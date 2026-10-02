@@ -42,6 +42,39 @@ pub(super) fn zeroed() -> Expr {
 }
 
 impl FunctionLowerer<'_, '_> {
+    fn lower_function_address(&mut self, value: &ir::Value, id: BindingId) -> Result<Expr> {
+        if self.tables.intrinsics.contains_key(&id)
+            || self.tables.function_type_has_vector(&value.ty)
+        {
+            return Err(unsupported_value(value));
+        }
+        Ok(match self.tables.names.get(&id) {
+            Some(name) if !name.is_extern => {
+                self.dependencies.address_taken.insert(name.rust.clone());
+                Expr::Call {
+                    func: Box::new(Expr::Var("Some".into())),
+                    args: vec![Expr::Var(name.rust.as_str().into())],
+                    binding: CallBinding::Generated,
+                }
+            }
+            Some(name) => {
+                let address = rust::Type::Ptr {
+                    mutable: false,
+                    inner: Box::new(rust::Type::Unit),
+                };
+                Expr::Transmute {
+                    from: address.clone(),
+                    to: self.lower_type(&value.ty)?,
+                    expr: Box::new(Expr::Cast {
+                        expr: Box::new(Expr::Var(name.rust.as_str().into())),
+                        ty: address,
+                    }),
+                }
+            }
+            None => return Err(unsupported_value(value)),
+        })
+    }
+
     pub(super) fn lower_evaluation_statements(
         &mut self,
         evaluation: &ir::Evaluation,
@@ -184,6 +217,10 @@ impl FunctionLowerer<'_, '_> {
                 }
             }
             ValueKind::Copy { operand, .. } => self.lower_value(operand)?,
+            ValueKind::AddressOf(ir::Place {
+                kind: PlaceKind::Binding(id),
+                ..
+            }) if self.tables.names.contains_key(id) => self.lower_function_address(value, *id)?,
             ValueKind::AddressOf(place) => match place.kind {
                 PlaceKind::Deref(ref pointer) => self.lower_value(pointer)?,
                 _ => {
@@ -520,44 +557,7 @@ impl FunctionLowerer<'_, '_> {
                         kind: PlaceKind::Binding(id),
                         ..
                     },
-            } if self.tables.intrinsics.contains_key(id)
-                || self.tables.function_type_has_vector(&value.ty) =>
-            {
-                return Err(unsupported_value(value));
-            }
-            ValueKind::FunctionDecay {
-                place:
-                    ir::Place {
-                        kind: PlaceKind::Binding(id),
-                        ..
-                    },
-            } => match self.tables.names.get(id) {
-                Some(name) if !name.is_extern => {
-                    self.dependencies.address_taken.insert(name.rust.clone());
-                    Expr::Call {
-                        func: Box::new(Expr::Var("Some".into())),
-                        args: vec![Expr::Var(name.rust.as_str().into())],
-                        binding: CallBinding::Generated,
-                    }
-                }
-                Some(name) => {
-                    let address = rust::Type::Ptr {
-                        mutable: false,
-                        inner: Box::new(rust::Type::Unit),
-                    };
-                    Expr::Transmute {
-                        from: address.clone(),
-                        to: self.lower_type(&value.ty)?,
-                        expr: Box::new(Expr::Cast {
-                            expr: Box::new(Expr::Var(name.rust.as_str().into())),
-                            ty: address,
-                        }),
-                    }
-                }
-                None => {
-                    return Err(unsupported_value(value));
-                }
-            },
+            } => self.lower_function_address(value, *id)?,
             ValueKind::Null => self.lower_null(value)?,
             ValueKind::Call {
                 callee: ir::Callee::Direct(id),

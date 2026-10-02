@@ -15,6 +15,9 @@
 - Record size, alignment, offsets, and pointer strides must match the C layout.
 - Aggregate initialization must account for zero-length flexible fields even
   though C does not provide initializers for them.
+- Static address constants may use recursively constant arithmetic for pointer
+  offsets and indices; aggregate members follow the same rule.
+- Explicit function addresses and function decay share lowering and ABI tracking.
 - Indirect variadic calls use the parser's explicit default argument promotions.
 - Volatile record fields keep ordinary C storage layout; qualification belongs
   to the memory operation. Volatile bit-field access remains a barrier.
