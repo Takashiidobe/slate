@@ -286,15 +286,67 @@ impl Opt {
     }
 
     fn parse_flag(self, argument: &str) -> Option<bool> {
-        let name = self.name();
-        if argument == format!("-f{name}") || argument == format!("--f{name}") {
-            Some(true)
-        } else if argument == format!("-fno-{name}") || argument == format!("--fno-{name}") {
-            Some(false)
-        } else {
-            None
-        }
+        parse_f_flag(self.name(), argument)
     }
+}
+
+fn parse_f_flag(name: &str, argument: &str) -> Option<bool> {
+    let flag = argument
+        .strip_prefix("--f")
+        .or_else(|| argument.strip_prefix("-f"))?;
+    match flag.strip_prefix("no-") {
+        Some(negated) if negated == name => Some(false),
+        _ if flag == name => Some(true),
+        _ => None,
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum IgnoredOption {
+    Alone,
+    TakesValue,
+}
+
+const IGNORED_DRIVER_FLAGS: [&str; 8] = ["-c", "-MD", "-MMD", "-MP", "-MG", "-M", "-MM", "-pipe"];
+
+const IGNORED_VALUE_OPTIONS: [&str; 5] = ["-o", "-MF", "-MT", "-MQ", "-MJ"];
+
+const CODEGEN_ONLY_FLAGS: [&str; 13] = [
+    "omit-frame-pointer",
+    "lto",
+    "function-sections",
+    "data-sections",
+    "strict-aliasing",
+    "plt",
+    "semantic-interposition",
+    "asynchronous-unwind-tables",
+    "unwind-tables",
+    "stack-clash-protection",
+    "merge-all-constants",
+    "ident",
+    "addrsig",
+];
+
+const CODEGEN_ONLY_VALUE_FLAGS: [&str; 3] = ["lto=", "visibility=", "debug-prefix-map="];
+
+pub fn ignored_option(argument: &str) -> Option<IgnoredOption> {
+    if IGNORED_VALUE_OPTIONS.contains(&argument) {
+        return Some(IgnoredOption::TakesValue);
+    }
+    let joined_value = IGNORED_VALUE_OPTIONS
+        .iter()
+        .any(|option| argument.len() > option.len() && argument.starts_with(option));
+    let codegen_only = CODEGEN_ONLY_FLAGS
+        .iter()
+        .any(|name| parse_f_flag(name, argument).is_some())
+        || CODEGEN_ONLY_VALUE_FLAGS
+            .iter()
+            .any(|prefix| argument.starts_with(&format!("-f{prefix}")));
+    (IGNORED_DRIVER_FLAGS.contains(&argument)
+        || argument.starts_with("-g")
+        || joined_value
+        || codegen_only)
+        .then_some(IgnoredOption::Alone)
 }
 
 const FLAG_OPTS: [Opt; 9] = [
@@ -420,7 +472,11 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
     let mut index = 0;
     while index < arguments.len() {
         let argument = &arguments[index];
-        if let Some((opt, value)) = FLAG_OPTS
+        if let Some(ignored) = ignored_option(argument) {
+            if ignored == IgnoredOption::TakesValue {
+                next_value(arguments, &mut index, argument, "")?;
+            }
+        } else if let Some((opt, value)) = FLAG_OPTS
             .iter()
             .find_map(|opt| opt.parse_flag(argument).map(|value| (*opt, value)))
         {
@@ -645,19 +701,7 @@ fn last_flag(arguments: &[String], name: &str) -> Option<(usize, bool)> {
         .iter()
         .enumerate()
         .rev()
-        .find_map(|(index, argument)| {
-            let positive = format!("-f{name}");
-            let positive_long = format!("--f{name}");
-            let negative = format!("-fno-{name}");
-            let negative_long = format!("--fno-{name}");
-            if argument == &positive || argument == &positive_long {
-                Some((index, true))
-            } else if argument == &negative || argument == &negative_long {
-                Some((index, false))
-            } else {
-                None
-            }
-        })
+        .find_map(|(index, argument)| parse_f_flag(name, argument).map(|value| (index, value)))
 }
 
 fn option_value<'a>(argument: &'a str, name: &str) -> Option<&'a str> {

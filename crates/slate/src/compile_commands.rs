@@ -1,4 +1,5 @@
 use serde_json::Value;
+use slate_parser::compiler_args::{IgnoredOption, ignored_option};
 use std::path::{Path, PathBuf};
 use thiserror::Error;
 
@@ -221,34 +222,23 @@ fn normalize(
     let mut word_index = 1;
     while word_index < words.len() {
         let word = &words[word_index];
-        if matches!(
-            word.as_str(),
-            "-c" | "-MD" | "-MMD" | "-MP" | "-MG" | "-M" | "-MM"
-        ) {
-            word_index += 1;
-            continue;
-        }
-        if word.starts_with("-g") {
-            word_index += 1;
-            continue;
-        }
-        if matches!(word.as_str(), "-o" | "-MF" | "-MT" | "-MQ" | "-MJ") {
-            if word_index + 1 >= words.len() {
-                return Err(CompileCommandsError::MissingOptionValue {
-                    path: database.to_path_buf(),
-                    index,
-                    option: word.clone(),
-                });
+        match ignored_option(word) {
+            Some(IgnoredOption::Alone) => {
+                word_index += 1;
+                continue;
             }
-            word_index += 2;
-            continue;
-        }
-        if ["-o", "-MF", "-MT", "-MQ", "-MJ"]
-            .iter()
-            .any(|prefix| word.starts_with(prefix) && word.len() > prefix.len())
-        {
-            word_index += 1;
-            continue;
+            Some(IgnoredOption::TakesValue) => {
+                if word_index + 1 >= words.len() {
+                    return Err(CompileCommandsError::MissingOptionValue {
+                        path: database.to_path_buf(),
+                        index,
+                        option: word.clone(),
+                    });
+                }
+                word_index += 2;
+                continue;
+            }
+            None => {}
         }
         match path_option(word) {
             Some(PathOption::Separate(option)) => {

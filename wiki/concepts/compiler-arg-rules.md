@@ -27,6 +27,15 @@ rule pipeline. Flag effects are in [compiler-flags](compiler-flags.md).
 - `-std` / `--std`: C90 and ISO 9899 aliases normalize to a language mode.
   `iso9899:199409` is C94: `__STDC_VERSION__ 199409L`, otherwise C89 rules.
   Unknown triples and standards are errors.
+- `ignored_option` is the single list of accepted-and-ignored arguments,
+  shared by the parser and slate's compile-command normalization: driver and
+  output options (`-c`, `-M*`, `-g*`, `-pipe`, `-o`/`-MF`/`-MT`/`-MQ`/`-MJ`
+  with a separate or joined value) and codegen-only `-f`/`-fno-` flags
+  (`CODEGEN_ONLY_FLAGS`, spelled like `Opt` flags; `-flto=`, `-fvisibility=`,
+  `-fdebug-prefix-map=`). A flag belongs there only if it changes neither
+  semantics nor predefined macros: `-fPIC`/`-fPIE` (`__PIC__`/`__PIE__`),
+  `-fstack-protector*` (`__SSP*__`), and `-fcf-protection` stay unknown
+  options until modeled.
 - `-masm=att|intel`: picks the `{att|intel}` alternative in x86 GNU asm and
   is recorded as the asm's `dialect`. gcc flavor rejects it off x86; clang
   accepts it everywhere (no effect off x86); msvc rejects it.
