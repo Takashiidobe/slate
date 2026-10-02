@@ -169,7 +169,10 @@ impl<W: Write> Codegen<W> {
                     self.out.write_str("]\n")?;
                 }
             }
-            Item::Mod { name } => {
+            Item::Mod { name, path } => {
+                if let Some(path) = path {
+                    writeln!(self.out, "#[path = {path:?}]")?;
+                }
                 self.out.write_str("mod ")?;
                 self.ident(name.as_str())?;
                 self.out.write_str(";\n")?;

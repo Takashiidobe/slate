@@ -15,6 +15,7 @@ impl FunctionLowerer<'_, '_> {
         &mut self,
         callee: &ir::Callee,
         arguments: &[ir::Value],
+        signature: &ir::Type,
     ) -> Result<Expr> {
         let names = &self.tables.names;
         let func = match callee {
@@ -32,11 +33,32 @@ impl FunctionLowerer<'_, '_> {
                 args: Vec::new(),
             },
         };
+        let variadic_start = match self.tables.resolve_type(signature) {
+            ir::Type::Function {
+                parameters,
+                variadic: true,
+                ..
+            } => Some(parameters.len()),
+            _ => None,
+        };
         let call = Expr::Call {
             func: Box::new(func),
             args: arguments
                 .iter()
-                .map(|argument| self.lower_value(argument))
+                .enumerate()
+                .map(|(index, argument)| {
+                    let lowered = self.lower_value(argument)?;
+                    let ty = self.lower_type(&argument.ty)?;
+                    Ok(
+                        if variadic_start.is_some_and(|start| index >= start)
+                            && matches!(ty, rust::Type::FnPtr { .. })
+                        {
+                            convert_function_pointer(ty, byte_pointer_type(), Box::new(lowered))
+                        } else {
+                            lowered
+                        },
+                    )
+                })
                 .collect::<Result<Vec<_>>>()?,
             binding: CallBinding::unknown(),
         };

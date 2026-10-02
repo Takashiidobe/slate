@@ -47,6 +47,7 @@ pub enum Item {
     CrateAttrs(Vec<CrateAttr>),
     Mod {
         name: Ident,
+        path: Option<String>,
     },
     InlineMod {
         vis: Visibility,

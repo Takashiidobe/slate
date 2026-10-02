@@ -676,11 +676,29 @@ fn translate_slate_project(
         .iter()
         .filter(|(stem, _)| *stem != root)
         .map(|(stem, _)| rust_ast::Item::Mod {
-            name: rust_ast::Ident::new(stem.as_str()),
+            name: rust_ast::Ident::new(format!("__slate_unit_{stem}")),
+            path: Some(format!("{stem}.rs")),
         })
         .collect();
     let mut outputs = Vec::new();
+    let mut rust_features = BTreeSet::new();
+    for (_, program) in &programs {
+        for item in &program.items {
+            if let rust_ast::Item::CrateAttrs(attrs) = item {
+                for attr in attrs {
+                    if let rust_ast::CrateAttr::Feature(feature) = attr {
+                        rust_features.insert(*feature);
+                    }
+                }
+            }
+        }
+    }
     for (stem, mut program) in programs {
+        for item in &mut program.items {
+            if let rust_ast::Item::CrateAttrs(attrs) = item {
+                attrs.retain(|attr| !matches!(attr, rust_ast::CrateAttr::Feature(_)));
+            }
+        }
         program.cargo_features(&mut cargo_features);
         shim_names.extend(
             c_shim::collect_program_shims(&program)
@@ -690,6 +708,16 @@ fn translate_slate_project(
         );
         let file = if stem == root {
             program.items.splice(0..0, children.iter().cloned());
+            program.items.insert(
+                0,
+                rust_ast::Item::CrateAttrs(
+                    rust_features
+                        .iter()
+                        .copied()
+                        .map(rust_ast::CrateAttr::Feature)
+                        .collect(),
+                ),
+            );
             "main".to_string()
         } else {
             stem

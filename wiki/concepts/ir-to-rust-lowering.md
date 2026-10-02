@@ -13,8 +13,8 @@
 | Volatile read / write | `ptr::read_volatile` / `ptr::write_volatile` on raw addresses |
 | f32 / f64 classification | Float classification methods; zero compares equal to either signed zero |
 | Scalar `__builtin_clz`, `clzl`, `clzll` calls | Unsigned operand's `leading_zeros()`, cast to the C result type |
-| NaN constructors | libc `nan` / `nanf` / `nanl`, preserving payload and argument evaluation |
 | f32 / f64 infinity constructors | `f32::INFINITY` / `f64::INFINITY` |
+| NaN constructors | libc `nan` / `nanf` / `nanl`, preserving payload and argument evaluation |
 
 - Record size, alignment, offsets, and pointer strides must match the C layout.
 - Aggregate initialization must account for zero-length flexible fields even
@@ -23,6 +23,10 @@
   offsets and indices; aggregate members follow the same rule.
 - Explicit function addresses and function decay share lowering and ABI tracking.
 - Indirect variadic calls use the parser's explicit default argument promotions.
+- Variadic function-pointer arguments travel as raw pointer representations;
+  `VaArg` reads that representation and restores the nullable function-pointer type.
+- Null-based field-address differences use parser layout offsets, avoiding Rust
+  null dereferences and pointer arithmetic.
 - Leading-zero counts preserve the C operand width; zero input is undefined in C.
 - Volatile record fields keep ordinary C storage layout; qualification belongs
   to the memory operation. Volatile bit-field access remains a barrier.
@@ -74,3 +78,9 @@
 - Differential fixtures cover forward/backward jumps, nested and sibling loops,
   irreducible control flow, jumps into switch cases, cross-state locals, skipped
   initializers, and condition/increment effects.
+
+## Translation units
+
+- Give generated Rust modules their own namespace and retain source filenames
+  with `#[path]`; C tags may share a translation unit's filename.
+- Collect feature requirements from all units onto the Rust crate root.

@@ -163,15 +163,28 @@ impl FunctionLowerer<'_, '_> {
                     })),
                 }))
             }
-            ValueKind::VaArg { list } => Expr::Unsafe(Box::new(rust::Block {
-                stmts: Vec::new(),
-                tail: Some(Box::new(Expr::MethodCallGeneric {
+            ValueKind::VaArg { list } => {
+                let ty = self.lower_type(&value.ty)?;
+                let read_ty = if matches!(ty, rust::Type::FnPtr { .. }) {
+                    byte_pointer_type()
+                } else {
+                    ty.clone()
+                };
+                let read = Expr::MethodCallGeneric {
                     recv: Box::new(self.lower_place(list)?),
                     method: "next_arg".into(),
-                    type_args: vec![self.lower_type(&value.ty)?],
+                    type_args: vec![read_ty.clone()],
                     args: Vec::new(),
-                })),
-            })),
+                };
+                Expr::Unsafe(Box::new(rust::Block {
+                    stmts: Vec::new(),
+                    tail: Some(Box::new(if read_ty == ty {
+                        read
+                    } else {
+                        convert_function_pointer(read_ty, ty, Box::new(read))
+                    })),
+                }))
+            }
             ValueKind::Fence { ordering, scope } => self
                 .lower_fence(*scope, ordering)
                 .ok_or_else(|| unsupported_value(value))?,
@@ -679,8 +692,11 @@ impl FunctionLowerer<'_, '_> {
                 )?
             }
             ValueKind::Call {
-                callee, arguments, ..
-            } => self.lower_call(callee, arguments)?,
+                callee,
+                arguments,
+                signature,
+                ..
+            } => self.lower_call(callee, arguments, signature)?,
             ValueKind::Aggregate { members, zero_fill } => {
                 self.lower_aggregate(&value.ty, members, *zero_fill)?
             }

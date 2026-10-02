@@ -1,5 +1,46 @@
 use super::*;
 
+impl Tables<'_> {
+    fn null_address_offset(&self, value: &ir::Value) -> Option<u64> {
+        match &value.node.value {
+            ValueKind::Null => Some(0),
+            ValueKind::Convert { operand, .. }
+                if matches!(self.resolve_type(&value.ty), ir::Type::Pointer { .. })
+                    && matches!(self.resolve_type(&operand.ty), ir::Type::Pointer { .. }) =>
+            {
+                self.null_address_offset(operand)
+            }
+            ValueKind::AddressOf(place) => self.null_place_offset(place),
+            _ => None,
+        }
+    }
+
+    fn null_place_offset(&self, place: &ir::Place) -> Option<u64> {
+        match &place.kind {
+            PlaceKind::Deref(pointer) => self.null_address_offset(pointer),
+            PlaceKind::Field {
+                base,
+                index,
+                bits: None,
+            } => {
+                let ir::Type::Defined(id) = self.resolve_type(&base.ty) else {
+                    return None;
+                };
+                let ir::TypeDefinitionKind::Record {
+                    layout: Some(layout),
+                    ..
+                } = &self.types.get(id)?.kind
+                else {
+                    return None;
+                };
+                self.null_place_offset(base)?
+                    .checked_add(*layout.offsets.get(*index)?)
+            }
+            _ => None,
+        }
+    }
+}
+
 pub(super) fn byte_pointer_type() -> rust::Type {
     rust::Type::Ptr {
         mutable: false,
@@ -105,6 +146,26 @@ impl FunctionLowerer<'_, '_> {
         right: &ir::Value,
         element: &ir::Type,
     ) -> Result<Expr> {
+        if let (Some(left), Some(right)) = (
+            self.tables.null_address_offset(left),
+            self.tables.null_address_offset(right),
+        ) {
+            let stride = match element {
+                ir::Type::Void | ir::Type::Function { .. } => 1,
+                _ => self
+                    .tables
+                    .storage_of(element)
+                    .map(|(size, _)| size)
+                    .filter(|size| *size != 0)
+                    .ok_or_else(|| unsupported_value(value))?,
+            };
+            return Ok(Expr::Cast {
+                expr: Box::new(Expr::Value(rust::RustValue::I128(
+                    (i128::from(left) - i128::from(right)) / i128::from(stride),
+                ))),
+                ty: self.lower_type(&value.ty)?,
+            });
+        }
         Ok(match element {
             ir::Type::Void => Expr::Cast {
                 expr: Box::new(Expr::Unsafe(Box::new(rust::Block {
