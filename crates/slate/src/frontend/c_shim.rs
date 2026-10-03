@@ -1,4 +1,4 @@
-use crate::backend::rust_ast::{ExternDecl, ExternFnDecl, Item, Program};
+use crate::backend::rust_ast::{Attr, ExternDecl, Item, Program};
 use std::collections::BTreeSet;
 
 fn c_type_for_tag(tag: &str) -> String {
@@ -86,16 +86,22 @@ fn render_trampoline(name: &str) -> Option<String> {
     if name.starts_with("__slate_vcall__") {
         return render_variadic_trampoline(name);
     }
-    let rest = name.strip_prefix("__slate_")?;
-    let sep = rest.find("__")?;
-    let callee = &rest[..sep];
-    let callback_callee = callee.strip_prefix("cb_");
-    let tags: Vec<&str> = rest[sep + 2..].split('_').collect();
+    let exported = name
+        .strip_prefix("__slate_ld__")
+        .and_then(|rest| rest.split_once("__"));
+    let (callee, tags) = match exported {
+        Some(split) => split,
+        None => name.strip_prefix("__slate_")?.split_once("__")?,
+    };
+    let exported_callee = exported.map(|(callee, _)| callee);
+    let callback_callee = callee.strip_prefix("cb_").filter(|_| exported.is_none());
+    let native_entry = callback_callee.is_some() || exported_callee.is_some();
+    let tags: Vec<&str> = tags.split('_').collect();
     let (ret_tag, arg_tags) = match tags.first() {
         Some(tag) if tag.starts_with('r') && tag.len() > 1 => (&tag[1..], &tags[1..]),
         _ => ("i32", &tags[..]),
     };
-    let ret_c_type = if callback_callee.is_some() && ret_tag == "f80" {
+    let ret_c_type = if native_entry && ret_tag == "f80" {
         "long double".to_string()
     } else {
         c_type_for_tag(ret_tag)
@@ -104,7 +110,7 @@ fn render_trampoline(name: &str) -> Option<String> {
         .iter()
         .enumerate()
         .map(|(i, tag)| {
-            let ty = if callback_callee.is_some() && *tag == "f80" {
+            let ty = if native_entry && *tag == "f80" {
                 "long double".to_string()
             } else {
                 c_type_for_tag(tag)
@@ -117,7 +123,7 @@ fn render_trampoline(name: &str) -> Option<String> {
         .iter()
         .enumerate()
         .map(|(i, tag)| {
-            if callback_callee.is_some() && *tag == "f80" {
+            if native_entry && *tag == "f80" {
                 format!("__slate_f80_store(_{i})")
             } else if *tag == "cf80" {
                 format!("__slate_cf80_load(_{i})")
@@ -135,25 +141,26 @@ fn render_trampoline(name: &str) -> Option<String> {
         })
         .collect::<Vec<_>>()
         .join(", ");
-    let undeclared = callback_callee.is_none() && header_for_shim_name(name).is_none();
-    let target = if undeclared {
-        format!("__slate_extern_{callee}")
-    } else {
-        callback_callee.unwrap_or(callee).to_string()
+    let undeclared = !native_entry && header_for_shim_name(name).is_none();
+    let (entry, target) = match (exported_callee, callback_callee) {
+        (Some(exported), _) => (exported.to_string(), name.to_string()),
+        (None, Some(callback)) => (name.to_string(), callback.to_string()),
+        (None, None) if undeclared => (name.to_string(), format!("__slate_extern_{callee}")),
+        (None, None) => (name.to_string(), callee.to_string()),
     };
     let call = format!("{target}({args})");
     let body = if ret_tag == "v" {
         format!("{call};")
     } else if ret_tag == "cf80" {
         format!("return __slate_cf80_store({call});")
-    } else if callback_callee.is_some() && ret_tag == "f80" {
+    } else if native_entry && ret_tag == "f80" {
         format!("return __slate_f80_load({call});")
     } else if ret_tag == "f80" {
         format!("return __slate_f80_store({call});")
     } else {
         format!("return {call};")
     };
-    let prototype = if callback_callee.is_some() {
+    let prototype = if native_entry {
         let rust_ret = if ret_tag == "f80" {
             "__slate_f80".to_string()
         } else {
@@ -170,10 +177,7 @@ fn render_trampoline(name: &str) -> Option<String> {
             })
             .collect::<Vec<_>>()
             .join(", ");
-        format!(
-            "{rust_ret} {}({rust_params});\n",
-            callback_callee.unwrap_or(callee)
-        )
+        format!("{rust_ret} {target}({rust_params});\n")
     } else if undeclared {
         let native_params = arg_tags
             .iter()
@@ -192,27 +196,35 @@ fn render_trampoline(name: &str) -> Option<String> {
         String::new()
     };
     Some(format!(
-        "{prototype}{ret_c_type} {name}({params}) {{\n    {body}\n}}\n"
+        "{prototype}{ret_c_type} {entry}({params}) {{\n    {body}\n}}\n"
     ))
 }
 
 pub(crate) const F80_SHIMS: &str = include_str!("./shims/long_double.c");
 pub(crate) const FENV_SHIMS: &str = include_str!("./shims/fenv.c");
 
-pub fn collect_program_shims(program: &Program) -> Vec<ExternFnDecl> {
-    program
-        .items
-        .iter()
-        .filter_map(|item| match item {
-            Item::ExternBlock { decls, .. } => Some(decls),
-            _ => None,
-        })
-        .flatten()
-        .filter_map(|decl| match decl {
-            ExternDecl::Fn(shim) => Some(shim.clone()),
-            ExternDecl::Static { .. } => None,
-        })
-        .collect()
+pub fn collect_program_shim_names(program: &Program) -> Vec<String> {
+    let mut names = Vec::new();
+    for item in &program.items {
+        match item {
+            Item::ExternBlock { decls, .. } => {
+                names.extend(decls.iter().filter_map(|decl| match decl {
+                    ExternDecl::Fn(shim) => Some(shim.name.clone()),
+                    ExternDecl::Static { .. } => None,
+                }))
+            }
+            Item::Fn(definition) => {
+                names.extend(definition.attrs.iter().filter_map(|attr| match attr {
+                    Attr::ExportName(name) if name.starts_with("__slate_ld__") => {
+                        Some(name.clone())
+                    }
+                    _ => None,
+                }))
+            }
+            _ => {}
+        }
+    }
+    names
 }
 
 fn header_for_shim_name(name: &str) -> Option<&'static str> {

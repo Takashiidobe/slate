@@ -36,7 +36,8 @@ rewrites and code generation. Rewrites are always on: differential suites run
 `translate`, and `translate-project` always applies its rewrites.
 `tests/fixtures.release/` fixtures go through `translate-project` and a
 `cargo build --release` (`release_build_differential`), for behavior that only
-shows up after LLVM optimization.
+shows up after LLVM optimization or across translation units: a `.c` file is a
+one-unit project, a directory of `.c` files is a multi-unit project.
 
 ## Toolchain
 

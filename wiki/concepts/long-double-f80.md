@@ -37,6 +37,20 @@ name cannot conflict with a header declaration whose integer spellings
 header so glibc redirects such as `__isoc23_strtold` still apply
 (`long_double_unknown_extern.c`).
 
+Bridges assume the callee has the native C ABI, but a Rust definition takes
+`LongDouble` as an INTEGER-class struct. So an exported (project) definition
+whose signature holds f80 is emitted with
+`#[unsafe(export_name = "__slate_ld__<name>__r<ret>_<arg tags>")]`, and
+`c_shim` renders the real `<name>` as a native-ABI C wrapper that applies
+`__slate_f80_store` to arguments and `__slate_f80_load` to the result. Calls by
+symbol from other translated units (through their bridges), native C, and
+`dlsym` all reach the native ABI; same-unit Rust callers call the Rust function
+directly. The double underscore after `ld` keeps these names distinct from
+bridges, whose callee never contains `__`. This revives the CIR lowerer's
+`__slate_ld_<name>` callback trampoline with the symbols swapped; the callback
+case (f80 function pointers handed to C) is `slate-dghn.24`. Variadic and
+complex f80 exports are barriers.
+
 Variadic `long double` arguments must reach the callee as real x87 values in
 memory; Rust would pass `LongDouble` as an INTEGER-class struct. A call to a
 Rust-defined variadic function with f80 variadic arguments becomes a call to

@@ -70,11 +70,12 @@ fn run_cases_with_mode(
         extra_args.extend(support::fixture_dg_additional_options(&f.path));
         let result = if project {
             let crate_dir = tmp.join(&f.name);
-            translate_fixture_project(f, &crate_dir, extra_args).and_then(|()| {
-                std::fs::copy(crate_dir.join("src/main.rs"), &generated)
-                    .map(|_| ())
-                    .map_err(|e| e.to_string())
-            })
+            translate_fixture_project(std::slice::from_ref(&f.path), &crate_dir, extra_args)
+                .and_then(|()| {
+                    std::fs::copy(crate_dir.join("src/main.rs"), &generated)
+                        .map(|_| ())
+                        .map_err(|e| e.to_string())
+                })
         } else {
             support::translate_slate(&f.path, &generated, &extra_args)
         };
@@ -103,28 +104,30 @@ fn run_cases_with_mode(
 }
 
 fn translate_fixture_project(
-    f: &Fixture,
+    sources: &[PathBuf],
     crate_dir: &Path,
     extra_args: Vec<String>,
 ) -> Result<(), String> {
     std::fs::create_dir_all(crate_dir).expect("create project directory");
     let database = crate_dir.join("compile_commands.json");
-    let mut arguments = vec!["clang".to_string(), "-std=c23".into()];
-    arguments.extend(extra_args);
-    arguments.push(f.path.display().to_string());
-    std::fs::write(
-        &database,
-        serde_json::to_vec(&serde_json::json!([{
-            "directory": f.path.parent(), "file": f.path, "arguments": arguments,
-        }]))
-        .unwrap(),
-    )
-    .unwrap();
+    let directory = sources[0].parent().unwrap();
+    let entries: Vec<_> = sources
+        .iter()
+        .map(|source| {
+            let mut arguments = vec!["clang".to_string(), "-std=c23".into()];
+            arguments.extend(extra_args.iter().cloned());
+            arguments.push(source.display().to_string());
+            serde_json::json!({
+                "directory": directory, "file": source, "arguments": arguments,
+            })
+        })
+        .collect();
+    std::fs::write(&database, serde_json::to_vec(&entries).unwrap()).unwrap();
     let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
         .arg("translate-project")
         .arg("--compile-commands")
         .arg(database)
-        .arg(f.path.parent().unwrap())
+        .arg(directory)
         .arg(crate_dir)
         .output()
         .unwrap();
@@ -206,20 +209,53 @@ fn project_control_flow_differential() {
 #[test]
 fn release_build_differential() {
     let work = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-generated/release");
-    let fixtures = fixtures(&Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures.release"));
-    let failures: Vec<_> = support::parallel_map(&fixtures, |f| {
-        let crate_dir = work.join(&f.name);
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures.release");
+    let selected = std::env::var("SLATE_DIFF_FIXTURE").ok();
+    let mut projects: Vec<(String, Vec<PathBuf>)> = std::fs::read_dir(&root)
+        .expect("read release fixtures")
+        .filter_map(|entry| {
+            let path = entry.ok()?.path();
+            let name = path.file_stem()?.to_string_lossy().into_owned();
+            let mut sources: Vec<PathBuf> = if path.is_dir() {
+                std::fs::read_dir(&path)
+                    .ok()?
+                    .filter_map(|entry| entry.ok().map(|entry| entry.path()))
+                    .filter(|source| source.extension().is_some_and(|ext| ext == "c"))
+                    .collect()
+            } else if path.extension().is_some_and(|ext| ext == "c") {
+                vec![path]
+            } else {
+                return None;
+            };
+            sources.sort();
+            (selected.as_ref().is_none_or(|selected| *selected == name) && !sources.is_empty())
+                .then_some((name, sources))
+        })
+        .collect();
+    projects.sort();
+    let failures: Vec<_> = support::parallel_map(&projects, |(name, sources)| {
+        let crate_dir = work.join(name);
         let result = (|| {
-            translate_fixture_project(f, &crate_dir, support::fixture_dg_options(&f.path))?;
+            translate_fixture_project(
+                sources,
+                &crate_dir,
+                support::fixture_dg_options(&sources[0]),
+            )?;
             let rs_bin = support::build_project_release(&crate_dir)?;
-            let c_bin = work.join(format!("{}_c", f.name));
-            support::compile_c_with_args_for_target(&f.path, &c_bin, &[], None)?;
+            let c_bin = work.join(format!("{name}_c"));
+            support::compile_c_multi_with_std_include_and_args(
+                sources,
+                &c_bin,
+                "c23",
+                sources[0].parent(),
+                &[],
+            )?;
             let config = support::RunConfig::default();
             let c = support::run_with_config(&c_bin, &config, &work)?;
             let r = support::run_with_config(&rs_bin, &config, &work)?;
             support::compare_runs(&c, &r, false)
         })();
-        result.err().map(|error| format!("[{}] {error}", f.name))
+        result.err().map(|error| format!("[{name}] {error}"))
     })
     .into_iter()
     .flatten()

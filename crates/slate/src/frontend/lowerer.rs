@@ -448,17 +448,28 @@ impl<'m> ModuleLowerer<'m> {
             } else {
                 self.lowerer().lower_function(function, body)
             };
-            match lowered {
-                Ok(Item::Fn(mut definition))
-                    if self.options.export_symbols
-                        && matches!(function.linkage, ir::Linkage::External)
-                        && !function.semantics.inline_only
-                        && function.name != "main" =>
-                {
-                    definition.attrs.push(Attr::NoMangle);
-                    definition.abi.get_or_insert(rust::Abi::CUnwind);
-                    self.items.push(Item::Fn(definition));
+            let exported = self.options.export_symbols
+                && matches!(function.linkage, ir::Linkage::External)
+                && !function.semantics.inline_only
+                && function.name != "main";
+            let lowered = match lowered {
+                Ok(Item::Fn(mut definition)) if exported => {
+                    let export = if self.tables.passes_long_double(function)
+                        && !function_is_variadic(function)
+                    {
+                        long_double_export_name(&function.name, &definition).map(Attr::ExportName)
+                    } else {
+                        Ok(Attr::NoMangle)
+                    };
+                    export.map(|attr| {
+                        definition.attrs.push(attr);
+                        definition.abi.get_or_insert(rust::Abi::CUnwind);
+                        Item::Fn(definition)
+                    })
                 }
+                lowered => lowered,
+            };
+            match lowered {
                 Ok(item) => self.items.push(item),
                 Err(error) => self.barriers.push(
                     error

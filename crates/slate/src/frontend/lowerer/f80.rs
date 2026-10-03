@@ -39,6 +39,33 @@ pub(super) fn long_double_bridge_tags<'a>(
         .collect()
 }
 
+pub(super) fn function_is_variadic(function: &ir::Function) -> bool {
+    matches!(
+        function.parameters,
+        ir::Parameters::Prototype { variadic: true, .. }
+    )
+}
+
+pub(super) fn long_double_export_name(symbol: &str, definition: &FnDef) -> Result<String> {
+    let unsupported = || {
+        Failure::from(Construct::LongDouble {
+            detail: format!("export of {symbol}"),
+        })
+    };
+    if symbol.contains("__") {
+        return Err(unsupported());
+    }
+    let ret = definition.ret.clone().unwrap_or(rust::Type::Unit);
+    let tags = long_double_bridge_tags(
+        symbol,
+        std::iter::once(&ret).chain(definition.params.iter().map(|param| &param.ty)),
+    )?;
+    if tags.iter().any(|tag| tag == "cf80") {
+        return Err(unsupported());
+    }
+    Ok(format!("__slate_ld__{symbol}__r{}", tags.join("_")))
+}
+
 impl Tables<'_> {
     pub(super) fn is_long_double(&self, ty: &ir::Type) -> bool {
         matches!(

@@ -716,9 +716,8 @@ fn translate_slate_project(
         }
         program.cargo_features(&mut cargo_features);
         shim_names.extend(
-            c_shim::collect_program_shims(&program)
+            c_shim::collect_program_shim_names(&program)
                 .into_iter()
-                .map(|shim| shim.name)
                 .filter(|name| name.starts_with("__slate_")),
         );
         let file = if stem == root {
