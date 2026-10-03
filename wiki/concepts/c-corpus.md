@@ -141,7 +141,8 @@ or `slate translate-project`.
 - `HOST_INCLUDE_DIRS` in the sweep is that manual list, appended as
   `-idirafter` so the sysroot still wins for libc headers. redis needs
   `/usr/include` for `systemd/sd-daemon.h` (its build detects systemd on
-  the host).
+  the host). pcre2 needs it for `bzlib.h` (`pcre2grep.c`) and
+  `readline/readline.h` (`pcre2test.c`).
 - Where a corpus project provides the header (`zlib`), the sweep appends
   its source and build directories as `-idirafter` for every other
   project, and libpng is built against that zlib so clang and slate read
