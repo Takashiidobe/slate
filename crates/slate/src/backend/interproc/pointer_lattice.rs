@@ -70,6 +70,7 @@ pub(in crate::backend) struct PointerFact {
     escape: bool,
     nullable: bool,
     string: bool,
+    reassigned: bool,
 }
 
 impl PointerFact {
@@ -83,7 +84,12 @@ impl PointerFact {
             escape: false,
             nullable: false,
             string: false,
+            reassigned: false,
         }
+    }
+
+    fn observe_reassign(&mut self) -> bool {
+        flip_up(&mut self.reassigned)
     }
 
     fn observe_write(&mut self) -> bool {
@@ -144,7 +150,7 @@ impl PointerFact {
     }
 
     pub(in crate::backend) fn resolved(&self) -> Representation {
-        if self.escape && !(self.unique && self.free) {
+        if self.reassigned || (self.escape && !(self.unique && self.free)) {
             let base = if self.write {
                 ResolvedPtrType::RawMut
             } else {
@@ -865,6 +871,7 @@ impl ClassifyCtx<'_> {
                     }
                     self.expr(value);
                 } else if let Expr::Var(name) = target {
+                    self.observe(name.as_str(), PointerFact::observe_reassign);
                     if !self.try_alias(name.as_str(), value)
                         && !self.try_offset_alias(name.as_str(), value)
                         && !self.try_return_call_alias(name.as_str(), value)
@@ -883,6 +890,11 @@ impl ClassifyCtx<'_> {
                     }
                 } else {
                     self.place(target, true);
+                    if let Some(source) = source_var(value)
+                        && let Some(canonical) = self.canonical_of(source.as_str())
+                    {
+                        self.observe(&canonical, PointerFact::observe_escape);
+                    }
                     self.expr(value);
                 }
             }
@@ -1227,6 +1239,13 @@ fn read_var_name(expr: &Expr) -> Option<Ident> {
 }
 
 fn is_null_like(expr: &Expr) -> bool {
+    if let Expr::Call { func, args, .. } = expr
+        && args.is_empty()
+        && let Expr::Var(name) = &**func
+    {
+        let name = name.as_str();
+        return name.starts_with("std::ptr::null::<") || name.starts_with("std::ptr::null_mut::<");
+    }
     matches!(
         expr,
         Expr::Value(
