@@ -1,5 +1,39 @@
 use crate::backend::engine::NodeRule;
-use crate::backend::engine::arena::{FunctionOptimizer, NodeId, NodeKind, NodeKindTag};
+use crate::backend::engine::arena::{Arena, FunctionOptimizer, NodeId, NodeKind, NodeKindTag};
+
+fn later_siblings(arena: &Arena, id: NodeId) -> Option<(NodeId, Vec<NodeId>)> {
+    let parent = arena.parent(id)?;
+    let lists = arena.get(parent)?.child_lists();
+    let list = lists.into_iter().find(|list| list.contains(&id))?;
+    let pos = list.iter().position(|&child| child == id)?;
+    Some((parent, list[pos + 1..].to_vec()))
+}
+
+fn shadow_outlives_scope(arena: &Arena, id: NodeId) -> bool {
+    let Some(NodeKind::Scope { body }) = arena.get(id) else {
+        return false;
+    };
+    let Some((parent, later)) = later_siblings(arena, id) else {
+        return false;
+    };
+    body.iter()
+        .filter_map(|&child| arena.get(child).and_then(NodeKind::declared_name))
+        .any(|name| {
+            arena.def_use_neighbors(name).iter().any(|&reader| {
+                if reader == parent {
+                    return true;
+                }
+                let mut node = reader;
+                while let Some(up) = arena.parent(node) {
+                    if up == parent {
+                        return later.contains(&node);
+                    }
+                    node = up;
+                }
+                false
+            })
+        })
+}
 
 pub(in crate::backend::engine) struct ScopeFlatten;
 
@@ -21,10 +55,13 @@ impl NodeRule for ScopeFlatten {
     }
 
     fn matches(&self, arena: &FunctionOptimizer, id: NodeId) -> bool {
-        arena.parent(id).is_some()
+        arena.parent(id).is_some() && !shadow_outlives_scope(arena, id)
     }
 
     fn apply(&self, arena: &mut FunctionOptimizer, id: NodeId) -> bool {
+        if shadow_outlives_scope(arena, id) {
+            return false;
+        }
         let Some(parent_id) = arena.parent(id) else {
             return false;
         };
