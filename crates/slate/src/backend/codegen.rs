@@ -45,6 +45,8 @@ fn starts_with_brace_expr(expr: &Expr) -> bool {
         Expr::Block(_)
             | Expr::Unsafe(_)
             | Expr::ConstBlock(_)
+            | Expr::Transmute { .. }
+            | Expr::CopyNonoverlapping { .. }
             | Expr::If { .. }
             | Expr::Match { .. }
     )
