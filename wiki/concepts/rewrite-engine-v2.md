@@ -4,6 +4,7 @@
 - [Ownership](#ownership)
 - [Scheduling and facts](#scheduling-and-facts)
 - [Control-flow rewrites](#control-flow-rewrites)
+  - [Explicit-tail-call candidate](#explicit-tail-call-candidate)
 - [Validation](#validation)
 - [Design history](#design-history)
 <!-- /toc -->

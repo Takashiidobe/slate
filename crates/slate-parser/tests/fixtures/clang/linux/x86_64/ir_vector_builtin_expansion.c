@@ -29,6 +29,8 @@ __attribute__((target("avx512f"))) float fadd(v16sf v) {
     return __builtin_ia32_reduce_fadd_ps512(-0.0f, v);
 }
 
+unsigned long long ticks(void) { return __rdtsc(); }
+
 // SLATE-FILECHECK-BEGIN IR
 // IR: module {
 // IR-NEXT:     target "x86_64-unknown-linux-gnu" {
@@ -80,6 +82,9 @@ __attribute__((target("avx512f"))) float fadd(v16sf v) {
 // IR-NEXT:         let %[[VALUE7:[0-9]+]]: vector<f32, 4> [synthetic] = add<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=ignore, contract=on>(shuffle<vector<f32, 4>, mask=[0, 1, 2, 3]>(read<vector<f32, 8>>(%[[VALUE6]])), shuffle<vector<f32, 4>, mask=[4, 5, 6, 7]>(read<vector<f32, 8>>(%[[VALUE6]])));
 // IR-NEXT:         let %[[VALUE8:[0-9]+]]: vector<f32, 2> [synthetic] = add<vector<f32, 2>, elementwise=true, rounding=nearest_even, exceptions=ignore, contract=on>(shuffle<vector<f32, 2>, mask=[0, 1]>(read<vector<f32, 4>>(%[[VALUE7]])), shuffle<vector<f32, 2>, mask=[2, 3]>(read<vector<f32, 4>>(%[[VALUE7]])));
 // IR-NEXT:         return add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(neg<f32>(const<f32>(0.0)), lane<f32>(add<vector<f32, 1>, elementwise=true, rounding=nearest_even, exceptions=ignore, contract=on>(shuffle<vector<f32, 1>, mask=[0]>(read<vector<f32, 2>>(%[[VALUE8]])), shuffle<vector<f32, 1>, mask=[1]>(read<vector<f32, 2>>(%[[VALUE8]]))), const<i32>(0)));
+// IR-NEXT:     }
+// IR-NEXT:     fn %[[VALUE_ticks:[0-9]+]] @ticks() -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return intrinsic<u64, llvm.x86.rdtsc>();
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

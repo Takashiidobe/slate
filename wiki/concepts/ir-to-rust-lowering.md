@@ -1,5 +1,12 @@
 # IR-to-Rust lowering
 
+<!-- toc -->
+- [Types and storage](#types-and-storage)
+- [Atomics](#atomics)
+- [Control flow](#control-flow)
+- [Translation units](#translation-units)
+<!-- /toc -->
+
 ## Types and storage
 
 | Parser IR | Rust |

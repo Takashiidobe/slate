@@ -135,6 +135,7 @@ no extern with vector parameters reaches Slate.
 | `__builtin_elementwise_{popcount,max,min,fma}` | `intrinsic<llvm.ctpop>`, `llvm.{s,u}{max,min}` or `llvm.{max,min}num`, `llvm.fma` |
 | `__builtin_ia32_extract*` / `vextractf128_*` | one-operand `shuffle` of lanes `(imm mod n) * width ..`; `_mask` forms need an all-ones constant mask, and an effectful passthrough is kept by `sequence` |
 | `__builtin_ia32_pternlog{d,q}{128,256,512}_mask[z]` | `intrinsic<llvm.x86.avx512.pternlog.*>(a, b, c, imm)` with an all-ones constant mask |
+| `__rdtsc()` | `intrinsic<u64, llvm.x86.rdtsc>()`; clang's x86 `__rdtsc` record has no `ClangBuiltin` alias (only `__builtin_ia32_rdtsc` does) |
 | `__builtin_ia32_reduce_f{add,mul}_p{s,d}512(init, v)` | `init op` a halving tree: each level combines the low and high halves with a vector `add`/`mul`, ending with `lane 0` of a one-lane vector. Clang emits a `reassoc` reduction, which LLVM lowers to this order; an intrinsic call cannot carry `reassoc` |
 
 - Each tree level is bound once with `capture<%t>`, the same once-binding

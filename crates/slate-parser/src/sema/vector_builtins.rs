@@ -26,6 +26,7 @@ impl Lowerer {
                     .ok_or(ResolveError::Internal("vector reduction operand"))?;
                 intrinsic(reduction_intrinsic(reduction, element), arguments)
             }
+            Expansion::Intrinsic(name) => intrinsic(name, arguments),
             Expansion::Popcount => intrinsic("llvm.ctpop", arguments),
             Expansion::Fma => intrinsic("llvm.fma", arguments),
             Expansion::Max | Expansion::Min => {

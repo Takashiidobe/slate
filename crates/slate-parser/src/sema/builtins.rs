@@ -212,6 +212,7 @@ pub(super) enum Expansion {
     Extract,
     TernaryLogic,
     FloatReduce(ArithOp),
+    Intrinsic(&'static str),
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -264,6 +265,7 @@ pub(super) fn expansion(builtin: &ClangBuiltin) -> Option<Expansion> {
         | "pternlogq256_maskz" | "pternlogq512_maskz" => Expansion::TernaryLogic,
         "reduce_fadd_ps512" | "reduce_fadd_pd512" => Expansion::FloatReduce(ArithOp::Add),
         "reduce_fmul_ps512" | "reduce_fmul_pd512" => Expansion::FloatReduce(ArithOp::Mul),
+        "__rdtsc" => Expansion::Intrinsic("llvm.x86.rdtsc"),
         _ => return None,
     })
 }

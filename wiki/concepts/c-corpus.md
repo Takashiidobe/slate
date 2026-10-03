@@ -5,6 +5,7 @@
 - [Setup](#setup)
 - [Recipes](#recipes)
 - [Sweep](#sweep)
+- [End to end](#end-to-end)
 - [Missing dependencies](#missing-dependencies)
 - [Gotchas](#gotchas)
 <!-- /toc -->
@@ -92,6 +93,40 @@ python3 tools/c_corpus_sweep.py [PROJECT ...] [--flavor clang|gcc|msvc] [--jobs 
   TU is `ok`. An `oracle-rejects` disqualifies, since it means the setup
   is wrong, not slate.
 - A full run takes about 3 minutes.
+
+## End to end
+
+```
+python3 tools/corpus/e2e.py redis [--mode clang|gcc] [--setup] [--until STAGE] [--bench-runs N] [-- runtest args]
+```
+
+Translates one project's target with `slate translate-project`, links it
+against the native build's libraries, benchmarks it against the native
+binary, and runs the project's tests. Reports go to
+`target/corpus/<project>/<mode>/` (`summary.json` plus per-stage logs).
+The run stops at the first failing stage. The barrier report is always
+written once translation units are known.
+
+| Stage | What | Report |
+| --- | --- | --- |
+| native | `--setup` reruns `c_corpus_setup.py`; checks the target's link inputs exist; picks the target's TUs (`make -pn` object lists) from `build-<mode>` | `compile_commands.json` |
+| barriers | `slate lowering-barriers` per TU, aggregated by kind | `barriers.{json,md}` |
+| translate | `translate-project`; also times the native compile of the same TUs with their original flags, in parallel | `translate_over_compile` |
+| check | `cargo check` of the generated crate | `check.log` |
+| build | `cargo build --release`, linking the native archives and libraries via `-C link-arg` | `build.log` |
+| bench | the project's benchmark against the native and translated binaries: one warmup each, then alternating samples, medians | `bench.{json,md}`, `geomean_ratio` |
+| test | the project's test command in a sandbox copy of its test tree, with the target binary swapped in | `test.log` |
+
+- Translation should take about as long as the native compile, and the
+  translated binary should benchmark about as fast as the native one.
+  `cargo build` time is not compared.
+- redis: the target is `REDIS_SERVER_OBJ` + `REDIS_VEC_SETS_OBJ`. Its
+  `build-clang` database records the `src/*.c` TUs only as `-MM` entries; the
+  harness keeps the first existing source per object, so
+  `../modules/vector-sets/hnsw.c` wins over the missing `src/hnsw.c`. The
+  benchmark is pipelined `redis-benchmark` (`-P 16 -c 50`). The test sandbox
+  links `redis-server`/`redis-check-*` to the translated binary and
+  `redis-cli`/`redis-benchmark` to the native ones.
 
 ## Missing dependencies
 
