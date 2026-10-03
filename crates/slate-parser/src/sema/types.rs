@@ -1968,6 +1968,11 @@ impl TypeResolver {
                 let mut field_types = Vec::new();
                 let mut requests = Vec::new();
                 for item in items {
+                    if let FieldItemKind::StaticAssert(assertion) = &item.value {
+                        let failure = super::assertion::static_assertion_error(self, assertion);
+                        self.diagnostics.extend(failure);
+                        continue;
+                    }
                     let FieldItemKind::Field(declaration) = &item.value else {
                         continue;
                     };

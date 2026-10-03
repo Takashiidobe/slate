@@ -528,6 +528,9 @@ pub fn walk_tag_definition<V: Visitor + ?Sized>(
     match &tag.body {
         TagBody::Record(fields) => {
             for item in fields {
+                if let FieldItemKind::StaticAssert(assertion) = &item.value {
+                    visitor.visit_expr(&assertion.condition)?;
+                }
                 if let FieldItemKind::Field(field) = &item.value {
                     walk_specifiers(visitor, &field.specifiers)?;
                     for declarator in &field.declarators {

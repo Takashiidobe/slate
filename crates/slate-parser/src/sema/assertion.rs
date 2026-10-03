@@ -118,43 +118,8 @@ enum Returns {
 
 impl Checker<'_> {
     fn assertion(&mut self, assertion: &StaticAssert) {
-        let condition = &assertion.condition;
-        match ice_shape(self.types, condition) {
-            Shape::Constant => {}
-            Shape::Skip => return,
-            Shape::NotConstant(call) => {
-                self.errors.push(error(
-                    call.provenance,
-                    call.expansion,
-                    "static assertion requires an integer constant expression: call to a function that cannot be constant folded",
-                ));
-                return;
-            }
-        }
-        let result = self
-            .types
-            .constant_value(condition)
-            .and_then(|value| match value.ty {
-                Type::Bool | Type::Numeric(NumericType::Integer { .. }) => {
-                    super::fold::integer_constant(&value, self.unit.dialect.flavor()).ok_or(
-                        ResolveError::Rejected("nonconstant or undefined integer expression"),
-                    )
-                }
-                _ => Err(ResolveError::Rejected("non-integer constant expression")),
-            })
-            .map_err(|error| error.to_string());
-        let message = match result {
-            Ok(value) if value.sign() != Sign::NoSign => return,
-            Ok(_) => assertion.message.as_ref().map_or_else(
-                || "static assertion failed".to_owned(),
-                |message| format!("static assertion failed: {message}"),
-            ),
-            Err(reason) => {
-                format!("static assertion requires an integer constant expression: {reason}")
-            }
-        };
         self.errors
-            .push(error(condition.provenance, condition.expansion, message));
+            .extend(static_assertion_error(self.types, assertion));
     }
 
     fn declare_object<T>(
@@ -1604,6 +1569,47 @@ fn call_shape<'e>(expr: &'e Expr, callee: &Expr, arguments: &'e [Expr]) -> Shape
         ExprKind::Identifier(name) if super::builtins::is_foldable_builtin(name) => Shape::Skip,
         _ => Shape::NotConstant(expr),
     }
+}
+
+pub(super) fn static_assertion_error(
+    types: &mut TypeResolver,
+    assertion: &StaticAssert,
+) -> Option<SemaError> {
+    let condition = &assertion.condition;
+    match ice_shape(types, condition) {
+        Shape::Constant => {}
+        Shape::Skip => return None,
+        Shape::NotConstant(call) => {
+            return Some(error(
+                call.provenance,
+                call.expansion,
+                "static assertion requires an integer constant expression: call to a function that cannot be constant folded",
+            ));
+        }
+    }
+    let flavor = types.compiler_flavor();
+    let result = types
+        .constant_value(condition)
+        .and_then(|value| match value.ty {
+            Type::Bool | Type::Numeric(NumericType::Integer { .. }) => {
+                super::fold::integer_constant(&value, flavor).ok_or(ResolveError::Rejected(
+                    "nonconstant or undefined integer expression",
+                ))
+            }
+            _ => Err(ResolveError::Rejected("non-integer constant expression")),
+        })
+        .map_err(|error| error.to_string());
+    let message = match result {
+        Ok(value) if value.sign() != Sign::NoSign => return None,
+        Ok(_) => assertion.message.as_ref().map_or_else(
+            || "static assertion failed".to_owned(),
+            |message| format!("static assertion failed: {message}"),
+        ),
+        Err(reason) => {
+            format!("static assertion requires an integer constant expression: {reason}")
+        }
+    };
+    Some(error(condition.provenance, condition.expansion, message))
 }
 
 fn ice_shape<'e>(types: &mut TypeResolver, expr: &'e Expr) -> Shape<'e> {

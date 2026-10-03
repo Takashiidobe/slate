@@ -1609,6 +1609,7 @@ pub enum TagBody {
 pub enum FieldItemKind {
     Comment(CommentGroup),
     Field(FieldDecl),
+    StaticAssert(StaticAssert),
 }
 
 #[derive(Debug, Clone, PartialEq)]

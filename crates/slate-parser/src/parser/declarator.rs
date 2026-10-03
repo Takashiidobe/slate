@@ -311,18 +311,24 @@ impl<'a> DeclaratorParser<'a> {
                     DeclaratorError::ExpectedToken(Token::Semi, "in struct/union body"),
                 )?
                 + 1;
-            let (specifiers, declarators) = parser
-                .parse_field_declaration_tokens(&self.tokens[start..end])
-                .map_err(DeclaratorError::Parse)?;
+            let item =
+                if self.tokens.value_at(start) == Some(&Token::Keyword(Keyword::StaticAssert)) {
+                    FieldItemKind::StaticAssert(
+                        parser
+                            .parse_static_assert(&self.tokens[start..end])
+                            .map_err(DeclaratorError::Parse)?,
+                    )
+                } else {
+                    let (specifiers, declarators) = parser
+                        .parse_field_declaration_tokens(&self.tokens[start..end])
+                        .map_err(DeclaratorError::Parse)?;
+                    FieldItemKind::Field(FieldDecl {
+                        specifiers,
+                        declarators,
+                    })
+                };
             self.pos = end;
-            fields.push(span_tokens(
-                FieldItemKind::Field(FieldDecl {
-                    specifiers,
-                    declarators,
-                }),
-                &self.tokens[start..end],
-                self.context,
-            ));
+            fields.push(span_tokens(item, &self.tokens[start..end], self.context));
             fields.extend(
                 parser
                     .input

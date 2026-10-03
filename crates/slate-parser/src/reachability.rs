@@ -163,6 +163,9 @@ impl<'a> Reachability<'a> {
         match &tag.value.body {
             TagBody::Record(fields) => {
                 for field in fields {
+                    if let FieldItemKind::StaticAssert(assertion) = &field.value {
+                        self.mark_expr(&assertion.condition);
+                    }
                     if let FieldItemKind::Field(field) = &field.value {
                         self.mark_attributes(&field.specifiers.attributes);
                         self.mark_type(&field.specifiers.ty);

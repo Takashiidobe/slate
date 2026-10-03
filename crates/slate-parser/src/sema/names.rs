@@ -654,6 +654,9 @@ impl Resolver {
             }
             TagBody::Record(fields) => {
                 for field in fields {
+                    if let crate::ast::FieldItemKind::StaticAssert(assertion) = &field.value {
+                        self.visit_expr(&assertion.condition)?;
+                    }
                     if let crate::ast::FieldItemKind::Field(field) = &field.value {
                         self.type_specifier(&field.specifiers.ty, &tag)?;
                         self.attributes(&field.specifiers.attributes)?;
