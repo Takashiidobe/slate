@@ -37,6 +37,7 @@ pub struct StandardFeatures {
     pub u8_character_constant: Availability,
     pub u8_literals_are_unsigned: bool,
     pub digit_separators: bool,
+    pub octal_prefix: bool,
     pub enumerators_have_enum_type: bool,
     pub conditional_pointers: crate::sema::PointerMerge,
     pub compatible_tag_redefinitions: bool,
@@ -95,6 +96,7 @@ impl StandardFeatures {
             u8_character_constant: c23_keyword,
             u8_literals_are_unsigned: c23,
             digit_separators: c23,
+            octal_prefix: true,
             enumerators_have_enum_type: c23,
             conditional_pointers: crate::sema::PointerMerge::EXACT,
             compatible_tag_redefinitions: c23,
@@ -143,6 +145,7 @@ impl StandardFeatures {
             }
             CompilerFlavor::Gcc => (false, false),
         };
+        features.octal_prefix = flavor != CompilerFlavor::Msvc;
         if flavor == CompilerFlavor::Gcc {
             features.widest_integer_literal_fallback = true;
             // gcc drops _Atomic, and before c23 qualifiers of an array's elements, from `?:` pointers

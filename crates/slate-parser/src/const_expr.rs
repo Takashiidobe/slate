@@ -771,14 +771,12 @@ fn parse_integer_literal(spelling: &str) -> IntegerLiteral {
     let digits = Lexer::integer_digits(spelling);
     let suffix = parse_integer_suffix(spelling, digits.len());
     let cleaned = digits.replace('\'', "");
-    let (radix, radix_num, digits) = if cleaned.starts_with("0x") || cleaned.starts_with("0X") {
-        (Radix::Hex, 16, &cleaned[2..])
-    } else if cleaned.starts_with("0b") || cleaned.starts_with("0B") {
-        (Radix::Binary, 2, &cleaned[2..])
-    } else if cleaned.len() > 1 && cleaned.starts_with('0') {
-        (Radix::Octal, 8, &cleaned[1..])
-    } else {
-        (Radix::Decimal, 10, cleaned.as_str())
+    let (radix_num, digits) = Lexer::integer_radix(&cleaned);
+    let radix = match radix_num {
+        16 => Radix::Hex,
+        2 => Radix::Binary,
+        8 => Radix::Octal,
+        _ => Radix::Decimal,
     };
     let value = if digits.is_empty() {
         BigUint::default()

@@ -338,15 +338,7 @@ impl Token {
             return None;
         }
         let digits = Lexer::integer_digits(spelling).replace('\'', "");
-        let (radix, digits) = if digits.starts_with("0x") || digits.starts_with("0X") {
-            (16, &digits[2..])
-        } else if digits.starts_with("0b") || digits.starts_with("0B") {
-            (2, &digits[2..])
-        } else if digits.len() > 1 && digits.starts_with('0') {
-            (8, &digits[1..])
-        } else {
-            (10, digits.as_str())
-        };
+        let (radix, digits) = Lexer::integer_radix(&digits);
         u128::from_str_radix(digits, radix)
             .ok()
             .and_then(|value| i128::try_from(value).ok())
@@ -360,15 +352,7 @@ impl Token {
             return None;
         }
         let digits = Lexer::integer_digits(spelling).replace('\'', "");
-        let (radix, digits) = if digits.starts_with("0x") || digits.starts_with("0X") {
-            (16, &digits[2..])
-        } else if digits.starts_with("0b") || digits.starts_with("0B") {
-            (2, &digits[2..])
-        } else if digits.len() > 1 && digits.starts_with('0') {
-            (8, &digits[1..])
-        } else {
-            (10, digits.as_str())
-        };
+        let (radix, digits) = Lexer::integer_radix(&digits);
         u64::from_str_radix(digits, radix)
             .ok()
             .map(|value| value as i64)
@@ -759,16 +743,14 @@ impl Lexer {
                 self.emit(Token::FloatLit(spelling.into()));
             } else {
                 let digits = Self::integer_digits(&spelling).replace('\'', "");
-                let (radix, digits) = if digits.starts_with("0x") || digits.starts_with("0X") {
-                    (16, &digits[2..])
-                } else if digits.starts_with("0b") || digits.starts_with("0B") {
-                    (2, &digits[2..])
-                } else if digits.len() > 1 && digits.starts_with('0') {
-                    (8, &digits[1..])
-                } else {
-                    (10, digits.as_str())
-                };
-                if !digits.is_empty() && digits.chars().all(|digit| digit.is_digit(radix)) {
+                let octal_prefix = digits
+                    .get(..2)
+                    .is_some_and(|p| p.eq_ignore_ascii_case("0o"));
+                let (radix, digits) = Self::integer_radix(&digits);
+                if !digits.is_empty()
+                    && digits.chars().all(|digit| digit.is_digit(radix))
+                    && (self.features.octal_prefix || !octal_prefix)
+                {
                     self.emit(Token::IntLit(spelling.into()));
                 } else {
                     self.emit(Token::FloatLit(spelling.into()));
@@ -931,6 +913,16 @@ impl Lexer {
 
     pub(crate) fn is_imaginary_integer(spelling: &str) -> bool {
         spelling.contains(['i', 'I', 'j', 'J'])
+    }
+
+    pub(crate) fn integer_radix(digits: &str) -> (u32, &str) {
+        match digits.get(..2).map(str::to_ascii_lowercase).as_deref() {
+            Some("0x") => (16, &digits[2..]),
+            Some("0b") => (2, &digits[2..]),
+            Some("0o") => (8, &digits[2..]),
+            _ if digits.len() > 1 && digits.starts_with('0') => (8, &digits[1..]),
+            _ => (10, digits),
+        }
     }
 
     pub(crate) fn integer_digits(spelling: &str) -> String {

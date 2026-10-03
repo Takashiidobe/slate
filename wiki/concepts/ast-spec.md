@@ -622,6 +622,7 @@ c23`, plain and `-pedantic`; `warn` = only under `-pedantic`.
 | `_BitInt` | C23 | warn | warn | extension ([`_BitInt`](ir/types.md#_bitint)) |
 | `[[…]]` attributes | C23 | warn | warn | extension |
 | `0b` literals | C23 | warn | warn | extension |
+| `0o`/`0O` literals (radix `Octal`, also in `#if`) | C2y | warn | warn | extension; msvc rejects (`octal_prefix`) |
 | digit separators (`1'000`) | C23 | char constant | char constant | gated by `digit_separators` |
 
 Digit separators are gated because pre-C23 `'` starts a character constant
