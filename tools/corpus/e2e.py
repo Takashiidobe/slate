@@ -40,6 +40,7 @@ class Recipe:
     links: dict[str, str] = field(default_factory=dict)
     test: list[str] = field(default_factory=list)
     test_copy: list[str] = field(default_factory=list)
+    test_build: list[list[str]] = field(default_factory=list)
     benchmark: Callable | None = None
 
 
@@ -258,7 +259,11 @@ def link_flags(project_dir, recipe, variables):
     return " ".join(f"-C link-arg={flag}" for flag in flags)
 
 
-def test_sandbox(project_dir, recipe, binary, out):
+def test_sandbox(project_dir, recipe, binary, out, jobs):
+    for index, command in enumerate(recipe.test_build):
+        code, _ = run([*command, f"-j{jobs}"], out / f"test-build-{index}.log", cwd=project_dir)
+        if code:
+            raise RuntimeError(f"{shlex.join(command)} failed; see test-build-{index}.log")
     sandbox = out / "test-tree"
     if sandbox.exists():
         shutil.rmtree(sandbox)
@@ -267,7 +272,7 @@ def test_sandbox(project_dir, recipe, binary, out):
         source = project_dir / name
         if source.is_dir():
             shutil.copytree(source, sandbox / name, symlinks=True,
-                            ignore=shutil.ignore_patterns("tmp", "*.o", "*.so", "*.xo"))
+                            ignore=shutil.ignore_patterns("tmp", "*.o", "*.xo"))
         elif source.exists():
             shutil.copy2(source, sandbox / name)
     for link, kind in recipe.links.items():
@@ -302,6 +307,7 @@ RECIPES = {
         },
         test=["./runtest", "--clients", "8"],
         test_copy=["runtest", "tests", "redis.conf", "sentinel.conf", "utils"],
+        test_build=[["make", "-C", "tests/modules"]],
         benchmark=redis_benchmark,
     ),
 }
@@ -399,7 +405,11 @@ def main():
         if not finish("bench", "ok", **bench):
             return 0
 
-    sandbox = test_sandbox(project_dir, recipe, binary, out)
+    try:
+        sandbox = test_sandbox(project_dir, recipe, binary, out, args.jobs)
+    except RuntimeError as error:
+        finish("test", "failed", error=str(error))
+        return 1
     code, seconds = run([*recipe.test, *args.test_args], out / "test.log", cwd=sandbox, timeout=args.test_timeout)
     finish("test", "failed" if code else "ok", seconds=seconds, log="test.log", exit=code)
     return 1 if code else 0
