@@ -46,6 +46,7 @@ type Result<T> = std::result::Result<T, Failure>;
 struct FunctionName {
     rust: String,
     builtin: Option<String>,
+    codegen_builtin: bool,
     is_extern: bool,
     is_unsafe: bool,
     is_variadic: bool,
@@ -246,6 +247,10 @@ impl<'m> ModuleLowerer<'m> {
                                 (key == "c_builtin").then(|| value.clone())
                             })
                         }),
+                        codegen_builtin: module
+                            .metadata
+                            .get(&function.id)
+                            .is_some_and(|entries| codegen_builtin(entries)),
                         is_extern: function.body.is_none(),
                         is_unsafe: function.body.is_none()
                             || !function.semantics.target.is_empty()

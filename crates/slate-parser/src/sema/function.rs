@@ -236,7 +236,7 @@ impl Lowerer {
                 .metadata
                 .entry(node)
                 .or_default()
-                .push(("c_builtin".into(), builtin.name.into()));
+                .extend(builtin.declaration_metadata());
             let state = self.function_declarations.entry(id).or_default();
             state.noreturn |= builtin.noreturn(self.types.compiler_flavor());
             if let Some(memory) = builtin.memory_effects(self.types.compiler_flavor()) {

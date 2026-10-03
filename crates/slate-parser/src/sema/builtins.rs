@@ -136,6 +136,24 @@ impl ClangBuiltin {
         self.attributes.contains(&attribute)
     }
 
+    pub fn declaration_metadata(&self) -> Vec<(String, String)> {
+        let kind = match self.kind {
+            ClangBuiltinKind::Builtin => "builtin",
+            ClangBuiltinKind::Atomic => "atomic",
+            ClangBuiltinKind::Language => "language",
+            ClangBuiltinKind::Library => "library",
+        };
+        let mut metadata = vec![
+            ("c_builtin".into(), self.name.into()),
+            ("c_builtin_kind".into(), kind.into()),
+        ];
+        metadata.extend(
+            self.header
+                .map(|header| ("c_builtin_header".into(), header.into())),
+        );
+        metadata
+    }
+
     // cl.exe gives a bare `exit` or `toupper` declaration no builtin semantics.
     fn declaration_semantics(&self, flavor: CompilerFlavor) -> bool {
         flavor != CompilerFlavor::Msvc || self.kind != ClangBuiltinKind::Library

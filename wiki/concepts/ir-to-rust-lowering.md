@@ -52,9 +52,12 @@
 - Null-based field-address differences use parser layout offsets, avoiding Rust
   null dereferences and pointer arithmetic.
 - Leading-zero counts preserve the C operand width; zero input is undefined in C.
-- A call to an extern `__builtin_*` with neither a lowering nor a library name
-  is a barrier: clang expands those in codegen, so the symbol never links (and
-  `lowering-barriers` would otherwise report the function as ok).
+- A call to an extern codegen-only builtin with neither a lowering nor a
+  library name is a barrier: clang expands those in codegen, so the symbol
+  never links (and `lowering-barriers` would otherwise report the function as
+  ok). Codegen-only means any `__builtin_*` name, a `c_builtin_kind` other than
+  `library`, or a `c_builtin_header` ending in `intrin.h` (`_mm_pause`,
+  `__readfsdword`); `codegen_only_builtin_extern.c` is unsupported.
 - `target` features: `no-x`, `tune=`, `branch-protection=`, and `default` are
   ignored (codegen only); `arch=` and features without a rustc mapping are
   barriers. Target functions are `unsafe fn` because callers may lack the feature.

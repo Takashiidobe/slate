@@ -58,8 +58,13 @@ Builtins look like functions, as clang's lazily created `FunctionDecl`s do.
 - A builtin used without a declaration gets one implicit `fn` per spelling
   with unnamed parameters and the registry prototype
   (`fn %9 @__builtin_abort() -> void [linkage=external] [noreturn]`).
-  Every builtin function carries `c_builtin` metadata. A builtin used only
-  inside unevaluated `sizeof`/`_Generic` leaves no declaration.
+  Every builtin function carries `c_builtin` metadata, plus `c_builtin_kind`
+  (`library`, `builtin`, `atomic`, `language`: clang's `ClangBuiltinKind`)
+  and, when the registry names one, `c_builtin_header`. Only a `library`
+  builtin from a non-intrinsic header has a library symbol; the rest
+  (`__rdtsc`, `__debugbreak`, `_mm_pause` from `emmintrin.h`) exist only in
+  clang codegen (`ir_builtin_kind_metadata.c`). A builtin used only inside
+  unevaluated `sizeof`/`_Generic` leaves no declaration.
 - That implicit declaration redeclares any function of the same name with
   linkage: it binds to an earlier block-scope `extern` or a later one at any
   scope, and the unit gets one `fn`. Calls before the later declaration keep

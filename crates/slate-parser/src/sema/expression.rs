@@ -198,7 +198,7 @@ impl Lowerer {
         };
         let function = Span::new(function, e.spelling, e.expansion).with_provenance(e.provenance);
         self.module
-            .annotate(&function, [("c_builtin".into(), builtin.name.into())]);
+            .annotate(&function, builtin.declaration_metadata());
         self.module.functions.push(function);
         self.builtin_declarations.insert(builtin.name, id);
         Ok(id)

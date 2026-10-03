@@ -69,7 +69,7 @@ int f(nullptr_t n, int *p, char *q) {
 // DEFAULT-NEXT:     global %[[VALUE_conditional_with_nullptr:[0-9]+]] conditional_with_nullptr: i32 [storage=static] = const<i32>(1) [linkage=external] [c="int"];
 // DEFAULT-NEXT:     global %[[VALUE_classify:[0-9]+]] classify: i32 [storage=static] = const<i32>(-1) [c_builtin="__builtin_classify_type"] [linkage=external] [c="int"];
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([37, 112, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE0:[0-9]+]] <unnamed>: ptr<const i8> [c="const char *"], ...) -> i32 [linkage=external] [c="int(const char *, ...)"] [c_builtin="printf"];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE0:[0-9]+]] <unnamed>: ptr<const i8> [c="const char *"], ...) -> i32 [linkage=external] [c="int(const char *, ...)"] [c_builtin="printf"] [c_builtin_kind="library"] [c_builtin_header="stdio.h"];
 // DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_n:[0-9]+]] n: ptr<void> [c="nullptr_t"] [typedef_chain="nullptr_t"], %[[VALUE_p:[0-9]+]] p: ptr<i32> [c="int *"], %[[VALUE_q:[0-9]+]] q: ptr<i8> [c="char *"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(nullptr_t, int *, char *)"] {
 // DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: bool [storage=automatic] = ne<ptr<void>>(read<ptr<void>>(%[[VALUE_n]]), null<ptr<void>>) [c="_Bool"];
 // DEFAULT-NEXT:         let %[[VALUE_v:[0-9]+]] v: ptr<void> [storage=automatic] = pointer_cast<ptr<void>>(read<ptr<void>>(%[[VALUE_n]])) [c="void *"];

@@ -48,9 +48,8 @@ unsigned long long leading_zeros(unsigned long long value) {
 // IR-NEXT:         call<void, signature=fn() -> void>(%[[VALUE___builtin_ia32_pause]]);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE___builtin_ia32_rdtsc:[0-9]+]] @__builtin_ia32_rdtsc() -> u64 [linkage=external];
-// IR-NEXT:     fn %[[VALUE___rdtsc:[0-9]+]] @__rdtsc() -> u64 [linkage=external];
 // IR-NEXT:     fn %[[VALUE_ticks:[0-9]+]] @ticks() -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return add<u64, overflow=wrap>(call<u64, signature=fn() -> u64>(%[[VALUE___builtin_ia32_rdtsc]]), call<u64, signature=fn() -> u64>(%[[VALUE___rdtsc]]));
+// IR-NEXT:         return add<u64, overflow=wrap>(call<u64, signature=fn() -> u64>(%[[VALUE___builtin_ia32_rdtsc]]), intrinsic<u64, llvm.x86.rdtsc>());
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE___builtin_ia32_pmovmskb128:[0-9]+]] @__builtin_ia32_pmovmskb128(%[[VALUE0:[0-9]+]] <unnamed>: vector<i8, 16>) -> i32 [linkage=external] [memory=none] [abi=sysv64(direct) -> scalar];
 // IR-NEXT:     fn %[[VALUE_sign_mask:[0-9]+]] @sign_mask(%[[VALUE_bytes:[0-9]+]] bytes: vector<i8, 16>) -> i32 [linkage=external] [abi=sysv64(direct) -> scalar] [fallthrough=ub_if_used] {

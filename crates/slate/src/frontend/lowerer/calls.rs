@@ -22,7 +22,7 @@ impl FunctionLowerer<'_, '_> {
             ir::Callee::Direct(id) => {
                 let name = names.get(id).ok_or(Invariant::UnknownCallee(*id))?;
                 if name.is_extern
-                    && name.rust.starts_with("__builtin_")
+                    && (name.codegen_builtin || name.rust.starts_with("__builtin_"))
                     && builtin_library_name(&name.rust).is_none()
                 {
                     return Err(Construct::Function {

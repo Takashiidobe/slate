@@ -14,6 +14,16 @@ pub(super) fn builtin_library_name(builtin: &str) -> Option<&'static str> {
     })
 }
 
+pub(super) fn codegen_builtin(metadata: &[(String, String)]) -> bool {
+    let entry = |name: &str| {
+        metadata
+            .iter()
+            .find_map(|(key, value)| (key == name).then_some(value.as_str()))
+    };
+    entry("c_builtin_kind").is_some_and(|kind| kind != "library")
+        || entry("c_builtin_header").is_some_and(|header| header.ends_with("intrin.h"))
+}
+
 pub(super) fn main_wrapper(arity: usize) -> Item {
     let call = |path: &str, args: Vec<Expr>| Expr::Call {
         func: Box::new(Expr::Var(path.into())),
