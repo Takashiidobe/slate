@@ -97,6 +97,7 @@ RECIPES = {
     ),
     "musl": Configure(["{source}/configure", "CC={cc}"]),
     "tinycc": Configure(["{source}/configure", "--cc={cc}"]),
+    "cpython": Configure(["{source}/configure", "CC={cc}"]),
     "nginx": InTree(
         configure=["auto/configure", "--with-cc={cc}", "--builddir={build}/objs"],
         clean=["rm", "-rf", "{build}/objs"],

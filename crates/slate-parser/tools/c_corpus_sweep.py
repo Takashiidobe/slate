@@ -24,9 +24,10 @@ import pp_diff
 ROOT = Path(__file__).resolve().parents[1]
 SLATE = ROOT.parents[1] / "target/test-cache/release/slate-parser"
 PROVIDERS = {"zlib": ["", "build-{flavor}"]}
-HOST_INCLUDE_DIRS = {"nginx": ["/usr/include"], "pcre2": ["/usr/include"], "redis": ["/usr/include"]}
+HOST_INCLUDE_DIRS = {"cpython": ["/usr/include"], "nginx": ["/usr/include"], "pcre2": ["/usr/include"], "redis": ["/usr/include"]}
 PROJECTS = {
     "cJSON": "https://github.com/DaveGamble/cJSON",
+    "cpython": "https://www.python.org",
     "chibicc": "https://github.com/rui314/chibicc",
     "curl": "https://curl.se",
     "giflib": "https://giflib.sourceforge.net",
@@ -49,7 +50,7 @@ PROJECTS = {
     "zlib": "https://zlib.net",
     "zstd": "https://github.com/facebook/zstd",
 }
-DISPLAY = {"sqlite": "SQLite", "lua": "Lua", "pcre2": "PCRE2", "quickjs": "QuickJS", "lz4": "LZ4", "tinycc": "TinyCC", "mbedtls": "Mbed TLS", "redis": "Redis"}
+DISPLAY = {"cpython": "CPython", "sqlite": "SQLite", "lua": "Lua", "pcre2": "PCRE2", "quickjs": "QuickJS", "lz4": "LZ4", "tinycc": "TinyCC", "mbedtls": "Mbed TLS", "redis": "Redis"}
 DETAIL = re.compile(r"^\s*(?:Error:\s*)?×\s+(.*)$")
 STATUSES = ("ok", "internal", "unimplemented", "rejected", "timeout", "missing-dependency", "oracle-rejects")
 

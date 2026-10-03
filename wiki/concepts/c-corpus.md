@@ -59,7 +59,7 @@ python3 tools/c_corpus_setup.py [PROJECT ...] [--flavor clang|gcc|msvc ...]
 | libpng | CMake against the corpus zlib (`zlib/build-<flavor>`) | same |
 | mbedtls | CMake, testing and programs on; generators run from `.venv` | same |
 | sqlite | `configure` + `make all testfixture` | `nmake /f ..\Makefile.msc TOP=.. USE_AMALGAMATION=0` |
-| musl, tinycc | `configure` out of tree | none |
+| musl, tinycc, cpython | `configure` out of tree | none |
 | nginx | `auto/configure --builddir=build-<flavor>/objs` | none |
 | redis, lua, quickjs, chibicc, giflib | `make CC=` in tree | none |
 
@@ -67,6 +67,8 @@ msvc covers only projects whose upstream ships a Windows build. musl,
 nginx, redis, lua, quickjs, chibicc, giflib and tinycc have no MSVC build
 system to drive, so there is no msvc database for them rather than an
 invented one.
+CPython ships an MSBuild project (`PCbuild/`) that setup does not drive
+yet.
 
 ## Sweep
 
@@ -76,9 +78,11 @@ python3 tools/c_corpus_sweep.py [PROJECT ...] [--flavor clang|gcc|msvc] [--jobs 
 
 - Deduplicates each database by file and drops entries whose file is
   gone (`bear` also records configure probes). Keeps `-D`, `-U`, `-I`,
-  `-isystem`, `-iquote`, `-idirafter`, `-include`, `-imacros`, `-std`
-  (`pp_diff.kept_args`); pins `-std=gnu17` when absent
-  (slate-parser-6x05.6).
+  `-isystem`, `-iquote`, `-idirafter`, `-include`, `-imacros`, `-std`,
+  and target features: `-march=` and valueless `-m`/`-mno-` flags other
+  than `-m16`/`-m32`/`-m64`/`-mx32` (`pp_diff.kept_args`), so per-file
+  SIMD flags such as CPython's `-mavx2` reach both slate and the oracle.
+  Pins `-std=gnu17` when absent (slate-parser-6x05.6).
 - `--flavor` selects `build-<flavor>`, the Slate flavor, and the compiler
   oracle; it defaults to clang. MSVC uses `cl.exe /Zs` and the Windows x64
   target.
@@ -142,7 +146,9 @@ or `slate translate-project`.
   `-idirafter` so the sysroot still wins for libc headers. redis needs
   `/usr/include` for `systemd/sd-daemon.h` (its build detects systemd on
   the host). pcre2 needs it for `bzlib.h` (`pcre2grep.c`) and
-  `readline/readline.h` (`pcre2test.c`), nginx for `crypt.h`.
+  `readline/readline.h` (`pcre2test.c`), nginx for `crypt.h`, cpython
+  for its optional modules' libraries (ssl, bz2, lzma, readline, ncurses,
+  ffi).
 - Where a corpus project provides the header (`zlib`), the sweep appends
   its source and build directories as `-idirafter` for every other
   project, and libpng is built against that zlib so clang and slate read

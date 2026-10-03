@@ -49,6 +49,7 @@ CONSUMED_PRAGMA = re.compile(
 KEEP_JOINED = ("-D", "-U", "-I", "-std=", "-isystem", "-iquote", "-idirafter", "-include", "-imacros")
 KEEP_SEPARATE = {"-D", "-U", "-I", "-isystem", "-iquote", "-idirafter", "-include", "-imacros"}
 PATH_FLAGS = {"-I", "-isystem", "-iquote", "-idirafter", "-include", "-imacros"}
+TARGET_FEATURE = re.compile(r"-march=.+|-m(?!16$|32$|64$|x32$)[a-z0-9][a-z0-9.-]*")
 
 
 @dataclass
@@ -102,7 +103,7 @@ def kept_args(argv: list[str], directory: str) -> list[str]:
         flag = next((flag for flag in ("-isystem", "-iquote", "-idirafter", "-I") if arg.startswith(flag)), None)
         if flag and len(arg) > len(flag):
             arg = flag + absolute(directory, arg[len(flag):])
-        if arg.startswith(KEEP_JOINED):
+        if arg.startswith(KEEP_JOINED) or TARGET_FEATURE.fullmatch(arg):
             kept.append(arg)
         index += 1
     return kept
