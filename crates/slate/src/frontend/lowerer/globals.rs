@@ -106,12 +106,19 @@ impl FunctionLowerer<'_, '_> {
         let variable = &global.variable;
         let abi_alignment = matches!(variable.ty, ir::Type::Array { .. })
             && variable.alignment == tables.target.large_array_alignment();
-        if !matches!(variable.storage, ir::StorageDuration::Static)
+        let symbol = ir::SymbolAttributes {
+            visibility: global
+                .symbol
+                .visibility
+                .filter(|visibility| *visibility != ir::Visibility::Default),
+            ..global.symbol.clone()
+        };
+        if matches!(variable.storage, ir::StorageDuration::Automatic)
             || (variable.alignment.is_some()
                 && !abi_alignment
                 && tables.storage_of(&variable.ty).is_none())
             || (variable.access.atomic && !tables.atomic_scalar(&variable.ty))
-            || global.symbol != ir::SymbolAttributes::default()
+            || symbol != ir::SymbolAttributes::default()
         {
             return Err(Construct::Global {
                 name: variable.name.clone(),

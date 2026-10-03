@@ -11,6 +11,8 @@
 | Flexible-array decay | Raw field address cast to an element pointer |
 | C function pointer | `Option<unsafe extern "C-unwind" fn(...) -> R>` |
 | Variadic C function pointer | Fixed parameters followed by `...` |
+| `storage=thread` global | `#[thread_local] static mut` (crate `#![feature(thread_local)]`); exported ones add `#[unsafe(no_mangle)]`, imports are `#[thread_local]` statics in the extern block |
+| `[visibility=default]` global | Same as no attribute (an exported static already has default visibility); hidden/protected/internal remain barriers |
 | Const-qualified address | `&raw const`; mutable addresses use `&raw mut` |
 | Volatile read / write | `ptr::read_volatile` / `ptr::write_volatile` on raw addresses |
 | f32 / f64 classification | Float classification methods; zero compares equal to either signed zero |

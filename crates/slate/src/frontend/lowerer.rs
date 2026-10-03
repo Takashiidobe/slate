@@ -356,19 +356,23 @@ impl<'m> ModuleLowerer<'m> {
                     .contains(&global.variable.name);
             let exported =
                 self.options.export_symbols && matches!(global.linkage, ir::Linkage::External);
+            let thread_local: Vec<Attr> =
+                matches!(global.variable.storage, ir::StorageDuration::Thread)
+                    .then_some(Attr::ThreadLocal)
+                    .into_iter()
+                    .collect();
             match self.lowerer().lower_static(global) {
                 Ok((ty, Some(_))) if imported => self.externs.push(rust::ExternDecl::Static {
-                    attrs: Vec::new(),
+                    attrs: thread_local,
                     mutable: true,
                     name,
                     ty,
                 }),
                 Ok((ty, Some(init))) => self.items.push(Item::Static {
-                    attrs: if exported {
-                        vec![Attr::NoMangle]
-                    } else {
-                        Vec::new()
-                    },
+                    attrs: thread_local
+                        .into_iter()
+                        .chain(exported.then_some(Attr::NoMangle))
+                        .collect(),
                     vis: rust::Visibility::Private,
                     mutable: true,
                     name,
@@ -376,7 +380,7 @@ impl<'m> ModuleLowerer<'m> {
                     init,
                 }),
                 Ok((ty, None)) => self.externs.push(rust::ExternDecl::Static {
-                    attrs: Vec::new(),
+                    attrs: thread_local,
                     mutable: true,
                     name,
                     ty,
@@ -558,6 +562,15 @@ impl<'m> ModuleLowerer<'m> {
             .any(|item| matches!(item, Item::ExternBlock { abi, .. } if abi == "llvm-intrinsic"))
         {
             features.push(rust::CrateAttr::Feature(rust::Feature::LinkLlvmIntrinsics));
+        }
+        if items.iter().any(|item| match item {
+            Item::Static { attrs, .. } => attrs.contains(&Attr::ThreadLocal),
+            Item::ExternBlock { decls, .. } => decls.iter().any(|decl| {
+                matches!(decl, rust::ExternDecl::Static { attrs, .. } if attrs.contains(&Attr::ThreadLocal))
+            }),
+            _ => false,
+        }) {
+            features.push(rust::CrateAttr::Feature(rust::Feature::ThreadLocal));
         }
         if items.iter().any(|item| {
             matches!(item, Item::Fn(definition) if definition.attrs.iter().any(|attr| {
