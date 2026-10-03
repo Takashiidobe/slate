@@ -350,9 +350,10 @@ impl Checker<'_> {
                 && (!self.types.ctypes.is_void(resolved)
                     || declaration.specifiers.storage == StorageClass::Extern)
             {
+                let sized = self.previously_sized(declarator.id, resolved);
                 let completed = self
                     .types
-                    .completed_array(resolved, declarator.initializer.as_ref());
+                    .completed_array(sized, declarator.initializer.as_ref());
                 let attributes = declaration
                     .specifiers
                     .attributes_with(&declarator.declarator, &declarator.attributes);
@@ -418,6 +419,21 @@ impl Checker<'_> {
                 }
             }
         }
+    }
+
+    fn previously_sized(&mut self, node: NodeId, resolved: QualType) -> QualType {
+        if !matches!(
+            self.types.ctypes.element(resolved),
+            Some((_, Extent::Incomplete))
+        ) {
+            return resolved;
+        }
+        self.types
+            .declarations
+            .get(&node)
+            .and_then(|id| self.types.entities.ty(id))
+            .and_then(|previous| self.types.ctypes.composite(previous, resolved))
+            .unwrap_or(resolved)
     }
 
     fn deduction(

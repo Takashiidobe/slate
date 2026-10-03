@@ -67,8 +67,12 @@ reject; where one only warns (always MSVC), accept with
   `int a[]; int a[5];`). Otherwise `types::same_layout` (lowered types,
   ignoring signedness) separates the warning from the error, which is MSVC's
   own C4142/C2371 split: on LLP64 `int x; long x;` warns, on LP64 it errors.
+- A `[]` definition after a sized declaration takes the composite before its
+  initializer is counted (`Checker::previously_sized`): `T a[64]; T a[] =
+  {x, y};` has 64 elements, zero-filled (CPython's `pyexpat.c`).
 - Tag redefinitions: `TypeResolver::define_tag`.
 - Fixtures: `ir_redeclaration_conflicts.c`, `ir_redeclaration_compatible.c`,
+  `array_redeclaration_composite_extent.c`,
   `x86_64-pc-windows-msvc/ir_redeclaration_layout.c`.
 
 ## Symbol attributes
