@@ -113,7 +113,11 @@ impl CTypes {
             (true, true) => {
                 av == bv
                     && ap.len() == bp.len()
-                    && ap.iter().zip(bp).all(|(a, b)| self.same(*a, *b))
+                    && ap.iter().zip(bp).all(|(a, b)| {
+                        self.same(*a, *b)
+                            || self.transparent_member(*a, *b).is_some()
+                            || self.transparent_member(*b, *a).is_some()
+                    })
             }
             (false, false) => true,
             _ => {
@@ -132,6 +136,24 @@ impl CTypes {
                 }
             }
         }
+    }
+
+    fn transparent_member(&self, union: QualType, other: QualType) -> Option<QualType> {
+        let CTypeKind::Record { id, union: true } = self.canonical_kind(union) else {
+            return None;
+        };
+        self.transparent_members
+            .get(id)?
+            .iter()
+            .copied()
+            .find(|member| self.compatible_unqualified(*member, other))
+    }
+
+    fn composite_param(&mut self, a: QualType, b: QualType) -> Option<QualType> {
+        if self.transparent_member(a, b).is_some() || self.transparent_member(b, a).is_some() {
+            return Some(a);
+        }
+        self.composite(a, b)
     }
 
     fn promotes_to_itself(&self, param: QualType) -> bool {
@@ -210,7 +232,7 @@ impl CTypes {
                 let params = ap
                     .iter()
                     .zip(&bp)
-                    .map(|(a, b)| self.composite(*a, *b))
+                    .map(|(a, b)| self.composite_param(*a, *b))
                     .collect::<Option<Vec<_>>>()?;
                 (params, av, true)
             }

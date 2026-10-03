@@ -2302,6 +2302,9 @@ impl TypeResolver {
                 && layout.alignment_bytes <= layouts[0].alignment_bytes
         }) {
             self.transparent_unions.insert(id);
+            if let Some(members) = self.record_fields.get(&id) {
+                self.ctypes.set_transparent_members(id, members.clone());
+            }
         }
     }
 

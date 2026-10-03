@@ -109,6 +109,14 @@ level), `compatible_unqualified`, `composite`.
   conventions (x86-32 `stdcall`/`fastcall`/`vectorcall`/`thiscall`, x86-64
   `vectorcall`) are never compatible; `CTypes::with_convention` sets the
   convention on the first reachable function type.
+- A prototyped parameter of `transparent_union` type is compatible with
+  any type compatible with one of its members, as in clang's
+  `mergeTransparentUnionType` and gcc (`CTypes::set_transparent_members`,
+  filled when sema marks the union). The composite keeps the left
+  (earlier) parameter, not clang's merged member, so a redeclared
+  function's call signature stays equal to its definition's and
+  function-pointer conversions between the two spellings stay explicit
+  `pointer_cast`s (`transparent_union_function_compat.c`).
 - Tags are nominal (one `TypeId` per definition) except C23 N3037: complete
   same-tag types with matching content are compatible within a TU.
   `TypeResolver::join_compatible_tag` runs on each named tag completion and

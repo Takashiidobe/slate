@@ -256,6 +256,7 @@ pub struct CTypes {
     entries: Vec<Entry>,
     ids: HashMap<CTypeKind, CTypeId>,
     enum_underlying: HashMap<TypeId, QualType>,
+    transparent_members: HashMap<TypeId, Vec<QualType>>,
     tag_classes: HashMap<TypeId, TypeId>,
     // cl.exe keeps __sptr/__uptr out of type identity; clang makes them distinct address spaces
     pub ptr32_extension_is_qualifier: bool,
@@ -299,6 +300,10 @@ impl CTypes {
 
     pub fn set_enum_underlying(&mut self, id: TypeId, underlying: QualType) {
         self.enum_underlying.insert(id, underlying);
+    }
+
+    pub fn set_transparent_members(&mut self, id: TypeId, members: Vec<QualType>) {
+        self.transparent_members.insert(id, members);
     }
 
     pub fn enum_underlying(&self, q: QualType) -> Option<QualType> {
