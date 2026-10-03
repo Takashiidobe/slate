@@ -94,6 +94,21 @@ impl Tables<'_> {
             .chain(&function.return_type)
             .any(|ty| self.holds_long_double(ty))
     }
+
+    pub(super) fn function_type_passes_long_double(&self, ty: &ir::Type) -> bool {
+        match self.resolve_type(ty) {
+            ir::Type::Pointer { pointee, .. } => self.function_type_passes_long_double(pointee),
+            ir::Type::Function {
+                parameters,
+                return_type,
+                ..
+            } => parameters
+                .iter()
+                .chain(return_type.as_deref())
+                .any(|ty| self.holds_long_double(ty)),
+            _ => false,
+        }
+    }
 }
 
 impl FunctionLowerer<'_, '_> {
@@ -180,6 +195,123 @@ impl FunctionLowerer<'_, '_> {
         }))
         .chain(arguments.iter().map(|argument| self.lower_value(argument)))
         .collect::<Result<Vec<_>>>()?;
+        Ok(self.call_long_double_bridge(
+            name,
+            std::iter::once(code_pointer).chain(params).collect(),
+            ret,
+            args,
+        ))
+    }
+
+    fn long_double_pointer_tags(&mut self, ty: &ir::Type, subject: &str) -> Result<Vec<String>> {
+        let unsupported = || {
+            Failure::from(Construct::LongDouble {
+                detail: format!("function pointer {subject}"),
+            })
+        };
+        let (parameters, return_type) = match self.tables.resolve_type(ty) {
+            ir::Type::Pointer { pointee, .. } => match self.tables.resolve_type(pointee) {
+                ir::Type::Function {
+                    parameters,
+                    return_type,
+                    variadic: false,
+                    prototyped: true,
+                    ..
+                } => (parameters, return_type),
+                _ => return Err(unsupported()),
+            },
+            _ => return Err(unsupported()),
+        };
+        let ret = match return_type {
+            Some(ty) => self.lower_type(ty)?,
+            None => rust::Type::Unit,
+        };
+        let params = parameters
+            .iter()
+            .map(|ty| self.lower_type(ty))
+            .collect::<Result<Vec<_>>>()?;
+        let tags = long_double_bridge_tags(subject, std::iter::once(&ret).chain(&params))?;
+        if tags.iter().any(|tag| tag == "cf80") {
+            return Err(unsupported());
+        }
+        Ok(tags)
+    }
+
+    pub(super) fn lower_long_double_function_address(
+        &mut self,
+        value: &ir::Value,
+        id: BindingId,
+    ) -> Result<Expr> {
+        let name = &self.tables.names[&id];
+        let tags = self.long_double_pointer_tags(&value.ty, &name.rust)?;
+        let entry = format!("__slate_ldfp_{}_{}", self.tables.unit, name.rust);
+        let link_name = if name.is_extern || name.exported {
+            Some(
+                self.tables
+                    .builtin_name(id)
+                    .and_then(builtin_library_name)
+                    .map_or_else(|| name.rust.clone(), str::to_string),
+            )
+        } else {
+            self.dependencies.long_double_exports.insert(
+                name.rust.clone(),
+                format!("__slate_ld__{entry}__r{}", tags.join("_")),
+            );
+            None
+        };
+        self.dependencies
+            .native_entries
+            .entry(entry.clone())
+            .or_insert_with(|| rust::ExternFnDecl {
+                attrs: link_name.map(Attr::LinkName).into_iter().collect(),
+                name: entry.clone(),
+                identity: FunctionIdentity::Unknown,
+                declared_type: None,
+                trusted_headers: Default::default(),
+                params: Vec::new(),
+                variadic: false,
+                ret: None,
+                safe: false,
+            });
+        let address = rust::Type::Ptr {
+            mutable: false,
+            inner: Box::new(rust::Type::Unit),
+        };
+        Ok(Expr::Transmute {
+            from: address.clone(),
+            to: self.lower_type(&value.ty)?,
+            expr: Box::new(Expr::Cast {
+                expr: Box::new(Expr::Var(entry.into())),
+                ty: address,
+            }),
+        })
+    }
+
+    pub(super) fn lower_long_double_indirect_call(
+        &mut self,
+        pointer: &ir::Value,
+        arguments: &[ir::Value],
+        ret: &ir::Type,
+    ) -> Result<Expr> {
+        let tags = self.long_double_pointer_tags(&pointer.ty, "call")?;
+        let name = format!("__slate_icall__r{}", tags.join("_"));
+        let code_pointer = rust::Type::Ptr {
+            mutable: false,
+            inner: Box::new(rust::Type::Unit),
+        };
+        let params = arguments
+            .iter()
+            .map(|argument| self.lower_type(&argument.ty))
+            .collect::<Result<Vec<_>>>()?;
+        let ret = self.lower_type(ret)?;
+        let callee = Expr::Transmute {
+            from: self.lower_type(&pointer.ty)?,
+            to: code_pointer.clone(),
+            expr: Box::new(self.lower_value(pointer)?),
+        };
+        let args = std::iter::once(Ok(callee))
+            .chain(arguments.iter().map(|argument| self.lower_value(argument)))
+            .collect::<Result<Vec<_>>>()?;
         Ok(self.call_long_double_bridge(
             name,
             std::iter::once(code_pointer).chain(params).collect(),

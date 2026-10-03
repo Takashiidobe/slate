@@ -58,6 +58,11 @@ impl FunctionLowerer<'_, '_> {
             return Err(unsupported_value(value));
         }
         self.dependencies.taken_functions.insert(id);
+        if self.tables.names.contains_key(&id)
+            && self.tables.function_type_passes_long_double(&value.ty)
+        {
+            return self.lower_long_double_function_address(value, id);
+        }
         Ok(match self.tables.names.get(&id) {
             Some(name) if !name.is_extern => {
                 self.dependencies.address_taken.insert(name.rust.clone());
@@ -787,6 +792,13 @@ impl FunctionLowerer<'_, '_> {
                     parameters.len(),
                     &value.ty,
                 )?
+            }
+            ValueKind::Call {
+                callee: ir::Callee::Indirect(pointer),
+                arguments,
+                ..
+            } if self.tables.function_type_passes_long_double(&pointer.ty) => {
+                self.lower_long_double_indirect_call(pointer, arguments, &value.ty)?
             }
             ValueKind::Call {
                 callee,

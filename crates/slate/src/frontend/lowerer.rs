@@ -50,6 +50,7 @@ struct FunctionName {
     is_extern: bool,
     is_unsafe: bool,
     is_variadic: bool,
+    exported: bool,
 }
 
 struct Tables<'m> {
@@ -61,6 +62,7 @@ struct Tables<'m> {
     over_aligned: HashMap<BindingId, u64>,
     target: &'m TargetInfo,
     metadata: &'m ir::Metadata,
+    unit: &'m str,
     types: HashMap<TypeId, &'m Span<ir::TypeDefinition>>,
     record_names: HashMap<TypeId, String>,
 }
@@ -78,6 +80,8 @@ struct Dependencies {
     compound_literals: Vec<Item>,
     address_taken: BTreeSet<String>,
     taken_functions: HashSet<BindingId>,
+    native_entries: BTreeMap<String, rust::ExternFnDecl>,
+    long_double_exports: BTreeMap<String, String>,
     bit_units: Vec<Item>,
 }
 
@@ -109,6 +113,7 @@ impl FunctionLowerer<'_, '_> {
 pub struct LowerOptions {
     pub export_symbols: bool,
     pub imported_commons: BTreeSet<String>,
+    pub unit: String,
 }
 
 pub struct Lowered {
@@ -125,6 +130,13 @@ pub fn lower(
     lowerer.declare()?;
     lowerer.lower_bodies()?;
     Ok(lowerer.assemble())
+}
+
+fn exports_symbol(options: &LowerOptions, function: &ir::Function) -> bool {
+    options.export_symbols
+        && matches!(function.linkage, ir::Linkage::External)
+        && !function.semantics.inline_only
+        && function.name != "main"
 }
 
 pub(crate) fn function_rust_name(function: &ir::Function) -> String {
@@ -268,6 +280,7 @@ impl<'m> ModuleLowerer<'m> {
                                 ..
                             }
                         ),
+                        exported: function.body.is_some() && exports_symbol(options, function),
                     },
                 )
             })
@@ -314,6 +327,7 @@ impl<'m> ModuleLowerer<'m> {
             over_aligned: HashMap::new(),
             target: &module.target,
             metadata: &module.metadata,
+            unit: &options.unit,
             types: module
                 .types
                 .iter()
@@ -448,10 +462,7 @@ impl<'m> ModuleLowerer<'m> {
             } else {
                 self.lowerer().lower_function(function, body)
             };
-            let exported = self.options.export_symbols
-                && matches!(function.linkage, ir::Linkage::External)
-                && !function.semantics.inline_only
-                && function.name != "main";
+            let exported = exports_symbol(self.options, function);
             let lowered = match lowered {
                 Ok(Item::Fn(mut definition)) if exported => {
                     let export = if self.tables.passes_long_double(function)
@@ -530,7 +541,19 @@ impl<'m> ModuleLowerer<'m> {
             {
                 function.abi = Some(rust::Abi::CUnwind);
             }
+            if let Item::Fn(function) = item
+                && let Some(export) = dependencies.long_double_exports.get(&function.name)
+            {
+                function.attrs.push(Attr::ExportName(export.clone()));
+                function.abi = Some(rust::Abi::CUnwind);
+            }
         }
+        externs.extend(
+            dependencies
+                .native_entries
+                .into_values()
+                .map(rust::ExternDecl::Fn),
+        );
         if dependencies.long_double {
             items.splice(
                 0..0,

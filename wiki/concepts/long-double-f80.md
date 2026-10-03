@@ -47,9 +47,25 @@ symbol from other translated units (through their bridges), native C, and
 `dlsym` all reach the native ABI; same-unit Rust callers call the Rust function
 directly. The double underscore after `ld` keeps these names distinct from
 bridges, whose callee never contains `__`. This revives the CIR lowerer's
-`__slate_ld_<name>` callback trampoline with the symbols swapped; the callback
-case (f80 function pointers handed to C) is `slate-dghn.24`. Variadic and
+`__slate_ld_<name>` callback trampoline with the symbols swapped. Variadic and
 complex f80 exports are barriers.
+
+Function pointers whose signature holds f80 by value always point at native-ABI
+code, so they can be handed to C (redis passes `RM_*LongDouble` to modules) or
+filled from C (`cbrtl`). Taking the address of such a function yields
+`__slate_ldfp_<unit>_<name>`, an address-only extern declaration. For an extern
+function, or an exported definition (which already has its native `<name>`
+wrapper), the declaration carries `#[link_name = "<name>"]`. Any other
+definition also gets the export name
+`__slate_ld____slate_ldfp_<unit>_<name>__r<tags>`, and `c_shim` renders the
+native wrapper `__slate_ldfp_<unit>_<name>`. The unit stem keeps `static`
+functions that share a name in different units apart. `c_shim` splits the
+export name at the last `__`, since tags never contain one. An indirect call
+through such a pointer becomes
+`__slate_icall__r<ret>_<tags>(pointer as *const (), args)`, a C trampoline that
+loads the f80 arguments and calls the pointer natively. Variadic, unprototyped,
+and complex f80 function pointers are barriers
+(`long_double_function_pointer.c`, `fixtures.release/long_double_static_callbacks`).
 
 Variadic `long double` arguments must reach the callee as real x87 values in
 memory; Rust would pass `LongDouble` as an INTEGER-class struct. A call to a

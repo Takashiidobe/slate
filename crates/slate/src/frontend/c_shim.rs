@@ -82,13 +82,63 @@ fn render_variadic_trampoline(name: &str) -> Option<String> {
     ))
 }
 
+fn render_indirect_trampoline(name: &str) -> Option<String> {
+    let mut tags = name.strip_prefix("__slate_icall__")?.split('_');
+    let ret_tag = tags.next()?.strip_prefix('r')?;
+    let tags = tags.collect::<Vec<_>>();
+    let params = tags
+        .iter()
+        .enumerate()
+        .map(|(i, tag)| format!(", {} _{i}", c_type_for_tag(tag)))
+        .collect::<String>();
+    let native_params = if tags.is_empty() {
+        "void".to_string()
+    } else {
+        tags.iter()
+            .map(|tag| native_c_type(tag))
+            .collect::<Vec<_>>()
+            .join(", ")
+    };
+    let args = tags
+        .iter()
+        .enumerate()
+        .map(|(i, tag)| {
+            if *tag == "f80" {
+                format!("__slate_f80_load(_{i})")
+            } else {
+                format!("_{i}")
+            }
+        })
+        .collect::<Vec<_>>()
+        .join(", ");
+    let call = format!(
+        "(({} (*)({native_params}))_f)({args})",
+        native_c_type(ret_tag)
+    );
+    let body = match ret_tag {
+        "v" => format!("{call};"),
+        "f80" => format!("return __slate_f80_store({call});"),
+        _ => format!("return {call};"),
+    };
+    Some(format!(
+        "{} {name}(void *_f{params}) {{\n    {body}\n}}\n",
+        c_type_for_tag(ret_tag)
+    ))
+}
+
 fn render_trampoline(name: &str) -> Option<String> {
     if name.starts_with("__slate_vcall__") {
         return render_variadic_trampoline(name);
     }
+    if name.starts_with("__slate_icall__") {
+        return render_indirect_trampoline(name);
+    }
+    if name.starts_with("__slate_ldfp_") {
+        return None;
+    }
     let exported = name
         .strip_prefix("__slate_ld__")
-        .and_then(|rest| rest.split_once("__"));
+        .and_then(|rest| rest.rsplit_once("__"));
     let (callee, tags) = match exported {
         Some(split) => split,
         None => name.strip_prefix("__slate_")?.split_once("__")?,

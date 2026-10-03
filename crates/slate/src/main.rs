@@ -644,6 +644,7 @@ fn translate_slate_project(
             let options = lowerer::LowerOptions {
                 export_symbols: true,
                 imported_commons: imported.remove(&unit.stem).unwrap_or_default(),
+                unit: unit.stem.clone(),
             };
             (unit, options)
         })
