@@ -500,6 +500,18 @@ impl TypeResolver {
         self.constant_value_with_context(&context, e)
     }
 
+    fn constant_count(&mut self, c: QualType) -> Result<(QualType, ValueKind), ResolveError> {
+        let Extent::Fixed(count) = self.count_extent(c)? else {
+            return Err(ResolveError::Rejected(
+                "_Countof of a variable length array",
+            ));
+        };
+        Ok((
+            self.ctypes.size_type(self.dialect.target()),
+            ValueKind::Constant(Number::Integer(count.into())),
+        ))
+    }
+
     pub(super) fn constant_value_with_context(
         &mut self,
         context: &super::numeric::Context,
@@ -643,6 +655,14 @@ impl TypeResolver {
                     self.ctypes.size_type(self.dialect.target()),
                     ValueKind::Constant(Number::Integer(n.into())),
                 )
+            }
+            ExprKind::CountOfType { ty } => {
+                let c = self.type_name(ty)?;
+                self.constant_count(c)?
+            }
+            ExprKind::CountOfExpr(operand) => {
+                let c = self.count_operand(operand)?;
+                self.constant_count(c)?
             }
             ExprKind::Binary { op, left, right } => {
                 let left = self.constant_value_with_context(context, left)?;

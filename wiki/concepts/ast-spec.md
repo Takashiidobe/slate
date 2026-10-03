@@ -354,6 +354,8 @@ TypeName { specifiers: DeclarationSpecifiers, declarator: Declarator }   // abst
 Used by casts, `sizeof`, `_Alignof`, compound literals, `va_arg`,
 `offsetof`, `_Generic`, `typeof`. `_Alignof`, `__alignof`, `__alignof__`
 are always the operator; `alignof` only with `keyword_alignof` (C23).
+`_Countof` is the operator only with `keyword_countof` (gcc and clang in
+every mode); msvc leaves it an identifier.
 
 ### `FunctionDefinition`
 
@@ -491,6 +493,7 @@ Comment { text: Vec<String>, loc: Loc }
 | `Cast { ty: TypeName, value }` | |
 | `CompoundLiteral { ty: TypeName, storage, initializer: InitializerList }` | C23 storage |
 | `SizeOfExpr`, `SizeOfType`, `AlignOf`, `AlignOfExpr` | |
+| `CountOfExpr`, `CountOfType { ty: TypeName }` | C2y `_Countof`; parsed like `sizeof` |
 | `OffsetOf { ty: TypeName, member: MemberDesignator }` | `offsetof`, `__builtin_offsetof` |
 | `Generic { controlling: GenericControl, associations }` | |
 | `VaArg { list, ty: TypeName }` | |
@@ -623,6 +626,7 @@ c23`, plain and `-pedantic`; `warn` = only under `-pedantic`.
 | `[[…]]` attributes | C23 | warn | warn | extension |
 | `0b` literals | C23 | warn | warn | extension |
 | `0o`/`0O` literals (radix `Octal`, also in `#if`) | C2y | warn | warn | extension; msvc rejects (`octal_prefix`) |
+| `_Countof` | C2y | warn | warn | extension; msvc identifier (`keyword_countof`) |
 | digit separators (`1'000`) | C23 | char constant | char constant | gated by `digit_separators` |
 
 Digit separators are gated because pre-C23 `'` starts a character constant

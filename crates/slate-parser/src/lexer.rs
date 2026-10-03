@@ -264,6 +264,7 @@ pub enum Token {
     Keyword(Keyword),
     Sizeof,
     Alignof,
+    Countof,
     Ident(TokenText),
     IntLit(TokenText),
     FloatLit(TokenText),
@@ -407,6 +408,7 @@ impl From<&Token> for String {
         match token {
             Token::Sizeof => "sizeof".into(),
             Token::Alignof => "_Alignof".into(),
+            Token::Countof => "_Countof".into(),
             Token::Keyword(keyword) => <&str>::from(*keyword).into(),
             Token::Ident(name) => name.to_string(),
             Token::IntLit(value) => value.to_string(),
@@ -1037,6 +1039,7 @@ pub fn keyword_token(word: &str, features: &StandardFeatures) -> Option<Token> {
         "sizeof" => Token::Sizeof,
         "_Alignof" | "__alignof" | "__alignof__" => Token::Alignof,
         "alignof" if features.keyword_alignof.is_accepted() => Token::Alignof,
+        "_Countof" if features.keyword_countof => Token::Countof,
         "_Bool" => Token::Keyword(Keyword::Bool),
         "bool" if features.keyword_bool_true_false.is_accepted() => Token::Keyword(Keyword::Bool),
         "__bf16" => Token::Keyword(Keyword::BFloat16),

@@ -130,7 +130,10 @@ from the initializer, not the type.
   under `?:` runs only in its arm. `sizeof` captures only when the named
   type is itself a VLA (`sizeof(int (*)[n])` is constant). Casts capture
   every bound before the operand. `_Alignof` evaluates nothing
-  (`variable_length_array_type_names.c`).
+  (`variable_length_array_type_names.c`). `_Countof` is a constant unless
+  the outermost bound is variable; only then does it capture the type
+  name's bounds or evaluate its operand, and the count reads the outer
+  extent (`int [7][n]` is 7, `*p++` on `int (*)[n]` increments `p`).
 - `typedef int T[n];` captures `n` once; every later `T` shares the extent
   even if `n` changes. The alias sits in the flat type table and may name
   a function-local extent (`variable_length_array_typedefs.c`).

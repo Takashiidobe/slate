@@ -50,7 +50,7 @@ impl<'a> Spellings<'a> {
         let canonical = String::from(&token.value);
         if !matches!(
             token.value,
-            Token::Keyword(_) | Token::Sizeof | Token::Alignof
+            Token::Keyword(_) | Token::Sizeof | Token::Alignof | Token::Countof
         ) {
             return canonical;
         }

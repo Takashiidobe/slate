@@ -670,6 +670,18 @@ impl TypeResolver {
                 let target = self.target_info().clone();
                 Typed::rvalue(self.ctypes.size_type(&target))
             }
+            ExprKind::CountOfType { ty } => {
+                let resolved = self.type_name(ty)?;
+                self.count_extent(resolved)?;
+                let target = self.target_info().clone();
+                Typed::rvalue(self.ctypes.size_type(&target))
+            }
+            ExprKind::CountOfExpr(operand) => {
+                let c = self.count_operand(operand)?;
+                self.count_extent(c)?;
+                let target = self.target_info().clone();
+                Typed::rvalue(self.ctypes.size_type(&target))
+            }
             ExprKind::OffsetOf { .. } => {
                 let target = self.target_info().clone();
                 Typed::rvalue(self.ctypes.size_type(&target))
@@ -1436,6 +1448,12 @@ impl TypeResolver {
             ExprKind::SizeOfExpr(operand) | ExprKind::AlignOfExpr(operand) => self
                 .expression_type(operand)
                 .is_ok_and(|c| !matches!(self.ir_type(c), Type::VariableArray { .. })),
+            ExprKind::CountOfType { ty } => self
+                .type_name(ty)
+                .is_ok_and(|c| matches!(self.count_extent(c), Ok(Extent::Fixed(_)))),
+            ExprKind::CountOfExpr(operand) => self
+                .count_operand(operand)
+                .is_ok_and(|c| matches!(self.count_extent(c), Ok(Extent::Fixed(_)))),
             ExprKind::Cast { ty, value } => {
                 let mut operand: &Expr = value;
                 while let ExprKind::Paren(inner) = &operand.value {
@@ -1688,6 +1706,26 @@ impl TypeResolver {
             .map_err(|error| if sizeof { sizeof_error(error) } else { error })?;
         self.declared_storage(c, layout)?;
         Ok(())
+    }
+
+    pub(super) fn count_operand(&mut self, operand: &Expr) -> Result<QualType, ResolveError> {
+        match &operand.value {
+            ExprKind::Paren(inner) => self.count_operand(inner),
+            ExprKind::StringLiteral(literal) => Ok(self.string_type(literal)),
+            _ => self.expression_type(operand),
+        }
+    }
+
+    pub(super) fn count_extent(&mut self, c: QualType) -> Result<Extent, ResolveError> {
+        match self.ctypes.element(c) {
+            Some((_, Extent::Incomplete)) => Err(ResolveError::Rejected(
+                "_Countof of an incomplete array type",
+            )),
+            Some((_, extent)) => Ok(extent),
+            None => Err(ResolveError::Rejected(
+                "invalid application of _Countof to a non-array type",
+            )),
+        }
     }
 
     fn va_list(&mut self, list: &Expr, reason: &'static str) -> Result<(), ResolveError> {

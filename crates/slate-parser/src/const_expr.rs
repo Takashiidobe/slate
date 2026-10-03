@@ -992,6 +992,9 @@ impl<'a> Parser<'a> {
             ExprKind::SizeOfType { .. } => Err(ConstExprError::UnsupportedSizeOf),
             ExprKind::AlignOf { .. } => Err(ConstExprError::UnsupportedAlignOf),
             ExprKind::AlignOfExpr(_) => Err(ConstExprError::UnsupportedAlignOf),
+            ExprKind::CountOfType { .. } | ExprKind::CountOfExpr(_) => {
+                Err(ConstExprError::NotConstant("_Countof"))
+            }
             ExprKind::OffsetOf { .. } => Err(ConstExprError::NotConstant("offsetof")),
             ExprKind::TypesCompatible { .. } => {
                 Err(ConstExprError::NotConstant("types compatible"))
@@ -1662,6 +1665,22 @@ impl<'a> Parser<'a> {
         if self.consume(&Token::Alignof) {
             let operand = self.parse_unary()?;
             return Ok(self.node(ExprKind::AlignOfExpr(operand), start));
+        }
+        if self.peek() == Some(&Token::Countof)
+            && self.peek_at(1) == Some(&Token::LParen)
+            && let Some(next) = self.peek_at(2)
+            && starts_type_name(next, self.context)
+            && let Some((ty, end)) = self.try_parse_type_name(self.position + 2, |end| {
+                self.token_at(end) == Some(&Token::RParen)
+                    && self.token_at(end + 1) != Some(&Token::LBrace)
+            })
+        {
+            self.position = end + 1;
+            return Ok(self.node(ExprKind::CountOfType { ty }, start));
+        }
+        if self.consume(&Token::Countof) {
+            let operand = self.parse_unary()?;
+            return Ok(self.node(ExprKind::CountOfExpr(operand), start));
         }
         if let Some(Token::Ident(name)) = self.peek()
             && matches!(name.as_str(), "__real__" | "__imag__" | "__real" | "__imag")

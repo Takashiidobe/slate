@@ -88,7 +88,7 @@ impl Directive {
 pub(super) fn identifier(src: &str, token: &Span<Token>) -> Option<String> {
     match &token.value {
         Token::Ident(name) => Some(name.to_string()),
-        Token::Keyword(_) | Token::Sizeof | Token::Alignof => src
+        Token::Keyword(_) | Token::Sizeof | Token::Alignof | Token::Countof => src
             .get(token.spelling.offset..token.spelling.offset + token.spelling.length)
             .map(str::to_string),
         _ => None,

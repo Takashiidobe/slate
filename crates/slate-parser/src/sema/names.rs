@@ -395,7 +395,9 @@ impl Resolver {
                 }
                 Ok(())
             }
-            ExprKind::SizeOfType { ty } | ExprKind::AlignOf { ty } => self.type_name(ty, expr),
+            ExprKind::SizeOfType { ty }
+            | ExprKind::AlignOf { ty }
+            | ExprKind::CountOfType { ty } => self.type_name(ty, expr),
             ExprKind::OffsetOf { ty, member } => {
                 self.type_name(ty, expr)?;
                 self.offsetof_member(member)

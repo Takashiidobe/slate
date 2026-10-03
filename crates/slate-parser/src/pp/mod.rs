@@ -1517,7 +1517,9 @@ fn has_check_argument(
     let word = |index: usize| match tokens.value_at(index) {
         Some(Token::Ident(name)) => Some(name.to_string()),
         Some(Token::Keyword(keyword)) => Some(<&str>::from(*keyword).to_string()),
-        Some(token @ (Token::Sizeof | Token::Alignof)) => Some(String::from(token)),
+        Some(token @ (Token::Sizeof | Token::Alignof | Token::Countof)) => {
+            Some(String::from(token))
+        }
         _ => None,
     };
     if tokens.value_at(start) != Some(&Token::LParen) {

@@ -1,6 +1,6 @@
 use super::builtins::{ClangBuiltin, CustomBuiltin};
 use super::ctype::convert::CastKind;
-use super::ctype::{CTypeKind, CTypes, QualType};
+use super::ctype::{CTypeKind, CTypes, Extent, QualType};
 use super::initializer::InitializerSource;
 use super::numeric::{Context, ResolveError};
 use super::operand::{Lvalue, Operand};
@@ -1843,7 +1843,6 @@ impl Lowerer {
 
     fn runtime_size(&mut self, e: &Expr, ty: &Type) -> Result<Operand, ResolveError> {
         let c = self.types.ctypes.size_type(&self.context.target);
-        let size_type = self.types.ir_type(c);
         let Type::VariableArray { element, extent } = ty else {
             let size = self.types.storage(ty.clone())?.size_bytes;
             return Ok(self.operand(e, c, ValueKind::Constant(Number::Integer(size.into()))));
@@ -1853,19 +1852,7 @@ impl Lowerer {
                 "size of an unspecified variable length array",
             ));
         };
-        let place = Place {
-            ty: size_type.clone(),
-            kind: PlaceKind::Binding(extent),
-            access: Access::default(),
-        };
-        let count = self.operand(
-            e,
-            c,
-            ValueKind::Read {
-                place,
-                ordering: None,
-            },
-        );
+        let count = self.extent_length(e, extent);
         let element = self.runtime_size(e, element)?;
         let (ty, kind) = self
             .context
@@ -1874,6 +1861,52 @@ impl Lowerer {
             value: self.value(e, ty, kind),
             c,
         })
+    }
+
+    fn after_operand(&mut self, e: &Expr, evaluated: Option<Value>, result: Operand) -> Operand {
+        let Some(evaluated) = evaluated else {
+            return result;
+        };
+        let ty = result.value.ty.clone();
+        let value = self.value(
+            e,
+            ty,
+            ValueKind::Sequence {
+                left: Box::new(evaluated),
+                right: Box::new(result.value),
+            },
+        );
+        Operand { value, c: result.c }
+    }
+
+    fn extent_length(&mut self, e: &Expr, extent: BindingId) -> Operand {
+        let c = self.types.ctypes.size_type(&self.context.target);
+        let place = Place {
+            ty: self.types.ir_type(c),
+            kind: PlaceKind::Binding(extent),
+            access: Access::default(),
+        };
+        self.operand(
+            e,
+            c,
+            ValueKind::Read {
+                place,
+                ordering: None,
+            },
+        )
+    }
+
+    fn element_count(&mut self, e: &Expr, c: QualType) -> Result<Operand, ResolveError> {
+        match self.types.count_extent(c)? {
+            Extent::Fixed(count) => {
+                let detail = self.types.ir_type(c).to_string();
+                Ok(self.layout_constant(e, count, "count_of", detail))
+            }
+            Extent::Variable(Some(extent)) => Ok(self.extent_length(e, extent)),
+            Extent::Variable(None) | Extent::Incomplete => Err(ResolveError::Internal(
+                "_Countof of an unspecified variable length array",
+            )),
+        }
     }
 
     fn layout_constant(&mut self, e: &Expr, amount: u64, key: &str, detail: String) -> Operand {
@@ -2413,19 +2446,7 @@ impl Lowerer {
                     && matches!(ty, Type::VariableArray { .. })
                 {
                     let size = self.runtime_size(e, &ty)?;
-                    let Some(evaluated) = evaluated else {
-                        return Ok(size);
-                    };
-                    let size_ty = size.value.ty.clone();
-                    let value = self.value(
-                        e,
-                        size_ty,
-                        ValueKind::Sequence {
-                            left: Box::new(evaluated),
-                            right: Box::new(size.value),
-                        },
-                    );
-                    return Ok(Operand { value, c: size.c });
+                    return Ok(self.after_operand(e, evaluated, size));
                 }
                 let layout = self
                     .types
@@ -2444,6 +2465,20 @@ impl Lowerer {
                     "align_of"
                 };
                 Ok(self.layout_constant(e, amount, key, ty.to_string()))
+            }
+            ExprKind::CountOfType { ty } => {
+                let extents = self.type_name_extents(ty)?;
+                let resolved = self.resolve_type_name(ty)?;
+                let count = self.element_count(e, resolved)?;
+                if matches!(self.types.count_extent(resolved)?, Extent::Fixed(_)) {
+                    return Ok(count);
+                }
+                Ok(self.with_extents(e, extents, count))
+            }
+            ExprKind::CountOfExpr(operand) => {
+                let (c, evaluated) = self.unevaluated_type(operand)?;
+                let count = self.element_count(e, c)?;
+                Ok(self.after_operand(e, evaluated, count))
             }
             ExprKind::TypesCompatible { left_ty, right_ty } => {
                 let (compatible, compared) = self.types.types_compatible(left_ty, right_ty)?;

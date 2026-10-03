@@ -197,6 +197,7 @@ pub fn walk_expr<V: Visitor + ?Sized>(visitor: &mut V, expr: &Expr) -> Result<()
         ExprKind::Paren(value)
         | ExprKind::SizeOfExpr(value)
         | ExprKind::AlignOfExpr(value)
+        | ExprKind::CountOfExpr(value)
         | ExprKind::Unary { operand: value, .. }
         | ExprKind::Postfix { operand: value, .. }
         | ExprKind::Member { base: value, .. } => visitor.visit_expr(value),
@@ -246,7 +247,9 @@ pub fn walk_expr<V: Visitor + ?Sized>(visitor: &mut V, expr: &Expr) -> Result<()
             }
             Ok(())
         }
-        ExprKind::SizeOfType { ty } | ExprKind::AlignOf { ty } => visitor.visit_type_name(ty),
+        ExprKind::SizeOfType { ty } | ExprKind::AlignOf { ty } | ExprKind::CountOfType { ty } => {
+            visitor.visit_type_name(ty)
+        }
         ExprKind::OffsetOf { ty, member } => {
             visitor.visit_type_name(ty)?;
             visitor.visit_expr(member)

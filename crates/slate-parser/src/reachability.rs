@@ -353,7 +353,9 @@ impl<'a> Reachability<'a> {
                     }
                 }
             }
-            ExprKind::SizeOfType { ty } | ExprKind::AlignOf { ty } => self.mark_type_name(ty),
+            ExprKind::SizeOfType { ty }
+            | ExprKind::AlignOf { ty }
+            | ExprKind::CountOfType { ty } => self.mark_type_name(ty),
             ExprKind::OffsetOf { ty, member } => {
                 self.mark_type_name(ty);
                 self.mark_expr(member);
@@ -378,6 +380,7 @@ impl<'a> Reachability<'a> {
             ExprKind::Paren(value)
             | ExprKind::SizeOfExpr(value)
             | ExprKind::AlignOfExpr(value)
+            | ExprKind::CountOfExpr(value)
             | ExprKind::Unary { operand: value, .. }
             | ExprKind::Postfix { operand: value, .. }
             | ExprKind::Member { base: value, .. } => self.mark_expr(value),
