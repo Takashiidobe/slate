@@ -259,12 +259,12 @@ def link_flags(project_dir, recipe, variables):
     return " ".join(f"-C link-arg={flag}" for flag in flags)
 
 
-def test_sandbox(project_dir, recipe, binary, out, jobs):
+def test_sandbox(project_dir, recipe, binary, out, jobs, name="test-tree"):
     for index, command in enumerate(recipe.test_build):
         code, _ = run([*command, f"-j{jobs}"], out / f"test-build-{index}.log", cwd=project_dir)
         if code:
             raise RuntimeError(f"{shlex.join(command)} failed; see test-build-{index}.log")
-    sandbox = out / "test-tree"
+    sandbox = out / name
     if sandbox.exists():
         shutil.rmtree(sandbox)
     sandbox.mkdir()
@@ -278,7 +278,7 @@ def test_sandbox(project_dir, recipe, binary, out, jobs):
     for link, kind in recipe.links.items():
         path = sandbox / link
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.symlink_to(binary if kind == "target" else (project_dir / link).resolve())
+        path.symlink_to(binary if kind == "target" and binary else (project_dir / link).resolve())
     return sandbox
 
 
@@ -327,6 +327,8 @@ def main():
     parser.add_argument("--bench-runs", type=int, default=3, help="alternating native/translated samples; 0 skips")
     parser.add_argument("--bench-requests", type=int, default=200000)
     parser.add_argument("--bench-tests", default="set,get,incr,lpush,rpush,lpop,rpop,sadd,hset,spop,zadd,zpopmin,lrange_100,mset")
+    parser.add_argument("--no-native-test", dest="native_test", action="store_false",
+                        help="skip timing the test command against the native binary")
     parser.add_argument("test_args", nargs="*", help="extra arguments for the project's test command")
     args = parser.parse_args()
 
@@ -411,7 +413,15 @@ def main():
         finish("test", "failed", error=str(error))
         return 1
     code, seconds = run([*recipe.test, *args.test_args], out / "test.log", cwd=sandbox, timeout=args.test_timeout)
-    finish("test", "failed" if code else "ok", seconds=seconds, log="test.log", exit=code)
+    timing = {}
+    if args.native_test:
+        native_sandbox = test_sandbox(project_dir, recipe, None, out, args.jobs, "test-tree-native")
+        native_code, native_seconds = run([*recipe.test, *args.test_args], out / "test-native.log",
+                                          cwd=native_sandbox, timeout=args.test_timeout)
+        timing = {"native_seconds": native_seconds, "native_exit": native_code,
+                  "native_log": "test-native.log",
+                  "test_over_native": round(seconds / native_seconds, 2) if native_seconds else None}
+    finish("test", "failed" if code else "ok", seconds=seconds, log="test.log", exit=code, **timing)
     return 1 if code else 0
 
 

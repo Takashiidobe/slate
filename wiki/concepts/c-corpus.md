@@ -115,10 +115,11 @@ written once translation units are known.
 | check | `cargo check` of the generated crate | `check.log` |
 | build | `cargo build --release`, linking the native archives and libraries via `-C link-arg` | `build.log` |
 | bench | the project's benchmark against the native and translated binaries: one warmup each, then alternating samples, medians | `bench.{json,md}`, `geomean_ratio` |
-| test | the project's test command in a sandbox copy of its test tree, with the target binary swapped in | `test.log` |
+| test | the project's test command in a sandbox copy of its test tree, with the target binary swapped in; then the same command against the native binary in a second sandbox (`--no-native-test` skips it) | `test.log`, `test-native.log`, `test_over_native` |
 
-- Translation should take about as long as the native compile, and the
-  translated binary should benchmark about as fast as the native one.
+- Translation should take about as long as the native compile, the
+  translated binary should benchmark about as fast as the native one, and
+  the test suite should take about as long against either binary.
   `cargo build` time is not compared.
 - redis: the target is `REDIS_SERVER_OBJ` + `REDIS_VEC_SETS_OBJ`. Its
   `build-clang` database records the `src/*.c` TUs only as `-MM` entries; the
