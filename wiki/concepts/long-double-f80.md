@@ -28,7 +28,14 @@ name (`frontend::c_shim::render_shim_c_source_for_names`) and links it with
 remain for variadic callees missing from `function_identity::Known` (the
 bridge needs their header), and for non-pointer aggregate arguments to a
 bridge. Non-variadic bridged callees depend on `long_double.c` including
-`<math.h>`.
+`<math.h>`. A callee with no known header (a project function such as redis
+`ld2string`, or libc `qecvt`) is declared as
+`extern <native ret> __slate_extern_<callee>(<native params>) __asm__("<callee>")`
+with `long double` for f80 tags, and the bridge calls that alias. The private
+name cannot conflict with a header declaration whose integer spellings
+(`long` vs `long long`) differ from the tags; known-header callees keep the
+header so glibc redirects such as `__isoc23_strtold` still apply
+(`long_double_unknown_extern.c`).
 
 Variadic `long double` arguments must reach the callee as real x87 values in
 memory; Rust would pass `LongDouble` as an INTEGER-class struct. A call to a

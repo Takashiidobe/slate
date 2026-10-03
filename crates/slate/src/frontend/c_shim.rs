@@ -35,6 +35,16 @@ fn c_type_for_tag(tag: &str) -> String {
     .to_string()
 }
 
+fn native_c_type(tag: &str) -> String {
+    match tag {
+        "f80" | "ld" => "long double".to_string(),
+        "pf80" => "long double *".to_string(),
+        "cf80" => "_Complex long double".to_string(),
+        "pcf80" => "_Complex long double *".to_string(),
+        _ => c_type_for_tag(tag),
+    }
+}
+
 fn render_variadic_trampoline(name: &str) -> Option<String> {
     let (fixed, variadic) = name.strip_prefix("__slate_vcall__")?.split_once("__")?;
     let mut fixed = fixed.split('_');
@@ -125,7 +135,13 @@ fn render_trampoline(name: &str) -> Option<String> {
         })
         .collect::<Vec<_>>()
         .join(", ");
-    let call = format!("{}({args})", callback_callee.unwrap_or(callee));
+    let undeclared = callback_callee.is_none() && header_for_shim_name(name).is_none();
+    let target = if undeclared {
+        format!("__slate_extern_{callee}")
+    } else {
+        callback_callee.unwrap_or(callee).to_string()
+    };
+    let call = format!("{target}({args})");
     let body = if ret_tag == "v" {
         format!("{call};")
     } else if ret_tag == "cf80" {
@@ -157,6 +173,20 @@ fn render_trampoline(name: &str) -> Option<String> {
         format!(
             "{rust_ret} {}({rust_params});\n",
             callback_callee.unwrap_or(callee)
+        )
+    } else if undeclared {
+        let native_params = arg_tags
+            .iter()
+            .map(|tag| native_c_type(tag))
+            .collect::<Vec<_>>();
+        let native_params = if native_params.is_empty() {
+            "void".to_string()
+        } else {
+            native_params.join(", ")
+        };
+        format!(
+            "extern {} {target}({native_params}) __asm__(\"{callee}\");\n",
+            native_c_type(ret_tag)
         )
     } else {
         String::new()
