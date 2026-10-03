@@ -63,7 +63,7 @@ impl StandardFeatures {
             LanguageStandard::C89 | LanguageStandard::C94 | LanguageStandard::Gnu89
         );
         let c11 = standard.stdc_version() >= Some(201112);
-        let c23 = matches!(standard, LanguageStandard::C23 | LanguageStandard::Gnu23);
+        let c23 = standard.stdc_version() >= Some(202311);
         let c23_keyword = if c23 { Standard } else { Rejected };
         Self {
             keyword_alignof: c23_keyword,

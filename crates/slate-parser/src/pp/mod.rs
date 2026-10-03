@@ -333,7 +333,9 @@ impl<'a> Preprocessor<'a> {
 
     fn seed_standard_predefines(&mut self) -> Result<(), PPError> {
         match (
-            self.dialect.standard().stdc_version(),
+            self.dialect
+                .standard()
+                .predefined_stdc_version(self.dialect.flavor()),
             self.macros.get_mut("__STDC_VERSION__"),
         ) {
             (Some(version), Some(entry)) => {

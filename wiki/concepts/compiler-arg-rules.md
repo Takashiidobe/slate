@@ -26,6 +26,9 @@ rule pipeline. Flag effects are in [compiler-flags](compiler-flags.md).
   [adding-a-target](adding-a-target.md).
 - `-std` / `--std`: C90 and ISO 9899 aliases normalize to a language mode.
   `iso9899:199409` is C94: `__STDC_VERSION__ 199409L`, otherwise C89 rules.
+  `c2y`/`gnu2y` predefine `__STDC_VERSION__` per flavor (gcc 16 `202500L`,
+  clang 23 `202400L`, `LanguageStandard::predefined_stdc_version`);
+  feature gates compare `stdc_version`, which is `202400` for both.
   Unknown triples and standards are errors.
 - `ignored_option` is the single list of accepted-and-ignored arguments,
   shared by the parser and slate's compile-command normalization: driver and

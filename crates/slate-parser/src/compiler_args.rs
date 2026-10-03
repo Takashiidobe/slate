@@ -47,14 +47,23 @@ pub enum LanguageStandard {
     C23,
     #[default]
     Gnu23,
+    C2y,
+    Gnu2y,
 }
 
 impl LanguageStandard {
     pub fn is_gnu(self) -> bool {
         matches!(
             self,
-            Self::Gnu89 | Self::Gnu99 | Self::Gnu11 | Self::Gnu17 | Self::Gnu23
+            Self::Gnu89 | Self::Gnu99 | Self::Gnu11 | Self::Gnu17 | Self::Gnu23 | Self::Gnu2y
         )
+    }
+
+    pub fn predefined_stdc_version(self, flavor: CompilerFlavor) -> Option<i64> {
+        match (self, flavor) {
+            (Self::C2y | Self::Gnu2y, CompilerFlavor::Gcc) => Some(202500),
+            _ => self.stdc_version(),
+        }
     }
 
     pub fn stdc_version(self) -> Option<i64> {
@@ -65,6 +74,7 @@ impl LanguageStandard {
             Self::C11 | Self::Gnu11 => Some(201112),
             Self::C17 | Self::Gnu17 => Some(201710),
             Self::C23 | Self::Gnu23 => Some(202311),
+            Self::C2y | Self::Gnu2y => Some(202400),
         }
     }
 }
@@ -85,6 +95,8 @@ impl FromStr for LanguageStandard {
             "gnu17" | "gnu18" => Ok(Self::Gnu17),
             "c23" | "c2x" | "iso9899:2024" => Ok(Self::C23),
             "gnu23" | "gnu2x" => Ok(Self::Gnu23),
+            "c2y" => Ok(Self::C2y),
+            "gnu2y" => Ok(Self::Gnu2y),
             _ => Err(format!("unknown language standard: {name}")),
         }
     }
