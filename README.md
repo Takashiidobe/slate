@@ -86,6 +86,13 @@ See [feature coverage](crates/slate/docs/src/features.md) and
 Target ABI details, runtime bridges and nonlocal jumps require coverage for the
 specific input and target.
 
+## Trophy Case
+
+Projects that we've tested e2e that translate to Rust:
+
+- [SQLite](https://sqlite.org)
+- [chibicc](https://github.com/rui314/chibicc)
+
 ### In Progress
 
 - [ ] Passing the GCC Torture Test Suite
