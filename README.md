@@ -91,6 +91,7 @@ specific input and target.
 Projects that we've tested e2e that translate to Rust:
 
 - [SQLite](https://sqlite.org)
+- [Redis](https://redis.io)
 - [chibicc](https://github.com/rui314/chibicc)
 
 ### In Progress
