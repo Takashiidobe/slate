@@ -407,6 +407,9 @@ impl FunctionLowerer<'_, '_> {
             .extend(graph.locals.iter().map(|(id, _)| *id));
         let mut lowered = Vec::new();
         for (id, ty) in graph.locals {
+            if self.tables.variably_modified(ty) {
+                return Err(unsupported_type(ty));
+            }
             let ty = self.lower_type(ty)?;
             let storage = format!("__slate_storage_{}", id.0);
             lowered.push(Stmt::Let {

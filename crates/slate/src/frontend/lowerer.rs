@@ -26,6 +26,7 @@ mod target_features;
 mod types;
 mod values;
 mod vectors;
+mod vla;
 
 use arithmetic::*;
 use calls::*;

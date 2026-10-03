@@ -253,6 +253,14 @@ impl FunctionLowerer<'_, '_> {
                 kind: PlaceKind::Binding(id),
                 ..
             }) if self.tables.names.contains_key(id) => self.lower_function_address(value, *id)?,
+            ValueKind::AddressOf(place) | ValueKind::ArrayDecay { place, .. }
+                if let Some(address) = self.vla_address(place)? =>
+            {
+                Expr::Cast {
+                    expr: Box::new(address),
+                    ty: self.lower_type(&value.ty)?,
+                }
+            }
             ValueKind::AddressOf(place) => match place.kind {
                 PlaceKind::Deref(ref pointer) => self.lower_value(pointer)?,
                 _ => {

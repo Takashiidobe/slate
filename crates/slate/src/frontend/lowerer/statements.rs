@@ -62,6 +62,9 @@ impl FunctionLowerer<'_, '_> {
                     .map(|value| self.lower_value(value))
                     .transpose()?,
             },
+            ir::Statement::Let(variable) if self.tables.variably_modified(&variable.ty) => {
+                self.lower_vla_let(variable)?
+            }
             ir::Statement::Let(variable) => {
                 let init = variable
                     .initializer

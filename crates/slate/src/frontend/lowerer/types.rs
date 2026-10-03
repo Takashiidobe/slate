@@ -478,6 +478,12 @@ impl FunctionLowerer<'_, '_> {
                     len: length.unwrap_or(0),
                 });
             }
+            ir::Type::VariableArray { element, .. } => {
+                return Ok(rust::Type::Array {
+                    elem: Box::new(self.lower_type(element)?),
+                    len: 0,
+                });
+            }
             ir::Type::Vector { element, lanes } => {
                 let ty = intrinsics::simd_type(
                     self.lower_type(&ir::Type::Numeric(*element))?,
@@ -553,7 +559,7 @@ fn push_bit_padding(members: &mut Vec<rust::StructField>, mut width: u64) {
     }
 }
 
-fn unsupported_type(ty: &ir::Type) -> Failure {
+pub(super) fn unsupported_type(ty: &ir::Type) -> Failure {
     Construct::Type { ty: ty.to_string() }.into()
 }
 

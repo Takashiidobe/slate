@@ -108,6 +108,18 @@ impl FunctionLowerer<'_, '_> {
             offset
         };
         Ok(match element {
+            _ if self.tables.variably_modified(element) => Expr::Unsafe(Box::new(rust::Block {
+                stmts: Vec::new(),
+                tail: Some(Box::new(Expr::MethodCall {
+                    recv: Box::new(self.lower_value(pointer)?),
+                    method: "byte_offset".into(),
+                    args: vec![Expr::Binary {
+                        op: BinOp::Mul,
+                        lhs: Box::new(offset),
+                        rhs: Box::new(self.runtime_stride(element)?),
+                    }],
+                })),
+            })),
             ir::Type::Void => Expr::Cast {
                 expr: Box::new(Expr::Unsafe(Box::new(rust::Block {
                     stmts: Vec::new(),
@@ -167,6 +179,21 @@ impl FunctionLowerer<'_, '_> {
             });
         }
         Ok(match element {
+            _ if self.tables.variably_modified(element) => Expr::Cast {
+                expr: Box::new(Expr::Binary {
+                    op: BinOp::Div,
+                    lhs: Box::new(Expr::Unsafe(Box::new(rust::Block {
+                        stmts: Vec::new(),
+                        tail: Some(Box::new(Expr::MethodCall {
+                            recv: Box::new(self.byte_pointer(left)?),
+                            method: "offset_from".into(),
+                            args: vec![self.byte_pointer(right)?],
+                        })),
+                    }))),
+                    rhs: Box::new(self.runtime_stride(element)?),
+                }),
+                ty: self.lower_type(&value.ty)?,
+            },
             ir::Type::Void => Expr::Cast {
                 expr: Box::new(Expr::Unsafe(Box::new(rust::Block {
                     stmts: Vec::new(),

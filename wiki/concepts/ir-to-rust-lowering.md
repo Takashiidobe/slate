@@ -5,6 +5,8 @@
 | Parser IR | Rust |
 | --- | --- |
 | Incomplete array | `[T; 0]`, retaining element alignment |
+| `vla<T, %e>` (pointee) | `[T; 0]`; only reached through raw pointers |
+| VLA local | Zero-filled `Vec<E>` of the innermost fixed element, sized by the captured extents; the place is `*(v.as_mut_ptr() as *mut [T; 0])` |
 | Flexible record member | Zero-length field at the parser-provided offset |
 | Flexible-array decay | Raw field address cast to an element pointer |
 | C function pointer | `Option<unsafe extern "C-unwind" fn(...) -> R>` |
@@ -31,6 +33,13 @@
 - Indirect variadic calls use the parser's explicit default argument promotions.
 - Variadic function-pointer arguments travel as raw pointer representations;
   `VaArg` reads that representation and restores the nullable function-pointer type.
+- VLA storage lives until the enclosing Rust block ends, so a VLA in a loop body
+  is freed each iteration as in C. Decay and `addr_of` of a VLA place cast the
+  storage pointer, never a reference to the zero-length array. `ptr_offset` and
+  `ptr_diff` over a VLA element use `byte_offset` / byte `offset_from` with a
+  runtime stride: the captured extents times the fixed element size
+  (`vla_locals.c`). A VLA local in a goto-dispatched function is a barrier: its
+  slot would never be freed.
 - Null-based field-address differences use parser layout offsets, avoiding Rust
   null dereferences and pointer arithmetic.
 - Leading-zero counts preserve the C operand width; zero input is undefined in C.

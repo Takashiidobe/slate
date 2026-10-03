@@ -4,6 +4,7 @@ impl Tables<'_> {
     pub(super) fn place_is_unsafe(&self, place: &ir::Place) -> bool {
         match &place.kind {
             PlaceKind::Deref(_) | PlaceKind::CompoundLiteral { .. } => true,
+            PlaceKind::Binding(_) if self.variably_modified(&place.ty) => true,
             PlaceKind::Lane { base, .. } => self.place_is_unsafe(base),
             PlaceKind::Field { base, .. } => self.is_union(&base.ty) || self.place_is_unsafe(base),
             _ => self.place_is_static(place),
@@ -26,6 +27,9 @@ impl Tables<'_> {
 
 impl FunctionLowerer<'_, '_> {
     pub(super) fn lower_address(&mut self, place: &ir::Place, mutable: bool) -> Result<Expr> {
+        if let Some(address) = self.vla_address(place)? {
+            return Ok(address);
+        }
         match &place.kind {
             PlaceKind::Deref(pointer) => self.lower_value(pointer),
             PlaceKind::Field { bits: Some(_), .. } => Err(Construct::Place {
@@ -41,24 +45,16 @@ impl FunctionLowerer<'_, '_> {
 
     pub(super) fn lower_place(&mut self, place: &ir::Place) -> Result<Expr> {
         let tables = self.tables;
+        if let PlaceKind::Binding(_) = place.kind
+            && let Some(address) = self.vla_address(place)?
+        {
+            return Ok(Expr::Unary {
+                op: rust::UnaryOp::Deref,
+                expr: Box::new(address),
+            });
+        }
         match place.kind {
-            PlaceKind::Binding(id) => {
-                if self.dispatch_bindings.contains(&id) {
-                    return Ok(Expr::Unary {
-                        op: rust::UnaryOp::Deref,
-                        expr: Box::new(control_flow::slot_pointer(id)),
-                    });
-                }
-                let binding = Expr::Var(binding_name(id, &tables.bindings).as_str().into());
-                Ok(if tables.over_aligned.contains_key(&id) {
-                    Expr::TupleField {
-                        base: Box::new(binding),
-                        index: 0,
-                    }
-                } else {
-                    binding
-                })
-            }
+            PlaceKind::Binding(id) => Ok(self.lower_binding(id)),
             PlaceKind::Deref(ref pointer) => Ok(Expr::Unary {
                 op: rust::UnaryOp::Deref,
                 expr: Box::new(self.lower_value(pointer)?),
@@ -104,6 +100,24 @@ impl FunctionLowerer<'_, '_> {
                 ir: place.to_string(),
             }
             .into()),
+        }
+    }
+
+    pub(super) fn lower_binding(&self, id: BindingId) -> Expr {
+        if self.dispatch_bindings.contains(&id) {
+            return Expr::Unary {
+                op: rust::UnaryOp::Deref,
+                expr: Box::new(control_flow::slot_pointer(id)),
+            };
+        }
+        let binding = Expr::Var(binding_name(id, &self.tables.bindings).as_str().into());
+        if self.tables.over_aligned.contains_key(&id) {
+            Expr::TupleField {
+                base: Box::new(binding),
+                index: 0,
+            }
+        } else {
+            binding
         }
     }
 
