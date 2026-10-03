@@ -34,14 +34,12 @@ parser + IR generator.
 Slate uses its built-in slate-parser frontend. Use `translate-project` with one
 or more compilation databases to generate an executable Cargo crate. Library
 projects and multiple configurations of the same translation unit are not yet
-supported. Project output applies control-flow rewrites; `--raw` keeps the
-baseline lowering for comparisons.
+supported. Project output always applies control-flow rewrites.
 
 ```text
 translate [compiler args...] <file.c>                         C -> Rust
-translate-lowered [compiler args...] <file.c>                 raw Rust output
 emit-slate-ir [compiler args...] <file.c>                     typed parser IR
-translate-project [--raw] --compile-commands <file>... <dir> <crate_dir>
+translate-project --compile-commands <file>... <dir> <crate_dir>
 ```
 
 For example, to translate `chibicc`:

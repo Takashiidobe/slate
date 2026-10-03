@@ -47,7 +47,12 @@ conversions and layout remain slate-parser responsibilities.
   but these passes consume Rust AST. See [pass porting](pass-porting-workflow.md).
 - Project translation runs the control-flow registry after raw basic-block coalescing.
   It preserves exported C signatures and skips interprocedural representation rewrites.
-  `translate-project --raw` retains the baseline; `translate-lowered` stays raw.
+  Rewrites are always on: there is no raw lowering mode.
+- Function identity: lowering records every function whose address it emits;
+  `frontend/distinct_functions.rs` marks the address-taken definitions that
+  LLVM MergeFunctions could fold into another definition with the same
+  signature shape, and `backend::place_in_distinct_sections` gives each one a
+  unique `.text.slate_distinct.<unit>.<name>` link section (ELF only).
 - Goto recognition accepts legacy and `__slate_dispatch` / `__slate_state` names,
   integer / `usize` state values, and transfers inside conditional arms.
   Nested decisions stay in their original blocks; dispatcher exits remain labeled block exits.

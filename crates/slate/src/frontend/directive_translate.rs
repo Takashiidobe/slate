@@ -829,8 +829,12 @@ fn translate_one(path: &Path, compiler_args: &[String]) -> Result<Translation, D
     let (module, files, diagnostics) =
         frontend::parse_module_with_source(path, source, compiler_args)?;
     frontend::reject_directive_errors(path, &diagnostics)?;
-    let program =
-        frontend::lower_module(&module, &files, &frontend::lowerer::LowerOptions::default())?;
+    let program = frontend::lower_single_module(
+        &module,
+        &files,
+        &frontend::lowerer::LowerOptions::default(),
+        "main",
+    )?;
     Ok(Translation {
         item_lines: item_lines(path, &module, &files),
         program: backend::apply_with_target(program, &module.target),

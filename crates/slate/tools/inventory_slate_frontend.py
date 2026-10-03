@@ -207,7 +207,7 @@ def inventory(binary):
     for fixture in sorted((ROOT / "tests/fixtures").glob("*.c")):
         source = fixture.read_text(errors="replace")
         scope = scope_owner(fixture.stem)
-        code, _, error = run(binary, "translate-lowered", fixture)
+        code, _, error = run(binary, "translate", fixture)
         diagnostic = error.strip().splitlines()[0] if error.strip() else ""
         if code == 0:
             stage, barrier, ticket = "lowered-unverified", "-", scope

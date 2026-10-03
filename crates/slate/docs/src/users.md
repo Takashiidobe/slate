@@ -20,11 +20,10 @@ for the Rust toolchain and test dependencies.
 
 ```bash
 target/test-cache/release/slate translate input.c
-target/test-cache/release/slate translate-lowered -std=gnu17 input.c
+target/test-cache/release/slate translate -std=gnu17 input.c
 ```
 
-`translate-lowered` emits raw lowered Rust; `translate` runs the backend
-pipeline. Single-file output may need supporting crates or C runtime bridges.
+`translate` runs the backend pipeline. Single-file output may need supporting crates or C runtime bridges.
 
 ## Translate a project
 

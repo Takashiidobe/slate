@@ -14,9 +14,8 @@ C semantics, conversions and target layout belong to slate-parser. Slate
 translates that typed IR directly. Unsupported constructs produce barriers;
 broken IR invariants produce invalid-IR diagnostics.
 
-`translate-lowered` and project generation emit raw lowered Rust. `translate`
-runs the retained backend pipeline. The current differential profile tests raw
-lowering; rewrite changes need fixtures that exercise backend translation.
+`translate` runs the full backend pipeline; project generation runs its
+control-flow subset. There is no raw lowering mode.
 
 Target headers come from slate-sysroots. Supported whole-item directive
 branches can be merged into Rust cfg items; project generation currently

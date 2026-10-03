@@ -94,7 +94,6 @@ def build(args, directory):
     database.write_text(json.dumps(commands, indent=2) + "\n")
     timings["translation"] = run([
         str(args.slate_root / "target/test-cache/release/slate"), "translate-project",
-        *(["--raw"] if args.raw else []),
         "--compile-commands", str(database), str(args.corpus), str(generated),
     ], directory / "translation.log", cwd=args.slate_root)
     core, shell = units["sqlite3.c"], units["shell.c"]
@@ -144,7 +143,7 @@ def build(args, directory):
             run(["objdump", "-d", f"--start-address={address}", f"--stop-address={address + size}",
                  str(path / "libsqlite3.so")], path / "vdbe.asm")
     metadata = {
-        "git_commit": revision, "slate_root": str(args.slate_root), "project_raw_requested": args.raw,
+        "git_commit": revision, "slate_root": str(args.slate_root),
         "clang": capture([args.clang, "--version"]), "rustc": capture(["rustc", "-Vv"]),
         "platform": platform.platform(), "cpu": cpu_configuration(pathlib.Path("/proc/cpuinfo").read_text()),
         "sqlite_version": (args.corpus / "VERSION").read_text().strip(),
@@ -202,7 +201,6 @@ def main():
     parser.add_argument("--size", type=int, default=50)
     parser.add_argument("--runs", type=int, default=5)
     parser.add_argument("--testsets", nargs="+", default=["main", "cte", "json"])
-    parser.add_argument("--raw", action="store_true", help="translate without control-flow rewrites")
     parser.add_argument("--skip-build", action="store_true")
     parser.add_argument("--build-only", action="store_true")
     parser.add_argument("--profile", action="store_true")

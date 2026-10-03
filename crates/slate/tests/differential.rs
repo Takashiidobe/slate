@@ -70,34 +70,11 @@ fn run_cases_with_mode(
         extra_args.extend(support::fixture_dg_additional_options(&f.path));
         let result = if project {
             let crate_dir = tmp.join(&f.name);
-            std::fs::create_dir_all(&crate_dir).expect("create project directory");
-            let database = crate_dir.join("compile_commands.json");
-            let mut arguments = vec!["clang".to_string(), "-std=c23".into()];
-            arguments.extend(extra_args);
-            arguments.push(f.path.display().to_string());
-            std::fs::write(
-                &database,
-                serde_json::to_vec(&serde_json::json!([{
-                    "directory": f.path.parent(), "file": f.path, "arguments": arguments,
-                }]))
-                .unwrap(),
-            )
-            .unwrap();
-            let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
-                .arg("translate-project")
-                .arg("--compile-commands")
-                .arg(database)
-                .arg(f.path.parent().unwrap())
-                .arg(&crate_dir)
-                .output()
-                .unwrap();
-            if output.status.success() {
+            translate_fixture_project(f, &crate_dir, extra_args).and_then(|()| {
                 std::fs::copy(crate_dir.join("src/main.rs"), &generated)
                     .map(|_| ())
                     .map_err(|e| e.to_string())
-            } else {
-                Err(String::from_utf8_lossy(&output.stderr).into_owned())
-            }
+            })
         } else {
             support::translate_slate(&f.path, &generated, &extra_args)
         };
@@ -125,13 +102,46 @@ fn run_cases_with_mode(
     results
 }
 
+fn translate_fixture_project(
+    f: &Fixture,
+    crate_dir: &Path,
+    extra_args: Vec<String>,
+) -> Result<(), String> {
+    std::fs::create_dir_all(crate_dir).expect("create project directory");
+    let database = crate_dir.join("compile_commands.json");
+    let mut arguments = vec!["clang".to_string(), "-std=c23".into()];
+    arguments.extend(extra_args);
+    arguments.push(f.path.display().to_string());
+    std::fs::write(
+        &database,
+        serde_json::to_vec(&serde_json::json!([{
+            "directory": f.path.parent(), "file": f.path, "arguments": arguments,
+        }]))
+        .unwrap(),
+    )
+    .unwrap();
+    let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
+        .arg("translate-project")
+        .arg("--compile-commands")
+        .arg(database)
+        .arg(f.path.parent().unwrap())
+        .arg(crate_dir)
+        .output()
+        .unwrap();
+    if output.status.success() {
+        Ok(())
+    } else {
+        Err(String::from_utf8_lossy(&output.stderr).into_owned())
+    }
+}
+
 fn first_barrier(error: &str) -> (&'static str, &str) {
     let detail = error
         .lines()
         .map(str::trim)
         .find(|line| line.starts_with("error"))
         .unwrap_or_else(|| error.lines().next().unwrap_or_default());
-    let class = if error.starts_with("slate translate-lowered failed") {
+    let class = if error.starts_with("slate translate failed") {
         if detail.contains("unsupported slate-parser IR") {
             "unsupported lowering"
         } else {
@@ -194,6 +204,30 @@ fn project_control_flow_differential() {
 }
 
 #[test]
+fn release_build_differential() {
+    let work = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-generated/release");
+    let fixtures = fixtures(&Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures.release"));
+    let failures: Vec<_> = support::parallel_map(&fixtures, |f| {
+        let crate_dir = work.join(&f.name);
+        let result = (|| {
+            translate_fixture_project(f, &crate_dir, support::fixture_dg_options(&f.path))?;
+            let rs_bin = support::build_project_release(&crate_dir)?;
+            let c_bin = work.join(format!("{}_c", f.name));
+            support::compile_c_with_args_for_target(&f.path, &c_bin, &[], None)?;
+            let config = support::RunConfig::default();
+            let c = support::run_with_config(&c_bin, &config, &work)?;
+            let r = support::run_with_config(&rs_bin, &config, &work)?;
+            support::compare_runs(&c, &r, false)
+        })();
+        result.err().map(|error| format!("[{}] {error}", f.name))
+    })
+    .into_iter()
+    .flatten()
+    .collect();
+    assert!(failures.is_empty(), "{}", failures.join("\n\n"));
+}
+
+#[test]
 fn fixtures_unsupported_tests_still_fail() {
     let fixtures = fixtures(&unsupported_dir());
     let results = run_cases("unsupported", &fixtures);
@@ -249,7 +283,6 @@ fn translation_is_self_hosted() {
     let target = "--target=x86_64-unknown-linux-gnu";
     let inputs = [
         vec!["translate", target, source.to_str().unwrap()],
-        vec!["translate-lowered", target, source.to_str().unwrap()],
         vec!["record-cfg", source.to_str().unwrap(), target],
         vec![
             "translate-project",

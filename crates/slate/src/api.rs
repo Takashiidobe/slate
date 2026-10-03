@@ -50,8 +50,12 @@ pub fn translate_with_args(path: &Path, extra_args: &[String]) -> Result<String,
             .map_err(Error::Directive);
     }
     let (module, files, diagnostics) = frontend::parse_module_with_source(path, None, extra_args)?;
-    let mut program =
-        frontend::lower_module(&module, &files, &frontend::lowerer::LowerOptions::default())?;
+    let mut program = frontend::lower_single_module(
+        &module,
+        &files,
+        &frontend::lowerer::LowerOptions::default(),
+        "main",
+    )?;
     directive_translate::insert_directive_items(
         &mut program,
         diagnostics
@@ -73,15 +77,6 @@ pub fn translate_with_args(path: &Path, extra_args: &[String]) -> Result<String,
     );
     let source = backend::apply_with_target(program, &module.target).emit();
     backend::pretty_rust(&source).map_err(|message| Error::Format { message })
-}
-
-pub fn lowered_slate_program_with_args(
-    path: &Path,
-    extra_args: &[String],
-) -> Result<rust_ast::Program, Error> {
-    let (module, files) = slate_ir_with_args(path, extra_args)?;
-    frontend::lower_module(&module, &files, &frontend::lowerer::LowerOptions::default())
-        .map_err(Error::from)
 }
 
 /// Translates a C source file for the requested target triples.

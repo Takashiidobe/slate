@@ -4,9 +4,9 @@
 analyses live in `src/backend/interproc`; the backend receives target facts
 from the parser module.
 
-`translate` invokes the backend; `translate-lowered` and project translation
-currently emit raw lowered programs. The Slate nextest profile exercises raw
-lowering, so rewrite work needs fixtures that also execute backend translation.
+`translate` runs the full backend; project translation runs its control-flow
+subset. There is no raw lowering mode, so the Slate nextest profile exercises
+rewrites on every fixture.
 
 See the [rewrite engine](https://github.com/takashiidobe/slate/blob/main/wiki/concepts/rewrite-engine-v2.md)
 and [pointer capability lattice](https://github.com/takashiidobe/slate/blob/main/wiki/concepts/pointer-capability-lattice.md)

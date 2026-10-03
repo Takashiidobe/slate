@@ -57,6 +57,7 @@ impl FunctionLowerer<'_, '_> {
         {
             return Err(unsupported_value(value));
         }
+        self.dependencies.taken_functions.insert(id);
         Ok(match self.tables.names.get(&id) {
             Some(name) if !name.is_extern => {
                 self.dependencies.address_taken.insert(name.rust.clone());

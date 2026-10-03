@@ -1,15 +1,22 @@
 use slate_parser::dialect::Dialect;
 use slate_parser::files::Files;
-use slate_parser::ir::Module;
+use slate_parser::ir::{BindingId, Module};
 use slate_parser::parser::Parser;
 use slate_parser::pp::DirectiveDiagnostic;
 use slate_parser::sema::Sema;
+use std::collections::HashSet;
 use std::path::{Path, PathBuf};
 use thiserror::Error;
 
 pub mod c_shim;
+pub mod distinct_functions;
 pub(crate) mod long_double;
 pub mod lowerer;
+
+pub struct LoweredModule {
+    pub program: crate::backend::rust_ast::Program,
+    pub address_taken: HashSet<BindingId>,
+}
 
 #[derive(Debug, Error)]
 pub enum Error {
@@ -140,7 +147,7 @@ pub fn lower_module(
     module: &Module,
     files: &Files,
     options: &lowerer::LowerOptions,
-) -> Result<crate::backend::rust_ast::Program, Error> {
+) -> Result<LoweredModule, Error> {
     let lowered = lowerer::lower(module, options).map_err(|invalid| Error::Invalid {
         report: render_site(
             &invalid.site,
@@ -175,8 +182,26 @@ pub fn lower_module(
             ),
             barrier: Box::new(barrier),
         }),
-        None => Ok(lowered.program),
+        None => Ok(LoweredModule {
+            program: lowered.program,
+            address_taken: lowered.address_taken,
+        }),
     }
+}
+
+pub fn lower_single_module(
+    module: &Module,
+    files: &Files,
+    options: &lowerer::LowerOptions,
+    unit: &str,
+) -> Result<crate::backend::rust_ast::Program, Error> {
+    let mut lowered = lower_module(module, files, options)?;
+    let protected = distinct_functions::mergeable_address_taken(&[distinct_functions::Unit {
+        module,
+        address_taken: &lowered.address_taken,
+    }]);
+    crate::backend::place_in_distinct_sections(&mut lowered.program, unit, &protected[0]);
+    Ok(lowered.program)
 }
 
 pub fn parse_module_with_args(path: &Path, args: &[String]) -> Result<(Module, Files), Error> {

@@ -77,6 +77,7 @@ struct Dependencies {
     records: BTreeMap<u32, Record>,
     compound_literals: Vec<Item>,
     address_taken: BTreeSet<String>,
+    taken_functions: HashSet<BindingId>,
     bit_units: Vec<Item>,
 }
 
@@ -113,6 +114,7 @@ pub struct LowerOptions {
 pub struct Lowered {
     pub program: rust::Program,
     pub barriers: Vec<Barrier>,
+    pub address_taken: HashSet<BindingId>,
 }
 
 pub fn lower(
@@ -125,7 +127,7 @@ pub fn lower(
     Ok(lowerer.assemble())
 }
 
-fn function_rust_name(function: &ir::Function) -> String {
+pub(crate) fn function_rust_name(function: &ir::Function) -> String {
     if function.name == "main" {
         "__slate_main".into()
     } else {
@@ -615,6 +617,7 @@ impl<'m> ModuleLowerer<'m> {
         Lowered {
             program: rust::Program { items },
             barriers,
+            address_taken: dependencies.taken_functions,
         }
     }
 }

@@ -14,7 +14,7 @@
 
 ```bash
 cargo run --release -p slate -- sysroot install aarch64-unknown-linux-gnu
-cargo run --release -p slate -- translate-lowered \
+cargo run --release -p slate -- translate \
   --target=aarch64-unknown-linux-gnu input.c
 ```
 

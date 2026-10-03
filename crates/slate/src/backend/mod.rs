@@ -29,15 +29,26 @@ pub fn apply_with_target(
     program: Program,
     target: &slate_parser::target_info::TargetInfo,
 ) -> Program {
-    if std::env::var_os("SLATE_RAW_LOWER").is_some()
-        || std::env::var("NEXTEST_PROFILE").is_ok_and(|profile| profile == "lowering")
-    {
-        return program;
-    }
     let mut program = program;
     engine::apply(&mut program, target);
     program
 }
 
-/// Propagates unwind ABI information across translated project programs.
+pub fn place_in_distinct_sections(
+    program: &mut Program,
+    unit: &str,
+    functions: &std::collections::BTreeSet<String>,
+) {
+    for item in &mut program.items {
+        if let rust_ast::Item::Fn(function) = item
+            && functions.contains(function.name.as_str())
+        {
+            function.attrs.push(rust_ast::Attr::LinkSection(format!(
+                ".text.slate_distinct.{unit}.{}",
+                function.name
+            )));
+        }
+    }
+}
+
 pub fn propagate_unwind_abi_across_project(_programs: &mut [Program]) {}

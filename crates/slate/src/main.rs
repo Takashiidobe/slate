@@ -24,7 +24,6 @@ struct Cli {
 enum Command {
     EmitSlateIr(RawArgs),
     Translate(RawArgs),
-    TranslateLowered(RawArgs),
     LoweringBarriers(RawArgs),
     RecordCfg(RawArgs),
     TranslateProject(RawArgs),
@@ -68,12 +67,6 @@ fn main() -> ExitCode {
         Command::Translate(raw) => match raw.args.split_last() {
             Some((path, compiler_args)) => {
                 run(translate_with_compiler_args(Path::new(path), compiler_args))
-            }
-            None => ExitCode::from(2),
-        },
-        Command::TranslateLowered(raw) => match raw.args.split_last() {
-            Some((path, compiler_args)) => {
-                run(lowered_rust_with_args(Path::new(path), compiler_args))
             }
             None => ExitCode::from(2),
         },
@@ -438,13 +431,11 @@ fn write_num_complex_support(crate_dir: &Path) -> Result<(), String> {
 fn translate_project_command(args: &[String]) -> Result<String, String> {
     let mut paths = Vec::new();
     let mut compile_command_paths = Vec::new();
-    let mut raw = false;
     let mut include_args = Vec::new();
     let current_dir = std::env::current_dir().map_err(|e| format!("current directory: {e}"))?;
     let mut index = 0;
     while index < args.len() {
         match args[index].as_str() {
-            "--raw" => raw = true,
             "--compile-commands" => {
                 index += 1;
                 let commands = args
@@ -488,7 +479,7 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
     for command in &mut commands {
         command.args.extend(include_args.iter().cloned());
     }
-    translate_slate_project(Path::new(paths[1]), commands, raw)
+    translate_slate_project(Path::new(paths[1]), commands)
 }
 
 fn slate_job_count() -> usize {
@@ -625,7 +616,6 @@ fn imported_commons(units: &[SlateUnit]) -> BTreeMap<String, BTreeSet<String>> {
 fn translate_slate_project(
     crate_dir: &Path,
     commands: Vec<compile_commands::CompileCommand>,
-    raw: bool,
 ) -> Result<String, String> {
     use slate::frontend::{self, lowerer};
     let units = parse_slate_units(commands)?;
@@ -662,19 +652,34 @@ fn translate_slate_project(
         jobs.into_par_iter()
             .map(|(unit, options)| {
                 frontend::lower_module(&unit.module, &unit.files, &options)
-                    .map(|program| {
-                        let program = if raw {
-                            program
-                        } else {
-                            slate::backend::structure_control_flow(program)
-                        };
-                        (unit.stem.clone(), program)
+                    .map(|mut lowered| {
+                        lowered.program = slate::backend::structure_control_flow(lowered.program);
+                        lowered
                     })
                     .map_err(|error| format!("{}: {error}", unit.path.display()))
             })
             .collect()
     });
-    let programs = collect_all_errors(results)?;
+    let lowered = collect_all_errors(results)?;
+    let protected = frontend::distinct_functions::mergeable_address_taken(
+        &units
+            .iter()
+            .zip(&lowered)
+            .map(|(unit, lowered)| frontend::distinct_functions::Unit {
+                module: &unit.module,
+                address_taken: &lowered.address_taken,
+            })
+            .collect::<Vec<_>>(),
+    );
+    let programs: Vec<_> = units
+        .iter()
+        .zip(lowered)
+        .zip(&protected)
+        .map(|((unit, mut lowered), functions)| {
+            slate::backend::place_in_distinct_sections(&mut lowered.program, &unit.stem, functions);
+            (unit.stem.clone(), lowered.program)
+        })
+        .collect();
 
     init_crate(crate_dir, false)?;
     let crate_src = crate_dir.join("src");
@@ -851,9 +856,4 @@ fn record_cfg(path: &Path, compiler_args: &[String]) -> Result<String, String> {
         "{}\n",
         serde_json::to_string_pretty(&doc).map_err(|e| format!("serialize cfg regions: {e}"))?
     ))
-}
-
-fn lowered_rust_with_args(path: &Path, args: &[String]) -> Result<String, String> {
-    let program = cli_result(api::lowered_slate_program_with_args(path, args))?;
-    backend::pretty_rust(&program.emit())
 }

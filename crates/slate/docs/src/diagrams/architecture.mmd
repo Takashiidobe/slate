@@ -11,5 +11,4 @@ flowchart TD
     C --> Parser
     Headers --> Parser
     Parser --> IR --> Lowerer --> Baseline
-    Baseline -->|translate-lowered| Rust
     Baseline -->|translate| Backend --> Rust

@@ -611,6 +611,27 @@ pub fn build_batch(
     Ok(parse_batch_build(&o))
 }
 
+pub fn build_project_release(crate_dir: &Path) -> Result<PathBuf, String> {
+    let output = Command::new(cargo())
+        .args([
+            "build",
+            "--release",
+            "--quiet",
+            "--message-format=json",
+            "--manifest-path",
+        ])
+        .arg(crate_dir.join("Cargo.toml"))
+        .arg("--target-dir")
+        .arg(test_target_dir_for_project(crate_dir))
+        .output()
+        .map_err(|e| format!("spawn {}: {e}", cargo()))?;
+    let build = parse_batch_build(&output);
+    match build.artifacts.values().next() {
+        Some(executable) if output.status.success() => Ok(executable.clone()),
+        _ => Err(format!("Rust release build failed:\n{}", build.stderr)),
+    }
+}
+
 fn parse_batch_build(output: &std::process::Output) -> BatchBuild {
     let mut build = BatchBuild {
         artifacts: BTreeMap::new(),
@@ -1024,11 +1045,11 @@ pub fn fixture_dg_additional_options(path: &Path) -> Vec<String> {
 
 pub fn translate_slate(c_src: &Path, rs_out: &Path, extra_args: &[String]) -> Result<(), String> {
     let o = Command::new(env!("CARGO_BIN_EXE_slate"))
-        .args(["translate-lowered", "-std=c23"])
+        .args(["translate", "-std=c23"])
         .args(extra_args)
         .arg(c_src)
         .output()
-        .map_err(|e| format!("spawn slate translate-lowered: {e}"))?;
+        .map_err(|e| format!("spawn slate translate: {e}"))?;
     if !o.status.success() {
         let stderr = String::from_utf8_lossy(&o.stderr);
         assert!(
@@ -1036,10 +1057,7 @@ pub fn translate_slate(c_src: &Path, rs_out: &Path, extra_args: &[String]) -> Re
             "{}: {stderr}",
             c_src.display()
         );
-        return Err(format!(
-            "slate translate-lowered failed ({}):\n{stderr}",
-            o.status
-        ));
+        return Err(format!("slate translate failed ({}):\n{stderr}", o.status));
     }
     write_if_changed(rs_out, &o.stdout)
         .map(|_| ())

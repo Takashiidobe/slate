@@ -28,7 +28,7 @@ SLATE_GCC_TORTURE_FIXTURE=<stem> cargo nextest r --release --profile slate \
   --run-ignored ignored-only --nocapture
 cargo run --release -p slate -- lowering-barriers <fixture.c>
 cargo run --release -p slate -- emit-slate-ir <fixture.c>
-cargo run --release -p slate -- translate-lowered <fixture.c>
+cargo run --release -p slate -- translate <fixture.c>
 ```
 
 | Failure | Investigate |

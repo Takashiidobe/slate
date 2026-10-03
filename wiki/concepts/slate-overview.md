@@ -23,7 +23,6 @@ Run from the workspace root; release binaries live in `target/test-cache/release
 ```bash
 cargo build --release -p slate
 cargo run --release -p slate -- sysroot install x86_64-unknown-linux-gnu
-cargo run --release -p slate -- translate-lowered input.c
 cargo run --release -p slate -- translate -std=gnu17 input.c
 cargo run --release -p slate -- emit-slate-ir input.c
 cargo run --release -p slate -- lowering-barriers input.c

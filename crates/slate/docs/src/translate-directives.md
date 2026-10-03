@@ -16,7 +16,7 @@ cargo run --release -p slate -- translate \
   --targets=x86_64-unknown-linux-gnu,aarch64-unknown-linux-gnu input.c
 ```
 
-`translate` may expand supported directives automatically. `translate-lowered`
-uses the selected concrete preprocessing configuration. Target headers come
+`translate` may expand supported directives automatically; otherwise it uses
+the selected concrete preprocessing configuration. Target headers come
 from slate-sysroots. Project generation consumes one compile-command
 configuration per translation unit and does not merge target variants.

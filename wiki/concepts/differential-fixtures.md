@@ -17,8 +17,8 @@ stdout and exit status. Runtime parity is the only correctness gate.
 
 `generated_differential`, `gcc_torture_suite`, `gcc_dg_suite`, and
 `c_testsuite_suite` translate every fixture through the slate-parser frontend
-(`support::translate_slate`, i.e. `slate translate-lowered`).
-That emits raw lowered Rust. Headers come from slate-sysroots, and fixtures
+(`support::translate_slate`, i.e. `slate translate`).
+That runs the backend rewrite pipeline. Headers come from slate-sysroots, and fixtures
 run for the host target only. Together with `chibicc_suite`, these suites make
 up the `slate` nextest profile:
 
@@ -64,7 +64,7 @@ SLATE_DIFF_FIXTURE=<stem> cargo nextest r --release -p slate --test differential
 defined in one translation unit with `ok` or its first lowering barrier, plus
 `<module>` lines for top-level barriers (unsupported globals, top-level asm).
 It never emits Rust and exits non-zero when any barrier exists. Strict
-translation (`translate-lowered`) still fails on the first
+translation (`translate`) still fails on the first
 barrier. Record and enum definitions only block the functions that use them;
 sema already resolves typedefs, so the module's type list is not a gate.
 

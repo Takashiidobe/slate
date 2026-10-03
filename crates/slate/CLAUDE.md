@@ -31,9 +31,12 @@ C -> slate-parser (preprocess, parse, sema) -> ir::Module
   single frontend and backend boundary. [Historical records](../../wiki/historical/index.md)
   preserve prior designs.
 
-The frontend consumes slate-parser IR exclusively. `src/backend/` retains
-rewrites and code generation; differential tests exercise raw lowering through
-`translate-lowered`.
+The frontend consumes slate-parser IR exclusively. `src/backend/` holds
+rewrites and code generation. Rewrites are always on: differential suites run
+`translate`, and `translate-project` always applies its rewrites.
+`tests/fixtures.release/` fixtures go through `translate-project` and a
+`cargo build --release` (`release_build_differential`), for behavior that only
+shows up after LLVM optimization.
 
 ## Toolchain
 
@@ -52,7 +55,7 @@ Install a sysroot with `cargo run -p slate -- sysroot install <triple>`.
 
 ```bash
 cargo run --release -p slate -- emit-slate-ir <file.c>                         # the IR slate receives
-cargo run --release -p slate -- translate-lowered <file.c>                    # raw Rust output
+cargo run --release -p slate -- translate <file.c>                            # Rust output
 cargo run --release -p slate -- lowering-barriers <file.c>                    # first barrier per function
 ```
 

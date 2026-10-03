@@ -6,7 +6,7 @@ explicit in the IR.
 
 ```bash
 cargo run --release -p slate -- lowering-barriers input.c
-cargo run --release -p slate -- translate-lowered input.c
+cargo run --release -p slate -- translate input.c
 ```
 
 The lowerer collects unsupported constructs as barriers. Invalid IR aborts
