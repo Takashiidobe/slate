@@ -55,6 +55,25 @@ ISA values are checked against the `-dM` output of both oracles. The
 tables live in `src/target/{x86,aarch64,arm}_isa.rs`. Where gcc and clang
 resolve the same string differently, each file has per-flavor rules.
 
+x86 features and CPUs are generated into `src/target/x86_isa_tables.rs`
+([generated-sources](generated-sources.md)): every `-m<feature>` in clang's
+`m_x86_Features_Group` that `X86.td` defines, and every `X86.td` CPU clang
+accepts. `tools/x86_isa_diff.py` compares slate's predefines with clang's
+for each CPU, each flag, and each `-mno-` flag on `diamondrapids`, on
+x86_64 and i686; it fails on wrong macros or on accepting what clang
+rejects, and lists what slate rejects. Rejected on purpose or not yet
+modeled:
+
+- clang-only CPU aliases (`corei7`, `skx`, `core-avx2`, `atom`, `slm`,
+  `athlon64`, ...), which live in `X86TargetParser.cpp`, not `X86.td`;
+- `-mapxf` and `-mvzeroupper`, which have no `X86.td` feature;
+- 32-bit CPUs without SSE2 (disabling SSE2 is unsupported);
+- gcc flavor: only the `x86-64` levels and the original 26 features
+  (`GCC_FEATURES` in `x86_isa.rs`); other names are rejected as
+  clang-only;
+- `-march=<cpu>` without 64-bit support on x86_64, and 64-bit-only
+  features such as `-muintr` on i686, as clang rejects them.
+
 ## ISA gotchas
 
 - x86: `-march` sets the base, then `-m` flags apply in order. Enabling a

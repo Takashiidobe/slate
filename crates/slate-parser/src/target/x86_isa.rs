@@ -1,38 +1,12 @@
+pub use super::x86_isa_tables::X86Feature;
+use super::x86_isa_tables::{
+    ALL_FEATURES, CPUS, PENTIUM4, X86_64, X86_64_V2, X86_64_V3, X86_64_V4, X86Cpu,
+};
 use crate::compiler_args::CompilerFlavor;
 use crate::target_info::TargetFamily;
 use std::str::FromStr;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum X86Feature {
-    Mmx,
-    Sse,
-    Sse2,
-    Sse3,
-    Ssse3,
-    Sse41,
-    Sse42,
-    Popcnt,
-    Crc32,
-    Xsave,
-    Fxsr,
-    Sahf,
-    Cx16,
-    Avx,
-    Avx2,
-    Fma,
-    F16c,
-    Avx512f,
-    Avx512bw,
-    Avx512cd,
-    Avx512dq,
-    Avx512vl,
-    Bmi,
-    Bmi2,
-    Lzcnt,
-    Movbe,
-}
-
-const ALL_FEATURES: [X86Feature; 26] = [
+const GCC_FEATURES: [X86Feature; 26] = [
     X86Feature::Mmx,
     X86Feature::Sse,
     X86Feature::Sse2,
@@ -62,88 +36,15 @@ const ALL_FEATURES: [X86Feature; 26] = [
 ];
 
 impl X86Feature {
-    fn spelling(self) -> &'static str {
-        match self {
-            Self::Mmx => "mmx",
-            Self::Sse => "sse",
-            Self::Sse2 => "sse2",
-            Self::Sse3 => "sse3",
-            Self::Ssse3 => "ssse3",
-            Self::Sse41 => "sse4.1",
-            Self::Sse42 => "sse4.2",
-            Self::Popcnt => "popcnt",
-            Self::Crc32 => "crc32",
-            Self::Xsave => "xsave",
-            Self::Fxsr => "fxsr",
-            Self::Sahf => "sahf",
-            Self::Cx16 => "cx16",
-            Self::Avx => "avx",
-            Self::Avx2 => "avx2",
-            Self::Fma => "fma",
-            Self::F16c => "f16c",
-            Self::Avx512f => "avx512f",
-            Self::Avx512bw => "avx512bw",
-            Self::Avx512cd => "avx512cd",
-            Self::Avx512dq => "avx512dq",
-            Self::Avx512vl => "avx512vl",
-            Self::Bmi => "bmi",
-            Self::Bmi2 => "bmi2",
-            Self::Lzcnt => "lzcnt",
-            Self::Movbe => "movbe",
-        }
-    }
-
-    fn macro_name(self) -> &'static str {
-        match self {
-            Self::Mmx => "__MMX__",
-            Self::Sse => "__SSE__",
-            Self::Sse2 => "__SSE2__",
-            Self::Sse3 => "__SSE3__",
-            Self::Ssse3 => "__SSSE3__",
-            Self::Sse41 => "__SSE4_1__",
-            Self::Sse42 => "__SSE4_2__",
-            Self::Popcnt => "__POPCNT__",
-            Self::Crc32 => "__CRC32__",
-            Self::Xsave => "__XSAVE__",
-            Self::Fxsr => "__FXSR__",
-            Self::Sahf => "__LAHF_SAHF__",
-            Self::Cx16 => "__GCC_HAVE_SYNC_COMPARE_AND_SWAP_16",
-            Self::Avx => "__AVX__",
-            Self::Avx2 => "__AVX2__",
-            Self::Fma => "__FMA__",
-            Self::F16c => "__F16C__",
-            Self::Avx512f => "__AVX512F__",
-            Self::Avx512bw => "__AVX512BW__",
-            Self::Avx512cd => "__AVX512CD__",
-            Self::Avx512dq => "__AVX512DQ__",
-            Self::Avx512vl => "__AVX512VL__",
-            Self::Bmi => "__BMI__",
-            Self::Bmi2 => "__BMI2__",
-            Self::Lzcnt => "__LZCNT__",
-            Self::Movbe => "__MOVBE__",
-        }
-    }
-
     fn implies(self, rules: Rules) -> X86Features {
         match self {
             Self::Avx if rules == Rules::Gcc => X86Features::of(&[Self::Sse42, Self::Xsave]),
             Self::Avx512f if rules == Rules::Gcc => X86Features::of(&[Self::Avx2]),
-            Self::Sse2 => X86Features::of(&[Self::Sse]),
-            Self::Sse3 => X86Features::of(&[Self::Sse2]),
-            Self::Ssse3 => X86Features::of(&[Self::Sse3]),
-            Self::Sse41 => X86Features::of(&[Self::Ssse3]),
-            Self::Sse42 => X86Features::of(&[Self::Sse41]),
-            Self::Avx => X86Features::of(&[Self::Sse42]),
-            Self::Avx2 | Self::Fma | Self::F16c => X86Features::of(&[Self::Avx]),
-            Self::Avx512f => X86Features::of(&[Self::Avx2, Self::Fma, Self::F16c]),
-            Self::Avx512bw | Self::Avx512cd | Self::Avx512dq | Self::Avx512vl => {
-                X86Features::of(&[Self::Avx512f])
-            }
-            _ => X86Features::default(),
+            _ => X86Features(self.clang_implies()),
         }
     }
 
-    fn bit(self) -> u32 {
+    fn bit(self) -> u128 {
         1 << self as u32
     }
 
@@ -167,7 +68,7 @@ impl X86Feature {
 }
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
-pub struct X86Features(u32);
+pub struct X86Features(u128);
 
 impl X86Features {
     fn of(features: &[X86Feature]) -> Self {
@@ -215,25 +116,16 @@ impl X86Features {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum X86Arch {
-    Pentium4,
-    X86_64,
-    X86_64V2,
-    X86_64V3,
-    X86_64V4,
-}
+pub struct X86Arch(usize);
 
 impl FromStr for X86Arch {
     type Err = String;
 
     fn from_str(name: &str) -> Result<Self, Self::Err> {
-        match name {
-            "x86-64" => Ok(Self::X86_64),
-            "x86-64-v2" => Ok(Self::X86_64V2),
-            "x86-64-v3" => Ok(Self::X86_64V3),
-            "x86-64-v4" => Ok(Self::X86_64V4),
-            _ => Err(format!("unsupported x86 architecture: {name}")),
-        }
+        CPUS.iter()
+            .position(|cpu| cpu.name == name)
+            .map(Self)
+            .ok_or_else(|| format!("unsupported x86 architecture: {name}"))
     }
 }
 
@@ -241,34 +133,29 @@ impl X86Arch {
     fn default_for(family: TargetFamily, rules: Rules) -> Self {
         match (family, rules) {
             // gcc follows the multilib x86_64 build our i686 snapshot comes from, whose -m32 defaults to x86-64
-            (TargetFamily::X86, Rules::Clang) => Self::Pentium4,
-            _ => Self::X86_64,
+            (TargetFamily::X86, Rules::Clang) => Self(PENTIUM4),
+            _ => Self(X86_64),
         }
+    }
+
+    fn cpu(self) -> &'static X86Cpu {
+        &CPUS[self.0]
     }
 
     fn features(self) -> X86Features {
-        use X86Feature::*;
-        let base = X86Features::of(&[Mmx, Sse2, Fxsr]);
-        let level = match self {
-            Self::Pentium4 | Self::X86_64 => X86Features::default(),
-            Self::X86_64V2 => X86Features::of(&[Cx16, Sahf, Popcnt, Crc32, Sse42]),
-            Self::X86_64V3 => X86Features::of(&[
-                Cx16, Sahf, Popcnt, Crc32, Avx2, Bmi, Bmi2, F16c, Fma, Lzcnt, Movbe, Xsave,
-            ]),
-            Self::X86_64V4 => X86Features::of(&[
-                Cx16, Sahf, Popcnt, Crc32, Avx2, Bmi, Bmi2, F16c, Fma, Lzcnt, Movbe, Xsave,
-                Avx512f, Avx512bw, Avx512cd, Avx512dq, Avx512vl,
-            ]),
-        };
-        base.union(level).closure(Rules::Clang)
+        X86Features(self.cpu().features)
     }
 
-    fn cpu_macros(self) -> &'static [&'static str] {
-        match self {
-            Self::Pentium4 => &["__pentium4", "__pentium4__", "__tune_pentium4__"],
-            Self::X86_64 => &["__k8", "__k8__", "__tune_k8__"],
-            Self::X86_64V2 | Self::X86_64V3 | Self::X86_64V4 => &[],
-        }
+    fn is_level(self) -> bool {
+        [X86_64, X86_64_V2, X86_64_V3, X86_64_V4].contains(&self.0)
+    }
+
+    pub fn long_mode(self) -> bool {
+        self.cpu().long_mode
+    }
+
+    pub fn name(self) -> &'static str {
+        self.cpu().name
     }
 }
 
@@ -298,6 +185,50 @@ pub struct X86IsaRequest {
 impl X86IsaRequest {
     pub fn set(&mut self, feature: X86Feature, enabled: bool) {
         self.flags.push((feature, enabled));
+    }
+
+    pub fn check(
+        &self,
+        family: TargetFamily,
+        arch: Option<X86Arch>,
+        flavor: CompilerFlavor,
+    ) -> Result<(), String> {
+        if let Some(arch) = arch {
+            if family == TargetFamily::X86_64 && !arch.long_mode() {
+                return Err(format!(
+                    "CPU `{}` does not support 64-bit mode",
+                    arch.name()
+                ));
+            }
+            if flavor == CompilerFlavor::Gcc && !arch.is_level() {
+                return Err(format!(
+                    "x86 architecture `{}` is only emulated for the clang flavor",
+                    arch.name()
+                ));
+            }
+        }
+        if family == TargetFamily::X86
+            && let Some((feature, _)) = self
+                .flags
+                .iter()
+                .find(|(feature, on)| *on && feature.long_mode_only())
+        {
+            return Err(format!(
+                "x86 feature `{}` is only supported in 64-bit mode",
+                feature.spelling()
+            ));
+        }
+        match self
+            .flags
+            .iter()
+            .find(|(feature, _)| flavor == CompilerFlavor::Gcc && !GCC_FEATURES.contains(feature))
+        {
+            Some((feature, _)) => Err(format!(
+                "x86 feature `{}` is only emulated for the clang flavor",
+                feature.spelling()
+            )),
+            None => Ok(()),
+        }
     }
 
     fn fold(&self, rules: Rules) -> (X86Features, X86Features) {
@@ -371,8 +302,8 @@ impl X86Isa {
     pub fn predefines(self, family: TargetFamily, flavor: CompilerFlavor) -> Vec<String> {
         let gcc = flavor == CompilerFlavor::Gcc;
         let cpu_macros = match self.arch {
-            X86Arch::X86_64V2 | X86Arch::X86_64V3 | X86Arch::X86_64V4 if gcc => &["__k8", "__k8__"],
-            arch => arch.cpu_macros(),
+            arch if gcc && arch.is_level() => &["__k8", "__k8__"],
+            arch => arch.cpu().macros,
         };
         let mut defines: Vec<String> = cpu_macros
             .iter()
@@ -386,7 +317,7 @@ impl X86Isa {
                 _ => self.features.contains(feature),
             };
             if present {
-                defines.push(format!("{}=1", feature.macro_name()));
+                defines.extend(feature.macros().iter().map(|name| format!("{name}=1")));
             }
         }
         // gcc defaults to -mfpmath=387 on 32-bit x86

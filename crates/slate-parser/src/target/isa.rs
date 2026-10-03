@@ -68,6 +68,7 @@ impl TargetIsa {
                     Some(March::X86(arch)) => Some(arch),
                     Some(March::Arm(_)) => return Err("expected an x86 architecture".into()),
                 };
+                request.x86.check(family, arch, flavor)?;
                 let isa = X86Isa::resolve(family, arch, &request.x86, flavor);
                 if isa.features.contains(X86Feature::Sse2) {
                     Ok(Self::X86(isa))

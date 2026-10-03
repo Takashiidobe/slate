@@ -10,9 +10,13 @@
 Checked-in files produced by a tool or captured from a compiler. Regenerate
 instead of editing by hand.
 
+The root `.gitignore`'s `target/` also matches `src/target/`, so a new file
+there needs `git add -f` (`x86_isa_tables.rs`).
+
 | File | Generator | Source of truth | Rerun when |
 | --- | --- | --- | --- |
 | `src/sema/clang_builtins.rs` | `tools/generate_clang_builtins.py --clang-tblgen <bin> --llvm-project <dir> --output src/sema/clang_builtins.rs` | clang's `Builtins.td`, `BuiltinsX86.td`, `BuiltinsX86_64.td` via `clang-tblgen --dump-json` | upgrading the clang oracle |
+| `src/target/x86_isa_tables.rs` | `tools/generate_x86_isa.py --llvm-tblgen <bin> --llvm-project <dir> --output src/target/x86_isa_tables.rs` | `X86.td` (features, implications, CPU feature lists) and clang's `Options.td` (accepted `-m` flags) via `llvm-tblgen --dump-json`; macro names from clang `-dM` deltas. `EXTRA_IMPLIES` and `CPU_OVERRIDES` in the script hold where clang's driver (`X86TargetParser.cpp`) differs from `X86.td`. Verify with `tools/x86_isa_diff.py` | upgrading the clang oracle or llvm-project |
 | `src/attribute_support/registered.rs` | `tools/generate_attribute_lists.py` | installed clang (per `CLANG_TRIPLES`) and gcc drivers, probed with `__has_attribute` / `__has_c_attribute` | upgrading clang or gcc, adding a probed triple |
 | `src/pp/has_checks/clang.rs` | `tools/generate_clang_pp_tables.py` | installed clang, probed with `__has_warning` over `diagtool tree` groups and `__is_identifier` over libclang-cpp identifiers in each C mode | upgrading clang |
 | `src/predefines/<compiler>-<version>_<triple>.h` | `-dM -E` capture ([adding-a-target](adding-a-target.md#steps)) | clang, gcc, `tools/cl.exe` | adding a target, upgrading a compiler |
