@@ -38,6 +38,9 @@ rewrites and code generation. Rewrites are always on: differential suites run
 `cargo build --release` (`release_build_differential`), for behavior that only
 shows up after LLVM optimization or across translation units: a `.c` file is a
 one-unit project, a directory of `.c` files is a multi-unit project.
+`tests/fixtures.library/<name>/src/` projects have no `main`: `library_differential`
+translates them as a `staticlib`, links each `tests/*.c` driver against the
+archive, and compares it with an all-native build.
 
 ## Toolchain
 

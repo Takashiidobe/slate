@@ -229,8 +229,8 @@ fn crate_manifest(
     tests: &[String],
     slate_support: bool,
     c_shims: bool,
-    autobins: bool,
     cargo_features: &BTreeSet<String>,
+    lib_crate_types: Option<&[String]>,
 ) -> String {
     let test_targets: String = tests
         .iter()
@@ -255,7 +255,18 @@ harness = false
     } else {
         ""
     };
-    let autobins_line = if autobins { "" } else { "autobins = false\n" };
+    let autobins_line = if lib_crate_types.is_none() {
+        ""
+    } else {
+        "autobins = false\n"
+    };
+    let lib_section = lib_crate_types.map_or_else(String::new, |types| {
+        let types: Vec<String> = types.iter().map(|ty| format!("\"{ty}\"")).collect();
+        format!(
+            "\n[lib]\npath = \"src/lib.rs\"\ncrate-type = [{}]\n",
+            types.join(", ")
+        )
+    });
     let bitfields_path = Path::new(env!("CARGO_MANIFEST_DIR")).join("vendor/bitfields");
     let features_section: String = if cargo_features.is_empty() {
         String::new()
@@ -272,6 +283,7 @@ name = "{package}"
 version = "0.0.0"
 edition = "2024"
 {autobins_line}
+{lib_section}
 [workspace]
 
 [dependencies]
@@ -296,8 +308,8 @@ fn write_crate_manifest(
     tests: &[String],
     slate_support: bool,
     c_shims: bool,
-    autobins: bool,
     cargo_features: &BTreeSet<String>,
+    lib_crate_types: Option<&[String]>,
 ) -> Result<(), String> {
     std::fs::write(
         crate_dir.join("Cargo.toml"),
@@ -306,8 +318,8 @@ fn write_crate_manifest(
             tests,
             slate_support,
             c_shims,
-            autobins,
             cargo_features,
+            lib_crate_types,
         ),
     )
     .map_err(|e| format!("write {}: {e}", crate_dir.join("Cargo.toml").display()))
@@ -315,11 +327,7 @@ fn write_crate_manifest(
 
 /// Scaffold a Cargo crate at `crate_dir` for translated output: `cargo init`,
 /// a manifest with the shared dependencies, and the vendored `aligned` crate.
-/// A library crate (`wants_lib`) exposes every module as `pub mod` from
-/// `lib.rs` and disables bin autodiscovery, since an incidental module named
-/// `main` must not collide with Cargo's `src/main.rs` binary detection. An
-/// executable crate keeps `src/main.rs` as its one binary entry point.
-fn init_crate(crate_dir: &Path, wants_lib: bool) -> Result<(), String> {
+fn init_crate(crate_dir: &Path, lib_crate_types: Option<&[String]>) -> Result<(), String> {
     let src_dir = crate_dir.join("src");
     std::fs::create_dir_all(&src_dir).map_err(|e| format!("create {}: {e}", src_dir.display()))?;
     let package = package_name(crate_dir);
@@ -329,18 +337,20 @@ fn init_crate(crate_dir: &Path, wants_lib: bool) -> Result<(), String> {
         &[],
         false,
         false,
-        !wants_lib,
         &BTreeSet::new(),
+        lib_crate_types,
     )?;
     write_aligned_support(crate_dir)?;
     write_bitint_support(crate_dir)?;
     write_num_complex_support(crate_dir)?;
-    if wants_lib {
-        let main_rs = crate_dir.join("src/main.rs");
-        if main_rs.exists() {
-            std::fs::remove_file(&main_rs)
-                .map_err(|e| format!("remove {}: {e}", main_rs.display()))?;
-        }
+    let stale_root = src_dir.join(if lib_crate_types.is_some() {
+        "main.rs"
+    } else {
+        "lib.rs"
+    });
+    if stale_root.exists() {
+        std::fs::remove_file(&stale_root)
+            .map_err(|e| format!("remove {}: {e}", stale_root.display()))?;
     }
     Ok(())
 }
@@ -432,6 +442,7 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
     let mut paths = Vec::new();
     let mut compile_command_paths = Vec::new();
     let mut include_args = Vec::new();
+    let mut crate_types = Vec::new();
     let current_dir = std::env::current_dir().map_err(|e| format!("current directory: {e}"))?;
     let mut index = 0;
     while index < args.len() {
@@ -442,6 +453,20 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
                     .get(index)
                     .ok_or_else(|| "--compile-commands requires a file".to_string())?;
                 compile_command_paths.push(PathBuf::from(commands));
+            }
+            "--crate-type" => {
+                index += 1;
+                let types = args.get(index).ok_or_else(|| {
+                    "--crate-type requires rlib, staticlib, or cdylib".to_string()
+                })?;
+                for ty in types.split(',') {
+                    if !matches!(ty, "rlib" | "staticlib" | "cdylib") {
+                        return Err(format!(
+                            "unknown crate type {ty}: expected rlib, staticlib, or cdylib"
+                        ));
+                    }
+                    crate_types.push(ty.to_string());
+                }
             }
             flag if flag.starts_with('-') => {
                 let (option, dir) = match compile_commands::path_option(flag) {
@@ -479,7 +504,7 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
     for command in &mut commands {
         command.args.extend(include_args.iter().cloned());
     }
-    translate_slate_project(Path::new(paths[1]), commands)
+    translate_slate_project(Path::new(paths[1]), commands, &crate_types)
 }
 
 fn slate_job_count() -> usize {
@@ -616,6 +641,7 @@ fn imported_commons(units: &[SlateUnit]) -> BTreeMap<String, BTreeSet<String>> {
 fn translate_slate_project(
     crate_dir: &Path,
     commands: Vec<compile_commands::CompileCommand>,
+    crate_types: &[String],
 ) -> Result<String, String> {
     use slate::frontend::{self, lowerer};
     let units = parse_slate_units(commands)?;
@@ -630,13 +656,25 @@ fn translate_slate_project(
         .map(|unit| unit.stem.as_str())
         .collect();
     let root = match roots.as_slice() {
-        [root] => root.to_string(),
-        [] => return Err("slate frontend does not yet support library projects".into()),
+        [root] => Some(root.to_string()),
+        [] => None,
         _ => return Err(format!("multiple units define main: {}", roots.join(", "))),
     };
-    if root != "main" && units.iter().any(|unit| unit.stem == "main") {
-        return Err("a non-root unit maps to module main".into());
-    }
+    let lib_crate_types = match &root {
+        Some(root) => {
+            if !crate_types.is_empty() {
+                return Err(format!(
+                    "--crate-type applies only to library projects, but {root} defines main"
+                ));
+            }
+            if root != "main" && units.iter().any(|unit| unit.stem == "main") {
+                return Err("a non-root unit maps to module main".into());
+            }
+            None
+        }
+        None if crate_types.is_empty() => Some(vec!["rlib".to_string()]),
+        None => Some(crate_types.to_vec()),
+    };
     let mut imported = imported_commons(&units);
     let jobs: Vec<_> = units
         .iter()
@@ -682,7 +720,7 @@ fn translate_slate_project(
         })
         .collect();
 
-    init_crate(crate_dir, false)?;
+    init_crate(crate_dir, lib_crate_types.as_deref())?;
     let crate_src = crate_dir.join("src");
     std::fs::create_dir_all(&crate_src)
         .map_err(|e| format!("create {}: {e}", crate_src.display()))?;
@@ -690,7 +728,7 @@ fn translate_slate_project(
     let mut shim_names = BTreeSet::new();
     let children: Vec<rust_ast::Item> = programs
         .iter()
-        .filter(|(stem, _)| *stem != root)
+        .filter(|(stem, _)| root.as_ref() != Some(stem))
         .map(|(stem, _)| rust_ast::Item::Mod {
             name: rust_ast::Ident::new(format!("__slate_unit_{stem}")),
             path: Some(format!("{stem}.rs")),
@@ -721,7 +759,7 @@ fn translate_slate_project(
                 .into_iter()
                 .filter(|name| name.starts_with("__slate_")),
         );
-        let file = if stem == root {
+        let file = if root.as_ref() == Some(&stem) {
             let mut crate_attrs: Vec<_> = rust_features
                 .iter()
                 .copied()
@@ -743,6 +781,16 @@ fn translate_slate_project(
             stem
         };
         outputs.push((crate_src.join(file).with_extension("rs"), program));
+    }
+    if root.is_none() {
+        let crate_attrs = rust_features
+            .iter()
+            .copied()
+            .map(rust_ast::CrateAttr::Feature)
+            .collect();
+        let mut items = vec![rust_ast::Item::CrateAttrs(crate_attrs)];
+        items.extend(children);
+        outputs.push((crate_src.join("lib.rs"), rust_ast::Program { items }));
     }
     let results: Vec<Result<PathBuf, String>> = slate_worker_pool()?.install(|| {
         outputs
@@ -778,8 +826,8 @@ fn translate_slate_project(
         &[],
         false,
         has_shims,
-        true,
         &cargo_features,
+        lib_crate_types.as_deref(),
     )?;
     Ok(written
         .into_iter()

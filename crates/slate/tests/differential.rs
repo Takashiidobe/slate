@@ -70,7 +70,7 @@ fn run_cases_with_mode(
         extra_args.extend(support::fixture_dg_additional_options(&f.path));
         let result = if project {
             let crate_dir = tmp.join(&f.name);
-            translate_fixture_project(std::slice::from_ref(&f.path), &crate_dir, extra_args)
+            translate_fixture_project(std::slice::from_ref(&f.path), &crate_dir, extra_args, &[])
                 .and_then(|()| {
                     std::fs::copy(crate_dir.join("src/main.rs"), &generated)
                         .map(|_| ())
@@ -107,6 +107,7 @@ fn translate_fixture_project(
     sources: &[PathBuf],
     crate_dir: &Path,
     extra_args: Vec<String>,
+    translate_args: &[&str],
 ) -> Result<(), String> {
     std::fs::create_dir_all(crate_dir).expect("create project directory");
     let database = crate_dir.join("compile_commands.json");
@@ -125,6 +126,7 @@ fn translate_fixture_project(
     std::fs::write(&database, serde_json::to_vec(&entries).unwrap()).unwrap();
     let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
         .arg("translate-project")
+        .args(translate_args)
         .arg("--compile-commands")
         .arg(database)
         .arg(directory)
@@ -240,6 +242,7 @@ fn release_build_differential() {
                 sources,
                 &crate_dir,
                 support::fixture_dg_options(&sources[0]),
+                &[],
             )?;
             let rs_bin = support::build_project_release(&crate_dir)?;
             let c_bin = work.join(format!("{name}_c"));
@@ -254,6 +257,78 @@ fn release_build_differential() {
             let c = support::run_with_config(&c_bin, &config, &work)?;
             let r = support::run_with_config(&rs_bin, &config, &work)?;
             support::compare_runs(&c, &r, false)
+        })();
+        result.err().map(|error| format!("[{name}] {error}"))
+    })
+    .into_iter()
+    .flatten()
+    .collect();
+    assert!(failures.is_empty(), "{}", failures.join("\n\n"));
+}
+
+fn c_sources_in(dir: &Path) -> Vec<PathBuf> {
+    let mut sources: Vec<PathBuf> = std::fs::read_dir(dir)
+        .into_iter()
+        .flatten()
+        .filter_map(|entry| entry.ok().map(|entry| entry.path()))
+        .filter(|source| source.extension().is_some_and(|ext| ext == "c"))
+        .collect();
+    sources.sort();
+    sources
+}
+
+#[test]
+fn library_differential() {
+    let work = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-generated/library");
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures.library");
+    let selected = std::env::var("SLATE_DIFF_FIXTURE").ok();
+    let mut projects: Vec<(String, PathBuf)> = std::fs::read_dir(&root)
+        .expect("read library fixtures")
+        .filter_map(|entry| {
+            let path = entry.ok()?.path();
+            let name = path.file_name()?.to_string_lossy().into_owned();
+            (path.join("src").is_dir() && selected.as_ref().is_none_or(|s| *s == name))
+                .then_some((name, path))
+        })
+        .collect();
+    projects.sort();
+    let failures: Vec<_> = support::parallel_map(&projects, |(name, project)| {
+        let src = project.join("src");
+        let sources = c_sources_in(&src);
+        let crate_dir = work.join(name);
+        let result = (|| {
+            translate_fixture_project(
+                &sources,
+                &crate_dir,
+                Vec::new(),
+                &["--crate-type", "staticlib"],
+            )?;
+            let archive = support::build_project_staticlib(&crate_dir)?;
+            for driver in c_sources_in(&project.join("tests")) {
+                let stem = driver.file_stem().unwrap().to_string_lossy().into_owned();
+                let c_bin = work.join(format!("{name}_{stem}_c"));
+                let rs_bin = work.join(format!("{name}_{stem}_rs"));
+                let mut native = sources.clone();
+                native.push(driver.clone());
+                support::compile_c_multi_with_std_include_and_args(
+                    &native,
+                    &c_bin,
+                    "c23",
+                    Some(&src),
+                    &[],
+                )?;
+                support::link_c_with_archive(
+                    std::slice::from_ref(&driver),
+                    &archive,
+                    &rs_bin,
+                    Some(&src),
+                )?;
+                let config = support::RunConfig::default();
+                let c = support::run_with_config(&c_bin, &config, &work)?;
+                let r = support::run_with_config(&rs_bin, &config, &work)?;
+                support::compare_runs(&c, &r, false).map_err(|e| format!("{stem}: {e}"))?;
+            }
+            Ok::<(), String>(())
         })();
         result.err().map(|error| format!("[{name}] {error}"))
     })

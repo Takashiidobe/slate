@@ -632,6 +632,60 @@ pub fn build_project_release(crate_dir: &Path) -> Result<PathBuf, String> {
     }
 }
 
+pub fn build_project_staticlib(crate_dir: &Path) -> Result<PathBuf, String> {
+    let output = Command::new(cargo())
+        .args([
+            "build",
+            "--release",
+            "--quiet",
+            "--message-format=json",
+            "--manifest-path",
+        ])
+        .arg(crate_dir.join("Cargo.toml"))
+        .arg("--target-dir")
+        .arg(test_target_dir_for_project(crate_dir))
+        .output()
+        .map_err(|e| format!("spawn {}: {e}", cargo()))?;
+    let build = parse_batch_build(&output);
+    let archive = String::from_utf8_lossy(&output.stdout)
+        .lines()
+        .filter_map(|line| serde_json::from_str::<serde_json::Value>(line).ok())
+        .filter(|message| message["reason"].as_str() == Some("compiler-artifact"))
+        .flat_map(|message| message["filenames"].as_array().cloned().unwrap_or_default())
+        .filter_map(|name| name.as_str().map(PathBuf::from))
+        .find(|name| name.extension().is_some_and(|ext| ext == "a"));
+    match archive {
+        Some(archive) if output.status.success() => Ok(archive),
+        _ => Err(format!("Rust staticlib build failed:\n{}", build.stderr)),
+    }
+}
+
+pub fn link_c_with_archive(
+    srcs: &[PathBuf],
+    archive: &Path,
+    out: &Path,
+    include_dir: Option<&Path>,
+) -> Result<(), String> {
+    let output = Command::new(cc())
+        .args(["-O0", "-std=c23", "-o"])
+        .arg(out)
+        .args(srcs)
+        .args(include_dir.map(|dir| format!("-I{}", dir.display())))
+        .arg(archive)
+        .args(["-lm", "-lpthread", "-ldl"])
+        .output()
+        .map_err(|e| format!("spawn {}: {e}", cc()))?;
+    if output.status.success() {
+        Ok(())
+    } else {
+        Err(format!(
+            "C link against {} failed:\n{}",
+            archive.display(),
+            String::from_utf8_lossy(&output.stderr)
+        ))
+    }
+}
+
 fn parse_batch_build(output: &std::process::Output) -> BatchBuild {
     let mut build = BatchBuild {
         artifacts: BTreeMap::new(),
