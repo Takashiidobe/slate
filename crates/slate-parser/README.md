@@ -107,12 +107,14 @@ C projects that slate-parser can parse with `--flavor=clang` on
 | [curl](https://curl.se)                              | `5b06840`                        |
 | [Redis](https://redis.io)                            | `e1d7d50`                        |
 | [libuv](https://libuv.org)                           | `f87c8e4`                        |
+| [nginx](https://nginx.org)                           | `5f54125`                        |
 | [Mbed TLS](https://github.com/Mbed-TLS/mbedtls)      | `522e2e4`                        |
 | [SQLite](https://sqlite.org)                         | `version-3.53.0-768-g0eaef28cf2` |
 | [PCRE2](https://github.com/PCRE2Project/pcre2)       | `a2b146a`                        |
 | [Lua](https://www.lua.org)                           | `v5.5.1`                         |
 | [libexpat](https://libexpat.github.io)               | `R_2_8_2-51-gdfdbaadf`           |
 | [giflib](https://giflib.sourceforge.net)             | `6.1.3-4-ga8e3114`               |
+| [libpng](https://www.libpng.org/pub/png/libpng.html) | `d1d0abe`                        |
 | [cJSON](https://github.com/DaveGamble/cJSON)         | `fb16e5c`                        |
 | [libyaml](https://github.com/yaml/libyaml)           | `0.2.5-16-g893682b`              |
 | [zlib](https://zlib.net)                             | `e3dc0a8`                        |

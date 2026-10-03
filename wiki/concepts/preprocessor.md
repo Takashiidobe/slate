@@ -167,6 +167,11 @@ token plus an interned `HideSet`; file tokens start empty.
   omitted in gnu modes only. msvc's traditional preprocessor drops a comma
   before any `__VA_ARGS__` that is empty after expansion, with or without
   `##`.
+- GNU named variadics (`#define F(fmt, args...)`): `#define` keeps `args`
+  out of the fixed parameters and rewrites its uses in the replacement to
+  `__VA_ARGS__`, so arity, `#`, `##` and comma elision share the
+  `__VA_ARGS__` paths. Linux's `bpf.h` (`___BPF_FUNC_MAPPER(FN, ctx...)`)
+  depends on it.
 - The first replacement token inherits the invocation's leading space.
 - `#if`, `#include`, `#embed` and `#line` operands expand with
   `expand_isolated` too (`expand_macros`), so they never read past the

@@ -59,7 +59,7 @@ impl Preprocessor<'_> {
         let src = self.source(directive.loc.file);
         let rest = &directive.arguments[1..];
         let name_end = name_token.spelling.offset + name_token.spelling.length;
-        let (parameters, variadic, replacement) = match rest.first() {
+        let (parameters, variadic, named_variadic, replacement) = match rest.first() {
             Some(open) if open.value == Token::LParen && open.spelling.offset == name_end => {
                 let close = rest
                     .iter()
@@ -67,20 +67,40 @@ impl Preprocessor<'_> {
                     .ok_or_else(|| {
                         PPFailure::at(open.spelling, PPErrorKind::ExpectedParametersClose)
                     })?;
+                let list = &rest[1..close];
                 let mut parameters = Vec::new();
                 let mut variadic = false;
-                for token in &rest[1..close] {
+                let mut named_variadic = None;
+                for (index, token) in list.iter().enumerate() {
                     match &token.value {
                         Token::Comma => {}
                         Token::Ellipsis => variadic = true,
+                        _ if list
+                            .get(index + 1)
+                            .is_some_and(|next| next.value == Token::Ellipsis) =>
+                        {
+                            named_variadic = identifier(src, token);
+                        }
                         _ => parameters.extend(identifier(src, token)),
                     }
                 }
-                (Some(parameters), variadic, &rest[close + 1..])
+                (
+                    Some(parameters),
+                    variadic,
+                    named_variadic,
+                    &rest[close + 1..],
+                )
             }
-            _ => (None, false, rest),
+            _ => (None, false, None, rest),
         };
         let mut replacement = replacement.to_vec();
+        if let Some(named) = named_variadic {
+            for token in &mut replacement {
+                if identifier(src, token).as_deref() == Some(named.as_str()) {
+                    token.value = Token::Ident("__VA_ARGS__".into());
+                }
+            }
+        }
         replacement.dedup_by(|next, previous| {
             next.value == Token::HashHash && previous.value == Token::HashHash
         });

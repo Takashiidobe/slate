@@ -24,7 +24,7 @@ import pp_diff
 ROOT = Path(__file__).resolve().parents[1]
 SLATE = ROOT.parents[1] / "target/test-cache/release/slate-parser"
 PROVIDERS = {"zlib": ["", "build-{flavor}"]}
-HOST_INCLUDE_DIRS = {"pcre2": ["/usr/include"], "redis": ["/usr/include"]}
+HOST_INCLUDE_DIRS = {"nginx": ["/usr/include"], "pcre2": ["/usr/include"], "redis": ["/usr/include"]}
 PROJECTS = {
     "cJSON": "https://github.com/DaveGamble/cJSON",
     "chibicc": "https://github.com/rui314/chibicc",
