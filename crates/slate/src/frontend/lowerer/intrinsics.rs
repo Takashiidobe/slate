@@ -24,7 +24,20 @@ pub(super) fn builtin_intrinsic(
         "__builtin_bswap16" | "__builtin_bswap32" | "__builtin_bswap64" => Some("llvm.bswap"),
         _ => None,
     };
-    let target_intrinsics = match module.target.family {
+    catalog(module.target.family).find(|intrinsic| {
+        intrinsic.builtins.contains(&function.name.as_str()) || explicit == Some(intrinsic.name)
+    })
+}
+
+pub(super) fn named_intrinsic(
+    family: TargetFamily,
+    name: &str,
+) -> Option<&'static IntrinsicSignature> {
+    catalog(family).find(|intrinsic| intrinsic.name == name)
+}
+
+fn catalog(family: TargetFamily) -> impl Iterator<Item = &'static IntrinsicSignature> {
+    let target_intrinsics = match family {
         TargetFamily::X86 | TargetFamily::X86_64 => intrinsics_table::X86_INTRINSICS,
         TargetFamily::AArch64 => intrinsics_table::AARCH64_INTRINSICS,
         TargetFamily::Arm32 => intrinsics_table::ARM_INTRINSICS,
@@ -32,9 +45,6 @@ pub(super) fn builtin_intrinsic(
     target_intrinsics
         .iter()
         .chain(intrinsics_table::GENERAL_INTRINSICS)
-        .find(|intrinsic| {
-            intrinsic.builtins.contains(&function.name.as_str()) || explicit == Some(intrinsic.name)
-        })
 }
 
 pub(super) fn simd_type(element: rust::Type, lanes: u64) -> Option<rust::Type> {
@@ -146,6 +156,10 @@ fn resolve_llvm_type(name: &str, overloads: &[rust::Type]) -> Option<rust::Type>
     if let Some(index) = name.strip_prefix("match:") {
         return overloads.get(index.parse::<usize>().ok()?).cloned();
     }
+    if let Some(index) = name.strip_prefix("element:") {
+        let (element, _) = simd_parts(overloads.get(index.parse::<usize>().ok()?)?)?;
+        return Some(element.clone());
+    }
     if let Some(vector) = name.strip_prefix('<').and_then(|s| s.strip_suffix('>')) {
         let (lanes, element) = vector.split_once(" x ")?;
         return simd_type(resolve_llvm_type(element, overloads)?, lanes.parse().ok()?);
@@ -245,13 +259,13 @@ fn constant_argument(value: &ir::Value) -> bool {
 impl FunctionLowerer<'_, '_> {
     pub(super) fn lower_intrinsic(
         &mut self,
-        id: BindingId,
+        label: &str,
         intrinsic: &IntrinsicSignature,
         arguments: &[ir::Value],
         return_type: &ir::Type,
     ) -> Result<Expr> {
         let unsupported = || Construct::Function {
-            name: self.tables.names[&id].rust.clone(),
+            name: label.to_owned(),
             detail: format!(
                 "intrinsic {} requires unsupported signature adaptation",
                 intrinsic.name

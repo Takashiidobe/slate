@@ -48,6 +48,36 @@ impl Lowerer {
         signature: QualType,
         arguments: &[Expr],
     ) -> Result<Operand, ResolveError> {
+        let (returned, ty, lowered) = self.call_arguments(e, signature, arguments)?;
+        self.lowered_call(e, callee, signature, (returned, ty, lowered))
+    }
+
+    pub(super) fn lowered_call(
+        &mut self,
+        e: &Expr,
+        callee: Callee,
+        signature: QualType,
+        (returned, ty, lowered): (QualType, Type, Vec<Value>),
+    ) -> Result<Operand, ResolveError> {
+        let abi = self.c_abi_signature(signature, &ty, Some(&lowered))?;
+        Ok(self.operand(
+            e,
+            returned,
+            ValueKind::Call {
+                callee,
+                signature: ty,
+                abi,
+                arguments: lowered,
+            },
+        ))
+    }
+
+    pub(super) fn call_arguments(
+        &mut self,
+        e: &Expr,
+        signature: QualType,
+        arguments: &[Expr],
+    ) -> Result<(QualType, Type, Vec<Value>), ResolveError> {
         let (returned, params, _, _) = self
             .types
             .ctypes
@@ -98,17 +128,7 @@ impl Lowerer {
             };
             lowered.push(value);
         }
-        let abi = self.c_abi_signature(signature, &ty, Some(&lowered))?;
-        Ok(self.operand(
-            e,
-            returned,
-            ValueKind::Call {
-                callee,
-                signature: ty,
-                abi,
-                arguments: lowered,
-            },
-        ))
+        Ok((returned, ty, lowered))
     }
 
     pub(super) fn builtin_declaration(
@@ -210,16 +230,27 @@ impl Lowerer {
         let Some(signature) = signature else {
             return Ok(None);
         };
+        let mut lowered = None;
+        if let Some(expansion) = super::builtins::expansion(builtin) {
+            let parts = self.call_arguments(e, signature, arguments)?;
+            match self.expand_builtin(e, expansion, signature, parts)? {
+                Ok(value) => {
+                    self.module
+                        .annotate(&value.value.node, [("c_builtin".into(), name)]);
+                    return Ok(Some(value));
+                }
+                Err(parts) => lowered = Some(parts),
+            }
+        }
         let id = match declaration {
             Some(id) => id,
             None => self.builtin_declaration(e, builtin, signature)?,
         };
-        Ok(Some(self.call(
-            e,
-            Callee::Direct(id),
-            signature,
-            arguments,
-        )?))
+        let value = match lowered {
+            Some(parts) => self.lowered_call(e, Callee::Direct(id), signature, parts)?,
+            None => self.call(e, Callee::Direct(id), signature, arguments)?,
+        };
+        Ok(Some(value))
     }
 
     fn custom_builtin(
@@ -1787,7 +1818,12 @@ impl Lowerer {
         }
     }
 
-    fn captured(&mut self, e: &Expr, extents: Vec<(BindingId, Value)>, value: Value) -> Value {
+    pub(super) fn captured(
+        &mut self,
+        e: &Expr,
+        extents: Vec<(BindingId, Value)>,
+        value: Value,
+    ) -> Value {
         extents
             .into_iter()
             .rev()

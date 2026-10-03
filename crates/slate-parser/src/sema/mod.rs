@@ -25,6 +25,7 @@ mod type_of;
 mod typer;
 pub mod types;
 mod validate;
+mod vector_builtins;
 
 pub use ctype::compat::PointerMerge;
 pub use validate::{SemaError, SemaErrors};

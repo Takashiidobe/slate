@@ -112,6 +112,8 @@ renderType(ArrayRef<IITDescriptor> descs, unsigned &i) {
   }
   case IITDescriptor::Match:
     return "match:" + std::to_string(d.getOverloadIndex());
+  case IITDescriptor::VecElement:
+    return "element:" + std::to_string(d.getOverloadIndex());
   case IITDescriptor::Vector: {
     if (d.VectorWidth.isScalable()) return std::nullopt;
     auto element = renderType(descs, i);

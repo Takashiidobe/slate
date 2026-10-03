@@ -203,6 +203,72 @@ pub(super) fn custom_builtin(builtin: &ClangBuiltin) -> Option<CustomBuiltin> {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(super) enum Expansion {
+    Reduce(Reduction),
+    Popcount,
+    Max,
+    Min,
+    Fma,
+    Extract,
+    TernaryLogic,
+    FloatReduce(ArithOp),
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(super) enum Reduction {
+    Add,
+    Mul,
+    And,
+    Or,
+    Xor,
+    Max,
+    Min,
+    Maximum,
+    Minimum,
+}
+
+pub(super) fn expansion(builtin: &ClangBuiltin) -> Option<Expansion> {
+    Some(match builtin.record {
+        "ReduceAdd" => Expansion::Reduce(Reduction::Add),
+        "ReduceMul" => Expansion::Reduce(Reduction::Mul),
+        "ReduceAnd" => Expansion::Reduce(Reduction::And),
+        "ReduceOr" => Expansion::Reduce(Reduction::Or),
+        "ReduceXor" => Expansion::Reduce(Reduction::Xor),
+        "ReduceMax" => Expansion::Reduce(Reduction::Max),
+        "ReduceMin" => Expansion::Reduce(Reduction::Min),
+        "ReduceMaximum" => Expansion::Reduce(Reduction::Maximum),
+        "ReduceMinimum" => Expansion::Reduce(Reduction::Minimum),
+        "ElementwisePopcount" => Expansion::Popcount,
+        "ElementwiseMax" => Expansion::Max,
+        "ElementwiseMin" => Expansion::Min,
+        "ElementwiseFma" => Expansion::Fma,
+        "extract128i256"
+        | "vextractf128_pd256"
+        | "vextractf128_ps256"
+        | "vextractf128_si256"
+        | "extractf32x4_mask"
+        | "extracti32x4_mask"
+        | "extractf64x4_mask"
+        | "extracti64x4_mask"
+        | "extractf32x8_mask"
+        | "extracti32x8_mask"
+        | "extractf64x2_512_mask"
+        | "extracti64x2_512_mask"
+        | "extractf32x4_256_mask"
+        | "extracti32x4_256_mask"
+        | "extractf64x2_256_mask"
+        | "extracti64x2_256_mask" => Expansion::Extract,
+        "pternlogd128_mask" | "pternlogd256_mask" | "pternlogd512_mask" | "pternlogq128_mask"
+        | "pternlogq256_mask" | "pternlogq512_mask" | "pternlogd128_maskz"
+        | "pternlogd256_maskz" | "pternlogd512_maskz" | "pternlogq128_maskz"
+        | "pternlogq256_maskz" | "pternlogq512_maskz" => Expansion::TernaryLogic,
+        "reduce_fadd_ps512" | "reduce_fadd_pd512" => Expansion::FloatReduce(ArithOp::Add),
+        "reduce_fmul_ps512" | "reduce_fmul_pd512" => Expansion::FloatReduce(ArithOp::Mul),
+        _ => return None,
+    })
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(super) enum OperandClass {
     Integer,
     Floating,

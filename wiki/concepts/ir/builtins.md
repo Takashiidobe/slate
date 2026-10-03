@@ -7,6 +7,7 @@
     flavor)](#redeclared-builtins-clang-flavor)
   - [MSVC implicit declarations](#msvc-implicit-declarations)
 - [Custom lowering](#custom-lowering)
+- [Vector builtin expansion](#vector-builtin-expansion)
 - [Recognized by callee name](#recognized-by-callee-name)
   - [`va_list`](#va_list)
   - [Source location and function
@@ -119,6 +120,29 @@ record through `builtins::custom_builtin`, which returns a typed
 | `__builtin_shufflevector`, `__builtin_convertvector` | see [vectors](type-families.md#vector) |
 
 Fixture: `ir_implicit_builtins.c`.
+
+## Vector builtin expansion
+
+Builtins that clang's CGBuiltin expands by hand, rather than mapping to one
+intrinsic through a `ClangBuiltin` alias, expand in sema
+(`builtins::expansion`, `sema/vector_builtins.rs`). Arguments convert through
+the prototype or derived signature first. No builtin declaration is made, so
+no extern with vector parameters reaches Slate.
+
+| Builtin | IR |
+| --- | --- |
+| `__builtin_reduce_{add,mul,and,or,xor,max,min,maximum,minimum}` | `intrinsic<llvm.vector.reduce.*>`; max/min pick `s`/`u`/`f` from the element, maximum/minimum are `fmaximum`/`fminimum` |
+| `__builtin_elementwise_{popcount,max,min,fma}` | `intrinsic<llvm.ctpop>`, `llvm.{s,u}{max,min}` or `llvm.{max,min}num`, `llvm.fma` |
+| `__builtin_ia32_extract*` / `vextractf128_*` | one-operand `shuffle` of lanes `(imm mod n) * width ..`; `_mask` forms need an all-ones constant mask, and an effectful passthrough is kept by `sequence` |
+| `__builtin_ia32_pternlog{d,q}{128,256,512}_mask[z]` | `intrinsic<llvm.x86.avx512.pternlog.*>(a, b, c, imm)` with an all-ones constant mask |
+| `__builtin_ia32_reduce_f{add,mul}_p{s,d}512(init, v)` | `init op` a halving tree: each level combines the low and high halves with a vector `add`/`mul`, ending with `lane 0` of a one-lane vector. Clang emits a `reassoc` reduction, which LLVM lowers to this order; an intrinsic call cannot carry `reassoc` |
+
+- Each tree level is bound once with `capture<%t>`, the same once-binding
+  used by GNU `a ?: b` and VLA extents, so the operand is evaluated once.
+- A builtin whose immediate or mask is not constant falls back to an ordinary
+  builtin call with the arguments that are already lowered.
+
+Fixture: `ir_vector_builtin_expansion.c`.
 
 ## Recognized by callee name
 

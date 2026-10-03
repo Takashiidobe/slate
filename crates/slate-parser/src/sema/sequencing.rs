@@ -185,6 +185,9 @@ fn walk(value: &Value, found: &mut Touches) {
                 walk(mask, found);
             }
         }
+        ValueKind::Intrinsic { arguments, .. } => {
+            arguments.iter().for_each(|argument| walk(argument, found));
+        }
         ValueKind::Capture { extent, value, .. } => {
             walk(extent, found);
             walk(value, found);

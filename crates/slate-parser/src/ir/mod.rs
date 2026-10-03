@@ -200,6 +200,10 @@ pub enum ValueKind {
         right: Option<Box<Value>>,
         mask: ShuffleMask,
     },
+    Intrinsic {
+        name: String,
+        arguments: Vec<Value>,
+    },
 }
 
 #[derive(Debug, Clone)]
@@ -651,6 +655,22 @@ impl Value {
                         f,
                         ", {}",
                         right
+                            .display_metadata(show_spans, metadata)
+                            .with_compact(compact)
+                    )?;
+                }
+                f.write_str(")")
+            }
+            ValueKind::Intrinsic { name, arguments } => {
+                write!(f, "intrinsic<{}, {name}>(", self.ty)?;
+                for (index, argument) in arguments.iter().enumerate() {
+                    if index > 0 {
+                        f.write_str(", ")?;
+                    }
+                    write!(
+                        f,
+                        "{}",
+                        argument
                             .display_metadata(show_spans, metadata)
                             .with_compact(compact)
                     )?;

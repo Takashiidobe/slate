@@ -19,7 +19,12 @@
 - General, x86, AArch64, ARM, and RISC-V sections; LLVM commit stored in the catalog.
 - LLVM and C++ dependencies apply only to regeneration.
 - Supported IIT templates retain overload constraints and references:
-  `overload:index:vector-constraint:element-constraint`, `match:index`.
+  `overload:index:vector-constraint:element-constraint`, `match:index`,
+  `element:index` (`LLVMVectorElementType`, the lane type of an overload;
+  `llvm.vector.reduce.*` results).
+- The checked-in catalog regenerates byte-for-byte from the system LLVM
+  (`--llvm-build /usr`, 23.1.1) with `--llvm-src` at the recorded commit,
+  except for 4 RISC-V `pssh*` entries that the system LLVM lacks.
 - Unsupported IIT shapes keep absent signatures and produce barriers.
 
 ## Frontend
@@ -36,6 +41,9 @@
 - Immediate arguments must have constant expression trees; Rust const blocks
   preserve that requirement through code generation.
 - Explicit C adapters cover byte swaps, fabs/copysign, and clear-cache calls.
+- Parser `intrinsic<T, llvm.name>(..)` values, produced by sema's
+  [vector builtin expansion](ir/builtins.md#vector-builtin-expansion), find
+  their entry by LLVM name and take the same path.
 - x86 f80 fabs/copysign reuse the existing long-double runtime shims.
 
 - Parser IR supplies C builtin signatures;
@@ -58,4 +66,5 @@
   function ABI remain barriers; function addresses cannot expose LLVM intrinsics.
 - Only default-address-space pointers participate in intrinsic signatures.
 - TableGen aliases cover direct builtin mappings; builtins Clang expands by
-  hand need separate lowering.
+  hand expand in sema. Unexpanded ones stay `builtin without a lowering`
+  barriers.

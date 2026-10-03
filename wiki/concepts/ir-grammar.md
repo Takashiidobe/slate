@@ -497,7 +497,8 @@ core       = "const<" type ">(" constant ")"
            | logical_op "<" type ">(" value ", " value ")"
            | "float_class<bool, test=" float_class ">(" value ")"
            | "lane<" type ">(" value ", " value ")"
-           | "shuffle<" type ", mask=" shuffle_mask ">(" value [ ", " value ] ")" ;
+           | "shuffle<" type ", mask=" shuffle_mask ">(" value [ ", " value ] ")"
+           | "intrinsic<" type ", " llvm_name ">(" [ value { ", " value } ] ")" ;
 shuffle_mask = "[" lane { ", " lane } "]" | "dynamic(" value ")" ;
 lane       = digits | "undef" ;
 constant   = int | bool | decimal_digits | float_literal | "bits=0x" hex_digits ;
@@ -522,6 +523,10 @@ reason     = "return" | "assign" | "arg" | "vararg" | "promotion"
   operand and comes from an `ext_vector` swizzle. `mask=dynamic(v)` is the
   two-operand `__builtin_shufflevector` form, whose mask is a runtime integer
   vector, not constants.
+- `intrinsic<T, llvm.name>(args)` calls an LLVM intrinsic by its unmangled
+  name (`llvm.vector.reduce.add`, `llvm.umax`); overload suffixes come from
+  the argument and result types. Only builtin expansion produces it
+  ([builtins](ir/builtins.md#vector-builtin-expansion)).
 - `float_literal` is a round-trippable decimal (`1.0`, `-0.0`, `inf`); a NaN
   prints as `bits=0x...` to keep its payload. Decimal floats keep their digit
   spelling.

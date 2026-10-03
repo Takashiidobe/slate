@@ -738,7 +738,13 @@ impl FunctionLowerer<'_, '_> {
                 arguments,
                 ..
             } if self.tables.intrinsics.contains_key(id) => {
-                self.lower_intrinsic(*id, self.tables.intrinsics[id], arguments, &value.ty)?
+                let label = self.tables.names[id].rust.clone();
+                self.lower_intrinsic(&label, self.tables.intrinsics[id], arguments, &value.ty)?
+            }
+            ValueKind::Intrinsic { name, arguments } => {
+                let intrinsic = intrinsics::named_intrinsic(self.tables.target.family, name)
+                    .ok_or_else(|| unsupported_value(value))?;
+                self.lower_intrinsic(name, intrinsic, arguments, &value.ty)?
             }
             ValueKind::Call {
                 callee: ir::Callee::Direct(id),

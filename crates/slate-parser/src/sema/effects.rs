@@ -719,6 +719,13 @@ impl Hoister {
                     lanes => lanes,
                 },
             },
+            ValueKind::Intrinsic { name, arguments } => ValueKind::Intrinsic {
+                name,
+                arguments: arguments
+                    .into_iter()
+                    .map(|argument| self.value(argument, out))
+                    .collect::<Result<_, _>>()?,
+            },
             ValueKind::Convert {
                 kind,
                 operand,
@@ -885,6 +892,9 @@ impl Hoister {
                         ShuffleMask::Lanes(_) => false,
                         ShuffleMask::Dynamic(mask) => self.effects(mask),
                     }
+            }
+            ValueKind::Intrinsic { arguments, .. } => {
+                arguments.iter().any(|argument| self.effects(argument))
             }
             ValueKind::Copy { operand, .. }
             | ValueKind::Unary { operand, .. }
