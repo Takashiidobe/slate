@@ -722,17 +722,22 @@ fn translate_slate_project(
                 .filter(|name| name.starts_with("__slate_")),
         );
         let file = if stem == root {
+            let mut crate_attrs: Vec<_> = rust_features
+                .iter()
+                .copied()
+                .map(rust_ast::CrateAttr::Feature)
+                .collect();
+            program.items.retain(|item| match item {
+                rust_ast::Item::CrateAttrs(attrs) => {
+                    crate_attrs.extend(attrs.iter().cloned());
+                    false
+                }
+                _ => true,
+            });
             program.items.splice(0..0, children.iter().cloned());
-            program.items.insert(
-                0,
-                rust_ast::Item::CrateAttrs(
-                    rust_features
-                        .iter()
-                        .copied()
-                        .map(rust_ast::CrateAttr::Feature)
-                        .collect(),
-                ),
-            );
+            program
+                .items
+                .insert(0, rust_ast::Item::CrateAttrs(crate_attrs));
             "main".to_string()
         } else {
             stem

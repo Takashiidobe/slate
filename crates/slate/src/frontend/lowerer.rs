@@ -631,9 +631,6 @@ impl<'m> ModuleLowerer<'m> {
                 rust::CrateAttr::Feature(rust::Feature::SimdFfi),
             ]);
         }
-        if !features.is_empty() {
-            items.insert(0, Item::CrateAttrs(features));
-        }
         if let Some(main) = self
             .module
             .functions
@@ -644,9 +641,13 @@ impl<'m> ModuleLowerer<'m> {
                 ir::Parameters::Prototype { fixed, .. } => fixed.len(),
                 _ => 0,
             };
-            if matches!(arity, 0 | 2) {
+            if matches!(arity, 0 | 2 | 3) {
+                features.push(rust::CrateAttr::NoMain);
                 items.push(main_wrapper(arity));
             }
+        }
+        if !features.is_empty() {
+            items.insert(0, Item::CrateAttrs(features));
         }
         Lowered {
             program: rust::Program { items },

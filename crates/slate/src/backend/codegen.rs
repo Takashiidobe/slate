@@ -482,6 +482,7 @@ impl<W: Write> Codegen<W> {
             CrateAttr::Feature(feature) => {
                 return write!(self.out, "feature({})", feature.spelling());
             }
+            CrateAttr::NoMain => return self.out.write_str("no_main"),
         };
         write!(self.out, "{kind}(")?;
         for (i, lint) in lints.iter().enumerate() {
