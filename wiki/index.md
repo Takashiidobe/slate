@@ -54,4 +54,5 @@ rewrite and fixture records, with the source revision for the former frontend.
 - [Configuration threading](concepts/configuration-threading.md)
 - [Diagnostic severity](concepts/diagnostic-severity.md)
 - [MSVC oracle](concepts/msvc-oracle.md)
+- [Inline asm parsing](concepts/inline-asm-parsing.md)
 - [MSVC inline asm](concepts/msvc-asm.md)
