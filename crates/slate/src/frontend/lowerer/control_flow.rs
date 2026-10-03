@@ -61,7 +61,7 @@ struct Graph<'a> {
     continues: HashMap<BindingId, usize>,
     cases: HashMap<BindingId, Vec<Case<'a>>>,
     defaults: HashMap<BindingId, usize>,
-    locals: Vec<(BindingId, &'a ir::Type)>,
+    locals: Vec<(BindingId, &'a ir::Type, Option<u64>)>,
 }
 
 fn children(statement: &ir::Statement) -> Vec<&[Statement]> {
@@ -362,11 +362,12 @@ impl<'a> Graph<'a> {
                 entry
             }
             ir::Statement::Temporary { id, ty, .. } => {
-                self.locals.push((*id, ty));
+                self.locals.push((*id, ty, None));
                 self.push(Node::Statement(statement, Some(next)))
             }
             ir::Statement::Let(variable) => {
-                self.locals.push((variable.id, &variable.ty));
+                self.locals
+                    .push((variable.id, &variable.ty, variable.alignment));
                 self.push(Node::Statement(statement, Some(next)))
             }
             ir::Statement::Return(_) => self.push(Node::Statement(statement, None)),
@@ -404,20 +405,27 @@ impl FunctionLowerer<'_, '_> {
         let entry = graph.list(statements, end);
         let (entry, blocks) = graph.blocks(entry);
         self.dispatch_bindings
-            .extend(graph.locals.iter().map(|(id, _)| *id));
+            .extend(graph.locals.iter().map(|(id, ..)| *id));
         let mut lowered = Vec::new();
-        for (id, ty) in graph.locals {
-            if self.tables.variably_modified(ty) {
-                return Err(unsupported_type(ty));
+        for (id, ir_ty, alignment) in graph.locals {
+            if self.tables.variably_modified(ir_ty) {
+                return Err(unsupported_type(ir_ty));
             }
-            let ty = self.lower_type(ty)?;
+            let ty = self.lower_type(ir_ty)?;
+            let stored = match self.tables.over_alignment(ir_ty, alignment) {
+                Some(alignment) => {
+                    let name = binding_name(id, &self.tables.bindings);
+                    self.align_wrapped(&name, alignment, ty.clone())?
+                }
+                None => ty.clone(),
+            };
             let storage = format!("__slate_storage_{}", id.0);
             lowered.push(Stmt::Let {
                 name: storage.clone(),
                 mutable: true,
                 ty: Some(rust::Type::Generic {
                     name: "std::mem::MaybeUninit".into(),
-                    args: vec![ty.clone()],
+                    args: vec![stored],
                 }),
                 init: Some(Expr::Call {
                     func: Box::new(Expr::Var("std::mem::MaybeUninit::uninit".into())),

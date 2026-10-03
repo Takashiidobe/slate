@@ -27,12 +27,10 @@ pub(super) fn align_wrapper(alignment: u64) -> String {
 }
 
 impl Tables<'_> {
-    pub(super) fn over_alignment(&self, variable: &ir::Variable) -> Option<u64> {
-        let alignment = variable.alignment?;
-        let abi_alignment = matches!(variable.ty, ir::Type::Array { .. })
-            && variable.alignment == self.target.large_array_alignment();
-        let (_, natural) = self.storage_of(&variable.ty)?;
-        (!abi_alignment && alignment > natural).then_some(alignment)
+    pub(super) fn over_alignment(&self, ty: &ir::Type, alignment: Option<u64>) -> Option<u64> {
+        let alignment = alignment?;
+        let (_, natural) = self.storage_of(ty)?;
+        (alignment > natural).then_some(alignment)
     }
 
     pub(super) fn is_constant_initializer(&self, value: &ir::Value) -> bool {
@@ -104,8 +102,6 @@ impl FunctionLowerer<'_, '_> {
     ) -> Result<(rust::Type, Option<Expr>)> {
         let tables = self.tables;
         let variable = &global.variable;
-        let abi_alignment = matches!(variable.ty, ir::Type::Array { .. })
-            && variable.alignment == tables.target.large_array_alignment();
         let symbol = ir::SymbolAttributes {
             visibility: global
                 .symbol
@@ -114,9 +110,7 @@ impl FunctionLowerer<'_, '_> {
             ..global.symbol.clone()
         };
         if matches!(variable.storage, ir::StorageDuration::Automatic)
-            || (variable.alignment.is_some()
-                && !abi_alignment
-                && tables.storage_of(&variable.ty).is_none())
+            || (variable.alignment.is_some() && tables.storage_of(&variable.ty).is_none())
             || (variable.access.atomic && !tables.atomic_scalar(&variable.ty))
             || symbol != ir::SymbolAttributes::default()
         {
@@ -144,22 +138,35 @@ impl FunctionLowerer<'_, '_> {
         let Some(&alignment) = tables.over_aligned.get(&variable.id) else {
             return Ok((ty, Some(init)));
         };
+        Ok((
+            self.align_wrapped(&variable.name, alignment, ty)?,
+            Some(align_wrap(alignment, init)),
+        ))
+    }
+
+    pub(super) fn align_wrapped(
+        &mut self,
+        name: &str,
+        alignment: u64,
+        ty: rust::Type,
+    ) -> Result<rust::Type> {
         self.dependencies
             .align_wrappers
             .insert(u32::try_from(alignment).map_err(|_| Construct::Global {
-                name: variable.name.clone(),
+                name: name.into(),
                 detail: format!("alignment {alignment}"),
             })?);
-        Ok((
-            rust::Type::Generic {
-                name: align_wrapper(alignment),
-                args: vec![ty],
-            },
-            Some(Expr::Call {
-                func: Box::new(Expr::Var(align_wrapper(alignment).into())),
-                args: vec![init],
-                binding: CallBinding::Generated,
-            }),
-        ))
+        Ok(rust::Type::Generic {
+            name: align_wrapper(alignment),
+            args: vec![ty],
+        })
+    }
+}
+
+pub(super) fn align_wrap(alignment: u64, value: Expr) -> Expr {
+    Expr::Call {
+        func: Box::new(Expr::Var(align_wrapper(alignment).into())),
+        args: vec![value],
+        binding: CallBinding::Generated,
     }
 }

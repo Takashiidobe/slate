@@ -19,6 +19,7 @@
 | C function pointer | `Option<unsafe extern "C-unwind" fn(...) -> R>` |
 | Variadic C function pointer | Fixed parameters followed by `...` |
 | `storage=thread` global | `#[thread_local] static mut` (crate `#![feature(thread_local)]`); exported ones add `#[unsafe(no_mangle)]`, imports are `#[thread_local]` statics in the extern block |
+| Global, local, or dispatch slot whose `align` exceeds its type's natural alignment | `__SlateAlignN<T>` (`#[repr(C, align(N))]` newtype); the place is `.0`. Includes the x86-64 ABI 16-byte alignment of arrays of 16+ bytes, which clang's vector loads rely on (`object_alignment.c`); extern declarations stay unwrapped |
 | `[visibility=default]` global | Same as no attribute (an exported static already has default visibility); hidden/protected/internal remain barriers |
 | Const-qualified address | `&raw const`; mutable addresses use `&raw mut` |
 | Volatile read / write | `ptr::read_volatile` / `ptr::write_volatile` on raw addresses |

@@ -111,7 +111,7 @@ impl FunctionLowerer<'_, '_> {
             };
         }
         let binding = Expr::Var(binding_name(id, &self.tables.bindings).as_str().into());
-        if self.tables.over_aligned.contains_key(&id) {
+        if self.tables.over_aligned.contains_key(&id) || self.aligned_locals.contains(&id) {
             Expr::TupleField {
                 base: Box::new(binding),
                 index: 0,

@@ -92,6 +92,7 @@ struct FunctionLowerer<'a, 'm> {
     temps: u32,
     hoisted: Vec<Stmt>,
     dispatch_bindings: HashSet<BindingId>,
+    aligned_locals: HashSet<BindingId>,
     old_value: Option<Expr>,
 }
 
@@ -322,7 +323,10 @@ impl<'m> ModuleLowerer<'m> {
             .iter()
             .filter(|global| global.definition)
             .filter_map(|global| {
-                Some((global.variable.id, tables.over_alignment(&global.variable)?))
+                Some((
+                    global.variable.id,
+                    tables.over_alignment(&global.variable.ty, global.variable.alignment)?,
+                ))
             })
             .collect();
         Ok(Self {
@@ -343,6 +347,7 @@ impl<'m> ModuleLowerer<'m> {
             temps: 0,
             hoisted: Vec::new(),
             dispatch_bindings: HashSet::new(),
+            aligned_locals: HashSet::new(),
             old_value: None,
         }
     }

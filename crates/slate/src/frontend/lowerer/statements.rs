@@ -100,10 +100,22 @@ impl FunctionLowerer<'_, '_> {
                         _ => zeroed(),
                     }),
                 };
+                let ty = self.lower_type(&variable.ty)?;
+                let (ty, init) = match self.tables.over_alignment(&variable.ty, variable.alignment)
+                {
+                    Some(alignment) => {
+                        self.aligned_locals.insert(variable.id);
+                        (
+                            self.align_wrapped(&variable.name, alignment, ty)?,
+                            init.map(|init| align_wrap(alignment, init)),
+                        )
+                    }
+                    None => (ty, init),
+                };
                 Stmt::Let {
                     name: binding_name(variable.id, &self.tables.bindings),
                     mutable: true,
-                    ty: Some(self.lower_type(&variable.ty)?),
+                    ty: Some(ty),
                     init,
                 }
             }
