@@ -218,6 +218,16 @@ impl FunctionLowerer<'_, '_> {
                 ordering: Some(ordering),
             } => self.lower_atomic_access(place, ordering, None)?,
             ValueKind::Read {
+                place:
+                    ir::Place {
+                        kind: PlaceKind::Binding(id),
+                        ..
+                    },
+                ordering: None,
+            } if let Some(register) = self.tables.register_globals.get(id) => {
+                self.lower_register_read(register, value)?
+            }
+            ValueKind::Read {
                 place,
                 ordering: None,
             } if place.access.volatile => Expr::Unsafe(Box::new(rust::Block {

@@ -54,7 +54,9 @@ impl FunctionLowerer<'_, '_> {
             });
         }
         match place.kind {
-            PlaceKind::Binding(id) => Ok(self.lower_binding(id)),
+            PlaceKind::Binding(id) if !tables.register_globals.contains_key(&id) => {
+                Ok(self.lower_binding(id))
+            }
             PlaceKind::Deref(ref pointer) => Ok(Expr::Unary {
                 op: rust::UnaryOp::Deref,
                 expr: Box::new(self.lower_value(pointer)?),

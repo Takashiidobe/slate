@@ -59,6 +59,7 @@ struct Tables<'m> {
     bindings: HashMap<BindingId, String>,
     strings: HashMap<BindingId, Vec<u8>>,
     statics: HashSet<BindingId>,
+    register_globals: HashMap<BindingId, &'static str>,
     over_aligned: HashMap<BindingId, u64>,
     target: &'m TargetInfo,
     metadata: &'m ir::Metadata,
@@ -240,7 +241,19 @@ impl<'m> ModuleLowerer<'m> {
         }
         let mut strings = HashMap::new();
         let mut statics = Vec::new();
+        let mut register_globals = HashMap::new();
         for global in &module.globals {
+            match register_global(global, &module.target) {
+                Some(Ok(register)) => {
+                    register_globals.insert(global.variable.id, register);
+                    continue;
+                }
+                Some(Err(error)) => {
+                    barriers.push(error.into_public(None, Site::of(global))?);
+                    continue;
+                }
+                None => {}
+            }
             match lower_string_global(global) {
                 Some(Ok(bytes)) => {
                     strings.insert(global.variable.id, bytes);
@@ -324,6 +337,7 @@ impl<'m> ModuleLowerer<'m> {
             bindings,
             strings,
             statics: statics.iter().map(|global| global.variable.id).collect(),
+            register_globals,
             over_aligned: HashMap::new(),
             target: &module.target,
             metadata: &module.metadata,

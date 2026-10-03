@@ -1,4 +1,5 @@
 use super::*;
+use slate_parser::target_info::TargetFamily;
 
 pub(super) fn lower_string_global(global: &ir::Global) -> Option<Result<Vec<u8>>> {
     if !global.variable.name.starts_with('.') {
@@ -20,6 +21,68 @@ pub(super) fn lower_string_global(global: &ir::Global) -> Option<Result<Vec<u8>>
             })
             .collect(),
     )
+}
+
+pub(super) fn register_global(
+    global: &ir::Global,
+    target: &TargetInfo,
+) -> Option<Result<&'static str>> {
+    let register = global.variable.register.as_ref()?;
+    let name = match (target.family, register.canonical) {
+        (TargetFamily::X86_64, Some("sp")) => "rsp",
+        (TargetFamily::X86_64, Some("bp")) => "rbp",
+        (TargetFamily::X86, Some("sp")) => "esp",
+        (TargetFamily::X86, Some("bp")) => "ebp",
+        _ => {
+            return Some(Err(Construct::Global {
+                name: global.variable.name.clone(),
+                detail: format!("register variable `{}`", register.spelling),
+            }
+            .into()));
+        }
+    };
+    Some(Ok(name))
+}
+
+impl FunctionLowerer<'_, '_> {
+    pub(super) fn lower_register_read(
+        &mut self,
+        register: &str,
+        value: &ir::Value,
+    ) -> Result<Expr> {
+        if !matches!(
+            self.tables.resolve_type(&value.ty),
+            ir::Type::Pointer { .. } | ir::Type::Numeric(ir::NumericType::Integer { .. })
+        ) {
+            return Err(unsupported_value(value));
+        }
+        let ty = self.lower_type(&value.ty)?;
+        let temp = self.next_temp();
+        Ok(Expr::Unsafe(Box::new(rust::Block {
+            stmts: vec![
+                Stmt::Let {
+                    name: temp.clone(),
+                    mutable: false,
+                    ty: Some(rust::Type::Prim(Prim::Usize)),
+                    init: None,
+                },
+                Stmt::InlineAsm(rust::InlineAsm {
+                    template: format!("mov {{}}, {register}"),
+                    dialect: None,
+                    operands: vec![rust::AsmOperand::Out {
+                        reg: rust::AsmReg::Class("reg".into()),
+                        late: true,
+                        value: Expr::Var(temp.as_str().into()),
+                    }],
+                    raw: false,
+                }),
+            ],
+            tail: Some(Box::new(Expr::Cast {
+                expr: Box::new(Expr::Var(temp.as_str().into())),
+                ty,
+            })),
+        })))
+    }
 }
 
 pub(super) fn align_wrapper(alignment: u64) -> String {
