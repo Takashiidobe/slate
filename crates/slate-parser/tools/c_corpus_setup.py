@@ -94,6 +94,10 @@ RECIPES = {
     "mimalloc": CMake(),
     "libdeflate": CMake(options=["-DLIBDEFLATE_BUILD_TESTS=ON"]),
     "xxHash": CMake(source="build/cmake", options=["-DDISPATCH=ON"]),
+    "oniguruma": CMake(),
+    "cglm": CMake(options=["-DCGLM_USE_TEST=ON"]),
+    "libevent": CMake(options=["-DEVENT__DISABLE_OPENSSL=ON", "-DEVENT__DISABLE_MBEDTLS=ON"]),
+    "c-ares": CMake(),
     "sqlite": Nmake(
         unix=Configure(["{source}/configure", "CC={cc}"], ["all", "testfixture"]),
         makefile="Makefile.msc",
@@ -103,6 +107,10 @@ RECIPES = {
     "tinycc": Configure(["{source}/configure", "--cc={cc}"]),
     "cpython": Configure(["{source}/configure", "CC={cc}"]),
     "libsodium": Configure(["{source}/configure", "CC={cc}"], ["check"], bootstrap=["./autogen.sh", "-s"]),
+    "jq": Configure(
+        ["{source}/configure", "CC={cc}", "--with-oniguruma=builtin", "--disable-docs"],
+        bootstrap=["autoreconf", "-i"],
+    ),
     "nginx": InTree(
         configure=["auto/configure", "--with-cc={cc}", "--builddir={build}/objs"],
         clean=["rm", "-rf", "{build}/objs"],
@@ -112,6 +120,8 @@ RECIPES = {
     "quickjs": InTree(make=["CC={cc}"]),
     "chibicc": InTree(make=["CC={cc}"]),
     "giflib": InTree(make=["CC={cc}", "MAKE=true"]),
+    "lmdb": InTree(make=["-C", "libraries/liblmdb", "CC={cc}"], clean=["make", "-C", "libraries/liblmdb", "clean"]),
+    "stb": InTree(make=["-i", "-C", "tests", "CC={cc}"], clean=["true"]),
 }
 
 

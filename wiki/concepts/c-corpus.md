@@ -65,6 +65,12 @@ python3 tools/c_corpus_setup.py [PROJECT ...] [--flavor clang|gcc|msvc ...]
 | libsodium | `autogen.sh -s` in tree, then `configure` out of tree + `make check` | none |
 | nginx | `auto/configure --builddir=build-<flavor>/objs` | none |
 | redis, lua, quickjs, chibicc, giflib | `make CC=` in tree | none |
+| oniguruma, c-ares | CMake | CMake, untested |
+| cglm | CMake, `CGLM_USE_TEST=ON` | CMake, untested |
+| libevent | CMake, OpenSSL and Mbed TLS off | CMake, untested |
+| jq | `autoreconf -i` in tree, then `configure --with-oniguruma=builtin --disable-docs` out of tree | none |
+| lmdb | `make -C libraries/liblmdb CC=` in tree | none |
+| stb | `make -i -C tests CC=` in tree: upstream's driver TUs define each header's `*_IMPLEMENTATION`; `-i` gets past the C++ TU's link failure | none |
 
 msvc covers only projects whose upstream ships a Windows build. musl,
 nginx, redis, lua, quickjs, chibicc, giflib and tinycc have no MSVC build

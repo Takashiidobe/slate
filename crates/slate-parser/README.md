@@ -130,6 +130,13 @@ C projects that slate-parser can parse with `--flavor=clang` on
 | [xxHash](https://github.com/Cyan4973/xxHash)         | `v0.7.4-1128-g680bf46`           |
 | [utf8proc](https://github.com/JuliaStrings/utf8proc) | `0075ed7`                        |
 | [yyjson](https://github.com/ibireme/yyjson)          | `757305b`                        |
+| [c-ares](https://c-ares.org)                         | `v1.31.0-404-gf4156c12`          |
+| [jq](https://jqlang.org)                             | `1.6rc2-766-gf13c1ef`            |
+| [libevent](https://libevent.org)                     | `d82464a2`                       |
+| [oniguruma](https://github.com/kkos/oniguruma)       | `v6.9.10-28-gf95747b`            |
+| [cglm](https://github.com/recp/cglm)                 | `v0.9.6-66-g58d8c15`             |
+| [stb](https://github.com/nothings/stb)               | `2c980bb`                        |
+| [lmdb](https://www.symas.com/lmdb)                   | `700e10f`                        |
 
 ## Development
 
