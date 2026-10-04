@@ -25,7 +25,9 @@ each stage is in [configuration-threading](configuration-threading.md).
   requires. Proving the runtime FP mode and lifting to plain Rust
   arithmetic is the Rust rewriter's job, not the IR's.
 - The MSVC flavor rejects every `-f…` and `-m…` flag below
-  (`msvc_rules`). Its own `/` spellings are not modeled.
+  (`Opt::accepted_by`), except the `CODEGEN_ONLY_FLAGS` rows marked
+  `ALL_FLAVORS` (`-fomit-frame-pointer`, `-flto`, `-fvisibility=`, ...).
+  Its own `/` spellings are not modeled.
 
 ## Implemented
 
@@ -46,6 +48,13 @@ each stage is in [configuration-threading](configuration-threading.md).
 | `-fstack-protector[-strong\|-all]` / `-fno-stack-protector` | gcc, clang | predefines only (`CodegenOptions::stack_protector`), last wins. clang's plain `-fstack-protector` is at least the target default (strong on Linux), read from the snapshot. clang: `__SSP__` 1, strong 2, all 3; gcc: 1, all 2, strong 3, `-fstack-protector-explicit` (gcc only) 4 |
 | `-fcf-protection[=full\|branch\|return\|none\|check]` | gcc, clang | `__CET__` on x86 only (`CodegenOptions::cf_protection`). clang: last wins. gcc: levels OR together, `none` clears branch and return but not `check` (8, gcc only) |
 | `-mcmodel=` | gcc, clang | parsed and ignored: the code model changes no IR. `__code_model_*__`/`__AARCH64_CMODEL_*__` keep the snapshot's `small`, and per-target validity is not checked |
+| `-pthread` | gcc, clang | `_REENTRANT 1`, defined ahead of `-D`/`-U` so `-U_REENTRANT` wins wherever it appears |
+| `-w` | gcc, clang, msvc | `DiagnosticOptions::ignore_warnings`, order independent: every diagnostic that is not a default error is dropped, even under `-Werror`, `-Werror=<w>` or `-pedantic-errors`. Default errors stay errors unless `-Wno-error=<w>` demotes them |
+| `-fmacro-prefix-map=OLD=NEW` / `-ffile-prefix-map=OLD=NEW` | gcc, clang | `CompilerOptions::macro_prefix_map`, applied to `__FILE__`, `__BASE_FILE__` and `#line` names. `__FILE_NAME__` takes the basename first, then remaps. A plain string prefix; an empty OLD matches every path; no `=` is an error. gcc: the last matching option wins. clang: the lexicographically greatest matching OLD wins, and the first occurrence wins on a duplicate OLD. Stored pre-sorted, so the first match applies |
+| `-f[no-]delete-null-pointer-checks` | gcc, clang | recorded as `CodegenOptions::delete_null_pointer_checks` (default on); nothing consumes it yet |
+| `-ftrivial-auto-var-init=uninitialized\|zero\|pattern` | gcc, clang | recorded as `CodegenOptions::trivial_auto_var_init`; nothing consumes it yet |
+| `-mllvm <arg>` / `-mllvm=<arg>` | clang | consumes its argument, even one starting with `-`, and ignores it |
+| codegen-only (`CODEGEN_ONLY_FLAGS`) | per row | parsed and ignored. Covers alignment, tuning, sibling calls, unrolling, red zone, retpolines and return thunks, stack-protector guard, TLS model, patchable entries, `-fexcess-precision=` (no macro change; x87 excess precision is slate-parser-6x05.38.6), diagnostic colors, LTO and section flags, and gcc's IRA and tree passes. `one_of` values are checked. Free-form values are not (`-falign-*=N`, `-mtune=`, `-fpatchable-function-entry=`, guard symbols, `--warning-suppression-mappings=` files), and `-mfunction-return=` accepts gcc's values for both flavors (clang rejects `thunk`/`thunk-inline`) |
 | `-std=` | gcc/clang | `LanguageStandard` → `StandardFeatures`, `__STDC_VERSION__` |
 | `-O` / `-O0`..`-O3` / `-Os` / `-Oz` / `-Og` | gcc, clang | predefines only; the last one wins. Above `-O0`: undefines `__NO_INLINE__`, defines `__OPTIMIZE__`, and `-Os`/`-Oz` also define `__OPTIMIZE_SIZE__`. `-Ofast` is rejected (fast-math is not emulated); msvc rejects all |
 | `-target` | clang | selects `TargetSpec` ([adding-a-target](adding-a-target.md)) |
@@ -151,8 +160,9 @@ same name:
 - Language: gcc's `-fms-extensions`, `-fdollars-in-identifiers`, `-fpermissive`.
 - Floating point: the fast-math family (`nnan`, `ninf`, `nsz`, `arcp`,
   `reassoc`, `afn` have no IR field yet).
-- Pointers: `-fno-delete-null-pointer-checks` needs a null-access
-  contract. The pointer wrapping implied by `-fno-strict-overflow` is
+- Pointers: `-fno-delete-null-pointer-checks` is recorded but needs a
+  null-access contract in the IR. `-ftrivial-auto-var-init=` is recorded
+  but does not yet initialize locals in the IR. The pointer wrapping implied by `-fno-strict-overflow` is
   stored but not yet applied.
 - Scoped overrides: `__attribute__((optimize))` does not change operation
   contracts yet. `#pragma float_control`, `STDC FP_CONTRACT`, and

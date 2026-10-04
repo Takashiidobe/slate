@@ -143,7 +143,9 @@ token plus an interned `HideSet`; file tokens start empty.
     `builtin`, seeded first by `configure`, so `defined`, `#undef`,
     `#define` and `push_macro` see them. msvc ignores `#define`/`#undef` of
     its builtins (C4117; `is_reserved_macro`). `__TIMESTAMP__` is the
-    current file's modification time. `__LINE__` differs per flavor when an invocation spans
+    current file's modification time. `__FILE__`, `__BASE_FILE__` and
+    `__FILE_NAME__` pass through `CompilerOptions::remap_macro_path`
+    (`-fmacro-prefix-map`, [compiler-flags](compiler-flags.md)). `__LINE__` differs per flavor when an invocation spans
     lines: gcc reports the line of the outermost macro name, clang the line
     of its closing `)` (a `PPToken`'s `end`, carried by `Stamp`), and msvc
     how far the source has been read (`source_position`), even for a

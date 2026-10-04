@@ -29,6 +29,8 @@ carries options, standard, and flavor.
 ```
 severity(w) =
   None     if -Wno-<w>
+  Error    if -w, default_severity(w) is Error, and no -Wno-error=<w>
+  None     if -w
   Error    if -Werror=<w>, or -Werror while enabled,
            or default_severity(w) is Error,
            or -pedantic-errors and w is pedantic
@@ -42,6 +44,10 @@ severity(w) =
 - `-Wno-<w>` beats the pedantic group regardless of order; otherwise later
   flags win.
 - `-Werror=<w>` enables a default-off warning; blanket `-Werror` does not.
+- `-w` (`DiagnosticOptions::ignore_warnings`) is order independent and
+  beats `-Werror`, `-Werror=<w>` and `-pedantic-errors` in both gcc and
+  clang. Only default errors survive it. `#warning` does not go through
+  `DiagnosticContext` yet, so neither `-w` nor `-Werror` affects it.
 - Severity never changes the AST or IR. `-m32 -std=c89 -pedantic-errors`
   still types `4294967296` as `long long` and errors on the use.
   `Availability::Extension` never becomes `Rejected`; `StandardFeatures`

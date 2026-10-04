@@ -88,21 +88,20 @@ python3 tools/c_corpus_sweep.py [PROJECT ...] [--flavor clang|gcc|msvc] [--jobs 
 ```
 
 - Deduplicates each database by file and drops entries whose file is
-  gone (`bear` also records configure probes). Keeps `-D`, `-U`, `-I`,
-  `-isystem`, `-iquote`, `-idirafter`, `-include`, `-imacros`, `-std`,
-  target flags (`-march=` and valueless `-m`/`-mno-` flags, including
-  `-m16`/`-m32`/`-m64`/`-mx32`), and flags that change what the C means
-  (`pp_diff.SEMANTIC_FLAGS`: `-nostdinc`, `-ffreestanding`, `-fno-builtin*`,
-  char signedness, `-fshort-wchar`, `-fms-anonymous-structs`,
-  `-fstrict-flex-arrays=`, `-fexperimental-late-parse-attributes`, PIC/PIE,
-  `--target=`, `-mregparm=`,
-  `-f[no-]stack-protector*`, `-fcf-protection*`, `-mcmodel=`).
-  `-mllvm`/`-Xclang` are dropped with their value. Pins `-std=gnu17` when
-  absent (slate-parser-6x05.6).
-- The filtering is a stopgap for finding unhandled flags, not a policy:
-  every flag a real build passes needs handling in `compiler_args`, and
-  the sweep should eventually pass the full command (slate-parser-6x05.38.4).
-  Never skip TUs or drop a flag to make a project pass.
+  gone (`bear` also records configure probes). gcc and clang get the full
+  compile command, minus the compiler and the source file; relative paths
+  resolve because both sides run in the entry's directory. The oracle also
+  drops dependency output (`-M*`, `-MF`/`-MT`/`-MQ`/`-MJ`, `-Wp,-M…`), which
+  would rewrite the build's `.d` files. Pins `-std=gnu17` when absent
+  (slate-parser-6x05.6).
+- msvc databases use `/` spellings, so they still go through
+  `pp_diff.kept_args`: `-D`, `-U`, the include flags, `-include`,
+  `-imacros`, `-std`, target `-m` flags and `pp_diff.SEMANTIC_FLAGS`.
+  `pp_diff.py` and `tools/corpus/e2e.py` also still use `kept_args`.
+- Every flag a real build passes needs handling in `compiler_args`. Never
+  skip TUs or drop a flag to make a project pass. `flag_probe.py`
+  ([compiler-arg-rules](compiler-arg-rules.md#adding-an-option)) checks a
+  rejected flag against the oracles.
 - `--flavor` selects `build-<flavor>`, the Slate flavor, and the compiler
   oracle; it defaults to clang. MSVC uses `cl.exe /Zs` and the Windows x64
   target.

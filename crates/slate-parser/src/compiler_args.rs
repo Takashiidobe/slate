@@ -1,6 +1,6 @@
 use crate::compiler_options::{
     CodegenOptions, CompilerOptions, LayoutOptions, LibraryBuiltins, MicrosoftFlags,
-    OperationValues, Pic, StackProtector,
+    OperationValues, Pic, StackProtector, TrivialAutoVarInit,
 };
 use crate::diagnostics::{DiagnosticOptions, Warning};
 use crate::files::SearchPaths;
@@ -248,6 +248,10 @@ struct ParsedCompilerArgs {
     short_wchar: Option<bool>,
     ms_anonymous_structs: Option<bool>,
     strict_flex_arrays: Option<u8>,
+    pthread: bool,
+    delete_null_pointer_checks: Option<bool>,
+    trivial_auto_var_init: Option<TrivialAutoVarInit>,
+    macro_prefix_map: Vec<(String, String)>,
     late_parsed_attributes: Option<bool>,
     asynchronous_unwind_tables: Option<bool>,
     pic: Option<Pic>,
@@ -370,6 +374,12 @@ enum Opt {
     Warning,
     Pedantic,
     Optimize,
+    Pthread,
+    NoWarnings,
+    DeleteNullPointerChecks,
+    TrivialAutoVarInit,
+    MacroPrefixMap,
+    Mllvm,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -449,6 +459,12 @@ impl std::fmt::Display for Opt {
             Self::Warning => "W",
             Self::Pedantic => "pedantic",
             Self::Optimize => "O",
+            Self::Pthread => "pthread",
+            Self::NoWarnings => "w",
+            Self::DeleteNullPointerChecks => "fdelete-null-pointer-checks",
+            Self::TrivialAutoVarInit => "ftrivial-auto-var-init",
+            Self::MacroPrefixMap => "fmacro-prefix-map",
+            Self::Mllvm => "mllvm",
         };
         formatter.write_str(name)
     }
@@ -474,7 +490,8 @@ impl Opt {
             | Self::Flavor
             | Self::Target
             | Self::Warning
-            | Self::Pedantic => &[Gcc, Clang, Msvc],
+            | Self::Pedantic
+            | Self::NoWarnings => &[Gcc, Clang, Msvc],
             Self::Wrapv
             | Self::Trapv
             | Self::StrictOverflow
@@ -514,7 +531,11 @@ impl Opt {
             | Self::RegParm
             | Self::X87
             | Self::ThreeDNow
-            | Self::ThreeDNowA => &[Gcc, Clang],
+            | Self::ThreeDNowA
+            | Self::Pthread
+            | Self::DeleteNullPointerChecks
+            | Self::TrivialAutoVarInit
+            | Self::MacroPrefixMap => &[Gcc, Clang],
             Self::PreferredStackBoundary
             | Self::GccStrictFlexArrays
             | Self::StackProtectorExplicit
@@ -523,7 +544,8 @@ impl Opt {
             | Self::ClangX87
             | Self::AsmBlocks
             | Self::MsAnonymousStructs
-            | Self::LateParseAttributes => &[Clang],
+            | Self::LateParseAttributes
+            | Self::Mllvm => &[Clang],
             Self::CodegenOnly(spelling) => {
                 codegen_only_flag_named(spelling).map_or(&[], |flag| flag.flavors)
             }
@@ -573,6 +595,7 @@ impl Opt {
             Self::FpRetIn387 => "-mfp-ret-in-387",
             Self::ThreeDNow => "-m3dnow",
             Self::ThreeDNowA => "-m3dnowa",
+            Self::DeleteNullPointerChecks => "-fdelete-null-pointer-checks",
             Self::CodegenOnly(spelling)
                 if codegen_only_flag_named(spelling)
                     .is_some_and(|flag| flag.form == CodegenOnlyForm::Switch) =>
@@ -608,7 +631,9 @@ enum IgnoredOption {
     TakesValue,
 }
 
-const IGNORED_DRIVER_FLAGS: [&str; 8] = ["-c", "-MD", "-MMD", "-MP", "-MG", "-M", "-MM", "-pipe"];
+const IGNORED_DRIVER_FLAGS: [&str; 9] = [
+    "-c", "-S", "-MD", "-MMD", "-MP", "-MG", "-M", "-MM", "-pipe",
+];
 
 const IGNORED_VALUE_OPTIONS: [&str; 5] = ["-o", "-MF", "-MT", "-MQ", "-MJ"];
 
@@ -643,6 +668,20 @@ impl CodegenOnlyFlag {
         }
     }
 
+    const fn one_of(self, values: &'static [&'static str]) -> Self {
+        Self {
+            form: CodegenOnlyForm::Value(values),
+            ..self
+        }
+    }
+
+    const fn negated_by(self, flavors: &'static [CompilerFlavor]) -> Self {
+        Self {
+            negation_flavors: flavors,
+            ..self
+        }
+    }
+
     fn matches(&self, argument: &str) -> bool {
         match self.form {
             CodegenOnlyForm::Switch => parse_switch(self.spelling, argument).is_some(),
@@ -670,9 +709,11 @@ const ALL_FLAVORS: &[CompilerFlavor] = &[
     CompilerFlavor::Clang,
     CompilerFlavor::Msvc,
 ];
+const GNU_FLAVORS: &[CompilerFlavor] = &[CompilerFlavor::Gcc, CompilerFlavor::Clang];
+const GCC_ONLY: &[CompilerFlavor] = &[CompilerFlavor::Gcc];
 const CLANG_ONLY: &[CompilerFlavor] = &[CompilerFlavor::Clang];
 
-const CODEGEN_ONLY_FLAGS: [CodegenOnlyFlag; 16] = [
+const CODEGEN_ONLY_FLAGS: [CodegenOnlyFlag; 59] = [
     CodegenOnlyFlag::switch("-fomit-frame-pointer", ALL_FLAVORS),
     CodegenOnlyFlag::switch("-flto", ALL_FLAVORS),
     CodegenOnlyFlag::switch("-ffunction-sections", ALL_FLAVORS),
@@ -688,7 +729,61 @@ const CODEGEN_ONLY_FLAGS: [CodegenOnlyFlag; 16] = [
     CodegenOnlyFlag::value("-flto=", ALL_FLAVORS),
     CodegenOnlyFlag::value("-fvisibility=", ALL_FLAVORS),
     CodegenOnlyFlag::value("-fdebug-prefix-map=", ALL_FLAVORS),
+    CodegenOnlyFlag::switch("-fjump-tables", GNU_FLAVORS),
+    CodegenOnlyFlag::switch("-fstack-check", GNU_FLAVORS),
+    CodegenOnlyFlag::switch("-foptimize-sibling-calls", GNU_FLAVORS),
+    CodegenOnlyFlag::switch("-fverbose-asm", GNU_FLAVORS),
+    CodegenOnlyFlag::switch("-funroll-loops", GNU_FLAVORS),
+    CodegenOnlyFlag::switch("-ftree-vectorize", GNU_FLAVORS),
+    CodegenOnlyFlag::switch("-ftree-vrp", GNU_FLAVORS),
+    CodegenOnlyFlag::switch("-fprefetch-loop-arrays", GNU_FLAVORS),
+    CodegenOnlyFlag::switch("-ffat-lto-objects", GNU_FLAVORS),
+    CodegenOnlyFlag::switch("-falign-functions", GNU_FLAVORS),
+    CodegenOnlyFlag::switch("-falign-loops", GNU_FLAVORS),
+    CodegenOnlyFlag::switch("-falign-jumps", GNU_FLAVORS),
+    CodegenOnlyFlag::switch("-falign-labels", GNU_FLAVORS),
+    CodegenOnlyFlag::value("-falign-functions=", GNU_FLAVORS),
+    CodegenOnlyFlag::value("-falign-loops=", GNU_FLAVORS),
+    CodegenOnlyFlag::value("-falign-jumps=", GNU_FLAVORS),
+    CodegenOnlyFlag::value("-falign-labels=", GNU_FLAVORS),
+    CodegenOnlyFlag::value("-fpatchable-function-entry=", GNU_FLAVORS),
+    CodegenOnlyFlag::value("-ftls-model=", GNU_FLAVORS).one_of(&[
+        "global-dynamic",
+        "local-dynamic",
+        "initial-exec",
+        "local-exec",
+    ]),
+    CodegenOnlyFlag::value("-fexcess-precision=", GNU_FLAVORS).one_of(&["fast", "standard", "16"]),
+    CodegenOnlyFlag::switch("-fdiagnostics-color", GNU_FLAVORS),
+    CodegenOnlyFlag::value("-fdiagnostics-color=", GNU_FLAVORS)
+        .one_of(&["always", "never", "auto"]),
+    CodegenOnlyFlag::switch("-coverage", GNU_FLAVORS).negated_by(&[]),
+    CodegenOnlyFlag::switch("-mred-zone", GNU_FLAVORS),
+    CodegenOnlyFlag::switch("-mskip-rax-setup", GNU_FLAVORS),
+    CodegenOnlyFlag::switch("-mindirect-branch-cs-prefix", GNU_FLAVORS).negated_by(GCC_ONLY),
+    CodegenOnlyFlag::value("-mtune=", GNU_FLAVORS),
+    CodegenOnlyFlag::value("-mfunction-return=", GNU_FLAVORS).one_of(&[
+        "keep",
+        "thunk",
+        "thunk-inline",
+        "thunk-extern",
+    ]),
+    CodegenOnlyFlag::value("-mstack-protector-guard=", GNU_FLAVORS).one_of(&["tls", "global"]),
+    CodegenOnlyFlag::value("-mstack-protector-guard-reg=", GNU_FLAVORS).one_of(&["fs", "gs"]),
+    CodegenOnlyFlag::value("-mstack-protector-guard-symbol=", GNU_FLAVORS),
+    CodegenOnlyFlag::value("-mstack-protector-guard-offset=", GNU_FLAVORS),
+    CodegenOnlyFlag::switch("-fira-hoist-pressure", GCC_ONLY),
+    CodegenOnlyFlag::switch("-ftree-ch", GCC_ONLY),
+    CodegenOnlyFlag::switch("-ftree-loop-distribute-patterns", GCC_ONLY),
+    CodegenOnlyFlag::value("-fira-region=", GCC_ONLY).one_of(&["all", "mixed", "one"]),
+    CodegenOnlyFlag::value("-freorder-blocks-algorithm=", GCC_ONLY).one_of(&["simple", "stc"]),
     CodegenOnlyFlag::switch("-moutline", CLANG_ONLY),
+    CodegenOnlyFlag::switch("-mretpoline", CLANG_ONLY),
+    CodegenOnlyFlag::switch("-fintegrated-as", CLANG_ONLY),
+    CodegenOnlyFlag::switch("-fcolor-diagnostics", CLANG_ONLY),
+    CodegenOnlyFlag::switch("-fdiagnostics-show-inlining-chain", CLANG_ONLY),
+    CodegenOnlyFlag::switch("-Qunused-arguments", CLANG_ONLY).negated_by(&[]),
+    CodegenOnlyFlag::value("--warning-suppression-mappings=", CLANG_ONLY),
 ];
 
 fn codegen_only_flag(argument: &str) -> Option<&'static CodegenOnlyFlag> {
@@ -714,7 +809,8 @@ fn ignored_option(argument: &str) -> Option<IgnoredOption> {
         .then_some(IgnoredOption::Alone)
 }
 
-const SWITCH_OPTS: [Opt; 30] = [
+const SWITCH_OPTS: [Opt; 31] = [
+    Opt::DeleteNullPointerChecks,
     Opt::SmallPic,
     Opt::LargePic,
     Opt::SmallPie,
@@ -819,6 +915,7 @@ impl CompilerArgParser {
             .unwrap_or(options.hosted || !flavor.is_clang());
         options.late_parsed_attributes = raw.late_parsed_attributes == Some(true);
         options.strict_flex_arrays = raw.strict_flex_arrays.unwrap_or(0);
+        options.macro_prefix_map = raw.macro_prefix_map;
         Ok(CompilerArgs {
             options,
             defines: raw.defines,
@@ -964,6 +1061,7 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                 }
                 Opt::ThreeDNow => parsed.three_dnow = Some(u8::from(value)),
                 Opt::ThreeDNowA => parsed.three_dnow = Some(if value { 2 } else { 0 }),
+                Opt::DeleteNullPointerChecks => parsed.delete_null_pointer_checks = Some(value),
                 _ => return Err(invalid(argument, "unknown flag")),
             }
         } else if let Some(level) = match argument.as_str() {
@@ -988,6 +1086,38 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                     _ => return Err(invalid(argument, "unknown control-flow protection level")),
                 },
             );
+        } else if argument == "-pthread" {
+            parsed.saw(Opt::Pthread, argument);
+            parsed.pthread = true;
+        } else if argument == "-w" {
+            parsed.saw(Opt::NoWarnings, argument);
+            parsed.diagnostics.ignore_warnings = true;
+        } else if let Some(value) = argument.strip_prefix("-ftrivial-auto-var-init=") {
+            parsed.saw(Opt::TrivialAutoVarInit, argument);
+            parsed.trivial_auto_var_init = Some(parse_value(
+                value.to_owned(),
+                argument,
+                "automatic variable initialization",
+            )?);
+        } else if let Some(mapping) = argument
+            .strip_prefix("-fmacro-prefix-map=")
+            .or_else(|| argument.strip_prefix("-ffile-prefix-map="))
+        {
+            parsed.saw(Opt::MacroPrefixMap, argument);
+            let (old, new) = mapping
+                .split_once('=')
+                .ok_or_else(|| invalid(argument, "expected OLD=NEW"))?;
+            parsed
+                .macro_prefix_map
+                .push((old.to_owned(), new.to_owned()));
+        } else if argument == "-mllvm" || argument.starts_with("-mllvm=") {
+            parsed.saw(Opt::Mllvm, argument);
+            if argument == "-mllvm" {
+                index += 1;
+                if index == arguments.len() {
+                    return Err(invalid(argument, "missing value"));
+                }
+            }
         } else if let Some(model) = argument.strip_prefix("-mcmodel=") {
             parsed.saw(Opt::CodeModel, argument);
             if !["tiny", "small", "kernel", "medium", "large"].contains(&model) {
@@ -1195,6 +1325,19 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
             ),
         );
     }
+    if parsed.pthread {
+        parsed
+            .preprocessor_inputs
+            .macros
+            .insert(0, MacroOption::Define("_REENTRANT".into()));
+    }
+    if parsed.flavor.is_gcc() {
+        parsed.macro_prefix_map.reverse();
+    } else {
+        parsed
+            .macro_prefix_map
+            .sort_by(|left, right| right.0.cmp(&left.0));
+    }
     Ok(parsed)
 }
 
@@ -1247,6 +1390,8 @@ fn codegen_options(raw: &ParsedCompilerArgs, target: &TargetInfo) -> CodegenOpti
         }),
         cf_protection,
         three_dnow: raw.three_dnow.unwrap_or(0),
+        delete_null_pointer_checks: raw.delete_null_pointer_checks.unwrap_or(true),
+        trivial_auto_var_init: raw.trivial_auto_var_init.unwrap_or_default(),
     }
 }
 

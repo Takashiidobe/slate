@@ -20,14 +20,51 @@ pub struct CompilerOptions {
     pub late_parsed_attributes: bool,
     pub strict_flex_arrays: u8,
     pub codegen: CodegenOptions,
+    pub macro_prefix_map: Vec<(String, String)>,
 }
 
-#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct CodegenOptions {
     pub pic: Option<Pic>,
     pub stack_protector: Option<StackProtector>,
     pub cf_protection: Option<u8>,
     pub three_dnow: u8,
+    pub delete_null_pointer_checks: bool,
+    pub trivial_auto_var_init: TrivialAutoVarInit,
+}
+
+impl Default for CodegenOptions {
+    fn default() -> Self {
+        Self {
+            pic: None,
+            stack_protector: None,
+            cf_protection: None,
+            three_dnow: 0,
+            delete_null_pointer_checks: true,
+            trivial_auto_var_init: TrivialAutoVarInit::Uninitialized,
+        }
+    }
+}
+
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
+pub enum TrivialAutoVarInit {
+    #[default]
+    Uninitialized,
+    Zero,
+    Pattern,
+}
+
+impl std::str::FromStr for TrivialAutoVarInit {
+    type Err = String;
+
+    fn from_str(value: &str) -> Result<Self, Self::Err> {
+        match value {
+            "uninitialized" => Ok(Self::Uninitialized),
+            "zero" => Ok(Self::Zero),
+            "pattern" => Ok(Self::Pattern),
+            _ => Err("expected uninitialized, zero, or pattern".into()),
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -135,6 +172,7 @@ impl Default for CompilerOptions {
             late_parsed_attributes: false,
             strict_flex_arrays: 0,
             codegen: CodegenOptions::default(),
+            macro_prefix_map: Vec::new(),
         }
     }
 }
@@ -176,6 +214,16 @@ impl CompilerOptions {
         }
         options.operations.signed_overflow = values.signed_overflow;
         options
+    }
+
+    pub fn remap_macro_path(&self, path: &str) -> String {
+        self.macro_prefix_map
+            .iter()
+            .find_map(|(old, new)| {
+                path.strip_prefix(old.as_str())
+                    .map(|rest| format!("{new}{rest}"))
+            })
+            .unwrap_or_else(|| path.to_owned())
     }
 
     pub fn effective_target(&self, mut target: TargetInfo) -> TargetInfo {

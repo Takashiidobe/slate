@@ -504,6 +504,7 @@ impl Preprocessor<'_> {
             }
             "__FILE__" => {
                 let (_, file) = self.presumed_location(loc);
+                let file = self.dialect.options().remap_macro_path(&file);
                 Some(token.clone().with_value(Token::StringLit(file.into())))
             }
             "__FILE_NAME__" => {
@@ -511,11 +512,13 @@ impl Preprocessor<'_> {
                 let name = std::path::Path::new(&file)
                     .file_name()
                     .map_or(file.clone(), |name| name.to_string_lossy().into_owned());
+                let name = self.dialect.options().remap_macro_path(&name);
                 Some(token.clone().with_value(Token::StringLit(name.into())))
             }
             "__BASE_FILE__" => {
                 let main = self.main_file.unwrap_or(loc.file);
                 let file = crate::files::display_path(self.files.path(main));
+                let file = self.dialect.options().remap_macro_path(&file);
                 Some(token.clone().with_value(Token::StringLit(file.into())))
             }
             "__INCLUDE_LEVEL__" => {

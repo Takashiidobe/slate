@@ -65,6 +65,8 @@ PROJECTS = {
 }
 DISPLAY = {"cpython": "CPython", "sqlite": "SQLite", "lua": "Lua", "pcre2": "PCRE2", "quickjs": "QuickJS", "lz4": "LZ4", "tinycc": "TinyCC", "mbedtls": "Mbed TLS", "redis": "Redis", "postgres": "PostgreSQL", "linux": "Linux"}
 DETAIL = re.compile(r"^\s*(?:Error:\s*)?×\s+(.*)$")
+DEPENDENCY_OUTPUT = {"-M", "-MM", "-MD", "-MMD", "-MP", "-MG"}
+DEPENDENCY_OUTPUT_VALUES = ("-MF", "-MT", "-MQ", "-MJ")
 STATUSES = ("ok", "internal", "unimplemented", "rejected", "timeout", "missing-dependency", "oracle-rejects")
 
 
@@ -107,8 +109,10 @@ def jobs(corpus: Path, projects: list[str], flavor: str) -> list[Job]:
                 continue
             seen.add(source)
             argv = entry.get("arguments") or shlex.split(entry["command"])
-            args = pp_diff.kept_args(argv, entry["directory"])
-            if flavor == "msvc":
+            if flavor != "msvc":
+                args = [arg for arg in argv[1:] if arg.startswith("-") or pp_diff.absolute(entry["directory"], arg) != source]
+            else:
+                args = pp_diff.kept_args(argv, entry["directory"])
                 path_flags = ("-isystem", "-iquote", "-idirafter", "-I", "-include", "-imacros")
                 normalized = []
                 for arg in args:
@@ -133,9 +137,22 @@ def classify(stderr: str) -> tuple[str, str]:
     return "rejected", detail
 
 
+def without_dependency_output(args: list[str]) -> list[str]:
+    kept, index = [], 0
+    while index < len(args):
+        arg = args[index]
+        if arg in DEPENDENCY_OUTPUT_VALUES:
+            index += 2
+            continue
+        if arg not in DEPENDENCY_OUTPUT and not arg.startswith(("-Wp,-M", *DEPENDENCY_OUTPUT_VALUES)):
+            kept.append(arg)
+        index += 1
+    return kept
+
+
 def oracle_args(job: Job, flavor: str) -> list[str]:
     if flavor != "msvc":
-        return [flavor, *job.args, "-fsyntax-only", "-w", job.source]
+        return [flavor, *without_dependency_output(job.args), "-fsyntax-only", "-w", job.source]
     args = []
     for arg in job.args:
         if arg.startswith(("-D", "-U")):
