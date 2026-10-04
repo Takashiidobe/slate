@@ -305,6 +305,9 @@ impl<'a> DeclaratorParser<'a> {
             if self.matches(Token::RBrace) {
                 break;
             }
+            if !parser.flavor().is_msvc() && self.matches(Token::Semi) {
+                continue;
+            }
             let start = self.pos;
             let end = start
                 + super::decl::top_level_semi(&self.tokens[start..]).ok_or(

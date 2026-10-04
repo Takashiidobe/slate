@@ -393,6 +393,9 @@ FieldDeclarator { declarator: Declarator, bit_width: Option<Expr>, attributes, p
 EnumItem = Enumerator { name, value: Option<Expr>, attributes, provenance } | CommentGroup
 ```
 
+- A stray `;` in a record body (`struct { int x; ; }`) leaves no
+  `MemberItem`. gcc and clang accept it (their pedantic warning is
+  not emitted, slate-parser-6x05.38.26); msvc rejects it.
 - Definitions are stored once in `TranslationUnit.tags` and referenced by
   `TagId`, so anonymous tags have identity (`struct { int y; } g1, g2;`
   share one). Nested, block, and parameter-list definitions get their own
