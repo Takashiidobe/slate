@@ -148,6 +148,15 @@ fn translate_directives_program_with_args(
     path: &Path,
     extra_args: &[String],
 ) -> Result<Program, DirectiveError> {
+    translate_directives_program_with_diagnostics(path, extra_args, &mut Vec::new(), false)
+}
+
+fn translate_directives_program_with_diagnostics(
+    path: &Path,
+    extra_args: &[String],
+    diagnostics: &mut Vec<serde_json::Value>,
+    collect_directives: bool,
+) -> Result<Program, DirectiveError> {
     let (source, _raw) = preprocess::read_source(path).map_err(|source| DirectiveError::Read {
         path: path.to_path_buf(),
         source,
@@ -156,19 +165,20 @@ fn translate_directives_program_with_args(
     let directive_items = directive_items(&directive_pp)?;
     let plan = match plan_configs(&source)? {
         None => {
-            let mut program = translate_one(path, extra_args)?.program;
+            let mut program =
+                translate_one(path, extra_args, diagnostics, collect_directives)?.program;
             insert_directive_items(&mut program, directive_items);
             return Ok(program);
         }
         Some(plan) => plan,
     };
 
-    let baseline = translate_one(path, extra_args)?;
+    let baseline = translate_one(path, extra_args, diagnostics, collect_directives)?;
     let mut variants = Vec::new();
     for config in plan.configs {
         let mut clang_args = extra_args.to_vec();
         clang_args.extend(config.clang_args.iter().cloned());
-        let translation = translate_one(path, &clang_args)?;
+        let translation = translate_one(path, &clang_args, diagnostics, collect_directives)?;
         variants.push(Variant {
             config,
             program: translation.program,
@@ -244,6 +254,87 @@ pub fn translate_targets_with_args(
         })
         .collect::<Result<_, DirectiveError>>()?;
     format_program(&merge_target_variants(&variants))
+}
+
+pub fn translate_with_diagnostics(
+    path: &Path,
+    extra_args: &[String],
+    targets: &[String],
+) -> (Result<String, DirectiveError>, Vec<serde_json::Value>) {
+    let mut seen = BTreeSet::new();
+    let targets: Vec<_> = targets
+        .iter()
+        .filter(|target| seen.insert((*target).clone()))
+        .collect();
+    let translate = |target: Option<&String>| {
+        let mut diagnostics = Vec::new();
+        let result = (|| {
+            let mut args = extra_args.to_vec();
+            let info = target
+                .map(|target| {
+                    args.push(format!("--target={target}"));
+                    TargetInfo::for_triple(target).map_err(|source| DirectiveError::Target {
+                        target: target.clone(),
+                        source,
+                    })
+                })
+                .transpose()?;
+            let program =
+                translate_directives_program_with_diagnostics(path, &args, &mut diagnostics, true)?;
+            Ok(TargetVariant {
+                cfg: info
+                    .as_ref()
+                    .map(target_cfg)
+                    .unwrap_or(Cfg::All(Vec::new())),
+                program,
+            })
+        })();
+        if let Err(error) = &result
+            && !diagnostics
+                .iter()
+                .any(|diagnostic| diagnostic["severity"] == "error")
+        {
+            diagnostics.push(crate::diagnostics::directive(error, path));
+        }
+        for diagnostic in &mut diagnostics {
+            diagnostic["target"] = serde_json::json!(target);
+        }
+        (result, diagnostics)
+    };
+    let results: Vec<_> = if targets.is_empty() {
+        vec![translate(None)]
+    } else {
+        targets
+            .par_iter()
+            .map(|target| translate(Some(target)))
+            .collect()
+    };
+    let mut diagnostics = Vec::new();
+    let mut variants = Vec::new();
+    let mut failure = None;
+    for (result, messages) in results {
+        diagnostics.extend(messages);
+        match result {
+            Ok(variant) => variants.push(variant),
+            Err(error) if failure.is_none() => failure = Some(error),
+            Err(_) => {}
+        }
+    }
+    let result = match failure {
+        Some(error) => Err(error),
+        None if targets.is_empty() => format_program(&variants[0].program),
+        None => format_program(&merge_target_variants(&variants)),
+    };
+    if let Err(error) = &result
+        && !diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic["severity"] == "error")
+    {
+        diagnostics.push(crate::diagnostics::directive(error, path));
+    }
+    let mut seen = BTreeSet::new();
+    diagnostics.retain(|diagnostic| seen.insert(diagnostic.to_string()));
+    (result, diagnostics)
 }
 
 fn cfg_atom_key(cfg: &Cfg) -> Option<String> {
@@ -800,7 +891,12 @@ fn line_start_depths(source: &str) -> Vec<i32> {
     depths
 }
 
-fn translate_one(path: &Path, compiler_args: &[String]) -> Result<Translation, DirectiveError> {
+fn translate_one(
+    path: &Path,
+    compiler_args: &[String],
+    messages: &mut Vec<serde_json::Value>,
+    collect_directives: bool,
+) -> Result<Translation, DirectiveError> {
     let (source, raw) = preprocess::read_source(path).map_err(|source| DirectiveError::Read {
         path: path.to_path_buf(),
         source,
@@ -818,6 +914,35 @@ fn translate_one(path: &Path, compiler_args: &[String]) -> Result<Translation, D
                     || directive.condition.is_some() && !directive.is_poison_pragma())
         })
         .collect();
+    if collect_directives && !sanitized.is_empty() {
+        let active = preprocess::record_translation_unit(path, &source, compiler_args).map_err(
+            |source| {
+                if let preprocess::PreprocessError::Preprocess { source } = &source {
+                    crate::diagnostics::collect(source.as_ref(), messages);
+                }
+                DirectiveError::Preprocess {
+                    path: path.to_path_buf(),
+                    source,
+                }
+            },
+        )?;
+        for directive in active
+            .directives
+            .iter()
+            .filter(|directive| directive.active == Some(true))
+        {
+            messages.push(serde_json::json!({
+                "severity": if directive.name == DirectiveName::Warning { "warning" } else { "error" },
+                "message": directive.raw_payload,
+                "labels": [{
+                    "file": path.display().to_string(),
+                    "byteOffset": directive.byte_start,
+                    "byteLength": directive.byte_end - directive.byte_start,
+                    "primary": true,
+                }],
+            }));
+        }
+    }
     let source = (!sanitized.is_empty())
         .then(|| preprocess::blank_directives(&raw, &sanitized))
         .transpose()
@@ -827,14 +952,17 @@ fn translate_one(path: &Path, compiler_args: &[String]) -> Result<Translation, D
         })?
         .map(|bytes| slate_parser::files::decode_source_bytes(&bytes));
     let (module, files, diagnostics) =
-        frontend::parse_module_with_source(path, source, compiler_args)?;
+        frontend::parse_module_with_diagnostics(path, source, compiler_args, messages)?;
     frontend::reject_directive_errors(path, &diagnostics)?;
     let program = frontend::lower_single_module(
         &module,
         &files,
         &frontend::lowerer::LowerOptions::default(),
         "main",
-    )?;
+    )
+    .inspect_err(|error| {
+        messages.push(crate::diagnostics::frontend(error, &files));
+    })?;
     Ok(Translation {
         item_lines: item_lines(path, &module, &files),
         program: backend::apply_with_target(program, &module.target),

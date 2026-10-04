@@ -92,3 +92,13 @@ pub fn translate_targets_with_args(
     directive_translate::translate_targets_with_args(path, extra_args, targets)
         .map_err(Error::Directive)
 }
+
+pub fn translate_with_diagnostics(
+    path: &Path,
+    extra_args: &[String],
+    targets: &[String],
+) -> (Result<String, Error>, Vec<serde_json::Value>) {
+    let (result, diagnostics) =
+        directive_translate::translate_with_diagnostics(path, extra_args, targets);
+    (result.map_err(Error::Directive), diagnostics)
+}

@@ -219,6 +219,15 @@ pub fn parse_module_with_source(
     source: Option<String>,
     args: &[String],
 ) -> Result<(Module, Files, Vec<DirectiveDiagnostic>), Error> {
+    parse_module_with_diagnostics(path, source, args, &mut Vec::new())
+}
+
+pub fn parse_module_with_diagnostics(
+    path: &Path,
+    source: Option<String>,
+    args: &[String],
+    diagnostics: &mut Vec<serde_json::Value>,
+) -> Result<(Module, Files, Vec<DirectiveDiagnostic>), Error> {
     let args = crate::target::parse_args(args)?;
     let search = args.search_paths();
     let dialect = Dialect::new(args.flavor, args.standard, args.target, args.options);
@@ -228,19 +237,37 @@ pub fn parse_module_with_source(
         Some(source) => parser.parse_file_with_source(path, source),
         None => parser.parse_file(path),
     }
-    .map_err(|error| Error::Parse {
-        path: path.to_path_buf(),
-        message: error.to_string(),
+    .map_err(|error| {
+        crate::diagnostics::collect(&error, diagnostics);
+        Error::Parse {
+            path: path.to_path_buf(),
+            message: error.to_string(),
+        }
     })?;
     let mut sema = Sema::new(&unit);
-    sema.analyze(&files).map_err(|error| Error::Analyze {
-        path: path.to_path_buf(),
-        message: error.to_string(),
+    let warnings = sema.analyze(&files).map_err(|error| {
+        crate::diagnostics::collect(&error, diagnostics);
+        Error::Analyze {
+            path: path.to_path_buf(),
+            message: error.to_string(),
+        }
     })?;
-    let (module, _) = sema.lower(&files).map_err(|error| Error::Lower {
-        path: path.to_path_buf(),
-        message: error.to_string(),
+    for warning in warnings {
+        crate::diagnostics::collect(&warning, diagnostics);
+    }
+    for diagnostic in parser.directive_diagnostics() {
+        crate::diagnostics::collect(diagnostic, diagnostics);
+    }
+    let (module, warnings) = sema.lower(&files).map_err(|error| {
+        crate::diagnostics::collect(&error, diagnostics);
+        Error::Lower {
+            path: path.to_path_buf(),
+            message: error.to_string(),
+        }
     })?;
+    for warning in warnings {
+        crate::diagnostics::collect(&warning, diagnostics);
+    }
     Ok((module, files, parser.directive_diagnostics().to_vec()))
 }
 

@@ -72,7 +72,14 @@ fn main() -> ExitCode {
         },
         Command::Translate(raw) => match raw.args.split_last() {
             Some((path, compiler_args)) => {
-                run(translate_with_compiler_args(Path::new(path), compiler_args))
+                if compiler_args
+                    .iter()
+                    .any(|arg| arg == "--diagnostic-format=json")
+                {
+                    translate_json(Path::new(path), compiler_args)
+                } else {
+                    run(translate_with_compiler_args(Path::new(path), compiler_args))
+                }
             }
             None => ExitCode::from(2),
         },
@@ -197,6 +204,39 @@ fn translate_with_compiler_args(path: &Path, compiler_args: &[String]) -> Result
     match targets {
         Some(targets) => cli_result(api::translate_targets_with_args(path, &remaining, &targets)),
         None => cli_result(api::translate_with_args(path, &remaining)),
+    }
+}
+
+fn translate_json(path: &Path, compiler_args: &[String]) -> ExitCode {
+    let mut targets = Vec::new();
+    let mut remaining = Vec::new();
+    for arg in compiler_args {
+        if arg == "--diagnostic-format=json" {
+            continue;
+        }
+        match arg.strip_prefix("--targets=") {
+            Some(value) => targets = value.split(',').map(str::to_string).collect(),
+            None => remaining.push(arg.clone()),
+        }
+    }
+    let (result, diagnostics) = api::translate_with_diagnostics(path, &remaining, &targets);
+    let has_errors = diagnostics
+        .iter()
+        .any(|diagnostic| diagnostic["severity"] == "error");
+    eprintln!(
+        "{}",
+        serde_json::json!({"version": 1, "diagnostics": diagnostics})
+    );
+    match result {
+        Ok(rust) => {
+            print!("{rust}");
+            if has_errors {
+                ExitCode::FAILURE
+            } else {
+                ExitCode::SUCCESS
+            }
+        }
+        Err(_) => ExitCode::FAILURE,
     }
 }
 
