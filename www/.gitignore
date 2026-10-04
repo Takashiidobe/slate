@@ -1,0 +1,7 @@
+/target/
+/dist/
+/token.txt
+.wrangler/
+
+# Local Netlify folder
+.netlify
