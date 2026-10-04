@@ -5,5 +5,5 @@
 int value;
 
 // SLATE-FILECHECK-BEGIN ERROR
-// ERROR: Error:   × all rules failed: all rules failed: GCC outliner: `moutline` is a Clang
+// ERROR: Error:   × invalid compiler argument `-mno-outline`: unknown option for the gcc
 // SLATE-FILECHECK-END ERROR

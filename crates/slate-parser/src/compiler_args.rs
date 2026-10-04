@@ -8,7 +8,6 @@ use crate::target::isa::{IsaRequest, TargetIsa};
 use crate::target::x86_isa::X86Feature;
 use crate::target_info::{LongDoubleFormat, TargetFamily, TargetInfo};
 use crate::{compiler_headers, sysroot};
-use std::collections::BTreeSet;
 use std::path::PathBuf;
 use std::str::FromStr;
 
@@ -30,6 +29,16 @@ impl FromStr for CompilerFlavor {
             "msvc" => Ok(Self::Msvc),
             _ => Err(format!("unknown compiler flavor: {name}")),
         }
+    }
+}
+
+impl std::fmt::Display for CompilerFlavor {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        formatter.write_str(match self {
+            Self::Gcc => "gcc",
+            Self::Clang => "clang",
+            Self::Msvc => "msvc",
+        })
     }
 }
 
@@ -187,7 +196,31 @@ struct ParsedCompilerArgs {
     optimization: Option<Optimization>,
     isa: IsaRequest,
     diagnostics: DiagnosticOptions,
-    present: BTreeSet<Opt>,
+    occurrences: Vec<(Opt, String)>,
+}
+
+impl ParsedCompilerArgs {
+    fn saw(&mut self, opt: Opt, argument: &str) {
+        self.occurrences.push((opt, argument.to_owned()));
+    }
+
+    fn has(&self, opt: Opt) -> bool {
+        self.occurrences.iter().any(|(seen, _)| *seen == opt)
+    }
+
+    fn check_flavor(&self) -> Result<(), CompilerArgError> {
+        match self
+            .occurrences
+            .iter()
+            .find(|(opt, _)| !opt.accepted_by(self.flavor))
+        {
+            Some((_, argument)) => Err(invalid(
+                argument,
+                &format!("unknown option for the {} flavor", self.flavor),
+            )),
+            None => Ok(()),
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
@@ -225,7 +258,7 @@ enum Opt {
     Fpu,
     Thumb,
     SveVectorBits,
-    Outline,
+    ClangCodegenOnly,
     Warning,
     Pedantic,
     Optimize,
@@ -274,7 +307,7 @@ impl std::fmt::Display for Opt {
             Self::Fpu => "mfpu",
             Self::Thumb => "mthumb",
             Self::SveVectorBits => "msve-vector-bits",
-            Self::Outline => "moutline",
+            Self::ClangCodegenOnly => "m<clang codegen flag>",
             Self::Warning => "W",
             Self::Pedantic => "pedantic",
             Self::Optimize => "O",
@@ -284,6 +317,49 @@ impl std::fmt::Display for Opt {
 }
 
 impl Opt {
+    fn accepted_by(self, flavor: CompilerFlavor) -> bool {
+        use CompilerFlavor::{Clang, Gcc, Msvc};
+        let flavors: &[CompilerFlavor] = match self {
+            Self::Define
+            | Self::Undef
+            | Self::ForceInclude
+            | Self::Imacros
+            | Self::Standard
+            | Self::Include
+            | Self::Iquote
+            | Self::Isystem
+            | Self::Idirafter
+            | Self::Isysroot
+            | Self::Sysroot
+            | Self::Nostdlibinc
+            | Self::Flavor
+            | Self::Target
+            | Self::Warning
+            | Self::Pedantic => &[Gcc, Clang, Msvc],
+            Self::Wrapv
+            | Self::Trapv
+            | Self::StrictOverflow
+            | Self::RoundingMath
+            | Self::TrappingMath
+            | Self::Gnu89Inline
+            | Self::Common
+            | Self::MsExtensions
+            | Self::MsCompatibility
+            | Self::LongDouble
+            | Self::AsmDialect
+            | Self::IsaFeature
+            | Self::Arch
+            | Self::FloatAbi
+            | Self::Fpu
+            | Self::Thumb
+            | Self::SveVectorBits
+            | Self::Optimize => &[Gcc, Clang],
+            Self::PreferredStackBoundary => &[Gcc],
+            Self::StackAlignment | Self::ClangCodegenOnly => &[Clang],
+        };
+        flavors.contains(&flavor)
+    }
+
     fn name(self) -> &'static str {
         match self {
             Self::Wrapv => "wrapv",
@@ -343,6 +419,14 @@ const CODEGEN_ONLY_FLAGS: [&str; 13] = [
 
 const CODEGEN_ONLY_VALUE_FLAGS: [&str; 3] = ["lto=", "visibility=", "debug-prefix-map="];
 
+const CLANG_CODEGEN_ONLY_M_FLAGS: [&str; 1] = ["outline"];
+
+fn clang_codegen_only(argument: &str) -> bool {
+    argument.strip_prefix("-m").is_some_and(|flag| {
+        CLANG_CODEGEN_ONLY_M_FLAGS.contains(&flag.strip_prefix("no-").unwrap_or(flag))
+    })
+}
+
 pub fn ignored_option(argument: &str) -> Option<IgnoredOption> {
     if IGNORED_VALUE_OPTIONS.contains(&argument) {
         return Some(IgnoredOption::TakesValue);
@@ -384,6 +468,7 @@ impl CompilerArgParser {
     {
         let arguments = args.into_iter().collect::<Vec<_>>();
         let raw = parse_arguments(&arguments)?;
+        raw.check_flavor()?;
         let mut target = TargetInfo::for_triple_and_flavor(&raw.target, raw.flavor)?;
         validate_rules(&target).check(&raw)?;
         target.isa = TargetIsa::resolve(target.family, target.environment, &raw.isa, raw.flavor)
@@ -494,7 +579,7 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
             .iter()
             .find_map(|opt| opt.parse_flag(argument).map(|value| (*opt, value)))
         {
-            parsed.present.insert(opt);
+            parsed.saw(opt, argument);
             match opt {
                 Opt::Wrapv => parsed.wrapv = Some(value),
                 Opt::Trapv => parsed.trapv = Some(value),
@@ -508,7 +593,7 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                 _ => return Err(invalid(argument, "unknown flag")),
             }
         } else if let Some(value) = option_value(argument, "D") {
-            parsed.present.insert(Opt::Define);
+            parsed.saw(Opt::Define, argument);
             let define = next_value(arguments, &mut index, argument, value)?;
             parsed.defines.push(define.clone());
             parsed
@@ -516,7 +601,7 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                 .macros
                 .push(MacroOption::Define(define));
         } else if let Some(value) = option_value(argument, "U") {
-            parsed.present.insert(Opt::Undef);
+            parsed.saw(Opt::Undef, argument);
             parsed
                 .preprocessor_inputs
                 .macros
@@ -524,7 +609,7 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                     arguments, &mut index, argument, value,
                 )?));
         } else if let Some(value) = option_value(argument, "include") {
-            parsed.present.insert(Opt::ForceInclude);
+            parsed.saw(Opt::ForceInclude, argument);
             parsed
                 .preprocessor_inputs
                 .includes
@@ -532,7 +617,7 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                     arguments, &mut index, argument, value,
                 )?));
         } else if let Some(value) = option_value(argument, "imacros") {
-            parsed.present.insert(Opt::Imacros);
+            parsed.saw(Opt::Imacros, argument);
             parsed
                 .preprocessor_inputs
                 .imacros
@@ -540,122 +625,122 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                     arguments, &mut index, argument, value,
                 )?));
         } else if let Some(value) = option_value(argument, "std") {
-            parsed.present.insert(Opt::Standard);
+            parsed.saw(Opt::Standard, argument);
             parsed.standard = Some(parse_value(
                 next_value(arguments, &mut index, argument, value)?,
                 argument,
                 "language standard",
             )?);
         } else if let Some(value) = option_value(argument, "I") {
-            parsed.present.insert(Opt::Include);
+            parsed.saw(Opt::Include, argument);
             parsed
                 .include
                 .push(next_value(arguments, &mut index, argument, value)?);
         } else if let Some(value) = option_value(argument, "iquote") {
-            parsed.present.insert(Opt::Iquote);
+            parsed.saw(Opt::Iquote, argument);
             parsed
                 .iquote
                 .push(next_value(arguments, &mut index, argument, value)?);
         } else if let Some(value) = option_value(argument, "isystem") {
-            parsed.present.insert(Opt::Isystem);
+            parsed.saw(Opt::Isystem, argument);
             parsed
                 .isystem
                 .push(next_value(arguments, &mut index, argument, value)?);
         } else if let Some(value) = option_value(argument, "idirafter") {
-            parsed.present.insert(Opt::Idirafter);
+            parsed.saw(Opt::Idirafter, argument);
             parsed
                 .idirafter
                 .push(next_value(arguments, &mut index, argument, value)?);
         } else if let Some(value) = option_value(argument, "isysroot") {
-            parsed.present.insert(Opt::Isysroot);
+            parsed.saw(Opt::Isysroot, argument);
             parsed.isysroot = Some(next_value(arguments, &mut index, argument, value)?);
         } else if let Some(value) = option_value(argument, "sysroot") {
-            parsed.present.insert(Opt::Sysroot);
+            parsed.saw(Opt::Sysroot, argument);
             parsed.sysroot = Some(next_value(arguments, &mut index, argument, value)?);
         } else if matches!(argument.as_str(), "-nostdlibinc" | "--nostdlibinc") {
-            parsed.present.insert(Opt::Nostdlibinc);
+            parsed.saw(Opt::Nostdlibinc, argument);
             parsed.nostdlibinc = true;
         } else if let Some(value) = option_value(argument, "flavor") {
-            parsed.present.insert(Opt::Flavor);
+            parsed.saw(Opt::Flavor, argument);
             parsed.flavor = parse_value(
                 next_value(arguments, &mut index, argument, value)?,
                 argument,
                 "compiler flavor",
             )?;
         } else if let Some(value) = option_value(argument, "target") {
-            parsed.present.insert(Opt::Target);
+            parsed.saw(Opt::Target, argument);
             parsed.target = next_value(arguments, &mut index, argument, value)?;
         } else if let Some(value) = option_value(argument, "mpreferred-stack-boundary") {
-            parsed.present.insert(Opt::PreferredStackBoundary);
+            parsed.saw(Opt::PreferredStackBoundary, argument);
             parsed.preferred_stack_boundary = Some(parse_value(
                 next_value(arguments, &mut index, argument, value)?,
                 argument,
                 "integer exponent",
             )?);
         } else if let Some(value) = option_value(argument, "mstack-alignment") {
-            parsed.present.insert(Opt::StackAlignment);
+            parsed.saw(Opt::StackAlignment, argument);
             parsed.stack_alignment = Some(parse_value(
                 next_value(arguments, &mut index, argument, value)?,
                 argument,
                 "byte alignment",
             )?);
         } else if let Some(value) = option_value(argument, "long-double") {
-            parsed.present.insert(Opt::LongDouble);
+            parsed.saw(Opt::LongDouble, argument);
             parsed.long_double = Some(parse_value(
                 next_value(arguments, &mut index, argument, value)?,
                 argument,
                 "long double format",
             )?);
         } else if let Some(value) = option_value(argument, "masm") {
-            parsed.present.insert(Opt::AsmDialect);
+            parsed.saw(Opt::AsmDialect, argument);
             parsed.asm_dialect = Some(parse_value(
                 next_value(arguments, &mut index, argument, value)?,
                 argument,
                 "asm dialect",
             )?);
         } else if let Some(value) = option_value(argument, "march") {
-            parsed.present.insert(Opt::Arch);
+            parsed.saw(Opt::Arch, argument);
             parsed.isa.march = Some(parse_value(
                 next_value(arguments, &mut index, argument, value)?,
                 argument,
                 "architecture",
             )?);
         } else if let Some(value) = option_value(argument, "mfloat-abi") {
-            parsed.present.insert(Opt::FloatAbi);
+            parsed.saw(Opt::FloatAbi, argument);
             parsed.isa.float_abi = Some(parse_value(
                 next_value(arguments, &mut index, argument, value)?,
                 argument,
                 "float ABI",
             )?);
         } else if let Some(value) = option_value(argument, "mfpu") {
-            parsed.present.insert(Opt::Fpu);
+            parsed.saw(Opt::Fpu, argument);
             parsed.isa.fpu = Some(parse_value(
                 next_value(arguments, &mut index, argument, value)?,
                 argument,
                 "FPU",
             )?);
         } else if let Some(value) = option_value(argument, "msve-vector-bits") {
-            parsed.present.insert(Opt::SveVectorBits);
+            parsed.saw(Opt::SveVectorBits, argument);
             parsed.isa.sve_vector_bits = Some(parse_value(
                 next_value(arguments, &mut index, argument, value)?,
                 argument,
                 "SVE vector length",
             )?);
-        } else if matches!(argument.as_str(), "-moutline" | "-mno-outline") {
-            parsed.present.insert(Opt::Outline);
+        } else if clang_codegen_only(argument) {
+            parsed.saw(Opt::ClangCodegenOnly, argument);
         } else if let Some(thumb) = thumb_flag(argument) {
-            parsed.present.insert(Opt::Thumb);
+            parsed.saw(Opt::Thumb, argument);
             parsed.isa.thumb = Some(thumb);
         } else if let Some((feature, enabled)) = X86Feature::parse_flag(argument) {
-            parsed.present.insert(Opt::IsaFeature);
+            parsed.saw(Opt::IsaFeature, argument);
             parsed.isa.x86.set(feature, enabled);
         } else if parse_pedantic(argument, &mut parsed.diagnostics) {
-            parsed.present.insert(Opt::Pedantic);
+            parsed.saw(Opt::Pedantic, argument);
         } else if let Some(name) = argument.strip_prefix("-W") {
-            parsed.present.insert(Opt::Warning);
+            parsed.saw(Opt::Warning, argument);
             apply_warning_flag(name, &mut parsed.diagnostics);
         } else if let Some(level) = argument.strip_prefix("-O") {
-            parsed.present.insert(Opt::Optimize);
+            parsed.saw(Opt::Optimize, argument);
             parsed.optimization = Some(match level {
                 "0" => Optimization::None,
                 "" | "1" | "2" | "3" | "g" => Optimization::Speed,
@@ -664,7 +749,7 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                 _ => return Err(invalid(argument, "unknown optimization level")),
             });
         } else if let Some(format) = long_double_flag(argument) {
-            parsed.present.insert(Opt::LongDouble);
+            parsed.saw(Opt::LongDouble, argument);
             parsed.long_double = Some(format);
         } else {
             return Err(invalid(argument, "unknown option"));
@@ -845,7 +930,7 @@ fn flavor_rules<'a>(target: &'a TargetInfo) -> Rule<'a, ParsedCompilerArgs> {
         [
             (CompilerFlavor::Gcc, gcc_rules(target)),
             (CompilerFlavor::Clang, clang_rules()),
-            (CompilerFlavor::Msvc, msvc_rules()),
+            (CompilerFlavor::Msvc, Rules::pipeline([])),
         ],
     )
 }
@@ -864,24 +949,10 @@ fn gcc_rules<'a>(target: &'a TargetInfo) -> Rule<'a, ParsedCompilerArgs> {
         Rule::validate("GCC MS modes", |args: &ParsedCompilerArgs| {
             match [Opt::MsExtensions, Opt::MsCompatibility]
                 .into_iter()
-                .find(|opt| args.present.contains(opt))
+                .find(|opt| args.has(*opt))
             {
                 Some(opt) => Err(format!("`{opt}` is not emulated for GCC")),
                 None => Ok(()),
-            }
-        }),
-        Rule::validate("GCC stack alignment", |args: &ParsedCompilerArgs| {
-            if args.stack_alignment.is_some() {
-                Err("stack alignment is a Clang option".into())
-            } else {
-                Ok(())
-            }
-        }),
-        Rule::validate("GCC outliner", |args: &ParsedCompilerArgs| {
-            if args.present.contains(&Opt::Outline) {
-                Err("`moutline` is a Clang option".into())
-            } else {
-                Ok(())
             }
         }),
         Rules::when(
@@ -916,58 +987,15 @@ fn gcc_rules<'a>(target: &'a TargetInfo) -> Rule<'a, ParsedCompilerArgs> {
 }
 
 fn clang_rules<'a>() -> Rule<'a, ParsedCompilerArgs> {
-    Rules::pipeline([
+    Rules::when(
+        |args: &ParsedCompilerArgs| args.stack_alignment.is_some(),
         Rule::validate("Clang stack alignment", |args: &ParsedCompilerArgs| {
-            if args.preferred_stack_boundary.is_some() {
-                Err("preferred stack boundary is a GCC option".into())
-            } else {
+            let value = args.stack_alignment.unwrap_or_default();
+            if value.is_power_of_two() {
                 Ok(())
+            } else {
+                Err(format!("expected a power of two, found {value}"))
             }
         }),
-        Rules::when(
-            |args: &ParsedCompilerArgs| args.stack_alignment.is_some(),
-            Rule::validate("Clang stack alignment", |args: &ParsedCompilerArgs| {
-                let value = args.stack_alignment.unwrap_or_default();
-                if value.is_power_of_two() {
-                    Ok(())
-                } else {
-                    Err(format!("expected a power of two, found {value}"))
-                }
-            }),
-        ),
-    ])
-}
-
-fn msvc_rules<'a>() -> Rule<'a, ParsedCompilerArgs> {
-    const UNSUPPORTED: [Opt; 21] = [
-        Opt::Gnu89Inline,
-        Opt::Common,
-        Opt::MsExtensions,
-        Opt::MsCompatibility,
-        Opt::Wrapv,
-        Opt::Trapv,
-        Opt::StrictOverflow,
-        Opt::RoundingMath,
-        Opt::TrappingMath,
-        Opt::LongDouble,
-        Opt::PreferredStackBoundary,
-        Opt::StackAlignment,
-        Opt::AsmDialect,
-        Opt::IsaFeature,
-        Opt::Arch,
-        Opt::FloatAbi,
-        Opt::Fpu,
-        Opt::Thumb,
-        Opt::SveVectorBits,
-        Opt::Outline,
-        Opt::Optimize,
-    ];
-    Rule::validate(
-        "MSVC stack alignment options",
-        |args: &ParsedCompilerArgs| match UNSUPPORTED.iter().find(|opt| args.present.contains(opt))
-        {
-            Some(opt) => Err(format!("MSVC does not support `{opt}`")),
-            None => Ok(()),
-        },
     )
 }

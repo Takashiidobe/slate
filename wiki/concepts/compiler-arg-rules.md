@@ -42,10 +42,19 @@ rule pipeline. Flag effects are in [compiler-flags](compiler-flags.md).
 - `-masm=att|intel`: picks the `{att|intel}` alternative in x86 GNU asm and
   is recorded as the asm's `dialect`. gcc flavor rejects it off x86; clang
   accepts it everywhere (no effect off x86); msvc rejects it.
-- `-moutline` / `-mno-outline`: clang's machine outliner, codegen-only and
-  without predefines, so clang accepts and ignores it on every target
-  (mimalloc passes `-mno-outline`). gcc and msvc reject it. It is an `Opt`,
-  not an `ignored_option`, because that list is flavor-independent.
+- Which flavors have an option is `Opt::accepted_by`, an exhaustive match,
+  so every new `Opt` must name its flavors. Parsing records each
+  `(Opt, argument)` occurrence without regard to flavor, because `--flavor`
+  may come later in argv; `check_flavor` then rejects the first occurrence
+  the final flavor lacks as `unknown option for the <flavor> flavor`, as
+  the real compiler would (`-mstack-alignment` is clang-only,
+  `-mpreferred-stack-boundary` gcc-only, and msvc has none of the GNU
+  codegen, ISA and optimization options).
+- `CLANG_CODEGEN_ONLY_M_FLAGS` (`Opt::ClangCodegenOnly`): `-m`/`-mno-` flags
+  that clang accepts and ignores and gcc does not know, such as `-moutline`
+  (mimalloc). Universal codegen-only flags stay in `ignored_option`, which
+  slate's compile-command normalization shares and which has no flavor
+  (slate-parser-ivo1.2).
 
 ## Include search
 
@@ -91,13 +100,17 @@ Put a rule in the narrowest bucket that owns the constraint.
 - Leaf rules use `Rule::validate` for dynamic messages. Failures are
   `thiserror` errors with miette diagnostics; combinators keep nested
   failures.
-- Rules never re-parse strings or spellings. They may use presence to
-  reject incompatible options (gcc's preferred stack boundary vs clang's
-  stack alignment); both normalize to one `TargetInfo` value.
+- Rules never re-parse strings or spellings, and never check whether a
+  flavor has an option; that is `Opt::accepted_by`. A flavor branch holds
+  value checks (clang's stack alignment is a power of two) and emulation
+  gaps (gcc's `-fms-extensions` exists but is not emulated).
 
 ## Adding an option
 
-1. Add an `Opt` definition.
-2. Add validation to `common_rules`, a flavor branch, or a target rule.
+1. Add an `Opt` definition and its flavors in `Opt::accepted_by`. A
+   clang-only codegen `-m` flag is just an entry in
+   `CLANG_CODEGEN_ONLY_M_FLAGS`.
+2. Add value validation to `common_rules`, a flavor branch, or a target
+   rule.
 3. Add a FileCheck fixture for accepted and rejected configurations if it
    changes target or diagnostic behavior.

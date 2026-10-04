@@ -4,5 +4,5 @@
 int value;
 
 // SLATE-FILECHECK-BEGIN PARSE
-// PARSE: Error:   × all rules failed: MSVC stack alignment options: MSVC does not support
+// PARSE: Error:   × invalid compiler argument `-masm=intel`: unknown option for the msvc
 // SLATE-FILECHECK-END PARSE

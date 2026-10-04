@@ -5,5 +5,5 @@
 int value(void) { return 0; }
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: Error:   × all rules failed: MSVC stack alignment options: MSVC does not support `O`
+// DEFAULT: Error:   × invalid compiler argument `-O2`: unknown option for the msvc flavor
 // SLATE-FILECHECK-END DEFAULT

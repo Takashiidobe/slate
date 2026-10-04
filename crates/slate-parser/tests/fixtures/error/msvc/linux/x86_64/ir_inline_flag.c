@@ -5,5 +5,5 @@
 int value(void) { return 0; }
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: Error:   × all rules failed: MSVC stack alignment options: MSVC does not support
+// DEFAULT: Error:   × invalid compiler argument `-fgnu89-inline`: unknown option for the msvc
 // SLATE-FILECHECK-END DEFAULT

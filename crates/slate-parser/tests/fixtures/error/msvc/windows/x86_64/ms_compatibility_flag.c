@@ -4,5 +4,5 @@ int value;
 // SLATE-FILECHECK-ERROR PARSE
 
 // SLATE-FILECHECK-BEGIN PARSE
-// PARSE: Error:   × all rules failed: MSVC stack alignment options: MSVC does not support `ms-
+// PARSE: Error:   × invalid compiler argument `-fms-compatibility`: unknown option for the
 // SLATE-FILECHECK-END PARSE

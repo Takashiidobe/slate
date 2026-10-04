@@ -5,5 +5,5 @@
 int value;
 
 // SLATE-FILECHECK-BEGIN ERROR
-// ERROR: Error:   × all rules failed: MSVC stack alignment options: MSVC does not support
+// ERROR: Error:   × invalid compiler argument `-mavx`: unknown option for the msvc flavor
 // SLATE-FILECHECK-END ERROR

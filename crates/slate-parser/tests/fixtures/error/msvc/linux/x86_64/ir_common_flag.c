@@ -5,5 +5,5 @@
 int tentative;
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: Error:   × all rules failed: MSVC stack alignment options: MSVC does not support
+// DEFAULT: Error:   × invalid compiler argument `-fcommon`: unknown option for the msvc flavor
 // SLATE-FILECHECK-END DEFAULT
