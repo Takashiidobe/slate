@@ -1199,7 +1199,7 @@ impl<'a> Parser<'a> {
                     BinaryOp::BitXor => Ok(left.bitxor(&right)),
                     BinaryOp::BitOr => Ok(left.bitor(&right)),
                     BinaryOp::ShiftLeft | BinaryOp::ShiftRight => {
-                        if ctx.is_defined.is_some() && ctx.flavor == CompilerFlavor::Msvc {
+                        if ctx.is_defined.is_some() && ctx.flavor.is_msvc() {
                             let shift = u32::try_from(&(&right.value & BigInt::from(63u8)))
                                 .map_err(|_| ConstExprError::InvalidIntegerConstant)?;
                             return Ok(if *op == BinaryOp::ShiftLeft {

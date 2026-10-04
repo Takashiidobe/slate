@@ -200,7 +200,7 @@ impl X86IsaRequest {
                     arch.name()
                 ));
             }
-            if flavor == CompilerFlavor::Gcc && !arch.is_level() {
+            if flavor.is_gcc() && !arch.is_level() {
                 return Err(format!(
                     "x86 architecture `{}` is only emulated for the clang flavor",
                     arch.name()
@@ -221,7 +221,7 @@ impl X86IsaRequest {
         match self
             .flags
             .iter()
-            .find(|(feature, _)| flavor == CompilerFlavor::Gcc && !GCC_FEATURES.contains(feature))
+            .find(|(feature, _)| flavor.is_gcc() && !GCC_FEATURES.contains(feature))
         {
             Some((feature, _)) => Err(format!(
                 "x86 feature `{}` is only emulated for the clang flavor",
@@ -300,7 +300,7 @@ impl X86Isa {
     }
 
     pub fn predefines(self, family: TargetFamily, flavor: CompilerFlavor) -> Vec<String> {
-        let gcc = flavor == CompilerFlavor::Gcc;
+        let gcc = flavor.is_gcc();
         let cpu_macros = match self.arch {
             arch if gcc && arch.is_level() => &["__k8", "__k8__"],
             arch => arch.cpu().macros,

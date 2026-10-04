@@ -126,10 +126,7 @@ impl Lowerer {
                 };
                 // x86 prints a tied input at its own width, not its output's.
                 let view = match input_width {
-                    Some(bits)
-                        if matches!(family, TargetFamily::X86 | TargetFamily::X86_64)
-                            && input_width != *width =>
-                    {
+                    Some(bits) if family.is_x86() && input_width != *width => {
                         Some(AsmRegisterView::Bits(bits))
                     }
                     _ => None,
@@ -203,7 +200,7 @@ impl Lowerer {
             &lowered,
             asm.operands.is_none(),
             self.context.target.family,
-            self.types.compiler_flavor(),
+            self.types.flavor(),
         ));
         Ok(lowered)
     }
@@ -244,7 +241,7 @@ impl Lowerer {
                 }
             }
         }
-        let flavor = self.types.compiler_flavor();
+        let flavor = self.types.flavor();
         let objects = self.types.entities.constants();
         let (constant, symbol) = match &candidate {
             Candidate::Value(value) => (
@@ -350,9 +347,7 @@ impl Lowerer {
                 let linked = match storage {
                     Some(StorageDuration::Static) => true,
                     // gcc prints a thread-local's symbol; clang rejects it as not a link-time address.
-                    Some(StorageDuration::Thread) => {
-                        self.types.compiler_flavor() == CompilerFlavor::Gcc
-                    }
+                    Some(StorageDuration::Thread) => self.types.flavor().is_gcc(),
                     Some(StorageDuration::Automatic) => false,
                     None => matches!(place.ty, Type::Function { .. }),
                 };
@@ -382,11 +377,8 @@ impl Lowerer {
     }
 
     fn scaled(&self, amount: &Value, element: &Type) -> Option<i64> {
-        let amount = integer_with_objects(
-            amount,
-            self.types.compiler_flavor(),
-            self.types.entities.constants(),
-        )?;
+        let amount =
+            integer_with_objects(amount, self.types.flavor(), self.types.entities.constants())?;
         let amount = i64::try_from(amount).ok()?;
         let size = i64::try_from(self.types.storage(element.clone()).ok()?.size_bytes).ok()?;
         amount.checked_mul(size)
@@ -407,7 +399,7 @@ impl Lowerer {
             }
             PlaceKind::Binding(id)
                 if memory_only
-                    && self.types.compiler_flavor() == CompilerFlavor::Gcc
+                    && self.types.flavor().is_gcc()
                     && self.types.entities.is_register(id) =>
             {
                 Err(ResolveError::Internal(
@@ -470,7 +462,7 @@ fn options(
     }
     if basic
         || clobbers(|clobber| matches!(clobber, AsmClobber::Memory))
-        || (side_effects && flavor != CompilerFlavor::Gcc)
+        || (side_effects && !flavor.is_gcc())
     {
         memory = AsmMemory::Any;
     }
@@ -478,8 +470,7 @@ fn options(
         memory,
         pure: !side_effects && memory != AsmMemory::Any,
         nostack: true,
-        preserves_flags: !matches!(family, TargetFamily::X86 | TargetFamily::X86_64)
-            && !clobbers(|clobber| matches!(clobber, AsmClobber::Cc)),
+        preserves_flags: !family.is_x86() && !clobbers(|clobber| matches!(clobber, AsmClobber::Cc)),
         may_unwind: clobbers(|clobber| matches!(clobber, AsmClobber::Unwind)),
     }
 }
@@ -695,7 +686,7 @@ impl TypeResolver {
             expr = inner;
         }
         if memory_only
-            && self.compiler_flavor() == CompilerFlavor::Gcc
+            && self.flavor().is_gcc()
             && matches!(expr.value, ast::ExprKind::Identifier(_))
             && self
                 .references
@@ -737,7 +728,7 @@ fn constraint(constraint: &ast::AsmConstraint, family: TargetFamily) -> AsmConst
 }
 
 fn classes(letters: &str, family: TargetFamily) -> Vec<AsmOperandClass> {
-    let x86 = matches!(family, TargetFamily::X86 | TargetFamily::X86_64);
+    let x86 = family.is_x86();
     let mut classes = Vec::new();
     let mut rest = letters;
     while let Some(first) = rest.chars().next() {

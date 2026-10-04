@@ -373,7 +373,7 @@ impl Resolver {
                 if !implicit_builtin && !super::expression::specially_lowered(callee, arguments) {
                     match &callee.value {
                         ExprKind::Identifier(name)
-                            if self.flavor == CompilerFlavor::Msvc
+                            if self.flavor.is_msvc()
                                 && !self.collecting_labels
                                 && self.lookup_ordinary(name).is_none()
                                 && !super::expression::predefined_function_name(name) =>
@@ -785,7 +785,7 @@ impl Resolver {
             return Ok(entry);
         }
         if self.labels.contains_key(&label.value)
-            || (self.flavor == CompilerFlavor::Msvc
+            || (self.flavor.is_msvc()
                 && self.ms_asm_labels.contains_key(&label.value.to_lowercase()))
         {
             return Err(ResolveError::Duplicate {
@@ -949,7 +949,7 @@ impl Resolver {
             .find_map(|scope| scope.get(name))
             .or_else(|| self.labels.get(name))
             .or_else(|| {
-                (self.flavor == CompilerFlavor::Msvc)
+                (self.flavor.is_msvc())
                     .then(|| {
                         self.ms_asm_labels
                             .get(&name.to_lowercase())
@@ -975,7 +975,7 @@ impl Resolver {
             if self.collecting_labels {
                 if let Some(label) = &instruction.value.label {
                     let name = label.value.to_lowercase();
-                    if self.flavor == CompilerFlavor::Msvc {
+                    if self.flavor.is_msvc() {
                         if self.labels.contains_key(&label.value)
                             || self.ms_asm_labels.contains_key(&name)
                         {
@@ -1011,7 +1011,7 @@ impl Resolver {
             MsAsmExpr::Name(name) if self.ms_asm_labels.contains_key(&name.to_lowercase()) => {
                 Ok(())
             }
-            MsAsmExpr::Name(name) if self.flavor == CompilerFlavor::Msvc => {
+            MsAsmExpr::Name(name) if self.flavor.is_msvc() => {
                 self.reference_label(&expr.clone().with_value(name.clone()))
             }
             MsAsmExpr::Name(name) => {

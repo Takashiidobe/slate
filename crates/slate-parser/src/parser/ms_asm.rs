@@ -426,7 +426,7 @@ impl<'p, 'a> OperandParser<'p, 'a> {
         if let Some(operator) = self.peek_word(0).as_deref().and_then(operator) {
             self.pos += 1;
             if operator == MsAsmOperator::Type
-                && self.parser.flavor() == CompilerFlavor::Msvc
+                && self.parser.flavor().is_msvc()
                 && let Some(Token::Keyword(keyword)) = self.peek()
                 && is_type_keyword(*keyword)
             {

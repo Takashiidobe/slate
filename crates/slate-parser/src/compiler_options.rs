@@ -73,7 +73,7 @@ impl Default for CompilerOptions {
 impl CompilerOptions {
     pub fn for_flavor(flavor: CompilerFlavor) -> Self {
         let mut options = Self::default();
-        if flavor == CompilerFlavor::Gcc {
+        if flavor.is_gcc() {
             options.operations.floating.exceptions = Exceptions::Observable;
         }
         options

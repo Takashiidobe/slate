@@ -18,7 +18,7 @@ enum Gate {
 
 impl Gate {
     fn admits(self, target: &TargetInfo) -> bool {
-        let x86 = matches!(target.family, TargetFamily::X86 | TargetFamily::X86_64);
+        let x86 = target.family.is_x86();
         match self {
             Self::Never => false,
             Self::Always => true,
@@ -240,7 +240,7 @@ pub fn declspec_registered(name: &str, flavor: CompilerFlavor, target: &TargetIn
 // gcc's `__has_attribute` also answers for standard attributes with no GNU spelling
 pub fn has_attribute(name: &str, flavor: CompilerFlavor, target: &TargetInfo) -> bool {
     gnu_registered(name, flavor, target)
-        || (flavor == CompilerFlavor::Gcc
+        || (flavor.is_gcc()
             && standard_attribute_value(unwrapped(name), flavor, LanguageStandard::C23) != 0)
 }
 
@@ -251,9 +251,7 @@ pub fn has_c_attribute(
     target: &TargetInfo,
 ) -> i64 {
     match spelling.split_once("::") {
-        Some(_) => {
-            (flavor != CompilerFlavor::Msvc && spelling_registered(spelling, flavor, target)) as i64
-        }
+        Some(_) => (!flavor.is_msvc() && spelling_registered(spelling, flavor, target)) as i64,
         None => standard_attribute_value(unwrapped(spelling), flavor, standard),
     }
 }
@@ -284,7 +282,7 @@ fn standard_attribute_value(name: &str, flavor: CompilerFlavor, standard: Langua
     match flavor {
         CompilerFlavor::Clang => clang,
         CompilerFlavor::Gcc => gcc,
-        CompilerFlavor::Msvc if standard.stdc_version() >= Some(202311) => msvc,
+        CompilerFlavor::Msvc if standard.at_least_c23() => msvc,
         CompilerFlavor::Msvc => 0,
     }
 }

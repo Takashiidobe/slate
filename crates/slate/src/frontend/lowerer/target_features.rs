@@ -1,5 +1,4 @@
 use super::*;
-use slate_parser::target_info::TargetFamily;
 
 const X86_FEATURES: &[(&str, &str)] = &[
     ("adx", "adx"),
@@ -58,7 +57,7 @@ fn rustc_x86_feature(clang: &str) -> Option<&'static str> {
 
 impl Tables<'_> {
     fn is_x86(&self) -> bool {
-        matches!(self.target.family, TargetFamily::X86 | TargetFamily::X86_64)
+        self.target.family.is_x86()
     }
 
     pub(super) fn target_feature_attr(&self, function: &ir::Function) -> Result<Option<Attr>> {

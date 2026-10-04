@@ -64,8 +64,8 @@ impl StandardFeatures {
             standard,
             LanguageStandard::C89 | LanguageStandard::C94 | LanguageStandard::Gnu89
         );
-        let c11 = standard.stdc_version() >= Some(201112);
-        let c23 = standard.stdc_version() >= Some(202311);
+        let c11 = standard.at_least_c11();
+        let c23 = standard.at_least_c23();
         let c23_keyword = if c23 { Standard } else { Rejected };
         Self {
             keyword_alignof: c23_keyword,
@@ -105,7 +105,7 @@ impl StandardFeatures {
             control_statement_scopes: !c89,
             auto_type_inference: c23,
             empty_parens_are_prototype: c23,
-            main_implicit_return_zero: standard.stdc_version() >= Some(199901),
+            main_implicit_return_zero: standard.at_least_c99(),
             valueless_return_in_nonvoid: c89,
             inline_semantics: if c89 {
                 InlineSemantics::SupressDef
@@ -147,9 +147,9 @@ impl StandardFeatures {
             }
             CompilerFlavor::Gcc => (false, false),
         };
-        features.octal_prefix = flavor != CompilerFlavor::Msvc;
-        features.keyword_countof = flavor != CompilerFlavor::Msvc;
-        if flavor == CompilerFlavor::Gcc {
+        features.octal_prefix = !flavor.is_msvc();
+        features.keyword_countof = !flavor.is_msvc();
+        if flavor.is_gcc() {
             features.widest_integer_literal_fallback = true;
             // gcc drops _Atomic, and before c23 qualifiers of an array's elements, from `?:` pointers
             features.conditional_pointers = crate::sema::PointerMerge {

@@ -64,6 +64,12 @@ pub enum TargetFamily {
     Arm32,
 }
 
+impl TargetFamily {
+    pub const fn is_x86(self) -> bool {
+        matches!(self, Self::X86 | Self::X86_64)
+    }
+}
+
 #[derive(Debug, thiserror::Error)]
 pub enum TargetError {
     #[error("unsupported target triple: {0}")]
@@ -277,8 +283,7 @@ impl TargetInfo {
     // msvc has no __float128
     pub fn has_float128(&self) -> bool {
         self.long_double == LongDoubleFormat::Binary128
-            || (matches!(self.family, TargetFamily::X86_64 | TargetFamily::X86)
-                && self.environment != TargetEnvironment::Msvc)
+            || (self.family.is_x86() && self.environment != TargetEnvironment::Msvc)
     }
 
     // gcc's _Float64x: the narrowest format wider than double

@@ -5,7 +5,6 @@ use super::expression::Lowerer;
 use super::numeric::ResolveError;
 use super::types::TypeResolver;
 use crate::ast::{Attribute, DeclarationSpecifiers, Expr, ExprKind, Span, StorageClass};
-use crate::compiler_args::CompilerFlavor;
 use crate::compiler_options::InlineSemantics;
 use crate::ir::{
     BindingId, Deallocator, Fallthrough, FunctionSemantics, Inlining, Linkage, MemoryEffects,
@@ -65,8 +64,7 @@ pub(super) fn builtin_deallocator(
     if types.references.contains_key(&function.id) {
         return None;
     }
-    let builtin =
-        super::builtins::clang_builtin(name, types.compiler_flavor(), types.target_info().family)?;
+    let builtin = super::builtins::clang_builtin(name, types.flavor(), types.target_info().family)?;
     Some((builtin, types.builtin_signature(builtin)?))
 }
 
@@ -216,7 +214,7 @@ impl Lowerer {
             .filter_map(|function| {
                 let builtin = super::builtins::clang_builtin(
                     &function.name,
-                    self.types.compiler_flavor(),
+                    self.types.flavor(),
                     self.types.target_info().family,
                 )?;
                 Some((function.id, function.value.id, builtin))
@@ -224,7 +222,7 @@ impl Lowerer {
             .collect();
         for (node, id, builtin) in named_builtins {
             if !self.types.declares_builtin(id, builtin) {
-                if self.types.compiler_flavor() == CompilerFlavor::Clang
+                if self.types.flavor().is_clang()
                     && builtin.has(BuiltinAttribute::NoReturn)
                     && matches!(self.types.entities.linkage(id), Some(Linkage::External))
                 {
@@ -238,8 +236,8 @@ impl Lowerer {
                 .or_default()
                 .extend(builtin.declaration_metadata());
             let state = self.function_declarations.entry(id).or_default();
-            state.noreturn |= builtin.noreturn(self.types.compiler_flavor());
-            if let Some(memory) = builtin.memory_effects(self.types.compiler_flavor()) {
+            state.noreturn |= builtin.noreturn(self.types.flavor());
+            if let Some(memory) = builtin.memory_effects(self.types.flavor()) {
                 state.restrict_memory(memory);
             }
         }

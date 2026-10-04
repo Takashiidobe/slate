@@ -265,7 +265,7 @@ impl<'a> Preprocessor<'a> {
                 continue;
             }
         }
-        if flavor == CompilerFlavor::Clang {
+        if flavor.is_clang() {
             self.seed_microsoft_mode_predefines(target)?;
         }
         self.seed_standard_predefines()
@@ -356,7 +356,7 @@ impl<'a> Preprocessor<'a> {
             if !self.dialect.standard().is_gnu() {
                 defines.push(("__STRICT_ANSI__".to_string(), "1".to_string()));
             }
-            let inline_semantics = if self.dialect.standard().stdc_version() >= Some(199901) {
+            let inline_semantics = if self.dialect.standard().at_least_c99() {
                 "__GNUC_STDC_INLINE__"
             } else {
                 "__GNUC_GNU_INLINE__"
@@ -543,7 +543,7 @@ impl<'a> Preprocessor<'a> {
 
     // msvc ignores #define and #undef of its builtin macros (warning C4117)
     fn is_reserved_macro(&self, name: &str) -> bool {
-        self.dialect.flavor() == CompilerFlavor::Msvc
+        self.dialect.flavor().is_msvc()
             && self
                 .macros
                 .get(name)
@@ -565,8 +565,7 @@ impl<'a> Preprocessor<'a> {
                 self.macros.insert(selected.to_owned(), entry);
             }
         }
-        let mut defines = if target.os == crate::target_info::TargetOs::Windows
-            && flavor == CompilerFlavor::Msvc
+        let mut defines = if target.os == crate::target_info::TargetOs::Windows && flavor.is_msvc()
         {
             Vec::new()
         } else {
@@ -578,12 +577,12 @@ impl<'a> Preprocessor<'a> {
             ));
             defines
         };
-        if flavor == CompilerFlavor::Gcc
+        if flavor.is_gcc()
             && options.operations.floating.rounding == crate::ir::Rounding::Environment
         {
             defines.push("__ROUNDING_MATH__=1".into());
         }
-        if flavor == CompilerFlavor::Msvc
+        if flavor.is_msvc()
             && options.explicit_standard
             && let Some(version) = self.dialect.standard().stdc_version()
         {
@@ -1425,15 +1424,13 @@ fn expand_has_checks(tokens: &[Span<Token>], dialect: &Dialect) -> Vec<Span<Toke
         let check: Option<&dyn Fn(&str) -> i64> = match tokens.value_at(index) {
             Some(Token::Ident(name)) if name == "__has_attribute" => Some(&has_attribute),
             Some(Token::Ident(name)) if name == "__has_c_attribute" => Some(&has_c_attribute),
-            Some(Token::Ident(name))
-                if name == "__has_cpp_attribute" && flavor == CompilerFlavor::Gcc =>
-            {
+            Some(Token::Ident(name)) if name == "__has_cpp_attribute" && flavor.is_gcc() => {
                 Some(&has_cpp_attribute)
             }
             Some(Token::Ident(name)) if name == "__has_builtin" => Some(&has_builtin),
             Some(Token::Ident(name)) if name == "__has_feature" => Some(&has_feature),
             Some(Token::Ident(name)) if name == "__has_extension" => Some(&has_extension),
-            Some(Token::Ident(name)) if flavor == CompilerFlavor::Clang => match name.as_ref() {
+            Some(Token::Ident(name)) if flavor.is_clang() => match name.as_ref() {
                 "__has_declspec_attribute" => Some(&has_declspec_attribute),
                 "__has_warning" => Some(&has_warning),
                 "__is_identifier" => Some(&is_identifier),

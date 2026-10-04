@@ -130,7 +130,7 @@ impl ArmIsa {
     }
 
     pub fn predefines(self, flavor: CompilerFlavor) -> Vec<String> {
-        let gcc = flavor == CompilerFlavor::Gcc;
+        let gcc = flavor.is_gcc();
         let number = |hex: u32| {
             if gcc {
                 hex.to_string()

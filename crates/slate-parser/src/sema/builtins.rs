@@ -156,7 +156,7 @@ impl ClangBuiltin {
 
     // cl.exe gives a bare `exit` or `toupper` declaration no builtin semantics.
     fn declaration_semantics(&self, flavor: CompilerFlavor) -> bool {
-        flavor != CompilerFlavor::Msvc || self.kind != ClangBuiltinKind::Library
+        !flavor.is_msvc() || self.kind != ClangBuiltinKind::Library
     }
 
     pub fn noreturn(&self, flavor: CompilerFlavor) -> bool {
@@ -453,7 +453,7 @@ impl TypeResolver {
         let ExprKind::Identifier(name) = &callee.value else {
             return None;
         };
-        let builtin = clang_builtin(name, self.compiler_flavor(), self.target_info().family)?;
+        let builtin = clang_builtin(name, self.flavor(), self.target_info().family)?;
         let Some(&binding) = self.references.get(&callee.id) else {
             return Some((builtin, None));
         };
@@ -475,7 +475,7 @@ impl TypeResolver {
         builtin: &ClangBuiltin,
         arguments: &[Expr],
     ) -> bool {
-        if self.compiler_flavor() != CompilerFlavor::Gcc
+        if !self.flavor().is_gcc()
             || !self
                 .entities
                 .ty(&binding)
@@ -602,7 +602,7 @@ impl TypeResolver {
     }
 
     pub(super) fn builtin_signature(&mut self, builtin: &ClangBuiltin) -> Option<QualType> {
-        let prototype = gcc_prototype(builtin, self.compiler_flavor()).or(builtin.prototype)?;
+        let prototype = gcc_prototype(builtin, self.flavor()).or(builtin.prototype)?;
         if builtin.has(BuiltinAttribute::CustomTypeChecking)
             || (prototype.params.is_empty() && prototype.variadic)
         {

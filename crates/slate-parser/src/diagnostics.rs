@@ -96,18 +96,12 @@ impl Warning {
     ) -> DefaultSeverity {
         match self {
             Self::LongLong | Self::BitIntExtension => DefaultSeverity::Ignored,
-            Self::DeprecatedNonPrototype if flavor != CompilerFlavor::Clang => {
-                DefaultSeverity::Ignored
-            }
-            Self::ImplicitFunctionDeclaration if flavor == CompilerFlavor::Msvc => {
-                DefaultSeverity::Ignored
-            }
-            Self::C99Compat if standard.stdc_version() >= Some(199901) => DefaultSeverity::Ignored,
+            Self::DeprecatedNonPrototype if !flavor.is_clang() => DefaultSeverity::Ignored,
+            Self::ImplicitFunctionDeclaration if flavor.is_msvc() => DefaultSeverity::Ignored,
+            Self::C99Compat if standard.at_least_c99() => DefaultSeverity::Ignored,
             Self::IncompatiblePointerTypes | Self::IntConversion => match flavor {
                 CompilerFlavor::Msvc => DefaultSeverity::Warning,
-                CompilerFlavor::Gcc if standard.stdc_version() < Some(199901) => {
-                    DefaultSeverity::Warning
-                }
+                CompilerFlavor::Gcc if !standard.at_least_c99() => DefaultSeverity::Warning,
                 _ => DefaultSeverity::Error,
             },
             _ => DefaultSeverity::Warning,

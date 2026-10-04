@@ -189,8 +189,8 @@ impl Lowerer {
             linkage: Linkage::External,
             symbol: SymbolAttributes::default(),
             semantics: FunctionSemantics {
-                noreturn: builtin.noreturn(self.types.compiler_flavor()),
-                memory: builtin.memory_effects(self.types.compiler_flavor()),
+                noreturn: builtin.noreturn(self.types.flavor()),
+                memory: builtin.memory_effects(self.types.flavor()),
                 ..FunctionSemantics::default()
             },
             body: None,

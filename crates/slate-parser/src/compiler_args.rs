@@ -32,6 +32,20 @@ impl FromStr for CompilerFlavor {
     }
 }
 
+impl CompilerFlavor {
+    pub const fn is_gcc(self) -> bool {
+        matches!(self, Self::Gcc)
+    }
+
+    pub const fn is_clang(self) -> bool {
+        matches!(self, Self::Clang)
+    }
+
+    pub const fn is_msvc(self) -> bool {
+        matches!(self, Self::Msvc)
+    }
+}
+
 impl std::fmt::Display for CompilerFlavor {
     fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         formatter.write_str(match self {
@@ -85,6 +99,18 @@ impl LanguageStandard {
             Self::C23 | Self::Gnu23 => Some(202311),
             Self::C2y | Self::Gnu2y => Some(202400),
         }
+    }
+
+    pub fn at_least_c99(self) -> bool {
+        self.stdc_version() >= Some(199901)
+    }
+
+    pub fn at_least_c11(self) -> bool {
+        self.stdc_version() >= Some(201112)
+    }
+
+    pub fn at_least_c23(self) -> bool {
+        self.stdc_version() >= Some(202311)
     }
 }
 
@@ -823,7 +849,7 @@ fn signed_overflow(flavor: CompilerFlavor, arguments: &[String]) -> Overflow {
         wrap.filter(|(_, value)| *value),
         trap.filter(|(_, value)| *value),
     ) {
-        (_, Some(_)) if flavor == CompilerFlavor::Clang => Overflow::Trap,
+        (_, Some(_)) if flavor.is_clang() => Overflow::Trap,
         (Some(wrap), Some(trap)) if trap.0 > wrap.0 => Overflow::Trap,
         (Some(_), _) => Overflow::Wrap,
         (_, Some(_)) => Overflow::Trap,
@@ -972,9 +998,7 @@ fn flavor_rules<'a>(target: &'a TargetInfo) -> Rule<'a, ParsedCompilerArgs> {
 fn gcc_rules<'a>(target: &'a TargetInfo) -> Rule<'a, ParsedCompilerArgs> {
     Rules::pipeline([
         Rule::validate("GCC asm dialect", move |args: &ParsedCompilerArgs| {
-            if args.asm_dialect.is_some()
-                && !matches!(target.family, TargetFamily::X86 | TargetFamily::X86_64)
-            {
+            if args.asm_dialect.is_some() && !target.family.is_x86() {
                 Err(format!("asm dialect is unsupported for {}", target.triple))
             } else {
                 Ok(())
@@ -995,7 +1019,7 @@ fn gcc_rules<'a>(target: &'a TargetInfo) -> Rule<'a, ParsedCompilerArgs> {
                 "GCC preferred stack boundary",
                 move |args: &ParsedCompilerArgs| {
                     let value = args.preferred_stack_boundary.unwrap_or_default();
-                    if !matches!(target.family, TargetFamily::X86 | TargetFamily::X86_64) {
+                    if !target.family.is_x86() {
                         return Err(format!(
                             "preferred stack boundary is unsupported for {}",
                             target.triple

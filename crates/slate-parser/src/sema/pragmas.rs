@@ -104,7 +104,7 @@ impl FloatingPragmas {
         placement: PragmaPlacement,
     ) -> Result<(), ResolveError> {
         // gcc implements none of these pragmas and ignores them with a warning
-        if self.flavor == CompilerFlavor::Gcc {
+        if self.flavor.is_gcc() {
             return Ok(());
         }
         let control = match pragma {

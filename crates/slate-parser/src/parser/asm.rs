@@ -6,7 +6,6 @@ use crate::ast::{
     AsmConstraintModifier, AsmLabel, AsmOperand, AsmOperands, AsmQualifier, AsmTemplatePiece, Expr,
     GnuAsm, Span, StorageClass,
 };
-use crate::compiler_args::CompilerFlavor;
 use crate::error::ParseError;
 use crate::lexer::{Keyword, Token};
 use crate::target::x86::decode_register;
@@ -177,14 +176,10 @@ impl Parser {
         cursor.pos = position + 1;
         let template_pos = cursor.pos;
         let template = asm_string(tokens, &mut cursor.pos).map_err(|error| cursor.error(error))?;
-        if is_goto && self.flavor() == CompilerFlavor::Gcc && cursor.peek() == Some(&Token::RParen)
-        {
+        if is_goto && self.flavor().is_gcc() && cursor.peek() == Some(&Token::RParen) {
             return Err(cursor.error("expected `:`"));
         }
-        if at_file_scope
-            && self.flavor() == CompilerFlavor::Clang
-            && cursor.peek() != Some(&Token::RParen)
-        {
+        if at_file_scope && self.flavor().is_clang() && cursor.peek() != Some(&Token::RParen) {
             return Err(cursor.error("expected `)`"));
         }
         if cursor.consume(Token::RParen) {
@@ -274,8 +269,7 @@ impl Parser {
                 .alternatives
                 .iter()
                 .any(|alternative| alternative.modifiers.contains(&AsmConstraintModifier::Pic));
-            if (self.flavor() == CompilerFlavor::Clang && hard_register) || (pic && !at_file_scope)
-            {
+            if (self.flavor().is_clang() && hard_register) || (pic && !at_file_scope) {
                 return Err(invalid_constraint(operand, direction));
             }
             Ok(AsmOperand {
@@ -328,7 +322,7 @@ impl Parser {
             if invalid_match || direction_modifier {
                 return Err(invalid_constraint(raw, "input"));
             }
-            let clang = self.flavor() == CompilerFlavor::Clang;
+            let clang = self.flavor().is_clang();
             if clang && matched.windows(2).any(|pair| pair[0] != pair[1]) {
                 return Err(invalid_constraint(raw, "input"));
             }

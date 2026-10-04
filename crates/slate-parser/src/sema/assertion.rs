@@ -286,7 +286,7 @@ impl Checker<'_> {
         self.types.owner = owner;
         let inferred = matches!(declaration.specifiers.ty, TypeSpecifier::Inferred);
         if inferred
-            && self.types.compiler_flavor() == CompilerFlavor::Gcc
+            && self.types.flavor().is_gcc()
             && let [_, second, ..] = declaration.declarators.as_slice()
         {
             self.reject(second, "'auto' may only be used with a single declarator");
@@ -612,7 +612,7 @@ impl Checker<'_> {
         let Ok(ty) = self.types.expression_type(function) else {
             return;
         };
-        let clang = self.types.compiler_flavor() == CompilerFlavor::Clang;
+        let clang = self.types.flavor().is_clang();
         let parameter = match self.types.ctypes.function_parts(ty) {
             Some((_, &[parameter], _, true)) => parameter,
             Some((_, _, _, false)) if !clang => return,
@@ -653,7 +653,7 @@ impl Checker<'_> {
             return self.reject(function, "'malloc' argument is not a function");
         };
         let result = ty.and_then(|ty| deallocator_argument(self.types, ty, argument));
-        if self.types.compiler_flavor() == CompilerFlavor::Clang {
+        if self.types.flavor().is_clang() {
             self.report(function, result.map(drop));
         }
     }
@@ -677,7 +677,7 @@ impl Checker<'_> {
                 Attribute::WeakRef(Some(_)) | Attribute::Alias(_)
             )
         });
-        let clang = self.types.compiler_flavor() == CompilerFlavor::Clang;
+        let clang = self.types.flavor().is_clang();
         if clang && !target {
             self.reject(at, "weakref declaration must also have an alias attribute");
         } else if defined && (clang || (target && object)) {
@@ -867,7 +867,7 @@ impl Checker<'_> {
             StmtKind::Decl(declaration) => self.declaration(&stmt.derive(()), declaration, false),
             StmtKind::Block(body) => self.compound(body),
             StmtKind::NestedFunction(function) => {
-                if self.types.compiler_flavor() != CompilerFlavor::Gcc {
+                if !self.types.flavor().is_gcc() {
                     self.reject(stmt, "function definition is not allowed here");
                 }
                 self.function(stmt.id, stmt.derive(()), None, function)
@@ -947,7 +947,7 @@ impl Checker<'_> {
             StmtKind::Attribute(attributes)
                 if self.context.switches.is_empty()
                     && is_fallthrough(attributes)
-                    && self.types.compiler_flavor() != CompilerFlavor::Gcc =>
+                    && !self.types.flavor().is_gcc() =>
             {
                 self.reject(stmt, "fallthrough outside switch")
             }
@@ -966,8 +966,7 @@ impl Checker<'_> {
                 }
             }
             StmtKind::Attributed { attributes, body } => {
-                if self.types.compiler_flavor() != CompilerFlavor::Gcc && is_fallthrough(attributes)
-                {
+                if !self.types.flavor().is_gcc() && is_fallthrough(attributes) {
                     self.reject(stmt, "fallthrough attribute on a non-empty statement");
                 }
                 self.statement(body)
@@ -988,7 +987,7 @@ impl Checker<'_> {
                 }
             }
             StmtKind::ReturnVoid => {
-                let accepted = match self.types.compiler_flavor() {
+                let accepted = match self.types.flavor() {
                     CompilerFlavor::Msvc => true,
                     CompilerFlavor::Gcc => self.types.features().valueless_return_in_nonvoid,
                     _ => false,
@@ -1400,7 +1399,7 @@ impl Checker<'_> {
         self.declarator(&ty.declarator);
         self.tag(&ty.specifiers.ty);
         let _ = self.types.resolve_type_name(ty);
-        if self.types.compiler_flavor() != CompilerFlavor::Gcc {
+        if !self.types.flavor().is_gcc() {
             for attribute in &ty.specifiers.attributes {
                 if matches!(attribute.value, Attribute::Aligned(_)) {
                     self.types.warn(
@@ -1606,7 +1605,7 @@ pub(super) fn static_assertion_error(
             ));
         }
     }
-    let flavor = types.compiler_flavor();
+    let flavor = types.flavor();
     let result = types
         .constant_value(condition)
         .and_then(|value| match value.ty {

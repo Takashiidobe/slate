@@ -250,7 +250,7 @@ fn lower_item(
     match &declaration.value {
         DeclKind::Comment(_) | DeclKind::StaticAssert(_) => {}
         DeclKind::Attribute(attributes) => {
-            if lower.types.compiler_flavor() == CompilerFlavor::Gcc {
+            if lower.types.flavor().is_gcc() {
                 for attribute in attributes {
                     lower.warn(Warning::IgnoredAttributes, "attribute ignored", attribute);
                 }
@@ -948,10 +948,7 @@ impl Lowerer {
         }
         let storage_class = item.specifiers.storage;
         let inferred = matches!(item.specifiers.ty, ast::TypeSpecifier::Inferred);
-        if inferred
-            && self.types.compiler_flavor() == CompilerFlavor::Gcc
-            && item.declarators.len() > 1
-        {
+        if inferred && self.types.flavor().is_gcc() && item.declarators.len() > 1 {
             return Err(ResolveError::Internal(
                 "'auto' may only be used with a single declarator",
             ));
@@ -1213,7 +1210,7 @@ impl Lowerer {
                     );
                     self.context.region = region;
                     let mut value = value?;
-                    if self.types.compiler_flavor() == CompilerFlavor::Msvc
+                    if self.types.flavor().is_msvc()
                         && (global || storage_class == StorageClass::Static)
                     {
                         super::fold::fold_msvc_static_divisions(&mut value);
@@ -1289,7 +1286,7 @@ impl Lowerer {
                     Some(value) => self.types.entities.record_constant(id, value.clone()),
                     None if storage != StorageDuration::Automatic
                         && storage_class != StorageClass::Extern
-                        && self.types.compiler_flavor() == CompilerFlavor::Gcc =>
+                        && self.types.flavor().is_gcc() =>
                     {
                         let zero = ValueKind::Aggregate {
                             members: Vec::new(),
@@ -1436,7 +1433,7 @@ impl Lowerer {
     ) -> Result<Value, ResolveError> {
         let value = self.expr(expr)?;
         let value = self.converted_at(label, slot, value)?;
-        let number = super::fold::integer_constant(&value, self.types.compiler_flavor())
+        let number = super::fold::integer_constant(&value, self.types.flavor())
             .ok_or(ResolveError::Internal("nonconstant case expression"))?;
         Ok(self.value(
             expr,
@@ -1643,7 +1640,7 @@ impl Lowerer {
             {
                 if !self.switches.is_empty() {
                     annotations.push(("c_attribute".into(), "fallthrough".into()));
-                } else if self.types.compiler_flavor() != CompilerFlavor::Gcc {
+                } else if !self.types.flavor().is_gcc() {
                     return Err(ResolveError::Internal("fallthrough outside switch"));
                 }
                 Statement::Null
@@ -1679,7 +1676,7 @@ impl Lowerer {
             StmtKind::Block(body) => {
                 Statement::Block(self.compound(|lower| lower.statements(body, return_type))?)
             }
-            StmtKind::ReturnVoid => match self.types.compiler_flavor() {
+            StmtKind::ReturnVoid => match self.types.flavor() {
                 CompilerFlavor::Msvc => Statement::Return(None),
                 CompilerFlavor::Gcc if self.types.features().valueless_return_in_nonvoid => {
                     Statement::Return(None)
@@ -1691,7 +1688,7 @@ impl Lowerer {
                 }
             },
             StmtKind::Attributed { attributes, body } => {
-                if self.types.compiler_flavor() != CompilerFlavor::Gcc
+                if !self.types.flavor().is_gcc()
                     && attributes
                         .iter()
                         .any(|a| matches!(&a.value, ast::Attribute::Fallthrough))
@@ -1704,7 +1701,7 @@ impl Lowerer {
                 return Ok(());
             }
             StmtKind::NestedFunction(_) => {
-                return Err(if self.types.compiler_flavor() == CompilerFlavor::Gcc {
+                return Err(if self.types.flavor().is_gcc() {
                     ResolveError::Unimplemented("GNU nested function")
                 } else {
                     ResolveError::Internal("function definition is not allowed here")

@@ -6,7 +6,6 @@ use super::operand::Lvalue;
 use crate::ast::{
     self, MsAsmBinaryOp, MsAsmExpr, MsAsmOperator, MsAsmSegment, MsAsmSize, Register, Span,
 };
-use crate::compiler_args::CompilerFlavor;
 use crate::ir::{
     AsmAccess, AsmClobber, AsmConstraint, AsmDialect, AsmMemory, AsmOperand, AsmOperandKind,
     AsmOptions, AsmPiece, AsmSymbol, BindingId, BindingKind, InlineAsm, PlaceKind, Type,
@@ -457,7 +456,7 @@ impl Lowerer {
                             .offsetof_field(ty, &field.value)
                             .map_err(|_| no_such_member)?
                     }
-                    _ if self.types.compiler_flavor() == CompilerFlavor::Msvc => {
+                    _ if self.types.flavor().is_msvc() => {
                         let declared_before = *self
                             .names
                             .ms_asm_members

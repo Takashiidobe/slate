@@ -170,7 +170,7 @@ fn analyze(
                         &mut errors,
                     );
                     check_attributes(&init_declarator.attributes, &mut errors);
-                    if flavor == CompilerFlavor::Clang {
+                    if flavor.is_clang() {
                         check_register_variable(
                             unit,
                             specifiers,
@@ -745,7 +745,7 @@ fn resolve_char_literal(
     flavor: CompilerFlavor,
 ) -> Result<(), String> {
     if literal.encoding == Encoding::Plain {
-        if flavor == CompilerFlavor::Clang
+        if flavor.is_clang()
             && literal.execution_units(target.wchar_width).len() > literal.code_units.len()
         {
             return Err("character too large for enclosing character literal type".to_string());
@@ -1103,7 +1103,7 @@ fn check_asm_operands(
 
 fn asm_operand_error(operands: &AsmOperands, flavor: CompilerFlavor) -> Option<(Loc, String)> {
     for output in &operands.outputs {
-        if flavor == CompilerFlavor::Gcc {
+        if flavor.is_gcc() {
             if !is_gcc_output_lvalue(&output.expr) {
                 return Some((
                     output.expr.expansion,
@@ -1131,7 +1131,7 @@ fn asm_operand_error(operands: &AsmOperands, flavor: CompilerFlavor) -> Option<(
         match expected {
             None => expected = Some(count),
             Some(expected) if expected != count => {
-                let message = if flavor == CompilerFlavor::Gcc {
+                let message = if flavor.is_gcc() {
                     "operand constraints for 'asm' differ in number of alternatives".into()
                 } else {
                     format!(

@@ -179,12 +179,8 @@ impl TypeResolver {
                 ""
             };
         };
-        let pretty = name == "__PRETTY_FUNCTION__" && self.compiler_flavor() != CompilerFlavor::Gcc;
+        let pretty = name == "__PRETTY_FUNCTION__" && !self.flavor().is_gcc();
         if pretty { &names.pretty } else { &names.plain }
-    }
-
-    pub(super) fn compiler_flavor(&self) -> CompilerFlavor {
-        self.dialect.flavor()
     }
 
     pub(super) fn standard(&self) -> LanguageStandard {
@@ -214,8 +210,7 @@ impl TypeResolver {
             .collect();
         resolver.declarations = names.declarations.clone();
         resolver.tag_definitions = names.tags.clone();
-        resolver.ctypes.ptr32_extension_is_qualifier =
-            unit.dialect.flavor() == CompilerFlavor::Msvc;
+        resolver.ctypes.ptr32_extension_is_qualifier = unit.dialect.flavor().is_msvc();
         resolver.tags = unit.tags.clone();
         resolver.pragmas = super::pragmas::collect(unit);
         resolver
@@ -1398,7 +1393,7 @@ impl TypeResolver {
 
     pub fn resolve_type_name(&mut self, name: &TypeName) -> Result<QualType, ResolveError> {
         let resolved = self.resolve(&name.specifiers, &name.declarator)?;
-        if self.dialect.flavor() != CompilerFlavor::Gcc {
+        if !self.dialect.flavor().is_gcc() {
             return Ok(resolved);
         }
         let aligned = name
@@ -2271,7 +2266,7 @@ impl TypeResolver {
             }
         };
         if redefines.is_some() {
-            let same_member = if self.dialect.flavor() == CompilerFlavor::Clang {
+            let same_member = if self.dialect.flavor().is_clang() {
                 CTypes::same_or_enum_underlying
             } else {
                 CTypes::same
@@ -2534,7 +2529,7 @@ impl TypeResolver {
     // cl.exe only honours __unaligned on pointer types
     fn is_unaligned(&self, q: QualType) -> bool {
         self.ctypes.quals(q).is_unaligned
-            && (self.dialect.flavor() != CompilerFlavor::Msvc || self.ctypes.is_pointer(q))
+            && (!self.dialect.flavor().is_msvc() || self.ctypes.is_pointer(q))
     }
 
     pub(super) fn qualified_storage(

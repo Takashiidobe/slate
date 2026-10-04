@@ -215,7 +215,7 @@ impl Preprocessor<'_> {
         };
         let rparen_hide = rparen.hide;
         // clang reports the end of the invocation's expansion range, gcc its name
-        if self.dialect.flavor() == CompilerFlavor::Clang {
+        if self.dialect.flavor().is_clang() {
             stamp.end = rparen.end;
         }
         if invocation.arguments.is_empty() && parameters.len() == 1 && !definition.variadic {
@@ -348,8 +348,7 @@ impl Preprocessor<'_> {
                 Token::Ident(name) if name == "defined" => Some(true),
                 Token::Ident(name) if name.starts_with("__has_") => Some(false),
                 Token::Ident(name)
-                    if name == "__is_identifier"
-                        && self.dialect.flavor() == CompilerFlavor::Clang =>
+                    if name == "__is_identifier" && self.dialect.flavor().is_clang() =>
                 {
                     Some(false)
                 }
@@ -895,7 +894,7 @@ impl Preprocessor<'_> {
         if !definition.variadic {
             return Ok(ElideComma::Never);
         }
-        if self.dialect.flavor() == CompilerFlavor::Msvc {
+        if self.dialect.flavor().is_msvc() {
             for (index, raw) in arguments.iter().enumerate().skip(parameters.len()) {
                 let empty = match expanded.get(index) {
                     Some(Some(expanded)) => expanded.is_empty(),

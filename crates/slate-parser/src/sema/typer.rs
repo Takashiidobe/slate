@@ -452,9 +452,7 @@ impl TypeResolver {
                 };
                 let one = self.ctypes.int();
                 let updated = self.record_update(e, operand, op, one)?;
-                if matches!(e.value, ExprKind::Postfix { .. })
-                    && self.flavor() != CompilerFlavor::Gcc
-                {
+                if matches!(e.value, ExprKind::Postfix { .. }) && !self.flavor().is_gcc() {
                     updated
                 } else {
                     self.stored_to(operand, updated)?

@@ -45,11 +45,21 @@ CompilerArgParser::parse → CompilerArgs
 | --- | --- | --- | --- |
 | Preprocessor | `self.dialect.flavor()` | `self.dialect.target()` | `self.dialect.standard()` / `.features()` |
 | Parser | `self.flavor()` | `self.dialect().target()` | `self.standard()` / `self.features()` |
-| `TypeResolver` | `self.compiler_flavor()` | `self.dialect.target()` | `self.standard()` / `self.features()` |
-| Lowerer, checker | `self.types.compiler_flavor()` | `self.context.target` (Lowerer) | `self.types.features()` |
+| `TypeResolver` | `self.flavor()` | `self.dialect.target()` | `self.standard()` / `self.features()` |
+| Lowerer, checker | `self.types.flavor()` | `self.context.target` (Lowerer) | `self.types.features()` |
 | `fold.rs` | `Env.flavor` | — | — |
 
 Only `context.region` (FP pragmas) changes within a translation unit.
+
+Ask questions with the shared helpers, never by comparing values:
+
+- Flavor: `flavor.is_gcc()`, `.is_clang()`, `.is_msvc()`; a `match` when
+  every flavor has its own arm.
+- Standard: `standard.at_least_c99()`, `.at_least_c11()`,
+  `.at_least_c23()`. Read `stdc_version()` only for the macro's value.
+  Grammar and keyword gates belong in `StandardFeatures`.
+- Target: `target.family.is_x86()` for either x86 width; single families
+  compare with `==`.
 
 ## Where a rule goes
 

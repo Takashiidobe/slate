@@ -7,7 +7,6 @@ use crate::ast::{
     Initializer, NodeId, Span, StorageClass, TagBody, TagSpecifier, TypeName, TypeOfOperand,
     TypeSpecifier,
 };
-use crate::compiler_args::CompilerFlavor;
 use crate::ir::BindingId;
 use crate::ir::{Type, Value};
 use crate::visit::{self, Visitor};
@@ -250,7 +249,7 @@ impl TypeResolver {
                 ));
             }
         };
-        if self.compiler_flavor() == CompilerFlavor::Gcc && !plain_identifier(declarator) {
+        if self.flavor().is_gcc() && !plain_identifier(declarator) {
             return Err(ResolveError::Rejected(
                 "'auto' requires a plain identifier as declarator",
             ));
@@ -265,7 +264,7 @@ impl TypeResolver {
             ));
         }
         if self.typed(expr)?.bits.is_some() {
-            return Err(if self.compiler_flavor() == CompilerFlavor::Gcc {
+            return Err(if self.flavor().is_gcc() {
                 ResolveError::Unimplemented("deduced type of a bit-field initializer")
             } else {
                 ResolveError::Rejected("cannot use a bit-field as a deduced-type initializer")
@@ -304,7 +303,7 @@ impl TypeResolver {
         declarator: &Declarator,
         value: QualType,
     ) -> Result<(QualType, QualType), ResolveError> {
-        let atomic = self.compiler_flavor() != CompilerFlavor::Gcc
+        let atomic = !self.flavor().is_gcc()
             && self.ctypes.element(value).is_none()
             && self.ctypes.quals(value).is_atomic;
         let converted = self.ctypes.lvalue_conversion(value);

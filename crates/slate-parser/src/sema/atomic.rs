@@ -296,7 +296,7 @@ pub(super) fn fetch_rule(
         return match op {
             FetchOp::Add | FetchOp::Sub
                 if integer
-                    || flavor == CompilerFlavor::Clang
+                    || flavor.is_clang()
                         && matches!(operand, Type::Numeric(NumericType::Float(_))) =>
             {
                 Ok(())
@@ -305,7 +305,7 @@ pub(super) fn fetch_rule(
                 Err(ResolveError::Rejected("noninteger atomic pointer offset"))
             }
             FetchOp::And | FetchOp::Or | FetchOp::Xor | FetchOp::Nand
-                if integer && flavor == CompilerFlavor::Gcc =>
+                if integer && flavor.is_gcc() =>
             {
                 Ok(())
             }
