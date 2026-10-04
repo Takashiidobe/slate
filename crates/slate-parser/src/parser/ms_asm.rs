@@ -59,7 +59,8 @@ impl Parser {
                 matches!(
                     self.dialect().target().family,
                     TargetFamily::X86 | TargetFamily::X86_64
-                ) && self.dialect().features().microsoft_extensions
+                ) && (self.dialect().features().microsoft_extensions
+                    || self.dialect().options().microsoft.asm_blocks)
             }
             CompilerFlavor::Gcc => false,
         }

@@ -42,6 +42,7 @@ each stage is in [configuration-threading](configuration-threading.md).
 | `-fgnu89-inline` | gcc, clang | inline definition semantics, `__GNUC_GNU_INLINE__` |
 | `-fcommon` | gcc, clang | tentative definitions become common symbols |
 | `-fms-extensions` / `-fms-compatibility` (and `-fno-`) | clang | [MS modes](#ms-modes); gcc and msvc reject them |
+| `-fasm-blocks` / `-fno-asm-blocks` | clang | MS `__asm` blocks on x86 without the rest of MS mode; last wins, MS extensions enable them regardless (`MicrosoftFlags::asm_blocks`) |
 | `-mlong-double-64\|80\|128` | gcc, clang | `TargetInfo.long_double` and its predefines; x86 only |
 | `-mpreferred-stack-boundary` | gcc | stack alignment ABI; x86, exponent from 4 (x86_64) or 2 (x86) up to 12 |
 | `-mstack-alignment` | clang | stack alignment ABI; power of two; exclusive with the gcc form |

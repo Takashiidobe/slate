@@ -19,6 +19,7 @@ pub struct CompilerOptions {
 pub struct MicrosoftFlags {
     pub extensions: Option<bool>,
     pub compatibility: Option<bool>,
+    pub asm_blocks: bool,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

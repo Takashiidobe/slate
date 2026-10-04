@@ -243,6 +243,7 @@ struct ParsedCompilerArgs {
     common: Option<bool>,
     ms_extensions: Option<bool>,
     ms_compatibility: Option<bool>,
+    asm_blocks: Option<bool>,
     long_double: Option<LongDoubleFormat>,
     asm_dialect: Option<AsmDialect>,
     optimization: Option<Optimization>,
@@ -302,6 +303,7 @@ enum Opt {
     Common,
     MsExtensions,
     MsCompatibility,
+    AsmBlocks,
     LongDouble,
     AsmDialect,
     IsaFeature,
@@ -351,6 +353,7 @@ impl std::fmt::Display for Opt {
             Self::Common => "common",
             Self::MsExtensions => "ms-extensions",
             Self::MsCompatibility => "ms-compatibility",
+            Self::AsmBlocks => "asm-blocks",
             Self::LongDouble => "long-double",
             Self::AsmDialect => "masm",
             Self::IsaFeature => "m<feature>",
@@ -407,7 +410,7 @@ impl Opt {
             | Self::SveVectorBits
             | Self::Optimize => &[Gcc, Clang],
             Self::PreferredStackBoundary => &[Gcc],
-            Self::StackAlignment | Self::ClangCodegenOnly => &[Clang],
+            Self::StackAlignment | Self::ClangCodegenOnly | Self::AsmBlocks => &[Clang],
         };
         flavors.contains(&flavor)
     }
@@ -423,6 +426,7 @@ impl Opt {
             Self::Common => "common",
             Self::MsExtensions => "ms-extensions",
             Self::MsCompatibility => "ms-compatibility",
+            Self::AsmBlocks => "asm-blocks",
             _ => "",
         }
     }
@@ -499,11 +503,12 @@ fn ignored_option(argument: &str) -> Option<IgnoredOption> {
         .then_some(IgnoredOption::Alone)
 }
 
-const FLAG_OPTS: [Opt; 9] = [
+const FLAG_OPTS: [Opt; 10] = [
     Opt::Gnu89Inline,
     Opt::Common,
     Opt::MsExtensions,
     Opt::MsCompatibility,
+    Opt::AsmBlocks,
     Opt::Wrapv,
     Opt::Trapv,
     Opt::StrictOverflow,
@@ -556,6 +561,7 @@ impl CompilerArgParser {
         options.microsoft = MicrosoftFlags {
             extensions: raw.ms_extensions,
             compatibility: raw.ms_compatibility,
+            asm_blocks: raw.asm_blocks == Some(true),
         };
         options.asm_dialect = raw.asm_dialect.unwrap_or_default();
         options.explicit_standard = raw.standard.is_some();
@@ -650,6 +656,7 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                 Opt::Common => parsed.common = Some(value),
                 Opt::MsExtensions => parsed.ms_extensions = Some(value),
                 Opt::MsCompatibility => parsed.ms_compatibility = Some(value),
+                Opt::AsmBlocks => parsed.asm_blocks = Some(value),
                 _ => return Err(invalid(argument, "unknown flag")),
             }
         } else if let Some(value) = option_value(argument, "D") {
