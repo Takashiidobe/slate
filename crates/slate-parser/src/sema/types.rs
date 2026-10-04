@@ -615,7 +615,7 @@ impl TypeResolver {
                 (
                     self.ctypes.int(),
                     ValueKind::Constant(Number::SignedInteger(
-                        u8::from(self.is_constant(operand)).into(),
+                        u8::from(self.builtin_constant_p(operand)).into(),
                     )),
                 )
             }
@@ -833,6 +833,65 @@ impl TypeResolver {
 
     pub(super) fn is_constant(&mut self, e: &crate::ast::Expr) -> bool {
         self.constant_value(e).is_ok_and(|value| is_folded(&value))
+    }
+
+    pub(super) fn builtin_constant_p(&mut self, e: &crate::ast::Expr) -> bool {
+        self.is_constant(e) || self.string_literal_start(e)
+    }
+
+    fn string_literal_start(&mut self, e: &crate::ast::Expr) -> bool {
+        use crate::ast::ExprKind;
+        use crate::const_expr::{BinaryOp, UnaryOp};
+        match &e.value {
+            ExprKind::StringLiteral(_) => true,
+            ExprKind::Paren(inner) | ExprKind::Cast { value: inner, .. } => {
+                self.builtin_constant_p(inner)
+            }
+            ExprKind::Unary {
+                op: UnaryOp::AddrOf,
+                operand,
+            } => match &operand.value {
+                ExprKind::Unary {
+                    op: UnaryOp::Deref,
+                    operand,
+                } => self.string_literal_start(operand),
+                ExprKind::Index { base, index } => {
+                    self.is_zero(index) && self.string_literal_start(base)
+                }
+                _ => false,
+            },
+            ExprKind::Binary {
+                op: BinaryOp::Add,
+                left,
+                right,
+            } => {
+                (self.is_zero(right) && self.string_literal_start(left))
+                    || (self.is_zero(left) && self.string_literal_start(right))
+            }
+            ExprKind::Binary {
+                op: BinaryOp::Sub,
+                left,
+                right,
+            } => self.is_zero(right) && self.string_literal_start(left),
+            ExprKind::Conditional {
+                condition,
+                then_value,
+                else_value,
+            } => match self.constant_integer(condition) {
+                Ok(value) if value.sign() == Sign::NoSign => self.builtin_constant_p(else_value),
+                Ok(_) => self.builtin_constant_p(then_value.as_ref().unwrap_or(condition)),
+                Err(_) => false,
+            },
+            ExprKind::Comma { right, .. } if self.dialect.flavor().is_clang() => {
+                self.builtin_constant_p(right)
+            }
+            _ => false,
+        }
+    }
+
+    fn is_zero(&mut self, e: &crate::ast::Expr) -> bool {
+        self.constant_integer(e)
+            .is_ok_and(|value| value.sign() == Sign::NoSign)
     }
 
     pub(super) fn generic_selection<'e>(

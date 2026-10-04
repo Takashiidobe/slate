@@ -189,7 +189,12 @@ the callee name.
 
 - `__builtin_constant_p(x)` → `const<i32>(0|1)` with `c_builtin` metadata;
   the operand is not evaluated. 1 when the lowered operand folds, else 0
-  (clang `-O0`'s answer). It is an integer constant expression.
+  (clang `-O0`'s answer). It is an integer constant expression. A pointer
+  operand is also 1 when it is the start of a string literal, through
+  parens, casts, `?:` with a constant condition, `+ 0`/`- 0`, `&s[0]`
+  and `&*s`, and (clang only) the right side of a comma
+  (`TypeResolver::builtin_constant_p`). PostgreSQL's
+  `AllocSetContextCreate` asserts this on its context names.
 - `__builtin_types_compatible_p(A, B)` → `const<i32>(0|1)` with
   `types_compatible="A, B"`, answered by `CTypes::compatible` (6.2.7), the
   predicate redeclaration merging uses. Top-level and element qualifiers

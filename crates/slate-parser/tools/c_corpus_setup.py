@@ -107,6 +107,7 @@ RECIPES = {
     "tinycc": Configure(["{source}/configure", "--cc={cc}"]),
     "cpython": Configure(["{source}/configure", "CC={cc}"]),
     "libsodium": Configure(["{source}/configure", "CC={cc}"], ["check"], bootstrap=["./autogen.sh", "-s"]),
+    "postgres": Configure(["{source}/configure", "CC={cc}"], ["world-bin"]),
     "jq": Configure(
         ["{source}/configure", "CC={cc}", "--with-oniguruma=builtin", "--disable-docs"],
         bootstrap=["autoreconf", "-i"],

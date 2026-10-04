@@ -24,7 +24,7 @@ import pp_diff
 ROOT = Path(__file__).resolve().parents[1]
 SLATE = ROOT.parents[1] / "target/test-cache/release/slate-parser"
 PROVIDERS = {"zlib": ["", "build-{flavor}"]}
-HOST_INCLUDE_DIRS = {"cpython": ["/usr/include"], "nginx": ["/usr/include"], "pcre2": ["/usr/include"], "redis": ["/usr/include"]}
+HOST_INCLUDE_DIRS = {"cpython": ["/usr/include"], "nginx": ["/usr/include"], "pcre2": ["/usr/include"], "postgres": ["/usr/include"], "redis": ["/usr/include"]}
 PROJECTS = {
     "cJSON": "https://github.com/DaveGamble/cJSON",
     "c-ares": "https://c-ares.org",
@@ -50,6 +50,7 @@ PROJECTS = {
     "nginx": "https://nginx.org",
     "oniguruma": "https://github.com/kkos/oniguruma",
     "pcre2": "https://github.com/PCRE2Project/pcre2",
+    "postgres": "https://www.postgresql.org",
     "quickjs": "https://bellard.org/quickjs/",
     "redis": "https://redis.io",
     "sqlite": "https://sqlite.org",
@@ -61,7 +62,7 @@ PROJECTS = {
     "zlib": "https://zlib.net",
     "zstd": "https://github.com/facebook/zstd",
 }
-DISPLAY = {"cpython": "CPython", "sqlite": "SQLite", "lua": "Lua", "pcre2": "PCRE2", "quickjs": "QuickJS", "lz4": "LZ4", "tinycc": "TinyCC", "mbedtls": "Mbed TLS", "redis": "Redis"}
+DISPLAY = {"cpython": "CPython", "sqlite": "SQLite", "lua": "Lua", "pcre2": "PCRE2", "quickjs": "QuickJS", "lz4": "LZ4", "tinycc": "TinyCC", "mbedtls": "Mbed TLS", "redis": "Redis", "postgres": "PostgreSQL"}
 DETAIL = re.compile(r"^\s*(?:Error:\s*)?×\s+(.*)$")
 STATUSES = ("ok", "internal", "unimplemented", "rejected", "timeout", "missing-dependency", "oracle-rejects")
 

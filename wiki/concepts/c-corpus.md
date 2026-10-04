@@ -1,6 +1,7 @@
 # C corpus
 
 <!-- toc -->
+
 - [Layout](#layout)
 - [Setup](#setup)
 - [Recipes](#recipes)
@@ -51,26 +52,27 @@ python3 tools/c_corpus_setup.py [PROJECT ...] [--flavor clang|gcc|msvc ...]
 
 ## Recipes
 
-| Project | Build | msvc |
-| --- | --- | --- |
-| cJSON, libexpat (`expat/`), libuv, libyaml, mimalloc, pcre2, utf8proc, yyjson, zlib | CMake | CMake |
-| libdeflate | CMake, `LIBDEFLATE_BUILD_TESTS=ON` | CMake |
-| xxHash | CMake in `build/cmake`, `DISPATCH=ON` (adds `xxh_x86dispatch.c`) | CMake |
-| lz4, zstd | CMake in `build/cmake` | CMake |
-| curl | CMake | CMake with Schannel, no optional dependencies |
-| libpng | CMake against the corpus zlib (`zlib/build-<flavor>`) | same |
-| mbedtls | CMake, testing and programs on; generators run from `.venv` | same |
-| sqlite | `configure` + `make all testfixture` | `nmake /f ..\Makefile.msc TOP=.. USE_AMALGAMATION=0` |
-| musl, tinycc, cpython | `configure` out of tree | none |
-| libsodium | `autogen.sh -s` in tree, then `configure` out of tree + `make check` | none |
-| nginx | `auto/configure --builddir=build-<flavor>/objs` | none |
-| redis, lua, quickjs, chibicc, giflib | `make CC=` in tree | none |
-| oniguruma, c-ares | CMake | CMake, untested |
-| cglm | CMake, `CGLM_USE_TEST=ON` | CMake, untested |
-| libevent | CMake, OpenSSL and Mbed TLS off | CMake, untested |
-| jq | `autoreconf -i` in tree, then `configure --with-oniguruma=builtin --disable-docs` out of tree | none |
-| lmdb | `make -C libraries/liblmdb CC=` in tree | none |
-| stb | `make -i -C tests CC=` in tree: upstream's driver TUs define each header's `*_IMPLEMENTATION`; `-i` gets past the C++ TU's link failure | none |
+| Project                                                                             | Build                                                                                                                                   | msvc                                                 |
+| ----------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
+| cJSON, libexpat (`expat/`), libuv, libyaml, mimalloc, pcre2, utf8proc, yyjson, zlib | CMake                                                                                                                                   | CMake                                                |
+| libdeflate                                                                          | CMake, `LIBDEFLATE_BUILD_TESTS=ON`                                                                                                      | CMake                                                |
+| xxHash                                                                              | CMake in `build/cmake`, `DISPATCH=ON` (adds `xxh_x86dispatch.c`)                                                                        | CMake                                                |
+| lz4, zstd                                                                           | CMake in `build/cmake`                                                                                                                  | CMake                                                |
+| curl                                                                                | CMake                                                                                                                                   | CMake with Schannel, no optional dependencies        |
+| libpng                                                                              | CMake against the corpus zlib (`zlib/build-<flavor>`)                                                                                   | same                                                 |
+| mbedtls                                                                             | CMake, testing and programs on; generators run from `.venv`                                                                             | same                                                 |
+| sqlite                                                                              | `configure` + `make all testfixture`                                                                                                    | `nmake /f ..\Makefile.msc TOP=.. USE_AMALGAMATION=0` |
+| musl, tinycc, cpython                                                               | `configure` out of tree                                                                                                                 | none                                                 |
+| libsodium                                                                           | `autogen.sh -s` in tree, then `configure` out of tree + `make check`                                                                    | none                                                 |
+| nginx                                                                               | `auto/configure --builddir=build-<flavor>/objs`                                                                                         | none                                                 |
+| redis, lua, quickjs, chibicc, giflib                                                | `make CC=` in tree                                                                                                                      | none                                                 |
+| oniguruma, c-ares                                                                   | CMake                                                                                                                                   | CMake, untested                                      |
+| cglm                                                                                | CMake, `CGLM_USE_TEST=ON`                                                                                                               | CMake, untested                                      |
+| libevent                                                                            | CMake, OpenSSL and Mbed TLS off                                                                                                         | CMake, untested                                      |
+| jq                                                                                  | `autoreconf -i` in tree, then `configure --with-oniguruma=builtin --disable-docs` out of tree                                           | none                                                 |
+| lmdb                                                                                | `make -C libraries/liblmdb CC=` in tree                                                                                                 | none                                                 |
+| stb                                                                                 | `make -i -C tests CC=` in tree: upstream's driver TUs define each header's `*_IMPLEMENTATION`; `-i` gets past the C++ TU's link failure | none                                                 |
+| postgres                                                                            | `configure` out of tree + `make world-bin` (contrib included)                                                                           | none                                                 |
 
 msvc covers only projects whose upstream ships a Windows build. musl,
 nginx, redis, lua, quickjs, chibicc, giflib and tinycc have no MSVC build
@@ -120,15 +122,15 @@ binary, and runs the project's tests. Reports go to
 The run stops at the first failing stage. The barrier report is always
 written once translation units are known.
 
-| Stage | What | Report |
-| --- | --- | --- |
-| native | `--setup` reruns `c_corpus_setup.py`; checks the target's link inputs exist; picks the target's TUs (`make -pn` object lists) from `build-<mode>` | `compile_commands.json` |
-| barriers | `slate lowering-barriers` per TU, aggregated by kind | `barriers.{json,md}` |
-| translate | `translate-project`; also times the native compile of the same TUs with their original flags, in parallel | `translate_over_compile` |
-| check | `cargo check` of the generated crate | `check.log` |
-| build | `cargo build --release`, linking the native archives and libraries via `-C link-arg` | `build.log` |
-| bench | the project's benchmark against the native and translated binaries: one warmup each, then alternating samples, medians | `bench.{json,md}`, `geomean_ratio` |
-| test | the project's test command in a sandbox copy of its test tree, with the target binary swapped in; then the same command against the native binary in a second sandbox (`--no-native-test` skips it) | `test.log`, `test-native.log`, `test_over_native` |
+| Stage     | What                                                                                                                                                                                                | Report                                            |
+| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| native    | `--setup` reruns `c_corpus_setup.py`; checks the target's link inputs exist; picks the target's TUs (`make -pn` object lists) from `build-<mode>`                                                   | `compile_commands.json`                           |
+| barriers  | `slate lowering-barriers` per TU, aggregated by kind                                                                                                                                                | `barriers.{json,md}`                              |
+| translate | `translate-project`; also times the native compile of the same TUs with their original flags, in parallel                                                                                           | `translate_over_compile`                          |
+| check     | `cargo check` of the generated crate                                                                                                                                                                | `check.log`                                       |
+| build     | `cargo build --release`, linking the native archives and libraries via `-C link-arg`                                                                                                                | `build.log`                                       |
+| bench     | the project's benchmark against the native and translated binaries: one warmup each, then alternating samples, medians                                                                              | `bench.{json,md}`, `geomean_ratio`                |
+| test      | the project's test command in a sandbox copy of its test tree, with the target binary swapped in; then the same command against the native binary in a second sandbox (`--no-native-test` skips it) | `test.log`, `test-native.log`, `test_over_native` |
 
 - Translation should take about as long as the native compile, the
   translated binary should benchmark about as fast as the native one, and

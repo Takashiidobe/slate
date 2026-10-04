@@ -2366,7 +2366,8 @@ impl Lowerer {
             {
                 let operand = constant_p_operand(callee, arguments)
                     .ok_or(ResolveError::Internal("__builtin_constant_p"))?;
-                let constant = super::types::is_folded(&self.expr(operand)?.value);
+                let constant = super::types::is_folded(&self.expr(operand)?.value)
+                    || self.types.builtin_constant_p(operand);
                 let c = self.result(e)?;
                 let value = self.operand(
                     e,

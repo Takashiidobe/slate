@@ -104,6 +104,7 @@ C projects that slate-parser can parse with `--flavor=clang` on
 | Project                                              | Revision                         |
 | ---------------------------------------------------- | -------------------------------- |
 | [musl](https://musl.libc.org)                        | `v1.2.6-20-gf21a9653`            |
+| [PostgreSQL](https://www.postgresql.org)             | `REL_19_BETA1-1128-g852fd5b86e1` |
 | [CPython](https://www.python.org)                    | `v3.14.8`                        |
 | [Mbed TLS](https://github.com/Mbed-TLS/mbedtls)      | `522e2e4`                        |
 | [curl](https://curl.se)                              | `5b06840`                        |
