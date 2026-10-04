@@ -17,11 +17,11 @@ rustup target add wasm32-wasip1
 `SLATE_HEADERS` overrides the directory containing `compiler-headers/` and
 `sysroots/`. By default, the build uses Slate's local data directory:
 
-| Host | Directory |
-| --- | --- |
-| Linux | `$XDG_DATA_HOME/slate` if absolute, otherwise `$HOME/.local/share/slate` |
-| macOS | `$HOME/Library/Application Support/Slate` |
-| Windows (Git Bash/MSYS2/Cygwin) | `%LOCALAPPDATA%\Slate\data` |
+| Host                            | Directory                                                                |
+| ------------------------------- | ------------------------------------------------------------------------ |
+| Linux                           | `$XDG_DATA_HOME/slate` if absolute, otherwise `$HOME/.local/share/slate` |
+| macOS                           | `$HOME/Library/Application Support/Slate`                                |
+| Windows (Git Bash/MSYS2/Cygwin) | `%LOCALAPPDATA%\Slate\data`                                              |
 
 The build requires Bash and GNU utilities (including find, sort, tar, stat,
 sed, and sha256sum).
@@ -37,5 +37,5 @@ python3 -m http.server -d dist 8000
 Deploy on netlify:
 
 ```sh
-ntl deploy --prod
+ntl deploy --prod --dir=dist
 ```
