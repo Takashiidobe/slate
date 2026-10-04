@@ -27,13 +27,13 @@ To install the standalone C parser and typed IR CLI:
 cargo +nightly install slate-parser --locked
 ```
 
-For releases with prebuilt binaries, use
+To avoid compilation from source, use
 [cargo-binstall](https://github.com/cargo-bins/cargo-binstall) to install without
-compiling. Archives are built for x86_64 Linux, x86_64 and Apple Silicon macOS,
+compiling. Prebuilt binaries are built for x86_64 Linux, x86_64 and aarch64 mac,
 and x86_64 Windows:
 
 ```sh
-cargo binstall slate-c2rust slate-parser --strategies crate-meta-data
+cargo binstall slate-c2rust slate-parser
 ```
 
 This installs both `slate` and `slate-parser`; omit either package to install
@@ -53,10 +53,6 @@ Build the workspace:
 ```sh
 cargo +nightly build --release
 ```
-
-I plan to merge `slate-sysroots` into plain slate, possibly leaving
-`slate-parser` as a separate crate if it's useful as a multi-dialect C
-parser + IR generator.
 
 ## Usage
 

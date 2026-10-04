@@ -57,40 +57,12 @@ completed release publishes only the remaining crates.
 After crates.io publication, the same workflow builds `slate` and `slate-parser`
 for these native targets:
 
-| Runner | Target |
-| ------ | ------ |
-| Ubuntu 22.04 | `x86_64-unknown-linux-gnu` |
-| macOS Intel | `x86_64-apple-darwin` |
-| macOS Apple Silicon | `aarch64-apple-darwin` |
-| Windows 2022 | `x86_64-pc-windows-msvc` |
+| Runner              | Target                     |
+| ------------------- | -------------------------- |
+| Ubuntu 22.04        | `x86_64-unknown-linux-gnu` |
+| macOS Intel         | `x86_64-apple-darwin`      |
+| macOS Apple Silicon | `aarch64-apple-darwin`     |
+| Windows 2022        | `x86_64-pc-windows-msvc`   |
 
-Each package gets an archive named
-`<package>-<target>-v<version>.tar.gz`, containing its executable and licenses
-at the archive root. Windows executables retain the `.exe` suffix. Builds use
-`target/test-cache/<target>/release/` from the workspace Cargo configuration.
-The workflow creates a GitHub Release for the existing tag and uploads all
-archives; reruns replace the matching assets.
-
-Both binary crates declare `[package.metadata.binstall]` matching these paths.
-Users install the `slate` executable with `cargo binstall slate-c2rust` and the
+Install the `slate` executable with `cargo binstall slate-c2rust` and the
 parser with `cargo binstall slate-parser`.
-
-Existing crates.io versions are immutable, but binstall can discover binaries
-without explicit metadata through its
-[default archive conventions](https://github.com/cargo-bins/cargo-binstall/blob/main/SUPPORT.md#defaults).
-To backfill an already published version, build its original tag and attach
-archives to the GitHub Release for that tag. For example:
-
-```text
-slate-c2rust-x86_64-unknown-linux-gnu-v0.1.0.tgz
-  slate-c2rust-x86_64-unknown-linux-gnu-v0.1.0/slate
-slate-parser-x86_64-unknown-linux-gnu-v0.1.0.tgz
-  slate-parser-x86_64-unknown-linux-gnu-v0.1.0/slate-parser
-```
-
-Use the same layout for other targets, with `.exe` for Windows binaries. This
-requires no tag movement or crates.io republication. The workflow only runs on
-new tag pushes; backfilling an existing tag requires a manual build and upload.
-Future versions carry the explicit metadata and use the archive-root layout
-described above. No separate publishing token is needed for automated binaries:
-the release job uses `GITHUB_TOKEN` with `contents: write`.
