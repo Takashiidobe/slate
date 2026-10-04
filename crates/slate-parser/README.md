@@ -15,12 +15,32 @@ conditional compilation branches. The IR keeps the resolved C semantics
 needed for Rust translation, including conversions, storage, linkage,
 arithmetic policies, and sequenced side effects.
 
-## Command-line usage
+## Installation
 
-Build and run from the workspace root:
+Install a prebuilt binary with cargo-binstall:
+
+```bash
+cargo binstall slate-parser
+```
+
+Prebuilt binaries are built for x86_64 Linux, x86_64 and aarch64 macOS,
+and x86_64 Windows.
+
+To build from source, run from the workspace root:
 
 ```bash
 cargo build --release -p slate-parser --bin slate-parser
+```
+
+## Command-line usage
+
+```bash
+slate-parser <parse|ir|pp> <source.c> [options]
+```
+
+For a workspace build, use the binary at:
+
+```bash
 target/test-cache/release/slate-parser <parse|ir|pp> <source.c> [options]
 ```
 
