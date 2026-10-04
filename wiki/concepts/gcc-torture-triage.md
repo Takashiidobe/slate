@@ -26,9 +26,9 @@ Run from the workspace root:
 SLATE_GCC_TORTURE_FIXTURE=<stem> cargo nextest r --release --profile slate \
   --test gcc_torture_suite -E 'test(gcc_torture_unsupported_triage_report)' \
   --run-ignored ignored-only --nocapture
-cargo run --release -p slate -- lowering-barriers <fixture.c>
-cargo run --release -p slate -- emit-slate-ir <fixture.c>
-cargo run --release -p slate -- translate <fixture.c>
+cargo run --release -p slate-c2rust -- lowering-barriers <fixture.c>
+cargo run --release -p slate-c2rust -- emit-slate-ir <fixture.c>
+cargo run --release -p slate-c2rust -- translate <fixture.c>
 ```
 
 | Failure | Investigate |

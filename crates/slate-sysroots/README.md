@@ -7,34 +7,34 @@ selection, installation, and path lookup. Manage sysroots through Slate's
 Currently supported:
 
 ```sh
-cargo run -p slate -- sysroot install x86_64-pc-windows-msvc
-cargo run -p slate -- sysroot remove x86_64-pc-windows-msvc
-cargo run -p slate -- sysroot install i686-pc-windows-msvc
-cargo run -p slate -- sysroot path x86_64-pc-windows-msvc
-cargo run -p slate -- sysroot doctor x86_64-pc-windows-msvc
-cargo run -p slate -- sysroot install aarch64-pc-windows-msvc
-cargo run -p slate -- sysroot doctor aarch64-pc-windows-msvc
-cargo run -p slate -- sysroot install thumbv7a-pc-windows-msvc
-cargo run -p slate -- sysroot install x86_64-unknown-linux-gnu
-cargo run -p slate -- sysroot install aarch64-unknown-linux-gnu
-cargo run -p slate -- sysroot install i686-unknown-linux-gnu
-cargo run -p slate -- sysroot install armv7-unknown-linux-gnueabi
-cargo run -p slate -- sysroot install armv7-unknown-linux-gnueabihf
-cargo run -p slate -- sysroot install x86_64-unknown-linux-musl
-cargo run -p slate -- sysroot install aarch64-unknown-linux-musl
-cargo run -p slate -- sysroot install x86_64-unknown-freebsd
-cargo run -p slate -- sysroot install aarch64-unknown-freebsd
-cargo run -p slate -- sysroot install x86_64-linux-android
-cargo run -p slate -- sysroot install aarch64-linux-android
-cargo run -p slate -- sysroot install x86_64-apple-darwin --sdk /path/to/MacOSX.sdk
-cargo run -p slate -- sysroot install aarch64-apple-darwin --sdk /path/to/MacOSX.sdk
-cargo run -p slate -- sysroot install compiler-headers clang
-cargo run -p slate -- sysroot install compiler-headers apple-clang
-cargo run -p slate -- sysroot install compiler-headers gcc
-cargo run -p slate -- sysroot install compiler-headers msvc
-cargo run -p slate -- sysroot doctor compiler-headers clang
-cargo run -p slate -- sysroot path compiler-headers gcc
-cargo run -p slate -- sysroot path compiler-headers msvc x86_64-pc-windows-msvc
+cargo run -p slate-c2rust -- sysroot install x86_64-pc-windows-msvc
+cargo run -p slate-c2rust -- sysroot remove x86_64-pc-windows-msvc
+cargo run -p slate-c2rust -- sysroot install i686-pc-windows-msvc
+cargo run -p slate-c2rust -- sysroot path x86_64-pc-windows-msvc
+cargo run -p slate-c2rust -- sysroot doctor x86_64-pc-windows-msvc
+cargo run -p slate-c2rust -- sysroot install aarch64-pc-windows-msvc
+cargo run -p slate-c2rust -- sysroot doctor aarch64-pc-windows-msvc
+cargo run -p slate-c2rust -- sysroot install thumbv7a-pc-windows-msvc
+cargo run -p slate-c2rust -- sysroot install x86_64-unknown-linux-gnu
+cargo run -p slate-c2rust -- sysroot install aarch64-unknown-linux-gnu
+cargo run -p slate-c2rust -- sysroot install i686-unknown-linux-gnu
+cargo run -p slate-c2rust -- sysroot install armv7-unknown-linux-gnueabi
+cargo run -p slate-c2rust -- sysroot install armv7-unknown-linux-gnueabihf
+cargo run -p slate-c2rust -- sysroot install x86_64-unknown-linux-musl
+cargo run -p slate-c2rust -- sysroot install aarch64-unknown-linux-musl
+cargo run -p slate-c2rust -- sysroot install x86_64-unknown-freebsd
+cargo run -p slate-c2rust -- sysroot install aarch64-unknown-freebsd
+cargo run -p slate-c2rust -- sysroot install x86_64-linux-android
+cargo run -p slate-c2rust -- sysroot install aarch64-linux-android
+cargo run -p slate-c2rust -- sysroot install x86_64-apple-darwin --sdk /path/to/MacOSX.sdk
+cargo run -p slate-c2rust -- sysroot install aarch64-apple-darwin --sdk /path/to/MacOSX.sdk
+cargo run -p slate-c2rust -- sysroot install compiler-headers clang
+cargo run -p slate-c2rust -- sysroot install compiler-headers apple-clang
+cargo run -p slate-c2rust -- sysroot install compiler-headers gcc
+cargo run -p slate-c2rust -- sysroot install compiler-headers msvc
+cargo run -p slate-c2rust -- sysroot doctor compiler-headers clang
+cargo run -p slate-c2rust -- sysroot path compiler-headers gcc
+cargo run -p slate-c2rust -- sysroot path compiler-headers msvc x86_64-pc-windows-msvc
 ```
 
 The Windows installer uses the `xwin` library to acquire the Microsoft CRT and

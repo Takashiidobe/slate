@@ -56,7 +56,7 @@ and `c_testsuite_unsupported_triage_report` are ignored tests. Each prints
 `parse/sema`, `unsupported lowering`, `rustc`, or `runtime mismatch`:
 
 ```bash
-SLATE_DIFF_FIXTURE=<stem> cargo nextest r --release -p slate --test differential \
+SLATE_DIFF_FIXTURE=<stem> cargo nextest r --release -p slate-c2rust --test differential \
   -E 'test(fixtures_unsupported_triage_report)' --run-ignored ignored-only --nocapture
 ```
 

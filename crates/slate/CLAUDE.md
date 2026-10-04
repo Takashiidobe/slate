@@ -53,14 +53,14 @@ archive, and compares it with an all-native build.
 Differential tests use `clang` on PATH as the C oracle. Slate frontend translation does not
 invoke Clang.
 
-Install a sysroot with `cargo run -p slate -- sysroot install <triple>`.
+Install a sysroot with `cargo run -p slate-c2rust -- sysroot install <triple>`.
 
 ## Debugging a fixture
 
 ```bash
-cargo run --release -p slate -- emit-slate-ir <file.c>                         # the IR slate receives
-cargo run --release -p slate -- translate <file.c>                            # Rust output
-cargo run --release -p slate -- lowering-barriers <file.c>                    # first barrier per function
+cargo run --release -p slate-c2rust -- emit-slate-ir <file.c>                         # the IR slate receives
+cargo run --release -p slate-c2rust -- translate <file.c>                            # Rust output
+cargo run --release -p slate-c2rust -- lowering-barriers <file.c>                    # first barrier per function
 ```
 
 ## Testing
@@ -92,7 +92,7 @@ SLATE_DIFF_FIXTURE=<name> cargo nextest r --release --profile slate --test diffe
 Find the first barrier for every unsupported fixture:
 
 ```bash
-cargo nextest r --release -p slate --test differential -E 'test(fixtures_unsupported_triage_report)' --run-ignored ignored-only --nocapture
+cargo nextest r --release -p slate-c2rust --test differential -E 'test(fixtures_unsupported_triage_report)' --run-ignored ignored-only --nocapture
 ```
 
 Corpus suites use their own selectors: `SLATE_GCC_TORTURE_FIXTURE`,

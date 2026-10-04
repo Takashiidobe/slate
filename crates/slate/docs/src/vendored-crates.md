@@ -3,6 +3,10 @@
 Generated Cargo crates depend on adapted support crates under
 `crates/slate/vendor/`:
 
+Embedded support manifests use `Cargo.toml.template`: Cargo excludes nested
+packages containing `Cargo.toml` from published archives. The translator writes
+these templates as `Cargo.toml` in generated projects.
+
 | Crate | Purpose |
 | --- | --- |
 | `aligned` | Explicitly aligned storage |

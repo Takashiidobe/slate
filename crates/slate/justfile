@@ -11,7 +11,7 @@ default:
 
 # core: translate a project from its compile_commands.json into crates/slate/transpiled/<name>
 _transpile name src cc=(src / "compile_commands.json"):
-    cargo run --release -p slate -- translate-project --compile-commands {{cc}} {{src}} crates/slate/transpiled/{{name}}
+    cargo run --release -p slate-c2rust -- translate-project --compile-commands {{cc}} {{src}} crates/slate/transpiled/{{name}}
 
 # core: cargo check the already-transpiled crate, without re-translating it
 _check name:

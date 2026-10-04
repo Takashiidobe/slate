@@ -36,24 +36,29 @@ fn cargo() -> String {
     std::env::var("SLATE_CARGO").unwrap_or_else(|_| "cargo".into())
 }
 
-fn aligned_path() -> PathBuf {
-    Path::new(env!("CARGO_MANIFEST_DIR")).join("vendor/aligned")
-}
-
-fn bitint_path() -> PathBuf {
-    Path::new(env!("CARGO_MANIFEST_DIR")).join("vendor/bitint")
-}
-
-fn num_complex_path() -> PathBuf {
-    Path::new(env!("CARGO_MANIFEST_DIR")).join("vendor/num-complex")
+fn support_crate_path(name: &str, project: &Path) -> Result<PathBuf, String> {
+    let source = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("vendor")
+        .join(name);
+    let template = source.join("Cargo.toml.template");
+    let manifest = std::fs::read_to_string(&template)
+        .map_err(|e| format!("read {}: {e}", template.display()))?;
+    let manifest = format!(
+        "{manifest}\n[lib]\npath = {:?}\n",
+        source.join("src/lib.rs").to_string_lossy()
+    );
+    let dest = project.join("vendor").join(name);
+    write_if_changed(dest.join("Cargo.toml"), manifest.as_bytes())
+        .map_err(|e| format!("write {name} manifest: {e}"))?;
+    Ok(dest)
 }
 
 fn bitfields_path() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("vendor/bitfields")
 }
 
-fn generated_crate_manifest(name: &str) -> String {
-    format!(
+fn generated_crate_manifest(name: &str, project: &Path) -> Result<String, String> {
+    Ok(format!(
         r#"[package]
 name = "{name}"
 version = "0.0.0"
@@ -77,11 +82,11 @@ codegen-units = 256
 
 [workspace]
 "#,
-        aligned_path().display(),
-        bitint_path().display(),
-        num_complex_path().display(),
+        support_crate_path("aligned", project)?.display(),
+        support_crate_path("bitint", project)?.display(),
+        support_crate_path("num-complex", project)?.display(),
         bitfields_path().display()
-    )
+    ))
 }
 
 pub fn test_cache_root() -> PathBuf {
@@ -546,7 +551,7 @@ pub fn build_batch(
     std::fs::create_dir_all(bin_dir).map_err(|e| format!("create {}: {e}", bin_dir.display()))?;
     write_if_changed(
         project.join("Cargo.toml"),
-        generated_crate_manifest("slate_batch").as_bytes(),
+        generated_crate_manifest("slate_batch", project)?.as_bytes(),
     )
     .map_err(|e| format!("write Cargo.toml: {e}"))?;
 
@@ -739,7 +744,7 @@ pub fn build_multi_bin_batch(cases: &[MultiBinCase], project: &Path) -> Result<B
     std::fs::create_dir_all(&bin_dir).map_err(|e| format!("create {}: {e}", bin_dir.display()))?;
     write_if_changed(
         project.join("Cargo.toml"),
-        generated_crate_manifest("slate_multi_batch").as_bytes(),
+        generated_crate_manifest("slate_multi_batch", project)?.as_bytes(),
     )
     .map_err(|e| format!("write Cargo.toml: {e}"))?;
 

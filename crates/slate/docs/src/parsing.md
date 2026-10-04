@@ -6,7 +6,7 @@ arguments configure dialect, target, macros, forced inputs and include paths.
 Headers come from slate-sysroots.
 
 ```bash
-cargo run --release -p slate -- emit-slate-ir [compiler arguments] input.c
+cargo run --release -p slate-c2rust -- emit-slate-ir [compiler arguments] input.c
 ```
 
 Slate consumes the typed module directly; printed IR is a debugging artifact.

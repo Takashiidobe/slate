@@ -21,12 +21,12 @@ C -> preprocess, parse, sema -> ir::Module -> Rust AST -> Rust source
 Run from the workspace root; release binaries live in `target/test-cache/release`.
 
 ```bash
-cargo build --release -p slate
-cargo run --release -p slate -- sysroot install x86_64-unknown-linux-gnu
-cargo run --release -p slate -- translate -std=gnu17 input.c
-cargo run --release -p slate -- emit-slate-ir input.c
-cargo run --release -p slate -- lowering-barriers input.c
-cargo run --release -p slate -- translate-project \
+cargo build --release -p slate-c2rust
+cargo run --release -p slate-c2rust -- sysroot install x86_64-unknown-linux-gnu
+cargo run --release -p slate-c2rust -- translate -std=gnu17 input.c
+cargo run --release -p slate-c2rust -- emit-slate-ir input.c
+cargo run --release -p slate-c2rust -- lowering-barriers input.c
+cargo run --release -p slate-c2rust -- translate-project \
   --compile-commands project/compile_commands.json project output-crate
 ```
 
@@ -35,6 +35,8 @@ cargo run --release -p slate -- translate-project \
 - `translate-project` supports executable projects with one `main`, one configuration per unit, and unique module stems. It writes runtime bridges when needed.
 - `SLATE_TARGET` sets the default target. Explicit compiler arguments take precedence; [target queries](slate-target-queries.md) documents configuration.
 - `SLATE_JOBS` controls project worker parallelism; `SLATE_CARGO` selects the generated-code compiler and `SLATE_RUSTFMT` the fallback formatter.
+- Published package: `slate-c2rust`; executable and library target: `slate`. [Release setup](../../RELEASING.md).
+- Embedded support manifests use `Cargo.toml.template`; Cargo always excludes nested packages containing `Cargo.toml`. Generated projects receive ordinary manifests.
 
 ## Coverage and failures
 

@@ -10,7 +10,7 @@
 1. Place or find the fixture in an unsupported bucket and inspect its first barrier.
 2. Fix the owning layer; use `emit-slate-ir`, `lowering-barriers` and `translate` to inspect the result.
 3. Promote fixtures that now pass differential execution into the supported bucket.
-4. Run `cargo clippy -p slate --allow-dirty --fix`, `cargo fmt`, and `cargo nextest r --release --profile slate` from the workspace root. Run the parser gates too if its Rust changed.
+4. Run `cargo clippy -p slate-c2rust --allow-dirty --fix`, `cargo fmt`, and `cargo nextest r --release --profile slate` from the workspace root. Run the parser gates too if its Rust changed.
 5. Update the bead, log the change with `llog new`, and commit.
 
 FileCheck is suspended. For rewrite work, use fixtures that execute the backend

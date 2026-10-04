@@ -2,6 +2,10 @@
 members = ["crates/slate", "crates/slate-parser", "crates/slate-sysroots", "crates/slate-intrinsic-gen"]
 resolver = "3"
 
+[workspace.package]
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/Takashiidobe/slate"
+
 [workspace.dependencies]
 anyhow = "1"
 ar = "0.9"
@@ -24,8 +28,8 @@ serde = "1"
 serde_json = "1"
 sha2 = "0.10"
 shlex = "2"
-slate-parser = { path = "crates/slate-parser" }
-slate-sysroots = { path = "crates/slate-sysroots" }
+slate-parser = { version = "0.1.0", path = "crates/slate-parser" }
+slate-sysroots = { version = "0.1.0", path = "crates/slate-sysroots" }
 syn = { version = "3", default-features = false }
 tar = "0.4"
 tempfile = "3"

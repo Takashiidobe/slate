@@ -51,7 +51,7 @@ CARGO_PROFILE_RELEASE_LTO=true \
 CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1 \
 CARGO_PROFILE_RELEASE_OPT_LEVEL=s \
 CARGO_PROFILE_RELEASE_STRIP=true \
-    cargo build --release --target wasm32-wasip1 --no-default-features -p slate \
+    cargo build --release --target wasm32-wasip1 --no-default-features -p slate-c2rust \
     --manifest-path "$root/../Cargo.toml" --target-dir "$root/target"
 
 rm -rf "$out"

@@ -1,8 +1,22 @@
 [package]
-name = "slate"
+name = "slate-c2rust"
 version = "0.1.0"
 edition = "2024"
 default-run = "slate"
+description = "A C to Rust transpiler with a built-in C frontend"
+license.workspace = true
+repository.workspace = true
+readme = "../../README.md"
+keywords = ["c", "rust", "transpiler", "compiler"]
+categories = ["compilers", "command-line-utilities"]
+include = ["/src", "/build.rs", "/LICENSE-*", "/vendor/aligned", "/vendor/bitint", "/vendor/num-complex"]
+
+[lib]
+name = "slate"
+
+[[bin]]
+name = "slate"
+path = "src/main.rs"
 
 [dependencies]
 clap = { workspace = true, features = ["derive"] }

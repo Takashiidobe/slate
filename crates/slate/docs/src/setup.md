@@ -8,8 +8,8 @@ Slate requires a Rust nightly toolchain. It links slate-parser and
 slate-sysroots as workspace libraries.
 
 ```bash
-cargo build --release -p slate
-cargo run --release -p slate -- sysroot install x86_64-unknown-linux-gnu
+cargo build --release -p slate-c2rust
+cargo run --release -p slate-c2rust -- sysroot install x86_64-unknown-linux-gnu
 ```
 
 Release binaries live under `target/test-cache/release/` because

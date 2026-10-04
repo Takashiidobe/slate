@@ -18,7 +18,7 @@
 
 - Start changed behavior with a failing C differential fixture.
 - Exercise `translate` for backend work. The current Slate profile runs raw lowering and cannot alone establish rewrite parity.
-- Run `cargo clippy -p slate --allow-dirty --fix`, `cargo fmt` and `cargo nextest r --release --profile slate` from the workspace root.
+- Run `cargo clippy -p slate-c2rust --allow-dirty --fix`, `cargo fmt` and `cargo nextest r --release --profile slate` from the workspace root.
 - FileCheck is suspended. Judge semantic correctness by executed C/Rust parity.
 
 ## Measure

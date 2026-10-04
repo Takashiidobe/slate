@@ -5,8 +5,8 @@ Type conversions, source bindings, places and evaluation order are already
 explicit in the IR.
 
 ```bash
-cargo run --release -p slate -- lowering-barriers input.c
-cargo run --release -p slate -- translate input.c
+cargo run --release -p slate-c2rust -- lowering-barriers input.c
+cargo run --release -p slate-c2rust -- translate input.c
 ```
 
 The lowerer collects unsupported constructs as barriers. Invalid IR aborts

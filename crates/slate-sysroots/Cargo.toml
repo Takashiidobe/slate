@@ -2,6 +2,12 @@
 name = "slate-sysroots"
 version = "0.1.0"
 edition = "2024"
+description = "Install per-target C headers and compiler headers for Slate"
+license.workspace = true
+repository.workspace = true
+keywords = ["c", "sysroot", "cross-compilation", "compiler"]
+categories = ["development-tools", "command-line-utilities"]
+include = ["/src", "/README.md", "/LICENSE-*"]
 
 [dependencies]
 anyhow.workspace = true

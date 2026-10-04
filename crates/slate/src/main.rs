@@ -409,7 +409,7 @@ fn write_aligned_support(crate_dir: &Path) -> Result<(), String> {
     for (path, contents) in [
         (
             aligned_dir.join("Cargo.toml"),
-            include_str!("../vendor/aligned/Cargo.toml"),
+            include_str!("../vendor/aligned/Cargo.toml.template"),
         ),
         (
             aligned_dir.join("LICENSE-MIT"),
@@ -438,8 +438,11 @@ fn write_bitint_support(crate_dir: &Path) -> Result<(), String> {
     let src_dir = bitint_dir.join("src");
     std::fs::create_dir_all(&src_dir).map_err(|e| format!("create {}: {e}", src_dir.display()))?;
     let manifest = bitint_dir.join("Cargo.toml");
-    std::fs::write(&manifest, include_str!("../vendor/bitint/Cargo.toml"))
-        .map_err(|e| format!("write {}: {e}", manifest.display()))?;
+    std::fs::write(
+        &manifest,
+        include_str!("../vendor/bitint/Cargo.toml.template"),
+    )
+    .map_err(|e| format!("write {}: {e}", manifest.display()))?;
     write_file(
         &src_dir.join("lib.rs"),
         include_str!("../vendor/bitint/src/lib.rs"),
@@ -454,7 +457,7 @@ fn write_num_complex_support(crate_dir: &Path) -> Result<(), String> {
     for (path, contents) in [
         (
             num_complex_dir.join("Cargo.toml"),
-            include_str!("../vendor/num-complex/Cargo.toml"),
+            include_str!("../vendor/num-complex/Cargo.toml.template"),
         ),
         (
             num_complex_dir.join("LICENSE-MIT"),

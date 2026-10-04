@@ -2,6 +2,12 @@
 name = "slate-parser"
 version = "0.1.0"
 edition = "2024"
+description = "C preprocessor, parser, semantic analysis, and typed IR for Slate"
+license.workspace = true
+repository.workspace = true
+keywords = ["c", "parser", "compiler", "preprocessor"]
+categories = ["compilers", "parser-implementations"]
+include = ["/src", "/README.md", "/LICENSE-*"]
 
 [dependencies]
 custom_debug.workspace = true

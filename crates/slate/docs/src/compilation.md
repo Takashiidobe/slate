@@ -3,8 +3,8 @@
 Install the target headers, then pass compiler arguments before the input:
 
 ```bash
-cargo run --release -p slate -- sysroot install aarch64-unknown-linux-gnu
-cargo run --release -p slate -- translate \
+cargo run --release -p slate-c2rust -- sysroot install aarch64-unknown-linux-gnu
+cargo run --release -p slate-c2rust -- translate \
   --target=aarch64-unknown-linux-gnu input.c
 ```
 

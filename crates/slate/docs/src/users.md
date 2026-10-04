@@ -9,8 +9,8 @@ checked by running both the C and generated Rust.
 From the workspace root:
 
 ```bash
-cargo build --release -p slate
-cargo run --release -p slate -- sysroot install x86_64-unknown-linux-gnu
+cargo build --release -p slate-c2rust
+cargo run --release -p slate-c2rust -- sysroot install x86_64-unknown-linux-gnu
 ```
 
 Release binaries live in `target/test-cache/release/`. See [setup](setup.md)

@@ -1,5 +1,5 @@
 [profile.slate]
-default-filter = 'package(slate)'
+default-filter = 'package(slate-c2rust)'
 
 [profile.parser]
 default-filter = 'package(slate-parser)'

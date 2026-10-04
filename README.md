@@ -13,16 +13,26 @@ and a simple user experience.
 
 ## Installation
 
-Slate is still source only and not on crates.io, so for now:
+Install the published package with Rust nightly:
+
+```sh
+cargo +nightly install slate-c2rust --version 0.1.0 --locked
+```
+
+The executable is named `slate`. See [publishing](RELEASING.md) for release
+setup and tag conventions.
+
+To build from source:
 
 ```sh
 git clone https://github.com/takashiidobe/slate
+cd slate
 ```
 
-and build it, to build `slate`, `slate-parser`, and `slate-sysroots`.
+Build the workspace:
 
 ```sh
-cargo build --release
+cargo +nightly build --release
 ```
 
 I plan to merge `slate-sysroots` into plain slate, possibly leaving

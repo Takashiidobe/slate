@@ -87,7 +87,7 @@ conversions and layout remain slate-parser responsibilities.
 ## Validation
 
 ```bash
-cargo clippy -p slate --allow-dirty --fix
+cargo clippy -p slate-c2rust --allow-dirty --fix
 cargo fmt
 cargo nextest r --release --profile slate
 ```
