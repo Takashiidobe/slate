@@ -3,12 +3,10 @@ name: Release
 on:
   push:
     tags:
-      - "*-slate-c2rust"
-      - "*-slate-parser"
-      - "*-slate-sysroots"
+      - "v*"
 
 concurrency:
-  group: release-${{ github.ref_name }}
+  group: crates-io-release
   cancel-in-progress: false
 
 jobs:
@@ -23,44 +21,49 @@ jobs:
 
       - uses: dtolnay/rust-toolchain@nightly
 
-      - name: Check tag and published version
+      - name: Check tag and published versions
         id: version
         shell: bash
         run: |
-          case "$GITHUB_REF_NAME" in
-            *-slate-c2rust) crate=slate-c2rust ;;
-            *-slate-parser) crate=slate-parser ;;
-            *-slate-sysroots) crate=slate-sysroots ;;
-            *) echo "Unsupported release tag: $GITHUB_REF_NAME" >&2; exit 1 ;;
-          esac
-          tag_version="${GITHUB_REF_NAME%-${crate}}"
-          crate_version="$(cargo metadata --no-deps --format-version 1 | jq -er --arg crate "$crate" '.packages[] | select(.name == $crate) | .version')"
-          if [ "$tag_version" != "$crate_version" ]; then
-            echo "Tag $GITHUB_REF_NAME does not match $crate Cargo.toml version $crate_version" >&2
-            exit 1
-          fi
-          echo "crate=$crate" >> "$GITHUB_OUTPUT"
+          tag_version="${GITHUB_REF_NAME#v}"
+          metadata="$(cargo metadata --locked --no-deps --format-version 1)"
+          crates=(slate-parser slate-sysroots slate-c2rust)
+          for crate in "${crates[@]}"; do
+            crate_version="$(jq -er --arg crate "$crate" '.packages[] | select(.name == $crate) | .version' <<< "$metadata")"
+            if [ "$GITHUB_REF_NAME" != "v$crate_version" ]; then
+              echo "Tag $GITHUB_REF_NAME does not match $crate Cargo.toml version $crate_version" >&2
+              exit 1
+            fi
+          done
 
-          encoded_version="$(jq -rn --arg v "$crate_version" '$v|@uri')"
-          status="$(curl -A "slate-release-workflow" --silent --show-error --retry 3 --output /dev/null --write-out '%{http_code}' "https://crates.io/api/v1/crates/$crate/$encoded_version")"
-          if [ "$status" = "200" ]; then
-            echo "$crate $crate_version already exists on crates.io; skipping publish."
-            echo "skip=true" >> "$GITHUB_OUTPUT"
-          elif [ "$status" = "404" ]; then
-            echo "$crate $crate_version has not been published yet."
-            echo "skip=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "Unexpected crates.io response while checking $crate $crate_version: HTTP $status" >&2
-            exit 1
-          fi
+          pending=()
+          encoded_version="$(jq -rn --arg v "$tag_version" '$v|@uri')"
+          for crate in "${crates[@]}"; do
+            status="$(curl -A "slate-release-workflow" --silent --show-error --retry 3 --output /dev/null --write-out '%{http_code}' "https://crates.io/api/v1/crates/$crate/$encoded_version")"
+            if [ "$status" = "200" ]; then
+              echo "$crate $tag_version already exists on crates.io; skipping publish."
+            elif [ "$status" = "404" ]; then
+              echo "$crate $tag_version has not been published yet."
+              pending+=("$crate")
+            else
+              echo "Unexpected crates.io response while checking $crate $tag_version: HTTP $status" >&2
+              exit 1
+            fi
+          done
+          echo "crates=${pending[*]}" >> "$GITHUB_OUTPUT"
 
       - uses: rust-lang/crates-io-auth-action@v1
         id: auth
-        if: steps.version.outputs.skip != 'true'
+        if: steps.version.outputs.crates != ''
 
-      - name: Publish crate
-        if: steps.version.outputs.skip != 'true'
-        run: cargo publish -p "$RELEASE_CRATE" --all-features --locked
+      - name: Publish crates in dependency order
+        if: steps.version.outputs.crates != ''
+        shell: bash
+        run: |
+          read -r -a crates <<< "$RELEASE_CRATES"
+          for crate in "${crates[@]}"; do
+            cargo publish -p "$crate" --all-features --locked
+          done
         env:
-          RELEASE_CRATE: ${{ steps.version.outputs.crate }}
+          RELEASE_CRATES: ${{ steps.version.outputs.crates }}
           CARGO_REGISTRY_TOKEN: ${{ steps.auth.outputs.token }}
