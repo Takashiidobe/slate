@@ -75,8 +75,22 @@ Both binary crates declare `[package.metadata.binstall]` matching these paths.
 Users install the `slate` executable with `cargo binstall slate-c2rust` and the
 parser with `cargo binstall slate-parser`.
 
-Binstall support starts with the next version published with this metadata and
-its release archives. Existing crates.io versions are immutable; bump all three
-release packages and workspace dependency requirements before tagging that
-release. No separate publishing token is needed for binaries: the release job
-uses `GITHUB_TOKEN` with `contents: write`.
+Existing crates.io versions are immutable, but binstall can discover binaries
+without explicit metadata through its
+[default archive conventions](https://github.com/cargo-bins/cargo-binstall/blob/main/SUPPORT.md#defaults).
+To backfill an already published version, build its original tag and attach
+archives to the GitHub Release for that tag. For example:
+
+```text
+slate-c2rust-x86_64-unknown-linux-gnu-v0.1.0.tgz
+  slate-c2rust-x86_64-unknown-linux-gnu-v0.1.0/slate
+slate-parser-x86_64-unknown-linux-gnu-v0.1.0.tgz
+  slate-parser-x86_64-unknown-linux-gnu-v0.1.0/slate-parser
+```
+
+Use the same layout for other targets, with `.exe` for Windows binaries. This
+requires no tag movement or crates.io republication. The workflow only runs on
+new tag pushes; backfilling an existing tag requires a manual build and upload.
+Future versions carry the explicit metadata and use the archive-root layout
+described above. No separate publishing token is needed for automated binaries:
+the release job uses `GITHUB_TOKEN` with `contents: write`.
