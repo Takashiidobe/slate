@@ -13,14 +13,33 @@ and a simple user experience.
 
 ## Installation
 
-Install the published package with Rust nightly:
+Install [`slate-c2rust`](https://crates.io/crates/slate-c2rust) from crates.io
+with Rust nightly:
 
 ```sh
-cargo +nightly install slate-c2rust --version 0.1.0 --locked
+cargo +nightly install slate-c2rust --locked
 ```
 
-The executable is named `slate`. See [publishing](RELEASING.md) for release
-setup and tag conventions.
+The package is named `slate-c2rust`; the executable is named `slate`.
+To install the standalone C parser and typed IR CLI:
+
+```sh
+cargo +nightly install slate-parser --locked
+```
+
+For releases with prebuilt binaries, use
+[cargo-binstall](https://github.com/cargo-bins/cargo-binstall) to install without
+compiling. Archives are built for x86_64 Linux, x86_64 and Apple Silicon macOS,
+and x86_64 Windows:
+
+```sh
+cargo binstall slate-c2rust slate-parser --strategies crate-meta-data
+```
+
+This installs both `slate` and `slate-parser`; omit either package to install
+just one. The release workflow publishes these archives on
+[GitHub Releases](https://github.com/takashiidobe/slate/releases).
+See [publishing](RELEASING.md) for release setup and tag conventions.
 
 To build from source:
 

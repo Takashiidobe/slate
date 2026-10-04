@@ -67,3 +67,82 @@ jobs:
         env:
           RELEASE_CRATES: ${{ steps.version.outputs.crates }}
           CARGO_REGISTRY_TOKEN: ${{ steps.auth.outputs.token }}
+
+  binaries:
+    needs: publish
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-22.04
+            target: x86_64-unknown-linux-gnu
+          - runner: macos-15-intel
+            target: x86_64-apple-darwin
+          - runner: macos-14
+            target: aarch64-apple-darwin
+          - runner: windows-2022
+            target: x86_64-pc-windows-msvc
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: dtolnay/rust-toolchain@nightly
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Build release binaries
+        run: cargo build --release --locked --target ${{ matrix.target }} -p slate-c2rust -p slate-parser --bins
+
+      - name: Package release binaries
+        shell: bash
+        env:
+          RELEASE_TARGET: ${{ matrix.target }}
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          suffix=""
+          if [[ "$RELEASE_TARGET" == *-windows-* ]]; then
+            suffix=".exe"
+          fi
+          mkdir -p dist
+          for package in slate-c2rust slate-parser; do
+            binary="$package"
+            if [ "$package" = "slate-c2rust" ]; then
+              binary="slate"
+            fi
+            staging="dist/$package"
+            mkdir -p "$staging"
+            cp "target/test-cache/$RELEASE_TARGET/release/$binary$suffix" "$staging/"
+            cp LICENSE-APACHE LICENSE-MIT "$staging/"
+            tar -czf "dist/$package-$RELEASE_TARGET-v$version.tar.gz" -C "$staging" "$binary$suffix" LICENSE-APACHE LICENSE-MIT
+          done
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: binaries-${{ matrix.target }}
+          path: dist/*.tar.gz
+          if-no-files-found: error
+
+  release:
+    needs: binaries
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: binaries-*
+          path: dist
+          merge-multiple: true
+
+      - name: Publish release archives
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          if gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" dist/*.tar.gz --clobber
+          else
+            gh release create "$GITHUB_REF_NAME" dist/*.tar.gz --verify-tag --generate-notes
+          fi

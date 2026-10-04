@@ -51,3 +51,32 @@ publishing anything. It publishes `slate-parser`, then `slate-sysroots`, then
 `slate-c2rust`, using trusted publishing for all three. Concurrent release runs
 are serialized. Existing versions are skipped, so rerunning a partially
 completed release publishes only the remaining crates.
+
+## Prebuilt binaries
+
+After crates.io publication, the same workflow builds `slate` and `slate-parser`
+for these native targets:
+
+| Runner | Target |
+| ------ | ------ |
+| Ubuntu 22.04 | `x86_64-unknown-linux-gnu` |
+| macOS Intel | `x86_64-apple-darwin` |
+| macOS Apple Silicon | `aarch64-apple-darwin` |
+| Windows 2022 | `x86_64-pc-windows-msvc` |
+
+Each package gets an archive named
+`<package>-<target>-v<version>.tar.gz`, containing its executable and licenses
+at the archive root. Windows executables retain the `.exe` suffix. Builds use
+`target/test-cache/<target>/release/` from the workspace Cargo configuration.
+The workflow creates a GitHub Release for the existing tag and uploads all
+archives; reruns replace the matching assets.
+
+Both binary crates declare `[package.metadata.binstall]` matching these paths.
+Users install the `slate` executable with `cargo binstall slate-c2rust` and the
+parser with `cargo binstall slate-parser`.
+
+Binstall support starts with the next version published with this metadata and
+its release archives. Existing crates.io versions are immutable; bump all three
+release packages and workspace dependency requirements before tagging that
+release. No separate publishing token is needed for binaries: the release job
+uses `GITHUB_TOKEN` with `contents: write`.

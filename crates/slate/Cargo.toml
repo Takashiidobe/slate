@@ -11,6 +11,11 @@ keywords = ["c", "rust", "transpiler", "compiler"]
 categories = ["compilers", "command-line-utilities"]
 include = ["/src", "/build.rs", "/LICENSE-*", "/vendor/aligned", "/vendor/bitint", "/vendor/num-complex"]
 
+[package.metadata.binstall]
+pkg-url = "{ repo }/releases/download/v{ version }/{ name }-{ target }-v{ version }.tar.gz"
+bin-dir = "{ bin }{ binary-ext }"
+pkg-fmt = "tgz"
+
 [lib]
 name = "slate"
 

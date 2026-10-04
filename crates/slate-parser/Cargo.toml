@@ -9,6 +9,11 @@ keywords = ["c", "parser", "compiler", "preprocessor"]
 categories = ["compilers", "parser-implementations"]
 include = ["/src", "/README.md", "/LICENSE-*"]
 
+[package.metadata.binstall]
+pkg-url = "{ repo }/releases/download/v{ version }/{ name }-{ target }-v{ version }.tar.gz"
+bin-dir = "{ bin }{ binary-ext }"
+pkg-fmt = "tgz"
+
 [dependencies]
 custom_debug.workspace = true
 directories.workspace = true
