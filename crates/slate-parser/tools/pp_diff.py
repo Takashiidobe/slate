@@ -49,7 +49,12 @@ CONSUMED_PRAGMA = re.compile(
 KEEP_JOINED = ("-D", "-U", "-I", "-std=", "-isystem", "-iquote", "-idirafter", "-include", "-imacros")
 KEEP_SEPARATE = {"-D", "-U", "-I", "-isystem", "-iquote", "-idirafter", "-include", "-imacros"}
 PATH_FLAGS = {"-I", "-isystem", "-iquote", "-idirafter", "-include", "-imacros"}
-TARGET_FEATURE = re.compile(r"-march=.+|-m(?!16$|32$|64$|x32$)[a-z0-9][a-z0-9.-]*")
+DROP_SEPARATE = {"-mllvm", "-Xclang"}
+SEMANTIC_FLAGS = (
+    "-funsigned-char", "-fsigned-char", "-fshort-wchar", "-fms-extensions", "-fms-anonymous-structs",
+    "-fexperimental-late-parse-attributes", "-fstrict-flex-arrays=", "-ffreestanding", "-nostdinc", "-fno-builtin",
+)
+TARGET_FEATURE = re.compile(r"-march=.+|-m(?!llvm$)[a-z0-9][a-z0-9.-]*")
 
 
 @dataclass
@@ -100,10 +105,13 @@ def kept_args(argv: list[str], directory: str) -> list[str]:
             kept += [arg, value]
             index += 2
             continue
+        if arg in DROP_SEPARATE:
+            index += 2
+            continue
         flag = next((flag for flag in ("-isystem", "-iquote", "-idirafter", "-I") if arg.startswith(flag)), None)
         if flag and len(arg) > len(flag):
             arg = flag + absolute(directory, arg[len(flag):])
-        if arg.startswith(KEEP_JOINED) or TARGET_FEATURE.fullmatch(arg):
+        if arg.startswith(KEEP_JOINED) or arg.startswith(SEMANTIC_FLAGS) or TARGET_FEATURE.fullmatch(arg):
             kept.append(arg)
         index += 1
     return kept

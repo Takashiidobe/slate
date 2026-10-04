@@ -108,6 +108,10 @@ RECIPES = {
     "cpython": Configure(["{source}/configure", "CC={cc}"]),
     "libsodium": Configure(["{source}/configure", "CC={cc}"], ["check"], bootstrap=["./autogen.sh", "-s"]),
     "postgres": Configure(["{source}/configure", "CC={cc}"], ["world-bin"]),
+    "linux": Configure(
+        ["make", "-C", "{source}", "O={build}", "CC={cc}", "HOSTCC={cc}", "defconfig"],
+        ["CC={cc}", "HOSTCC={cc}"],
+    ),
     "jq": Configure(
         ["{source}/configure", "CC={cc}", "--with-oniguruma=builtin", "--disable-docs"],
         bootstrap=["autoreconf", "-i"],
@@ -194,7 +198,7 @@ def setup(corpus: Path, project: str, flavor: str) -> str:
                 if recipe.bootstrap:
                     run(expand(recipe.bootstrap, values), root, env, log)
                 run(expand(recipe.configure, values), build, env, log)
-                built = run(bear(database, ["make", "-j", JOBS, *recipe.make]), build, env, log, required=False)
+                built = run(bear(database, ["make", "-j", JOBS, *expand(recipe.make, values)]), build, env, log, required=False)
             case Nmake() if flavor == "msvc":
                 argv = ["nmake", "/nologo", "/i", "/f", f"..\\{recipe.makefile}", *expand(recipe.options, values)]
                 built = run(argv, build, env, log, required=False)

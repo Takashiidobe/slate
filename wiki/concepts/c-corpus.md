@@ -1,7 +1,6 @@
 # C corpus
 
 <!-- toc -->
-
 - [Layout](#layout)
 - [Setup](#setup)
 - [Recipes](#recipes)
@@ -73,6 +72,7 @@ python3 tools/c_corpus_setup.py [PROJECT ...] [--flavor clang|gcc|msvc ...]
 | lmdb                                                                                | `make -C libraries/liblmdb CC=` in tree                                                                                                 | none                                                 |
 | stb                                                                                 | `make -i -C tests CC=` in tree: upstream's driver TUs define each header's `*_IMPLEMENTATION`; `-i` gets past the C++ TU's link failure | none                                                 |
 | postgres                                                                            | `configure` out of tree + `make world-bin` (contrib included)                                                                           | none                                                 |
+| linux                                                                               | shallow clone; `make O=build-<flavor> CC= HOSTCC= defconfig`, then the full build (about 4 minutes)                                     | none                                                 |
 
 msvc covers only projects whose upstream ships a Windows build. musl,
 nginx, redis, lua, quickjs, chibicc, giflib and tinycc have no MSVC build
@@ -90,10 +90,17 @@ python3 tools/c_corpus_sweep.py [PROJECT ...] [--flavor clang|gcc|msvc] [--jobs 
 - Deduplicates each database by file and drops entries whose file is
   gone (`bear` also records configure probes). Keeps `-D`, `-U`, `-I`,
   `-isystem`, `-iquote`, `-idirafter`, `-include`, `-imacros`, `-std`,
-  and target features: `-march=` and valueless `-m`/`-mno-` flags other
-  than `-m16`/`-m32`/`-m64`/`-mx32` (`pp_diff.kept_args`), so per-file
-  SIMD flags such as CPython's `-mavx2` reach both slate and the oracle.
-  Pins `-std=gnu17` when absent (slate-parser-6x05.6).
+  target flags (`-march=` and valueless `-m`/`-mno-` flags, including
+  `-m16`/`-m32`/`-m64`/`-mx32`), and flags that change what the C means
+  (`pp_diff.SEMANTIC_FLAGS`: `-nostdinc`, `-ffreestanding`, `-fno-builtin*`,
+  char signedness, `-fshort-wchar`, `-fms-anonymous-structs`,
+  `-fstrict-flex-arrays=`, `-fexperimental-late-parse-attributes`).
+  `-mllvm`/`-Xclang` are dropped with their value. Pins `-std=gnu17` when
+  absent (slate-parser-6x05.6).
+- The filtering is a stopgap for finding unhandled flags, not a policy:
+  every flag a real build passes needs handling in `compiler_args`, and
+  the sweep should eventually pass the full command (slate-parser-6x05.38.4).
+  Never skip TUs or drop a flag to make a project pass.
 - `--flavor` selects `build-<flavor>`, the Slate flavor, and the compiler
   oracle; it defaults to clang. MSVC uses `cl.exe /Zs` and the Windows x64
   target.
@@ -157,7 +164,8 @@ or `slate translate-project`.
   `-idirafter` so the sysroot still wins for libc headers. redis needs
   `/usr/include` for `systemd/sd-daemon.h` (its build detects systemd on
   the host). pcre2 needs it for `bzlib.h` (`pcre2grep.c`) and
-  `readline/readline.h` (`pcre2test.c`), nginx for `crypt.h`, cpython
+  `readline/readline.h` (`pcre2test.c`), nginx for `crypt.h`, linux for
+  its host tools (`gelf.h`, `openssl/bio.h`), cpython
   for its optional modules' libraries (ssl, bz2, lzma, readline, ncurses,
   ffi).
 - Where a corpus project provides the header (`zlib`), the sweep appends
