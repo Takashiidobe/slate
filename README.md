@@ -8,8 +8,8 @@ C2Rust. First, by lowering to unidiomatic Rust, and then run a set of passes
 on the generated Rust in order to refine it to safer Rust with only
 static analyses and rewrites.
 
-Slate support for modern C (C23 support), cross-compilation,
-and a simple user experience.
+Slate supports modern C (C23 support), cross-compilation, and a simple
+user experience.
 
 ## Installation
 
@@ -60,11 +60,11 @@ Before translating C code, install a sysroot for your target. This is required
 to fetch the C standard library and platform headers that Slate uses to parse
 your code. Run the command for your target:
 
-| Target | Command |
-| ------ | ------- |
-| macOS aarch64 (Apple Silicon) | `slate sysroot install aarch64-apple-darwin` |
-| Linux x86_64 (glibc) | `slate sysroot install x86_64-unknown-linux-gnu` |
-| Windows x86_64 (MSVC) | `slate sysroot install x86_64-pc-windows-msvc` |
+| Target                        | Command                                          |
+| ----------------------------- | ------------------------------------------------ |
+| macOS aarch64 (Apple Silicon) | `slate sysroot install aarch64-apple-darwin`     |
+| Linux x86_64 (glibc)          | `slate sysroot install x86_64-unknown-linux-gnu` |
+| Windows x86_64 (MSVC)         | `slate sysroot install x86_64-pc-windows-msvc`   |
 
 Linux and Windows sysroots download the headers. On macOS, Slate uses the local
 Apple SDK instead; install it with `xcode-select --install` if needed, then run
