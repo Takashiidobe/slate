@@ -366,7 +366,7 @@ enum Opt {
     Fpu,
     Thumb,
     SveVectorBits,
-    ClangCodegenOnly,
+    CodegenOnly(&'static str),
     Warning,
     Pedantic,
     Optimize,
@@ -445,7 +445,7 @@ impl std::fmt::Display for Opt {
             Self::Fpu => "mfpu",
             Self::Thumb => "mthumb",
             Self::SveVectorBits => "msve-vector-bits",
-            Self::ClangCodegenOnly => "m<clang codegen flag>",
+            Self::CodegenOnly(spelling) => spelling.trim_start_matches('-'),
             Self::Warning => "W",
             Self::Pedantic => "pedantic",
             Self::Optimize => "O",
@@ -521,10 +521,12 @@ impl Opt {
             | Self::FpRetIn387 => &[Gcc],
             Self::StackAlignment
             | Self::ClangX87
-            | Self::ClangCodegenOnly
             | Self::AsmBlocks
             | Self::MsAnonymousStructs
             | Self::LateParseAttributes => &[Clang],
+            Self::CodegenOnly(spelling) => {
+                codegen_only_flag_named(spelling).map_or(&[], |flag| flag.flavors)
+            }
         };
         flavors.contains(&flavor)
     }
@@ -533,6 +535,8 @@ impl Opt {
         match self {
             Self::Freestanding | Self::Hosted => flavor.is_gcc(),
             Self::FpRetIn387 => !flavor.is_msvc(),
+            Self::CodegenOnly(spelling) => codegen_only_flag_named(spelling)
+                .is_some_and(|flag| flag.negation_flavors.contains(&flavor)),
             _ => self.accepted_by(flavor),
         }
     }
@@ -569,6 +573,12 @@ impl Opt {
             Self::FpRetIn387 => "-mfp-ret-in-387",
             Self::ThreeDNow => "-m3dnow",
             Self::ThreeDNowA => "-m3dnowa",
+            Self::CodegenOnly(spelling)
+                if codegen_only_flag_named(spelling)
+                    .is_some_and(|flag| flag.form == CodegenOnlyForm::Switch) =>
+            {
+                spelling
+            }
             _ => return None,
         })
     }
@@ -602,29 +612,95 @@ const IGNORED_DRIVER_FLAGS: [&str; 8] = ["-c", "-MD", "-MMD", "-MP", "-MG", "-M"
 
 const IGNORED_VALUE_OPTIONS: [&str; 5] = ["-o", "-MF", "-MT", "-MQ", "-MJ"];
 
-const CODEGEN_ONLY_FLAGS: [&str; 12] = [
-    "-fomit-frame-pointer",
-    "-flto",
-    "-ffunction-sections",
-    "-fdata-sections",
-    "-fstrict-aliasing",
-    "-fplt",
-    "-fsemantic-interposition",
-    "-funwind-tables",
-    "-fstack-clash-protection",
-    "-fmerge-all-constants",
-    "-fident",
-    "-faddrsig",
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum CodegenOnlyForm {
+    Switch,
+    Value(&'static [&'static str]),
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+struct CodegenOnlyFlag {
+    spelling: &'static str,
+    form: CodegenOnlyForm,
+    flavors: &'static [CompilerFlavor],
+    negation_flavors: &'static [CompilerFlavor],
+}
+
+impl CodegenOnlyFlag {
+    const fn switch(spelling: &'static str, flavors: &'static [CompilerFlavor]) -> Self {
+        Self {
+            spelling,
+            form: CodegenOnlyForm::Switch,
+            flavors,
+            negation_flavors: flavors,
+        }
+    }
+
+    const fn value(spelling: &'static str, flavors: &'static [CompilerFlavor]) -> Self {
+        Self {
+            form: CodegenOnlyForm::Value(&[]),
+            ..Self::switch(spelling, flavors)
+        }
+    }
+
+    fn matches(&self, argument: &str) -> bool {
+        match self.form {
+            CodegenOnlyForm::Switch => parse_switch(self.spelling, argument).is_some(),
+            CodegenOnlyForm::Value(_) => argument.starts_with(self.spelling),
+        }
+    }
+
+    fn check_value(&self, argument: &str) -> Result<(), CompilerArgError> {
+        match (self.form, argument.strip_prefix(self.spelling)) {
+            (CodegenOnlyForm::Value(values), Some(value))
+                if !values.is_empty() && !values.contains(&value) =>
+            {
+                Err(invalid(
+                    argument,
+                    &format!("expected one of {}", values.join(", ")),
+                ))
+            }
+            _ => Ok(()),
+        }
+    }
+}
+
+const ALL_FLAVORS: &[CompilerFlavor] = &[
+    CompilerFlavor::Gcc,
+    CompilerFlavor::Clang,
+    CompilerFlavor::Msvc,
+];
+const CLANG_ONLY: &[CompilerFlavor] = &[CompilerFlavor::Clang];
+
+const CODEGEN_ONLY_FLAGS: [CodegenOnlyFlag; 16] = [
+    CodegenOnlyFlag::switch("-fomit-frame-pointer", ALL_FLAVORS),
+    CodegenOnlyFlag::switch("-flto", ALL_FLAVORS),
+    CodegenOnlyFlag::switch("-ffunction-sections", ALL_FLAVORS),
+    CodegenOnlyFlag::switch("-fdata-sections", ALL_FLAVORS),
+    CodegenOnlyFlag::switch("-fstrict-aliasing", ALL_FLAVORS),
+    CodegenOnlyFlag::switch("-fplt", ALL_FLAVORS),
+    CodegenOnlyFlag::switch("-fsemantic-interposition", ALL_FLAVORS),
+    CodegenOnlyFlag::switch("-funwind-tables", ALL_FLAVORS),
+    CodegenOnlyFlag::switch("-fstack-clash-protection", ALL_FLAVORS),
+    CodegenOnlyFlag::switch("-fmerge-all-constants", ALL_FLAVORS),
+    CodegenOnlyFlag::switch("-fident", ALL_FLAVORS),
+    CodegenOnlyFlag::switch("-faddrsig", ALL_FLAVORS),
+    CodegenOnlyFlag::value("-flto=", ALL_FLAVORS),
+    CodegenOnlyFlag::value("-fvisibility=", ALL_FLAVORS),
+    CodegenOnlyFlag::value("-fdebug-prefix-map=", ALL_FLAVORS),
+    CodegenOnlyFlag::switch("-moutline", CLANG_ONLY),
 ];
 
-const CODEGEN_ONLY_VALUE_FLAGS: [&str; 3] = ["lto=", "visibility=", "debug-prefix-map="];
-
-const CLANG_CODEGEN_ONLY_M_FLAGS: [&str; 1] = ["-moutline"];
-
-fn clang_codegen_only(argument: &str) -> bool {
-    CLANG_CODEGEN_ONLY_M_FLAGS
+fn codegen_only_flag(argument: &str) -> Option<&'static CodegenOnlyFlag> {
+    CODEGEN_ONLY_FLAGS
         .iter()
-        .any(|switch| parse_switch(switch, argument).is_some())
+        .find(|flag| flag.matches(argument))
+}
+
+fn codegen_only_flag_named(spelling: &str) -> Option<&'static CodegenOnlyFlag> {
+    CODEGEN_ONLY_FLAGS
+        .iter()
+        .find(|flag| flag.spelling == spelling)
 }
 
 fn ignored_option(argument: &str) -> Option<IgnoredOption> {
@@ -634,16 +710,7 @@ fn ignored_option(argument: &str) -> Option<IgnoredOption> {
     let joined_value = IGNORED_VALUE_OPTIONS
         .iter()
         .any(|option| argument.len() > option.len() && argument.starts_with(option));
-    let codegen_only = CODEGEN_ONLY_FLAGS
-        .iter()
-        .any(|switch| parse_switch(switch, argument).is_some())
-        || CODEGEN_ONLY_VALUE_FLAGS
-            .iter()
-            .any(|prefix| argument.starts_with(&format!("-f{prefix}")));
-    (IGNORED_DRIVER_FLAGS.contains(&argument)
-        || argument.starts_with("-g")
-        || joined_value
-        || codegen_only)
+    (IGNORED_DRIVER_FLAGS.contains(&argument) || argument.starts_with("-g") || joined_value)
         .then_some(IgnoredOption::Alone)
 }
 
@@ -829,6 +896,9 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
             if ignored == IgnoredOption::TakesValue {
                 next_value(arguments, &mut index, argument, "")?;
             }
+        } else if let Some(flag) = codegen_only_flag(argument) {
+            flag.check_value(argument)?;
+            parsed.saw(Opt::CodegenOnly(flag.spelling), argument);
         } else if let Some((opt, value)) = SWITCH_OPTS
             .iter()
             .find_map(|opt| opt.parse_switch(argument).map(|value| (*opt, value)))
@@ -1081,8 +1151,6 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                 argument,
                 "SVE vector length",
             )?);
-        } else if clang_codegen_only(argument) {
-            parsed.saw(Opt::ClangCodegenOnly, argument);
         } else if let Some(thumb) = thumb_flag(argument) {
             parsed.saw(Opt::Thumb, argument);
             parsed.isa.thumb = Some(thumb);
