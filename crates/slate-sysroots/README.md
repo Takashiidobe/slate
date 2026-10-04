@@ -34,15 +34,15 @@ cannot supply link libraries or startup files.
 
 ## Commands
 
-| Command | Effect |
-| --- | --- |
-| `install <target>` | Acquire the target sysroot and print its installed path. For macOS, register a local SDK. |
+| Command                                          | Effect                                                                                                                            |
+| ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------- |
+| `install <target>`                               | Acquire the target sysroot and print its installed path. For macOS, register a local SDK.                                         |
 | `install compiler-headers <compiler> [selector]` | Acquire compiler headers and print their include paths. MSVC installs the selected Windows sysroots and reuses their CRT headers. |
-| `doctor <target>` | Check the target's expected header and library paths, where applicable. Windows checks also detect CRT/UCRT version mismatches. |
-| `doctor compiler-headers <compiler> [selector]` | Check the selected compiler bundle's required headers and accompanying license or manifest files. |
-| `path <target>` | Validate the target installation and print its sysroot path. |
-| `path compiler-headers <compiler> [selector]` | Validate the selected compiler bundle and print its include path. |
-| `remove <target>` | Remove the target sysroot installation. Compiler bundles have no `remove` command. |
+| `doctor <target>`                                | Check the target's expected header and library paths, where applicable. Windows checks also detect CRT/UCRT version mismatches.   |
+| `doctor compiler-headers <compiler> [selector]`  | Check the selected compiler bundle's required headers and accompanying license or manifest files.                                 |
+| `path <target>`                                  | Validate the target installation and print its sysroot path.                                                                      |
+| `path compiler-headers <compiler> [selector]`    | Validate the selected compiler bundle and print its include path.                                                                 |
+| `remove <target>`                                | Remove the target sysroot installation. Compiler bundles have no `remove` command.                                                |
 
 `doctor` prints `✓` or `✗` for each check and exits unsuccessfully if any
 check fails. It checks the named target or compiler bundle; it does not
@@ -53,12 +53,12 @@ that the expected files exist, rather than compiling or linking a test program.
 
 All four compiler names support `install`, `path`, and `doctor`.
 
-| Compiler | Header source | Target use | Optional selector |
-| --- | --- | --- | --- |
-| `clang` | Upstream Clang 22.1.8 resource headers; requires `git` to install | Shared bundle for all supported targets | None |
-| `apple-clang` | Resource headers copied from the active Xcode or Command Line Tools compiler; installation requires macOS | The two macOS targets | None |
-| `gcc` | GCC 16.2.0 release archive, verified by SHA-256; assembled as Linux compiler headers | Linux targets with the matching architecture family | `x86`, `aarch64`, or `arm`; omitted means all families |
-| `msvc` | CRT headers from the pinned Microsoft packages | The four Windows MSVC targets; headers must match the exact target | A Windows MSVC target triple; omitted means all four targets |
+| Compiler      | Header source                                                                                             | Target use                                                         | Optional selector                                            |
+| ------------- | --------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ | ------------------------------------------------------------ |
+| `clang`       | Upstream Clang 22.1.8 resource headers; requires `git` to install                                         | Shared bundle for all supported targets                            | None                                                         |
+| `apple-clang` | Resource headers copied from the active Xcode or Command Line Tools compiler; installation requires macOS | The two macOS targets                                              | None                                                         |
+| `gcc`         | GCC 16.2.0 release archive, verified by SHA-256; assembled as Linux compiler headers                      | Linux targets with the matching architecture family                | `x86`, `aarch64`, or `arm`; omitted means all families       |
+| `msvc`        | CRT headers from the pinned Microsoft packages                                                            | The four Windows MSVC targets; headers must match the exact target | A Windows MSVC target triple; omitted means all four targets |
 
 GCC's `x86` family covers i686 and x86_64; `aarch64` covers aarch64;
 `arm` covers both armv7 Linux targets. Installing GCC headers always installs
@@ -158,10 +158,10 @@ manifest. It prompts for acceptance of Microsoft's license on stdin. Set
 `XWIN_ACCEPT_LICENSE` to accept non-interactively. Installed files are for
 local use and are not bundled with Slate.
 
-| Targets | MSVC CRT | Windows SDK |
-| --- | --- | --- |
-| i686, x86_64, aarch64 | 14.51 | 10.0.26100 |
-| thumbv7a | 14.44 | 10.0.22621 |
+| Targets               | MSVC CRT | Windows SDK |
+| --------------------- | -------- | ----------- |
+| i686, x86_64, aarch64 | 14.51    | 10.0.26100  |
+| thumbv7a              | 14.44    | 10.0.22621  |
 
 The thumbv7a versions are the last releases with 32-bit ARM support. The
 Universal CRT comes from the pinned SDK to avoid an older standalone UCRT
@@ -176,22 +176,22 @@ paths rather than creating duplicate compiler-header bundles.
 
 Installations use Slate's platform-specific local data directory:
 
-| Host | Data directory |
-| --- | --- |
-| Linux | `${XDG_DATA_HOME:-~/.local/share}/slate` |
-| macOS | `~/Library/Application Support/Slate` |
-| Windows | `%LOCALAPPDATA%\Slate\data` |
+| Host    | Data directory                           |
+| ------- | ---------------------------------------- |
+| Linux   | `${XDG_DATA_HOME:-~/.local/share}/slate` |
+| macOS   | `~/Library/Application Support/Slate`    |
+| Windows | `%LOCALAPPDATA%\Slate\data`              |
 
 Paths relative to that directory:
 
-| Path | Contents |
-| --- | --- |
-| `sysroots/<target>/` | Target sysroot |
-| `compiler-headers/clang-22.1.8/include/` | Clang resource headers |
-| `compiler-headers/gcc-16.2.0/<family>/include/` | GCC headers for one architecture family |
-| `compiler-headers/apple-clang-<version>/include/` | Locally copied Apple Clang resource headers |
-| `compiler-headers/apple-clang-current/include/` | Stable path to the active Apple Clang bundle |
-| `sysroots/<MSVC target>/crt/include/` | MSVC compiler headers |
+| Path                                              | Contents                                     |
+| ------------------------------------------------- | -------------------------------------------- |
+| `sysroots/<target>/`                              | Target sysroot                               |
+| `compiler-headers/clang-22.1.8/include/`          | Clang resource headers                       |
+| `compiler-headers/gcc-16.2.0/<family>/include/`   | GCC headers for one architecture family      |
+| `compiler-headers/apple-clang-<version>/include/` | Locally copied Apple Clang resource headers  |
+| `compiler-headers/apple-clang-current/include/`   | Stable path to the active Apple Clang bundle |
+| `sysroots/<MSVC target>/crt/include/`             | MSVC compiler headers                        |
 
 Downloads use Slate's platform cache directory; `xwin` packages are stored
 under `xwin/` there.
@@ -219,19 +219,10 @@ Register an explicit macOS SDK:
 slate sysroot install aarch64-apple-darwin --sdk /path/to/MacOSX.sdk
 ```
 
-Install and check one Windows architecture, including its CRT headers:
+Install and check x86_64 windows, including its CRT headers:
 
 ```sh
 slate sysroot install compiler-headers msvc x86_64-pc-windows-msvc
 slate sysroot doctor x86_64-pc-windows-msvc
 slate sysroot doctor compiler-headers msvc x86_64-pc-windows-msvc
 ```
-
-## Library interface
-
-`Paths::resolve` returns a validated sysroot path. `Paths::include_paths`
-returns its C header directories, accounting for each target's layout.
-`Paths::include_paths_with_compiler` places the selected compiler headers
-before target headers, avoiding duplicate paths for MSVC. It requires GCC's
-architecture family to match the target, MSVC's target to match exactly,
-and Apple Clang to use a macOS target.
