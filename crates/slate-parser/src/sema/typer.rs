@@ -893,7 +893,7 @@ impl TypeResolver {
         self.call_signature(callee, arguments).map(Some)
     }
 
-    fn call_signature(
+    pub(super) fn call_signature(
         &mut self,
         callee: &Expr,
         arguments: &[Expr],

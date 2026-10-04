@@ -1,3 +1,4 @@
+use super::builtins::BitBuiltin;
 use crate::compiler_args::CompilerFlavor;
 use crate::ir::{
     AggregateTarget, ArithOp, ArithSema, BindingId, CompareOp, ConversionKind, FloatType,
@@ -39,6 +40,44 @@ pub(super) fn read_with_objects(
     objects: &Objects,
 ) -> Option<BigInt> {
     read(place, MAX_DEPTH, Env::constant(flavor, Some(objects)))
+}
+
+pub(super) fn bit_builtin(
+    builtin: BitBuiltin,
+    argument: &Value,
+    fallback: Option<&Value>,
+    flavor: CompilerFlavor,
+) -> Option<BigInt> {
+    let (width, _) = integer_type(&argument.ty).filter(|(width, _)| *width <= 128)?;
+    let bits = u128::try_from(normalize(integer_constant(argument, flavor)?, width, false)).ok()?;
+    let unused = 128 - width;
+    let count = match builtin {
+        BitBuiltin::Clz | BitBuiltin::Ctz if bits == 0 => {
+            return match fallback {
+                Some(fallback) => integer_constant(fallback, flavor),
+                None if flavor.is_gcc() => Some(width.into()),
+                None => None,
+            };
+        }
+        BitBuiltin::Clz => bits.leading_zeros() - unused,
+        BitBuiltin::Ctz => bits.trailing_zeros(),
+        BitBuiltin::Popcount => bits.count_ones(),
+        BitBuiltin::Parity => bits.count_ones() & 1,
+        BitBuiltin::Ffs if bits == 0 => 0,
+        BitBuiltin::Ffs => bits.trailing_zeros() + 1,
+        BitBuiltin::Clrsb => {
+            let mask = u128::MAX >> unused;
+            let magnitude = if bits >> (width - 1) == 1 {
+                !bits & mask
+            } else {
+                bits
+            };
+            magnitude.leading_zeros() - unused - 1
+        }
+        BitBuiltin::Bswap => return Some((bits.swap_bytes() >> unused).into()),
+        BitBuiltin::Bitreverse => return Some((bits.reverse_bits() >> unused).into()),
+    };
+    Some(count.into())
 }
 
 pub(super) fn integer_number(ty: &Type, value: BigInt) -> Number {

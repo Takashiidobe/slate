@@ -59,6 +59,15 @@ Rust, such as the wiki, fixtures, and C sources. Right after startup,
 rust-analyzer may still be indexing and return nothing. Retry before you fall
 back to grep.
 
+## Shell
+
+The user's shell is fish: unquoted variables don't word-split, and bash
+loops, `$(...)` splitting, and `eval` of argument lists break. Keep shell
+calls to single commands (cargo, bd, llog, git, one tool run). Write anything
+with loops, argument lists, or output comparisons as a Python script in the
+scratchpad, using `subprocess.run` with list arguments and `shlex.split` for
+compile-database commands.
+
 ## Wiki
 
 `wiki/` is shared by both crates: `wiki/concepts/` holds durable design and

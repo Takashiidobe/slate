@@ -623,6 +623,45 @@ impl TypeResolver {
                     )),
                 )
             }
+            ExprKind::Call { callee, arguments }
+                if super::builtins::BitBuiltin::of_call(callee, arguments).is_some() =>
+            {
+                let (builtin, arguments) = super::builtins::BitBuiltin::of_call(callee, arguments)
+                    .ok_or(ResolveError::Internal("bit builtin"))?;
+                let c = self.typed(e)?.c;
+                let signature = self.call_signature(callee, arguments)?;
+                let parameters = self
+                    .ctypes
+                    .function_parts(signature)
+                    .ok_or(ResolveError::Internal("bit builtin signature"))?
+                    .1
+                    .to_vec();
+                let mut values = Vec::with_capacity(arguments.len());
+                for (argument, parameter) in arguments.iter().zip(parameters) {
+                    let operand = self.constant_value_with_context(context, argument)?;
+                    let operand = self.arithmetic_conversion(
+                        context,
+                        operand,
+                        parameter,
+                        crate::ir::ConversionReason::Arg,
+                    )?;
+                    values.push(operand.value);
+                }
+                let argument = values
+                    .first()
+                    .ok_or(ResolveError::Internal("bit builtin argument"))?;
+                let n = super::fold::bit_builtin(
+                    builtin,
+                    argument,
+                    values.get(1),
+                    self.dialect.flavor(),
+                )
+                .ok_or(ResolveError::Rejected("builtin call is not a constant"))?;
+                (
+                    c,
+                    ValueKind::Constant(super::fold::integer_number(&self.ir_type(c), n)),
+                )
+            }
             ExprKind::SizeOfType { ty } | ExprKind::AlignOf { ty } => {
                 let resolved = self.resolve_type_name(ty)?;
                 let atomic = self.ctypes.quals(resolved).is_atomic;

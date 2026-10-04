@@ -208,3 +208,13 @@ the callee name.
   `int[]` matches `int[5]`; `int(*)()` matches `int(*)(int)` before C23 but
   not from C23 (verified with clang 22 and gcc 16).
 - `__builtin_choose_expr`: see [control flow](control-flow.md#resolved-away-before-the-ir).
+- Bit builtins (`BitBuiltin`: `clz`, `ctz`, `popcount`, `parity`, `ffs`,
+  `clrsb` with their `l`/`ll`/`s` forms, `bswap16/32/64`,
+  `bitreverse8..64`, and `clzg`/`ctzg` with an optional fallback) fold
+  where a constant is required: array sizes, enumerators, case labels,
+  designators, `_Static_assert` (`constant_value_with_context` →
+  `fold::bit_builtin`). Each argument is converted to the builtin's
+  parameter type first (`clzl(1)` is 63). `clz`/`ctz` of zero without a
+  fallback is not a constant under clang; gcc folds it to the width. Kernel
+  `ilog2()` depends on this. Elsewhere they stay calls in the IR.
+  `popcountg` has no typing rule yet.

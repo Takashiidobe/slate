@@ -15,6 +15,48 @@ pub(super) fn is_foldable_builtin(name: &str) -> bool {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(super) enum BitBuiltin {
+    Clz,
+    Ctz,
+    Popcount,
+    Parity,
+    Ffs,
+    Clrsb,
+    Bswap,
+    Bitreverse,
+}
+
+impl BitBuiltin {
+    pub(super) fn of_call<'e>(callee: &Expr, arguments: &'e [Expr]) -> Option<(Self, &'e [Expr])> {
+        let ExprKind::Identifier(name) = &callee.value else {
+            return None;
+        };
+        let builtin = match name.as_str() {
+            "__builtin_clz" | "__builtin_clzl" | "__builtin_clzll" | "__builtin_clzs"
+            | "__builtin_clzg" => Self::Clz,
+            "__builtin_ctz" | "__builtin_ctzl" | "__builtin_ctzll" | "__builtin_ctzs"
+            | "__builtin_ctzg" => Self::Ctz,
+            "__builtin_popcount" | "__builtin_popcountl" | "__builtin_popcountll" => Self::Popcount,
+            "__builtin_parity" | "__builtin_parityl" | "__builtin_parityll" => Self::Parity,
+            "__builtin_ffs" | "__builtin_ffsl" | "__builtin_ffsll" => Self::Ffs,
+            "__builtin_clrsb" | "__builtin_clrsbl" | "__builtin_clrsbll" => Self::Clrsb,
+            "__builtin_bswap16" | "__builtin_bswap32" | "__builtin_bswap64" => Self::Bswap,
+            "__builtin_bitreverse8"
+            | "__builtin_bitreverse16"
+            | "__builtin_bitreverse32"
+            | "__builtin_bitreverse64" => Self::Bitreverse,
+            _ => return None,
+        };
+        let generic = name.ends_with('g');
+        match arguments.len() {
+            1 => Some((builtin, arguments)),
+            2 if generic && matches!(builtin, Self::Clz | Self::Ctz) => Some((builtin, arguments)),
+            _ => None,
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(super) enum ClangBuiltinKind {
     Builtin,
     Atomic,
