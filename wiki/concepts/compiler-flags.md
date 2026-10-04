@@ -49,6 +49,8 @@ each stage is in [configuration-threading](configuration-threading.md).
 | `-std=` | gcc/clang | `LanguageStandard` → `StandardFeatures`, `__STDC_VERSION__` |
 | `-O` / `-O0`..`-O3` / `-Os` / `-Oz` / `-Og` | gcc, clang | predefines only; the last one wins. Above `-O0`: undefines `__NO_INLINE__`, defines `__OPTIMIZE__`, and `-Os`/`-Oz` also define `__OPTIMIZE_SIZE__`. `-Ofast` is rejected (fast-math is not emulated); msvc rejects all |
 | `-target` | clang | selects `TargetSpec` ([adding-a-target](adding-a-target.md)) |
+| `-m16` / `-m32` / `-m64` / `-mx32` | gcc, clang | retarget the triple ([compiler-arg-rules](compiler-arg-rules.md)). `-m16` is `-m32` for C: clang's `code16` environment changes only codegen, and the predefines are identical. `-mx32` is rejected until an x32 target exists |
+| `-mregparm=N` | gcc, clang | `TargetAbi::default_regparm` on 32-bit x86 only (both compilers ignore it on x86_64): non-variadic cdecl and stdcall signatures print `regparm=N` ([calls-abi](ir/calls-abi.md#calling-conventions)). gcc rejects N above 3; clang accepts any count |
 | `-fwrapv` / `-ftrapv` / `-fstrict-overflow` (and `-fno-`) | gcc, clang | signed `overflow=wrap\|trap\|ub`. gcc: the last active one wins. clang: an active `-ftrapv` beats `-fwrapv` |
 | `-frounding-math` | gcc, clang | `rounding=environment`; gcc also defines `__ROUNDING_MATH__` |
 | `-ftrapping-math` | gcc, clang | `exceptions=`. Default is observable on gcc, ignored on clang |

@@ -74,6 +74,8 @@ impl TargetFamily {
 pub enum TargetError {
     #[error("unsupported target triple: {0}")]
     UnsupportedTriple(String),
+    #[error("`{mode}` has no variant of target {triple}")]
+    UnsupportedArchMode { triple: String, mode: &'static str },
     #[error("the {flavor:?} flavor is not supported on {triple}")]
     UnsupportedFlavor {
         triple: String,
@@ -140,6 +142,7 @@ pub struct StorageLayout {
 pub struct TargetAbi {
     pub preferred_stack_alignment: u32,
     pub zero_width_bitfield_aligns_record: bool,
+    pub default_regparm: u8,
 }
 
 impl Default for TargetAbi {
@@ -147,6 +150,7 @@ impl Default for TargetAbi {
         Self {
             preferred_stack_alignment: 16,
             zero_width_bitfield_aligns_record: false,
+            default_regparm: 0,
         }
     }
 }
@@ -401,6 +405,7 @@ impl TargetInfo {
             abi: TargetAbi {
                 preferred_stack_alignment: 16,
                 zero_width_bitfield_aligns_record: false,
+                ..TargetAbi::default()
             },
             family: TargetFamily::X86,
             os: TargetOs::Linux,
@@ -431,6 +436,7 @@ impl TargetInfo {
             abi: TargetAbi {
                 preferred_stack_alignment: 16,
                 zero_width_bitfield_aligns_record: true,
+                ..TargetAbi::default()
             },
             family: TargetFamily::AArch64,
             os: TargetOs::Linux,
@@ -461,6 +467,7 @@ impl TargetInfo {
             abi: TargetAbi {
                 preferred_stack_alignment: 16,
                 zero_width_bitfield_aligns_record: true,
+                ..TargetAbi::default()
             },
             family: TargetFamily::AArch64,
             os: TargetOs::Darwin,
@@ -545,6 +552,7 @@ impl TargetInfo {
             abi: TargetAbi {
                 preferred_stack_alignment: 8,
                 zero_width_bitfield_aligns_record: true,
+                ..TargetAbi::default()
             },
             family: TargetFamily::Arm32,
             os: TargetOs::Linux,

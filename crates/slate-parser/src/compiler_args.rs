@@ -10,6 +10,7 @@ use crate::rules::{Rule, Rules};
 use crate::target::isa::{IsaRequest, TargetIsa};
 use crate::target::x86_isa::X86Feature;
 use crate::target_info::{LongDoubleFormat, TargetEnvironment, TargetFamily, TargetInfo, TargetOs};
+use crate::target_registry::{ArchMode, arch_variant};
 use crate::{compiler_headers, sysroot};
 use std::path::{Path, PathBuf};
 use std::str::FromStr;
@@ -238,6 +239,8 @@ struct ParsedCompilerArgs {
     nostdinc: bool,
     flavor: CompilerFlavor,
     target: String,
+    arch_mode: Option<ArchMode>,
+    regparm: Option<u8>,
     hosted: Option<bool>,
     builtin: Option<bool>,
     no_builtin: Vec<String>,
@@ -315,6 +318,8 @@ enum Opt {
     Nostdinc,
     Flavor,
     Target,
+    ArchMode,
+    RegParm,
     Freestanding,
     Hosted,
     Builtin,
@@ -392,6 +397,8 @@ impl std::fmt::Display for Opt {
             Self::Nostdinc => "nostdinc",
             Self::Flavor => "flavor",
             Self::Target => "target",
+            Self::ArchMode => "m16|m32|m64|mx32",
+            Self::RegParm => "mregparm",
             Self::Freestanding => "ffreestanding",
             Self::Hosted => "fhosted",
             Self::Builtin => "fbuiltin",
@@ -503,6 +510,8 @@ impl Opt {
             | Self::StackProtectorLevel
             | Self::CfProtection
             | Self::CodeModel
+            | Self::ArchMode
+            | Self::RegParm
             | Self::X87
             | Self::ThreeDNow
             | Self::ThreeDNowA => &[Gcc, Clang],
@@ -681,8 +690,15 @@ impl CompilerArgParser {
         let arguments = args.into_iter().collect::<Vec<_>>();
         let raw = parse_arguments(&arguments)?;
         raw.check_flavor()?;
-        let mut target = TargetInfo::for_triple_and_flavor(&raw.target, raw.flavor)?;
+        let triple = match raw.arch_mode {
+            Some(mode) => arch_variant(&raw.target, mode)?,
+            None => raw.target.clone(),
+        };
+        let mut target = TargetInfo::for_triple_and_flavor(&triple, raw.flavor)?;
         validate_rules(&target).check(&raw)?;
+        if target.family == TargetFamily::X86 {
+            target.abi.default_regparm = raw.regparm.unwrap_or(0);
+        }
         target.isa = TargetIsa::resolve(target.family, target.environment, &raw.isa, raw.flavor)
             .map_err(|reason| invalid(&raw.target, &reason))?;
         let flavor = raw.flavor;
@@ -907,6 +923,18 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
             if !["tiny", "small", "kernel", "medium", "large"].contains(&model) {
                 return Err(invalid(argument, "unknown code model"));
             }
+        } else if let Some(mode) = match argument.as_str() {
+            "-m16" => Some(ArchMode::Code16),
+            "-m32" => Some(ArchMode::Bits32),
+            "-m64" => Some(ArchMode::Bits64),
+            "-mx32" => Some(ArchMode::X32),
+            _ => None,
+        } {
+            parsed.saw(Opt::ArchMode, argument);
+            parsed.arch_mode = Some(mode);
+        } else if let Some(count) = argument.strip_prefix("-mregparm=") {
+            parsed.saw(Opt::RegParm, argument);
+            parsed.regparm = Some(parse_value(count.to_owned(), argument, "register count")?);
         } else if let Some(function) = argument
             .strip_prefix("-fno-builtin-")
             .filter(|function| !function.is_empty())
@@ -1312,6 +1340,15 @@ fn gcc_rules<'a>(target: &'a TargetInfo) -> Rule<'a, ParsedCompilerArgs> {
                 Ok(())
             }
         }),
+        Rule::validate(
+            "GCC register parameters",
+            |args: &ParsedCompilerArgs| match args.regparm {
+                Some(count) if count > 3 => {
+                    Err(format!("expected a count in 0..=3, found {count}"))
+                }
+                _ => Ok(()),
+            },
+        ),
         Rule::validate("GCC MS modes", |args: &ParsedCompilerArgs| {
             match [Opt::MsExtensions, Opt::MsCompatibility]
                 .into_iter()

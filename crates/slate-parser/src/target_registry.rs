@@ -81,10 +81,61 @@ pub struct TargetSpec {
 }
 
 pub fn lookup(triple: &str) -> Result<&'static TargetSpec, TargetError> {
+    let with_vendor = gnu_short_triple(triple);
     TARGETS
         .iter()
         .find(|spec| spec.triple == triple)
+        .or_else(|| {
+            TARGETS
+                .iter()
+                .find(|spec| with_vendor.as_deref() == Some(spec.triple))
+        })
         .ok_or_else(|| TargetError::UnsupportedTriple(triple.into()))
+}
+
+fn gnu_short_triple(triple: &str) -> Option<String> {
+    let (arch, rest) = triple.split_once('-')?;
+    rest.starts_with("linux-")
+        .then(|| format!("{arch}-unknown-{rest}"))
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ArchMode {
+    Code16,
+    Bits32,
+    Bits64,
+    X32,
+}
+
+impl ArchMode {
+    pub fn spelling(self) -> &'static str {
+        match self {
+            Self::Code16 => "-m16",
+            Self::Bits32 => "-m32",
+            Self::Bits64 => "-m64",
+            Self::X32 => "-mx32",
+        }
+    }
+}
+
+pub fn arch_variant(triple: &str, mode: ArchMode) -> Result<String, TargetError> {
+    let unsupported = || TargetError::UnsupportedArchMode {
+        triple: triple.into(),
+        mode: mode.spelling(),
+    };
+    let (arch, rest) = triple.split_once('-').ok_or_else(unsupported)?;
+    let x86_32 = matches!(arch, "i386" | "i486" | "i586" | "i686");
+    let variant_arch = match (arch, mode) {
+        ("x86_64", ArchMode::Code16 | ArchMode::Bits32) => "i686",
+        (_, ArchMode::Code16 | ArchMode::Bits32) if x86_32 => arch,
+        ("x86_64" | "aarch64", ArchMode::Bits64) => arch,
+        (_, ArchMode::Bits64) if x86_32 => "x86_64",
+        ("x86_64", ArchMode::X32) if rest.ends_with("-gnu") => {
+            return Ok(format!("x86_64-{rest}x32"));
+        }
+        _ => return Err(unsupported()),
+    };
+    Ok(format!("{variant_arch}-{rest}"))
 }
 
 const CLANG_AND_MSVC: &[CompilerFlavor] = &[CompilerFlavor::Clang, CompilerFlavor::Msvc];

@@ -289,7 +289,9 @@ fn check_directive_placement(fixture: &Path, source: &str, placement: &Placement
         };
         let Some(value) = value else { continue };
         let conflicts = match name {
-            "target" => TargetInfo::for_triple(value).is_ok() && value != placement.triple,
+            "target" => {
+                TargetInfo::for_triple(value).is_ok_and(|target| target.triple != placement.triple)
+            }
             "flavor" => value.parse::<CompilerFlavor>().is_ok() && value != placement.flavor,
             _ => false,
         };

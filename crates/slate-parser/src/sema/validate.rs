@@ -1256,7 +1256,9 @@ fn check_register_variable(
     };
     match register {
         Register::Other(_) => {}
-        Register::X86(x86) if file_scope && !matches!(x86.spelling.as_str(), "rsp" | "rbp") => {
+        Register::X86(x86)
+            if file_scope && !matches!(x86.spelling.as_str(), "rsp" | "rbp" | "esp" | "ebp") =>
+        {
             errors.push(error(
                 provenance,
                 label.expansion,

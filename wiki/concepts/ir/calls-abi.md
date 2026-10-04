@@ -159,6 +159,13 @@ member, so Slate must pass that member's type at the boundary
   one on a pointer or grouped declarator goes to the function type beneath.
 - Dropped as clang does: on variadic functions, the other three on x86-64,
   all four on other targets.
+- `-mregparm=N` on 32-bit x86 puts `regparm=N` on every non-variadic
+  `cdecl` or `stdcall` `AbiSignature` (`x86_cdecl regparm=3(scalar) ->
+  scalar`): the first N integer-class registers (`eax`, `edx`, `ecx`) carry
+  arguments as clang's `inreg` assigns them. gcc and clang both pass a
+  variadic function's fixed arguments on the stack, so variadics get none.
+  It is recorded, not modeled: rustc's `-Zregparm=N` is the matching
+  switch. The per-function `regparm(N)` attribute is not applied yet.
 - Types differing only in convention are incompatible. A redeclaration
   without one inherits it; adding or changing one is rejected (all three
   compilers).

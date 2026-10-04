@@ -103,7 +103,8 @@ never silently dropped. Today functions keep unresolved attributes as
 - Nonlocal exits: `returns_twice`, `setjmp`/`longjmp`, and unwinding need a
   shape; no default `nothrow` flag.
 - A `musttail` requirement belongs on the call.
-- `regparm(N)` is parsed onto the AST but not yet applied to the ABI.
+- `regparm(N)` is parsed onto the AST but not yet applied to the ABI; only
+  the `-mregparm=N` default reaches `AbiSignature.regparm`.
 
 ## Module invocation record
 

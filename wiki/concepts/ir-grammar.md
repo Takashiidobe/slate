@@ -229,8 +229,8 @@ target_feature = ( "+" | "-" ) feature_name | "arch=" cpu_name | "tune=" cpu_nam
 ## ABI signatures
 
 ```ebnf
-abi_signature = convention [ " " call_conv ] "(" [ abi_pass { ", " abi_pass } ] ") -> "
-                abi_pass ;
+abi_signature = convention [ " " call_conv ] [ " regparm=" integer ]
+                "(" [ abi_pass { ", " abi_pass } ] ") -> " abi_pass ;
 convention    = "sysv64" | "win64" | "x86_cdecl" | "x86_win32" | "aapcs64" | "win_arm64"
               | "aapcs32" | "aapcs32_hard_float" ;
 abi_pass      = "void" | "scalar" | "direct" | "native_c"

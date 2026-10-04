@@ -28,7 +28,15 @@ rule pipeline. Flag effects are in [compiler-flags](compiler-flags.md).
 - `-target` / `--target` (and `=` forms): the triple must be registered in
   `src/target_registry.rs` and have predefines for `--flavor`; checked at
   parse time (`TargetInfo::for_triple_and_flavor`). See
-  [adding-a-target](adding-a-target.md).
+  [adding-a-target](adding-a-target.md). A GNU short triple
+  (`x86_64-linux-gnu`) resolves to its `unknown`-vendor entry
+  (`target_registry::lookup`).
+- `-m16` / `-m32` / `-m64` / `-mx32` (gcc, clang; last wins) rewrite the
+  `--target` triple before lookup, whatever their order in argv
+  (`target_registry::arch_variant`): x86_64 → i686 for `-m16`/`-m32`,
+  i386..i686 → x86_64 for `-m64`, `-m64` is a no-op on x86_64 and aarch64,
+  and `-mx32` selects `x86_64-…-gnux32`. Any other combination, or a
+  variant with no registry entry (`i686-apple-darwin`, x32), is rejected.
 - `-std` / `--std`: C90 and ISO 9899 aliases normalize to a language mode.
   `iso9899:199409` is C94: `__STDC_VERSION__ 199409L`, otherwise C89 rules.
   `c2y`/`gnu2y` predefine `__STDC_VERSION__` per flavor (gcc 16 `202500L`,

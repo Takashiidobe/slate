@@ -54,7 +54,7 @@ SEMANTIC_FLAGS = (
     "-funsigned-char", "-fsigned-char", "-fshort-wchar", "-fms-extensions", "-fms-anonymous-structs",
     "-fexperimental-late-parse-attributes", "-fstrict-flex-arrays=", "-ffreestanding", "-nostdinc", "-fno-builtin",
     "-fpic", "-fPIC", "-fpie", "-fPIE", "-fno-pic", "-fno-PIC", "-fno-pie", "-fno-PIE",
-    "-fstack-protector", "-fno-stack-protector", "-fcf-protection", "-mcmodel=",
+    "-fstack-protector", "-fno-stack-protector", "-fcf-protection", "-mcmodel=", "-mregparm=", "--target=",
 )
 TARGET_FEATURE = re.compile(r"-march=.+|-m(?!llvm$)[a-z0-9][a-z0-9.-]*")
 

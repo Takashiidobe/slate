@@ -95,6 +95,7 @@ python3 tools/c_corpus_sweep.py [PROJECT ...] [--flavor clang|gcc|msvc] [--jobs 
   (`pp_diff.SEMANTIC_FLAGS`: `-nostdinc`, `-ffreestanding`, `-fno-builtin*`,
   char signedness, `-fshort-wchar`, `-fms-anonymous-structs`,
   `-fstrict-flex-arrays=`, `-fexperimental-late-parse-attributes`, PIC/PIE,
+  `--target=`, `-mregparm=`,
   `-f[no-]stack-protector*`, `-fcf-protection*`, `-mcmodel=`).
   `-mllvm`/`-Xclang` are dropped with their value. Pins `-std=gnu17` when
   absent (slate-parser-6x05.6).

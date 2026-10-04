@@ -227,9 +227,17 @@ impl<'a> AbiClassifier<'a> {
             Some(operand) => self.abi_pass(operand, true, convention)?,
             None => AbiPass::Void,
         };
+        let regparm = match (convention, calling) {
+            (
+                AbiConvention::X86Cdecl | AbiConvention::X86Win32,
+                CallConv::C | CallConv::X86Stdcall,
+            ) if !variadic => self.target.abi.default_regparm,
+            _ => 0,
+        };
         Ok(AbiSignature {
             convention,
             calling,
+            regparm,
             arguments,
             result,
         })
