@@ -9,7 +9,6 @@ pub struct CompilerOptions {
     pub operations: OperationOptions,
     pub layout: LayoutOptions,
     pub diagnostics: DiagnosticOptions,
-    pub arguments: Vec<String>,
     pub common: bool,
     pub explicit_standard: bool,
     pub asm_dialect: AsmDialect,
@@ -63,7 +62,6 @@ impl Default for CompilerOptions {
             },
             layout: LayoutOptions::default(),
             diagnostics: DiagnosticOptions::default(),
-            arguments: Vec::new(),
             common: false,
             explicit_standard: false,
             asm_dialect: AsmDialect::Att,
@@ -85,7 +83,6 @@ impl CompilerOptions {
         flavor: CompilerFlavor,
         layout: LayoutOptions,
         diagnostics: DiagnosticOptions,
-        arguments: Vec<String>,
         values: OperationValues,
     ) -> Self {
         let mut options = Self::for_flavor(flavor);
@@ -109,7 +106,6 @@ impl CompilerOptions {
             };
         }
         options.operations.signed_overflow = values.signed_overflow;
-        options.arguments = arguments;
         options
     }
 

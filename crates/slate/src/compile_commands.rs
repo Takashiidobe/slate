@@ -1,5 +1,7 @@
 use serde_json::Value;
-use slate_parser::compiler_args::{IgnoredOption, ignored_option};
+use slate_parser::compiler_args::{
+    CompilerArgError, CompilerArgParser, CompilerArgs, CompilerFlavor,
+};
 use std::path::{Path, PathBuf};
 use thiserror::Error;
 
@@ -43,30 +45,49 @@ pub enum CompileCommandsError {
     InvalidShellQuoting { path: PathBuf, index: usize },
     #[error("compile commands {path} entry {index} has an empty command")]
     EmptyCommand { path: PathBuf, index: usize },
-    #[error("compile commands {path} entry {index} option {option} requires a value")]
-    MissingOptionValue {
+    #[error("compile commands {path} entry {index} ({}): {source}", file.display())]
+    Arguments {
         path: PathBuf,
         index: usize,
-        option: String,
+        file: PathBuf,
+        #[source]
+        source: CompilerArgError,
     },
     #[error("compile command inputs contain no C translation units")]
     NoCTranslationUnits { paths: Vec<PathBuf> },
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct CompileCommand {
     pub file: PathBuf,
-    pub args: Vec<String>,
-    pub target: String,
+    pub args: CompilerArgs,
 }
 
-pub fn read(paths: &[PathBuf]) -> Result<Vec<CompileCommand>, CompileCommandsError> {
-    let mut commands = Vec::new();
+pub struct ReadOptions<'a> {
+    pub extra_args: &'a [String],
+    pub flavor: Option<CompilerFlavor>,
+}
+
+pub fn read(
+    paths: &[PathBuf],
+    options: &ReadOptions,
+) -> Result<Vec<CompileCommand>, CompileCommandsError> {
+    let mut parsed = Vec::new();
     for path in paths {
-        commands.extend(read_one(path)?);
+        parsed.extend(read_one(path, options)?);
     }
-    commands.sort();
-    commands.dedup();
+    parsed.sort_by(|left, right| left.file.cmp(&right.file));
+    let mut commands: Vec<CompileCommand> = Vec::new();
+    for command in parsed {
+        let duplicate = commands
+            .iter()
+            .rev()
+            .take_while(|earlier| earlier.file == command.file)
+            .any(|earlier| *earlier == command);
+        if !duplicate {
+            commands.push(command);
+        }
+    }
     if commands.is_empty() {
         return Err(CompileCommandsError::NoCTranslationUnits {
             paths: paths.to_vec(),
@@ -75,7 +96,10 @@ pub fn read(paths: &[PathBuf]) -> Result<Vec<CompileCommand>, CompileCommandsErr
     Ok(commands)
 }
 
-fn read_one(path: &Path) -> Result<Vec<CompileCommand>, CompileCommandsError> {
+fn read_one(
+    path: &Path,
+    options: &ReadOptions,
+) -> Result<Vec<CompileCommand>, CompileCommandsError> {
     let bytes = std::fs::read(path).map_err(|source| CompileCommandsError::Read {
         path: path.to_path_buf(),
         source,
@@ -140,8 +164,23 @@ fn read_one(path: &Path) -> Result<Vec<CompileCommand>, CompileCommandsError> {
                 })?
             }
         };
-        let (args, target) = normalize(words, &directory, &file, path, index)?;
-        commands.push(CompileCommand { file, args, target });
+        if words.is_empty() {
+            return Err(CompileCommandsError::EmptyCommand {
+                path: path.to_path_buf(),
+                index,
+            });
+        }
+        let args = CompilerArgParser::parse_in(
+            command_arguments(&words, &directory, &file, options),
+            &directory,
+        )
+        .map_err(|source| CompileCommandsError::Arguments {
+            path: path.to_path_buf(),
+            index,
+            file: file.clone(),
+            source,
+        })?;
+        commands.push(CompileCommand { file, args });
     }
     Ok(commands)
 }
@@ -204,98 +243,45 @@ pub fn absolute_path(base: &Path, path: &Path) -> PathBuf {
     path.canonicalize().unwrap_or(path)
 }
 
-fn normalize(
-    words: Vec<String>,
+fn command_arguments(
+    words: &[String],
     directory: &Path,
     file: &Path,
-    database: &Path,
-    index: usize,
-) -> Result<(Vec<String>, String), CompileCommandsError> {
-    let compiler = words
-        .first()
-        .ok_or_else(|| CompileCommandsError::EmptyCommand {
-            path: database.to_path_buf(),
-            index,
-        })?;
-    let mut args = Vec::new();
-    let mut target = compiler_target(compiler);
-    let mut word_index = 1;
-    while word_index < words.len() {
-        let word = &words[word_index];
-        match ignored_option(word) {
-            Some(IgnoredOption::Alone) => {
-                word_index += 1;
-                continue;
-            }
-            Some(IgnoredOption::TakesValue) => {
-                if word_index + 1 >= words.len() {
-                    return Err(CompileCommandsError::MissingOptionValue {
-                        path: database.to_path_buf(),
-                        index,
-                        option: word.clone(),
-                    });
-                }
-                word_index += 2;
-                continue;
-            }
-            None => {}
-        }
-        match path_option(word) {
-            Some(PathOption::Separate(option)) => {
-                let value = words.get(word_index + 1).ok_or_else(|| {
-                    CompileCommandsError::MissingOptionValue {
-                        path: database.to_path_buf(),
-                        index,
-                        option: word.clone(),
-                    }
-                })?;
-                args.push(option.to_string());
-                args.push(
-                    absolute_path(directory, Path::new(value))
-                        .to_string_lossy()
-                        .into_owned(),
-                );
-                word_index += 2;
-                continue;
-            }
-            Some(PathOption::Joined(option, value)) => {
-                args.push(format!(
-                    "{option}{}",
-                    absolute_path(directory, Path::new(value)).display()
-                ));
-                word_index += 1;
-                continue;
-            }
-            None => {}
-        }
-        if matches!(word.as_str(), "-target" | "--target") {
-            let value = words.get(word_index + 1).ok_or_else(|| {
-                CompileCommandsError::MissingOptionValue {
-                    path: database.to_path_buf(),
-                    index,
-                    option: word.clone(),
-                }
-            })?;
-            target = Some(value.clone());
-            word_index += 2;
-            continue;
-        }
-        if let Some(value) = word
-            .strip_prefix("--target=")
-            .or_else(|| word.strip_prefix("-target="))
-        {
-            target = Some(value.to_string());
-            word_index += 1;
-            continue;
-        }
-        if !word.starts_with('-') && absolute_path(directory, Path::new(word)) == file {
-            word_index += 1;
-            continue;
-        }
-        args.push(word.clone());
-        word_index += 1;
+    options: &ReadOptions,
+) -> Vec<String> {
+    let compiler = &words[0];
+    let flavor = options.flavor.unwrap_or_else(|| compiler_flavor(compiler));
+    let mut args = vec![format!("--flavor={flavor}")];
+    args.extend(compiler_target(compiler).map(|target| format!("--target={target}")));
+    args.extend(
+        words[1..]
+            .iter()
+            .filter(|word| {
+                word.starts_with('-') || absolute_path(directory, Path::new(word)) != file
+            })
+            .cloned(),
+    );
+    args.extend(options.extra_args.iter().cloned());
+    crate::target::compiler_arguments(&args)
+}
+
+fn compiler_flavor(compiler: &str) -> CompilerFlavor {
+    let name = Path::new(compiler)
+        .file_name()
+        .and_then(|name| name.to_str())
+        .unwrap_or(compiler);
+    let name = name.strip_suffix(".exe").unwrap_or(name);
+    let gcc = name == "gcc"
+        || name.ends_with("-gcc")
+        || name.starts_with("gcc-")
+        || name.contains("-gcc-");
+    if name == "cl" {
+        CompilerFlavor::Msvc
+    } else if gcc && !name.contains("clang") {
+        CompilerFlavor::Gcc
+    } else {
+        CompilerFlavor::Clang
     }
-    Ok((args, target.unwrap_or_else(crate::target::active_target)))
 }
 
 fn compiler_target(compiler: &str) -> Option<String> {

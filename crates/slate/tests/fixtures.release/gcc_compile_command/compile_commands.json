@@ -1,0 +1,15 @@
+[
+  {
+    "file": "main.c",
+    "arguments": [
+      "/usr/bin/gcc",
+      "-std=c23",
+      "-mpreferred-stack-boundary=4",
+      "-c",
+      "main.c",
+      "-o",
+      "main.o"
+    ],
+    "directory": "."
+  }
+]

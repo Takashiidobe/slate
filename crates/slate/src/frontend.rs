@@ -1,3 +1,4 @@
+use slate_parser::compiler_args::CompilerArgs;
 use slate_parser::dialect::Dialect;
 use slate_parser::files::Files;
 use slate_parser::ir::{BindingId, Module};
@@ -214,6 +215,15 @@ pub fn parse_module_with_args(path: &Path, args: &[String]) -> Result<(Module, F
     Ok((module, files))
 }
 
+pub fn parse_module_with_compiler_args(
+    path: &Path,
+    args: CompilerArgs,
+) -> Result<(Module, Files), Error> {
+    let (module, files, diagnostics) = parse_module_from_args(path, None, args, &mut Vec::new())?;
+    reject_directive_errors(path, &diagnostics)?;
+    Ok((module, files))
+}
+
 pub fn parse_module_with_source(
     path: &Path,
     source: Option<String>,
@@ -229,6 +239,15 @@ pub fn parse_module_with_diagnostics(
     diagnostics: &mut Vec<serde_json::Value>,
 ) -> Result<(Module, Files, Vec<DirectiveDiagnostic>), Error> {
     let args = crate::target::parse_args(args)?;
+    parse_module_from_args(path, source, args, diagnostics)
+}
+
+fn parse_module_from_args(
+    path: &Path,
+    source: Option<String>,
+    args: CompilerArgs,
+    diagnostics: &mut Vec<serde_json::Value>,
+) -> Result<(Module, Files, Vec<DirectiveDiagnostic>), Error> {
     let search = args.search_paths();
     let dialect = Dialect::new(args.flavor, args.standard, args.target, args.options);
     let mut parser =

@@ -493,6 +493,7 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
     let mut compile_command_paths = Vec::new();
     let mut include_args = Vec::new();
     let mut crate_types = Vec::new();
+    let mut flavor = None;
     let current_dir = std::env::current_dir().map_err(|e| format!("current directory: {e}"))?;
     let mut index = 0;
     while index < args.len() {
@@ -503,6 +504,13 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
                     .get(index)
                     .ok_or_else(|| "--compile-commands requires a file".to_string())?;
                 compile_command_paths.push(PathBuf::from(commands));
+            }
+            "--flavor" => {
+                index += 1;
+                let name = args
+                    .get(index)
+                    .ok_or_else(|| "--flavor requires gcc, clang, or msvc".to_string())?;
+                flavor = Some(name.parse()?);
             }
             "--crate-type" => {
                 index += 1;
@@ -550,10 +558,13 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
     if compile_command_paths.is_empty() {
         return Err("translate-project requires at least one --compile-commands <file>".into());
     }
-    let mut commands = cli_result(compile_commands::read(&compile_command_paths))?;
-    for command in &mut commands {
-        command.args.extend(include_args.iter().cloned());
-    }
+    let commands = cli_result(compile_commands::read(
+        &compile_command_paths,
+        &compile_commands::ReadOptions {
+            extra_args: &include_args,
+            flavor,
+        },
+    ))?;
     translate_slate_project(Path::new(paths[1]), commands, &crate_types)
 }
 
@@ -610,9 +621,7 @@ fn parse_slate_units(
         by_stem
             .into_par_iter()
             .map(|(stem, command)| {
-                let mut args = command.args;
-                args.push(format!("--target={}", command.target));
-                api::slate_ir_with_args(&command.file, &args)
+                slate::frontend::parse_module_with_compiler_args(&command.file, command.args)
                     .map(|(module, files)| SlateUnit {
                         stem,
                         path: command.file.clone(),

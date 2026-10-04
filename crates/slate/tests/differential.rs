@@ -110,20 +110,26 @@ fn translate_fixture_project(
     translate_args: &[&str],
 ) -> Result<(), String> {
     std::fs::create_dir_all(crate_dir).expect("create project directory");
-    let database = crate_dir.join("compile_commands.json");
     let directory = sources[0].parent().unwrap();
-    let entries: Vec<_> = sources
-        .iter()
-        .map(|source| {
-            let mut arguments = vec!["clang".to_string(), "-std=c23".into()];
-            arguments.extend(extra_args.iter().cloned());
-            arguments.push(source.display().to_string());
-            serde_json::json!({
-                "directory": directory, "file": source, "arguments": arguments,
+    let checked_in = directory.join("compile_commands.json");
+    let database = if checked_in.is_file() {
+        checked_in
+    } else {
+        let database = crate_dir.join("compile_commands.json");
+        let entries: Vec<_> = sources
+            .iter()
+            .map(|source| {
+                let mut arguments = vec!["clang".to_string(), "-std=c23".into()];
+                arguments.extend(extra_args.iter().cloned());
+                arguments.push(source.display().to_string());
+                serde_json::json!({
+                    "directory": directory, "file": source, "arguments": arguments,
+                })
             })
-        })
-        .collect();
-    std::fs::write(&database, serde_json::to_vec(&entries).unwrap()).unwrap();
+            .collect();
+        std::fs::write(&database, serde_json::to_vec(&entries).unwrap()).unwrap();
+        database
+    };
     let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
         .arg("translate-project")
         .args(translate_args)

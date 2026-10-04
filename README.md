@@ -80,12 +80,14 @@ or more compilation databases to generate a Cargo crate: an executable when one
 unit defines `main`, otherwise a library (`src/lib.rs`) whose `--crate-type` is
 any comma-separated mix of `rlib` (default), `staticlib`, and `cdylib`. Multiple
 configurations of the same translation unit are not yet supported. Project
-output always applies control-flow rewrites.
+output always applies control-flow rewrites. Each command is parsed as the
+compiler it names (`gcc` and `*-gcc` as gcc, `cl` as MSVC, anything else as
+clang); `--flavor gcc|clang|msvc` overrides that for every command.
 
 ```text
 translate [compiler args...] <file.c>                         C -> Rust
 emit-slate-ir [compiler args...] <file.c>                     typed parser IR
-translate-project [--crate-type <types>] --compile-commands <file>... <dir> <crate_dir>
+translate-project [--crate-type <types>] [--flavor <flavor>] --compile-commands <file>... <dir> <crate_dir>
 ```
 
 For example, to translate `chibicc`:

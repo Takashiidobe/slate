@@ -8,7 +8,7 @@ use crate::target::isa::{IsaRequest, TargetIsa};
 use crate::target::x86_isa::X86Feature;
 use crate::target_info::{LongDoubleFormat, TargetFamily, TargetInfo};
 use crate::{compiler_headers, sysroot};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::str::FromStr;
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
@@ -150,6 +150,32 @@ impl CompilerArgs {
             user: self.include.iter().map(|path| include_dir(path)).collect(),
             system,
         }
+    }
+
+    fn resolve_paths_in(&mut self, directory: &Path) {
+        let resolve = |path: &Path| {
+            let path = directory.join(path);
+            path.canonicalize().unwrap_or(path)
+        };
+        let resolve_dir = |path: &mut String| {
+            if !path.starts_with('=') {
+                *path = resolve(Path::new(path)).to_string_lossy().into_owned();
+            }
+        };
+        self.include
+            .iter_mut()
+            .chain(&mut self.iquote)
+            .chain(&mut self.isystem)
+            .chain(&mut self.idirafter)
+            .chain(&mut self.isysroot)
+            .chain(&mut self.sysroot)
+            .for_each(resolve_dir);
+        let inputs = &mut self.preprocessor_inputs;
+        inputs
+            .includes
+            .iter_mut()
+            .chain(&mut inputs.imacros)
+            .for_each(|path| *path = resolve(path));
     }
 }
 
@@ -392,7 +418,7 @@ fn parse_f_flag(name: &str, argument: &str) -> Option<bool> {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum IgnoredOption {
+enum IgnoredOption {
     Alone,
     TakesValue,
 }
@@ -427,7 +453,7 @@ fn clang_codegen_only(argument: &str) -> bool {
     })
 }
 
-pub fn ignored_option(argument: &str) -> Option<IgnoredOption> {
+fn ignored_option(argument: &str) -> Option<IgnoredOption> {
     if IGNORED_VALUE_OPTIONS.contains(&argument) {
         return Some(IgnoredOption::TakesValue);
     }
@@ -485,7 +511,6 @@ impl CompilerArgParser {
             flavor,
             layout,
             raw.diagnostics,
-            arguments,
             OperationValues {
                 signed_overflow: raw.signed_overflow,
                 strict_overflow: raw.strict_overflow,
@@ -523,6 +548,15 @@ impl CompilerArgParser {
             flavor,
             target,
         })
+    }
+
+    pub fn parse_in<I>(args: I, directory: &Path) -> Result<CompilerArgs, CompilerArgError>
+    where
+        I: IntoIterator<Item = String>,
+    {
+        let mut parsed = Self::parse(args)?;
+        parsed.resolve_paths_in(directory);
+        Ok(parsed)
     }
 }
 

@@ -45,7 +45,7 @@ with `crates/`.
 | `lowering-barriers` | All lowering barriers, without emitting Rust |
 | `translate` | Rust after the backend pipeline; supported directive branches may become cfg items |
 | `record-cfg` | Recorded directive activity, branches and diagnostics as JSON |
-| `translate-project` | Cargo crate with translation units as modules and optional C shims: a binary when one unit defines `main`, otherwise a library with `--crate-type` rlib/staticlib/cdylib |
+| `translate-project` | Cargo crate with translation units as modules and optional C shims: a binary when one unit defines `main`, otherwise a library with `--crate-type` rlib/staticlib/cdylib. Each command parses as the compiler it names unless `--flavor` overrides ([compiler-arg-rules](compiler-arg-rules.md)) |
 
 ## Projects and targets
 

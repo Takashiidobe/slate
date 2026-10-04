@@ -30,8 +30,8 @@ rule pipeline. Flag effects are in [compiler-flags](compiler-flags.md).
   clang 23 `202400L`, `LanguageStandard::predefined_stdc_version`);
   feature gates compare `stdc_version`, which is `202400` for both.
   Unknown triples and standards are errors.
-- `ignored_option` is the single list of accepted-and-ignored arguments,
-  shared by the parser and slate's compile-command normalization: driver and
+- `ignored_option` is the list of arguments every flavor accepts and ignores:
+  driver and
   output options (`-c`, `-M*`, `-g*`, `-pipe`, `-o`/`-MF`/`-MT`/`-MQ`/`-MJ`
   with a separate or joined value) and codegen-only `-f`/`-fno-` flags
   (`CODEGEN_ONLY_FLAGS`, spelled like `Opt` flags; `-flto=`, `-fvisibility=`,
@@ -52,9 +52,18 @@ rule pipeline. Flag effects are in [compiler-flags](compiler-flags.md).
   codegen, ISA and optimization options).
 - `CLANG_CODEGEN_ONLY_M_FLAGS` (`Opt::ClangCodegenOnly`): `-m`/`-mno-` flags
   that clang accepts and ignores and gcc does not know, such as `-moutline`
-  (mimalloc). Universal codegen-only flags stay in `ignored_option`, which
-  slate's compile-command normalization shares and which has no flavor
-  (slate-parser-ivo1.2).
+  (mimalloc).
+- `CompilerArgParser::parse_in(args, directory)` resolves relative include
+  directories, sysroots and forced files against a compile command's
+  directory and canonicalizes them; `=`-prefixed sysroot-relative
+  directories are left alone. slate's compile-command reader
+  (`crates/slate/src/compile_commands.rs`) passes each database entry
+  through it once and carries the resulting `CompilerArgs`. It chooses the
+  flavor from the compiler name (`gcc`, `*-gcc`, `gcc-N` as gcc, `cl` as
+  msvc, anything else as clang; `translate-project --flavor` overrides) and
+  the target from a `<triple>-gcc`/`<triple>-clang` prefix, before argv so
+  an explicit `--target` still wins. A rejected argument is reported against
+  its database entry, before any translation.
 
 ## Include search
 
