@@ -11,13 +11,20 @@ serde_json.workspace = true
 shlex.workspace = true
 thiserror.workspace = true
 ordered-float.workspace = true
-mimalloc.workspace = true
 miette.workspace = true
 rayon.workspace = true
 slate-parser.workspace = true
-slate-sysroots.workspace = true
+slate-sysroots = { workspace = true, optional = true }
 prettyplease.workspace = true
 syn = { workspace = true, features = ["full", "parsing"] }
+
+[target.'cfg(not(target_family = "wasm"))'.dependencies]
+mimalloc.workspace = true
+
+[features]
+default = ["sysroot-install", "syntax-highlight"]
+sysroot-install = ["dep:slate-sysroots"]
+syntax-highlight = ["miette/syntect-highlighter"]
 
 [lints.clippy]
 large_enum_variant = "allow"

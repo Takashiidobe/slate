@@ -13,7 +13,7 @@ foldhash = "0.2"
 indicatif = "0.18"
 libc = "0.2"
 libtest-mimic = "0.8"
-miette = { version = "7", features = ["fancy", "syntect-highlighter"] }
+miette = { version = "7", features = ["fancy"] }
 mimalloc = "0.1.52"
 num-bigint = "0.5"
 ordered-float = "5.3.0"

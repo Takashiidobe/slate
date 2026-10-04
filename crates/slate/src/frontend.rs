@@ -52,6 +52,16 @@ struct SiteDiagnostic {
     help: String,
 }
 
+fn report_handler() -> miette::GraphicalReportHandler {
+    #[cfg(feature = "syntax-highlight")]
+    if std::io::IsTerminal::is_terminal(&std::io::stderr()) {
+        return miette::GraphicalReportHandler::new_themed(miette::GraphicalTheme::unicode())
+            .with_syntax_highlighting(miette::highlighters::SyntectHighlighter::default());
+    }
+    miette::GraphicalReportHandler::new_themed(miette::GraphicalTheme::unicode_nocolor())
+        .without_syntax_highlighting()
+}
+
 fn render_site(
     site: &lowerer::Site,
     files: &Files,
@@ -115,13 +125,7 @@ fn render_site(
         help,
     };
     let mut report = String::new();
-    let handler = if std::io::IsTerminal::is_terminal(&std::io::stderr()) {
-        miette::GraphicalReportHandler::new_themed(miette::GraphicalTheme::unicode())
-            .with_syntax_highlighting(miette::highlighters::SyntectHighlighter::default())
-    } else {
-        miette::GraphicalReportHandler::new_themed(miette::GraphicalTheme::unicode_nocolor())
-            .without_syntax_highlighting()
-    };
+    let handler = report_handler();
     match handler
         .with_context_lines(2)
         .render_report(&mut report, &diagnostic)

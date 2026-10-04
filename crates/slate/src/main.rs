@@ -8,8 +8,10 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
 
+#[cfg(feature = "sysroot-install")]
 mod sysroot;
 
+#[cfg(not(target_family = "wasm"))]
 #[global_allocator]
 static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
 
@@ -27,6 +29,7 @@ enum Command {
     LoweringBarriers(RawArgs),
     RecordCfg(RawArgs),
     TranslateProject(RawArgs),
+    #[cfg(feature = "sysroot-install")]
     Sysroot(SysrootArgs),
 }
 
@@ -37,12 +40,14 @@ struct RawArgs {
     args: Vec<String>,
 }
 
+#[cfg(feature = "sysroot-install")]
 #[derive(Args)]
 struct SysrootArgs {
     #[command(subcommand)]
     action: SysrootAction,
 }
 
+#[cfg(feature = "sysroot-install")]
 #[derive(Subcommand)]
 enum SysrootAction {
     Install(SysrootRawArgs),
@@ -51,6 +56,7 @@ enum SysrootAction {
     Doctor(SysrootRawArgs),
 }
 
+#[cfg(feature = "sysroot-install")]
 #[derive(Args)]
 struct SysrootRawArgs {
     #[arg(allow_hyphen_values = true, trailing_var_arg = true)]
@@ -82,6 +88,7 @@ fn main() -> ExitCode {
             Some(_) => run(translate_project_command(&raw.args)),
             None => ExitCode::from(2),
         },
+        #[cfg(feature = "sysroot-install")]
         Command::Sysroot(args) => match args.action {
             SysrootAction::Install(raw) => {
                 sysroot::main_result(std::iter::once("install".into()).chain(raw.args))
