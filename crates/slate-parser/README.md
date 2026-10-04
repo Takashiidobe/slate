@@ -105,12 +105,14 @@ C projects that slate-parser can parse with `--flavor=clang` on
 | ---------------------------------------------------- | -------------------------------- |
 | [musl](https://musl.libc.org)                        | `v1.2.6-20-gf21a9653`            |
 | [CPython](https://www.python.org)                    | `v3.14.8`                        |
+| [Mbed TLS](https://github.com/Mbed-TLS/mbedtls)      | `522e2e4`                        |
 | [curl](https://curl.se)                              | `5b06840`                        |
 | [Redis](https://redis.io)                            | `e1d7d50`                        |
+| [libsodium](https://libsodium.org)                   | `1.0.17-RELEASE-1234-g75c6d552`  |
 | [libuv](https://libuv.org)                           | `f87c8e4`                        |
 | [nginx](https://nginx.org)                           | `5f54125`                        |
-| [Mbed TLS](https://github.com/Mbed-TLS/mbedtls)      | `522e2e4`                        |
 | [SQLite](https://sqlite.org)                         | `version-3.53.0-768-g0eaef28cf2` |
+| [zstd](https://github.com/facebook/zstd)             | `10da6ba`                        |
 | [PCRE2](https://github.com/PCRE2Project/pcre2)       | `a2b146a`                        |
 | [Lua](https://www.lua.org)                           | `v5.5.1`                         |
 | [libexpat](https://libexpat.github.io)               | `R_2_8_2-51-gdfdbaadf`           |
@@ -123,9 +125,9 @@ C projects that slate-parser can parse with `--flavor=clang` on
 | [LZ4](https://github.com/lz4/lz4)                    | `0774d05`                        |
 | [TinyCC](https://bellard.org/tcc/)                   | `2ba12e8`                        |
 | [chibicc](https://github.com/rui314/chibicc)         | `90d1f7f`                        |
+| [xxHash](https://github.com/Cyan4973/xxHash)         | `v0.7.4-1128-g680bf46`           |
 | [utf8proc](https://github.com/JuliaStrings/utf8proc) | `0075ed7`                        |
 | [yyjson](https://github.com/ibireme/yyjson)          | `757305b`                        |
-| [zstd](https://github.com/facebook/zstd)             | `10da6ba`                        |
 
 ## Development
 

@@ -53,13 +53,16 @@ python3 tools/c_corpus_setup.py [PROJECT ...] [--flavor clang|gcc|msvc ...]
 
 | Project | Build | msvc |
 | --- | --- | --- |
-| cJSON, libexpat (`expat/`), libuv, libyaml, pcre2, utf8proc, yyjson, zlib | CMake | CMake |
+| cJSON, libexpat (`expat/`), libuv, libyaml, mimalloc, pcre2, utf8proc, yyjson, zlib | CMake | CMake |
+| libdeflate | CMake, `LIBDEFLATE_BUILD_TESTS=ON` | CMake |
+| xxHash | CMake in `build/cmake`, `DISPATCH=ON` (adds `xxh_x86dispatch.c`) | CMake |
 | lz4, zstd | CMake in `build/cmake` | CMake |
 | curl | CMake | CMake with Schannel, no optional dependencies |
 | libpng | CMake against the corpus zlib (`zlib/build-<flavor>`) | same |
 | mbedtls | CMake, testing and programs on; generators run from `.venv` | same |
 | sqlite | `configure` + `make all testfixture` | `nmake /f ..\Makefile.msc TOP=.. USE_AMALGAMATION=0` |
 | musl, tinycc, cpython | `configure` out of tree | none |
+| libsodium | `autogen.sh -s` in tree, then `configure` out of tree + `make check` | none |
 | nginx | `auto/configure --builddir=build-<flavor>/objs` | none |
 | redis, lua, quickjs, chibicc, giflib | `make CC=` in tree | none |
 

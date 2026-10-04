@@ -31,6 +31,7 @@ class CMake:
 class Configure:
     configure: list[str]
     make: list[str] = field(default_factory=list)
+    bootstrap: list[str] | None = None
 
     def flavors(self):
         return ("gcc", "clang")
@@ -90,6 +91,9 @@ RECIPES = {
     "yyjson": CMake(),
     "zlib": CMake(),
     "zstd": CMake(source="build/cmake"),
+    "mimalloc": CMake(),
+    "libdeflate": CMake(options=["-DLIBDEFLATE_BUILD_TESTS=ON"]),
+    "xxHash": CMake(source="build/cmake", options=["-DDISPATCH=ON"]),
     "sqlite": Nmake(
         unix=Configure(["{source}/configure", "CC={cc}"], ["all", "testfixture"]),
         makefile="Makefile.msc",
@@ -98,6 +102,7 @@ RECIPES = {
     "musl": Configure(["{source}/configure", "CC={cc}"]),
     "tinycc": Configure(["{source}/configure", "--cc={cc}"]),
     "cpython": Configure(["{source}/configure", "CC={cc}"]),
+    "libsodium": Configure(["{source}/configure", "CC={cc}"], ["check"], bootstrap=["./autogen.sh", "-s"]),
     "nginx": InTree(
         configure=["auto/configure", "--with-cc={cc}", "--builddir={build}/objs"],
         clean=["rm", "-rf", "{build}/objs"],
@@ -175,6 +180,8 @@ def setup(corpus: Path, project: str, flavor: str) -> str:
                 run(configure, root, env, log)
                 built = run(["cmake", "--build", str(build), "--", "-k", "0", "-j", JOBS], root, env, log, required=False)
             case Configure():
+                if recipe.bootstrap:
+                    run(expand(recipe.bootstrap, values), root, env, log)
                 run(expand(recipe.configure, values), build, env, log)
                 built = run(bear(database, ["make", "-j", JOBS, *recipe.make]), build, env, log, required=False)
             case Nmake() if flavor == "msvc":
