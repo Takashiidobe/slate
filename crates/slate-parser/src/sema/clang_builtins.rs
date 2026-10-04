@@ -421,7 +421,7 @@ static PROTOTYPE_0040: BuiltinPrototype = BuiltinPrototype {
     spelling: "_Vector<16, char>(_Vector<16, char const *>)",
     ret: BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Char, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Char, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Char, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false },
     ],
     variadic: false,
 };
@@ -430,7 +430,7 @@ static PROTOTYPE_0041: BuiltinPrototype = BuiltinPrototype {
     spelling: "_Vector<16, char>(_Vector<16, char const *>, _Vector<16, char>, unsigned short)",
     ret: BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Char, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Char, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Char, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Char, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: false }, quals: Qualifiers::NONE, constant: false },
     ],
@@ -743,7 +743,7 @@ static PROTOTYPE_0070: BuiltinPrototype = BuiltinPrototype {
     spelling: "_Vector<16, float>(_Vector<16, float const *>, _Vector<16, float>, unsigned short)",
     ret: BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float), quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: false }, quals: Qualifiers::NONE, constant: false },
     ],
@@ -1032,7 +1032,7 @@ static PROTOTYPE_0095: BuiltinPrototype = BuiltinPrototype {
     spelling: "_Vector<16, int>(_Vector<16, int const *>)",
     ret: BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false },
     ],
     variadic: false,
 };
@@ -1041,7 +1041,7 @@ static PROTOTYPE_0096: BuiltinPrototype = BuiltinPrototype {
     spelling: "_Vector<16, int>(_Vector<16, int const *>, _Vector<16, int>, unsigned short)",
     ret: BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: false }, quals: Qualifiers::NONE, constant: false },
     ],
@@ -1357,7 +1357,7 @@ static PROTOTYPE_0125: BuiltinPrototype = BuiltinPrototype {
     spelling: "_Vector<16, short>(_Vector<16, short const *>)",
     ret: BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false },
     ],
     variadic: false,
 };
@@ -1366,7 +1366,7 @@ static PROTOTYPE_0126: BuiltinPrototype = BuiltinPrototype {
     spelling: "_Vector<16, short>(_Vector<16, short const *>, _Vector<16, short>, unsigned short)",
     ret: BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: false }, quals: Qualifiers::NONE, constant: false },
     ],
@@ -1604,7 +1604,7 @@ static PROTOTYPE_0149: BuiltinPrototype = BuiltinPrototype {
     spelling: "_Vector<2, double>(_Vector<2, double const *>, _Vector<2, double>, unsigned char)",
     ret: BuiltinParam { ty: &BuiltinType::Vector { lanes: 2, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Double), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 2, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Float(FloatKind::Double), quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 2, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Double), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 2, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Double), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     ],
@@ -1615,7 +1615,7 @@ static PROTOTYPE_0150: BuiltinPrototype = BuiltinPrototype {
     spelling: "_Vector<2, double>(_Vector<2, double const *>, _Vector<2, long long int>)",
     ret: BuiltinParam { ty: &BuiltinType::Vector { lanes: 2, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Double), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 2, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Float(FloatKind::Double), quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 2, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Double), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 2, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     ],
     variadic: false,
@@ -2033,7 +2033,7 @@ static PROTOTYPE_0186: BuiltinPrototype = BuiltinPrototype {
     spelling: "_Vector<2, long long int>(_Vector<2, long long int const *>)",
     ret: BuiltinParam { ty: &BuiltinType::Vector { lanes: 2, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 2, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 2, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false },
     ],
     variadic: false,
 };
@@ -2042,7 +2042,7 @@ static PROTOTYPE_0187: BuiltinPrototype = BuiltinPrototype {
     spelling: "_Vector<2, long long int>(_Vector<2, long long int const *>, _Vector<2, long long int>)",
     ret: BuiltinParam { ty: &BuiltinType::Vector { lanes: 2, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 2, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 2, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 2, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     ],
     variadic: false,
@@ -2052,7 +2052,7 @@ static PROTOTYPE_0188: BuiltinPrototype = BuiltinPrototype {
     spelling: "_Vector<2, long long int>(_Vector<2, long long int const *>, _Vector<2, long long int>, unsigned char)",
     ret: BuiltinParam { ty: &BuiltinType::Vector { lanes: 2, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 2, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 2, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 2, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     ],
@@ -2742,7 +2742,7 @@ static PROTOTYPE_0250: BuiltinPrototype = BuiltinPrototype {
     spelling: "_Vector<32, char>(_Vector<32, char const *>)",
     ret: BuiltinParam { ty: &BuiltinType::Vector { lanes: 32, element: &BuiltinParam { ty: &BuiltinType::Char, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 32, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Char, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 32, element: &BuiltinParam { ty: &BuiltinType::Char, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false },
     ],
     variadic: false,
 };
@@ -2751,7 +2751,7 @@ static PROTOTYPE_0251: BuiltinPrototype = BuiltinPrototype {
     spelling: "_Vector<32, char>(_Vector<32, char const *>, _Vector<32, char>, unsigned int)",
     ret: BuiltinParam { ty: &BuiltinType::Vector { lanes: 32, element: &BuiltinParam { ty: &BuiltinType::Char, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 32, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Char, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 32, element: &BuiltinParam { ty: &BuiltinType::Char, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 32, element: &BuiltinParam { ty: &BuiltinType::Char, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: false }, quals: Qualifiers::NONE, constant: false },
     ],
@@ -2911,7 +2911,7 @@ static PROTOTYPE_0266: BuiltinPrototype = BuiltinPrototype {
     spelling: "_Vector<32, short>(_Vector<32, short const *>)",
     ret: BuiltinParam { ty: &BuiltinType::Vector { lanes: 32, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 32, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 32, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false },
     ],
     variadic: false,
 };
@@ -2920,7 +2920,7 @@ static PROTOTYPE_0267: BuiltinPrototype = BuiltinPrototype {
     spelling: "_Vector<32, short>(_Vector<32, short const *>, _Vector<32, short>, unsigned int)",
     ret: BuiltinParam { ty: &BuiltinType::Vector { lanes: 32, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 32, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 32, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 32, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: false }, quals: Qualifiers::NONE, constant: false },
     ],
@@ -3104,7 +3104,7 @@ static PROTOTYPE_0285: BuiltinPrototype = BuiltinPrototype {
     spelling: "_Vector<4, double>(_Vector<4, double const *>, _Vector<4, double>, unsigned char)",
     ret: BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Double), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Float(FloatKind::Double), quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Double), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Double), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     ],
@@ -3115,7 +3115,7 @@ static PROTOTYPE_0286: BuiltinPrototype = BuiltinPrototype {
     spelling: "_Vector<4, double>(_Vector<4, double const *>, _Vector<4, long long int>)",
     ret: BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Double), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Float(FloatKind::Double), quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Double), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     ],
     variadic: false,
@@ -3439,7 +3439,7 @@ static PROTOTYPE_0315: BuiltinPrototype = BuiltinPrototype {
     spelling: "_Vector<4, float>(_Vector<4, float const *>, _Vector<4, float>, unsigned char)",
     ret: BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float), quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     ],
@@ -3450,7 +3450,7 @@ static PROTOTYPE_0316: BuiltinPrototype = BuiltinPrototype {
     spelling: "_Vector<4, float>(_Vector<4, float const *>, _Vector<4, int>)",
     ret: BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float), quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     ],
     variadic: false,
@@ -3851,7 +3851,7 @@ static PROTOTYPE_0350: BuiltinPrototype = BuiltinPrototype {
     spelling: "_Vector<4, float>(_Vector<8, _Float16 const *>)",
     ret: BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float16), quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float16), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false },
     ],
     variadic: false,
 };
@@ -3871,7 +3871,7 @@ static PROTOTYPE_0352: BuiltinPrototype = BuiltinPrototype {
     spelling: "_Vector<4, float>(_Vector<8, __bf16 const *>)",
     ret: BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Float(FloatKind::BFloat16), quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::BFloat16), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false },
     ],
     variadic: false,
 };
@@ -3974,7 +3974,7 @@ static PROTOTYPE_0362: BuiltinPrototype = BuiltinPrototype {
     spelling: "_Vector<4, int>(_Vector<2, long long int const *>, _Vector<2, long long int>, unsigned char)",
     ret: BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 2, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 2, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 2, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     ],
@@ -4036,7 +4036,7 @@ static PROTOTYPE_0368: BuiltinPrototype = BuiltinPrototype {
     spelling: "_Vector<4, int>(_Vector<4, int const *>)",
     ret: BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false },
     ],
     variadic: false,
 };
@@ -4045,7 +4045,7 @@ static PROTOTYPE_0369: BuiltinPrototype = BuiltinPrototype {
     spelling: "_Vector<4, int>(_Vector<4, int const *>, _Vector<4, int>)",
     ret: BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     ],
     variadic: false,
@@ -4055,7 +4055,7 @@ static PROTOTYPE_0370: BuiltinPrototype = BuiltinPrototype {
     spelling: "_Vector<4, int>(_Vector<4, int const *>, _Vector<4, int>, unsigned char)",
     ret: BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     ],
@@ -4475,7 +4475,7 @@ static PROTOTYPE_0408: BuiltinPrototype = BuiltinPrototype {
     spelling: "_Vector<4, long long int>(_Vector<4, long long int const *>)",
     ret: BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false },
     ],
     variadic: false,
 };
@@ -4484,7 +4484,7 @@ static PROTOTYPE_0409: BuiltinPrototype = BuiltinPrototype {
     spelling: "_Vector<4, long long int>(_Vector<4, long long int const *>, _Vector<4, long long int>)",
     ret: BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     ],
     variadic: false,
@@ -4494,7 +4494,7 @@ static PROTOTYPE_0410: BuiltinPrototype = BuiltinPrototype {
     spelling: "_Vector<4, long long int>(_Vector<4, long long int const *>, _Vector<4, long long int>, unsigned char)",
     ret: BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     ],
@@ -4866,7 +4866,7 @@ static PROTOTYPE_0444: BuiltinPrototype = BuiltinPrototype {
     spelling: "_Vector<64, char>(_Vector<64, char const *>)",
     ret: BuiltinParam { ty: &BuiltinType::Vector { lanes: 64, element: &BuiltinParam { ty: &BuiltinType::Char, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 64, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Char, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 64, element: &BuiltinParam { ty: &BuiltinType::Char, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false },
     ],
     variadic: false,
 };
@@ -4875,7 +4875,7 @@ static PROTOTYPE_0445: BuiltinPrototype = BuiltinPrototype {
     spelling: "_Vector<64, char>(_Vector<64, char const *>, _Vector<64, char>, unsigned long long int)",
     ret: BuiltinParam { ty: &BuiltinType::Vector { lanes: 64, element: &BuiltinParam { ty: &BuiltinType::Char, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 64, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Char, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 64, element: &BuiltinParam { ty: &BuiltinType::Char, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 64, element: &BuiltinParam { ty: &BuiltinType::Char, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: false }, quals: Qualifiers::NONE, constant: false },
     ],
@@ -5102,7 +5102,7 @@ static PROTOTYPE_0466: BuiltinPrototype = BuiltinPrototype {
     spelling: "_Vector<8, _Float16>(_Vector<8, _Float16 const *>, _Vector<8, _Float16>, unsigned char)",
     ret: BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float16), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float16), quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float16), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float16), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     ],
@@ -5425,7 +5425,7 @@ static PROTOTYPE_0494: BuiltinPrototype = BuiltinPrototype {
     spelling: "_Vector<8, __bf16>(_Vector<8, __bf16 const *>, _Vector<8, __bf16>, unsigned char)",
     ret: BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::BFloat16), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Float(FloatKind::BFloat16), quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::BFloat16), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::BFloat16), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     ],
@@ -5542,7 +5542,7 @@ static PROTOTYPE_0505: BuiltinPrototype = BuiltinPrototype {
     spelling: "_Vector<8, double>(_Vector<8, double const *>, _Vector<8, double>, unsigned char)",
     ret: BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Double), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Float(FloatKind::Double), quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Double), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Double), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     ],
@@ -5775,7 +5775,7 @@ static PROTOTYPE_0525: BuiltinPrototype = BuiltinPrototype {
     spelling: "_Vector<8, float>(_Vector<16, _Float16 const *>)",
     ret: BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float16), quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float16), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false },
     ],
     variadic: false,
 };
@@ -5784,7 +5784,7 @@ static PROTOTYPE_0526: BuiltinPrototype = BuiltinPrototype {
     spelling: "_Vector<8, float>(_Vector<16, __bf16 const *>)",
     ret: BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Float(FloatKind::BFloat16), quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::BFloat16), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false },
     ],
     variadic: false,
 };
@@ -5828,7 +5828,7 @@ static PROTOTYPE_0530: BuiltinPrototype = BuiltinPrototype {
     spelling: "_Vector<8, float>(_Vector<8, float const *>, _Vector<8, float>, unsigned char)",
     ret: BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float), quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     ],
@@ -5839,7 +5839,7 @@ static PROTOTYPE_0531: BuiltinPrototype = BuiltinPrototype {
     spelling: "_Vector<8, float>(_Vector<8, float const *>, _Vector<8, int>)",
     ret: BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float), quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     ],
     variadic: false,
@@ -6185,7 +6185,7 @@ static PROTOTYPE_0562: BuiltinPrototype = BuiltinPrototype {
     spelling: "_Vector<8, int>(_Vector<8, int const *>)",
     ret: BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false },
     ],
     variadic: false,
 };
@@ -6194,7 +6194,7 @@ static PROTOTYPE_0563: BuiltinPrototype = BuiltinPrototype {
     spelling: "_Vector<8, int>(_Vector<8, int const *>, _Vector<8, int>)",
     ret: BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     ],
     variadic: false,
@@ -6204,7 +6204,7 @@ static PROTOTYPE_0564: BuiltinPrototype = BuiltinPrototype {
     spelling: "_Vector<8, int>(_Vector<8, int const *>, _Vector<8, int>, unsigned char)",
     ret: BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     ],
@@ -6546,7 +6546,7 @@ static PROTOTYPE_0595: BuiltinPrototype = BuiltinPrototype {
     spelling: "_Vector<8, long long int>(_Vector<8, long long int const *>)",
     ret: BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false },
     ],
     variadic: false,
 };
@@ -6555,7 +6555,7 @@ static PROTOTYPE_0596: BuiltinPrototype = BuiltinPrototype {
     spelling: "_Vector<8, long long int>(_Vector<8, long long int const *>, _Vector<8, long long int>, unsigned char)",
     ret: BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     ],
@@ -6912,7 +6912,7 @@ static PROTOTYPE_0629: BuiltinPrototype = BuiltinPrototype {
     spelling: "_Vector<8, short>(_Vector<8, short const *>)",
     ret: BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false },
     ],
     variadic: false,
 };
@@ -6921,7 +6921,7 @@ static PROTOTYPE_0630: BuiltinPrototype = BuiltinPrototype {
     spelling: "_Vector<8, short>(_Vector<8, short const *>, _Vector<8, short>, unsigned char)",
     ret: BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     ],
@@ -9897,8 +9897,8 @@ static PROTOTYPE_0930: BuiltinPrototype = BuiltinPrototype {
     spelling: "unsigned char(_Vector<2, long long int *>, _Vector<2, long long int const *>, void const *)",
     ret: BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 2, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 2, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 2, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 2, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Void, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false },
     ],
     variadic: false,
@@ -9908,7 +9908,7 @@ static PROTOTYPE_0931: BuiltinPrototype = BuiltinPrototype {
     spelling: "unsigned char(_Vector<2, long long int *>, _Vector<2, long long int>, void const *)",
     ret: BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 2, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 2, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 2, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Void, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false },
     ],
@@ -11354,7 +11354,7 @@ static PROTOTYPE_1071: BuiltinPrototype = BuiltinPrototype {
     spelling: "void(_Vector<16, char *>, _Vector<16, char>, unsigned short)",
     ret: BuiltinParam { ty: &BuiltinType::Void, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Char, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Char, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Char, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: false }, quals: Qualifiers::NONE, constant: false },
     ],
@@ -11365,7 +11365,7 @@ static PROTOTYPE_1072: BuiltinPrototype = BuiltinPrototype {
     spelling: "void(_Vector<16, char *>, _Vector<16, int>, unsigned short)",
     ret: BuiltinParam { ty: &BuiltinType::Void, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Char, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Char, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: false }, quals: Qualifiers::NONE, constant: false },
     ],
@@ -11376,7 +11376,7 @@ static PROTOTYPE_1073: BuiltinPrototype = BuiltinPrototype {
     spelling: "void(_Vector<16, char *>, _Vector<16, short>, unsigned short)",
     ret: BuiltinParam { ty: &BuiltinType::Void, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Char, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Char, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: false }, quals: Qualifiers::NONE, constant: false },
     ],
@@ -11387,7 +11387,7 @@ static PROTOTYPE_1074: BuiltinPrototype = BuiltinPrototype {
     spelling: "void(_Vector<16, char *>, _Vector<2, long long int>, unsigned char)",
     ret: BuiltinParam { ty: &BuiltinType::Void, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Char, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Char, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 2, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     ],
@@ -11398,7 +11398,7 @@ static PROTOTYPE_1075: BuiltinPrototype = BuiltinPrototype {
     spelling: "void(_Vector<16, char *>, _Vector<4, int>, unsigned char)",
     ret: BuiltinParam { ty: &BuiltinType::Void, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Char, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Char, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     ],
@@ -11409,7 +11409,7 @@ static PROTOTYPE_1076: BuiltinPrototype = BuiltinPrototype {
     spelling: "void(_Vector<16, char *>, _Vector<4, long long int>, unsigned char)",
     ret: BuiltinParam { ty: &BuiltinType::Void, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Char, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Char, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     ],
@@ -11420,7 +11420,7 @@ static PROTOTYPE_1077: BuiltinPrototype = BuiltinPrototype {
     spelling: "void(_Vector<16, char *>, _Vector<8, int>, unsigned char)",
     ret: BuiltinParam { ty: &BuiltinType::Void, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Char, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Char, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     ],
@@ -11431,7 +11431,7 @@ static PROTOTYPE_1078: BuiltinPrototype = BuiltinPrototype {
     spelling: "void(_Vector<16, char *>, _Vector<8, long long int>, unsigned char)",
     ret: BuiltinParam { ty: &BuiltinType::Void, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Char, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Char, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     ],
@@ -11442,7 +11442,7 @@ static PROTOTYPE_1079: BuiltinPrototype = BuiltinPrototype {
     spelling: "void(_Vector<16, char *>, _Vector<8, short>, unsigned char)",
     ret: BuiltinParam { ty: &BuiltinType::Void, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Char, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Char, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     ],
@@ -11464,7 +11464,7 @@ static PROTOTYPE_1081: BuiltinPrototype = BuiltinPrototype {
     spelling: "void(_Vector<16, float *>, _Vector<16, float>, unsigned short)",
     ret: BuiltinParam { ty: &BuiltinType::Void, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float), quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: false }, quals: Qualifiers::NONE, constant: false },
     ],
@@ -11475,7 +11475,7 @@ static PROTOTYPE_1082: BuiltinPrototype = BuiltinPrototype {
     spelling: "void(_Vector<16, int *>, _Vector<16, int>, unsigned short)",
     ret: BuiltinParam { ty: &BuiltinType::Void, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: false }, quals: Qualifiers::NONE, constant: false },
     ],
@@ -11498,7 +11498,7 @@ static PROTOTYPE_1084: BuiltinPrototype = BuiltinPrototype {
     spelling: "void(_Vector<16, short *>, _Vector<16, int>, unsigned short)",
     ret: BuiltinParam { ty: &BuiltinType::Void, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: false }, quals: Qualifiers::NONE, constant: false },
     ],
@@ -11509,7 +11509,7 @@ static PROTOTYPE_1085: BuiltinPrototype = BuiltinPrototype {
     spelling: "void(_Vector<16, short *>, _Vector<16, short>, unsigned short)",
     ret: BuiltinParam { ty: &BuiltinType::Void, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 16, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: false }, quals: Qualifiers::NONE, constant: false },
     ],
@@ -11520,7 +11520,7 @@ static PROTOTYPE_1086: BuiltinPrototype = BuiltinPrototype {
     spelling: "void(_Vector<2, double *>, _Vector<2, double>, unsigned char)",
     ret: BuiltinParam { ty: &BuiltinType::Void, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 2, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Float(FloatKind::Double), quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 2, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Double), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 2, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Double), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     ],
@@ -11531,7 +11531,7 @@ static PROTOTYPE_1087: BuiltinPrototype = BuiltinPrototype {
     spelling: "void(_Vector<2, double *>, _Vector<2, long long int>, _Vector<2, double>)",
     ret: BuiltinParam { ty: &BuiltinType::Void, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 2, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Float(FloatKind::Double), quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 2, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Double), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 2, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 2, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Double), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     ],
@@ -11542,7 +11542,7 @@ static PROTOTYPE_1088: BuiltinPrototype = BuiltinPrototype {
     spelling: "void(_Vector<2, long long int *>, _Vector<2, long long int>, _Vector<2, long long int>)",
     ret: BuiltinParam { ty: &BuiltinType::Void, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 2, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 2, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 2, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 2, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     ],
@@ -11553,7 +11553,7 @@ static PROTOTYPE_1089: BuiltinPrototype = BuiltinPrototype {
     spelling: "void(_Vector<2, long long int *>, _Vector<2, long long int>, unsigned char)",
     ret: BuiltinParam { ty: &BuiltinType::Void, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 2, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 2, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 2, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     ],
@@ -11588,7 +11588,7 @@ static PROTOTYPE_1092: BuiltinPrototype = BuiltinPrototype {
     spelling: "void(_Vector<32, char *>, _Vector<32, char>, unsigned int)",
     ret: BuiltinParam { ty: &BuiltinType::Void, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 32, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Char, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 32, element: &BuiltinParam { ty: &BuiltinType::Char, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 32, element: &BuiltinParam { ty: &BuiltinType::Char, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: false }, quals: Qualifiers::NONE, constant: false },
     ],
@@ -11599,7 +11599,7 @@ static PROTOTYPE_1093: BuiltinPrototype = BuiltinPrototype {
     spelling: "void(_Vector<32, char *>, _Vector<32, short>, unsigned int)",
     ret: BuiltinParam { ty: &BuiltinType::Void, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 32, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Char, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 32, element: &BuiltinParam { ty: &BuiltinType::Char, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 32, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: false }, quals: Qualifiers::NONE, constant: false },
     ],
@@ -11610,7 +11610,7 @@ static PROTOTYPE_1094: BuiltinPrototype = BuiltinPrototype {
     spelling: "void(_Vector<32, short *>, _Vector<32, short>, unsigned int)",
     ret: BuiltinParam { ty: &BuiltinType::Void, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 32, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 32, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 32, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: false }, quals: Qualifiers::NONE, constant: false },
     ],
@@ -11621,7 +11621,7 @@ static PROTOTYPE_1095: BuiltinPrototype = BuiltinPrototype {
     spelling: "void(_Vector<4, double *>, _Vector<4, double>, unsigned char)",
     ret: BuiltinParam { ty: &BuiltinType::Void, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Float(FloatKind::Double), quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Double), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Double), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     ],
@@ -11632,7 +11632,7 @@ static PROTOTYPE_1096: BuiltinPrototype = BuiltinPrototype {
     spelling: "void(_Vector<4, double *>, _Vector<4, long long int>, _Vector<4, double>)",
     ret: BuiltinParam { ty: &BuiltinType::Void, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Float(FloatKind::Double), quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Double), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Double), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     ],
@@ -11643,7 +11643,7 @@ static PROTOTYPE_1097: BuiltinPrototype = BuiltinPrototype {
     spelling: "void(_Vector<4, float *>, _Vector<4, float>, unsigned char)",
     ret: BuiltinParam { ty: &BuiltinType::Void, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float), quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     ],
@@ -11654,7 +11654,7 @@ static PROTOTYPE_1098: BuiltinPrototype = BuiltinPrototype {
     spelling: "void(_Vector<4, float *>, _Vector<4, int>, _Vector<4, float>)",
     ret: BuiltinParam { ty: &BuiltinType::Void, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float), quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     ],
@@ -11665,7 +11665,7 @@ static PROTOTYPE_1099: BuiltinPrototype = BuiltinPrototype {
     spelling: "void(_Vector<4, int *>, _Vector<2, long long int>, unsigned char)",
     ret: BuiltinParam { ty: &BuiltinType::Void, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 2, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     ],
@@ -11676,7 +11676,7 @@ static PROTOTYPE_1100: BuiltinPrototype = BuiltinPrototype {
     spelling: "void(_Vector<4, int *>, _Vector<4, int>, _Vector<4, int>)",
     ret: BuiltinParam { ty: &BuiltinType::Void, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     ],
@@ -11687,7 +11687,7 @@ static PROTOTYPE_1101: BuiltinPrototype = BuiltinPrototype {
     spelling: "void(_Vector<4, int *>, _Vector<4, int>, unsigned char)",
     ret: BuiltinParam { ty: &BuiltinType::Void, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     ],
@@ -11698,7 +11698,7 @@ static PROTOTYPE_1102: BuiltinPrototype = BuiltinPrototype {
     spelling: "void(_Vector<4, int *>, _Vector<4, long long int>, unsigned char)",
     ret: BuiltinParam { ty: &BuiltinType::Void, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     ],
@@ -11721,7 +11721,7 @@ static PROTOTYPE_1104: BuiltinPrototype = BuiltinPrototype {
     spelling: "void(_Vector<4, long long int *>, _Vector<4, long long int>, _Vector<4, long long int>)",
     ret: BuiltinParam { ty: &BuiltinType::Void, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     ],
@@ -11732,7 +11732,7 @@ static PROTOTYPE_1105: BuiltinPrototype = BuiltinPrototype {
     spelling: "void(_Vector<4, long long int *>, _Vector<4, long long int>, unsigned char)",
     ret: BuiltinParam { ty: &BuiltinType::Void, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     ],
@@ -11755,7 +11755,7 @@ static PROTOTYPE_1107: BuiltinPrototype = BuiltinPrototype {
     spelling: "void(_Vector<64, char *>, _Vector<64, char>, unsigned long long int)",
     ret: BuiltinParam { ty: &BuiltinType::Void, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 64, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Char, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 64, element: &BuiltinParam { ty: &BuiltinType::Char, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 64, element: &BuiltinParam { ty: &BuiltinType::Char, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: false }, quals: Qualifiers::NONE, constant: false },
     ],
@@ -11766,7 +11766,7 @@ static PROTOTYPE_1108: BuiltinPrototype = BuiltinPrototype {
     spelling: "void(_Vector<8, _Float16 *>, _Vector<8, _Float16>, unsigned char)",
     ret: BuiltinParam { ty: &BuiltinType::Void, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float16), quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float16), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float16), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     ],
@@ -11777,7 +11777,7 @@ static PROTOTYPE_1109: BuiltinPrototype = BuiltinPrototype {
     spelling: "void(_Vector<8, __bf16 *>, _Vector<8, __bf16>, unsigned char)",
     ret: BuiltinParam { ty: &BuiltinType::Void, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Float(FloatKind::BFloat16), quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::BFloat16), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::BFloat16), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     ],
@@ -11788,7 +11788,7 @@ static PROTOTYPE_1110: BuiltinPrototype = BuiltinPrototype {
     spelling: "void(_Vector<8, double *>, _Vector<8, double>, unsigned char)",
     ret: BuiltinParam { ty: &BuiltinType::Void, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Float(FloatKind::Double), quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Double), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Double), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     ],
@@ -11799,7 +11799,7 @@ static PROTOTYPE_1111: BuiltinPrototype = BuiltinPrototype {
     spelling: "void(_Vector<8, float *>, _Vector<8, float>, unsigned char)",
     ret: BuiltinParam { ty: &BuiltinType::Void, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float), quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     ],
@@ -11810,7 +11810,7 @@ static PROTOTYPE_1112: BuiltinPrototype = BuiltinPrototype {
     spelling: "void(_Vector<8, float *>, _Vector<8, int>, _Vector<8, float>)",
     ret: BuiltinParam { ty: &BuiltinType::Void, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float), quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     ],
@@ -11821,7 +11821,7 @@ static PROTOTYPE_1113: BuiltinPrototype = BuiltinPrototype {
     spelling: "void(_Vector<8, int *>, _Vector<8, int>, _Vector<8, int>)",
     ret: BuiltinParam { ty: &BuiltinType::Void, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
     ],
@@ -11832,7 +11832,7 @@ static PROTOTYPE_1114: BuiltinPrototype = BuiltinPrototype {
     spelling: "void(_Vector<8, int *>, _Vector<8, int>, unsigned char)",
     ret: BuiltinParam { ty: &BuiltinType::Void, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     ],
@@ -11843,7 +11843,7 @@ static PROTOTYPE_1115: BuiltinPrototype = BuiltinPrototype {
     spelling: "void(_Vector<8, int *>, _Vector<8, long long int>, unsigned char)",
     ret: BuiltinParam { ty: &BuiltinType::Void, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     ],
@@ -11866,7 +11866,7 @@ static PROTOTYPE_1117: BuiltinPrototype = BuiltinPrototype {
     spelling: "void(_Vector<8, long long int *>, _Vector<8, long long int>, unsigned char)",
     ret: BuiltinParam { ty: &BuiltinType::Void, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     ],
@@ -11889,7 +11889,7 @@ static PROTOTYPE_1119: BuiltinPrototype = BuiltinPrototype {
     spelling: "void(_Vector<8, short *>, _Vector<2, long long int>, unsigned char)",
     ret: BuiltinParam { ty: &BuiltinType::Void, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 2, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     ],
@@ -11900,7 +11900,7 @@ static PROTOTYPE_1120: BuiltinPrototype = BuiltinPrototype {
     spelling: "void(_Vector<8, short *>, _Vector<4, int>, unsigned char)",
     ret: BuiltinParam { ty: &BuiltinType::Void, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     ],
@@ -11911,7 +11911,7 @@ static PROTOTYPE_1121: BuiltinPrototype = BuiltinPrototype {
     spelling: "void(_Vector<8, short *>, _Vector<4, long long int>, unsigned char)",
     ret: BuiltinParam { ty: &BuiltinType::Void, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 4, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     ],
@@ -11922,7 +11922,7 @@ static PROTOTYPE_1122: BuiltinPrototype = BuiltinPrototype {
     spelling: "void(_Vector<8, short *>, _Vector<8, int>, unsigned char)",
     ret: BuiltinParam { ty: &BuiltinType::Void, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     ],
@@ -11933,7 +11933,7 @@ static PROTOTYPE_1123: BuiltinPrototype = BuiltinPrototype {
     spelling: "void(_Vector<8, short *>, _Vector<8, long long int>, unsigned char)",
     ret: BuiltinParam { ty: &BuiltinType::Void, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     ],
@@ -11944,7 +11944,7 @@ static PROTOTYPE_1124: BuiltinPrototype = BuiltinPrototype {
     spelling: "void(_Vector<8, short *>, _Vector<8, short>, unsigned char)",
     ret: BuiltinParam { ty: &BuiltinType::Void, quals: Qualifiers::NONE, constant: false },
     params: &[
-        BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Vector { lanes: 8, element: &BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::NONE, constant: false } }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     ],

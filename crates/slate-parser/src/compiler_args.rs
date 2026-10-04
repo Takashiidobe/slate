@@ -225,6 +225,7 @@ enum Opt {
     Fpu,
     Thumb,
     SveVectorBits,
+    Outline,
     Warning,
     Pedantic,
     Optimize,
@@ -273,6 +274,7 @@ impl std::fmt::Display for Opt {
             Self::Fpu => "mfpu",
             Self::Thumb => "mthumb",
             Self::SveVectorBits => "msve-vector-bits",
+            Self::Outline => "moutline",
             Self::Warning => "W",
             Self::Pedantic => "pedantic",
             Self::Optimize => "O",
@@ -639,6 +641,8 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                 argument,
                 "SVE vector length",
             )?);
+        } else if matches!(argument.as_str(), "-moutline" | "-mno-outline") {
+            parsed.present.insert(Opt::Outline);
         } else if let Some(thumb) = thumb_flag(argument) {
             parsed.present.insert(Opt::Thumb);
             parsed.isa.thumb = Some(thumb);
@@ -873,6 +877,13 @@ fn gcc_rules<'a>(target: &'a TargetInfo) -> Rule<'a, ParsedCompilerArgs> {
                 Ok(())
             }
         }),
+        Rule::validate("GCC outliner", |args: &ParsedCompilerArgs| {
+            if args.present.contains(&Opt::Outline) {
+                Err("`moutline` is a Clang option".into())
+            } else {
+                Ok(())
+            }
+        }),
         Rules::when(
             |args: &ParsedCompilerArgs| args.preferred_stack_boundary.is_some(),
             Rule::validate(
@@ -928,7 +939,7 @@ fn clang_rules<'a>() -> Rule<'a, ParsedCompilerArgs> {
 }
 
 fn msvc_rules<'a>() -> Rule<'a, ParsedCompilerArgs> {
-    const UNSUPPORTED: [Opt; 20] = [
+    const UNSUPPORTED: [Opt; 21] = [
         Opt::Gnu89Inline,
         Opt::Common,
         Opt::MsExtensions,
@@ -948,6 +959,7 @@ fn msvc_rules<'a>() -> Rule<'a, ParsedCompilerArgs> {
         Opt::Fpu,
         Opt::Thumb,
         Opt::SveVectorBits,
+        Opt::Outline,
         Opt::Optimize,
     ];
     Rule::validate(

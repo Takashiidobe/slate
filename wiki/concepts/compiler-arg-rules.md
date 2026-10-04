@@ -42,6 +42,10 @@ rule pipeline. Flag effects are in [compiler-flags](compiler-flags.md).
 - `-masm=att|intel`: picks the `{att|intel}` alternative in x86 GNU asm and
   is recorded as the asm's `dialect`. gcc flavor rejects it off x86; clang
   accepts it everywhere (no effect off x86); msvc rejects it.
+- `-moutline` / `-mno-outline`: clang's machine outliner, codegen-only and
+  without predefines, so clang accepts and ignores it on every target
+  (mimalloc passes `-mno-outline`). gcc and msvc reject it. It is an `Opt`,
+  not an `ignored_option`, because that list is flavor-independent.
 
 ## Include search
 

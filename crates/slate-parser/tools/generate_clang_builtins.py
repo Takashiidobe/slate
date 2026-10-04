@@ -138,8 +138,14 @@ class Parser:
         if not lanes.isdigit():
             raise PrototypeError(f"vector lane count `{lanes}`")
         self.expect(",")
-        element = Parser(self.take_until(">")).parameter()
-        return f"&BuiltinType::{variant} {{ lanes: {lanes}, element: &{element} }}"
+        inner = self.take_until(">")
+        split = next((i for i, token in enumerate(inner) if token in ("*", "&")), len(inner))
+        self.tokens[self.index : self.index] = inner[split:]
+        element = Parser(inner[:split])
+        ty, quals, constant = element.base()
+        if constant or not element.at_end():
+            raise PrototypeError(f"vector element `{' '.join(inner)}`")
+        return f"&BuiltinType::{variant} {{ lanes: {lanes}, element: &{param_expr(ty, set(), False)} }}", quals
 
     def take_until(self, closing):
         taken = []
@@ -150,7 +156,8 @@ class Parser:
 
     def base(self):
         if self.peek() in VECTORS:
-            return self.vector(VECTORS[self.consume()]), set(), False
+            ty, quals = self.vector(VECTORS[self.consume()])
+            return ty, quals, False
         words = []
         quals = set()
         constant = False
