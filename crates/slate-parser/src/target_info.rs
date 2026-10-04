@@ -713,6 +713,22 @@ impl TargetInfo {
         self
     }
 
+    pub fn with_char_signed(mut self, signed: bool) -> Self {
+        self.char_signed = signed;
+        self
+    }
+
+    pub fn with_short_wchar(mut self, short: bool) -> Self {
+        if short {
+            self.wchar_signed = false;
+            self.wchar_width = self.short_width;
+        } else if self.wchar_width == self.short_width {
+            self.wchar_signed = true;
+            self.wchar_width = self.int_width;
+        }
+        self
+    }
+
     // x86-64 psABI: an array object of at least this many bytes gets this alignment;
     // clang and gcc apply it on every x86-64 OS unless the declaration says `aligned`
     pub fn large_array_alignment(&self) -> Option<u64> {

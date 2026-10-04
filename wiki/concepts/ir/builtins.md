@@ -92,6 +92,11 @@ Builtins look like functions, as clang's lazily created `FunctionDecl`s do.
   declared or implicit; cl.exe learns noreturn only from
   `__declspec(noreturn)`. They keep `c_builtin`, which names the libc
   entity rather than claiming semantics (`msvc/linux/x86_64/ir_library_builtins.c`).
+- `-fno-builtin`, `-fno-builtin-<name>` and `-ffreestanding`
+  (`CompilerOptions::library_builtins`, checked in `clang_builtin`) make
+  a library builtin an ordinary function: no `c_builtin`, no implicit
+  builtin signature, no attributes. `__builtin_<name>` still works
+  (`clang/linux/x86_64/freestanding_library_builtins.c`).
 - Header provenance plays no part: it decides libc identity for Rust, not
   builtin semantics.
 

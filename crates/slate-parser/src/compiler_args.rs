@@ -1,4 +1,6 @@
-use crate::compiler_options::{CompilerOptions, LayoutOptions, MicrosoftFlags, OperationValues};
+use crate::compiler_options::{
+    CompilerOptions, LayoutOptions, LibraryBuiltins, MicrosoftFlags, OperationValues,
+};
 use crate::diagnostics::{DiagnosticOptions, Warning};
 use crate::files::SearchPaths;
 use crate::ir::{AsmDialect, Overflow};
@@ -150,6 +152,7 @@ pub struct CompilerArgs {
     pub isysroot: Option<String>,
     pub sysroot: Option<String>,
     pub nostdlibinc: bool,
+    pub nostdinc: bool,
     pub flavor: CompilerFlavor,
     pub target: TargetInfo,
 }
@@ -166,8 +169,10 @@ impl CompilerArgs {
             None => PathBuf::from(path),
         };
         let mut system: Vec<PathBuf> = self.isystem.iter().map(|path| include_dir(path)).collect();
-        system.extend(compiler_headers::include_paths(&self.target, self.flavor));
-        if !self.nostdlibinc {
+        if !self.nostdinc {
+            system.extend(compiler_headers::include_paths(&self.target, self.flavor));
+        }
+        if !self.nostdlibinc && !self.nostdinc {
             system.extend(sysroot::include_paths_at(&root, &self.target, self.flavor));
         }
         system.extend(self.idirafter.iter().map(|path| include_dir(path)));
@@ -229,8 +234,18 @@ struct ParsedCompilerArgs {
     isysroot: Option<String>,
     sysroot: Option<String>,
     nostdlibinc: bool,
+    nostdinc: bool,
     flavor: CompilerFlavor,
     target: String,
+    hosted: Option<bool>,
+    builtin: Option<bool>,
+    no_builtin: Vec<String>,
+    char_signed: Option<bool>,
+    short_wchar: Option<bool>,
+    ms_anonymous_structs: Option<bool>,
+    strict_flex_arrays: Option<u8>,
+    late_parsed_attributes: Option<bool>,
+    asynchronous_unwind_tables: Option<bool>,
     preferred_stack_boundary: Option<u32>,
     stack_alignment: Option<u32>,
     wrapv: Option<bool>,
@@ -262,11 +277,13 @@ impl ParsedCompilerArgs {
     }
 
     fn check_flavor(&self) -> Result<(), CompilerArgError> {
-        match self
-            .occurrences
-            .iter()
-            .find(|(opt, _)| !opt.accepted_by(self.flavor))
-        {
+        match self.occurrences.iter().find(|(opt, argument)| {
+            if opt.parse_switch(argument) == Some(false) {
+                !opt.negation_accepted_by(self.flavor)
+            } else {
+                !opt.accepted_by(self.flavor)
+            }
+        }) {
             Some((_, argument)) => Err(invalid(
                 argument,
                 &format!("unknown option for the {} flavor", self.flavor),
@@ -290,8 +307,21 @@ enum Opt {
     Isysroot,
     Sysroot,
     Nostdlibinc,
+    Nostdinc,
     Flavor,
     Target,
+    Freestanding,
+    Hosted,
+    Builtin,
+    NoBuiltinFunction,
+    UnsignedChar,
+    SignedChar,
+    ShortWchar,
+    MsAnonymousStructs,
+    StrictFlexArrays,
+    GccStrictFlexArrays,
+    LateParseAttributes,
+    AsynchronousUnwindTables,
     PreferredStackBoundary,
     StackAlignment,
     Wrapv,
@@ -340,8 +370,21 @@ impl std::fmt::Display for Opt {
             Self::Isysroot => "isysroot",
             Self::Sysroot => "sysroot",
             Self::Nostdlibinc => "nostdlibinc",
+            Self::Nostdinc => "nostdinc",
             Self::Flavor => "flavor",
             Self::Target => "target",
+            Self::Freestanding => "ffreestanding",
+            Self::Hosted => "fhosted",
+            Self::Builtin => "fbuiltin",
+            Self::NoBuiltinFunction => "fno-builtin-<function>",
+            Self::UnsignedChar => "funsigned-char",
+            Self::SignedChar => "fsigned-char",
+            Self::ShortWchar => "fshort-wchar",
+            Self::MsAnonymousStructs => "fms-anonymous-structs",
+            Self::StrictFlexArrays => "fstrict-flex-arrays=",
+            Self::GccStrictFlexArrays => "fstrict-flex-arrays",
+            Self::LateParseAttributes => "fexperimental-late-parse-attributes",
+            Self::AsynchronousUnwindTables => "fasynchronous-unwind-tables",
             Self::PreferredStackBoundary => "preferred-stack-boundary",
             Self::StackAlignment => "stack-alignment",
             Self::Wrapv => "wrapv",
@@ -387,6 +430,7 @@ impl Opt {
             | Self::Isysroot
             | Self::Sysroot
             | Self::Nostdlibinc
+            | Self::Nostdinc
             | Self::Flavor
             | Self::Target
             | Self::Warning
@@ -408,41 +452,74 @@ impl Opt {
             | Self::Fpu
             | Self::Thumb
             | Self::SveVectorBits
-            | Self::Optimize => &[Gcc, Clang],
-            Self::PreferredStackBoundary => &[Gcc],
-            Self::StackAlignment | Self::ClangCodegenOnly | Self::AsmBlocks => &[Clang],
+            | Self::Optimize
+            | Self::Freestanding
+            | Self::Hosted
+            | Self::Builtin
+            | Self::NoBuiltinFunction
+            | Self::UnsignedChar
+            | Self::SignedChar
+            | Self::ShortWchar
+            | Self::StrictFlexArrays
+            | Self::AsynchronousUnwindTables => &[Gcc, Clang],
+            Self::PreferredStackBoundary | Self::GccStrictFlexArrays => &[Gcc],
+            Self::StackAlignment
+            | Self::ClangCodegenOnly
+            | Self::AsmBlocks
+            | Self::MsAnonymousStructs
+            | Self::LateParseAttributes => &[Clang],
         };
         flavors.contains(&flavor)
     }
 
-    fn name(self) -> &'static str {
+    fn negation_accepted_by(self, flavor: CompilerFlavor) -> bool {
         match self {
-            Self::Wrapv => "wrapv",
-            Self::Trapv => "trapv",
-            Self::StrictOverflow => "strict-overflow",
-            Self::RoundingMath => "rounding-math",
-            Self::TrappingMath => "trapping-math",
-            Self::Gnu89Inline => "gnu89-inline",
-            Self::Common => "common",
-            Self::MsExtensions => "ms-extensions",
-            Self::MsCompatibility => "ms-compatibility",
-            Self::AsmBlocks => "asm-blocks",
-            _ => "",
+            Self::Freestanding | Self::Hosted => flavor.is_gcc(),
+            _ => self.accepted_by(flavor),
         }
     }
 
-    fn parse_flag(self, argument: &str) -> Option<bool> {
-        parse_f_flag(self.name(), argument)
+    fn switch(self) -> Option<&'static str> {
+        Some(match self {
+            Self::Wrapv => "-fwrapv",
+            Self::Trapv => "-ftrapv",
+            Self::StrictOverflow => "-fstrict-overflow",
+            Self::RoundingMath => "-frounding-math",
+            Self::TrappingMath => "-ftrapping-math",
+            Self::Gnu89Inline => "-fgnu89-inline",
+            Self::Common => "-fcommon",
+            Self::MsExtensions => "-fms-extensions",
+            Self::MsCompatibility => "-fms-compatibility",
+            Self::AsmBlocks => "-fasm-blocks",
+            Self::Freestanding => "-ffreestanding",
+            Self::Hosted => "-fhosted",
+            Self::Builtin => "-fbuiltin",
+            Self::UnsignedChar => "-funsigned-char",
+            Self::SignedChar => "-fsigned-char",
+            Self::ShortWchar => "-fshort-wchar",
+            Self::MsAnonymousStructs => "-fms-anonymous-structs",
+            Self::GccStrictFlexArrays => "-fstrict-flex-arrays",
+            Self::LateParseAttributes => "-fexperimental-late-parse-attributes",
+            Self::AsynchronousUnwindTables => "-fasynchronous-unwind-tables",
+            _ => return None,
+        })
+    }
+
+    fn parse_switch(self, argument: &str) -> Option<bool> {
+        parse_switch(self.switch()?, argument)
     }
 }
 
-fn parse_f_flag(name: &str, argument: &str) -> Option<bool> {
-    let flag = argument
-        .strip_prefix("--f")
-        .or_else(|| argument.strip_prefix("-f"))?;
-    match flag.strip_prefix("no-") {
+fn parse_switch(switch: &str, argument: &str) -> Option<bool> {
+    let argument = argument
+        .strip_prefix('-')
+        .filter(|rest| rest.starts_with('-'))
+        .unwrap_or(argument);
+    let (prefix, name) = switch.split_at(2);
+    let rest = argument.strip_prefix(prefix)?;
+    match rest.strip_prefix("no-") {
         Some(negated) if negated == name => Some(false),
-        _ if flag == name => Some(true),
+        _ if rest == name => Some(true),
         _ => None,
     }
 }
@@ -457,30 +534,29 @@ const IGNORED_DRIVER_FLAGS: [&str; 8] = ["-c", "-MD", "-MMD", "-MP", "-MG", "-M"
 
 const IGNORED_VALUE_OPTIONS: [&str; 5] = ["-o", "-MF", "-MT", "-MQ", "-MJ"];
 
-const CODEGEN_ONLY_FLAGS: [&str; 13] = [
-    "omit-frame-pointer",
-    "lto",
-    "function-sections",
-    "data-sections",
-    "strict-aliasing",
-    "plt",
-    "semantic-interposition",
-    "asynchronous-unwind-tables",
-    "unwind-tables",
-    "stack-clash-protection",
-    "merge-all-constants",
-    "ident",
-    "addrsig",
+const CODEGEN_ONLY_FLAGS: [&str; 12] = [
+    "-fomit-frame-pointer",
+    "-flto",
+    "-ffunction-sections",
+    "-fdata-sections",
+    "-fstrict-aliasing",
+    "-fplt",
+    "-fsemantic-interposition",
+    "-funwind-tables",
+    "-fstack-clash-protection",
+    "-fmerge-all-constants",
+    "-fident",
+    "-faddrsig",
 ];
 
 const CODEGEN_ONLY_VALUE_FLAGS: [&str; 3] = ["lto=", "visibility=", "debug-prefix-map="];
 
-const CLANG_CODEGEN_ONLY_M_FLAGS: [&str; 1] = ["outline"];
+const CLANG_CODEGEN_ONLY_M_FLAGS: [&str; 1] = ["-moutline"];
 
 fn clang_codegen_only(argument: &str) -> bool {
-    argument.strip_prefix("-m").is_some_and(|flag| {
-        CLANG_CODEGEN_ONLY_M_FLAGS.contains(&flag.strip_prefix("no-").unwrap_or(flag))
-    })
+    CLANG_CODEGEN_ONLY_M_FLAGS
+        .iter()
+        .any(|switch| parse_switch(switch, argument).is_some())
 }
 
 fn ignored_option(argument: &str) -> Option<IgnoredOption> {
@@ -492,7 +568,7 @@ fn ignored_option(argument: &str) -> Option<IgnoredOption> {
         .any(|option| argument.len() > option.len() && argument.starts_with(option));
     let codegen_only = CODEGEN_ONLY_FLAGS
         .iter()
-        .any(|name| parse_f_flag(name, argument).is_some())
+        .any(|switch| parse_switch(switch, argument).is_some())
         || CODEGEN_ONLY_VALUE_FLAGS
             .iter()
             .any(|prefix| argument.starts_with(&format!("-f{prefix}")));
@@ -503,7 +579,17 @@ fn ignored_option(argument: &str) -> Option<IgnoredOption> {
         .then_some(IgnoredOption::Alone)
 }
 
-const FLAG_OPTS: [Opt; 10] = [
+const SWITCH_OPTS: [Opt; 20] = [
+    Opt::Freestanding,
+    Opt::Hosted,
+    Opt::GccStrictFlexArrays,
+    Opt::Builtin,
+    Opt::UnsignedChar,
+    Opt::SignedChar,
+    Opt::ShortWchar,
+    Opt::MsAnonymousStructs,
+    Opt::LateParseAttributes,
+    Opt::AsynchronousUnwindTables,
     Opt::Gnu89Inline,
     Opt::Common,
     Opt::MsExtensions,
@@ -537,6 +623,8 @@ impl CompilerArgParser {
                 .preferred_stack_boundary
                 .map(|exponent| 1u32 << exponent)
                 .or(raw.stack_alignment),
+            char_signed: raw.char_signed,
+            short_wchar: raw.short_wchar,
         };
         let mut options = CompilerOptions::from_values(
             flavor,
@@ -562,9 +650,21 @@ impl CompilerArgParser {
             extensions: raw.ms_extensions,
             compatibility: raw.ms_compatibility,
             asm_blocks: raw.asm_blocks == Some(true),
+            anonymous_structs: raw.ms_anonymous_structs,
         };
         options.asm_dialect = raw.asm_dialect.unwrap_or_default();
         options.explicit_standard = raw.standard.is_some();
+        options.hosted = raw.hosted.unwrap_or(true);
+        options.library_builtins = LibraryBuiltins {
+            enabled: options.hosted && raw.builtin.unwrap_or(true),
+            disabled: raw.no_builtin,
+        };
+        options.implicit_stdc_predef = options.hosted && !raw.nostdinc;
+        options.asynchronous_unwind_tables = raw
+            .asynchronous_unwind_tables
+            .unwrap_or(options.hosted || !flavor.is_clang());
+        options.late_parsed_attributes = raw.late_parsed_attributes == Some(true);
+        options.strict_flex_arrays = raw.strict_flex_arrays.unwrap_or(0);
         Ok(CompilerArgs {
             options,
             defines: raw.defines,
@@ -577,6 +677,7 @@ impl CompilerArgParser {
             isysroot: raw.isysroot,
             sysroot: raw.sysroot,
             nostdlibinc: raw.nostdlibinc,
+            nostdinc: raw.nostdinc,
             flavor,
             target,
         })
@@ -641,9 +742,9 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
             if ignored == IgnoredOption::TakesValue {
                 next_value(arguments, &mut index, argument, "")?;
             }
-        } else if let Some((opt, value)) = FLAG_OPTS
+        } else if let Some((opt, value)) = SWITCH_OPTS
             .iter()
-            .find_map(|opt| opt.parse_flag(argument).map(|value| (*opt, value)))
+            .find_map(|opt| opt.parse_switch(argument).map(|value| (*opt, value)))
         {
             parsed.saw(opt, argument);
             match opt {
@@ -654,11 +755,40 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                 Opt::TrappingMath => parsed.trapping_math = Some(value),
                 Opt::Gnu89Inline => parsed.gnu89_inline = Some(value),
                 Opt::Common => parsed.common = Some(value),
-                Opt::MsExtensions => parsed.ms_extensions = Some(value),
-                Opt::MsCompatibility => parsed.ms_compatibility = Some(value),
+                Opt::MsExtensions => {
+                    parsed.ms_extensions = Some(value);
+                    parsed.ms_anonymous_structs = Some(value);
+                }
+                Opt::MsCompatibility => {
+                    parsed.ms_compatibility = Some(value);
+                    if value {
+                        parsed.ms_anonymous_structs = Some(true);
+                    }
+                }
                 Opt::AsmBlocks => parsed.asm_blocks = Some(value),
+                Opt::Builtin => parsed.builtin = Some(value),
+                Opt::UnsignedChar => parsed.char_signed = Some(!value),
+                Opt::SignedChar => parsed.char_signed = Some(value),
+                Opt::ShortWchar => parsed.short_wchar = Some(value),
+                Opt::MsAnonymousStructs => parsed.ms_anonymous_structs = Some(value),
+                Opt::LateParseAttributes => parsed.late_parsed_attributes = Some(value),
+                Opt::AsynchronousUnwindTables => parsed.asynchronous_unwind_tables = Some(value),
+                Opt::Freestanding => parsed.hosted = Some(!value),
+                Opt::Hosted => parsed.hosted = Some(value),
+                Opt::GccStrictFlexArrays => {
+                    parsed.strict_flex_arrays = Some(if value { 3 } else { 0 })
+                }
                 _ => return Err(invalid(argument, "unknown flag")),
             }
+        } else if let Some(function) = argument
+            .strip_prefix("-fno-builtin-")
+            .filter(|function| !function.is_empty())
+        {
+            parsed.saw(Opt::NoBuiltinFunction, argument);
+            parsed.no_builtin.push(function.to_owned());
+        } else if let Some(level) = argument.strip_prefix("-fstrict-flex-arrays=") {
+            parsed.saw(Opt::StrictFlexArrays, argument);
+            parsed.strict_flex_arrays = Some(parse_value(level.to_owned(), argument, "level")?);
         } else if let Some(value) = option_value(argument, "D") {
             parsed.saw(Opt::Define, argument);
             let define = next_value(arguments, &mut index, argument, value)?;
@@ -727,6 +857,9 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
         } else if matches!(argument.as_str(), "-nostdlibinc" | "--nostdlibinc") {
             parsed.saw(Opt::Nostdlibinc, argument);
             parsed.nostdlibinc = true;
+        } else if argument == "-nostdinc" {
+            parsed.saw(Opt::Nostdinc, argument);
+            parsed.nostdinc = true;
         } else if let Some(value) = option_value(argument, "flavor") {
             parsed.saw(Opt::Flavor, argument);
             parsed.flavor = parse_value(
@@ -844,14 +977,14 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
 
 fn signed_overflow(flavor: CompilerFlavor, arguments: &[String]) -> Overflow {
     let wrap = match (
-        last_flag(arguments, "wrapv"),
-        last_flag(arguments, "strict-overflow"),
+        last_flag(arguments, Opt::Wrapv),
+        last_flag(arguments, Opt::StrictOverflow),
     ) {
         (Some(wrap), Some(strict)) if strict.0 > wrap.0 => Some((strict.0, !strict.1)),
         (None, Some(strict)) => Some((strict.0, !strict.1)),
         (wrap, _) => wrap,
     };
-    let trap = last_flag(arguments, "trapv");
+    let trap = last_flag(arguments, Opt::Trapv);
     match (
         wrap.filter(|(_, value)| *value),
         trap.filter(|(_, value)| *value),
@@ -864,12 +997,12 @@ fn signed_overflow(flavor: CompilerFlavor, arguments: &[String]) -> Overflow {
     }
 }
 
-fn last_flag(arguments: &[String], name: &str) -> Option<(usize, bool)> {
+fn last_flag(arguments: &[String], opt: Opt) -> Option<(usize, bool)> {
     arguments
         .iter()
         .enumerate()
         .rev()
-        .find_map(|(index, argument)| parse_f_flag(name, argument).map(|value| (index, value)))
+        .find_map(|(index, argument)| opt.parse_switch(argument).map(|value| (index, value)))
 }
 
 fn option_value<'a>(argument: &'a str, name: &str) -> Option<&'a str> {
@@ -949,6 +1082,7 @@ fn invalid(argument: &str, reason: &str) -> CompilerArgError {
 fn validate_rules<'a>(target: &'a TargetInfo) -> Rule<'a, ParsedCompilerArgs> {
     Rules::pipeline([
         common_rules(),
+        strict_flex_arrays_rule(),
         long_double_target_rule(target),
         isa_target_rule(target),
         flavor_rules(target),
@@ -989,6 +1123,16 @@ fn common_rules<'a>() -> Rule<'a, ParsedCompilerArgs> {
             Ok(())
         }
     })
+}
+
+fn strict_flex_arrays_rule<'a>() -> Rule<'a, ParsedCompilerArgs> {
+    Rule::validate(
+        "strict flex arrays level",
+        |args: &ParsedCompilerArgs| match args.strict_flex_arrays {
+            Some(level) if level > 3 => Err(format!("expected a level in 0..=3, found {level}")),
+            _ => Ok(()),
+        },
+    )
 }
 
 fn flavor_rules<'a>(target: &'a TargetInfo) -> Rule<'a, ParsedCompilerArgs> {

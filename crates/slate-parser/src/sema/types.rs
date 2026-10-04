@@ -92,6 +92,10 @@ impl TypeResolver {
         self.dialect.target()
     }
 
+    pub(super) fn dialect(&self) -> &Dialect {
+        &self.dialect
+    }
+
     fn new(dialect: Dialect) -> Self {
         Self {
             dialect,
@@ -2060,13 +2064,14 @@ impl TypeResolver {
                                 .is_some_and(|tag| tag.name.is_none() && tag.kind != TagKind::Enum),
                             _ => false,
                         };
-                        if !anonymous {
+                        let resolved =
                             self.resolve(&declaration.specifiers, &Declarator::Abstract)?;
+                        let microsoft_record = self.features().microsoft_anonymous_records
+                            && self.ctypes.is_record(resolved);
+                        if !anonymous && !microsoft_record {
                             continue;
                         }
                         self.check_attributes(&declaration.specifiers.attributes, Subject::Field)?;
-                        let resolved =
-                            self.resolve(&declaration.specifiers, &Declarator::Abstract)?;
                         fields.push(item.derive(Field {
                             name: None,
                             ty: self.object_type(resolved, "void record field")?,

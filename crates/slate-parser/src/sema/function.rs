@@ -64,7 +64,7 @@ pub(super) fn builtin_deallocator(
     if types.references.contains_key(&function.id) {
         return None;
     }
-    let builtin = super::builtins::clang_builtin(name, types.flavor(), types.target_info().family)?;
+    let builtin = super::builtins::clang_builtin(name, types.dialect())?;
     Some((builtin, types.builtin_signature(builtin)?))
 }
 
@@ -212,11 +212,7 @@ impl Lowerer {
             .functions
             .iter()
             .filter_map(|function| {
-                let builtin = super::builtins::clang_builtin(
-                    &function.name,
-                    self.types.flavor(),
-                    self.types.target_info().family,
-                )?;
+                let builtin = super::builtins::clang_builtin(&function.name, self.types.dialect())?;
                 Some((function.id, function.value.id, builtin))
             })
             .collect();

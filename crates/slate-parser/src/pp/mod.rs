@@ -79,6 +79,15 @@ const BUILTIN_MACROS: [&str; 6] = [
 ];
 const GNU_BUILTIN_MACROS: [&str; 3] = ["__FILE_NAME__", "__BASE_FILE__", "__INCLUDE_LEVEL__"];
 
+const STDC_PREDEF_MACROS: [&str; 6] = [
+    "_STDC_PREDEF_H",
+    "__STDC_IEC_559__",
+    "__STDC_IEC_559_COMPLEX__",
+    "__STDC_IEC_60559_BFP__",
+    "__STDC_IEC_60559_COMPLEX__",
+    "__STDC_ISO_10646__",
+];
+
 const MSC_VERSION_MACROS: [&str; 5] = [
     "_MSC_VER",
     "_MSC_FULL_VER",
@@ -589,6 +598,9 @@ impl<'a> Preprocessor<'a> {
             let version = if version == 202311 { 202312 } else { version };
             defines.push(format!("__STDC_VERSION__={version}L"));
         }
+        if !flavor.is_msvc() {
+            defines.extend(self.option_predefines());
+        }
         for define in &defines {
             if let Some((name, _)) = define.split_once('=') {
                 self.macros.remove(name);
@@ -611,6 +623,82 @@ impl<'a> Preprocessor<'a> {
         self.parse_source(&source, file)
             .map(drop)
             .map_err(|failure| self.render_error(failure))
+    }
+
+    fn option_predefines(&mut self) -> Vec<String> {
+        let dialect = self.dialect;
+        let (target, options) = (dialect.target(), dialect.options());
+        let mut removed = Vec::new();
+        let mut defines = Vec::new();
+        if !options.hosted {
+            defines.push("__STDC_HOSTED__=0".to_owned());
+        }
+        if !options.implicit_stdc_predef {
+            removed.extend(STDC_PREDEF_MACROS);
+        }
+        if !options.asynchronous_unwind_tables {
+            removed.push("__GCC_HAVE_DWARF2_CFI_ASM");
+        }
+        if options.layout.char_signed.is_some() {
+            let msvc_environment =
+                target.environment == crate::target_info::TargetEnvironment::Msvc;
+            let names = ["__CHAR_UNSIGNED__", "_CHAR_UNSIGNED"];
+            let names = &names[..if msvc_environment { 2 } else { 1 }];
+            if target.char_signed {
+                removed.extend(names);
+            } else {
+                defines.extend(names.iter().map(|name| format!("{name}=1")));
+            }
+        }
+        let wchar_size = (target.wchar_width / 8).to_string();
+        if options.layout.short_wchar.is_some()
+            && self.scalar_macro_spelling("__SIZEOF_WCHAR_T__") != Some(wchar_size)
+        {
+            if target.wchar_signed {
+                removed.push("__WCHAR_UNSIGNED__");
+            }
+            defines.extend(self.wchar_predefines(target.wchar_width == target.short_width));
+        }
+        for name in removed {
+            self.macros.remove(name);
+        }
+        defines
+    }
+
+    fn wchar_predefines(&self, short: bool) -> Vec<String> {
+        let gcc = self.dialect.flavor().is_gcc();
+        let (size, width, encoding) = if short { (2, 16, "16") } else { (4, 32, "32") };
+        let (max, min, ty) = match (short, gcc) {
+            (true, true) => ("0xffff", "0", "short unsigned int"),
+            (true, false) => ("65535", "0", "unsigned short"),
+            (false, true) => ("0x7fffffff", "(-__WCHAR_MAX__ - 1)", "int"),
+            (false, false) => ("2147483647", "(-__WCHAR_MAX__ - 1)", "int"),
+        };
+        let mut defines = vec![
+            format!("__SIZEOF_WCHAR_T__={size}"),
+            format!("__WCHAR_WIDTH__={width}"),
+            format!("__WCHAR_MAX__={max}"),
+            format!("__WCHAR_TYPE__={ty}"),
+        ];
+        if self.macros.contains_key("__WCHAR_MIN__") {
+            defines.push(format!("__WCHAR_MIN__={min}"));
+        }
+        if gcc {
+            defines.push(format!(
+                "__GNUC_WIDE_EXECUTION_CHARSET_NAME=\"UTF-{encoding}LE\""
+            ));
+        } else {
+            defines.push(format!(
+                "__clang_wide_literal_encoding__=\"UTF-{encoding}\""
+            ));
+            if short {
+                defines.push("__WCHAR_UNSIGNED__=1".to_owned());
+            }
+        }
+        if self.macros.contains_key("__ARM_SIZEOF_WCHAR_T") {
+            defines.push(format!("__ARM_SIZEOF_WCHAR_T={size}"));
+        }
+        defines
     }
 
     pub fn parse_file(&mut self, path: &Path) -> Result<Vec<PPNode>, PPError> {

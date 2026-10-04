@@ -17,6 +17,11 @@ rule pipeline. Flag effects are in [compiler-flags](compiler-flags.md).
   (`-fwrapv`, `--fwrapv`, `-fno-wrapv`, `--fno-wrapv` are one option).
   Occurrences apply in order; a later opposite replaces the earlier value
   before rules run.
+- On/off switches (`SWITCH_OPTS`) are named once by their positive
+  spelling in `Opt::switch` (`-fhosted`, `-fshort-wchar`); `parse_switch`
+  derives the `-fno-`/`-mno-` form and the `--` alias. When a flavor has
+  only the positive spelling, `Opt::negation_accepted_by` says so
+  (`-fno-freestanding` and `-fno-hosted` are gcc only).
 - Value options take `=value` or a separate argument. `-m` options use the
   same definitions; no one-off parsers. Downstream sees typed values, never
   spellings.
@@ -34,11 +39,12 @@ rule pipeline. Flag effects are in [compiler-flags](compiler-flags.md).
   driver and
   output options (`-c`, `-M*`, `-g*`, `-pipe`, `-o`/`-MF`/`-MT`/`-MQ`/`-MJ`
   with a separate or joined value) and codegen-only `-f`/`-fno-` flags
-  (`CODEGEN_ONLY_FLAGS`, spelled like `Opt` flags; `-flto=`, `-fvisibility=`,
-  `-fdebug-prefix-map=`). A flag belongs there only if it changes neither
-  semantics nor predefined macros: `-fPIC`/`-fPIE` (`__PIC__`/`__PIE__`),
-  `-fstack-protector*` (`__SSP*__`), and `-fcf-protection` stay unknown
-  options until modeled.
+  (`CODEGEN_ONLY_FLAGS`, positive spellings matched with `parse_switch`;
+  `-flto=`, `-fvisibility=`, `-fdebug-prefix-map=`). A flag belongs there
+  only if it changes neither semantics nor predefined macros:
+  `-fPIC`/`-fPIE` (`__PIC__`/`__PIE__`), `-fstack-protector*` (`__SSP*__`),
+  and `-fcf-protection` stay unknown options until modeled, and
+  `-fasynchronous-unwind-tables` (`__GCC_HAVE_DWARF2_CFI_ASM`) is an `Opt`.
 - `-masm=att|intel`: picks the `{att|intel}` alternative in x86 GNU asm and
   is recorded as the asm's `dialect`. gcc flavor rejects it off x86; clang
   accepts it everywhere (no effect off x86); msvc rejects it.
@@ -74,7 +80,7 @@ Built by `CompilerArgs::search_paths`.
   system headers.
 - System order: `-isystem`, compiler builtin headers, sysroot standard
   headers, `-idirafter`. `-nostdlibinc` drops only the sysroot standard
-  headers.
+  headers; `-nostdinc` also drops the compiler builtin headers.
 - Standard header directories come from the target's `SysrootLayout` (msvc
   flavor always uses Windows kits); builtin headers from `ClangHeaders`.
 - `-isysroot` beats `--sysroot`; either replaces the target default root,
@@ -96,8 +102,10 @@ Built by `CompilerArgs::search_paths`.
 
 Put a rule in the narrowest bucket that owns the constraint.
 
-- `common_rules`: flavor- and target-independent (e.g. mutually exclusive
-  options). Shared semantics go here once.
+- `common_rules` and `strict_flex_arrays_rule`: flavor- and
+  target-independent (mutually exclusive options, value ranges). Each is
+  its own entry in `validate_rules`; nesting a pipeline repeats the
+  `all rules failed:` prefix.
 - `flavor_rules`: one branch per flavor via `Rules::branch`; add only that
   compiler's differences. No `is_gcc()`/`is_clang()` inside a branch.
 - Target rules: use the borrowed `TargetInfo`; report the target and the

@@ -5,8 +5,8 @@ use crate::ast::{
     TypeOfOperand, TypeSpecifier,
 };
 use crate::compiler_args::CompilerFlavor;
+use crate::dialect::Dialect;
 use crate::ir::{Binding, BindingId, BindingKind, NameResolution, Reference};
-use crate::target_info::TargetFamily;
 use crate::visit::Visitor;
 use std::collections::{HashMap, HashSet};
 
@@ -71,7 +71,7 @@ struct Resolver {
     linked: HashMap<String, Entry>,
     implicit_builtin_calls: HashMap<&'static str, Vec<Span<()>>>,
     flavor: CompilerFlavor,
-    target_family: TargetFamily,
+    dialect: Dialect,
     next_id: u32,
     errors: Vec<ResolveError>,
 }
@@ -100,7 +100,7 @@ impl Resolver {
             linked: HashMap::new(),
             implicit_builtin_calls: HashMap::new(),
             flavor: unit.dialect.flavor(),
-            target_family: unit.dialect.target().family,
+            dialect: unit.dialect.clone(),
             next_id: 0,
             errors: Vec::new(),
         }
@@ -451,8 +451,7 @@ impl Resolver {
         if self.lookup_ordinary(name).is_some() {
             return false;
         }
-        let Some(builtin) = super::builtins::clang_builtin(name, self.flavor, self.target_family)
-        else {
+        let Some(builtin) = super::builtins::clang_builtin(name, &self.dialect) else {
             return false;
         };
         // GCC's `__builtin_exit` calls whatever `exit` is declared

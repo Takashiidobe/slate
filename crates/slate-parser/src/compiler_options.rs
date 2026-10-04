@@ -13,6 +13,12 @@ pub struct CompilerOptions {
     pub explicit_standard: bool,
     pub asm_dialect: AsmDialect,
     pub microsoft: MicrosoftFlags,
+    pub hosted: bool,
+    pub library_builtins: LibraryBuiltins,
+    pub implicit_stdc_predef: bool,
+    pub asynchronous_unwind_tables: bool,
+    pub late_parsed_attributes: bool,
+    pub strict_flex_arrays: u8,
 }
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
@@ -20,6 +26,28 @@ pub struct MicrosoftFlags {
     pub extensions: Option<bool>,
     pub compatibility: Option<bool>,
     pub asm_blocks: bool,
+    pub anonymous_structs: Option<bool>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct LibraryBuiltins {
+    pub enabled: bool,
+    pub disabled: Vec<String>,
+}
+
+impl Default for LibraryBuiltins {
+    fn default() -> Self {
+        Self {
+            enabled: true,
+            disabled: Vec::new(),
+        }
+    }
+}
+
+impl LibraryBuiltins {
+    pub fn recognizes(&self, name: &str) -> bool {
+        self.enabled && !self.disabled.iter().any(|disabled| disabled == name)
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -47,6 +75,8 @@ pub struct OperationValues {
 pub struct LayoutOptions {
     pub long_double: Option<LongDoubleFormat>,
     pub preferred_stack_alignment: Option<u32>,
+    pub char_signed: Option<bool>,
+    pub short_wchar: Option<bool>,
 }
 
 impl Default for CompilerOptions {
@@ -67,6 +97,12 @@ impl Default for CompilerOptions {
             explicit_standard: false,
             asm_dialect: AsmDialect::Att,
             microsoft: MicrosoftFlags::default(),
+            hosted: true,
+            library_builtins: LibraryBuiltins::default(),
+            implicit_stdc_predef: true,
+            asynchronous_unwind_tables: true,
+            late_parsed_attributes: false,
+            strict_flex_arrays: 0,
         }
     }
 }
@@ -116,6 +152,12 @@ impl CompilerOptions {
         }
         if let Some(alignment) = self.layout.preferred_stack_alignment {
             target = target.with_preferred_stack_alignment(alignment);
+        }
+        if let Some(signed) = self.layout.char_signed {
+            target = target.with_char_signed(signed);
+        }
+        if let Some(short) = self.layout.short_wchar {
+            target = target.with_short_wchar(short);
         }
         target
     }

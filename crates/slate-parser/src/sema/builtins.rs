@@ -4,6 +4,7 @@ use super::numeric::ResolveError;
 use super::types::TypeResolver;
 use crate::ast::{Expr, ExprKind};
 use crate::compiler_args::CompilerFlavor;
+use crate::dialect::Dialect;
 use crate::ir::{
     ArithOp, BindingId, CompareOp, FloatClassTest, Linkage, MemoryEffects, PointerSpace,
 };
@@ -356,17 +357,18 @@ fn elementwise_signature(operation: &str) -> Option<DerivedSignature> {
     })
 }
 
-pub(super) fn clang_builtin(
-    name: &str,
-    flavor: CompilerFlavor,
-    family: TargetFamily,
-) -> Option<&'static ClangBuiltin> {
-    registered_builtin(CLANG_BUILTINS, name).or_else(|| match flavor {
-        CompilerFlavor::Gcc => registered_builtin(CLANG_BUILTINS, name.strip_prefix("__builtin_")?)
-            .filter(|builtin| builtin.kind == ClangBuiltinKind::Library),
-        CompilerFlavor::Clang => target_builtin(name, family),
-        CompilerFlavor::Msvc => None,
-    })
+pub(super) fn clang_builtin(name: &str, dialect: &Dialect) -> Option<&'static ClangBuiltin> {
+    let library = &dialect.options().library_builtins;
+    registered_builtin(CLANG_BUILTINS, name)
+        .filter(|builtin| builtin.kind != ClangBuiltinKind::Library || library.recognizes(name))
+        .or_else(|| match dialect.flavor() {
+            CompilerFlavor::Gcc => {
+                registered_builtin(CLANG_BUILTINS, name.strip_prefix("__builtin_")?)
+                    .filter(|builtin| builtin.kind == ClangBuiltinKind::Library)
+            }
+            CompilerFlavor::Clang => target_builtin(name, dialect.target().family),
+            CompilerFlavor::Msvc => None,
+        })
 }
 
 fn target_builtin(name: &str, family: TargetFamily) -> Option<&'static ClangBuiltin> {
@@ -453,7 +455,7 @@ impl TypeResolver {
         let ExprKind::Identifier(name) = &callee.value else {
             return None;
         };
-        let builtin = clang_builtin(name, self.flavor(), self.target_info().family)?;
+        let builtin = clang_builtin(name, self.dialect())?;
         let Some(&binding) = self.references.get(&callee.id) else {
             return Some((builtin, None));
         };

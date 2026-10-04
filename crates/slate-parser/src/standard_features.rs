@@ -50,6 +50,7 @@ pub struct StandardFeatures {
     pub inline_semantics: InlineSemantics,
     pub microsoft_extensions: bool,
     pub microsoft_compatibility: bool,
+    pub microsoft_anonymous_records: bool,
     pub gnu_floating_keywords: bool,
     pub widest_integer_literal_fallback: bool,
     pub keyword_float80: bool,
@@ -114,6 +115,7 @@ impl StandardFeatures {
             },
             microsoft_extensions: false,
             microsoft_compatibility: false,
+            microsoft_anonymous_records: false,
             gnu_floating_keywords: false,
             widest_integer_literal_fallback: false,
             keyword_float80: false,
@@ -146,6 +148,13 @@ impl StandardFeatures {
                 )
             }
             CompilerFlavor::Gcc => (false, false),
+        };
+        features.microsoft_anonymous_records = match flavor {
+            CompilerFlavor::Msvc => true,
+            CompilerFlavor::Clang => microsoft
+                .anonymous_structs
+                .unwrap_or(features.microsoft_extensions),
+            CompilerFlavor::Gcc => false,
         };
         features.octal_prefix = !flavor.is_msvc();
         features.keyword_countof = !flavor.is_msvc();
