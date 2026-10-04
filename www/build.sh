@@ -2,8 +2,6 @@
 set -euo pipefail
 
 root=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-slate_root=${SLATE_ROOT:-"$root/../"}
-slate_data=${SLATE_DATA:-"$HOME/.local/share/slate"}
 out=${1:-"$root/dist"}
 sysroot_targets=(x86_64-unknown-linux-gnu i686-unknown-linux-gnu armv7-unknown-linux-gnueabihf aarch64-unknown-linux-gnu)
 # msvc headers can't be redistributed, so windows targets ship without a sysroot
@@ -15,15 +13,38 @@ die() {
     exit 1
 }
 
+slate_headers=${SLATE_HEADERS:-}
+if [[ -z $slate_headers ]]; then
+    case $(uname -s) in
+        Darwin)
+            slate_headers="$HOME/Library/Application Support/Slate"
+            ;;
+        MINGW*|MSYS*|CYGWIN*)
+            [[ -n ${LOCALAPPDATA:-} ]] || die "LOCALAPPDATA is unset; set SLATE_HEADERS"
+            slate_headers="$LOCALAPPDATA/Slate/data"
+            if command -v cygpath >/dev/null 2>&1; then
+                slate_headers=$(cygpath -u "$slate_headers")
+            fi
+            ;;
+        *)
+            if [[ ${XDG_DATA_HOME:-} == /* ]]; then
+                slate_headers="$XDG_DATA_HOME/slate"
+            else
+                slate_headers="$HOME/.local/share/slate"
+            fi
+            ;;
+    esac
+fi
+
 latest_profile() {
-    find "$slate_data/compiler-headers" -mindepth 1 -maxdepth 1 -type d -name "$1-*" -printf '%f\n' | sort -V | tail -n 1
+    find "$slate_headers/compiler-headers" -mindepth 1 -maxdepth 1 -type d -name "$1-*" -printf '%f\n' | sort -V | tail -n 1
 }
 
 for compiler in "${compilers[@]}"; do
-    [[ -n $(latest_profile "$compiler") ]] || die "no $compiler headers in $slate_data/compiler-headers; run: slate sysroot install"
+    [[ -n $(latest_profile "$compiler") ]] || die "no $compiler headers in $slate_headers/compiler-headers; run: slate sysroot install"
 done
 for target in "${sysroot_targets[@]}"; do
-    [[ -d $slate_data/sysroots/$target ]] || die "missing sysroot $target; run: slate sysroot install $target"
+    [[ -d $slate_headers/sysroots/$target ]] || die "missing sysroot $target; run: slate sysroot install $target"
 done
 
 CARGO_PROFILE_RELEASE_LTO=true \
@@ -31,7 +52,7 @@ CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1 \
 CARGO_PROFILE_RELEASE_OPT_LEVEL=s \
 CARGO_PROFILE_RELEASE_STRIP=true \
     cargo build --release --target wasm32-wasip1 --no-default-features -p slate \
-    --manifest-path "$slate_root/Cargo.toml" --target-dir "$root/target"
+    --manifest-path "$root/../Cargo.toml" --target-dir "$root/target"
 
 rm -rf "$out"
 mkdir -p "$out/headers"
@@ -71,12 +92,12 @@ wasm=$(hashed "$out/slate.wasm" slate wasm)
 compiler_entries=()
 for compiler in "${compilers[@]}"; do
     profile=$(latest_profile "$compiler")
-    compiler_entries+=("    \"$compiler\": $(pack "$slate_data/compiler-headers" "$profile" "$profile")")
+    compiler_entries+=("    \"$compiler\": $(pack "$slate_headers/compiler-headers" "$profile" "$profile")")
 done
 
 target_entries=()
 for target in "${sysroot_targets[@]}"; do
-    target_entries+=("    \"$target\": $(pack "$slate_data/sysroots/$target" "$target")")
+    target_entries+=("    \"$target\": $(pack "$slate_headers/sysroots/$target" "$target")")
 done
 for target in "${headerless_targets[@]}"; do
     target_entries+=("    \"$target\": null")

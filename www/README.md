@@ -14,6 +14,18 @@ rustup target add wasm32-wasip1
 ./build.sh
 ```
 
+`SLATE_HEADERS` overrides the directory containing `compiler-headers/` and
+`sysroots/`. By default, the build uses Slate's local data directory:
+
+| Host | Directory |
+| --- | --- |
+| Linux | `$XDG_DATA_HOME/slate` if absolute, otherwise `$HOME/.local/share/slate` |
+| macOS | `$HOME/Library/Application Support/Slate` |
+| Windows (Git Bash/MSYS2/Cygwin) | `%LOCALAPPDATA%\Slate\data` |
+
+The build requires Bash and GNU utilities (including find, sort, tar, stat,
+sed, and sha256sum).
+
 ## Run locally
 
 ```sh
