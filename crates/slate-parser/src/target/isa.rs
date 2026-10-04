@@ -1,7 +1,7 @@
 use crate::compiler_args::CompilerFlavor;
 use crate::target::aarch64_isa::{AArch64Isa, ArmMarch, ArmVersion, SveVectorBits};
 use crate::target::arm_isa::{ArmFloatAbi, ArmFpu, ArmIsa};
-use crate::target::x86_isa::{X86Arch, X86Feature, X86Isa, X86IsaRequest};
+use crate::target::x86_isa::{X86Arch, X86Isa, X86IsaRequest};
 use crate::target_info::{TargetEnvironment, TargetFamily};
 use std::str::FromStr;
 
@@ -69,12 +69,12 @@ impl TargetIsa {
                     Some(March::Arm(_)) => return Err("expected an x86 architecture".into()),
                 };
                 request.x86.check(family, arch, flavor)?;
-                let isa = X86Isa::resolve(family, arch, &request.x86, flavor);
-                if isa.features.contains(X86Feature::Sse2) {
-                    Ok(Self::X86(isa))
-                } else {
-                    Err("disabling SSE or SSE2 is unsupported".into())
-                }
+                Ok(Self::X86(X86Isa::resolve(
+                    family,
+                    arch,
+                    &request.x86,
+                    flavor,
+                )))
             }
             TargetFamily::AArch64 => {
                 if request.x86 != X86IsaRequest::default() {

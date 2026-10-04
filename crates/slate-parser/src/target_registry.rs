@@ -11,6 +11,16 @@ pub struct Predefines {
     pub gnu_namespace: &'static str,
 }
 
+impl Predefines {
+    pub fn value(&self, name: &str) -> Option<&'static str> {
+        self.source.lines().find_map(|line| {
+            line.strip_prefix("#define ")?
+                .strip_prefix(name)?
+                .strip_prefix(' ')
+        })
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum SysrootLayout {
     WindowsKits,

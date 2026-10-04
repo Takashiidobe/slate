@@ -41,10 +41,12 @@ rule pipeline. Flag effects are in [compiler-flags](compiler-flags.md).
   with a separate or joined value) and codegen-only `-f`/`-fno-` flags
   (`CODEGEN_ONLY_FLAGS`, positive spellings matched with `parse_switch`;
   `-flto=`, `-fvisibility=`, `-fdebug-prefix-map=`). A flag belongs there
-  only if it changes neither semantics nor predefined macros:
-  `-fPIC`/`-fPIE` (`__PIC__`/`__PIE__`), `-fstack-protector*` (`__SSP*__`),
-  and `-fcf-protection` stay unknown options until modeled, and
-  `-fasynchronous-unwind-tables` (`__GCC_HAVE_DWARF2_CFI_ASM`) is an `Opt`.
+  only if it changes neither semantics nor predefined macros; PIC/PIE,
+  stack protector, `-fcf-protection` and `-fasynchronous-unwind-tables`
+  change macros, so they are `Opt`s. A flavor-specific flag with no IR or
+  macro effect (`-mcmodel=`) is an `Opt` that is parsed and dropped, so
+  flavor checking still applies; backend-only validation (code model per
+  target, PIC on windows-msvc) is not emulated.
 - `-masm=att|intel`: picks the `{att|intel}` alternative in x86 GNU asm and
   is recorded as the asm's `dialect`. gcc flavor rejects it off x86; clang
   accepts it everywhere (no effect off x86); msvc rejects it.
@@ -105,7 +107,7 @@ Put a rule in the narrowest bucket that owns the constraint.
 - `common_rules` and `strict_flex_arrays_rule`: flavor- and
   target-independent (mutually exclusive options, value ranges). Each is
   its own entry in `validate_rules`; nesting a pipeline repeats the
-  `all rules failed:` prefix.
+  `all rules failed:` prefix, as the flavor branches already do.
 - `flavor_rules`: one branch per flavor via `Rules::branch`; add only that
   compiler's differences. No `is_gcc()`/`is_clang()` inside a branch.
 - Target rules: use the borrowed `TargetInfo`; report the target and the

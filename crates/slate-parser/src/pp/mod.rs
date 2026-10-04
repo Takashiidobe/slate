@@ -10,10 +10,14 @@ mod syntax;
 use crate::ast::{FileId, HeaderKind, Loc, Provenance, Span};
 use crate::attribute_support;
 use crate::compiler_args::CompilerFlavor;
+use crate::compiler_options::StackProtector;
 use crate::const_expr;
 use crate::dialect::Dialect;
 use crate::files::{Files, SearchPaths, display_path};
 use crate::lexer::{Lexer, Token, TokenSpanExt, keyword_token};
+use crate::target::isa::TargetIsa;
+use crate::target::x86_isa::X86Feature;
+use crate::target_info::TargetFamily;
 pub use error::{DirectiveDiagnostic, DirectiveErrors, PPError};
 use error::{PPErrorKind, PPFailure};
 use expand::{PPToken, Piece, Stream};
@@ -658,6 +662,62 @@ impl<'a> Preprocessor<'a> {
                 removed.push("__WCHAR_UNSIGNED__");
             }
             defines.extend(self.wchar_predefines(target.wchar_width == target.short_width));
+        }
+        let codegen = &options.codegen;
+        let gcc = dialect.flavor().is_gcc();
+        if !gcc && !matches!(target.isa, TargetIsa::X86(_)) {
+            defines.push("__FLT_EVAL_METHOD__=0".to_owned());
+        }
+        if let Some(pic) = codegen.pic {
+            removed.extend(["__pic__", "__PIC__", "__pie__", "__PIE__"]);
+            let level = pic.level;
+            if level > 0 {
+                defines.extend([format!("__pic__={level}"), format!("__PIC__={level}")]);
+            }
+            if pic.executable {
+                defines.extend([format!("__pie__={level}"), format!("__PIE__={level}")]);
+            }
+            if gcc && target.family == TargetFamily::AArch64 && level == 1 {
+                removed.push("__AARCH64_CMODEL_SMALL__");
+            }
+        }
+        if let Some(protector) = codegen.stack_protector {
+            removed.extend([
+                "__SSP__",
+                "__SSP_STRONG__",
+                "__SSP_ALL__",
+                "__SSP_EXPLICIT__",
+            ]);
+            defines.extend(
+                match (protector, gcc) {
+                    (StackProtector::Off, _) => None,
+                    (StackProtector::On, _) => Some("__SSP__=1"),
+                    (StackProtector::Strong, false) => Some("__SSP_STRONG__=2"),
+                    (StackProtector::All, false) => Some("__SSP_ALL__=3"),
+                    (StackProtector::Strong, true) => Some("__SSP_STRONG__=3"),
+                    (StackProtector::All, true) => Some("__SSP_ALL__=2"),
+                    (StackProtector::Explicit, _) => Some("__SSP_EXPLICIT__=4"),
+                }
+                .map(str::to_owned),
+            );
+        }
+        if let TargetIsa::X86(isa) = target.isa {
+            removed.extend(isa.disabled_macros());
+            if let Some(cet) = codegen.cf_protection {
+                removed.push("__CET__");
+                if cet != 0 {
+                    defines.push(format!("__CET__={cet}"));
+                }
+            }
+            if !gcc && !isa.features.contains(X86Feature::Sse2) {
+                self.macros.retain(|name, _| !name.starts_with("__FLT16_"));
+            }
+            if gcc && codegen.three_dnow > 0 && isa.features.contains(X86Feature::Mmx) {
+                defines.push("__3dNOW__=1".to_owned());
+                if codegen.three_dnow > 1 {
+                    defines.push("__3dNOW_A__=1".to_owned());
+                }
+            }
         }
         for name in removed {
             self.macros.remove(name);

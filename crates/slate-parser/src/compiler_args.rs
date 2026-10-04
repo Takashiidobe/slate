@@ -1,5 +1,6 @@
 use crate::compiler_options::{
-    CompilerOptions, LayoutOptions, LibraryBuiltins, MicrosoftFlags, OperationValues,
+    CodegenOptions, CompilerOptions, LayoutOptions, LibraryBuiltins, MicrosoftFlags,
+    OperationValues, Pic, StackProtector,
 };
 use crate::diagnostics::{DiagnosticOptions, Warning};
 use crate::files::SearchPaths;
@@ -8,7 +9,7 @@ use crate::pp::{MacroOption, PreprocessorInputs};
 use crate::rules::{Rule, Rules};
 use crate::target::isa::{IsaRequest, TargetIsa};
 use crate::target::x86_isa::X86Feature;
-use crate::target_info::{LongDoubleFormat, TargetFamily, TargetInfo};
+use crate::target_info::{LongDoubleFormat, TargetEnvironment, TargetFamily, TargetInfo, TargetOs};
 use crate::{compiler_headers, sysroot};
 use std::path::{Path, PathBuf};
 use std::str::FromStr;
@@ -246,6 +247,10 @@ struct ParsedCompilerArgs {
     strict_flex_arrays: Option<u8>,
     late_parsed_attributes: Option<bool>,
     asynchronous_unwind_tables: Option<bool>,
+    pic: Option<Pic>,
+    stack_protector: Option<StackProtector>,
+    cf_protection: Vec<u8>,
+    three_dnow: Option<u8>,
     preferred_stack_boundary: Option<u32>,
     stack_alignment: Option<u32>,
     wrapv: Option<bool>,
@@ -322,6 +327,20 @@ enum Opt {
     GccStrictFlexArrays,
     LateParseAttributes,
     AsynchronousUnwindTables,
+    SmallPic,
+    LargePic,
+    SmallPie,
+    LargePie,
+    StackProtector,
+    StackProtectorLevel,
+    StackProtectorExplicit,
+    CfProtection,
+    CodeModel,
+    X87,
+    ClangX87,
+    FpRetIn387,
+    ThreeDNow,
+    ThreeDNowA,
     PreferredStackBoundary,
     StackAlignment,
     Wrapv,
@@ -385,6 +404,20 @@ impl std::fmt::Display for Opt {
             Self::GccStrictFlexArrays => "fstrict-flex-arrays",
             Self::LateParseAttributes => "fexperimental-late-parse-attributes",
             Self::AsynchronousUnwindTables => "fasynchronous-unwind-tables",
+            Self::SmallPic => "fpic",
+            Self::LargePic => "fPIC",
+            Self::SmallPie => "fpie",
+            Self::LargePie => "fPIE",
+            Self::StackProtector => "fstack-protector",
+            Self::StackProtectorLevel => "fstack-protector-<level>",
+            Self::StackProtectorExplicit => "fstack-protector-explicit",
+            Self::CfProtection => "fcf-protection",
+            Self::CodeModel => "mcmodel",
+            Self::X87 => "m80387",
+            Self::ClangX87 => "mx87",
+            Self::FpRetIn387 => "mfp-ret-in-387",
+            Self::ThreeDNow => "m3dnow",
+            Self::ThreeDNowA => "m3dnowa",
             Self::PreferredStackBoundary => "preferred-stack-boundary",
             Self::StackAlignment => "stack-alignment",
             Self::Wrapv => "wrapv",
@@ -461,9 +494,24 @@ impl Opt {
             | Self::SignedChar
             | Self::ShortWchar
             | Self::StrictFlexArrays
-            | Self::AsynchronousUnwindTables => &[Gcc, Clang],
-            Self::PreferredStackBoundary | Self::GccStrictFlexArrays => &[Gcc],
+            | Self::AsynchronousUnwindTables
+            | Self::SmallPic
+            | Self::LargePic
+            | Self::SmallPie
+            | Self::LargePie
+            | Self::StackProtector
+            | Self::StackProtectorLevel
+            | Self::CfProtection
+            | Self::CodeModel
+            | Self::X87
+            | Self::ThreeDNow
+            | Self::ThreeDNowA => &[Gcc, Clang],
+            Self::PreferredStackBoundary
+            | Self::GccStrictFlexArrays
+            | Self::StackProtectorExplicit
+            | Self::FpRetIn387 => &[Gcc],
             Self::StackAlignment
+            | Self::ClangX87
             | Self::ClangCodegenOnly
             | Self::AsmBlocks
             | Self::MsAnonymousStructs
@@ -475,6 +523,7 @@ impl Opt {
     fn negation_accepted_by(self, flavor: CompilerFlavor) -> bool {
         match self {
             Self::Freestanding | Self::Hosted => flavor.is_gcc(),
+            Self::FpRetIn387 => !flavor.is_msvc(),
             _ => self.accepted_by(flavor),
         }
     }
@@ -501,6 +550,16 @@ impl Opt {
             Self::GccStrictFlexArrays => "-fstrict-flex-arrays",
             Self::LateParseAttributes => "-fexperimental-late-parse-attributes",
             Self::AsynchronousUnwindTables => "-fasynchronous-unwind-tables",
+            Self::SmallPic => "-fpic",
+            Self::LargePic => "-fPIC",
+            Self::SmallPie => "-fpie",
+            Self::LargePie => "-fPIE",
+            Self::StackProtector => "-fstack-protector",
+            Self::X87 => "-m80387",
+            Self::ClangX87 => "-mx87",
+            Self::FpRetIn387 => "-mfp-ret-in-387",
+            Self::ThreeDNow => "-m3dnow",
+            Self::ThreeDNowA => "-m3dnowa",
             _ => return None,
         })
     }
@@ -579,7 +638,17 @@ fn ignored_option(argument: &str) -> Option<IgnoredOption> {
         .then_some(IgnoredOption::Alone)
 }
 
-const SWITCH_OPTS: [Opt; 20] = [
+const SWITCH_OPTS: [Opt; 30] = [
+    Opt::SmallPic,
+    Opt::LargePic,
+    Opt::SmallPie,
+    Opt::LargePie,
+    Opt::StackProtector,
+    Opt::X87,
+    Opt::ClangX87,
+    Opt::FpRetIn387,
+    Opt::ThreeDNow,
+    Opt::ThreeDNowA,
     Opt::Freestanding,
     Opt::Hosted,
     Opt::GccStrictFlexArrays,
@@ -617,6 +686,7 @@ impl CompilerArgParser {
         target.isa = TargetIsa::resolve(target.family, target.environment, &raw.isa, raw.flavor)
             .map_err(|reason| invalid(&raw.target, &reason))?;
         let flavor = raw.flavor;
+        let codegen = codegen_options(&raw, &target);
         let layout = LayoutOptions {
             long_double: raw.long_double,
             preferred_stack_alignment: raw
@@ -645,6 +715,7 @@ impl CompilerArgParser {
                 InlineSemantics::ProvideDef
             }
         });
+        options.codegen = codegen;
         options.common = raw.common.unwrap_or(false);
         options.microsoft = MicrosoftFlags {
             extensions: raw.ms_extensions,
@@ -778,7 +849,63 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                 Opt::GccStrictFlexArrays => {
                     parsed.strict_flex_arrays = Some(if value { 3 } else { 0 })
                 }
+                Opt::SmallPic | Opt::LargePic | Opt::SmallPie | Opt::LargePie => {
+                    parsed.pic = Some(if value {
+                        Pic {
+                            level: if matches!(opt, Opt::SmallPic | Opt::SmallPie) {
+                                1
+                            } else {
+                                2
+                            },
+                            executable: matches!(opt, Opt::SmallPie | Opt::LargePie),
+                        }
+                    } else {
+                        Pic::OFF
+                    })
+                }
+                Opt::StackProtector => {
+                    parsed.stack_protector = Some(if value {
+                        StackProtector::On
+                    } else {
+                        StackProtector::Off
+                    })
+                }
+                Opt::X87 | Opt::ClangX87 => parsed.isa.x86.set(X86Feature::X87, value),
+                Opt::FpRetIn387 => {
+                    if !value {
+                        parsed.isa.x86.set_for_clang(X86Feature::X87, false);
+                    }
+                }
+                Opt::ThreeDNow => parsed.three_dnow = Some(u8::from(value)),
+                Opt::ThreeDNowA => parsed.three_dnow = Some(if value { 2 } else { 0 }),
                 _ => return Err(invalid(argument, "unknown flag")),
+            }
+        } else if let Some(level) = match argument.as_str() {
+            "-fstack-protector-strong" => Some((Opt::StackProtectorLevel, StackProtector::Strong)),
+            "-fstack-protector-all" => Some((Opt::StackProtectorLevel, StackProtector::All)),
+            "-fstack-protector-explicit" => {
+                Some((Opt::StackProtectorExplicit, StackProtector::Explicit))
+            }
+            _ => None,
+        } {
+            parsed.saw(level.0, argument);
+            parsed.stack_protector = Some(level.1);
+        } else if argument == "-fcf-protection" || argument.starts_with("-fcf-protection=") {
+            parsed.saw(Opt::CfProtection, argument);
+            parsed.cf_protection.push(
+                match argument.strip_prefix("-fcf-protection").unwrap_or_default() {
+                    "" | "=full" => 3,
+                    "=none" => 0,
+                    "=branch" => 1,
+                    "=return" => 2,
+                    "=check" => 8,
+                    _ => return Err(invalid(argument, "unknown control-flow protection level")),
+                },
+            );
+        } else if let Some(model) = argument.strip_prefix("-mcmodel=") {
+            parsed.saw(Opt::CodeModel, argument);
+            if !["tiny", "small", "kernel", "medium", "large"].contains(&model) {
+                return Err(invalid(argument, "unknown code model"));
             }
         } else if let Some(function) = argument
             .strip_prefix("-fno-builtin-")
@@ -997,6 +1124,36 @@ fn signed_overflow(flavor: CompilerFlavor, arguments: &[String]) -> Overflow {
     }
 }
 
+fn codegen_options(raw: &ParsedCompilerArgs, target: &TargetInfo) -> CodegenOptions {
+    let snapshot = target.profile.predefines(raw.flavor);
+    let snapshot_has = |name| snapshot.is_some_and(|predefines| predefines.value(name).is_some());
+    let default_protector = [
+        ("__SSP_ALL__", StackProtector::All),
+        ("__SSP_STRONG__", StackProtector::Strong),
+        ("__SSP__", StackProtector::On),
+    ]
+    .into_iter()
+    .find_map(|(name, level)| snapshot_has(name).then_some(level))
+    .unwrap_or(StackProtector::Off);
+    let pic_fixed = target.os == TargetOs::Darwin || target.environment == TargetEnvironment::Msvc;
+    let cf_protection = raw.cf_protection.iter().fold(None, |bits, &level| {
+        Some(match (raw.flavor, level) {
+            (CompilerFlavor::Gcc, 0) => bits.unwrap_or(0) & 8,
+            (CompilerFlavor::Gcc, level) => bits.unwrap_or(0) | level,
+            (_, level) => level,
+        })
+    });
+    CodegenOptions {
+        pic: raw.pic.filter(|_| !pic_fixed),
+        stack_protector: raw.stack_protector.map(|level| match level {
+            StackProtector::On if raw.flavor.is_clang() => level.max(default_protector),
+            level => level,
+        }),
+        cf_protection,
+        three_dnow: raw.three_dnow.unwrap_or(0),
+    }
+}
+
 fn last_flag(arguments: &[String], opt: Opt) -> Option<(usize, bool)> {
     arguments
         .iter()
@@ -1196,15 +1353,27 @@ fn gcc_rules<'a>(target: &'a TargetInfo) -> Rule<'a, ParsedCompilerArgs> {
 }
 
 fn clang_rules<'a>() -> Rule<'a, ParsedCompilerArgs> {
-    Rules::when(
-        |args: &ParsedCompilerArgs| args.stack_alignment.is_some(),
-        Rule::validate("Clang stack alignment", |args: &ParsedCompilerArgs| {
-            let value = args.stack_alignment.unwrap_or_default();
-            if value.is_power_of_two() {
-                Ok(())
-            } else {
-                Err(format!("expected a power of two, found {value}"))
-            }
-        }),
-    )
+    Rules::pipeline([
+        Rules::when(
+            |args: &ParsedCompilerArgs| args.stack_alignment.is_some(),
+            Rule::validate("Clang stack alignment", |args: &ParsedCompilerArgs| {
+                let value = args.stack_alignment.unwrap_or_default();
+                if value.is_power_of_two() {
+                    Ok(())
+                } else {
+                    Err(format!("expected a power of two, found {value}"))
+                }
+            }),
+        ),
+        Rule::validate(
+            "Clang control-flow protection",
+            |args: &ParsedCompilerArgs| {
+                if args.cf_protection.contains(&8) {
+                    Err("`check` is a gcc-only level".into())
+                } else {
+                    Ok(())
+                }
+            },
+        ),
+    ])
 }

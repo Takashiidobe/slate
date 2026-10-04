@@ -71,7 +71,7 @@ Later groups remove earlier definitions of the names they set.
 | `<slate-gnu-namespace-predefines>` | System | gnu modes only |
 | `<microsoft modes>` | System | clang: delta from the snapshot's default [MS modes](compiler-flags.md#ms-modes) |
 | `<standard predefines>` | System | `__STDC_VERSION__`, `__STRICT_ANSI__`, GNU inline macros, C23 `char8_t` / `bool` / `_FMTb__` macros, recomputed for the selected standard |
-| `<target options>` | User | long-double and ISA macros (not for msvc on Windows), `__ROUNDING_MATH__` (gcc, `-frounding-math`), msvc explicit `__STDC_VERSION__`, inline-semantics swap; gcc/clang option deltas from the snapshot: `__STDC_HOSTED__`, `stdc-predef.h` macros, `__GCC_HAVE_DWARF2_CFI_ASM`, char signedness, `wchar_t` macros (`option_predefines`) |
+| `<target options>` | User | long-double and ISA macros (not for msvc on Windows), `__ROUNDING_MATH__` (gcc, `-frounding-math`), msvc explicit `__STDC_VERSION__`, inline-semantics swap; gcc/clang option deltas from the snapshot: `__STDC_HOSTED__`, `stdc-predef.h` macros, `__GCC_HAVE_DWARF2_CFI_ASM`, char signedness, `wchar_t` macros, PIC/PIE, `__SSP*__`, `__CET__`, macros of disabled x86 features, clang `__FLT_EVAL_METHOD__` (`option_predefines`) |
 | `<command line>` | User | `-D` / `-U` in order |
 
 Forced files (`-imacros`, `-include`) follow, resolved as quoted includes

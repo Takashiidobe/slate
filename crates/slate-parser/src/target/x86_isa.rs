@@ -6,7 +6,8 @@ use crate::compiler_args::CompilerFlavor;
 use crate::target_info::TargetFamily;
 use std::str::FromStr;
 
-const GCC_FEATURES: [X86Feature; 26] = [
+const GCC_FEATURES: [X86Feature; 27] = [
+    X86Feature::X87,
     X86Feature::Mmx,
     X86Feature::Sse,
     X86Feature::Sse2,
@@ -180,11 +181,26 @@ impl From<CompilerFlavor> for Rules {
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
 pub struct X86IsaRequest {
     flags: Vec<(X86Feature, bool)>,
+    clang_only: Vec<usize>,
 }
 
 impl X86IsaRequest {
     pub fn set(&mut self, feature: X86Feature, enabled: bool) {
         self.flags.push((feature, enabled));
+    }
+
+    pub fn set_for_clang(&mut self, feature: X86Feature, enabled: bool) {
+        self.clang_only.push(self.flags.len());
+        self.set(feature, enabled);
+    }
+
+    fn flags_for(&self, rules: Rules) -> Vec<(X86Feature, bool)> {
+        self.flags
+            .iter()
+            .enumerate()
+            .filter(|(index, _)| rules == Rules::Clang || !self.clang_only.contains(index))
+            .map(|(_, flag)| *flag)
+            .collect()
     }
 
     pub fn check(
@@ -221,7 +237,7 @@ impl X86IsaRequest {
         match self
             .flags
             .iter()
-            .find(|(feature, _)| flavor.is_gcc() && !GCC_FEATURES.contains(feature))
+            .find(|(feature, on)| *on && flavor.is_gcc() && !GCC_FEATURES.contains(feature))
         {
             Some((feature, _)) => Err(format!(
                 "x86 feature `{}` is only emulated for the clang flavor",
@@ -232,11 +248,11 @@ impl X86IsaRequest {
     }
 
     fn fold(&self, rules: Rules) -> (X86Features, X86Features) {
+        let flags = self.flags_for(rules);
         let mut enabled = X86Features::default();
         let mut disabled = X86Features::default();
-        for (index, &(feature, on)) in self.flags.iter().enumerate() {
-            // both drivers drop -mfoo outright when a later -mno-foo follows
-            let cancelled = on && self.flags[index + 1..].contains(&(feature, false));
+        for (index, &(feature, on)) in flags.iter().enumerate() {
+            let cancelled = on && flags[index + 1..].contains(&(feature, false));
             if cancelled {
                 continue;
             }
@@ -258,6 +274,7 @@ impl X86IsaRequest {
 pub struct X86Isa {
     pub arch: X86Arch,
     pub features: X86Features,
+    pub disabled: X86Features,
 }
 
 impl X86Isa {
@@ -286,7 +303,11 @@ impl X86Isa {
                 features = features.union(X86Features::of(&[implied]));
             }
         }
-        Self { arch, features }
+        Self {
+            arch,
+            features,
+            disabled: disabled.without(features),
+        }
     }
 
     pub fn vector_register_bytes(self) -> u64 {
@@ -342,8 +363,11 @@ impl X86Isa {
                     "__FP_FAST_FMAF64=1".into(),
                 ]);
             }
-            if family == TargetFamily::X86_64 {
+            if family == TargetFamily::X86_64 && self.features.contains(X86Feature::Sse2) {
                 defines.push("__MMX_WITH_SSE__=1".into());
+            }
+            if !self.features.contains(X86Feature::X87) {
+                defines.push("_SOFT_FLOAT=1".into());
             }
             if self.features.contains(X86Feature::Avx512vl) {
                 defines.push("__EVEX256__=1".into());
@@ -353,6 +377,46 @@ impl X86Isa {
                 self.vector_register_bytes()
             ));
         }
+        if let Some(method) = self.eval_method(family, flavor) {
+            defines.push(format!("__FLT_EVAL_METHOD__={method}"));
+            if gcc {
+                defines.push(format!("__FLT_EVAL_METHOD_TS_18661_3__={method}"));
+            }
+        }
         defines
+    }
+
+    fn eval_method(self, family: TargetFamily, flavor: CompilerFlavor) -> Option<&'static str> {
+        let has = |feature| self.features.contains(feature);
+        if flavor.is_gcc() {
+            match family {
+                TargetFamily::X86 if !has(X86Feature::X87) => Some("0"),
+                TargetFamily::X86_64 if !has(X86Feature::X87) => None,
+                TargetFamily::X86_64 if !has(X86Feature::Sse) => Some("2"),
+                TargetFamily::X86_64 if !has(X86Feature::Sse2) => Some("-1"),
+                _ => None,
+            }
+        } else if has(X86Feature::Sse) {
+            Some("0")
+        } else {
+            Some("2")
+        }
+    }
+
+    pub fn disabled_macros(self) -> Vec<&'static str> {
+        let mut names: Vec<&'static str> = ALL_FEATURES
+            .into_iter()
+            .filter(|feature| self.disabled.contains(*feature))
+            .flat_map(|feature| feature.macros().iter().copied())
+            .collect();
+        for (feature, name) in [
+            (X86Feature::Sse, "__SSE_MATH__"),
+            (X86Feature::Sse2, "__SSE2_MATH__"),
+        ] {
+            if self.disabled.contains(feature) {
+                names.push(name);
+            }
+        }
+        names
     }
 }

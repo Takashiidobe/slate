@@ -42,6 +42,10 @@ each stage is in [configuration-threading](configuration-threading.md).
 | `-fms-anonymous-structs` (and `-fno-`) | clang | [MS modes](#ms-modes): a declarator-less member of record type is an anonymous member |
 | `-fstrict-flex-arrays=0..3` | gcc, clang | `CompilerOptions::strict_flex_arrays`, with no consumer yet. The bare and `-fno-` forms (3 and 0) are gcc only |
 | `-fexperimental-late-parse-attributes` | clang | `CompilerOptions::late_parsed_attributes`; `counted_by` arguments are not resolved yet, so it changes nothing |
+| `-fpic` / `-fPIC` / `-fpie` / `-fPIE` (and `-fno-`) | gcc, clang | predefines only (`CodegenOptions::pic`): the last of the eight wins, giving `__pic__`/`__PIC__` level 1 or 2 and, for pie, `__pie__`/`__PIE__`. Darwin forces PIC and windows-msvc ignores them (clang rejects the positive spellings there; slate does not). gcc aarch64 drops `__AARCH64_CMODEL_SMALL__` at level 1 |
+| `-fstack-protector[-strong\|-all]` / `-fno-stack-protector` | gcc, clang | predefines only (`CodegenOptions::stack_protector`), last wins. clang's plain `-fstack-protector` is at least the target default (strong on Linux), read from the snapshot. clang: `__SSP__` 1, strong 2, all 3; gcc: 1, all 2, strong 3, `-fstack-protector-explicit` (gcc only) 4 |
+| `-fcf-protection[=full\|branch\|return\|none\|check]` | gcc, clang | `__CET__` on x86 only (`CodegenOptions::cf_protection`). clang: last wins. gcc: levels OR together, `none` clears branch and return but not `check` (8, gcc only) |
+| `-mcmodel=` | gcc, clang | parsed and ignored: the code model changes no IR. `__code_model_*__`/`__AARCH64_CMODEL_*__` keep the snapshot's `small`, and per-target validity is not checked |
 | `-std=` | gcc/clang | `LanguageStandard` → `StandardFeatures`, `__STDC_VERSION__` |
 | `-O` / `-O0`..`-O3` / `-Os` / `-Oz` / `-Og` | gcc, clang | predefines only; the last one wins. Above `-O0`: undefines `__NO_INLINE__`, defines `__OPTIMIZE__`, and `-Os`/`-Oz` also define `__OPTIMIZE_SIZE__`. `-Ofast` is rejected (fast-math is not emulated); msvc rejects all |
 | `-target` | clang | selects `TargetSpec` ([adding-a-target](adding-a-target.md)) |
@@ -77,10 +81,10 @@ modeled:
 - clang-only CPU aliases (`corei7`, `skx`, `core-avx2`, `atom`, `slm`,
   `athlon64`, ...), which live in `X86TargetParser.cpp`, not `X86.td`;
 - `-mapxf` and `-mvzeroupper`, which have no `X86.td` feature;
-- 32-bit CPUs without SSE2 (disabling SSE2 is unsupported);
-- gcc flavor: only the `x86-64` levels and the original 26 features
-  (`GCC_FEATURES` in `x86_isa.rs`); other names are rejected as
-  clang-only;
+- 32-bit CPUs without SSE2 (no CPU table entries; `-mno-sse2` itself works);
+- gcc flavor: only the `x86-64` levels and the original features plus x87
+  (`GCC_FEATURES` in `x86_isa.rs`); enabling other names is rejected as
+  clang-only, disabling them is a no-op;
 - `-march=<cpu>` without 64-bit support on x86_64, and 64-bit-only
   features such as `-muintr` on i686, as clang rejects them.
 
@@ -91,8 +95,20 @@ modeled:
   it. `-mfoo … -mno-foo` drops `foo` entirely.
 - x86: clang's avx512f implies AVX2, FMA, and F16C; gcc's implies only
   AVX2. In gcc, AVX → XSAVE is a real edge.
-- x86: disabling SSE or SSE2 is rejected, because it would change the
-  float ABI.
+- x86: `-mno-sse`/`-mno-sse2` are accepted. Their feature macros are
+  removed even where the snapshot bakes them in (Darwin, FreeBSD:
+  `X86Isa::disabled_macros`); clang also drops `__FLT16_*`.
+  `__FLT_EVAL_METHOD__` follows: clang 2 without SSE; gcc x86_64 2 without
+  SSE and -1 without SSE2, gcc i686 0 without x87. The IR does not model
+  x87 excess precision yet (slate-parser-6x05.38.6). clang's rejection of
+  `_Float16`/`__bf16` without SSE2 and of `long double` uses without x87 is
+  not emulated (too permissive is fine).
+- x86 x87: `-m[no-]80387` both flavors, `-m[no-]x87` clang only. gcc
+  defines `_SOFT_FLOAT` without x87. `-mno-fp-ret-in-387` is `-mno-x87` in
+  clang and has no macro effect in gcc; the positive spelling is gcc only
+  (`X86IsaRequest::set_for_clang`).
+- x86 3DNow!: `-m[no-]3dnow[a]` are accepted by both; clang ignores them,
+  gcc defines `__3dNOW__` (and `__3dNOW_A__`) while MMX is on.
 - i686 without `-march`: clang defaults to pentium4 and gcc to x86-64
   (from the multilib snapshot). Both have the same features.
 - gcc sets `__BIGGEST_ALIGNMENT__` to the widest enabled vector register;
@@ -130,7 +146,6 @@ Add these when a sweep or corpus needs them, emulating the flag of the
 same name:
 
 - Layout: `-fshort-enums`, `-fpack-struct`.
-- Codegen: `-fPIC` / `-fpic`; their PIC predefines are not modeled by these flags.
 - Language: gcc's `-fms-extensions`, `-fdollars-in-identifiers`, `-fpermissive`.
 - Floating point: the fast-math family (`nnan`, `ninf`, `nsz`, `arcp`,
   `reassoc`, `afn` have no IR field yet).

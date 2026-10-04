@@ -19,6 +19,37 @@ pub struct CompilerOptions {
     pub asynchronous_unwind_tables: bool,
     pub late_parsed_attributes: bool,
     pub strict_flex_arrays: u8,
+    pub codegen: CodegenOptions,
+}
+
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
+pub struct CodegenOptions {
+    pub pic: Option<Pic>,
+    pub stack_protector: Option<StackProtector>,
+    pub cf_protection: Option<u8>,
+    pub three_dnow: u8,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Pic {
+    pub level: u8,
+    pub executable: bool,
+}
+
+impl Pic {
+    pub const OFF: Self = Self {
+        level: 0,
+        executable: false,
+    };
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub enum StackProtector {
+    Off,
+    On,
+    Strong,
+    All,
+    Explicit,
 }
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
@@ -103,6 +134,7 @@ impl Default for CompilerOptions {
             asynchronous_unwind_tables: true,
             late_parsed_attributes: false,
             strict_flex_arrays: 0,
+            codegen: CodegenOptions::default(),
         }
     }
 }
