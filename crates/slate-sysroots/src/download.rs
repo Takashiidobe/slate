@@ -48,5 +48,10 @@ fn verify_sha256(path: &Path, expected: &str) -> io::Result<bool> {
         }
         hasher.update(&buffer[..count]);
     }
-    Ok(format!("{:x}", hasher.finalize()) == expected)
+    let actual: String = hasher
+        .finalize()
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect();
+    Ok(actual == expected)
 }
