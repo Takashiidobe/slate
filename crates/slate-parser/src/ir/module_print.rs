@@ -914,6 +914,9 @@ impl fmt::Display for DisplayModule<'_> {
             if function.semantics.naked {
                 f.write_str(" [naked]")?;
             }
+            if function.semantics.overloadable {
+                f.write_str(" [overloadable]")?;
+            }
             if !function.semantics.target.is_empty() {
                 f.write_str(" [target=")?;
                 for (index, feature) in function.semantics.target.iter().enumerate() {

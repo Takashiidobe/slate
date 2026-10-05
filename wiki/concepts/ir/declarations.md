@@ -3,6 +3,7 @@
 <!-- toc -->
 - [Globals, statics, and linkage](#globals-statics-and-linkage)
 - [Redeclaration conflicts](#redeclaration-conflicts)
+- [Overloadable functions](#overloadable-functions)
 - [Symbol attributes](#symbol-attributes)
 - [Object properties](#object-properties)
 - [Declaration attribute
@@ -74,6 +75,42 @@ reject; where one only warns (always MSVC), accept with
 - Fixtures: `ir_redeclaration_conflicts.c`, `ir_redeclaration_compatible.c`,
   `array_redeclaration_composite_extent.c`,
   `x86_64-pc-windows-msvc/ir_redeclaration_layout.c`.
+
+## Overloadable functions
+
+clang's `__attribute__((overloadable))` lets C functions share a name. The
+Linux kernel's `context_lock_struct` helpers and clang's `<tgmath.h>` rely
+on it.
+
+- Name resolution (`names::Resolver::bind_function`) gives every
+  `overloadable` function declaration its own binding, because it runs
+  before types are known. A plain function already in scope joins the set and
+  keeps its C name, which clang allows for one unmarked overload.
+  `NameResolution::overload_sets` maps each overload to the overloads visible
+  when it is declared, so a call sees only earlier declarations.
+- `TypeResolver::resolve_overload`, called from `call_signature` in both the
+  checker and lowering, ranks each argument against each candidate:
+  - exact match, including adding pointee qualifiers;
+  - integer or `float` to `double` promotion;
+  - conversion: arithmetic, `void *`, a null pointer constant, pointer to `_Bool`;
+  - incompatible pointer;
+  - dropped pointee qualifiers;
+  - variadic argument.
+  The candidate that is at least as good on every argument and better on one
+  wins. It is written into `references` for the callee. Ambiguous calls and
+  calls with no viable candidate are rejected, as clang does.
+- `Unimplemented`: a non-call use of a name with several overloads (clang
+  resolves `&f` from the target type), and redeclaring an overload with the
+  same type (the second binding would need merging into the first). Also
+  `Unimplemented` (slate-parser-6x05.41): calling or defining an extern
+  overload, whose symbol is the Itanium-mangled name. An unused extern
+  prototype is lowered.
+- Each overload prints `[overloadable]` and keeps its C name. Consumers must
+  name it by binding (see the [grammar](../ir-grammar.md#functions)).
+- gcc and msvc don't register the attribute, so overloads there conflict as
+  those compilers report.
+- Fixtures: `ir_overloadable.c`, `error/.../overloadable-ambiguous.c`,
+  `overloadable-no-match.c`.
 
 ## Symbol attributes
 

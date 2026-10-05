@@ -134,6 +134,25 @@ impl Checker<'_> {
         let Some(&id) = self.types.declarations.get(&node) else {
             return Ok(());
         };
+        if let Some(overloads) = self.types.overload_sets.get(&id).cloned() {
+            let redeclares = overloads.iter().filter(|&&other| other != id).any(|other| {
+                self.types
+                    .entities
+                    .ty(other)
+                    .is_some_and(|earlier| self.types.ctypes.compatible(earlier, ty))
+            });
+            if redeclares {
+                let error =
+                    ResolveError::Unimplemented("redeclaration of an overloadable function");
+                self.types
+                    .unsupported_declarations
+                    .insert(node, error.clone());
+                return Err(error);
+            }
+            if matches!(linkage, Some(Linkage::External)) {
+                self.types.external_overloads.insert(id);
+            }
+        }
         let ty = self.types.inherit_convention(id, ty);
         let previous = self.types.entities.ty(&id);
         self.types.entities.declare(id, ty, register);
@@ -237,6 +256,14 @@ impl Checker<'_> {
             let linkage = owner_linkage.then(|| linkage(function.specifiers.storage));
             let declared = self.declare_object(&at, node, ty, None, linkage.flatten(), false);
             self.report(&at, declared);
+            if let Some(id) = self.types.declarations.get(&node)
+                && self.types.external_overloads.contains(id)
+            {
+                self.types.unsupported_declarations.insert(
+                    node,
+                    ResolveError::Unimplemented("definition of an extern overloadable function"),
+                );
+            }
             names = function
                 .declarator
                 .name()

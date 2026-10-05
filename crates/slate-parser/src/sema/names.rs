@@ -126,7 +126,12 @@ impl Resolver {
                 let definition_parameters = function.declarator.function_parameters();
                 self.declarator_layers(&function.declarator, definition_parameters)?;
                 let name = function.declarator.name().unwrap_or("<anonymous>");
-                self.bind_ordinary(name, BindingKind::Function, true, declaration)?;
+                let overloadable = overloadable(
+                    function
+                        .specifiers
+                        .attributes_with(&function.declarator, &function.attributes),
+                );
+                self.bind_function(name, true, overloadable, declaration)?;
                 let outer_labels = std::mem::take(&mut self.labels);
                 let outer_local_labels =
                     std::mem::replace(&mut self.local_labels, vec![HashMap::new()]);
@@ -195,7 +200,16 @@ impl Resolver {
                         || declaration.specifiers.storage == StorageClass::Extern
                         || (kind == BindingKind::Function
                             && declaration.specifiers.storage == StorageClass::None));
-                self.bind_ordinary(name, kind, linked, declarator)?;
+                if kind == BindingKind::Function {
+                    let overloadable = overloadable(
+                        declaration
+                            .specifiers
+                            .attributes_with(&declarator.declarator, &declarator.attributes),
+                    );
+                    self.bind_function(name, linked, overloadable, declarator)?;
+                } else {
+                    self.bind_ordinary(name, kind, linked, declarator)?;
+                }
             }
             if let Some(initializer) = &declarator.initializer {
                 self.visit_initializer(initializer)?;
@@ -766,6 +780,49 @@ impl Resolver {
         Ok(entry)
     }
 
+    fn bind_function<T>(
+        &mut self,
+        name: &str,
+        linked: bool,
+        overloadable: bool,
+        span: &Span<T>,
+    ) -> Result<Entry, ResolveError> {
+        let existing = self
+            .ordinary
+            .last()
+            .unwrap()
+            .get(name)
+            .filter(|existing| existing.kind == BindingKind::Function)
+            .cloned();
+        let Some(existing) = existing else {
+            let entry = self.bind_ordinary(name, BindingKind::Function, linked, span)?;
+            if overloadable {
+                self.resolution
+                    .overload_sets
+                    .entry(entry.id)
+                    .or_insert_with(|| vec![entry.id]);
+            }
+            return Ok(entry);
+        };
+        let earlier = self.resolution.overload_sets.get(&existing.id).cloned();
+        if !overloadable && earlier.is_none() {
+            return self.bind_ordinary(name, BindingKind::Function, linked, span);
+        }
+        let entry = self.new_entry(name, BindingKind::Function, span);
+        let mut overloads = earlier.unwrap_or_else(|| vec![existing.id]);
+        overloads.push(entry.id);
+        self.resolution.overload_sets.insert(entry.id, overloads);
+        if linked {
+            self.linked.insert(name.into(), entry.clone());
+        }
+        self.ordinary
+            .last_mut()
+            .unwrap()
+            .insert(name.into(), entry.clone());
+        self.resolution.declarations.insert(span.id, entry.id);
+        Ok(entry)
+    }
+
     fn bind_label(&mut self, label: &Span<String>) -> Result<Entry, ResolveError> {
         if let Some(entry) = self
             .local_labels
@@ -1121,6 +1178,10 @@ impl Visitor for Resolver {
     fn visit_declarator(&mut self, declarator: &Declarator) -> Result<(), Self::Error> {
         self.declarator_layers(declarator, None)
     }
+}
+
+fn overloadable<'a>(mut attributes: impl Iterator<Item = &'a Span<Attribute>>) -> bool {
+    attributes.any(|attribute| attribute.value == Attribute::Overloadable)
 }
 
 fn redeclares(existing: BindingKind, declared: BindingKind) -> bool {

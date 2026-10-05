@@ -271,6 +271,7 @@ impl Lowerer {
                     },
                 noreturn: state.noreturn,
                 naked: state.naked,
+                overloadable: self.types.overload_sets.contains_key(&function.value.id),
                 memory: state.memory,
                 deallocators: if matches!(function.return_type, Some(Type::Pointer { .. })) {
                     state.deallocators.clone()

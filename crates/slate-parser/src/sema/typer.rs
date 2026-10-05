@@ -1,7 +1,7 @@
 use super::atomic::{AtomicBuiltin, AtomicResult, FetchOp, atomic_builtin};
 use super::builtins::{CustomBuiltin, DerivedSignature};
 use super::ctype::convert::{CastKind, Conversion, ConversionContext};
-use super::ctype::{CTypeKind, Extent, QualType, Qualifiers};
+use super::ctype::{CTypeKind, Extent, FloatKind, QualType, Qualifiers};
 use super::expression::{
     SourceLocationBuiltin, VaBuiltin, choose_expr_operands, constant_p_operand,
     source_location_builtin, va_builtin,
@@ -101,6 +101,16 @@ const FLOAT_CLASS_ARITY: ResolveError = ResolveError::Rejected("float class buil
 const COUNTED_BY_REF_ARGUMENT: ResolveError = ResolveError::Rejected(
     "'__builtin_counted_by_ref' argument must be a flexible array or pointer member",
 );
+
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+enum OverloadRank {
+    Exact,
+    Promotion,
+    Conversion,
+    IncompatiblePointer,
+    DroppedQualifiers,
+    Ellipsis,
+}
 
 pub(super) struct CountedMember<'e> {
     pub(super) base: &'e Expr,
@@ -430,6 +440,11 @@ impl TypeResolver {
                     element,
                     extent: Extent::Fixed(length),
                 }))
+            }
+            ExprKind::Identifier(_) if self.overload_candidates.contains_key(&e.id) => {
+                return Err(self.overload_errors.get(&e.id).cloned().unwrap_or(
+                    ResolveError::Unimplemented("overloaded function used outside a call"),
+                ));
             }
             ExprKind::Identifier(_) => match self.object(e) {
                 Some(c) => Typed::lvalue(c),
@@ -992,11 +1007,150 @@ impl TypeResolver {
                 return Ok(signature);
             }
         }
+        self.resolve_overload(callee, arguments)?;
         let pointer = self.operand_type(callee)?;
         self.ctypes
             .pointee(pointer)
             .filter(|&signature| self.ctypes.is_function(signature))
             .ok_or(NON_FUNCTION_CALLEE)
+    }
+
+    fn resolve_overload(&mut self, callee: &Expr, arguments: &[Expr]) -> Result<(), ResolveError> {
+        let mut named = callee;
+        while let ExprKind::Paren(inner) = &named.value {
+            named = inner;
+        }
+        let Some(candidates) = self.overload_candidates.get(&named.id).cloned() else {
+            return Ok(());
+        };
+        let mut viable = Vec::new();
+        for candidate in candidates {
+            let Some(signature) = self.entities.ty(&candidate) else {
+                continue;
+            };
+            if let Some(ranks) = self.overload_ranks(signature, arguments)? {
+                viable.push((candidate, ranks));
+            }
+        }
+        let better = |a: &[OverloadRank], b: &[OverloadRank]| {
+            a.iter().zip(b).all(|(a, b)| a <= b) && a.iter().zip(b).any(|(a, b)| a < b)
+        };
+        let best = viable.iter().find(|(id, ranks)| {
+            viable
+                .iter()
+                .all(|(other, other_ranks)| other == id || better(ranks, other_ranks))
+        });
+        let error = match best {
+            None if viable.is_empty() => Some(ResolveError::Rejected(
+                "no matching function for call to overloaded function",
+            )),
+            None => Some(ResolveError::Rejected(
+                "call to overloaded function is ambiguous",
+            )),
+            Some((chosen, _)) if self.external_overloads.contains(chosen) => Some(
+                ResolveError::Unimplemented("call to an extern overloadable function"),
+            ),
+            Some(_) => None,
+        };
+        if let Some(error) = error {
+            self.overload_errors.insert(named.id, error.clone());
+            return Err(error);
+        }
+        let Some(&(chosen, _)) = best else {
+            return Err(ResolveError::Internal(
+                "overload resolution without a choice",
+            ));
+        };
+        self.overload_candidates.remove(&named.id);
+        self.references.insert(named.id, chosen);
+        Ok(())
+    }
+
+    fn overload_ranks(
+        &mut self,
+        signature: QualType,
+        arguments: &[Expr],
+    ) -> Result<Option<Vec<OverloadRank>>, ResolveError> {
+        let Some((_, parameters, variadic, _)) = self.ctypes.function_parts(signature) else {
+            return Ok(None);
+        };
+        let parameters = parameters.to_vec();
+        if arguments.len() < parameters.len() || (!variadic && arguments.len() > parameters.len()) {
+            return Ok(None);
+        }
+        let mut ranks = Vec::new();
+        for (index, argument) in arguments.iter().enumerate() {
+            let rank = match parameters.get(index) {
+                Some(&parameter) => self.overload_rank(argument, parameter)?,
+                None => Some(OverloadRank::Ellipsis),
+            };
+            let Some(rank) = rank else {
+                return Ok(None);
+            };
+            ranks.push(rank);
+        }
+        Ok(Some(ranks))
+    }
+
+    fn overload_rank(
+        &mut self,
+        argument: &Expr,
+        parameter: QualType,
+    ) -> Result<Option<OverloadRank>, ResolveError> {
+        let from = self.operand_type(argument)?;
+        let from = self.ctypes.unqualified(from);
+        let to = self.ctypes.unqualified(parameter);
+        if self.ctypes.compatible_unqualified(from, to) {
+            return Ok(Some(OverloadRank::Exact));
+        }
+        if let (Some(from_pointee), Some(to_pointee)) =
+            (self.ctypes.pointee(from), self.ctypes.pointee(to))
+        {
+            let widens = self
+                .ctypes
+                .canonical(to_pointee)
+                .quals
+                .includes(self.ctypes.canonical(from_pointee).quals);
+            let from_pointee = self.ctypes.unqualified(from_pointee);
+            let to_pointee = self.ctypes.unqualified(to_pointee);
+            return Ok(Some(if !widens {
+                OverloadRank::DroppedQualifiers
+            } else if self.ctypes.compatible_unqualified(from_pointee, to_pointee) {
+                OverloadRank::Exact
+            } else if self.ctypes.is_void(from_pointee) || self.ctypes.is_void(to_pointee) {
+                OverloadRank::Conversion
+            } else {
+                OverloadRank::IncompatiblePointer
+            }));
+        }
+        if self.ctypes.is_arithmetic(from) && self.ctypes.is_arithmetic(to) {
+            let float_promotion = matches!(
+                (
+                    self.ctypes.canonical_kind(from),
+                    self.ctypes.canonical_kind(to)
+                ),
+                (
+                    CTypeKind::Float(FloatKind::Float),
+                    CTypeKind::Float(FloatKind::Double)
+                )
+            );
+            let promoted = self.ctypes.is_integer(from) && {
+                let promoted = self.promoted(from);
+                self.ctypes.compatible_unqualified(promoted, to)
+            };
+            return Ok(Some(if float_promotion || promoted {
+                OverloadRank::Promotion
+            } else {
+                OverloadRank::Conversion
+            }));
+        }
+        let to_bool = matches!(self.ctypes.canonical_kind(to), CTypeKind::Bool);
+        if (self.ctypes.is_pointer(to) && self.null_pointer_constant(argument))
+            || (to_bool && self.ctypes.is_pointer(from))
+        {
+            return Ok(Some(OverloadRank::Conversion));
+        }
+        Ok(None)
     }
 
     fn atomic_type(

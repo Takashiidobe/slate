@@ -110,9 +110,9 @@ int use(void) { return imported + exported + bogus + scoped_bogus; }
 // IR-WARN-NEXT:     global %[[VALUE_has_const:[0-9]+]] has_const: i32 [storage=static] [linkage=external];
 // IR-WARN-NEXT:     fn %[[VALUE_opaque:[0-9]+]] @opaque() -> void [linkage=external] [fallthrough=ret_void] {
 // IR-WARN-NEXT:     }
-// IR-WARN-NEXT:     fn %[[VALUE_overloaded:[0-9]+]] @overloaded(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external];
+// IR-WARN-NEXT:     fn %[[VALUE_overloaded:[0-9]+]] @overloaded(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [overloadable];
 // IR-WARN-NEXT:     fn %[[VALUE_bare:[0-9]+]] @bare() -> void [linkage=external] [naked];
-// IR-WARN-NEXT:     fn %[[VALUE_clang_scoped:[0-9]+]] @clang_scoped(%[[VALUE1:[0-9]+]] <unnamed>: i32) -> void [linkage=external];
+// IR-WARN-NEXT:     fn %[[VALUE_clang_scoped:[0-9]+]] @clang_scoped(%[[VALUE1:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [overloadable];
 // IR-WARN-NEXT:     fn %[[VALUE_msvc_scoped:[0-9]+]] @msvc_scoped() -> void [linkage=external] [inline=never];
 // IR-WARN-NEXT:     fn %[[VALUE_use:[0-9]+]] @use() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-WARN-NEXT:         return add<i32>(add<i32>(add<i32>(read<i32>(%[[VALUE_imported]]), read<i32>(%[[VALUE_exported]])), read<i32>(%[[VALUE_bogus]])), read<i32>(%[[VALUE_scoped_bogus]]));

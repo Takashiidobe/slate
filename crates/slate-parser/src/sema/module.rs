@@ -668,6 +668,9 @@ impl Lowerer {
     }
 
     fn redeclared(&mut self, node: ast::NodeId, id: BindingId) -> Result<(), ResolveError> {
+        if let Some(error) = self.types.unsupported_declarations.get(&node) {
+            return Err(error.clone());
+        }
         let recorded = *self
             .types
             .declared_types

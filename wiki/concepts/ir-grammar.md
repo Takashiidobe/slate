@@ -189,7 +189,8 @@ tls_model    = "global-dynamic" | "local-dynamic" | "initial-exec" | "local-exec
 function    = "fn" binding "@" c_identifier "(" [ params ] ")" "->" type
               linkage symbol_attrs [ "[inline=" ( "hint" | "always" | "never" ) "]" ]
               [ "[definition=" ( "emitted" | "inline_only" ) "]" ] [ "[noreturn]" ]
-              [ "[naked]" ] [ "[target=" target_feature { "," target_feature } "]" ]
+              [ "[naked]" ] [ "[overloadable]" ]
+              [ "[target=" target_feature { "," target_feature } "]" ]
               [ "[memory=" ( "none" | "read" ) "]" ]
               { "[deallocator=%" int ", argument=" int "]" }
               [ "[abi=" ( abi_signature | "incomplete" ) "]" ]
@@ -220,6 +221,12 @@ target_feature = ( "+" | "-" ) feature_name | "arch=" cpu_name | "tune=" cpu_nam
   `noreturn` survives compact printing and makes fallthrough unconditionally `ub`.
 - `[naked]` is `__attribute__((naked))` from any declaration: no prologue or
   epilogue, fallthrough `ub`, and its asm statements print no `[options=...]`.
+- `[overloadable]` is clang's `__attribute__((overloadable))`. Several functions
+  may share `c_identifier`; the binding is the identity, and each call names
+  the overload chosen for it. The C name is not the symbol: consumers give
+  each overload a unique name. Only internal-linkage overloads reach the IR
+  (extern ones need Itanium mangling and are not implemented). A function in
+  the set without the attribute keeps its C name and prints no flag.
 - `[target=...]` is `__attribute__((target("...")))` split as clang does:
   comma-separated and trimmed, empty entries dropped, `no-x` is `-x`. The last
   `target` attribute across declarations wins. Feature names are not validated.

@@ -86,6 +86,11 @@ pub struct TypeResolver {
     pub(super) owners: HashMap<TypeId, Span<()>>,
     alias_definitions: HashMap<crate::ast::NodeId, (TypeId, QualType)>,
     tag_failures: HashMap<TagId, ResolveError>,
+    pub(super) overload_sets: HashMap<BindingId, Vec<BindingId>>,
+    pub(super) overload_candidates: HashMap<crate::ast::NodeId, Vec<BindingId>>,
+    pub(super) unsupported_declarations: HashMap<crate::ast::NodeId, ResolveError>,
+    pub(super) external_overloads: HashSet<BindingId>,
+    pub(super) overload_errors: HashMap<crate::ast::NodeId, ResolveError>,
 }
 
 impl TypeResolver {
@@ -142,6 +147,11 @@ impl TypeResolver {
             owners: HashMap::new(),
             alias_definitions: HashMap::new(),
             tag_failures: HashMap::new(),
+            overload_sets: HashMap::new(),
+            overload_candidates: HashMap::new(),
+            unsupported_declarations: HashMap::new(),
+            external_overloads: HashSet::new(),
+            overload_errors: HashMap::new(),
         }
     }
 
@@ -215,6 +225,15 @@ impl TypeResolver {
             .map(|r| r.id)
             .collect();
         resolver.declarations = names.declarations.clone();
+        resolver.overload_candidates = names
+            .references
+            .iter()
+            .filter_map(|r| {
+                let overloads = names.overload_sets.get(&r.binding)?;
+                (overloads.len() > 1).then(|| (r.id, overloads.clone()))
+            })
+            .collect();
+        resolver.overload_sets = names.overload_sets.clone();
         resolver.tag_definitions = names.tags.clone();
         resolver.ctypes.ptr32_extension_is_qualifier = unit.dialect.flavor().is_msvc();
         resolver.tags = unit.tags.clone();
