@@ -56,12 +56,31 @@ class Differential:
 @dataclass
 class CMakeLibrary:
     library: str
+    components: list[str] = field(default_factory=list)
     variants: list[str] = field(default_factory=list)
     tools: list[str] = field(default_factory=list)
     differential: list[Differential] = field(default_factory=list)
     inputs: list[str] = field(default_factory=list)
     host_includes: list[str] = field(default_factory=list)
+    test_env: dict[str, str] = field(default_factory=dict)
+    compare_stdout: bool = True
     translate_tests: bool = False
+    benchmark: Callable | None = None
+
+
+@dataclass
+class MakeLibrary:
+    make_dir: str
+    archives: list[str]
+    tools: list[str]
+    test: list[str]
+    test_copy: list[str] = field(default_factory=list)
+    tools_dir: str = "."
+    test_dir: str = ""
+    host_includes: list[str] = field(default_factory=list)
+    test_build: list[list[str]] = field(default_factory=list)
+    test_patches: dict[str, list[tuple[str, str]]] = field(default_factory=dict)
+    links: dict[str, str] = field(default_factory=dict)
     benchmark: Callable | None = None
 
 
@@ -89,23 +108,27 @@ def run(command, output, cwd=ROOT, env=None, timeout=None, stdin=None):
 
 
 def make_variables(project_dir, recipe, compiler, names):
+    printer = f"__slate_vars: ; $(foreach v,{' '.join(names)},$(info $(v)=$($(v))))@:"
     output = subprocess.run(
-        ["make", "-pn", f"CC={compiler}", recipe.target],
+        ["make", "-s", f"CC={compiler}", f"--eval={printer}", "__slate_vars"],
         cwd=project_dir / recipe.make_dir, capture_output=True, text=True,
     ).stdout
     values = {}
     for line in output.splitlines():
-        match = re.match(r"^(\w+) :?= (.*)$", line)
-        if match and match[1] in names and match[1] not in values:
-            values[match[1]] = match[2].strip()
+        name, _, value = line.partition("=")
+        if name in names and name not in values:
+            values[name] = value.strip()
     missing = [name for name in names if name not in values]
     if missing:
-        raise SystemExit(f"make -pn did not print {', '.join(missing)}")
+        raise SystemExit(f"make did not print {', '.join(missing)}")
     return values
 
 
 def native_check(project_dir, recipe, variables):
     make_dir = project_dir / recipe.make_dir
+    if isinstance(recipe, MakeLibrary):
+        inputs = [*recipe.archives, *(word for name in recipe.tools for word in variables[name].split())]
+        return [path for path in inputs if not (make_dir / path).exists()]
     inputs = [*recipe.archives, *(word for word in variables[recipe.libs].split() if word.endswith(".a"))]
     missing = [path for path in inputs if not (make_dir / path).exists()]
     if not (make_dir / recipe.target).exists():
@@ -295,8 +318,17 @@ def translation_unit(entry, source, recipe, flavor):
     }
 
 
+def archive_members(make_dir, archives):
+    return [member for archive in archives
+            for member in subprocess.run(["ar", "t", archive], cwd=make_dir, capture_output=True, text=True,
+                                         check=True).stdout.split()]
+
+
 def translation_units(project_dir, recipe, database, variables, flavor):
-    objects = [word for name in recipe.objects for word in variables[name].split()]
+    if isinstance(recipe, MakeLibrary):
+        objects = archive_members(project_dir / recipe.make_dir, recipe.archives)
+    else:
+        objects = [word for name in recipe.objects for word in variables[name].split()]
     wanted = {Path(obj).stem: obj for obj in objects}
     found = {}
     for entry in json.loads(database.read_text()):
@@ -360,7 +392,8 @@ def units_for_objects(objects, recipe, database, flavor):
 
 
 def library_units(build_dir, recipe, database, flavor):
-    return units_for_objects(target_objects(build_dir, recipe.library), recipe, database, flavor)
+    objects = [obj for library in [recipe.library, *recipe.components] for obj in target_objects(build_dir, library)]
+    return units_for_objects(objects, recipe, database, flavor)
 
 
 def executable_units(build_dir, executable, recipe, database, flavor, shared_library):
@@ -386,9 +419,18 @@ def ctest_cases(build_dir):
     cases = []
     for test in json.loads(listing)["tests"]:
         properties = {item["name"]: item["value"] for item in test.get("properties", [])}
-        cases.append({"name": test["name"], "command": test["command"],
+        environment = dict(item.split("=", 1) for item in properties.get("ENVIRONMENT", []))
+        cases.append({"name": test["name"], "command": test["command"], "env": environment,
                       "cwd": properties.get("WORKING_DIRECTORY", str(build_dir))})
     return cases
+
+
+def ctest_executable(command, build_dir):
+    index = 2 if Path(command[0]).name in {"bash", "sh"} and len(command) > 2 else 0
+    path = Path(command[index]).resolve()
+    if not path.is_relative_to(build_dir.resolve()):
+        return None
+    return index, str(path.relative_to(build_dir.resolve()))
 
 
 def relink(build_dir, executable, libraries, archive, destination):
@@ -443,16 +485,25 @@ def translate_executable(project_dir, build_dir, executable, recipe, database, f
     return binary
 
 
-def run_case(command, cwd, stdin=None, timeout=300, executable=None):
+def run_case(command, cwd, stdin=None, timeout=300, executable=None, env=None):
     start = time.perf_counter()
     try:
         with open(stdin, "rb") if stdin else open(os.devnull, "rb") as handle:
             result = subprocess.run(command, cwd=cwd, stdin=handle, capture_output=True, timeout=timeout,
-                                    executable=executable)
+                                    executable=executable, env=env)
         code, stdout = result.returncode, result.stdout
     except subprocess.TimeoutExpired:
         code, stdout = "timeout", b""
     return code, stdout, time.perf_counter() - start
+
+
+def run_differential(differential, path, build_dir, executable):
+    with tempfile.TemporaryDirectory() as directory:
+        arguments = [arg.replace("{input}", str(path)).replace("{output}", directory) for arg in differential.args]
+        code, stdout, seconds = run_case([differential.tool, *arguments], build_dir,
+                                         path if differential.stdin else None, 60, executable)
+        written = b"".join(file.read_bytes() for file in sorted(Path(directory).rglob("*")) if file.is_file())
+    return code, stdout + written, seconds
 
 
 def library_tests(project_dir, build_dir, recipe, archive, database, args, out):
@@ -461,26 +512,36 @@ def library_tests(project_dir, build_dir, recipe, archive, database, args, out):
         shutil.rmtree(sandbox)
     cases, skipped = [], []
     for case in ctest_cases(build_dir):
-        in_build = Path(case["command"][0]).resolve().is_relative_to(build_dir.resolve())
-        (cases if in_build else skipped).append(case)
-    executables = {str(Path(case["command"][0]).resolve().relative_to(build_dir.resolve())) for case in cases}
-    executables |= set(recipe.tools)
+        found = ctest_executable(case["command"], build_dir)
+        if found:
+            cases.append({**case, "index": found[0], "executable": found[1]})
+        else:
+            skipped.append(case)
+    executables = {case["executable"] for case in cases} | set(recipe.tools)
     if recipe.translate_tests:
         shared_library = archive.with_suffix(".so")
         relinked = {name: translate_executable(project_dir, build_dir, name, recipe, database, args.mode,
                                                sandbox, args.profile, shared_library)
                     for name in sorted(executables)}
     else:
-        relinked = {name: relink(build_dir, name, [recipe.library, *recipe.variants], archive, sandbox)
+        relinked = {name: relink(build_dir, name, [recipe.library, *recipe.components, *recipe.variants], archive,
+                                 sandbox)
                     for name in sorted(executables)}
+
+    def compare(case):
+        command, index = case["command"], case["index"]
+        env = dict(os.environ, **recipe.test_env, **case["env"])
+        translated = [*command[:index], str(relinked[case["executable"]]), *command[index + 1:]]
+        return run_case(command, case["cwd"], env=env), run_case(translated, case["cwd"], env=env)
+
+    with concurrent.futures.ThreadPoolExecutor(args.jobs) as pool:
+        outcomes = list(pool.map(compare, cases))
     rows, failures, seconds = [], 0, {"native": 0.0, "translated": 0.0}
-    for case in cases:
-        name = str(Path(case["command"][0]).resolve().relative_to(build_dir.resolve()))
-        native = run_case(case["command"], case["cwd"])
-        translated = run_case([str(relinked[name]), *case["command"][1:]], case["cwd"])
+    for case, (native, translated) in zip(cases, outcomes):
         seconds["native"] += native[2]
         seconds["translated"] += translated[2]
-        result = "FAIL" if translated[0] != 0 else "ok" if translated[1] == native[1] else "STDOUT DIFFERS"
+        same = translated[1] == native[1] or not recipe.compare_stdout
+        result = "FAIL" if translated[0] != 0 else "ok" if same else "STDOUT DIFFERS"
         failures += result != "ok"
         rows.append(f"| ctest {case['name']} | {native[0]} | {translated[0]} | {result} |")
     rows += [f"| ctest {case['name']} | | | skipped: runs {Path(case['command'][0]).name} |" for case in skipped]
@@ -488,11 +549,8 @@ def library_tests(project_dir, build_dir, recipe, archive, database, args, out):
     mismatches = 0
     for differential in recipe.differential:
         for path in inputs:
-            args = [arg.replace("{input}", str(path)) for arg in differential.args]
-            stdin = path if differential.stdin else None
-            command = [differential.tool, *args]
-            native = run_case(command, build_dir, stdin, 60, build_dir / differential.tool)
-            translated = run_case(command, build_dir, stdin, 60, relinked[differential.tool])
+            native = run_differential(differential, path, build_dir, build_dir / differential.tool)
+            translated = run_differential(differential, path, build_dir, relinked[differential.tool])
             seconds["native"] += native[2]
             seconds["translated"] += translated[2]
             same = native[:2] == translated[:2]
@@ -506,6 +564,56 @@ def library_tests(project_dir, build_dir, recipe, archive, database, args, out):
             "differential": len(rows) - len(cases) - len(skipped), "mismatches": mismatches, "report": "test.md",
             "native_seconds": round(seconds["native"], 2), "seconds": round(seconds["translated"], 2),
             "test_over_native": round(seconds["translated"] / seconds["native"], 2) if seconds["native"] else None}
+
+
+def make_link_command(make_dir, compiler, tool):
+    output = subprocess.run(["make", "-Bn", f"CC={compiler}", tool], cwd=make_dir, capture_output=True, text=True,
+                            check=True).stdout
+    for line in reversed(output.splitlines()):
+        words = shlex.split(line)
+        if "-o" in words and words.index("-o") + 1 < len(words) and words[words.index("-o") + 1] == tool:
+            return words
+    raise RuntimeError(f"make -Bn {tool} printed no link command")
+
+
+def relink_make_tools(make_dir, recipe, variables, compiler, archive, destination):
+    archives = {(make_dir / name).resolve() for name in recipe.archives}
+    destination.mkdir(parents=True, exist_ok=True)
+    tools = {}
+    for tool in (word for name in recipe.tools for word in variables[name].split()):
+        command = make_link_command(make_dir, compiler, tool)
+        command[command.index("-o") + 1] = str(destination / tool)
+        command = [str(archive) if (make_dir / word).resolve() in archives else word for word in command]
+        result = subprocess.run([*command, *RUST_NATIVE_LIBS], cwd=make_dir, capture_output=True, text=True)
+        if result.returncode:
+            raise RuntimeError(f"relinking {tool} failed:\n{result.stderr[-2000:]}")
+        tools[tool] = destination / tool
+    return tools
+
+
+def make_library_tests(project_dir, recipe, variables, archive, out, args):
+    make_dir = project_dir / recipe.make_dir
+    translated = relink_make_tools(make_dir, recipe, variables, COMPILERS[args.mode], archive,
+                                   out / "translated-tools")
+    runs = [("translated", "test-tree", translated)]
+    if args.native_test:
+        runs.append(("native", "test-tree-native", {tool: make_dir / tool for tool in translated}))
+    results = {}
+    for label, name, tools in runs:
+        sandbox = test_sandbox(project_dir, recipe, None, out, args.jobs, name)
+        for tool, path in tools.items():
+            link = sandbox / recipe.tools_dir / tool
+            link.parent.mkdir(parents=True, exist_ok=True)
+            link.symlink_to(path)
+        results[label] = run([*recipe.test, *args.test_args], out / f"test-{label}.log",
+                             cwd=sandbox / recipe.test_dir, timeout=args.test_timeout, stdin=subprocess.PIPE)
+    code, seconds = results["translated"]
+    summary = {"seconds": seconds, "log": "test-translated.log", "exit": code, "tools": len(translated)}
+    if "native" in results:
+        native_code, native_seconds = results["native"]
+        summary |= {"native_seconds": native_seconds, "native_exit": native_code, "native_log": "test-native.log",
+                    "test_over_native": round(seconds / native_seconds, 2) if native_seconds else None}
+    return code, summary
 
 
 def barrier_rows(entry):
@@ -598,6 +706,24 @@ def test_sandbox(project_dir, recipe, binary, out, jobs, name="test-tree"):
     return sandbox
 
 
+LMDB_TEST = """set -e
+dump() { ./mdb_dump "$1" | grep -v '^mapaddr='; }
+rm -rf testdb loaded copied && mkdir testdb loaded copied
+./mtest
+./mdb_stat -efr testdb
+dump testdb > dump.txt
+./mdb_load -f dump.txt loaded
+dump loaded | cmp - dump.txt
+./mdb_copy -c testdb copied
+dump copied | cmp - dump.txt
+./mdb_drop copied
+for test in mtest2 mtest3 mtest4 mtest5; do
+    rm -rf testdb && mkdir testdb
+    ./$test
+    ./mdb_stat -a testdb
+done
+"""
+
 RECIPES = {
     "redis": Recipe(
         target="redis-server",
@@ -665,6 +791,36 @@ RECIPES = {
         ],
         inputs=["examples/*.yaml", "regression-inputs/*"],
     ),
+    "utf8proc": CMakeLibrary(library="libutf8proc.a"),
+    "libexpat": CMakeLibrary(
+        library="libexpat.so",
+        tools=["xmlwf/xmlwf"],
+        differential=[Differential("xmlwf/xmlwf", [*mode, "-d", "{output}", "{input}"])
+                      for mode in ([], ["-n"], ["-m"], ["-N", "-p"])],
+        inputs=["testdata/largefiles/*.xml", "expat/doc/xmlwf.xml"],
+        translate_tests=True,
+    ),
+    "c-ares": CMakeLibrary(library="lib/libcares.so", test_env={"GTEST_PRINT_TIME": "0"}),
+    "libevent": CMakeLibrary(
+        library="lib/libevent_core.a",
+        components=["lib/libevent_extra.a", "lib/libevent_pthreads.a"],
+        variants=["lib/libevent.a"],
+        compare_stdout=False,
+    ),
+    "giflib": MakeLibrary(
+        make_dir=".",
+        archives=["libgif.a", "libutil.a"],
+        tools=["UTILS"],
+        test=["make", "test"],
+        test_copy=["tests", "pic"],
+        test_dir="tests",
+    ),
+    "lmdb": MakeLibrary(
+        make_dir="libraries/liblmdb",
+        archives=["liblmdb.a"],
+        tools=["PROGS"],
+        test=["bash", "-c", LMDB_TEST],
+    ),
 }
 
 
@@ -700,6 +856,7 @@ def main():
         return status == "ok" and STAGES.index(stage) < STAGES.index(args.until)
 
     library = isinstance(recipe, CMakeLibrary)
+    make_library = isinstance(recipe, MakeLibrary)
     code, seconds = run(["cargo", "build", "--release", "-p", "slate-c2rust"], out / "slate-build.log")
     if code:
         raise SystemExit("slate build failed")
@@ -719,7 +876,8 @@ def main():
         missing = [] if (build_dir / recipe.library).exists() else [recipe.library]
         units = library_units(build_dir, recipe, database, args.mode)
     else:
-        variables = make_variables(project_dir, recipe, COMPILERS[args.mode], [*recipe.objects, recipe.libs])
+        names = recipe.tools if make_library else [*recipe.objects, recipe.libs]
+        variables = make_variables(project_dir, recipe, COMPILERS[args.mode], names)
         missing = native_check(project_dir, recipe, variables)
         units = translation_units(project_dir, recipe, database, variables, args.mode)
     commands = out / "compile_commands.json"
@@ -732,10 +890,11 @@ def main():
     if not finish("barriers", "ok", blocked=blocked, report="barriers.md"):
         return 0
 
-    crate = out / (args.project if library else recipe.target)
+    crate = out / (args.project if library or make_library else recipe.target)
     if crate.exists():
         shutil.rmtree(crate)
     crate_type = ["--crate-type", "staticlib,cdylib" if recipe.translate_tests else "staticlib"] if library else []
+    crate_type = ["--crate-type", "staticlib"] if make_library else crate_type
     code, seconds = run([SLATE, "translate-project", *crate_type, "--compile-commands", commands, project_dir,
                          crate], out / "translate.log")
     native_seconds, native_failures = native_compile_seconds(units, out, args.jobs)
@@ -753,14 +912,24 @@ def main():
         return 1 if code else 0
 
     env["RUSTFLAGS"] = " ".join(filter(None, [os.environ.get("RUSTFLAGS"), "-A warnings",
-                                              None if library else link_flags(project_dir, recipe, variables)]))
+                                              None if library or make_library else
+                                              link_flags(project_dir, recipe, variables)]))
     code, _ = run(["cargo", "build", "--profile", args.profile], out / "build.log", cwd=crate, env=env)
     profile_dir = "debug" if args.profile == "dev" else args.profile
     package = re.search(r'^name = "([^"]+)"', (crate / "Cargo.toml").read_text(), re.MULTILINE)[1]
     binary = out / "cargo-target" / profile_dir / package
-    if library:
+    if library or make_library:
         binary = next((out / "cargo-target" / profile_dir).glob("*.a"), binary)
     if not finish("build", "failed" if code else "ok", log="build.log", binary=str(binary)):
+        return 1 if code else 0
+
+    if make_library:
+        try:
+            code, results = make_library_tests(project_dir, recipe, variables, binary, out, args)
+        except (RuntimeError, subprocess.SubprocessError) as error:
+            finish("test", "failed", error=str(error))
+            return 1
+        finish("test", "failed" if code else "ok", **results)
         return 1 if code else 0
 
     if library:

@@ -143,6 +143,12 @@ Projects that we've tested e2e that translate to Rust:
 - [libyaml](https://github.com/yaml/libyaml)
 - [Lua](https://www.lua.org)
 - [zlib](https://zlib.net)
+- [utf8proc](https://github.com/JuliaStrings/utf8proc)
+- [libexpat](https://github.com/libexpat/libexpat)
+- [giflib](https://giflib.sourceforge.net)
+- [LMDB](https://www.symas.com/mdb)
+- [c-ares](https://c-ares.org)
+- [libevent](https://libevent.org)
 
 ### In Progress
 

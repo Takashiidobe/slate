@@ -7,6 +7,7 @@
 - [Sweep](#sweep)
 - [End to end](#end-to-end)
   - [CMake libraries](#cmake-libraries)
+  - [Make libraries](#make-libraries)
 - [Missing dependencies](#missing-dependencies)
 - [Gotchas](#gotchas)
 <!-- /toc -->
@@ -54,7 +55,8 @@ python3 tools/c_corpus_setup.py [PROJECT ...] [--flavor clang|gcc|msvc ...]
 
 | Project                                                                             | Build                                                                                                                                   | msvc                                                 |
 | ----------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
-| cJSON, libexpat (`expat/`), libuv, libyaml, mimalloc, pcre2, utf8proc, yyjson, zlib | CMake                                                                                                                                   | CMake                                                |
+| cJSON, libexpat (`expat/`), libuv, libyaml, mimalloc, pcre2, yyjson, zlib           | CMake                                                                                                                                   | CMake                                                |
+| utf8proc                                                                            | CMake, `UTF8PROC_ENABLE_TESTING=ON` (downloads the Unicode test data)                                                                   | CMake                                                |
 | libdeflate                                                                          | CMake, `LIBDEFLATE_BUILD_TESTS=ON`                                                                                                      | CMake                                                |
 | xxHash                                                                              | CMake in `build/cmake`, `DISPATCH=ON` (adds `xxh_x86dispatch.c`)                                                                        | CMake                                                |
 | lz4, zstd                                                                           | CMake in `build/cmake`                                                                                                                  | CMake                                                |
@@ -66,9 +68,10 @@ python3 tools/c_corpus_setup.py [PROJECT ...] [--flavor clang|gcc|msvc ...]
 | libsodium                                                                           | `autogen.sh -s` in tree, then `configure` out of tree + `make check`                                                                    | none                                                 |
 | nginx                                                                               | `auto/configure --builddir=build-<flavor>/objs`                                                                                         | none                                                 |
 | redis, lua, quickjs, chibicc, giflib                                                | `make CC=` in tree                                                                                                                      | none                                                 |
-| oniguruma, c-ares                                                                   | CMake                                                                                                                                   | CMake, untested                                      |
+| oniguruma                                                                           | CMake                                                                                                                                   | CMake, untested                                      |
+| c-ares                                                                              | CMake, `CARES_BUILD_TESTS=ON` (needs gtest)                                                                                             | CMake, untested                                      |
 | cglm                                                                                | CMake, `CGLM_USE_TEST=ON`                                                                                                               | CMake, untested                                      |
-| libevent                                                                            | CMake, OpenSSL and Mbed TLS off                                                                                                         | CMake, untested                                      |
+| libevent                                                                            | CMake, OpenSSL and Mbed TLS off, `EVENT__LIBRARY_TYPE=STATIC`                                                                           | CMake, untested                                      |
 | jq                                                                                  | `autoreconf -i` in tree, then `configure --with-oniguruma=builtin --disable-docs` out of tree                                           | none                                                 |
 | lmdb                                                                                | `make -C libraries/liblmdb CC=` in tree                                                                                                 | none                                                 |
 | stb                                                                                 | `make -i -C tests CC=` in tree: upstream's driver TUs define each header's `*_IMPLEMENTATION`; `-i` gets past the C++ TU's link failure | none                                                 |
@@ -121,7 +124,7 @@ python3 tools/c_corpus_sweep.py [PROJECT ...] [--flavor clang|gcc|msvc] [--jobs 
 ## End to end
 
 ```
-python3 tools/corpus/e2e.py redis|lua|cJSON|libyaml|zlib [--mode clang|gcc] [--setup] [--until STAGE] [--bench-runs N] [-- runtest args]
+python3 tools/corpus/e2e.py PROJECT [--mode clang|gcc] [--setup] [--until STAGE] [--bench-runs N] [-- runtest args]
 ```
 
 Translates one project's target with `slate translate-project`, links it
@@ -133,7 +136,7 @@ written once translation units are known.
 
 | Stage     | What                                                                                                                                                                                                | Report                                            |
 | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
-| native    | `--setup` reruns `c_corpus_setup.py`; checks the target's link inputs exist; picks the target's TUs (`make -pn` object lists) from `build-<mode>`                                                   | `compile_commands.json`                           |
+| native    | `--setup` reruns `c_corpus_setup.py`; checks the target's link inputs exist; picks the target's TUs (make object lists) from `build-<mode>`                                                         | `compile_commands.json`                           |
 | barriers  | `slate lowering-barriers` per TU, aggregated by kind                                                                                                                                                | `barriers.{json,md}`                              |
 | translate | `translate-project`; also times the native compile of the same TUs with their original flags, in parallel                                                                                           | `translate_over_compile`                          |
 | check     | `cargo check` of the generated crate                                                                                                                                                                | `check.log`                                       |
@@ -170,20 +173,26 @@ whose product is a library. Their optional `benchmark` runs after the test
 stage, against the relinked tools in `test-tree/`.
 
 - native: the library's TUs are the objects `ninja -t query <library>`
-  lists (symlinks such as `libcjson.so` are resolved first), matched to
-  `compile_commands.json` entries by `output`.
+  lists (symlinks such as `libcjson.so` are resolved first), plus those of
+  its `components` (libevent's `_extra` and `_pthreads` archives next to
+  `_core`), matched to `compile_commands.json` entries by `output`.
 - translate/build: `translate-project --crate-type staticlib` (also
   `cdylib` with `translate_tests`).
 - test: every CTest executable plus the recipe's `tools`, rebuilt into
   `test-tree/`. By default each is relinked from its native link command
-  (`ninja -t commands`) with the library and its `variants` (other builds
-  of it, such as zlib's `libz.so` next to `libz.a`) swapped for the
-  translated archive and Rust's native libs appended. A ctest case passes
-  when it exits 0 and its stdout matches the native run. Cases whose
-  command is not an in-build executable (zlib's `cmake` packaging and
-  `llvm-cov` cases) are listed as skipped. Each `Differential` then runs a tool
-  over every input glob with the same `argv[0]` for both builds and must
-  match the native exit code and stdout.
+  (`ninja -t commands`) with the library, its components and its
+  `variants` (other builds of it, such as zlib's `libz.so` next to
+  `libz.a`) swapped for the translated archive and Rust's native libs
+  appended. A ctest case passes when it exits 0 and its stdout matches the
+  native run; it runs with its `ENVIRONMENT` property, and cases run in
+  parallel (`--jobs`), each native then translated. The executable is
+  `argv[0]`, or `argv[2]` behind a `bash`/`sh` wrapper script (libexpat's
+  `run.sh`). Cases whose executable is not in the build tree (zlib's
+  `cmake` packaging and `llvm-cov` cases) are listed as skipped. Each
+  `Differential` then runs a tool over every input glob with the same
+  `argv[0]` for both builds and must match the native exit code and
+  stdout. An `{output}` argument is a fresh directory per run whose files
+  are compared too (`xmlwf -d`).
 - `translate_tests` (cJSON): its unity tests `#include "../cJSON.c"`, so
   relinking would only test native code. Instead each test executable
   (its objects plus in-build archives such as `libunity.a`) is translated
@@ -199,6 +208,44 @@ stage, against the relinked tools in `test-tree/`.
   pipes a 64 MiB input built from the sources and `zlib.3.pdf` through
   `minigzip`, `minigzip -9`, and `minigzip -d`, and requires identical
   output: geomean 1.04x native.
+- `test_env` adds environment to every ctest case (c-ares sets
+  `GTEST_PRINT_TIME=0`, since gtest's per-test timings differ run to
+  run). `compare_stdout=False` judges cases by exit code alone, for
+  suites whose native output is not reproducible (libevent prints
+  timestamps, CPU usage and pointers).
+- 2026-10-05: utf8proc 1 TU, 10/10 ctest. libexpat (`translate_tests`,
+  since `runtests` compiles its own copy of `lib/*.c`): 7 TUs, 1/1 ctest,
+  and 36/36 `xmlwf -d` runs (default, `-n`, `-m`, `-N -p`) over
+  `testdata/largefiles/*.xml` and `doc/xmlwf.xml`. c-ares: 93 TUs from
+  `libcares.so`, 3/3 ctest (`arestest`'s 1219 gtest cases, live DNS
+  included, plus both fuzz corpora). libevent (static build): 28 TUs from
+  `_core`, `_extra` and `_pthreads`, 84/84 ctest by exit code, 25 minutes
+  of test time.
+
+### Make libraries
+
+`MakeLibrary` recipes (giflib, lmdb) cover in-tree Make builds whose
+product is a static library and a set of tools.
+
+- native: the TUs are the members of the recipe's `archives` (`ar t`),
+  matched to the `bear` database by source stem. Tool names come from a
+  make variable (`UTILS`, `PROGS`), expanded with a print goal passed via
+  `--eval`, because `make -pn` prints values unexpanded
+  (`OBJECTS = $(SOURCES:.c=.o)`). Make `Recipe`s read their object lists
+  the same way.
+- test: each tool is relinked from the last line of `make -Bn <tool>`
+  whose `-o` names it, with the archives swapped for the translated
+  archive, into `translated-tools/`. The test command then runs twice, in
+  `test-tree/` with the translated tools linked in and in
+  `test-tree-native/` with the native ones, and must exit 0.
+- giflib (2026-10-05): 10 TUs from `libgif.a` and `libutil.a`, 14 tools;
+  `make test` in `tests/` passes 51/51, with the same TAP output as native.
+- lmdb (2026-10-05): 3 TUs from `liblmdb.a`, 10 tools (`PROGS`). Upstream's
+  `make test` is only `mtest` + `mdb_stat`, so the recipe's script also
+  round-trips `mtest`'s database through `mdb_dump`/`mdb_load`/`mdb_copy`
+  (ignoring the `mapaddr=` header, which is address-dependent) and runs
+  `mtest2`-`mtest5`. A dump with `mtest5`'s dupsort subdatabase does not
+  round-trip natively either, so it is not compared.
 
 ## Missing dependencies
 

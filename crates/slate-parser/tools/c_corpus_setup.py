@@ -87,7 +87,7 @@ RECIPES = {
         python_requirements=["scripts/basic.requirements.txt", "tf-psa-crypto/scripts/basic.requirements.txt"],
     ),
     "pcre2": CMake(options=["-DPCRE2_BUILD_TESTS=ON"]),
-    "utf8proc": CMake(),
+    "utf8proc": CMake(options=["-DUTF8PROC_ENABLE_TESTING=ON"]),
     "yyjson": CMake(),
     "zlib": CMake(),
     "zstd": CMake(source="build/cmake"),
@@ -96,8 +96,10 @@ RECIPES = {
     "xxHash": CMake(source="build/cmake", options=["-DDISPATCH=ON"]),
     "oniguruma": CMake(),
     "cglm": CMake(options=["-DCGLM_USE_TEST=ON"]),
-    "libevent": CMake(options=["-DEVENT__DISABLE_OPENSSL=ON", "-DEVENT__DISABLE_MBEDTLS=ON"]),
-    "c-ares": CMake(),
+    "libevent": CMake(
+        options=["-DEVENT__DISABLE_OPENSSL=ON", "-DEVENT__DISABLE_MBEDTLS=ON", "-DEVENT__LIBRARY_TYPE=STATIC"]
+    ),
+    "c-ares": CMake(options=["-DCARES_BUILD_TESTS=ON"]),
     "sqlite": Nmake(
         unix=Configure(["{source}/configure", "CC={cc}"], ["all", "testfixture"]),
         makefile="Makefile.msc",
