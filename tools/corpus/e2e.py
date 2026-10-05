@@ -56,11 +56,13 @@ class Differential:
 @dataclass
 class CMakeLibrary:
     library: str
+    variants: list[str] = field(default_factory=list)
     tools: list[str] = field(default_factory=list)
     differential: list[Differential] = field(default_factory=list)
     inputs: list[str] = field(default_factory=list)
     host_includes: list[str] = field(default_factory=list)
     translate_tests: bool = False
+    benchmark: Callable | None = None
 
 
 RUST_NATIVE_LIBS = ["-lgcc_s", "-lutil", "-lrt", "-lpthread", "-lm", "-ldl", "-lc"]
@@ -206,6 +208,47 @@ def lua_benchmark(project_dir, binary, out, args):
     return {"geomean_ratio": round(statistics.geometric_mean(ratios.values()), 3), "report": "bench.md"}
 
 
+def timed_filter(command, source, destination):
+    with open(source, "rb") as stdin, open(destination, "wb") as stdout:
+        start = time.perf_counter()
+        subprocess.run(command, stdin=stdin, stdout=stdout, check=True)
+        return time.perf_counter() - start
+
+
+def zlib_benchmark(project_dir, build_dir, sandbox, out, args):
+    work = out / "bench"
+    work.mkdir(exist_ok=True)
+    data = b"".join(path.read_bytes() for path in sorted(project_dir.glob("*.[ch]")) + [project_dir / "zlib.3.pdf"])
+    plain = work / "input"
+    plain.write_bytes(data * max(1, (64 << 20) // len(data)))
+    binaries = {"native": build_dir / "test/minigzip", "translated": sandbox / "test/minigzip"}
+    operations = {"compress": ([], plain, ".gz"), "compress -9": (["-9"], plain, ".9.gz"),
+                  "decompress": (["-d"], work / "native.gz", ".out")}
+    samples = {kind: {name: [] for name in operations} for kind in binaries}
+    for _ in range(args.bench_runs):
+        for name, (flags, source, suffix) in operations.items():
+            for kind, binary in binaries.items():
+                samples[kind][name].append(timed_filter([binary, *flags], source, work / f"{kind}{suffix}"))
+    for suffix in (".gz", ".9.gz", ".out"):
+        if (work / f"native{suffix}").read_bytes() != (work / f"translated{suffix}").read_bytes():
+            raise RuntimeError(f"native{suffix} and translated{suffix} differ")
+    if (work / "native.out").read_bytes() != plain.read_bytes():
+        raise RuntimeError("decompressed output differs from the input")
+    medians = {kind: {name: statistics.median(times) for name, times in runs.items()}
+               for kind, runs in samples.items()}
+    ratios = {name: round(medians["translated"][name] / medians["native"][name], 3) for name in operations}
+    (out / "bench.json").write_text(json.dumps({"unit": "seconds", "input_bytes": plain.stat().st_size,
+                                                "samples": samples, "medians": medians, "ratios": ratios},
+                                               indent=1) + "\n")
+    lines = ["| operation | native s | translated s | translated / native |", "| --- | ---: | ---: | ---: |"]
+    lines += [f"| {name} | {medians['native'][name]:.3f} | {medians['translated'][name]:.3f} | {ratios[name]:.3f} |"
+              for name in operations]
+    (out / "bench.md").write_text("\n".join(lines) + "\n")
+    log("\n".join(lines))
+    shutil.rmtree(work)
+    return {"geomean_ratio": round(statistics.geometric_mean(ratios.values()), 3), "report": "bench.md"}
+
+
 def native_arguments(argv, entry):
     kept, skip = [], False
     for argument in argv:
@@ -348,8 +391,8 @@ def ctest_cases(build_dir):
     return cases
 
 
-def relink(build_dir, executable, library, archive, destination):
-    library = (build_dir / library).resolve()
+def relink(build_dir, executable, libraries, archive, destination):
+    libraries = {(build_dir / library).resolve() for library in libraries}
     command = link_command(build_dir, executable)
     linked, index = [], 0
     while index < len(command):
@@ -363,7 +406,7 @@ def relink(build_dir, executable, library, archive, destination):
             linked += ["-o", str(output)]
             index += 2
             continue
-        linked.append(str(archive) if (build_dir / token).resolve() == library else token)
+        linked.append(str(archive) if (build_dir / token).resolve() in libraries else token)
         index += 1
     result = subprocess.run([*linked, *RUST_NATIVE_LIBS], cwd=build_dir, capture_output=True, text=True)
     if result.returncode:
@@ -416,7 +459,10 @@ def library_tests(project_dir, build_dir, recipe, archive, database, args, out):
     sandbox = out / "test-tree"
     if sandbox.exists():
         shutil.rmtree(sandbox)
-    cases = ctest_cases(build_dir)
+    cases, skipped = [], []
+    for case in ctest_cases(build_dir):
+        in_build = Path(case["command"][0]).resolve().is_relative_to(build_dir.resolve())
+        (cases if in_build else skipped).append(case)
     executables = {str(Path(case["command"][0]).resolve().relative_to(build_dir.resolve())) for case in cases}
     executables |= set(recipe.tools)
     if recipe.translate_tests:
@@ -425,7 +471,8 @@ def library_tests(project_dir, build_dir, recipe, archive, database, args, out):
                                                sandbox, args.profile, shared_library)
                     for name in sorted(executables)}
     else:
-        relinked = {name: relink(build_dir, name, recipe.library, archive, sandbox) for name in sorted(executables)}
+        relinked = {name: relink(build_dir, name, [recipe.library, *recipe.variants], archive, sandbox)
+                    for name in sorted(executables)}
     rows, failures, seconds = [], 0, {"native": 0.0, "translated": 0.0}
     for case in cases:
         name = str(Path(case["command"][0]).resolve().relative_to(build_dir.resolve()))
@@ -436,6 +483,7 @@ def library_tests(project_dir, build_dir, recipe, archive, database, args, out):
         result = "FAIL" if translated[0] != 0 else "ok" if translated[1] == native[1] else "STDOUT DIFFERS"
         failures += result != "ok"
         rows.append(f"| ctest {case['name']} | {native[0]} | {translated[0]} | {result} |")
+    rows += [f"| ctest {case['name']} | | | skipped: runs {Path(case['command'][0]).name} |" for case in skipped]
     inputs = sorted(path for pattern in recipe.inputs for path in project_dir.glob(pattern))
     mismatches = 0
     for differential in recipe.differential:
@@ -454,8 +502,8 @@ def library_tests(project_dir, build_dir, recipe, archive, database, args, out):
     lines = ["| case | native exit | translated exit | result |", "| --- | --- | --- | --- |", *rows]
     (out / "test.md").write_text("\n".join(lines) + "\n")
     log("\n".join(lines))
-    return {"ctest": len(cases), "ctest_failures": failures,
-            "differential": len(rows) - len(cases), "mismatches": mismatches, "report": "test.md",
+    return {"ctest": len(cases), "ctest_failures": failures, "ctest_skipped": len(skipped),
+            "differential": len(rows) - len(cases) - len(skipped), "mismatches": mismatches, "report": "test.md",
             "native_seconds": round(seconds["native"], 2), "seconds": round(seconds["translated"], 2),
             "test_over_native": round(seconds["translated"] / seconds["native"], 2) if seconds["native"] else None}
 
@@ -594,6 +642,15 @@ RECIPES = {
         benchmark=lua_benchmark,
     ),
     "cJSON": CMakeLibrary(library="libcjson.so", translate_tests=True),
+    "zlib": CMakeLibrary(
+        library="libz.a",
+        variants=["libz.so"],
+        tools=["test/minigzip"],
+        differential=[Differential("test/minigzip", [*level, "-c", "{input}"])
+                      for level in ([], ["-1"], ["-9"], ["-h"], ["-r"], ["-f"])],
+        inputs=["*.c", "*.h", "ChangeLog", "FAQ", "doc/*", "zlib.3.pdf"],
+        benchmark=zlib_benchmark,
+    ),
     "libyaml": CMakeLibrary(
         library="libyaml.a",
         tools=["run-scanner", "run-parser", "run-loader", "run-emitter", "run-dumper", "run-parser-test-suite",
@@ -714,7 +771,15 @@ def main():
             return 1
         failed = results["ctest_failures"] or results["mismatches"]
         finish("test", "failed" if failed else "ok", **results)
-        return 1 if failed else 0
+        if failed or not recipe.benchmark or not args.bench_runs:
+            return 1 if failed else 0
+        try:
+            bench = recipe.benchmark(project_dir, build_dir, out / "test-tree", out, args)
+        except (RuntimeError, subprocess.SubprocessError) as error:
+            finish("bench", "failed", error=str(error))
+            return 1
+        finish("bench", "ok", **bench)
+        return 0
 
     if recipe.benchmark and args.bench_runs:
         try:

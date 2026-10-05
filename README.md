@@ -142,6 +142,7 @@ Projects that we've tested e2e that translate to Rust:
 - [cJSON](https://github.com/DaveGamble/cJSON)
 - [libyaml](https://github.com/yaml/libyaml)
 - [Lua](https://www.lua.org)
+- [zlib](https://zlib.net)
 
 ### In Progress
 

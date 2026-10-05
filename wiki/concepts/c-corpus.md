@@ -121,7 +121,7 @@ python3 tools/c_corpus_sweep.py [PROJECT ...] [--flavor clang|gcc|msvc] [--jobs 
 ## End to end
 
 ```
-python3 tools/corpus/e2e.py redis|lua|cJSON|libyaml [--mode clang|gcc] [--setup] [--until STAGE] [--bench-runs N] [-- runtest args]
+python3 tools/corpus/e2e.py redis|lua|cJSON|libyaml|zlib [--mode clang|gcc] [--setup] [--until STAGE] [--bench-runs N] [-- runtest args]
 ```
 
 Translates one project's target with `slate translate-project`, links it
@@ -165,8 +165,9 @@ written once translation units are known.
 
 ### CMake libraries
 
-`CMakeLibrary` recipes (cJSON, libyaml) cover CMake/ninja projects whose
-product is a library. They have no bench stage.
+`CMakeLibrary` recipes (cJSON, libyaml, zlib) cover CMake/ninja projects
+whose product is a library. Their optional `benchmark` runs after the test
+stage, against the relinked tools in `test-tree/`.
 
 - native: the library's TUs are the objects `ninja -t query <library>`
   lists (symlinks such as `libcjson.so` are resolved first), matched to
@@ -175,9 +176,12 @@ product is a library. They have no bench stage.
   `cdylib` with `translate_tests`).
 - test: every CTest executable plus the recipe's `tools`, rebuilt into
   `test-tree/`. By default each is relinked from its native link command
-  (`ninja -t commands`) with the library swapped for the translated archive
-  and Rust's native libs appended. A ctest case passes when it exits 0 and
-  its stdout matches the native run. Each `Differential` then runs a tool
+  (`ninja -t commands`) with the library and its `variants` (other builds
+  of it, such as zlib's `libz.so` next to `libz.a`) swapped for the
+  translated archive and Rust's native libs appended. A ctest case passes
+  when it exits 0 and its stdout matches the native run. Cases whose
+  command is not an in-build executable (zlib's `cmake` packaging and
+  `llvm-cov` cases) are listed as skipped. Each `Differential` then runs a tool
   over every input glob with the same `argv[0]` for both builds and must
   match the native exit code and stdout.
 - `translate_tests` (cJSON): its unity tests `#include "../cJSON.c"`, so
@@ -189,6 +193,12 @@ product is a library. They have no bench stage.
 - cJSON (2026-10-05): 1 TU, 19/19 ctest. libyaml: 8 TUs, 3/3 ctest, and
   100/100 differential runs (`run-*`/`example-*` over `examples/*.yaml`
   and `regression-inputs/*`).
+- zlib (2026-10-05): 15 TUs from `libz.a`, 5/5 ctest (examples, static
+  examples, `infcover`), 10 skipped, and 210/210 byte-identical
+  `minigzip -c` runs (default, `-1`, `-9`, `-h`, `-r`, `-f`). The benchmark
+  pipes a 64 MiB input built from the sources and `zlib.3.pdf` through
+  `minigzip`, `minigzip -9`, and `minigzip -d`, and requires identical
+  output: geomean 1.04x native.
 
 ## Missing dependencies
 
