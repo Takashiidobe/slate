@@ -172,7 +172,7 @@ impl Preprocessor<'_> {
             return Ok(Some(token));
         };
         let Some(entry) = self.macros.get(name.as_str()) else {
-            return Ok(Some(token));
+            return self.expand_has_check(token, stream);
         };
         if entry.definition.builtin {
             return Ok(Some(
@@ -263,6 +263,54 @@ impl Preprocessor<'_> {
         Ok(None)
     }
 
+    fn expand_has_check(
+        &mut self,
+        token: PPToken,
+        stream: &mut Stream,
+    ) -> Result<Option<PPToken>, PPFailure> {
+        let Token::Ident(name) = &token.token.value else {
+            return Ok(Some(token));
+        };
+        if !super::is_defined_operator(name, self.dialect.flavor())
+            || matches!(
+                name.as_str(),
+                "__has_include" | "__has_include_next" | "__has_embed"
+            )
+            || !stream.next_is_lparen()
+        {
+            return Ok(Some(token));
+        }
+        let Some(lparen) = self.next_raw(stream, true)? else {
+            return Ok(Some(token));
+        };
+        let invocation = self.collect_invocation(stream, lparen)?.into_tokens();
+        let [lparen, operand @ .., rparen] = invocation.as_slice() else {
+            stream.push_front(invocation);
+            return Ok(Some(token));
+        };
+        let operand = if expands_has_operand(name, self.dialect.flavor()) {
+            self.expand_isolated(operand.to_vec())?
+        } else {
+            operand.to_vec()
+        };
+        let check: Vec<Span<Token>> = [&token, lparen]
+            .into_iter()
+            .chain(&operand)
+            .chain([rparen])
+            .map(|token| token.token.clone())
+            .collect();
+        match super::expand_has_checks(&check, self.dialect).as_slice() {
+            [value] => Ok(Some(PPToken {
+                token: value.clone(),
+                ..token
+            })),
+            _ => {
+                stream.push_front(invocation);
+                Ok(Some(token))
+            }
+        }
+    }
+
     fn hide_all(&mut self, mut tokens: Vec<PPToken>, hide: HideSet) -> Vec<PPToken> {
         for token in &mut tokens {
             token.hide = self.hide_sets.union(token.hide, hide);
@@ -335,7 +383,6 @@ impl Preprocessor<'_> {
             .collect())
     }
 
-    // `defined` and `__has_*` take their operands unexpanded, even when an expansion produced them
     pub(super) fn expand_condition(
         &mut self,
         tokens: &[Span<Token>],
@@ -346,7 +393,12 @@ impl Preprocessor<'_> {
         while let Some(token) = self.next_raw(&mut stream, false)? {
             let operator = match &token.token.value {
                 Token::Ident(name) if name == "defined" => Some(true),
-                Token::Ident(name) if name.starts_with("__has_") => Some(false),
+                Token::Ident(name)
+                    if name.starts_with("__has_")
+                        && !expands_has_operand(name, self.dialect.flavor()) =>
+                {
+                    Some(false)
+                }
                 Token::Ident(name)
                     if name == "__is_identifier" && self.dialect.flavor().is_clang() =>
                 {
@@ -694,7 +746,17 @@ fn invocation_arguments(tokens: &[Span<Token>], start: usize) -> Option<SplitArg
     None
 }
 
-// one entry per parameter, then one for __VA_ARGS__
+fn expands_has_operand(name: &str, flavor: CompilerFlavor) -> bool {
+    match name {
+        "__has_attribute"
+        | "__has_c_attribute"
+        | "__has_cpp_attribute"
+        | "__has_declspec_attribute" => true,
+        "__has_builtin" | "__has_feature" | "__has_extension" => flavor.is_gcc(),
+        _ => false,
+    }
+}
+
 fn prescanned_parameters(definition: &MacroDef, parameters: &[String]) -> Vec<bool> {
     let replacement = &definition.replacement;
     if replacement

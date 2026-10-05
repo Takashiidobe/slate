@@ -193,6 +193,14 @@ token plus an interned `HideSet`; file tokens start empty.
   `defined` or `__has_*` name takes its operand unexpanded from the stream.
   That includes a `defined` an expansion produced, with its operand from
   the expansion or from the directive after it, as gcc and clang do.
+  The exception is a query whose operand the compiler macro-expands
+  (`expands_has_operand`): the attribute queries under both flavors, plus
+  `__has_builtin`/`__has_feature`/`__has_extension` under gcc only.
+  These go through the expander like any token.
+- Running text: the expander evaluates every `__has_*` query the flavor
+  defines (`expand_has_check`), with the same operand rule, because gcc and
+  clang accept them outside directives. `__has_include`, `__has_include_next`
+  and `__has_embed` stay unevaluated, as both compilers reject them there.
 - clang only: `__has_declspec_attribute` answers from
   `attribute_support::declspec_registered`, and only with
   `microsoft_extensions` (0 on Linux, as clang without `-fms-extensions`).
