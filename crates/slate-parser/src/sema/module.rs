@@ -127,9 +127,9 @@ fn resolve_module(
             *length = Some(1);
         }
     }
-    lower
-        .finish_module(unit)
-        .map_err(|error| unlocated(error.checked()))?;
+    lower.finish_module(unit).map_err(|error| SemaErrors {
+        errors: vec![SemaError::resolve_error(&error.checked(), files)],
+    })?;
     let diagnostics = with_sources(lower.types.diagnostics, files)?;
     Ok((lower.module, diagnostics))
 }
@@ -140,12 +140,6 @@ fn item_error(error: &ResolveError, item: &ast::Decl) -> SemaError {
         error.loc().unwrap_or(item.expansion),
         error.to_string(),
     )
-}
-
-fn unlocated(error: ResolveError) -> SemaErrors {
-    SemaErrors {
-        errors: vec![SemaError::unlocated(error.to_string())],
-    }
 }
 
 impl Lowerer {
@@ -629,6 +623,7 @@ impl Lowerer {
             }
         }
         for global in &mut self.module.globals {
+            let loc = global.expansion;
             let global = &mut global.value;
             let id = global.variable.id;
             if let Some(linkage) = self.types.entities.linkage(id) {
@@ -647,11 +642,14 @@ impl Lowerer {
                 }
             }
             let request = self.types.entities.request(&global.variable.id);
-            global.variable.alignment = self.types.object_alignment_override(
-                &global.variable.ty,
-                self.types.entities.ty(&id),
-                request.alignment,
-            )?;
+            global.variable.alignment = self
+                .types
+                .object_alignment_override(
+                    &global.variable.ty,
+                    self.types.entities.ty(&id),
+                    request.alignment,
+                )
+                .map_err(|error| error.checked().at(loc))?;
             let symbol = &global.symbol;
             let tentative = global.definition
                 && global.variable.initializer.is_none()

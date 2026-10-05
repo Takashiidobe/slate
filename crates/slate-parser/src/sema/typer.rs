@@ -1911,7 +1911,7 @@ impl TypeResolver {
             return Err(FAILED_DEFINITION);
         }
         let layout = self
-            .sizeof_storage(fixed_element(&ty).clone(), atomic)
+            .measured_storage(&ty, atomic, sizeof)
             .map_err(|error| if sizeof { sizeof_error(error) } else { error })?;
         self.declared_storage(c, layout)?;
         Ok(())
@@ -1940,7 +1940,7 @@ impl TypeResolver {
         }
         let atomic = self.access_of(c).atomic;
         let layout = self
-            .sizeof_storage(fixed_element(&ty).clone(), atomic)
+            .measured_storage(&ty, atomic, sizeof)
             .map_err(|error| if sizeof { sizeof_error(error) } else { error })?;
         self.declared_storage(c, layout)?;
         Ok(())
@@ -2109,12 +2109,5 @@ pub(super) fn sizeof_error(error: ResolveError) -> ResolveError {
             ResolveError::Rejected("sizeof of incomplete type")
         }
         error => error,
-    }
-}
-
-pub(super) fn fixed_element(ty: &Type) -> &Type {
-    match ty {
-        Type::VariableArray { element, .. } => fixed_element(element),
-        _ => ty,
     }
 }

@@ -570,7 +570,11 @@ impl TypeResolver {
                     });
                 }
                 let layout = self
-                    .sizeof_storage(self.ir_type(ty), self.ctypes.quals(ty).is_atomic)
+                    .measured_storage(
+                        &self.ir_type(ty),
+                        self.ctypes.quals(ty).is_atomic,
+                        matches!(e.value, ExprKind::SizeOfExpr(_)),
+                    )
                     .map_err(|error| match error {
                         ResolveError::Rejected("incomplete field type")
                             if matches!(e.value, ExprKind::SizeOfExpr(_)) =>
@@ -691,7 +695,7 @@ impl TypeResolver {
                 let atomic = self.ctypes.quals(resolved).is_atomic;
                 let ty = self.ir_type(resolved);
                 let layout = self
-                    .sizeof_storage(ty, atomic)
+                    .measured_storage(&ty, atomic, matches!(e.value, ExprKind::SizeOfType { .. }))
                     .map_err(|error| match error {
                         ResolveError::Rejected("incomplete field type") => {
                             ResolveError::Rejected("sizeof of incomplete type")
@@ -2724,6 +2728,24 @@ impl TypeResolver {
         self.qualified_storage(ty, atomic)
     }
 
+    pub(super) fn measured_storage(
+        &self,
+        mut ty: &Type,
+        atomic: bool,
+        sizeof: bool,
+    ) -> Result<StorageLayout, ResolveError> {
+        while !sizeof
+            && let Type::VariableArray { element, .. }
+            | Type::Array {
+                element,
+                length: None,
+            } = ty
+        {
+            ty = element;
+        }
+        self.sizeof_storage(ty.clone(), atomic)
+    }
+
     fn atomic_layout(&self, layout: StorageLayout) -> StorageLayout {
         match self.dialect.flavor() {
             CompilerFlavor::Gcc => layout,
@@ -2761,7 +2783,20 @@ impl TypeResolver {
         if requested.is_none() && large_array.is_none() && !typedef_aligned && !unaligned {
             return Ok(None);
         }
-        let storage = self.storage(ty.clone())?;
+        let storage = match self.storage(ty.clone()) {
+            Err(ResolveError::Rejected("incomplete field type")) => {
+                let typedef = declared
+                    .filter(|_| !matches!(self.dialect.flavor(), CompilerFlavor::Clang))
+                    .and_then(|q| self.ctypes.typedef_alignment(q));
+                return Ok(match (requested, typedef) {
+                    (Some(requested), Some(typedef)) => {
+                        Some(self.effective_alignment(requested, typedef))
+                    }
+                    (requested, typedef) => requested.or(typedef),
+                });
+            }
+            storage => storage?,
+        };
         let natural = u64::from(storage.alignment_bytes);
         let typed = match declared {
             Some(q) => u64::from(self.declared_storage(q, storage)?.alignment_bytes),

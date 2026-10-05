@@ -226,6 +226,12 @@ impl SemaError {
         }
     }
 
+    pub(super) fn resolve_error(error: &super::numeric::ResolveError, files: &Files) -> Self {
+        let mut resolved = Self::unlocated(error.to_string());
+        resolved.loc = error.loc();
+        resolved.with_source(files)
+    }
+
     fn with_source(mut self, files: &Files) -> Self {
         let Some(loc) = self.loc else {
             return self;

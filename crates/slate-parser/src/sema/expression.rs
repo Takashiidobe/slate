@@ -2436,7 +2436,7 @@ impl Lowerer {
                 }
                 let layout = self
                     .types
-                    .sizeof_storage(super::typer::fixed_element(&ty).clone(), atomic)
+                    .measured_storage(&ty, atomic, matches!(e.value, ExprKind::SizeOfType { .. }))
                     .map_err(ResolveError::checked)?;
                 let layout = self.types.declared_storage(resolved, layout)?;
                 let value = if matches!(e.value, ExprKind::SizeOfType { .. }) {
@@ -2466,7 +2466,11 @@ impl Lowerer {
                 }
                 let layout = self
                     .types
-                    .sizeof_storage(super::typer::fixed_element(&ty).clone(), access.atomic)
+                    .measured_storage(
+                        &ty,
+                        access.atomic,
+                        matches!(e.value, ExprKind::SizeOfExpr(_)),
+                    )
                     .map_err(ResolveError::checked)?;
                 let layout = self.types.declared_storage(c, layout)?;
                 let amount = if matches!(e.value, ExprKind::SizeOfExpr(_)) {

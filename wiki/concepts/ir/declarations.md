@@ -154,6 +154,16 @@ alignment):
   entities. `__alignof__` of a member is its laid-out alignment (`packed` 1,
   `packed, aligned(2)` 2). A typedef redeclared in one scope keeps its
   largest `aligned`.
+- `alignof` of an incomplete array is its element's (`TypeResolver::
+  measured_storage`): `__alignof__(tfm->ctx)` of a flexible array member
+  gives the member's laid-out alignment (the kernel's
+  `crypto_tfm_ctx_alignment`), and clang's `__alignof__(short[])` is 2.
+  `sizeof` of one is still rejected (`ir_alignof_flexible_array.c`).
+- An object whose type stays incomplete has no natural alignment, so its
+  request prints as is: `extern struct rq rq __attribute__((aligned(64)))`
+  gives `[align=64]`. clang ignores a typedef's `aligned` there (its LLVM IR
+  says `align 1`); gcc keeps it and takes the larger of the two
+  (`ir_incomplete_aligned_extern.c`).
 - `[common]` marks an external tentative definition: no initializer
   anywhere, not thread-local, not `alias`/`section`/`weak`/`selectany`.
   `common` on any declaration beats `nocommon`, which beats
