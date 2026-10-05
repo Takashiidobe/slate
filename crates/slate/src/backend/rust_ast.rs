@@ -184,7 +184,6 @@ pub enum Lint {
     DeadCode,
     Unused,
     NonCamelCaseTypes,
-    NonSnakeCase,
     NonUpperCaseGlobals,
     ArithmeticOverflow,
     UnconditionalPanic,
@@ -199,7 +198,6 @@ impl Lint {
             Lint::DeadCode => "dead_code",
             Lint::Unused => "unused",
             Lint::NonCamelCaseTypes => "non_camel_case_types",
-            Lint::NonSnakeCase => "non_snake_case",
             Lint::NonUpperCaseGlobals => "non_upper_case_globals",
             Lint::ArithmeticOverflow => "arithmetic_overflow",
             Lint::UnconditionalPanic => "unconditional_panic",
@@ -1379,23 +1377,50 @@ impl BinOp {
         }
     }
 
-    // higher binds tighter; mirrors Rust's operator precedence.
-    pub fn precedence(self) -> u8 {
+    pub fn precedence(self) -> Precedence {
         match self {
-            BinOp::Or => 3,
-            BinOp::And => 4,
-            BinOp::Eq | BinOp::Ne | BinOp::Lt | BinOp::Gt | BinOp::Le | BinOp::Ge => 5,
-            BinOp::BitOr => 6,
-            BinOp::BitXor => 7,
-            BinOp::BitAnd => 8,
-            BinOp::Shl | BinOp::Shr => 9,
-            BinOp::Add | BinOp::Sub => 10,
-            BinOp::Mul | BinOp::Div | BinOp::Rem => 11,
+            BinOp::Or => Precedence::Or,
+            BinOp::And => Precedence::And,
+            BinOp::Eq | BinOp::Ne | BinOp::Lt | BinOp::Gt | BinOp::Le | BinOp::Ge => {
+                Precedence::Compare
+            }
+            BinOp::BitOr => Precedence::BitOr,
+            BinOp::BitXor => Precedence::BitXor,
+            BinOp::BitAnd => Precedence::BitAnd,
+            BinOp::Shl | BinOp::Shr => Precedence::Shift,
+            BinOp::Add | BinOp::Sub => Precedence::Add,
+            BinOp::Mul | BinOp::Div | BinOp::Rem => Precedence::Mul,
         }
     }
 
     pub fn is_comparison(self) -> bool {
-        self.precedence() == 5
+        self.precedence() == Precedence::Compare
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[repr(u8)]
+pub enum Precedence {
+    Range = 2,
+    Or = 3,
+    And = 4,
+    Cast = 5,
+    Compare = 6,
+    BitOr = 7,
+    BitXor = 8,
+    BitAnd = 9,
+    Shift = 10,
+    Add = 11,
+    Mul = 12,
+    CastOperand = 13,
+    Prefix = 14,
+    Call = 15,
+    Atom = 16,
+}
+
+impl Precedence {
+    pub fn level(self) -> u8 {
+        self as u8
     }
 }
 

@@ -1,41 +1,28 @@
-//! Emit the backend's Rust AST as Rust source text.
-//!
-//! [`Codegen`](crate::backend::codegen::Codegen) writes structured AST nodes to any
-//! [`std::fmt::Write`] implementation,
-//! while the `*_to_string` helpers provide convenient allocation-based wrappers.
-
 use std::fmt::{self, Write};
 
 use crate::backend::rust_ast::{
     Abi, AsmDialect, AsmOperand, AsmReg, AtomicOrdering, AtomicPlace, AtomicRmwOp, AtomicType,
     Attr, Block, Cfg, Comment, CrateAttr, Derive, Expr, ExternDecl, FnDef, GenericParam, ImplBlock,
-    ImplItem, InlineHint, Item, Method, Path, Program, RecordDef, RecordField, Repr, RustValue,
-    SelfKind, Stmt, StructDef, StructFields, TraitBound, TraitRef, Type,
+    ImplItem, InlineHint, Item, Method, Path, Pattern, Precedence, Program, RecordDef, RecordField,
+    Repr, RustValue, SelfKind, Stmt, StructDef, StructFields, TraitBound, TraitRef, Type,
 };
 
 const INDENT: &str = "    ";
 
-const PREC_CAST: u8 = 4;
-const PREC_RANGE: u8 = 2;
-const PREC_CAST_OPERAND: u8 = 12;
-const PREC_PREFIX: u8 = 13;
-const PREC_CALL: u8 = 14;
-const PREC_ATOM: u8 = 15;
-
-fn expr_prec(expr: &Expr) -> u8 {
+fn expr_prec(expr: &Expr) -> Precedence {
     match expr {
-        Expr::Range { .. } => PREC_RANGE,
+        Expr::Range { .. } => Precedence::Range,
         Expr::Binary { op, .. } => op.precedence(),
-        Expr::Cast { .. } => PREC_CAST,
-        Expr::Unary { .. } | Expr::Ref { .. } => PREC_PREFIX,
+        Expr::Cast { .. } => Precedence::Cast,
+        Expr::Unary { .. } | Expr::Ref { .. } => Precedence::Prefix,
         Expr::Call { .. }
         | Expr::MethodCall { .. }
         | Expr::MethodCallGeneric { .. }
         | Expr::Field { .. }
         | Expr::TupleField { .. }
         | Expr::ArrayPtr { .. }
-        | Expr::Index { .. } => PREC_CALL,
-        _ => PREC_ATOM,
+        | Expr::Index { .. } => Precedence::Call,
+        _ => Precedence::Atom,
     }
 }
 
@@ -371,7 +358,7 @@ impl<W: Write> Codegen<W> {
         }
         self.attrs(&[Attr::Repr(repr)])?;
         if r.allow_non_camel_case {
-            self.out.write_str("#[expect(non_camel_case_types)]\n")?;
+            self.out.write_str("#[allow(non_camel_case_types)]\n")?;
         }
         if record_fields_are_copy(&r.fields) {
             self.out.write_str("#[derive(Clone, Copy)]\n")?;
@@ -793,7 +780,6 @@ impl<W: Write> Codegen<W> {
         Ok(())
     }
 
-    /// Emits a Rust statement.
     pub fn stmt(&mut self, stmt: &Stmt) -> fmt::Result {
         match stmt {
             Stmt::Comment(comment) => self.comment(comment, 0),
@@ -1039,7 +1025,6 @@ impl<W: Write> Codegen<W> {
         }
     }
 
-    /// Emits a Rust expression.
     pub fn expr(&mut self, expr: &Expr) -> fmt::Result {
         self.expr_prec(expr, 0)
     }
@@ -1053,7 +1038,7 @@ impl<W: Write> Codegen<W> {
     }
 
     fn expr_prec(&mut self, expr: &Expr, min: u8) -> fmt::Result {
-        if expr_prec(expr) < min {
+        if expr_prec(expr).level() < min {
             self.parenthesized(expr)
         } else {
             self.expr_raw(expr)
@@ -1091,7 +1076,7 @@ impl<W: Write> Codegen<W> {
                 self.prefix_operand(expr)
             }
             Expr::Binary { op, lhs, rhs } => {
-                let p = op.precedence();
+                let p = op.precedence().level();
                 let (lmin, rmin) = if op.is_comparison() {
                     (p + 1, p + 1)
                 } else {
@@ -1111,13 +1096,13 @@ impl<W: Write> Codegen<W> {
                 self.range_endpoint(end)
             }
             Expr::Call { func, args, .. } => {
-                self.expr_prec(func, PREC_CALL)?;
+                self.expr_prec(func, Precedence::Call.level())?;
                 self.out.write_char('(')?;
                 self.args(args)?;
                 self.out.write_char(')')
             }
             Expr::MethodCall { recv, method, args } => {
-                self.expr_prec(recv, PREC_CALL)?;
+                self.expr_prec(recv, Precedence::Call.level())?;
                 self.out.write_char('.')?;
                 self.ident(method)?;
                 self.out.write_char('(')?;
@@ -1130,7 +1115,7 @@ impl<W: Write> Codegen<W> {
                 type_args,
                 args,
             } => {
-                self.expr_prec(recv, PREC_CALL)?;
+                self.expr_prec(recv, Precedence::Call.level())?;
                 self.out.write_char('.')?;
                 self.ident(method)?;
                 self.out.write_str("::<")?;
@@ -1145,16 +1130,16 @@ impl<W: Write> Codegen<W> {
                 self.out.write_char(')')
             }
             Expr::Field { base, field } => {
-                self.expr_prec(base, PREC_CALL)?;
+                self.expr_prec(base, Precedence::Call.level())?;
                 self.out.write_char('.')?;
                 self.ident(field)
             }
             Expr::TupleField { base, index } => {
-                self.expr_prec(base, PREC_CALL)?;
+                self.expr_prec(base, Precedence::Call.level())?;
                 write!(self.out, ".{index}")
             }
             Expr::ArrayPtr { array, mutable } => {
-                self.expr_prec(array, PREC_CALL)?;
+                self.expr_prec(array, Precedence::Call.level())?;
                 self.out.write_str(if *mutable {
                     ".as_mut_ptr()"
                 } else {
@@ -1162,9 +1147,9 @@ impl<W: Write> Codegen<W> {
                 })
             }
             Expr::Index { base, index } => {
-                self.expr_prec(base, PREC_CALL)?;
+                self.expr_prec(base, Precedence::Call.level())?;
                 self.out.write_char('[')?;
-                self.expr_prec(index, PREC_CALL)?;
+                self.expr_prec(index, Precedence::Call.level())?;
                 self.out.write_char(']')
             }
             Expr::StructLit { name, fields } => {
@@ -1266,7 +1251,7 @@ impl<W: Write> Codegen<W> {
                 if starts_with_brace_expr(expr) {
                     self.parenthesized(expr)?;
                 } else {
-                    self.expr_prec(expr, PREC_CAST_OPERAND)?;
+                    self.expr_prec(expr, Precedence::CastOperand.level())?;
                 }
                 self.out.write_str(" as ")?;
                 self.ty(ty)
@@ -1409,7 +1394,7 @@ impl<W: Write> Codegen<W> {
         if matches!(expr, Expr::Binary { .. }) {
             self.parenthesized(expr)
         } else {
-            self.expr_prec(expr, PREC_RANGE + 1)
+            self.expr_prec(expr, Precedence::Range.level() + 1)
         }
     }
 
@@ -1432,7 +1417,7 @@ impl<W: Write> Codegen<W> {
         if matches!(expr, Expr::Unary { .. } | Expr::Ref { .. }) {
             self.parenthesized(expr)
         } else {
-            self.expr_prec(expr, PREC_PREFIX)
+            self.expr_prec(expr, Precedence::Prefix.level())
         }
     }
 
@@ -1481,25 +1466,25 @@ impl<W: Write> Codegen<W> {
         }
     }
 
-    fn pattern(&mut self, pattern: &crate::backend::rust_ast::Pattern) -> fmt::Result {
+    fn pattern(&mut self, pattern: &Pattern) -> fmt::Result {
         match pattern {
-            crate::backend::rust_ast::Pattern::Wildcard => self.out.write_char('_'),
-            crate::backend::rust_ast::Pattern::Binding(name) => self.ident(name.as_str()),
-            crate::backend::rust_ast::Pattern::I64(n) => write!(self.out, "{n}"),
-            crate::backend::rust_ast::Pattern::I128(n) => write!(self.out, "{n}"),
-            crate::backend::rust_ast::Pattern::U128(n) => write!(self.out, "{n}"),
-            crate::backend::rust_ast::Pattern::InclusiveRange { start, end } => {
+            Pattern::Wildcard => self.out.write_char('_'),
+            Pattern::Binding(name) => self.ident(name.as_str()),
+            Pattern::I64(n) => write!(self.out, "{n}"),
+            Pattern::I128(n) => write!(self.out, "{n}"),
+            Pattern::U128(n) => write!(self.out, "{n}"),
+            Pattern::InclusiveRange { start, end } => {
                 write!(self.out, "{start}..={end}")
             }
-            crate::backend::rust_ast::Pattern::InclusiveRangeU128 { start, end } => {
+            Pattern::InclusiveRangeU128 { start, end } => {
                 write!(self.out, "{start}..={end}")
             }
-            crate::backend::rust_ast::Pattern::Guarded { bind, cond } => {
+            Pattern::Guarded { bind, cond } => {
                 self.ident(bind.as_str())?;
                 self.out.write_str(" if ")?;
                 self.expr(cond)
             }
-            crate::backend::rust_ast::Pattern::Or(alts) => {
+            Pattern::Or(alts) => {
                 for (i, alt) in alts.iter().enumerate() {
                     if i > 0 {
                         self.out.write_str(" | ")?;
@@ -1508,7 +1493,7 @@ impl<W: Write> Codegen<W> {
                 }
                 Ok(())
             }
-            crate::backend::rust_ast::Pattern::TupleStruct { name, fields } => {
+            Pattern::TupleStruct { name, fields } => {
                 self.ident_path(name.as_str())?;
                 self.out.write_char('(')?;
                 for (i, field) in fields.iter().enumerate() {
