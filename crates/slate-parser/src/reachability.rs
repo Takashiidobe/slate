@@ -24,6 +24,10 @@ pub fn filter_translation_unit(
             .iter()
             .filter(|tag| reachability.reachable_tags.contains(&tag.value.id))
             .cloned()
+            .map(|mut tag| {
+                reachability.retain_root_comments(&mut tag.value.body);
+                tag
+            })
             .collect(),
     }
 }
@@ -76,6 +80,7 @@ struct Reachability<'a> {
     symbols: HashMap<String, Vec<usize>>,
     reachable: HashSet<usize>,
     reachable_tags: HashSet<TagId>,
+    root_files: Vec<FileId>,
 }
 
 impl<'a> Reachability<'a> {
@@ -109,10 +114,14 @@ impl<'a> Reachability<'a> {
             symbols,
             reachable: HashSet::new(),
             reachable_tags: HashSet::new(),
+            root_files: Vec::new(),
         }
     }
 
     fn mark_roots(&mut self, root_file: FileId, forced_roots: &[FileId]) {
+        self.root_files = std::iter::once(root_file)
+            .chain(forced_roots.iter().copied())
+            .collect();
         let mut roots = self
             .nodes
             .iter()
@@ -133,6 +142,19 @@ impl<'a> Reachability<'a> {
         }
     }
 
+    fn retain_root_comments(&self, body: &mut TagBody) {
+        match body {
+            TagBody::Record(fields) => fields.retain(|item| {
+                !matches!(item.value, FieldItemKind::Comment(_))
+                    || self.root_files.contains(&item.provenance.file)
+            }),
+            TagBody::Enum { enumerators, .. } => enumerators.retain(|item| {
+                !matches!(item.value, EnumItemKind::Comment(_))
+                    || self.root_files.contains(&item.provenance.file)
+            }),
+        }
+    }
+
     fn mark(&mut self, id: usize) {
         if !self.reachable.insert(id) {
             return;
@@ -141,6 +163,7 @@ impl<'a> Reachability<'a> {
         while previous > 0 {
             previous -= 1;
             if self.nodes[previous].expansion.file != self.nodes[id].expansion.file
+                || !self.root_files.contains(&self.nodes[previous].provenance.file)
                 || !matches!(self.nodes[previous].value, DeclKind::Comment(_))
             {
                 break;
