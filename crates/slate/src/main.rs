@@ -697,6 +697,14 @@ fn imported_commons(units: &[SlateUnit]) -> BTreeMap<String, BTreeSet<String>> {
         .collect()
 }
 
+fn unit_file_stem(stem: &str) -> String {
+    if stem == "main" {
+        "__slate_unit_main".to_string()
+    } else {
+        stem.to_string()
+    }
+}
+
 fn translate_slate_project(
     crate_dir: &Path,
     commands: Vec<compile_commands::CompileCommand>,
@@ -725,9 +733,6 @@ fn translate_slate_project(
                 return Err(format!(
                     "--crate-type applies only to library projects, but {root} defines main"
                 ));
-            }
-            if root != "main" && units.iter().any(|unit| unit.stem == "main") {
-                return Err("a non-root unit maps to module main".into());
             }
             None
         }
@@ -790,7 +795,7 @@ fn translate_slate_project(
         .filter(|(stem, _)| root.as_ref() != Some(stem))
         .map(|(stem, _)| rust_ast::Item::Mod {
             name: rust_ast::Ident::new(format!("__slate_unit_{stem}")),
-            path: Some(format!("{stem}.rs")),
+            path: Some(format!("{}.rs", unit_file_stem(stem))),
         })
         .collect();
     let mut outputs = Vec::new();
@@ -837,7 +842,7 @@ fn translate_slate_project(
                 .insert(0, rust_ast::Item::CrateAttrs(crate_attrs));
             "main".to_string()
         } else {
-            stem
+            unit_file_stem(&stem)
         };
         outputs.push((crate_src.join(file).with_extension("rs"), program));
     }

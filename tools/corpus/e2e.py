@@ -37,6 +37,7 @@ class Recipe:
     libs: str
     ldflags: list[str]
     host_includes: list[str] = field(default_factory=list)
+    native_objects: list[str] = field(default_factory=list)
     links: dict[str, str] = field(default_factory=dict)
     test: list[str] = field(default_factory=list)
     test_copy: list[str] = field(default_factory=list)
@@ -328,7 +329,8 @@ def translation_units(project_dir, recipe, database, variables, flavor):
     if isinstance(recipe, MakeLibrary):
         objects = archive_members(project_dir / recipe.make_dir, recipe.archives)
     else:
-        objects = [word for name in recipe.objects for word in variables[name].split()]
+        objects = [word for name in recipe.objects for word in (variables[name].split() if name in variables else [name])
+                   if word not in recipe.native_objects]
     wanted = {Path(obj).stem: obj for obj in objects}
     found = {}
     for entry in json.loads(database.read_text()):
@@ -696,6 +698,7 @@ def link_flags(project_dir, recipe, variables):
     flags = [str((make_dir / archive).resolve()) for archive in recipe.archives]
     for word in variables[recipe.libs].split():
         flags.append(str((make_dir / word).resolve()) if word.endswith(".a") else word)
+    flags += [str((make_dir / obj).resolve()) for obj in recipe.native_objects]
     flags += recipe.ldflags
     return " ".join(f"-C link-arg={flag}" for flag in flags)
 
@@ -776,6 +779,17 @@ RECIPES = {
         test_copy=["runtest", "tests", "redis.conf", "sentinel.conf", "utils"],
         test_build=[["make", "-C", "tests/modules"]],
         benchmark=redis_benchmark,
+    ),
+    "cpython": Recipe(
+        target="python",
+        make_dir="build-clang",
+        objects=["Programs/python.o", "LIBRARY_OBJS"],
+        archives=[],
+        libs="LIBS",
+        ldflags=["-Wl,-E", "-lm"],
+        host_includes=["/usr/include"],
+        native_objects=["Python/asm_trampoline.o"],
+        links={"build-clang/python": "target"},
     ),
     "lua": Recipe(
         target="lua",
@@ -908,7 +922,7 @@ def main():
         missing = [] if (build_dir / recipe.library).exists() else [recipe.library]
         units = library_units(build_dir, recipe, database, args.mode)
     else:
-        names = recipe.tools if make_library else [*recipe.objects, recipe.libs]
+        names = recipe.tools if make_library else [*(name for name in recipe.objects if not name.endswith(".o")), recipe.libs]
         variables = make_variables(project_dir, recipe, COMPILERS[args.mode], names)
         missing = native_check(project_dir, recipe, variables)
         units = translation_units(project_dir, recipe, database, variables, args.mode)
