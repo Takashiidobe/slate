@@ -137,7 +137,13 @@
 - Raw slot pointers avoid creating fresh mutable references that could
   invalidate C pointers retained across states.
 - CFG construction borrows parser IR and preserves source sites for ordinary
-  statement lowering. Computed goto and asm goto remain unsupported.
+  statement lowering. Asm goto remains unsupported.
+- `label_addr` lowers to the constant pointer `label id + 1`, so label tables
+  (`static void *t[] = {&&a}`) and label deltas (`&&a - &&b`, folded to an
+  integer) are constant initializers; offsets from a label address use
+  `wrapping_offset`. Computed goto matches `target as usize` against every
+  label in the function, each arm jumping to that label's state, and any
+  other value is `unreachable!()`.
 - Dispatch can retain costly copies of locals at the common loop merge even in
   release builds; inspect optimized code before relying on elimination.
 - Retained Rust-to-Rust structuring and proposed tail-call optimization are in

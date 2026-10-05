@@ -41,6 +41,8 @@ class Recipe:
     test: list[str] = field(default_factory=list)
     test_copy: list[str] = field(default_factory=list)
     test_build: list[list[str]] = field(default_factory=list)
+    test_dir: str = ""
+    test_patches: dict[str, list[tuple[str, str]]] = field(default_factory=dict)
     benchmark: Callable | None = None
 
 
@@ -68,12 +70,12 @@ def log(message):
     print(message, flush=True)
 
 
-def run(command, output, cwd=ROOT, env=None, timeout=None):
+def run(command, output, cwd=ROOT, env=None, timeout=None, stdin=None):
     log(f"$ {shlex.join(map(str, command))}")
     start = time.perf_counter()
     with output.open("w") as handle:
         try:
-            result = subprocess.run(command, cwd=cwd, env=env, stdout=handle,
+            result = subprocess.run(command, cwd=cwd, env=env, stdin=stdin, stdout=handle,
                                     stderr=subprocess.STDOUT, timeout=timeout)
             code = result.returncode
         except subprocess.TimeoutExpired:
@@ -158,6 +160,47 @@ def redis_benchmark(project_dir, binary, out, args):
     lines = ["| test | native rps | translated rps | translated / native |", "| --- | ---: | ---: | ---: |"]
     lines += [f"| {test} | {medians['native'][test]:.0f} | {medians['translated'][test]:.0f} | {ratios[test]:.3f} |"
               for test in tests]
+    (out / "bench.md").write_text("\n".join(lines) + "\n")
+    log("\n".join(lines))
+    return {"geomean_ratio": round(statistics.geometric_mean(ratios.values()), 3), "report": "bench.md"}
+
+
+LUA_BENCHMARKS = {
+    "fib": "local function fib(n) if n < 2 then return n end return fib(n - 1) + fib(n - 2) end "
+           "assert(fib(32) == 2178309)",
+    "table": "local t = {} for i = 1, 3000000 do t[i] = i * 2 end local s = 0 "
+             "for k, v in ipairs(t) do s = s + v end assert(s > 0)",
+    "string": "local parts = {} for i = 1, 300000 do parts[#parts + 1] = string.format('%d:%x', i, i) end "
+              "local text = table.concat(parts, ',') local n = 0 "
+              "for word in text:gmatch('[^,]+') do n = n + #word:upper() end assert(n > 0)",
+    "sort": "math.randomseed(42) local t = {} for i = 1, 1000000 do t[i] = math.random() end "
+            "table.sort(t) for i = 2, #t do assert(t[i - 1] <= t[i]) end",
+    "closure": "local acc = 0 for i = 1, 3000000 do local f = function(x) return x + i end acc = f(acc) % 1000003 end "
+               "assert(acc >= 0)",
+}
+
+
+def lua_sample(binary, script):
+    start = time.perf_counter()
+    subprocess.run([binary, "-e", script], check=True, capture_output=True)
+    return time.perf_counter() - start
+
+
+def lua_benchmark(project_dir, binary, out, args):
+    native = project_dir / "lua"
+    samples = {kind: {name: [] for name in LUA_BENCHMARKS} for kind in ("native", "translated")}
+    for _ in range(args.bench_runs):
+        for name, script in LUA_BENCHMARKS.items():
+            samples["native"][name].append(lua_sample(native, script))
+            samples["translated"][name].append(lua_sample(binary, script))
+    medians = {kind: {name: statistics.median(times) for name, times in runs.items()}
+               for kind, runs in samples.items()}
+    ratios = {name: round(medians["translated"][name] / medians["native"][name], 3) for name in LUA_BENCHMARKS}
+    (out / "bench.json").write_text(json.dumps({"unit": "seconds", "samples": samples,
+                                                "medians": medians, "ratios": ratios}, indent=1) + "\n")
+    lines = ["| script | native s | translated s | translated / native |", "| --- | ---: | ---: | ---: |"]
+    lines += [f"| {name} | {medians['native'][name]:.3f} | {medians['translated'][name]:.3f} | {ratios[name]:.3f} |"
+              for name in LUA_BENCHMARKS]
     (out / "bench.md").write_text("\n".join(lines) + "\n")
     log("\n".join(lines))
     return {"geomean_ratio": round(statistics.geometric_mean(ratios.values()), 3), "report": "bench.md"}
@@ -492,6 +535,14 @@ def test_sandbox(project_dir, recipe, binary, out, jobs, name="test-tree"):
                             ignore=shutil.ignore_patterns("tmp", "*.o", "*.xo"))
         elif source.exists():
             shutil.copy2(source, sandbox / name)
+    for name, replacements in recipe.test_patches.items():
+        path = sandbox / name
+        text = path.read_text()
+        for old, new in replacements:
+            if old not in text:
+                raise RuntimeError(f"test patch for {name} no longer applies: {old!r}")
+            text = text.replace(old, new)
+        path.write_text(text)
     for link, kind in recipe.links.items():
         path = sandbox / link
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -526,6 +577,21 @@ RECIPES = {
         test_copy=["runtest", "tests", "redis.conf", "sentinel.conf", "utils"],
         test_build=[["make", "-C", "tests/modules"]],
         benchmark=redis_benchmark,
+    ),
+    "lua": Recipe(
+        target="lua",
+        make_dir=".",
+        objects=["LUA_O", "CORE_O", "AUX_O", "LIB_O"],
+        archives=[],
+        libs="LIBS",
+        ldflags=["-Wl,-E", "-ldl"],
+        links={"lua": "target"},
+        test=["../lua", "all.lua"],
+        test_copy=["testes"],
+        test_build=[["make", "-C", "testes/libs"]],
+        test_dir="testes",
+        test_patches={"testes/files.lua": [("    {\"sh -c 'kill -s HUP $$'\", \"exit\"},\n", "")]},
+        benchmark=lua_benchmark,
     ),
     "cJSON": CMakeLibrary(library="libcjson.so", translate_tests=True),
     "libyaml": CMakeLibrary(
@@ -664,12 +730,14 @@ def main():
     except RuntimeError as error:
         finish("test", "failed", error=str(error))
         return 1
-    code, seconds = run([*recipe.test, *args.test_args], out / "test.log", cwd=sandbox, timeout=args.test_timeout)
+    code, seconds = run([*recipe.test, *args.test_args], out / "test.log", cwd=sandbox / recipe.test_dir,
+                        timeout=args.test_timeout, stdin=subprocess.PIPE)
     timing = {}
     if args.native_test:
         native_sandbox = test_sandbox(project_dir, recipe, None, out, args.jobs, "test-tree-native")
         native_code, native_seconds = run([*recipe.test, *args.test_args], out / "test-native.log",
-                                          cwd=native_sandbox, timeout=args.test_timeout)
+                                          cwd=native_sandbox / recipe.test_dir, timeout=args.test_timeout,
+                                          stdin=subprocess.PIPE)
         timing = {"native_seconds": native_seconds, "native_exit": native_code,
                   "native_log": "test-native.log",
                   "test_over_native": round(seconds / native_seconds, 2) if native_seconds else None}

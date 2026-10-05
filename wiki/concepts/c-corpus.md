@@ -121,7 +121,7 @@ python3 tools/c_corpus_sweep.py [PROJECT ...] [--flavor clang|gcc|msvc] [--jobs 
 ## End to end
 
 ```
-python3 tools/corpus/e2e.py redis|cJSON|libyaml [--mode clang|gcc] [--setup] [--until STAGE] [--bench-runs N] [-- runtest args]
+python3 tools/corpus/e2e.py redis|lua|cJSON|libyaml [--mode clang|gcc] [--setup] [--until STAGE] [--bench-runs N] [-- runtest args]
 ```
 
 Translates one project's target with `slate translate-project`, links it
@@ -152,6 +152,16 @@ written once translation units are known.
   benchmark is pipelined `redis-benchmark` (`-P 16 -c 50`). The test sandbox
   links `redis-server`/`redis-check-*` to the translated binary and
   `redis-cli`/`redis-benchmark` to the native ones.
+- lua: the target is `LUA_O` + `CORE_O` + `AUX_O` + `LIB_O` (34 TUs),
+  linked with `-Wl,-E -ldl` so `testes/libs/*.so` resolve the API from the
+  binary. The test is `../lua all.lua` in the sandbox's `testes/` (after
+  `make -C testes/libs`), with stdin a closed pipe because `files.lua`
+  expects seeking stdin to fail. `test_patches` drops the
+  `sh -c 'kill -s HUP $$'` row of `files.lua`: it expects `exit`, but bash
+  as `/bin/sh` execs the last command and reports `signal`, failing natively
+  too. The benchmark times five `lua -e` scripts (fib, table, string, sort,
+  closure). 2026-10-05: `final OK`, 4.7s vs 4.5s native; benchmark geomean
+  1.56x native (fib 2.8x).
 
 ### CMake libraries
 

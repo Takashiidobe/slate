@@ -141,6 +141,7 @@ Projects that we've tested e2e that translate to Rust:
 - [chibicc](https://github.com/rui314/chibicc)
 - [cJSON](https://github.com/DaveGamble/cJSON)
 - [libyaml](https://github.com/yaml/libyaml)
+- [Lua](https://www.lua.org)
 
 ### In Progress
 

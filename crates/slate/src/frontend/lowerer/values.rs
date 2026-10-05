@@ -610,6 +610,18 @@ impl FunctionLowerer<'_, '_> {
                 element,
                 ..
             } => self.lower_pointer_offset(value, pointer, amount, *subtract, element)?,
+            ValueKind::PointerDifference { left, right, .. }
+                if let (ValueKind::LabelAddress(left), ValueKind::LabelAddress(right)) =
+                    (&left.node.value, &right.node.value) =>
+            {
+                Expr::Cast {
+                    expr: Box::new(Expr::Value(rust::RustValue::I64(
+                        control_flow::label_code(*left) as i64
+                            - control_flow::label_code(*right) as i64,
+                    ))),
+                    ty: self.lower_type(&value.ty)?,
+                }
+            }
             ValueKind::PointerDifference {
                 left,
                 right,
@@ -677,6 +689,12 @@ impl FunctionLowerer<'_, '_> {
                 }
             }
             ValueKind::Null => self.lower_null(value)?,
+            ValueKind::LabelAddress(id) => Expr::Cast {
+                expr: Box::new(Expr::Value(rust::RustValue::Usize(
+                    control_flow::label_code(*id),
+                ))),
+                ty: self.lower_type(&value.ty)?,
+            },
             ValueKind::Call {
                 callee: ir::Callee::Direct(id),
                 arguments,

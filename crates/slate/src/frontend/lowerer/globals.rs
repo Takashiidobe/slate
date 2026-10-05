@@ -101,6 +101,7 @@ impl Tables<'_> {
             ValueKind::Constant(_)
             | ValueKind::CodeUnits(_)
             | ValueKind::Null
+            | ValueKind::LabelAddress(_)
             | ValueKind::FunctionDecay { .. } => true,
             ValueKind::ArrayDecay { place, .. } | ValueKind::AddressOf(place) => {
                 self.is_constant_address(place)
@@ -132,6 +133,10 @@ impl Tables<'_> {
             ValueKind::Logical { left, right, .. } => {
                 self.is_constant_initializer(left) && self.is_constant_initializer(right)
             }
+            ValueKind::PointerDifference { left, right, .. } => matches!(
+                (&left.node.value, &right.node.value),
+                (ValueKind::LabelAddress(_), ValueKind::LabelAddress(_))
+            ),
             _ => false,
         }
     }
@@ -166,10 +171,7 @@ impl FunctionLowerer<'_, '_> {
         let tables = self.tables;
         let variable = &global.variable;
         let symbol = ir::SymbolAttributes {
-            visibility: global
-                .symbol
-                .visibility
-                .filter(|visibility| *visibility != ir::Visibility::Default),
+            visibility: None,
             ..global.symbol.clone()
         };
         if matches!(variable.storage, ir::StorageDuration::Automatic)

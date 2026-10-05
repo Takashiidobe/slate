@@ -125,7 +125,12 @@ impl FunctionLowerer<'_, '_> {
                     stmts: Vec::new(),
                     tail: Some(Box::new(Expr::MethodCall {
                         recv: Box::new(self.byte_pointer(pointer)?),
-                        method: "offset".into(),
+                        method: if matches!(pointer.node.value, ValueKind::LabelAddress(_)) {
+                            "wrapping_offset"
+                        } else {
+                            "offset"
+                        }
+                        .into(),
                         args: vec![offset],
                     })),
                 }))),

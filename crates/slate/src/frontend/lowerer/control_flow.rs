@@ -9,6 +9,7 @@ enum Node<'a> {
     Value(&'a ir::Value, usize),
     Branch(&'a ir::Value, usize, usize),
     Switch(&'a ir::Value, Vec<Case<'a>>, usize),
+    Indirect(&'a ir::Value, Vec<(BindingId, usize)>),
 }
 
 impl Node<'_> {
@@ -24,6 +25,7 @@ impl Node<'_> {
                 .map(|case| case.entry)
                 .chain([*default])
                 .collect(),
+            Self::Indirect(_, targets) => targets.iter().map(|(_, entry)| *entry).collect(),
         }
     }
 
@@ -42,6 +44,11 @@ impl Node<'_> {
                     case.entry = targets[case.entry];
                 }
                 *default = targets[*default];
+            }
+            Self::Indirect(_, entries) => {
+                for (_, entry) in entries {
+                    *entry = targets[*entry];
+                }
             }
         }
     }
@@ -62,6 +69,22 @@ struct Graph<'a> {
     cases: HashMap<BindingId, Vec<Case<'a>>>,
     defaults: HashMap<BindingId, usize>,
     locals: Vec<(BindingId, &'a ir::Type, Option<u64>)>,
+    targets: Vec<BindingId>,
+}
+
+pub(super) fn label_code(id: BindingId) -> usize {
+    id.0 as usize + 1
+}
+
+fn collect_labels(statements: &[Statement], labels: &mut Vec<BindingId>) {
+    for statement in statements {
+        if let ir::Statement::Label { id, .. } = statement.value {
+            labels.push(id);
+        }
+        for body in children(&statement.value) {
+            collect_labels(body, labels);
+        }
+    }
 }
 
 fn children(statement: &ir::Statement) -> Vec<&[Statement]> {
@@ -110,7 +133,7 @@ pub(super) fn needs_dispatch(statements: &[Statement]) -> bool {
     statements.iter().any(|statement| {
         matches!(
             statement.value,
-            ir::Statement::Goto(_) | ir::Statement::Label { .. }
+            ir::Statement::Goto(_) | ir::Statement::ComputedGoto(_) | ir::Statement::Label { .. }
         ) || children(statement).into_iter().any(needs_dispatch)
             || match &statement.value {
                 ir::Statement::Switch { body, .. } => {
@@ -183,7 +206,10 @@ impl<'a> Graph<'a> {
             successors.dedup();
             for next in successors {
                 predecessors[next] += 1;
-                if matches!(node, Node::Branch(..) | Node::Switch(..)) {
+                if matches!(
+                    node,
+                    Node::Branch(..) | Node::Switch(..) | Node::Indirect(..)
+                ) {
                     leaders[next] = true;
                 }
                 stack.push(next);
@@ -273,6 +299,15 @@ impl<'a> Graph<'a> {
                 label
             }
             ir::Statement::Goto(id) => self.label(*id),
+            ir::Statement::ComputedGoto(target) => {
+                let targets = self
+                    .targets
+                    .clone()
+                    .into_iter()
+                    .map(|id| (id, self.label(id)))
+                    .collect();
+                self.push(Node::Indirect(target, targets))
+            }
             ir::Statement::Break(id) => self.breaks[id],
             ir::Statement::Continue(id) => self.continues[id],
             ir::Statement::If {
@@ -401,6 +436,7 @@ pub(super) fn slot_pointer(id: BindingId) -> Expr {
 impl FunctionLowerer<'_, '_> {
     pub(super) fn lower_dispatch(&mut self, statements: &[Statement]) -> Result<Vec<Stmt>> {
         let mut graph = Graph::default();
+        collect_labels(statements, &mut graph.targets);
         let end = graph.push(Node::End);
         let entry = graph.list(statements, end);
         let (entry, blocks) = graph.blocks(entry);
@@ -539,6 +575,29 @@ impl FunctionLowerer<'_, '_> {
                         }];
                         body.extend(dispatch);
                         body
+                    }
+                    Node::Indirect(target, entries) => {
+                        let mut arms: Vec<_> = entries
+                            .into_iter()
+                            .map(|(id, entry)| rust::MatchArm {
+                                pattern: rust::Pattern::I64(label_code(id) as i64),
+                                body: jump(entry),
+                            })
+                            .collect();
+                        arms.push(rust::MatchArm {
+                            pattern: rust::Pattern::Wildcard,
+                            body: vec![Stmt::Expr(Expr::Macro {
+                                name: "unreachable".into(),
+                                args: Vec::new(),
+                            })],
+                        });
+                        vec![Stmt::Match {
+                            expr: Expr::Cast {
+                                expr: Box::new(self.lower_value(target)?),
+                                ty: rust::Type::Prim(Prim::Usize),
+                            },
+                            arms,
+                        }]
                     }
                 });
             }
