@@ -283,6 +283,43 @@ impl TypeResolver {
         Ok(())
     }
 
+    pub(super) fn check_function_type_attributes<'a>(
+        &mut self,
+        attributes: impl IntoIterator<Item = &'a Span<Attribute>>,
+        declared: QualType,
+        declares_function: bool,
+    ) {
+        let applies = if self.dialect.flavor().is_gcc() {
+            declares_function
+                || self
+                    .ctypes
+                    .pointee(declared)
+                    .is_some_and(|pointee| self.ctypes.is_function(pointee))
+        } else {
+            let mut reached = declared;
+            while let Some(next) = self
+                .ctypes
+                .pointee(reached)
+                .or_else(|| self.ctypes.element(reached).map(|(element, _)| element))
+            {
+                reached = next;
+            }
+            self.ctypes.is_function(reached)
+        };
+        if applies {
+            return;
+        }
+        for attribute in attributes {
+            if matches!(attribute.value, Attribute::NoReturn) {
+                self.warn(
+                    Warning::IgnoredAttributes,
+                    "'noreturn' attribute ignored; it applies only to function types",
+                    attribute,
+                );
+            }
+        }
+    }
+
     pub(super) fn check_attributes<'a>(
         &mut self,
         attributes: impl IntoIterator<Item = &'a Span<Attribute>>,
@@ -2254,6 +2291,11 @@ impl TypeResolver {
                             continue;
                         }
                         self.check_attributes(&declaration.specifiers.attributes, Subject::Field)?;
+                        self.check_function_type_attributes(
+                            &declaration.specifiers.attributes,
+                            resolved,
+                            false,
+                        );
                         fields.push(item.derive(Field {
                             name: None,
                             ty: self.object_type(resolved, "void record field")?,
@@ -2281,6 +2323,13 @@ impl TypeResolver {
                             &declarator.declarator,
                             &declarator.attributes,
                         )?;
+                        self.check_function_type_attributes(
+                            declaration
+                                .specifiers
+                                .attributes_with(&declarator.declarator, &declarator.attributes),
+                            resolved,
+                            false,
+                        );
                         let ty = self.object_type(resolved, "void record field")?;
                         let bit_width = declarator
                             .bit_width

@@ -223,9 +223,6 @@ fn inapplicable(
         Attribute::AllocAlign(_) => function_only("alloc_align"),
         Attribute::ReturnsNonNull => function_only("returns_nonnull"),
         Attribute::ReturnsTwice => function_only("returns_twice"),
-        Attribute::NoReturn => {
-            (subject != Subject::Function).then_some(("noreturn", Some("function types")))
-        }
         Attribute::NonNull(_) => (subject != Subject::Function && subject != Subject::Parameter)
             .then_some(("nonnull", Some("functions, methods, and parameters"))),
         Attribute::Constructor(_) => function_only("constructor"),

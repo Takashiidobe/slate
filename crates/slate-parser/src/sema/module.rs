@@ -830,6 +830,8 @@ impl Lowerer {
             let owner = self.types.owner.replace(parameter.derive(()));
             let resolved =
                 self.resolve_parameter_type(&parameter.specifiers, &parameter.declarator)?;
+            self.types
+                .check_function_type_attributes(attributes(), resolved, false);
             let declared_array = parameter.declarator.array_parameter().unwrap_or_default();
             let shape = self.types.parameter_shape(resolved, declared_array)?;
             let adjusted = shape.adjusted;
@@ -1027,6 +1029,11 @@ impl Lowerer {
                 Ok(id) => self.types.inherit_convention(id, resolved),
                 Err(_) => resolved,
             };
+            self.types.check_function_type_attributes(
+                attributes.clone(),
+                resolved,
+                storage_class != StorageClass::Typedef && self.types.ctypes.is_function(resolved),
+            );
             if let Some(value) = value {
                 self.types
                     .check_inferred(resolved, value)
