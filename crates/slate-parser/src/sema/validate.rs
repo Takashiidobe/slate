@@ -5,6 +5,7 @@ use crate::const_expr::{
 };
 use crate::diagnostics::{DiagnosticContext, DiagnosticOptions, Warning};
 use crate::files::{Files, decode_source_bytes, display_path};
+use crate::ir::BindingId;
 use crate::standard_features::{Availability, StandardFeatures};
 use crate::target_info::TargetInfo;
 use crate::visit::{self, Visitor};
@@ -123,7 +124,15 @@ fn analyze(
                     &mut errors,
                 );
                 if matches!(flavor, CompilerFlavor::Clang | CompilerFlavor::Gcc) {
-                    check_function_asm(unit, function, flavor, provenance, &mut errors);
+                    check_function_asm(
+                        unit,
+                        function,
+                        &names.label_definitions,
+                        &resolver.references,
+                        flavor,
+                        provenance,
+                        &mut errors,
+                    );
                 }
                 check_unnamed_parameters(function, types, &mut errors);
                 visit_literals(function, literals, &mut errors);
@@ -936,26 +945,48 @@ impl Visitor for BodyTypeVisitor<'_, '_> {
 fn check_function_asm(
     unit: &TranslationUnit,
     function: &FunctionDefinition,
+    label_definitions: &HashMap<NodeId, BindingId>,
+    references: &HashMap<NodeId, BindingId>,
     flavor: CompilerFlavor,
     provenance: Provenance,
     errors: &mut Vec<SemaError>,
 ) {
-    let mut labels = HashMap::new();
-    let mut collector = AsmLabelVisitor::new(&mut labels);
+    let mut labels = AsmLabelScopes {
+        definitions: HashMap::new(),
+        references,
+    };
+    let mut collector = AsmLabelVisitor::new(label_definitions, &mut labels.definitions);
     visit::walk_stmts(&mut collector, &function.body).unwrap_or_else(|never| match never {});
     let mut checker = AsmCheckVisitor::new(unit, &labels, flavor, provenance, errors);
     visit::walk_stmts(&mut checker, &function.body).unwrap_or_else(|never| match never {});
 }
 
+struct AsmLabelScopes<'a> {
+    definitions: HashMap<BindingId, Vec<usize>>,
+    references: &'a HashMap<NodeId, BindingId>,
+}
+
+impl AsmLabelScopes<'_> {
+    fn scope_of(&self, label: NodeId) -> Option<&[usize]> {
+        let binding = self.references.get(&label)?;
+        self.definitions.get(binding).map(Vec::as_slice)
+    }
+}
+
 struct AsmLabelVisitor<'a> {
-    labels: &'a mut HashMap<String, Vec<usize>>,
+    label_definitions: &'a HashMap<NodeId, BindingId>,
+    labels: &'a mut HashMap<BindingId, Vec<usize>>,
     scope: Vec<usize>,
     next_scope: usize,
 }
 
 impl<'a> AsmLabelVisitor<'a> {
-    fn new(labels: &'a mut HashMap<String, Vec<usize>>) -> Self {
+    fn new(
+        label_definitions: &'a HashMap<NodeId, BindingId>,
+        labels: &'a mut HashMap<BindingId, Vec<usize>>,
+    ) -> Self {
         Self {
+            label_definitions,
             labels,
             scope: Vec::new(),
             next_scope: 0,
@@ -967,8 +998,10 @@ impl<'a> Visitor for AsmLabelVisitor<'a> {
     type Error = std::convert::Infallible;
 
     fn visit_stmt(&mut self, stmt: &Stmt) -> Result<(), Self::Error> {
-        if let StmtKind::Labeled { label, .. } = &stmt.value {
-            self.labels.insert(label.value.clone(), self.scope.clone());
+        if let StmtKind::Labeled { label, .. } = &stmt.value
+            && let Some(&binding) = self.label_definitions.get(&label.id)
+        {
+            self.labels.insert(binding, self.scope.clone());
         }
         visit::walk_stmt(self, stmt)
     }
@@ -988,7 +1021,7 @@ impl<'a> Visitor for AsmLabelVisitor<'a> {
 
 struct AsmCheckVisitor<'a, 'b> {
     unit: &'a TranslationUnit,
-    labels: &'a HashMap<String, Vec<usize>>,
+    labels: &'a AsmLabelScopes<'a>,
     flavor: CompilerFlavor,
     provenance: Provenance,
     errors: &'b mut Vec<SemaError>,
@@ -999,7 +1032,7 @@ struct AsmCheckVisitor<'a, 'b> {
 impl<'a, 'b> AsmCheckVisitor<'a, 'b> {
     fn new(
         unit: &'a TranslationUnit,
-        labels: &'a HashMap<String, Vec<usize>>,
+        labels: &'a AsmLabelScopes<'a>,
         flavor: CompilerFlavor,
         provenance: Provenance,
         errors: &'b mut Vec<SemaError>,
@@ -1063,7 +1096,7 @@ impl Visitor for AsmCheckVisitor<'_, '_> {
 
 fn check_asm_operands(
     asm: &GnuAsm,
-    labels: &HashMap<String, Vec<usize>>,
+    labels: &AsmLabelScopes,
     scope: &[usize],
     flavor: CompilerFlavor,
     provenance: Provenance,
@@ -1088,7 +1121,7 @@ fn check_asm_operands(
     }
     let mut invalid_jump_scope = false;
     for label in &operands.labels {
-        match labels.get(label.value.as_str()) {
+        match labels.scope_of(label.id) {
             None => errors.push(error(
                 provenance,
                 label.expansion,
