@@ -771,7 +771,16 @@ impl TypeResolver {
                 let target = self.target_info().clone();
                 Typed::rvalue(self.ctypes.size_type(&target))
             }
-            ExprKind::OffsetOf { .. } => {
+            ExprKind::OffsetOf { ty, member } => {
+                let resolved = self.resolve_type_name(ty)?;
+                let ty = self.object_type(resolved, "void offsetof")?;
+                let path = self.offsetof_member(ty, member)?;
+                for (index, _) in path.runtime_indices {
+                    let index = self.operand_type(index)?;
+                    if !self.ctypes.is_integer(index) {
+                        return Err(ResolveError::Rejected("offsetof index is not an integer"));
+                    }
+                }
                 let target = self.target_info().clone();
                 Typed::rvalue(self.ctypes.size_type(&target))
             }

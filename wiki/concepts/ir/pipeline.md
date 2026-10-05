@@ -113,6 +113,14 @@ Macro expansion chains are not in the IR yet (only atomic builtins record
   members at any depth, as member access does, and adds each level's offset
   (`clang/linux/x86_64/offsetof_anonymous_members.c`). A bit-field found that
   way is still `Rejected` (`error/.../ir_layout_constants.c` `ANON_BITFIELD`).
+- An `offsetof` array index that is not an integer constant (the kernel's
+  `container_of(p, struct task_struct, pid_links[type])`) lowers as clang
+  emits it: the constant part folds into the `offset_of` leaf, then each
+  runtime index is explicitly converted to `size_t` and added as
+  `add(offset, mul(index, element_size))`, all wrapping
+  (`clang/linux/x86_64/offsetof_runtime_index.c`). Such an `offsetof` is not
+  an integer constant expression; a non-integer index is `Rejected`
+  (`FLOAT_INDEX`).
 - `sizeof` of a VLA type is a runtime computation over captured extents,
   never a constant.
 - `sema/fold.rs` goes past C's integer-constant-expression rule, as clang,

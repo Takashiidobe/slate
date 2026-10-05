@@ -3,11 +3,13 @@
 // SLATE-FILECHECK-DEFINES BITFIELD -DBITFIELD
 // SLATE-FILECHECK-DEFINES WIDTH -DWIDTH
 // SLATE-FILECHECK-DEFINES ANON_BITFIELD -DANON_BITFIELD
+// SLATE-FILECHECK-DEFINES FLOAT_INDEX -DFLOAT_INDEX
 // SLATE-FILECHECK-ERROR FIELD
 // SLATE-FILECHECK-ERROR INCOMPLETE
 // SLATE-FILECHECK-ERROR BITFIELD
 // SLATE-FILECHECK-ERROR WIDTH
 // SLATE-FILECHECK-ERROR ANON_BITFIELD
+// SLATE-FILECHECK-ERROR FLOAT_INDEX
 // SLATE-FILECHECK-ARGS --dump-ir
 struct S { int field; unsigned bits : 2; struct { unsigned flag : 1; }; };
 #ifdef FIELD
@@ -25,6 +27,10 @@ void bad(void) { (_BitInt(sizeof(int) - 4))1; }
 #endif
 #ifdef ANON_BITFIELD
 unsigned long bad(void) { return __builtin_offsetof(struct S, flag); }
+#endif
+#ifdef FLOAT_INDEX
+struct Array { long items[4]; };
+unsigned long bad(double index) { return __builtin_offsetof(struct Array, items[index]); }
 #endif
 
 // SLATE-FILECHECK-BEGIN FIELD
@@ -82,3 +88,14 @@ unsigned long bad(void) { return __builtin_offsetof(struct S, flag); }
 // ANON_BITFIELD: 17 │ #endif
 // ANON_BITFIELD: ╰────
 // SLATE-FILECHECK-END ANON_BITFIELD
+// SLATE-FILECHECK-BEGIN FLOAT_INDEX
+// FLOAT_INDEX: Error:   × semantic analysis failed
+// FLOAT_INDEX: Error:
+// FLOAT_INDEX: × offsetof index is not an integer
+// FLOAT_INDEX: ╭─[tests/fixtures/error/clang/linux/x86_64/ir_layout_constants.c:20:42]
+// FLOAT_INDEX: 19 │ struct Array { long items[4]; };
+// FLOAT_INDEX: 20 │ unsigned long bad(double index) { return __builtin_offsetof(struct Array, items[index]); }
+// FLOAT_INDEX: ·                                          ──────────────────────────────────────────────
+// FLOAT_INDEX: 21 │ #endif
+// FLOAT_INDEX: ╰────
+// SLATE-FILECHECK-END FLOAT_INDEX

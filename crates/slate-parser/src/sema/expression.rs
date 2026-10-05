@@ -2515,8 +2515,36 @@ impl Lowerer {
             ExprKind::OffsetOf { ty, member } => {
                 let resolved = self.resolve_type_name(ty)?;
                 let ty = self.types.object_type(resolved, "void offsetof")?;
-                let (_, offset) = self.types.offsetof_member(ty.clone(), member)?;
-                Ok(self.layout_constant(e, offset, "offset_of", format!("{ty}.{member}")))
+                let path = self.types.offsetof_member(ty.clone(), member)?;
+                let offset =
+                    self.layout_constant(e, path.offset, "offset_of", format!("{ty}.{member}"));
+                path.runtime_indices
+                    .into_iter()
+                    .try_fold(offset, |offset, (index, size)| {
+                        let index = self.expr(index)?;
+                        let index = self.types.arithmetic_conversion(
+                            &self.context,
+                            index,
+                            offset.c,
+                            ConversionReason::Explicit,
+                        )?;
+                        let size = self.operand(
+                            e,
+                            offset.c,
+                            ValueKind::Constant(Number::Integer(size.into())),
+                        );
+                        let (ty, kind) =
+                            self.context
+                                .emit_binary(BinaryOp::Mul, index.value, size.value)?;
+                        let scaled = self.value(e, ty, kind);
+                        let (ty, kind) =
+                            self.context
+                                .emit_binary(BinaryOp::Add, offset.value, scaled)?;
+                        Ok(Operand {
+                            value: self.value(e, ty, kind),
+                            c: offset.c,
+                        })
+                    })
             }
             ExprKind::BitCast { ty, value } => {
                 let resolved = self.resolve_type_name(ty)?;

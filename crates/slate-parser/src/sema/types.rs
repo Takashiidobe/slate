@@ -41,6 +41,12 @@ pub(super) struct FunctionNames {
     pub pretty: String,
 }
 
+pub(super) struct OffsetOfPath<'e> {
+    pub ty: Type,
+    pub offset: u64,
+    pub runtime_indices: Vec<(&'e crate::ast::Expr, u64)>,
+}
+
 pub struct TypeResolver {
     dialect: Dialect,
     pub ctypes: CTypes,
@@ -716,7 +722,11 @@ impl TypeResolver {
             ExprKind::OffsetOf { ty, member } => {
                 let ty = self.resolve_type_name(ty)?;
                 let ty = self.object_type(ty, "void offsetof")?;
-                let (_, n) = self.offsetof_member(ty, member)?;
+                let path = self.offsetof_member(ty, member)?;
+                if !path.runtime_indices.is_empty() {
+                    return Err(ResolveError::Rejected("offsetof with a nonconstant index"));
+                }
+                let n = path.offset;
                 (
                     self.ctypes.size_type(self.dialect.target()),
                     ValueKind::Constant(Number::Integer(n.into())),
@@ -1280,41 +1290,56 @@ impl TypeResolver {
             ))
     }
 
-    pub(super) fn offsetof_member(
+    pub(super) fn offsetof_member<'e>(
         &mut self,
         root: Type,
-        member: &crate::ast::Expr,
-    ) -> Result<(Type, u64), ResolveError> {
+        member: &'e crate::ast::Expr,
+    ) -> Result<OffsetOfPath<'e>, ResolveError> {
         use crate::ast::ExprKind;
         match &member.value {
-            ExprKind::Identifier(name) => self.offsetof_field(root, name),
+            ExprKind::Identifier(name) => {
+                let (ty, offset) = self.offsetof_field(root, name)?;
+                Ok(OffsetOfPath {
+                    ty,
+                    offset,
+                    runtime_indices: Vec::new(),
+                })
+            }
             ExprKind::Member {
                 base,
                 field,
                 arrow: false,
             } => {
-                let (ty, offset) = self.offsetof_member(root, base)?;
-                let (ty, field_offset) = self.offsetof_field(ty, &field.value)?;
-                Ok((
+                let path = self.offsetof_member(root, base)?;
+                let (ty, field_offset) = self.offsetof_field(path.ty, &field.value)?;
+                Ok(OffsetOfPath {
                     ty,
-                    offset
+                    offset: path
+                        .offset
                         .checked_add(field_offset)
                         .ok_or(ResolveError::Rejected("offsetof overflow"))?,
-                ))
+                    runtime_indices: path.runtime_indices,
+                })
             }
             ExprKind::Index { base, index } => {
-                let (ty, offset) = self.offsetof_member(root, base)?;
-                let Type::Array { element, .. } = ty else {
+                let mut path = self.offsetof_member(root, base)?;
+                let Type::Array { element, .. } = path.ty else {
                     return Err(ResolveError::Rejected("offsetof index of non-array"));
                 };
-                let index = u64::try_from(self.constant_integer(index)?)
-                    .map_err(|_| ResolveError::Unimplemented("invalid offsetof index"))?;
                 let size = self.storage((*element).clone())?.size_bytes;
-                let offset = size
-                    .checked_mul(index)
-                    .and_then(|n| offset.checked_add(n))
-                    .ok_or(ResolveError::Rejected("offsetof overflow"))?;
-                Ok((*element, offset))
+                path.ty = *element;
+                match self.constant_integer(index) {
+                    Ok(constant) => {
+                        let constant = u64::try_from(constant)
+                            .map_err(|_| ResolveError::Unimplemented("invalid offsetof index"))?;
+                        path.offset = size
+                            .checked_mul(constant)
+                            .and_then(|n| path.offset.checked_add(n))
+                            .ok_or(ResolveError::Rejected("offsetof overflow"))?;
+                    }
+                    Err(_) => path.runtime_indices.push((index, size)),
+                }
+                Ok(path)
             }
             _ => Err(ResolveError::Rejected("offsetof member path")),
         }
