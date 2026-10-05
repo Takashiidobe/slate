@@ -527,6 +527,21 @@ impl Lowerer {
             element: char_type,
             extent: super::ctype::Extent::Fixed(units.len() as u64),
         });
+        Ok(self.code_unit_global(e, c, units))
+    }
+
+    fn string_literal(
+        &mut self,
+        e: &Expr,
+        literal: &crate::const_expr::StringLiteral,
+    ) -> Result<Lvalue, ResolveError> {
+        let mut units = literal.execution_units(self.context.target.wchar_width);
+        units.push(0);
+        let c = self.lvalue_result(e)?;
+        Ok(self.code_unit_global(e, c, units))
+    }
+
+    fn code_unit_global(&mut self, e: &Expr, c: QualType, units: Vec<u32>) -> Lvalue {
         let ty = self.types.ir_type(c);
         let id = self.fresh();
         let initializer = self.value(e, ty.clone(), ValueKind::CodeUnits(units));
@@ -550,14 +565,14 @@ impl Lowerer {
             definition: true,
             common: false,
         }));
-        Ok(Lvalue {
+        Lvalue {
             c,
             place: Place {
                 ty,
                 kind: PlaceKind::Binding(id),
                 access: Access::default(),
             },
-        })
+        }
     }
 
     fn overflow_builtin(
@@ -1155,6 +1170,7 @@ impl Lowerer {
                 let text = self.types.predefined_name(name).to_owned();
                 self.string_global(e, &text)
             }
+            ExprKind::StringLiteral(literal) => self.string_literal(e, literal),
             ExprKind::Identifier(_) => {
                 let id = self.reference(e)?;
                 let c = self.lvalue_result(e)?;
@@ -2013,44 +2029,9 @@ impl Lowerer {
                 let c = self.result(e)?;
                 Ok(self.operand(e, c, ValueKind::Null))
             }
-            ExprKind::StringLiteral(lit) => {
-                let mut units = lit.execution_units(self.context.target.wchar_width);
-                units.push(0);
-                let c = self.lvalue_result(e)?;
-                let ty = self.types.ir_type(c);
-                let id = self.fresh();
-                let initializer = self.value(e, ty.clone(), ValueKind::CodeUnits(units));
-                self.module.globals.push(e.derive(Global {
-                    variable: Variable {
-                        id,
-                        name: format!(".str{}", id.0),
-                        ty: ty.clone(),
-                        storage: StorageDuration::Static,
-                        restrict: false,
-                        is_const: false,
-                        access: Access::default(),
-                        constexpr: false,
-                        alignment: None,
-                        cleanup: None,
-                        register: None,
-                        initializer: Some(initializer),
-                    },
-                    linkage: Linkage::Internal,
-                    symbol: SymbolAttributes::default(),
-                    definition: true,
-                    common: false,
-                }));
-                self.read(
-                    e,
-                    Lvalue {
-                        c,
-                        place: Place {
-                            ty,
-                            kind: PlaceKind::Binding(id),
-                            access: Access::default(),
-                        },
-                    },
-                )
+            ExprKind::StringLiteral(literal) => {
+                let lvalue = self.string_literal(e, literal)?;
+                self.read(e, lvalue)
             }
             ExprKind::Cast { ty, value } => {
                 let extents = self.type_name_extents(ty)?;
