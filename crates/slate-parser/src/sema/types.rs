@@ -2356,6 +2356,32 @@ impl TypeResolver {
                             "enumerator values fit no underlying integer type",
                         ))?
                 };
+                let mode = tag
+                    .attributes
+                    .iter()
+                    .find_map(|attribute| match &attribute.value {
+                        Attribute::Mode(mode) => Some(mode.as_str()),
+                        _ => None,
+                    });
+                let underlying_c = match mode {
+                    Some(mode) if self.dialect.flavor() == CompilerFlavor::Clang => {
+                        let base = fixed_underlying.unwrap_or(int_ty);
+                        self.machine_mode(base, mode)?
+                    }
+                    Some(mode) if !is_fixed => {
+                        let narrowed = self.machine_mode(underlying_c, mode)?;
+                        if !values
+                            .iter()
+                            .all(|(_, _, value)| self.integer_fits(value, narrowed))
+                        {
+                            return Err(ResolveError::Rejected(
+                                "specified mode too small for enumerated values",
+                            ));
+                        }
+                        narrowed
+                    }
+                    _ => underlying_c,
+                };
                 let underlying = self.object_type(underlying_c, "void enum underlying type")?;
                 self.ctypes.set_enum_underlying(id, underlying_c);
                 let enumerator_c = if !is_fixed && fits_int {
@@ -2367,7 +2393,21 @@ impl TypeResolver {
                 };
                 let enumerator_type = self.ir_type(enumerator_c);
                 let mut entries = Vec::new();
+                let wrap_to = match self.ir_type(underlying_c) {
+                    Type::Numeric(NumericType::Integer { width, signed, .. })
+                        if is_fixed || !fits_int =>
+                    {
+                        Some((width, signed))
+                    }
+                    _ => None,
+                };
                 for (item, enumerator, value) in values {
+                    let value = match wrap_to {
+                        Some((width, signed)) => {
+                            crate::const_expr::WideInt::wrap(value, width, signed).value
+                        }
+                        None => value,
+                    };
                     let value = Value {
                         ty: enumerator_type.clone(),
                         node: item.derive(ValueKind::Constant(super::fold::integer_number(

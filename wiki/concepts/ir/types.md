@@ -142,6 +142,15 @@ The shown type is concrete and target-resolved; the C type is metadata
   tries `char` and `short` first, so `{ A = 200 }` is `u8` and
   `{ A = -1, B = 200 }` is `i16`; enumerators stay `int`. On a later
   `enum E __attribute__((packed));` it does nothing (`ir_packed_enum.c`).
+- `__attribute__((mode(M)))` on the definition replaces the underlying type
+  and wins over `packed`; the flavors differ (`ir_enum_machine_mode.c`):
+  - clang applies the mode to `int`, or to the fixed type if there is one, so
+    `{ A } mode(QI)` is `i8`. Values may overflow it. If any value does not
+    fit `int`, every enumerator takes the enum type, and clang wraps its value
+    to that width (`{ A = 300, B = 0x80000000u } mode(QI)` gives 44 and 0).
+  - gcc applies it to the type picked from the values, so `{ A } mode(QI)`
+    is `u8`. It rejects values that don't fit ("specified mode too small for
+    enumerated values") and ignores mode on a fixed type.
 - Enumerator type after the enum closes (clang): `int` if no fixed type and
   every value fits `int`; otherwise the underlying type before C23 and the
   enum type from C23 (`enumerators_have_enum_type`). Known gap: clang keeps

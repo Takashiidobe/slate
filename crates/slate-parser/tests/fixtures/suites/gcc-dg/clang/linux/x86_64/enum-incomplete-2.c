@@ -84,23 +84,23 @@ SA (_Alignof (enum e11) == _Alignof (enum e12));
 // DEFAULT-NEXT:     type @type[[TYPE_e6:[0-9]+]] e6 = enum : u32 {
 // DEFAULT-NEXT:         %[[VALUE_A]] F = const<i32>(2147483647);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type[[TYPE_e7:[0-9]+]] e7 = enum : u32 {
+// DEFAULT-NEXT:     type @type[[TYPE_e7:[0-9]+]] e7 = enum : i8 {
 // DEFAULT-NEXT:         %[[VALUE_A]] G = const<i32>(0);
-// DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type[[TYPE_e8:[0-9]+]] e8 = enum : u32 {
+// DEFAULT-NEXT:     } [size=1, align=1];
+// DEFAULT-NEXT:     type @type[[TYPE_e8:[0-9]+]] e8 = enum : i8 {
 // DEFAULT-NEXT:         %[[VALUE_A]] H = const<i32>(0);
-// DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type[[TYPE_e9:[0-9]+]] e9 = enum : u8 {
+// DEFAULT-NEXT:     } [size=1, align=1];
+// DEFAULT-NEXT:     type @type[[TYPE_e9:[0-9]+]] e9 = enum : i8 {
 // DEFAULT-NEXT:         %[[VALUE_A]] I = const<i32>(0);
 // DEFAULT-NEXT:     } [size=1, align=1];
-// DEFAULT-NEXT:     type @type[[TYPE_e10:[0-9]+]] e10 = enum : u8 {
+// DEFAULT-NEXT:     type @type[[TYPE_e10:[0-9]+]] e10 = enum : i8 {
 // DEFAULT-NEXT:         %[[VALUE_A]] J = const<i32>(0);
 // DEFAULT-NEXT:     } [size=1, align=1];
-// DEFAULT-NEXT:     type @type[[TYPE_e11:[0-9]+]] e11 = enum : u32 {
+// DEFAULT-NEXT:     type @type[[TYPE_e11:[0-9]+]] e11 = enum : i64 {
 // DEFAULT-NEXT:         %[[VALUE_A]] K = const<i32>(0);
-// DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type[[TYPE_e12:[0-9]+]] e12 = enum : u32 {
+// DEFAULT-NEXT:     } [size=8, align=8];
+// DEFAULT-NEXT:     type @type[[TYPE_e12:[0-9]+]] e12 = enum : i64 {
 // DEFAULT-NEXT:         %[[VALUE_A]] L = const<i32>(0);
-// DEFAULT-NEXT:     } [size=4, align=4];
+// DEFAULT-NEXT:     } [size=8, align=8];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT
