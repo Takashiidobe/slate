@@ -44,6 +44,26 @@ class Recipe:
     benchmark: Callable | None = None
 
 
+@dataclass
+class Differential:
+    tool: str
+    args: list[str] = field(default_factory=list)
+    stdin: bool = False
+
+
+@dataclass
+class CMakeLibrary:
+    library: str
+    tools: list[str] = field(default_factory=list)
+    differential: list[Differential] = field(default_factory=list)
+    inputs: list[str] = field(default_factory=list)
+    host_includes: list[str] = field(default_factory=list)
+    translate_tests: bool = False
+
+
+RUST_NATIVE_LIBS = ["-lgcc_s", "-lutil", "-lrt", "-lpthread", "-lm", "-ldl", "-lc"]
+
+
 def log(message):
     print(message, flush=True)
 
@@ -175,6 +195,20 @@ def native_compile_seconds(units, out, jobs):
     return seconds, failures
 
 
+def translation_unit(entry, source, recipe, flavor):
+    argv = entry.get("arguments") or shlex.split(entry["command"])
+    args = pp_diff.kept_args(argv, entry["directory"])
+    if not any(arg.startswith("-std=") for arg in args):
+        args.append(pp_diff.CLANG_DEFAULT_STANDARD)
+    args += [f"-idirafter{directory}" for directory in recipe.host_includes]
+    return {
+        "directory": entry["directory"],
+        "file": str(source),
+        "arguments": [COMPILERS[flavor], *args, "-c", str(source)],
+        "native": native_arguments(argv, entry),
+    }
+
+
 def translation_units(project_dir, recipe, database, variables, flavor):
     objects = [word for name in recipe.objects for word in variables[name].split()]
     wanted = {Path(obj).stem: obj for obj in objects}
@@ -183,21 +217,204 @@ def translation_units(project_dir, recipe, database, variables, flavor):
         source = Path(pp_diff.absolute(entry["directory"], entry["file"])).resolve()
         if source.suffix != ".c" or source.stem not in wanted or source.stem in found or not source.exists():
             continue
-        argv = entry.get("arguments") or shlex.split(entry["command"])
-        args = pp_diff.kept_args(argv, entry["directory"])
-        if not any(arg.startswith("-std=") for arg in args):
-            args.append(pp_diff.CLANG_DEFAULT_STANDARD)
-        args += [f"-idirafter{directory}" for directory in recipe.host_includes]
-        found[source.stem] = {
-            "directory": entry["directory"],
-            "file": str(source),
-            "arguments": [COMPILERS[flavor], *args, "-c", str(source)],
-            "native": native_arguments(argv, entry),
-        }
+        found[source.stem] = translation_unit(entry, source, recipe, flavor)
     missing = sorted(set(wanted) - set(found))
     if missing:
         raise SystemExit(f"no compile command for {', '.join(missing)}")
     return [found[Path(obj).stem] for obj in objects]
+
+
+def ninja_tool(build_dir, *args):
+    return subprocess.run(["ninja", "-C", build_dir, "-t", *args], capture_output=True, text=True,
+                          check=True).stdout
+
+
+def target_objects(build_dir, target):
+    objects, reading = [], False
+    target = (build_dir / target).resolve().relative_to(build_dir.resolve())
+    for line in ninja_tool(build_dir, "query", str(target)).splitlines():
+        line = line.strip()
+        if line.startswith("input:"):
+            reading = True
+        elif line.startswith("outputs:"):
+            break
+        elif reading and line.endswith(".o") and not line.startswith("|"):
+            objects.append((build_dir / line).resolve())
+    if not objects:
+        raise SystemExit(f"ninja -t query {target} listed no objects")
+    return objects
+
+
+def link_command(build_dir, executable):
+    segments, segment = [], []
+    for token in shlex.split(ninja_tool(build_dir, "commands", executable).strip().splitlines()[-1]):
+        if token == "&&":
+            segments.append(segment)
+            segment = []
+        else:
+            segment.append(token)
+    segments.append(segment)
+    return next(segment for segment in segments if "-o" in segment)
+
+
+def units_for_objects(objects, recipe, database, flavor):
+    found = {}
+    for entry in json.loads(database.read_text()):
+        output = entry.get("output")
+        if not output:
+            continue
+        output = Path(pp_diff.absolute(entry["directory"], output)).resolve()
+        source = Path(pp_diff.absolute(entry["directory"], entry["file"])).resolve()
+        if output in objects and source.suffix == ".c":
+            found[output] = translation_unit(entry, source, recipe, flavor)
+    missing = [str(obj) for obj in objects if obj not in found]
+    if missing:
+        raise SystemExit(f"no compile command for {', '.join(missing)}")
+    return [found[obj] for obj in objects]
+
+
+def library_units(build_dir, recipe, database, flavor):
+    return units_for_objects(target_objects(build_dir, recipe.library), recipe, database, flavor)
+
+
+def executable_units(build_dir, executable, recipe, database, flavor, shared_library):
+    objects = target_objects(build_dir, executable)
+    command = link_command(build_dir, executable)
+    library = (build_dir / recipe.library).resolve()
+    libraries = []
+    for token in command[1:]:
+        path = (build_dir / token).resolve()
+        if path == library:
+            libraries += [str(shared_library), f"-Wl,-rpath,{shared_library.parent}"]
+        elif path.suffix in {".a", ".so"} or ".so." in path.name:
+            if path.is_relative_to(build_dir.resolve()) and path.exists():
+                objects += target_objects(build_dir, path)
+        elif token.startswith("-l"):
+            libraries.append(token)
+    return units_for_objects(objects, recipe, database, flavor), libraries
+
+
+def ctest_cases(build_dir):
+    listing = subprocess.run(["ctest", "--show-only=json-v1"], cwd=build_dir, capture_output=True, text=True,
+                             check=True).stdout
+    cases = []
+    for test in json.loads(listing)["tests"]:
+        properties = {item["name"]: item["value"] for item in test.get("properties", [])}
+        cases.append({"name": test["name"], "command": test["command"],
+                      "cwd": properties.get("WORKING_DIRECTORY", str(build_dir))})
+    return cases
+
+
+def relink(build_dir, executable, library, archive, destination):
+    library = (build_dir / library).resolve()
+    command = link_command(build_dir, executable)
+    linked, index = [], 0
+    while index < len(command):
+        token = command[index]
+        if token == "-Xlinker" and command[index + 1].startswith("--dependency-file"):
+            index += 2
+            continue
+        if token == "-o":
+            output = destination / command[index + 1]
+            output.parent.mkdir(parents=True, exist_ok=True)
+            linked += ["-o", str(output)]
+            index += 2
+            continue
+        linked.append(str(archive) if (build_dir / token).resolve() == library else token)
+        index += 1
+    result = subprocess.run([*linked, *RUST_NATIVE_LIBS], cwd=build_dir, capture_output=True, text=True)
+    if result.returncode:
+        raise RuntimeError(f"relinking {executable} failed:\n{result.stderr[-2000:]}")
+    return output
+
+
+def translate_executable(project_dir, build_dir, executable, recipe, database, flavor, destination, profile,
+                         shared_library):
+    units, libraries = executable_units(build_dir, executable, recipe, database, flavor, shared_library)
+    work = destination / "translated" / executable.replace("/", "_")
+    if work.exists():
+        shutil.rmtree(work)
+    work.mkdir(parents=True)
+    commands = work / "compile_commands.json"
+    commands.write_text(json.dumps([{key: value for key, value in unit.items() if key != "native"}
+                                    for unit in units], indent=1) + "\n")
+    crate = work / "crate"
+    code, _ = run([SLATE, "translate-project", "--compile-commands", commands, project_dir, crate],
+                  work / "translate.log")
+    if code:
+        raise RuntimeError(f"translating {executable} failed; see {work / 'translate.log'}")
+    target_dir = destination / "translated" / "cargo-target"
+    flags = " ".join(f"-C link-arg={library}" for library in libraries)
+    env = dict(os.environ, CARGO_TARGET_DIR=str(target_dir),
+               RUSTFLAGS=" ".join(filter(None, [os.environ.get("RUSTFLAGS"), "-A warnings", flags])))
+    code, _ = run(["cargo", "build", "--profile", profile], work / "build.log", cwd=crate, env=env)
+    if code:
+        raise RuntimeError(f"building {executable} failed; see {work / 'build.log'}")
+    package = re.search(r'^name = "([^"]+)"', (crate / "Cargo.toml").read_text(), re.MULTILINE)[1]
+    binary = destination / executable
+    binary.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(target_dir / ("debug" if profile == "dev" else profile) / package, binary)
+    return binary
+
+
+def run_case(command, cwd, stdin=None, timeout=300, executable=None):
+    start = time.perf_counter()
+    try:
+        with open(stdin, "rb") if stdin else open(os.devnull, "rb") as handle:
+            result = subprocess.run(command, cwd=cwd, stdin=handle, capture_output=True, timeout=timeout,
+                                    executable=executable)
+        code, stdout = result.returncode, result.stdout
+    except subprocess.TimeoutExpired:
+        code, stdout = "timeout", b""
+    return code, stdout, time.perf_counter() - start
+
+
+def library_tests(project_dir, build_dir, recipe, archive, database, args, out):
+    sandbox = out / "test-tree"
+    if sandbox.exists():
+        shutil.rmtree(sandbox)
+    cases = ctest_cases(build_dir)
+    executables = {str(Path(case["command"][0]).resolve().relative_to(build_dir.resolve())) for case in cases}
+    executables |= set(recipe.tools)
+    if recipe.translate_tests:
+        shared_library = archive.with_suffix(".so")
+        relinked = {name: translate_executable(project_dir, build_dir, name, recipe, database, args.mode,
+                                               sandbox, args.profile, shared_library)
+                    for name in sorted(executables)}
+    else:
+        relinked = {name: relink(build_dir, name, recipe.library, archive, sandbox) for name in sorted(executables)}
+    rows, failures, seconds = [], 0, {"native": 0.0, "translated": 0.0}
+    for case in cases:
+        name = str(Path(case["command"][0]).resolve().relative_to(build_dir.resolve()))
+        native = run_case(case["command"], case["cwd"])
+        translated = run_case([str(relinked[name]), *case["command"][1:]], case["cwd"])
+        seconds["native"] += native[2]
+        seconds["translated"] += translated[2]
+        result = "FAIL" if translated[0] != 0 else "ok" if translated[1] == native[1] else "STDOUT DIFFERS"
+        failures += result != "ok"
+        rows.append(f"| ctest {case['name']} | {native[0]} | {translated[0]} | {result} |")
+    inputs = sorted(path for pattern in recipe.inputs for path in project_dir.glob(pattern))
+    mismatches = 0
+    for differential in recipe.differential:
+        for path in inputs:
+            args = [arg.replace("{input}", str(path)) for arg in differential.args]
+            stdin = path if differential.stdin else None
+            command = [differential.tool, *args]
+            native = run_case(command, build_dir, stdin, 60, build_dir / differential.tool)
+            translated = run_case(command, build_dir, stdin, 60, relinked[differential.tool])
+            seconds["native"] += native[2]
+            seconds["translated"] += translated[2]
+            same = native[:2] == translated[:2]
+            mismatches += not same
+            rows.append(f"| {differential.tool} {os.path.relpath(path, project_dir)} | {native[0]} | "
+                        f"{translated[0]} | {'ok' if same else 'MISMATCH'} |")
+    lines = ["| case | native exit | translated exit | result |", "| --- | --- | --- | --- |", *rows]
+    (out / "test.md").write_text("\n".join(lines) + "\n")
+    log("\n".join(lines))
+    return {"ctest": len(cases), "ctest_failures": failures,
+            "differential": len(rows) - len(cases), "mismatches": mismatches, "report": "test.md",
+            "native_seconds": round(seconds["native"], 2), "seconds": round(seconds["translated"], 2),
+            "test_over_native": round(seconds["translated"] / seconds["native"], 2) if seconds["native"] else None}
 
 
 def barrier_rows(entry):
@@ -310,6 +527,21 @@ RECIPES = {
         test_build=[["make", "-C", "tests/modules"]],
         benchmark=redis_benchmark,
     ),
+    "cJSON": CMakeLibrary(library="libcjson.so", translate_tests=True),
+    "libyaml": CMakeLibrary(
+        library="libyaml.a",
+        tools=["run-scanner", "run-parser", "run-loader", "run-emitter", "run-dumper", "run-parser-test-suite",
+               "example-reformatter", "example-reformatter-alt", "example-deconstructor",
+               "example-deconstructor-alt"],
+        differential=[
+            *(Differential(tool, ["{input}"]) for tool in
+              ["run-scanner", "run-parser", "run-loader", "run-emitter", "run-dumper", "run-parser-test-suite"]),
+            *(Differential(tool, stdin=True) for tool in
+              ["example-reformatter", "example-reformatter-alt", "example-deconstructor",
+               "example-deconstructor-alt"]),
+        ],
+        inputs=["examples/*.yaml", "regression-inputs/*"],
+    ),
 }
 
 
@@ -344,7 +576,8 @@ def main():
         log(f"== {stage}: {status} {json.dumps(details) if details else ''}")
         return status == "ok" and STAGES.index(stage) < STAGES.index(args.until)
 
-    code, seconds = run(["cargo", "build", "--release", "-p", "slate"], out / "slate-build.log")
+    library = isinstance(recipe, CMakeLibrary)
+    code, seconds = run(["cargo", "build", "--release", "-p", "slate-c2rust"], out / "slate-build.log")
     if code:
         raise SystemExit("slate build failed")
     if args.setup:
@@ -357,9 +590,15 @@ def main():
     if not database.exists():
         finish("native", "failed", error=f"missing {database}; run with --setup")
         return 1
-    variables = make_variables(project_dir, recipe, COMPILERS[args.mode], [*recipe.objects, recipe.libs])
-    missing = native_check(project_dir, recipe, variables)
-    units = translation_units(project_dir, recipe, database, variables, args.mode)
+    build_dir = database.parent
+    if library:
+        variables = None
+        missing = [] if (build_dir / recipe.library).exists() else [recipe.library]
+        units = library_units(build_dir, recipe, database, args.mode)
+    else:
+        variables = make_variables(project_dir, recipe, COMPILERS[args.mode], [*recipe.objects, recipe.libs])
+        missing = native_check(project_dir, recipe, variables)
+        units = translation_units(project_dir, recipe, database, variables, args.mode)
     commands = out / "compile_commands.json"
     commands.write_text(json.dumps([{key: value for key, value in unit.items() if key != "native"}
                                     for unit in units], indent=1) + "\n")
@@ -370,11 +609,12 @@ def main():
     if not finish("barriers", "ok", blocked=blocked, report="barriers.md"):
         return 0
 
-    crate = out / recipe.target
+    crate = out / (args.project if library else recipe.target)
     if crate.exists():
         shutil.rmtree(crate)
-    code, seconds = run([SLATE, "translate-project", "--compile-commands", commands, project_dir, crate],
-                        out / "translate.log")
+    crate_type = ["--crate-type", "staticlib,cdylib" if recipe.translate_tests else "staticlib"] if library else []
+    code, seconds = run([SLATE, "translate-project", *crate_type, "--compile-commands", commands, project_dir,
+                         crate], out / "translate.log")
     native_seconds, native_failures = native_compile_seconds(units, out, args.jobs)
     timing = {"translate_seconds": seconds, "native_compile_seconds": native_seconds,
               "translate_over_compile": round(seconds / native_seconds, 2) if native_seconds else None,
@@ -390,13 +630,25 @@ def main():
         return 1 if code else 0
 
     env["RUSTFLAGS"] = " ".join(filter(None, [os.environ.get("RUSTFLAGS"), "-A warnings",
-                                              link_flags(project_dir, recipe, variables)]))
+                                              None if library else link_flags(project_dir, recipe, variables)]))
     code, _ = run(["cargo", "build", "--profile", args.profile], out / "build.log", cwd=crate, env=env)
     profile_dir = "debug" if args.profile == "dev" else args.profile
     package = re.search(r'^name = "([^"]+)"', (crate / "Cargo.toml").read_text(), re.MULTILINE)[1]
     binary = out / "cargo-target" / profile_dir / package
+    if library:
+        binary = next((out / "cargo-target" / profile_dir).glob("*.a"), binary)
     if not finish("build", "failed" if code else "ok", log="build.log", binary=str(binary)):
         return 1 if code else 0
+
+    if library:
+        try:
+            results = library_tests(project_dir, build_dir, recipe, binary, database, args, out)
+        except (RuntimeError, subprocess.SubprocessError) as error:
+            finish("test", "failed", error=str(error))
+            return 1
+        failed = results["ctest_failures"] or results["mismatches"]
+        finish("test", "failed" if failed else "ok", **results)
+        return 1 if failed else 0
 
     if recipe.benchmark and args.bench_runs:
         try:

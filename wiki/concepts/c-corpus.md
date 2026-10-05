@@ -6,6 +6,7 @@
 - [Recipes](#recipes)
 - [Sweep](#sweep)
 - [End to end](#end-to-end)
+  - [CMake libraries](#cmake-libraries)
 - [Missing dependencies](#missing-dependencies)
 - [Gotchas](#gotchas)
 <!-- /toc -->
@@ -120,7 +121,7 @@ python3 tools/c_corpus_sweep.py [PROJECT ...] [--flavor clang|gcc|msvc] [--jobs 
 ## End to end
 
 ```
-python3 tools/corpus/e2e.py redis [--mode clang|gcc] [--setup] [--until STAGE] [--bench-runs N] [-- runtest args]
+python3 tools/corpus/e2e.py redis|cJSON|libyaml [--mode clang|gcc] [--setup] [--until STAGE] [--bench-runs N] [-- runtest args]
 ```
 
 Translates one project's target with `slate translate-project`, links it
@@ -151,6 +152,33 @@ written once translation units are known.
   benchmark is pipelined `redis-benchmark` (`-P 16 -c 50`). The test sandbox
   links `redis-server`/`redis-check-*` to the translated binary and
   `redis-cli`/`redis-benchmark` to the native ones.
+
+### CMake libraries
+
+`CMakeLibrary` recipes (cJSON, libyaml) cover CMake/ninja projects whose
+product is a library. They have no bench stage.
+
+- native: the library's TUs are the objects `ninja -t query <library>`
+  lists (symlinks such as `libcjson.so` are resolved first), matched to
+  `compile_commands.json` entries by `output`.
+- translate/build: `translate-project --crate-type staticlib` (also
+  `cdylib` with `translate_tests`).
+- test: every CTest executable plus the recipe's `tools`, rebuilt into
+  `test-tree/`. By default each is relinked from its native link command
+  (`ninja -t commands`) with the library swapped for the translated archive
+  and Rust's native libs appended. A ctest case passes when it exits 0 and
+  its stdout matches the native run. Each `Differential` then runs a tool
+  over every input glob with the same `argv[0]` for both builds and must
+  match the native exit code and stdout.
+- `translate_tests` (cJSON): its unity tests `#include "../cJSON.c"`, so
+  relinking would only test native code. Instead each test executable
+  (its objects plus in-build archives such as `libunity.a`) is translated
+  as its own binary crate, linked against the translated `cdylib` in
+  place of the native `.so`, which keeps the native rule that the test's
+  own definitions win.
+- cJSON (2026-10-05): 1 TU, 19/19 ctest. libyaml: 8 TUs, 3/3 ctest, and
+  100/100 differential runs (`run-*`/`example-*` over `examples/*.yaml`
+  and `regression-inputs/*`).
 
 ## Missing dependencies
 
