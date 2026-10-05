@@ -131,7 +131,10 @@ impl Resolver {
                         .specifiers
                         .attributes_with(&function.declarator, &function.attributes),
                 );
-                self.bind_function(name, true, overloadable, declaration)?;
+                let entry = self.bind_function(name, true, overloadable, declaration)?;
+                if passes_object_size(&function.declarator) {
+                    self.resolution.passes_object_size.insert(entry.id);
+                }
                 let outer_labels = std::mem::take(&mut self.labels);
                 let outer_local_labels =
                     std::mem::replace(&mut self.local_labels, vec![HashMap::new()]);
@@ -206,9 +209,21 @@ impl Resolver {
                             .specifiers
                             .attributes_with(&declarator.declarator, &declarator.attributes),
                     );
-                    self.bind_function(name, linked, overloadable, declarator)?;
+                    let entry = self.bind_function(name, linked, overloadable, declarator)?;
+                    if passes_object_size(&declarator.declarator) {
+                        self.resolution.passes_object_size.insert(entry.id);
+                    }
                 } else {
-                    self.bind_ordinary(name, kind, linked, declarator)?;
+                    let entry = self.bind_ordinary(name, kind, linked, declarator)?;
+                    if kind == BindingKind::Typedef
+                        && self.flavor.is_clang()
+                        && self.ordinary.len() == 1
+                        && BUILTIN_TYPEDEFS.contains(&name)
+                    {
+                        self.resolution
+                            .builtin_typedefs
+                            .insert(name.into(), entry.id);
+                    }
                 }
             }
             if let Some(initializer) = &declarator.initializer {
@@ -1182,6 +1197,22 @@ impl Visitor for Resolver {
 
 fn overloadable<'a>(mut attributes: impl Iterator<Item = &'a Span<Attribute>>) -> bool {
     attributes.any(|attribute| attribute.value == Attribute::Overloadable)
+}
+
+const BUILTIN_TYPEDEFS: &[&str] = &["FILE", "jmp_buf", "sigjmp_buf", "ucontext_t"];
+
+fn passes_object_size(declarator: &Declarator) -> bool {
+    declarator.function_parameters().is_some_and(|parameters| {
+        parameters.parameters().iter().any(|parameter| {
+            parameter
+                .specifiers
+                .attributes
+                .iter()
+                .chain(&parameter.attributes)
+                .chain(parameter.declarator.layer_attributes())
+                .any(|attribute| matches!(attribute.value, Attribute::PassObjectSize { .. }))
+        })
+    })
 }
 
 fn redeclares(existing: BindingKind, declared: BindingKind) -> bool {

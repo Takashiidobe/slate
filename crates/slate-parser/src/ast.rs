@@ -1445,6 +1445,24 @@ impl Declarator {
         attributes
     }
 
+    pub fn layer_attributes(&self) -> Vec<&Span<Attribute>> {
+        let mut attributes = Vec::new();
+        let mut layer = Some(self);
+        while let Some(declarator) = layer {
+            if let Self::Attributed {
+                attributes: own, ..
+            }
+            | Self::Pointer {
+                attributes: own, ..
+            } = declarator
+            {
+                attributes.extend(own);
+            }
+            layer = declarator.inner();
+        }
+        attributes
+    }
+
     fn inner(&self) -> Option<&Declarator> {
         match self {
             Self::Name(_) | Self::Abstract => None,

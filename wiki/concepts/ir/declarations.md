@@ -97,8 +97,15 @@ on it.
   - dropped pointee qualifiers;
   - variadic argument.
   The candidate that is at least as good on every argument and better on one
-  wins. It is written into `references` for the callee. Ambiguous calls and
+  wins. On a tie, a candidate with a `pass_object_size` parameter beats one
+  without, as in clang. It is written into `references` for the callee. Ambiguous calls and
   calls with no viable candidate are rejected, as clang does.
+- `pass_object_size` on any parameter (`NameResolution::passes_object_size`)
+  distinguishes overloads of the same type, so glibc's clang fortify wrappers
+  (`static` overloadable `fprintf`, `snprintf`, ...) don't redeclare the plain
+  prototype. The hidden object-size argument clang passes is not modeled: in
+  the callee `__builtin_object_size` of the parameter is an ordinary query,
+  so it is unknown and the `_chk` call never traps.
 - `Unimplemented`: a non-call use of a name with several overloads (clang
   resolves `&f` from the target type), and redeclaring an overload with the
   same type (the second binding would need merging into the first). Also

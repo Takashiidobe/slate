@@ -1041,13 +1041,19 @@ impl TypeResolver {
                 viable.push((candidate, ranks));
             }
         }
-        let better = |a: &[OverloadRank], b: &[OverloadRank]| {
-            a.iter().zip(b).all(|(a, b)| a <= b) && a.iter().zip(b).any(|(a, b)| a < b)
-        };
-        let best = viable.iter().find(|(id, ranks)| {
+        let better =
+            |(a, a_ranks): &(crate::ir::BindingId, Vec<OverloadRank>),
+             (b, b_ranks): &(crate::ir::BindingId, Vec<OverloadRank>)| {
+                let no_worse = a_ranks.iter().zip(b_ranks).all(|(a, b)| a <= b);
+                no_worse
+                    && (a_ranks.iter().zip(b_ranks).any(|(a, b)| a < b)
+                        || (self.passes_object_size.contains(a)
+                            && !self.passes_object_size.contains(b)))
+            };
+        let best = viable.iter().find(|candidate| {
             viable
                 .iter()
-                .all(|(other, other_ranks)| other == id || better(ranks, other_ranks))
+                .all(|other| other.0 == candidate.0 || better(candidate, other))
         });
         let error = match best {
             None if viable.is_empty() => Some(ResolveError::Rejected(

@@ -100,6 +100,8 @@ pub struct TypeResolver {
     alias_definitions: HashMap<crate::ast::NodeId, (TypeId, QualType)>,
     tag_failures: HashMap<TagId, ResolveError>,
     pub(super) overload_sets: HashMap<BindingId, Vec<BindingId>>,
+    pub(super) passes_object_size: HashSet<BindingId>,
+    pub(super) builtin_typedefs: HashMap<String, BindingId>,
     pub(super) overload_candidates: HashMap<crate::ast::NodeId, Vec<BindingId>>,
     pub(super) unsupported_declarations: HashMap<crate::ast::NodeId, ResolveError>,
     pub(super) external_overloads: HashSet<BindingId>,
@@ -161,6 +163,8 @@ impl TypeResolver {
             alias_definitions: HashMap::new(),
             tag_failures: HashMap::new(),
             overload_sets: HashMap::new(),
+            passes_object_size: HashSet::new(),
+            builtin_typedefs: HashMap::new(),
             overload_candidates: HashMap::new(),
             unsupported_declarations: HashMap::new(),
             external_overloads: HashSet::new(),
@@ -254,6 +258,8 @@ impl TypeResolver {
             })
             .collect();
         resolver.overload_sets = names.overload_sets.clone();
+        resolver.passes_object_size = names.passes_object_size.clone();
+        resolver.builtin_typedefs = names.builtin_typedefs.clone();
         resolver.tag_definitions = names.tags.clone();
         resolver.ctypes.ptr32_extension_is_qualifier = unit.dialect.flavor().is_msvc();
         resolver.tags = unit.tags.clone();

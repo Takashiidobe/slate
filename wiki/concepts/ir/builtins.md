@@ -37,8 +37,11 @@ Part of the [IR spec](../ir-spec.md). Atomic builtins are in
 - `TypeResolver::builtin_signature` derives the call signature. None is
   derived (and the call reports an unsupported builtin) for
   `CustomTypeChecking`, variadic prototypes with no named parameters, and
-  prototypes naming types outside the model (`FILE`, `jmp_buf`, ObjC `id`,
-  HLSL resources, C++ references, ext-vectors).
+  prototypes naming types outside the model (ObjC `id`, HLSL resources, C++
+  references, ext-vectors). `FILE`, `jmp_buf`, `sigjmp_buf` and `ucontext_t`
+  take the file-scope typedef of that name in clang flavor, as clang does
+  (`NameResolution::builtin_typedefs`); without one there is no signature.
+  Array parameters decay to pointers, as in clang's builtin prototypes.
 - Some `CustomTypeChecking` builtins get a signature derived from the first
   argument instead (`derived_signature`). `__builtin_reduce_*` takes a vector
   and returns its element type: `add`/`mul`/`and`/`or`/`xor` need integer

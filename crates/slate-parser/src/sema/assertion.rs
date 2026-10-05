@@ -135,11 +135,14 @@ impl Checker<'_> {
             return Ok(());
         };
         if let Some(overloads) = self.types.overload_sets.get(&id).cloned() {
+            let passes_object_size = self.types.passes_object_size.contains(&id);
             let redeclares = overloads.iter().filter(|&&other| other != id).any(|other| {
-                self.types
-                    .entities
-                    .ty(other)
-                    .is_some_and(|earlier| self.types.ctypes.compatible(earlier, ty))
+                self.types.passes_object_size.contains(other) == passes_object_size
+                    && self
+                        .types
+                        .entities
+                        .ty(other)
+                        .is_some_and(|earlier| self.types.ctypes.compatible(earlier, ty))
             });
             if redeclares {
                 let error =

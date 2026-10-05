@@ -41,6 +41,8 @@ pub struct NameResolution {
     pub implicit_functions: std::collections::HashSet<BindingId>,
     pub ms_asm_members: std::collections::HashMap<crate::ast::NodeId, BindingId>,
     pub overload_sets: std::collections::HashMap<BindingId, Vec<BindingId>>,
+    pub passes_object_size: std::collections::HashSet<BindingId>,
+    pub builtin_typedefs: std::collections::HashMap<String, BindingId>,
 }
 
 impl fmt::Display for NameResolution {

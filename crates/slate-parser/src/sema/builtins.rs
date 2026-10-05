@@ -670,7 +670,8 @@ impl TypeResolver {
         let ret = self.builtin_param(&prototype.ret, &target)?;
         let mut params = Vec::with_capacity(prototype.params.len());
         for param in prototype.params {
-            params.push(self.builtin_param(param, &target)?);
+            let param = self.builtin_param(param, &target)?;
+            params.push(self.ctypes.adjust_parameter(param));
         }
         Some(self.ctypes.qual(CTypeKind::Function {
             ret,
@@ -730,10 +731,12 @@ impl TypeResolver {
                 signed: target.wchar_signed,
             },
             BuiltinType::VaList => return Some(self.ctypes.va_list_type(target)),
-            BuiltinType::Reference(_)
-            | BuiltinType::ExtVector { .. }
-            | BuiltinType::VaListRef
-            | BuiltinType::Opaque(_) => return None,
+            BuiltinType::Opaque(name) => {
+                return self.alias(*self.builtin_typedefs.get(*name)?);
+            }
+            BuiltinType::Reference(_) | BuiltinType::ExtVector { .. } | BuiltinType::VaListRef => {
+                return None;
+            }
         };
         Some(self.ctypes.qual(kind))
     }
