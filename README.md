@@ -149,6 +149,8 @@ Projects that we've tested e2e that translate to Rust:
 - [LMDB](https://www.symas.com/mdb)
 - [c-ares](https://c-ares.org)
 - [libevent](https://libevent.org)
+- [yyjson](https://github.com/ibireme/yyjson)
+- [PCRE2](https://github.com/PCRE2Project/pcre2)
 
 ### In Progress
 
