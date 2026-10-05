@@ -5,4 +5,7 @@ target/
 *.db
 .beads-credential-key
 .beads/proxieddb/
+.beads.gate.lock
 .llog/
+
+**/__pycache__/**

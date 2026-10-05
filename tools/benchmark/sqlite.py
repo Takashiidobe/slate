@@ -86,7 +86,7 @@ def build(args, directory):
     generated = directory / "rust"
     native.mkdir(exist_ok=True)
     timings = {}
-    timings["slate"] = run(["cargo", "build", "--release", "-p", "slate"], directory / "slate-build.log", cwd=args.slate_root)
+    timings["slate"] = run(["cargo", "build", "--release", "--bin", "slate"], directory / "slate-build.log", cwd=args.slate_root)
     commands = [{"directory": str(ROOT), "file": unit["source"],
                  "arguments": [args.clang, *unit["flags"], "-D__PIC__=2", "-D__pic__=2",
                                "-c", unit["source"]]} for unit in units.values()]

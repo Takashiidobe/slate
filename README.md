@@ -137,6 +137,8 @@ specific input and target.
 Projects that we've tested e2e that translate to Rust:
 
 - [SQLite](https://sqlite.org)
+  - [Rust Translation](https://github.com/takashiidobe/slate-sqlite).
+    Passes `select1.test` and `main.test` using `testfixture`, plus `mptest` and `threadtest3`.
 - [Redis](https://redis.io)
 - [chibicc](https://github.com/rui314/chibicc)
 - [cJSON](https://github.com/DaveGamble/cJSON)
