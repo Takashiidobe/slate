@@ -211,6 +211,13 @@ impl TypeResolver {
         self.dialect.flavor()
     }
 
+    pub(super) fn fold_target(&self) -> super::fold::Target {
+        super::fold::Target {
+            flavor: self.dialect.flavor(),
+            pointer_width: self.target_info().pointer_width,
+        }
+    }
+
     pub fn access_of(&self, q: QualType) -> Access {
         self.ctypes.access(q)
     }
@@ -456,7 +463,7 @@ impl TypeResolver {
         e: &crate::ast::Expr,
     ) -> Result<BigInt, ResolveError> {
         let value = self.constant_value(e)?;
-        super::fold::integer_constant(&value, self.dialect.flavor()).ok_or(ResolveError::Rejected(
+        super::fold::integer_constant(&value, self.fold_target()).ok_or(ResolveError::Rejected(
             "nonconstant or undefined integer expression",
         ))
     }
@@ -602,7 +609,7 @@ impl TypeResolver {
                     ),
                     (left, right) => {
                         let truth = context.condition(condition.value.clone());
-                        return match super::fold::integer_constant(&truth, self.dialect.flavor()) {
+                        return match super::fold::integer_constant(&truth, self.fold_target()) {
                             Some(truth) if truth.sign() == Sign::NoSign => {
                                 self.folded_operand(context, e, Slot::Else, right?)
                             }
@@ -671,13 +678,9 @@ impl TypeResolver {
                 let argument = values
                     .first()
                     .ok_or(ResolveError::Internal("bit builtin argument"))?;
-                let n = super::fold::bit_builtin(
-                    builtin,
-                    argument,
-                    values.get(1),
-                    self.dialect.flavor(),
-                )
-                .ok_or(ResolveError::Rejected("builtin call is not a constant"))?;
+                let n =
+                    super::fold::bit_builtin(builtin, argument, values.get(1), self.fold_target())
+                        .ok_or(ResolveError::Rejected("builtin call is not a constant"))?;
                 (
                     c,
                     ValueKind::Constant(super::fold::integer_number(&self.ir_type(c), n)),
@@ -726,6 +729,11 @@ impl TypeResolver {
             ExprKind::Binary { op, left, right } => {
                 let left = self.constant_value_with_context(context, left)?;
                 let right = self.constant_value_with_context(context, right)?;
+                if self.ctypes.is_pointer(left.c) || self.ctypes.is_pointer(right.c) {
+                    return Err(ResolveError::Unimplemented(
+                        "pointer operand in an integer constant expression",
+                    ));
+                }
                 let c = self.typed(e)?.c;
                 let (left, right) = if matches!(
                     op,
@@ -750,6 +758,11 @@ impl TypeResolver {
             ExprKind::Unary { op, operand } => {
                 use crate::const_expr::UnaryOp;
                 let operand = self.constant_value_with_context(context, operand)?;
+                if self.ctypes.is_pointer(operand.c) {
+                    return Err(ResolveError::Unimplemented(
+                        "pointer operand in an integer constant expression",
+                    ));
+                }
                 match op {
                     UnaryOp::Plus | UnaryOp::Minus | UnaryOp::BitNot => {
                         self.typed(e)?;
@@ -806,7 +819,13 @@ impl TypeResolver {
             ExprKind::Cast { ty, value } => {
                 let ty = self.resolve_type_name(ty)?;
                 self.object_type(ty, "void constant cast")?;
+                let null = self.null_pointer_constant(value);
                 let value = self.constant_value_with_context(context, value)?;
+                if self.ctypes.is_pointer(ty) || self.ctypes.is_pointer(value.c) {
+                    let mut operand = self.constant_pointer_cast(value, ty, null)?;
+                    operand.value.node = e.derive(operand.value.node.value);
+                    return Ok(operand);
+                }
                 let mut operand = self.arithmetic_conversion(
                     context,
                     value,
@@ -830,6 +849,79 @@ impl TypeResolver {
             operand.value.ty = Type::Bool;
         }
         Ok(operand)
+    }
+
+    fn constant_pointer_cast(
+        &mut self,
+        operand: Operand,
+        to: QualType,
+        null: bool,
+    ) -> Result<Operand, ResolveError> {
+        use super::ctype::convert::{CastKind, ConversionContext, EnumTail};
+        use crate::ir::{CompareOp, ConversionKind, ConversionReason, ConversionSema};
+        let to = self.ctypes.unqualified(to);
+        let ty = self.ir_type(to);
+        let reason = ConversionReason::Explicit;
+        let cast = self
+            .ctypes
+            .classify_conversion(operand.c, to, ConversionContext::Cast, null)?
+            .kind;
+        let (kind, operand) = match cast {
+            CastKind::NullPointer => {
+                let node = operand.value.node.derive(ValueKind::Null);
+                return Ok(Operand {
+                    value: Value { ty, node },
+                    c: to,
+                });
+            }
+            CastKind::PtrToBool => {
+                let null = Value {
+                    ty: operand.value.ty.clone(),
+                    node: operand.value.node.derive(ValueKind::Null),
+                };
+                let anchor = null.node.derive(());
+                let node = anchor.with_value(ValueKind::Compare {
+                    op: CompareOp::Ne,
+                    left: Box::new(operand.value),
+                    right: Box::new(null),
+                    exceptions: None,
+                    reason: Some(reason),
+                });
+                return Ok(Operand {
+                    value: Value { ty, node },
+                    c: to,
+                });
+            }
+            CastKind::Pointer => (ConversionKind::PointerCast, operand),
+            CastKind::PtrToInt => (ConversionKind::PtrToInt, operand),
+            CastKind::IntToPtr => (ConversionKind::IntToPtr, operand),
+            CastKind::EnumToInt(EnumTail::IntToPtr) => {
+                (ConversionKind::IntToPtr, self.enum_operand(operand))
+            }
+            _ => {
+                return Err(ResolveError::Unimplemented(
+                    "pointer conversion in a constant expression",
+                ));
+            }
+        };
+        if let (Type::Pointer { space: from, .. }, Type::Pointer { space, .. }) =
+            (&operand.value.ty, &ty)
+            && from != space
+        {
+            return Err(ResolveError::Unimplemented(
+                "address space cast in a constant expression",
+            ));
+        }
+        Ok(Operand {
+            value: super::numeric::conversion(
+                operand.value,
+                ty,
+                kind,
+                reason,
+                ConversionSema::Exact,
+            ),
+            c: to,
+        })
     }
 
     fn folded_operand(
@@ -2274,13 +2366,11 @@ impl TypeResolver {
                     let (value, own) = match (&enumerator.value, previous.take()) {
                         (Some(expr), _) => {
                             let operand = self.constant_value(expr)?;
-                            let value = super::fold::integer_constant(
-                                &operand.value,
-                                self.dialect.flavor(),
-                            )
-                            .ok_or(ResolveError::Rejected(
-                                "nonconstant or undefined integer expression",
-                            ))?;
+                            let value =
+                                super::fold::integer_constant(&operand.value, self.fold_target())
+                                    .ok_or(ResolveError::Rejected(
+                                    "nonconstant or undefined integer expression",
+                                ))?;
                             let own = self.ctypes.integer_promotion(
                                 operand.c,
                                 None,

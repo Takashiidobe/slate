@@ -122,6 +122,14 @@ Macro expansion chains are not in the IR yet (only atomic builtins record
   out-of-range float→int folds per flavor: clang saturates (NaN → 0), MSVC
   wraps below 2^64 and else gives 0, gcc does not fold
   (`ir_float_constant_folding.c`).
+- Casts through a pointer fold too, as all three oracles do: `null`,
+  `int_to_ptr` of a constant (wrapped to the target's pointer width) and
+  `pointer_cast` give an address, which `ptr_to_int`, a pointer `eq`/`ne`
+  and a cast to `_Bool` read. The kernel's
+  `case (unsigned long) SEND_SIG_NOINFO:` needs it
+  (`ir_pointer_cast_constants.c` on x86_64 and i686). Pointer arithmetic,
+  pointer comparisons and `!p` written in the expression are `Unimplemented`
+  (slate-parser-6x05.43).
 - Layout constants fold through `TypeResolver::constant_integer`, which is
   target-aware and sees predefines, enumerators, and `constexpr` objects.
   The token-level folder in `const_expr.rs` is for the preprocessor only.

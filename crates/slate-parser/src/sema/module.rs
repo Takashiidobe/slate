@@ -1436,8 +1436,10 @@ impl Lowerer {
     ) -> Result<Value, ResolveError> {
         let value = self.expr(expr)?;
         let value = self.converted_at(label, slot, value)?;
-        let number = super::fold::integer_constant(&value, self.types.flavor())
-            .ok_or(ResolveError::Internal("nonconstant case expression"))?;
+        let Some(number) = super::fold::integer_constant(&value, self.types.fold_target()) else {
+            self.types.constant_integer(expr)?;
+            return Err(ResolveError::Internal("nonconstant case expression"));
+        };
         Ok(self.value(
             expr,
             value.ty.clone(),

@@ -235,7 +235,7 @@ impl Lowerer {
     }
 
     fn constant(&self, value: &Value) -> Option<BigInt> {
-        super::fold::integer_constant(value, self.types.flavor())
+        super::fold::integer_constant(value, self.types.fold_target())
     }
 
     fn all_lanes(&self, mask: &Value, lanes: u32) -> bool {

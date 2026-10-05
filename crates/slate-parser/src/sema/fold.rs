@@ -22,40 +22,46 @@ pub(super) fn integer(value: &Value) -> Option<BigInt> {
     evaluate(value, MAX_DEPTH, Env::default())
 }
 
-pub(super) fn integer_constant(value: &Value, flavor: CompilerFlavor) -> Option<BigInt> {
-    evaluate(value, MAX_DEPTH, Env::constant(flavor, None))
+#[derive(Clone, Copy)]
+pub(super) struct Target {
+    pub flavor: CompilerFlavor,
+    pub pointer_width: u32,
+}
+
+pub(super) fn integer_constant(value: &Value, target: Target) -> Option<BigInt> {
+    evaluate(value, MAX_DEPTH, Env::constant(target, None))
 }
 
 pub(super) fn integer_with_objects(
     value: &Value,
-    flavor: CompilerFlavor,
+    target: Target,
     objects: &Objects,
 ) -> Option<BigInt> {
-    evaluate(value, MAX_DEPTH, Env::constant(flavor, Some(objects)))
+    evaluate(value, MAX_DEPTH, Env::constant(target, Some(objects)))
 }
 
 pub(super) fn read_with_objects(
     place: &Place,
-    flavor: CompilerFlavor,
+    target: Target,
     objects: &Objects,
 ) -> Option<BigInt> {
-    read(place, MAX_DEPTH, Env::constant(flavor, Some(objects)))
+    read(place, MAX_DEPTH, Env::constant(target, Some(objects)))
 }
 
 pub(super) fn bit_builtin(
     builtin: BitBuiltin,
     argument: &Value,
     fallback: Option<&Value>,
-    flavor: CompilerFlavor,
+    target: Target,
 ) -> Option<BigInt> {
     let (width, _) = integer_type(&argument.ty).filter(|(width, _)| *width <= 128)?;
-    let bits = u128::try_from(normalize(integer_constant(argument, flavor)?, width, false)).ok()?;
+    let bits = u128::try_from(normalize(integer_constant(argument, target)?, width, false)).ok()?;
     let unused = 128 - width;
     let count = match builtin {
         BitBuiltin::Clz | BitBuiltin::Ctz if bits == 0 => {
             return match fallback {
-                Some(fallback) => integer_constant(fallback, flavor),
-                None if flavor.is_gcc() => Some(width.into()),
+                Some(fallback) => integer_constant(fallback, target),
+                None if target.flavor.is_gcc() => Some(width.into()),
                 None => None,
             };
         }
@@ -95,13 +101,15 @@ pub(super) type Objects = HashMap<BindingId, Value>;
 #[derive(Clone, Copy, Default)]
 struct Env<'a> {
     flavor: Option<CompilerFlavor>,
+    pointer_width: Option<u32>,
     objects: Option<&'a Objects>,
 }
 
 impl<'a> Env<'a> {
-    fn constant(flavor: CompilerFlavor, objects: Option<&'a Objects>) -> Self {
+    fn constant(target: Target, objects: Option<&'a Objects>) -> Self {
         Self {
-            flavor: Some(flavor),
+            flavor: Some(target.flavor),
+            pointer_width: Some(target.pointer_width),
             objects,
         }
     }
@@ -235,10 +243,13 @@ pub(super) fn fold_msvc_static_divisions(value: &mut Value) {
         } => {
             fold_msvc_static_divisions(left);
             fold_msvc_static_divisions(right);
+            let msvc = Env {
+                flavor: Some(CompilerFlavor::Msvc),
+                ..Env::default()
+            };
             matches!(op, ArithOp::Div | ArithOp::Rem)
-                && integer_constant(left, CompilerFlavor::Msvc).is_some()
-                && integer_constant(right, CompilerFlavor::Msvc)
-                    .is_some_and(|value| value == 0.into())
+                && evaluate(left, MAX_DEPTH, msvc).is_some()
+                && evaluate(right, MAX_DEPTH, msvc).is_some_and(|value| value == 0.into())
         }
         ValueKind::Convert { operand, .. }
         | ValueKind::Unary { operand, .. }
@@ -310,6 +321,11 @@ fn evaluate(value: &Value, depth: usize, env: Env) -> Option<BigInt> {
             operand,
             ..
         } => enumerated(operand, depth, env)?,
+        ValueKind::Convert {
+            kind: ConversionKind::PtrToInt,
+            operand,
+            ..
+        } => address(operand, depth, env)?,
         ValueKind::Convert { kind, operand, .. } => {
             match kind {
                 ConversionKind::Widen | ConversionKind::Truncate | ConversionKind::Reinterpret
@@ -368,8 +384,11 @@ fn evaluate(value: &Value, depth: usize, env: Env) -> Option<BigInt> {
         ValueKind::Compare {
             op, left, right, ..
         } => {
-            let left = evaluate(left, depth, env)?;
-            let right = evaluate(right, depth, env)?;
+            let (left, right) = if matches!(left.ty, Type::Pointer { .. }) {
+                (address(left, depth, env)?, address(right, depth, env)?)
+            } else {
+                (evaluate(left, depth, env)?, evaluate(right, depth, env)?)
+            };
             BigInt::from(u8::from(match op {
                 CompareOp::Eq => left == right,
                 CompareOp::Ne => left != right,
@@ -416,7 +435,25 @@ fn evaluate(value: &Value, depth: usize, env: Env) -> Option<BigInt> {
     Some(normalize(result, width, signed))
 }
 
-// quad holds every binary format exactly, so values travel as quad and round per operation
+fn address(value: &Value, depth: usize, env: Env) -> Option<BigInt> {
+    let depth = depth.checked_sub(1)?;
+    let width = env.pointer_width?;
+    match &value.node.value {
+        ValueKind::Null => Some(BigInt::from(0u8)),
+        ValueKind::Convert {
+            kind: ConversionKind::IntToPtr,
+            operand,
+            ..
+        } => Some(normalize(evaluate(operand, depth, env)?, width, false)),
+        ValueKind::Convert {
+            kind: ConversionKind::PointerCast,
+            operand,
+            ..
+        } => address(operand, depth, env),
+        _ => None,
+    }
+}
+
 macro_rules! in_format {
     ($format:expr, $F:ident => $body:expr) => {
         match $format {

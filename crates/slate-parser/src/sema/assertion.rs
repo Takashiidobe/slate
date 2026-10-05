@@ -1055,7 +1055,11 @@ impl Checker<'_> {
 
     fn case_value(&mut self, label: &Stmt, slot: Slot, value: &Expr) {
         self.expression(value);
-        if self.types.constant_integer(value).is_err() {
+        if self
+            .types
+            .constant_integer(value)
+            .is_err_and(|error| error.is_rejection())
+        {
             self.reject(label, "nonconstant case expression");
         }
         if let Some(Some(switch)) = self.context.switches.last().copied() {
@@ -1634,12 +1638,12 @@ pub(super) fn static_assertion_error(
             ));
         }
     }
-    let flavor = types.flavor();
+    let target = types.fold_target();
     let result = types
         .constant_value(condition)
         .and_then(|value| match value.ty {
             Type::Bool | Type::Numeric(NumericType::Integer { .. }) => {
-                super::fold::integer_constant(&value, flavor).ok_or(ResolveError::Rejected(
+                super::fold::integer_constant(&value, target).ok_or(ResolveError::Rejected(
                     "nonconstant or undefined integer expression",
                 ))
             }

@@ -241,15 +241,15 @@ impl Lowerer {
                 }
             }
         }
-        let flavor = self.types.flavor();
+        let target = self.types.fold_target();
         let objects = self.types.entities.constants();
         let (constant, symbol) = match &candidate {
             Candidate::Value(value) => (
-                integer_with_objects(value, flavor, objects),
+                integer_with_objects(value, target, objects),
                 self.symbol(value),
             ),
             Candidate::Lvalue { lvalue, .. } => {
-                (read_with_objects(&lvalue.place, flavor, objects), None)
+                (read_with_objects(&lvalue.place, target, objects), None)
             }
             Candidate::Output(_) => (None, None),
         };
@@ -377,8 +377,11 @@ impl Lowerer {
     }
 
     fn scaled(&self, amount: &Value, element: &Type) -> Option<i64> {
-        let amount =
-            integer_with_objects(amount, self.types.flavor(), self.types.entities.constants())?;
+        let amount = integer_with_objects(
+            amount,
+            self.types.fold_target(),
+            self.types.entities.constants(),
+        )?;
         let amount = i64::try_from(amount).ok()?;
         let size = i64::try_from(self.types.storage(element.clone()).ok()?.size_bytes).ok()?;
         amount.checked_mul(size)
