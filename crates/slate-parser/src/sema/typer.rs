@@ -1700,7 +1700,7 @@ impl TypeResolver {
         }
         let atomic = self.access_of(c).atomic;
         let layout = self
-            .qualified_storage(fixed_element(&ty).clone(), atomic)
+            .sizeof_storage(fixed_element(&ty).clone(), atomic)
             .map_err(|error| if sizeof { sizeof_error(error) } else { error })?;
         self.declared_storage(c, layout)?;
         Ok(())

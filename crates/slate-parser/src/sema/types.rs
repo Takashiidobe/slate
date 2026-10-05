@@ -542,7 +542,7 @@ impl TypeResolver {
                     });
                 }
                 let layout = self
-                    .qualified_storage(self.ir_type(ty), self.ctypes.quals(ty).is_atomic)
+                    .sizeof_storage(self.ir_type(ty), self.ctypes.quals(ty).is_atomic)
                     .map_err(|error| match error {
                         ResolveError::Rejected("incomplete field type")
                             if matches!(e.value, ExprKind::SizeOfExpr(_)) =>

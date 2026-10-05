@@ -57,7 +57,10 @@ _Atomic`. Tags print by definition name.
   of a global (`extern void _text;`), and the `sizeof` / `_Alignof` sites.
 - `sizeof(void)` = `_Alignof(void)` = 1 and `require_pointer_element`
   accepts `void` (GNU extension; the `-Wpointer-arith` warning is not
-  emitted).
+  emitted). The expression forms agree: `sizeof(*voidp)`, `sizeof(f())` for
+  a void `f`, and the kernel's `__is_constexpr` conditional are 1 in the
+  checker, lowering, and constant evaluator, all through
+  `TypeResolver::sizeof_storage` (`ir_sizeof_void_expression.c`).
 - Never give `TargetInfo::storage_of(Type::Void)` a size: object, field,
   parameter, and `va_arg` paths must keep failing.
 
