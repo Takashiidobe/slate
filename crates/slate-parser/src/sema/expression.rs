@@ -426,6 +426,21 @@ impl Lowerer {
                 let c = self.result(e)?;
                 Ok(self.operand(e, c, ValueKind::AddressOf(place.place)))
             }
+            CustomBuiltin::CountedByRef => {
+                let [argument] = arguments else {
+                    return Err(ResolveError::Internal("counted_by_ref builtin arity"));
+                };
+                let c = self.result(e)?;
+                let Some(counted) = self.types.counted_by_ref(argument)? else {
+                    return Ok(self.operand(e, c, ValueKind::Null));
+                };
+                let Projection::Place(counter) =
+                    self.member(argument, counted.base, &counted.counter, counted.arrow)?
+                else {
+                    return Err(ResolveError::Internal("counted_by counter is not a place"));
+                };
+                Ok(self.operand(e, c, ValueKind::AddressOf(counter.place)))
+            }
             CustomBuiltin::ClassifyType => {
                 let [operand] = arguments else {
                     return Err(ResolveError::Internal("classify builtin arity"));

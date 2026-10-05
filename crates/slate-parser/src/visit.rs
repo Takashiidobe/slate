@@ -499,6 +499,7 @@ pub fn walk_attribute<V: Visitor + ?Sized>(
         | Attribute::DllExport
         | Attribute::WeakImport
         | Attribute::TlsModel(_)
+        | Attribute::CountedBy(_)
         | Attribute::MsStruct
         | Attribute::CallingConvention(_)
         | Attribute::NoMips16

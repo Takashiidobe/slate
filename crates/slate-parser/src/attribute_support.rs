@@ -114,6 +114,7 @@ const GNU_ATTRIBUTES: &[Support] = &[
     both("alloc_size"),
     both("alloc_align"),
     both("cleanup"),
+    both("counted_by"),
     both("returns_nonnull"),
     both("warn_unused_result"),
     both("sentinel"),

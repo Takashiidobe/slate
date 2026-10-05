@@ -127,6 +127,7 @@ fn general_use(attribute: &Attribute) -> Use {
         Attribute::Mode(_) => Use::Ignored,
         Attribute::AddressSpace(_) => Use::Ignored,
         Attribute::Cleanup(_) => Use::Ignored,
+        Attribute::CountedBy(_) => Use::Ignored,
         Attribute::ScalarStorageOrder(_) => Use::Ignored,
         Attribute::TransparentUnion => Use::Ignored,
         Attribute::CodeSeg(_) => Use::Unimplemented("code segment attribute"),

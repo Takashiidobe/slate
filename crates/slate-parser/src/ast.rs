@@ -993,6 +993,7 @@ pub enum Attribute {
     AllocSize(Vec<Expr>),
     AllocAlign(Expr),
     Cleanup(Expr),
+    CountedBy(String),
     ReturnsNonNull,
     WarnUnusedResult,
     Sentinel(Option<i64>),

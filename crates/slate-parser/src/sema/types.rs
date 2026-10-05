@@ -75,6 +75,7 @@ pub struct TypeResolver {
     pub(super) locals: HashMap<BindingId, QualType>,
     pub(super) constants: HashMap<BindingId, Operand>,
     pub(super) record_fields: HashMap<TypeId, Vec<QualType>>,
+    pub(super) field_counters: HashMap<TypeId, Vec<Option<String>>>,
     field_alignments: HashMap<TypeId, Vec<u64>>,
     pub(super) pragmas: super::pragmas::Pragmas,
     pub(super) diagnostics: Vec<super::SemaError>,
@@ -130,6 +131,7 @@ impl TypeResolver {
             locals: HashMap::new(),
             constants: HashMap::new(),
             record_fields: HashMap::new(),
+            field_counters: HashMap::new(),
             field_alignments: HashMap::new(),
             pragmas: super::pragmas::Pragmas::default(),
             diagnostics: Vec::new(),
@@ -2083,6 +2085,7 @@ impl TypeResolver {
                 self.check_attributes(&tag.attributes, Subject::Record { union })?;
                 let mut fields = Vec::new();
                 let mut field_types = Vec::new();
+                let mut counters = Vec::new();
                 let mut requests = Vec::new();
                 for item in items {
                     if let FieldItemKind::StaticAssert(assertion) = &item.value {
@@ -2119,6 +2122,7 @@ impl TypeResolver {
                             bit_width: None,
                         }));
                         field_types.push(resolved);
+                        counters.push(None);
                         requests.push(field_request(
                             self,
                             &declaration.specifiers.attributes,
@@ -2155,6 +2159,15 @@ impl TypeResolver {
                             bit_width,
                         }));
                         field_types.push(resolved);
+                        counters.push(
+                            declaration
+                                .specifiers
+                                .attributes_with(&declarator.declarator, &declarator.attributes)
+                                .find_map(|attribute| match &attribute.value {
+                                    Attribute::CountedBy(counter) => Some(counter.clone()),
+                                    _ => None,
+                                }),
+                        );
                         let field = declarator
                             .attributes
                             .iter()
@@ -2193,6 +2206,7 @@ impl TypeResolver {
                     alignment,
                 )?;
                 self.record_fields.insert(id, field_types);
+                self.field_counters.insert(id, counters);
                 self.field_alignments.insert(id, field_alignments);
                 TypeDefinitionKind::Record {
                     kind: match tag.kind {

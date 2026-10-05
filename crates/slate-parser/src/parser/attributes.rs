@@ -420,6 +420,9 @@ fn parse_attribute_value(
             (Some(_), Ok(function)) => Attribute::Cleanup(function),
             _ => invalid_attribute(name, arguments),
         }),
+        "counted_by" => Ok(single_ident()
+            .map(Attribute::CountedBy)
+            .unwrap_or_else(|| invalid_attribute(name, arguments))),
         "weak" if arguments.is_empty() => Ok(Attribute::Weak),
         "used" if arguments.is_empty() => Ok(Attribute::Used),
         "retain" if arguments.is_empty() => Ok(Attribute::Retain),

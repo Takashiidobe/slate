@@ -128,8 +128,17 @@ record through `builtins::custom_builtin`, which returns a typed
 | `__builtin_add/sub/mul_overflow` | `overflow_add/sub/mul<bool>(l, r, place)`: math-domain result stored through `place`, returns whether it overflowed |
 | `__builtin_bit_cast` | `bit_cast<T>` |
 | `__builtin_shufflevector`, `__builtin_convertvector` | see [vectors](type-families.md#vector) |
+| `__builtin_counted_by_ref(base->m)` | `addr_of<ptr<C>>` of `base->counter` when `m` has `counted_by(counter)` (C is the counter's declared type, base qualifiers dropped as in clang); otherwise `null<ptr<void>>` without evaluating the argument |
 
 Fixture: `ir_implicit_builtins.c`.
+
+`__builtin_counted_by_ref` takes a parenthesized `.`/`->` member of pointer
+or array type (both oracles reject anything else,
+`error/clang/linux/x86_64/counted-by-ref-not-member.c`). Clang's extra
+errors (an argument with side effects; the result assigned, passed,
+returned, subscripted, or used in a binary operator) are not checked, and
+gcc has none of them. `counted_by_or_null` and `sized_by` stay unmodeled, so
+members carrying them give `void *`, as in clang (`ir_counted_by_ref.c`).
 
 ## Vector builtin expansion
 

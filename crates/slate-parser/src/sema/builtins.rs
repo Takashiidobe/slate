@@ -232,6 +232,7 @@ pub(super) enum CustomBuiltin {
     ClassifyType,
     FloatClassify,
     Shuffle,
+    CountedByRef,
 }
 
 pub(super) fn custom_builtin(builtin: &ClangBuiltin) -> Option<CustomBuiltin> {
@@ -259,6 +260,7 @@ pub(super) fn custom_builtin(builtin: &ClangBuiltin) -> Option<CustomBuiltin> {
         "ShuffleVector" => CustomBuiltin::Shuffle,
         "BuiltinAddressof" => CustomBuiltin::AddressOf,
         "BuiltinClassifyType" => CustomBuiltin::ClassifyType,
+        "CountedByRef" => CustomBuiltin::CountedByRef,
         _ => return None,
     })
 }

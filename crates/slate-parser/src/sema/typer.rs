@@ -98,6 +98,16 @@ const NON_SCALAR_CONDITION: ResolveError = ResolveError::Rejected("non-scalar co
 const NOT_ASSIGNABLE: ResolveError = ResolveError::Rejected("expression is not assignable");
 const NON_FUNCTION_CALLEE: ResolveError = ResolveError::Rejected("non-function callee");
 const FLOAT_CLASS_ARITY: ResolveError = ResolveError::Rejected("float class builtin arity");
+const COUNTED_BY_REF_ARGUMENT: ResolveError = ResolveError::Rejected(
+    "'__builtin_counted_by_ref' argument must be a flexible array or pointer member",
+);
+
+pub(super) struct CountedMember<'e> {
+    pub(super) base: &'e Expr,
+    pub(super) arrow: bool,
+    pub(super) counter: String,
+    pub(super) counter_type: QualType,
+}
 // the definition's own error is diagnosed where it is declared
 const FAILED_DEFINITION: ResolveError = ResolveError::Unimplemented("type whose definition failed");
 
@@ -182,6 +192,72 @@ impl TypeResolver {
             }
         }
         None
+    }
+
+    fn member_counter(&self, record: QualType, name: &str) -> Option<Option<String>> {
+        let CTypeKind::Record { id, .. } = self.ctypes.canonical_kind(record) else {
+            return None;
+        };
+        let TypeDefinitionKind::Record {
+            fields: Some(fields),
+            ..
+        } = &self.definitions[id.0 as usize].kind
+        else {
+            return None;
+        };
+        let types = self.record_fields.get(id)?;
+        let counters = self.field_counters.get(id)?;
+        for ((field, member), counter) in fields.iter().zip(types).zip(counters) {
+            if field.name.as_deref() == Some(name) {
+                return Some(counter.clone());
+            }
+            if field.name.is_none()
+                && let Some(found) = self.member_counter(*member, name)
+            {
+                return Some(found);
+            }
+        }
+        None
+    }
+
+    pub(super) fn counted_by_ref<'e>(
+        &mut self,
+        argument: &'e Expr,
+    ) -> Result<Option<CountedMember<'e>>, ResolveError> {
+        let mut member = argument;
+        while let ExprKind::Paren(inner) = &member.value {
+            member = inner;
+        }
+        let ExprKind::Member { base, field, arrow } = &member.value else {
+            return Err(COUNTED_BY_REF_ARGUMENT);
+        };
+        let c = self.expression_type(member)?;
+        if self.ctypes.pointee(c).is_none() && self.ctypes.element(c).is_none() {
+            return Err(COUNTED_BY_REF_ARGUMENT);
+        }
+        let record = if *arrow {
+            let pointer = self.operand_type(base)?;
+            self.ctypes.pointee(pointer).ok_or(ResolveError::Internal(
+                "member reference base is not a pointer",
+            ))?
+        } else {
+            self.expression_type(base)?
+        };
+        let Some(counter) = self.member_counter(record, &field.value).flatten() else {
+            return Ok(None);
+        };
+        let record = self.ctypes.unqualified(record);
+        let (counter_type, _) =
+            self.member_type(record, &counter)
+                .ok_or(ResolveError::Rejected(
+                    "'counted_by' names an unknown member",
+                ))?;
+        Ok(Some(CountedMember {
+            base,
+            arrow: *arrow,
+            counter,
+            counter_type,
+        }))
     }
 
     pub(super) fn declarator_type(
@@ -1091,6 +1167,16 @@ impl TypeResolver {
             CustomBuiltin::Complex => {
                 let common = self.real_floating_pair(e, arguments)?;
                 self.complex_of(common)
+            }
+            CustomBuiltin::CountedByRef => {
+                let [argument] = arguments else {
+                    return Err(ResolveError::Rejected("counted_by_ref builtin arity"));
+                };
+                let pointee = match self.counted_by_ref(argument)? {
+                    Some(counted) => counted.counter_type,
+                    None => self.ctypes.qual(CTypeKind::Void),
+                };
+                self.ctypes.pointer(pointee)
             }
             CustomBuiltin::Shuffle => {
                 let [left, right, indices @ ..] = arguments else {

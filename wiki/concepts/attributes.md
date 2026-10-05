@@ -221,6 +221,7 @@ Fixtures: `sema/ir_attribute_applicability.c`,
 | `types::requested_alignment` | `aligned`, `_Alignas` | object request → `[align=N]` ([object properties](ir/declarations.md#object-properties)) |
 | `TypeResolver::resolve_type_name` | `aligned` in a type name's specifiers (gcc only; clang and msvc warn and ignore) | an anonymous aligned `Typedef` ([types](ir/types.md#alignment)) |
 | `types::field_request` | `packed`, `aligned` on field and its declaration | record layout |
+| `TypeResolver::field_counters` (`define_tag`) | `counted_by(member)` on a field | `__builtin_counted_by_ref` result ([builtins](ir/builtins.md#custom-lowering)); the counter name is not checked at the definition |
 | record layout (`define_tag`) | `packed`, `ms_struct`, `gcc_struct`, `aligned` on the tag, plus `#pragma pack` / `ms_struct` | offsets and alignment |
 | entity request | `common`, `nocommon` | `[common]` |
 | `TypeResolver::resolve_declarator` | declarator-position `vector_size`, `ext_vector_type`, `mode` | the declarator's type |
