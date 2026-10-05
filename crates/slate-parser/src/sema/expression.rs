@@ -2568,7 +2568,7 @@ impl Lowerer {
                         "statement expression outside a function",
                     ));
                 }
-                let (leading, labels, result) = statement_expression_parts(body);
+                let (leading, labels, result, trailing) = statement_expression_parts(body);
                 let (statements, value) = self.compound(|lower| {
                     let mut statements = lower.statements(leading, lower.return_type)?;
                     if let Some(labels) = &labels {
@@ -2583,6 +2583,7 @@ impl Lowerer {
                             lower.operand(e, c, ValueKind::Void)
                         }
                     };
+                    statements.extend(lower.statements(trailing, lower.return_type)?);
                     Ok((statements, value))
                 })?;
                 Ok(Operand {
@@ -2637,20 +2638,26 @@ impl Lowerer {
 
 pub(super) fn statement_expression_parts(
     body: &[crate::ast::Stmt],
-) -> (&[crate::ast::Stmt], Option<crate::ast::Stmt>, Option<&Expr>) {
-    let last = body
-        .iter()
-        .rposition(|statement| !matches!(statement.value, StmtKind::Comment(_)));
-    match last {
-        Some(index) => match &body[index].value {
-            StmtKind::Expr(result) => (&body[..index], None, Some(result)),
-            StmtKind::Labeled { .. } => match labeled_result(&body[index]) {
-                Some((labels, result)) => (&body[..index], Some(labels), Some(result)),
-                None => (body, None, None),
-            },
-            _ => (body, None, None),
+) -> (
+    &[crate::ast::Stmt],
+    Option<crate::ast::Stmt>,
+    Option<&Expr>,
+    &[crate::ast::Stmt],
+) {
+    let last = body.iter().rposition(|statement| {
+        !matches!(statement.value, StmtKind::Comment(_) | StmtKind::Pragma(_))
+    });
+    let Some(index) = last else {
+        return (body, None, None, &[]);
+    };
+    let trailing = &body[index + 1..];
+    match &body[index].value {
+        StmtKind::Expr(result) => (&body[..index], None, Some(result), trailing),
+        StmtKind::Labeled { .. } => match labeled_result(&body[index]) {
+            Some((labels, result)) => (&body[..index], Some(labels), Some(result), trailing),
+            None => (body, None, None, &[]),
         },
-        None => (body, None, None),
+        _ => (body, None, None, &[]),
     }
 }
 

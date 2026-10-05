@@ -858,7 +858,7 @@ impl TypeResolver {
                     ));
                 }
                 match super::expression::statement_expression_parts(body) {
-                    (statements, _, Some(result)) => {
+                    (statements, _, Some(result), _) => {
                         self.declare_statement_locals(statements);
                         Typed::rvalue(self.operand_type(result)?)
                     }
