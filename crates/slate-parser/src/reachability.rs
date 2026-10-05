@@ -172,6 +172,9 @@ impl<'a> Reachability<'a> {
                         for declarator in &field.declarators {
                             self.mark_attributes(&declarator.attributes);
                             self.mark_declarator(&declarator.declarator);
+                            if let Some(width) = &declarator.bit_width {
+                                self.mark_expr(width);
+                            }
                         }
                     }
                 }
