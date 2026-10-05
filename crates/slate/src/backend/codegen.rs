@@ -277,9 +277,9 @@ impl<W: Write> Codegen<W> {
                 self.out.write_str(INDENT)?;
             }
             if line.is_empty() {
-                self.out.write_str("///\n")?;
+                self.out.write_str("//\n")?;
             } else {
-                writeln!(self.out, "/// {line}")?;
+                writeln!(self.out, "// {line}")?;
             }
         }
         Ok(())
@@ -397,6 +397,9 @@ impl<W: Write> Codegen<W> {
             self.out.write_str(": ")?;
             self.ty(&field.ty)?;
             self.out.write_str(",\n")?;
+        }
+        for comment in &r.trailing_comments {
+            self.comment(comment, 1)?;
         }
         self.out.write_str("}\n\n")
     }
@@ -793,6 +796,7 @@ impl<W: Write> Codegen<W> {
     /// Emits a Rust statement.
     pub fn stmt(&mut self, stmt: &Stmt) -> fmt::Result {
         match stmt {
+            Stmt::Comment(comment) => self.comment(comment, 0),
             Stmt::Let {
                 name,
                 mutable,

@@ -1120,6 +1120,7 @@ fn rewrite_signature_stmt(
     proofs: &mut BTreeMap<(String, String), VecDeque<CallProof>>,
 ) {
     match stmt {
+        Stmt::Comment(_) => {}
         Stmt::Let {
             init: Some(expr), ..
         } => rewrite_signature_expr(expr, caller, accepted, candidates, proofs),
@@ -1972,6 +1973,7 @@ fn expr_read_count(expr: &Expr, name: &str) -> usize {
 
 fn stmt_read_count(stmt: &Stmt, name: &str) -> usize {
     match stmt {
+        Stmt::Comment(_) => 0,
         Stmt::Let {
             init: Some(init), ..
         } => expr_read_count(init, name),
@@ -2572,6 +2574,7 @@ fn rewrite_const_call_items(items: &mut [Item], accepted: &BTreeMap<String, Vec<
 
 fn rewrite_const_call_stmt(stmt: &mut Stmt, accepted: &BTreeMap<String, Vec<ConstCandidate>>) {
     match stmt {
+        Stmt::Comment(_) => {}
         Stmt::Let {
             init: Some(expr), ..
         } => rewrite_const_call_expr(expr, accepted),
@@ -3120,6 +3123,7 @@ fn retained_stmt_safe(
         return is_match || !expr_reads_alias(arg, aliases);
     }
     match stmt {
+        Stmt::Comment(_) => true,
         Stmt::Let { name, init, .. } if name == binding => init
             .as_ref()
             .is_none_or(|expr| !expr_reads_alias(expr, aliases)),
@@ -3787,6 +3791,7 @@ fn rewrite_return_call_item(item: &mut Item, elems: &BTreeMap<String, Type>) {
 
 fn rewrite_return_call_stmt(stmt: &mut Stmt, elems: &BTreeMap<String, Type>) {
     match stmt {
+        Stmt::Comment(_) => {}
         Stmt::Let {
             init: Some(expr), ..
         } => rewrite_return_call_expr(expr, elems),

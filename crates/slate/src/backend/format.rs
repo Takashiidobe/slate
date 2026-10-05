@@ -34,6 +34,9 @@ pub fn write_rust(path: &Path, source: &str) -> Result<(), String> {
 }
 
 pub fn pretty_rust(source: &str) -> Result<String, String> {
+    if source.contains("//") || source.contains("/*") {
+        return format_rust(source);
+    }
     match syn::parse_file(source) {
         Ok(file) => Ok(prettyplease::unparse(&file)),
         Err(_) => format_rust(source),

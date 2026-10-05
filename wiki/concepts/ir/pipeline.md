@@ -57,6 +57,16 @@ AST ──sema (check + lower)──▶ IR ──analysis pass(es)──▶ IR +
   exactly one node. A declarator's C type annotates the declared entity, not
   type definitions it happens to create (`ir_metadata_single_owner.c`).
 - Parentheses are transparent; the inner operation keeps its own span.
+- Source comments are non-executing metadata: `Module.comments` retains file,
+  declaration, record, and enum comment groups; `Statement::Comment` retains
+  their positions inside bodies. Both carry raw text and source spans.
+- Effects normalization keeps comments in order. Default IR dumps hide them;
+  `--show-comments` explicitly prints `comment "raw text"` with source locations.
+- Rust lowering emits ordinary comments, anchors declaration comments by source
+  location, and keeps field comments on their fields. Comments in unreachable
+  dispatcher blocks are retained at the end of the generated function.
+- `translate-project` always formats with rustfmt. Single-file output uses
+  rustfmt when it contains comments, since syn/prettyplease discard them.
 
 ### C type metadata
 

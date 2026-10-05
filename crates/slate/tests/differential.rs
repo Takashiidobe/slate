@@ -382,7 +382,14 @@ fn fixtures_unsupported_triage_report() {
 }
 
 #[test]
-fn translation_is_self_hosted() {
+fn translation_uses_builtin_frontend() {
+    let output = std::process::Command::new("rustc")
+        .args(["--print", "sysroot"])
+        .output()
+        .expect("locate Rust toolchain");
+    assert!(output.status.success());
+    let sysroot = String::from_utf8(output.stdout).unwrap();
+    let rustfmt = Path::new(sysroot.trim()).join("bin/rustfmt");
     let source = fixtures_dir().join("atoi_atol_prelude_dynamic.c");
     let work = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-generated/self-hosted");
     std::fs::create_dir_all(&work).expect("create self-hosted test directory");
@@ -413,15 +420,84 @@ fn translation_is_self_hosted() {
         let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
             .args(&args)
             .env("PATH", "")
+            .env("SLATE_RUSTFMT", &rustfmt)
             .env("SLATE_TARGET", "invalid-default-target")
             .env_remove("SLATE_CLANG_ARGS")
             .output()
-            .expect("run Slate without external tools");
+            .expect("run Slate without external C tools");
         assert!(
             output.status.success(),
-            "{} failed without external tools:\n{}",
+            "{} failed without external C tools:\n{}",
             args[0],
             String::from_utf8_lossy(&output.stderr)
         );
+    }
+}
+
+#[test]
+fn comments_preserved_differential() {
+    let source = fixtures_dir().join("comments_preserved.c");
+    let work =
+        Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-generated/comments-preserved");
+    std::fs::create_dir_all(&work).unwrap();
+    let generated = work.join("comments.generated.rs");
+    support::translate_slate(&source, &generated, &[]).unwrap();
+    let project = work.join("project");
+    translate_fixture_project(std::slice::from_ref(&source), &project, Vec::new(), &[]).unwrap();
+    support::build_project_release(&project).unwrap();
+    for output in [&generated, &project.join("src/main.rs")] {
+        let rust = std::fs::read_to_string(output).unwrap();
+        for marker in [
+            "preserved-file-comment",
+            "preserved-field-comment",
+            "preserved-field-trailing-comment",
+            "preserved-function-comment",
+            "preserved-local-comment",
+            "preserved-loop-comment",
+            "preserved-return-comment",
+            "preserved-call-comment",
+            "preserved-trailing-comment",
+            "preserved-header-comment",
+            "preserved-enumerator-comment",
+            "preserved-switch-function-comment",
+            "preserved-before-case-comment",
+            "preserved-between-cases-comment",
+            "preserved-after-return-comment",
+            "preserved-goto-function-comment",
+            "preserved-before-goto-comment",
+            "preserved-unreachable-comment",
+            "preserved-label-comment",
+        ] {
+            assert_eq!(
+                rust.matches(marker).count(),
+                1,
+                "{marker}: {}",
+                output.display()
+            );
+        }
+        assert!(!rust.contains("///"));
+        let record = rust
+            .split("struct Value {")
+            .nth(1)
+            .unwrap()
+            .split("}")
+            .next()
+            .unwrap();
+        assert!(record.find("preserved-field-comment").unwrap() < record.find("n: i32").unwrap());
+        assert!(
+            record.find("n: i32").unwrap()
+                < record.find("preserved-field-trailing-comment").unwrap()
+        );
+        assert!(rust.find("preserved-local-comment") < rust.find("preserved-loop-comment"));
+        assert!(rust.find("preserved-loop-comment") < rust.find("preserved-return-comment"));
+    }
+    let case = support::Case {
+        name: "comments_preserved".into(),
+        c_src: source,
+        rs_src: generated,
+        config: support::RunConfig::default(),
+    };
+    for (_, result) in support::compare_batch(&[case], &work) {
+        result.unwrap();
     }
 }

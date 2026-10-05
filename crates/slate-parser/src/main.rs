@@ -135,7 +135,10 @@ fn run() -> miette::Result<()> {
             }
             module
         };
-        let display = module.display(show_metadata).with_spans(show_spans);
+        let display = module
+            .display(show_metadata)
+            .with_spans(show_spans)
+            .with_comments(show_comments);
         print!(
             "{}",
             if compact_ir {

@@ -80,7 +80,9 @@ or more compilation databases to generate a Cargo crate: an executable when one
 unit defines `main`, otherwise a library (`src/lib.rs`) whose `--crate-type` is
 any comma-separated mix of `rlib` (default), `staticlib`, and `cdylib`. Multiple
 configurations of the same translation unit are not yet supported. Project
-output always applies control-flow rewrites. Each command is parsed as the
+output always applies control-flow rewrites and uses `rustfmt` to preserve
+source comments while formatting. Install the `rustfmt` component for your Rust
+toolchain; `SLATE_RUSTFMT` can override its executable. Each command is parsed as the
 compiler it names (`gcc` and `*-gcc` as gcc, `cl` as MSVC, anything else as
 clang); `--flavor gcc|clang|msvc` overrides that for every command.
 

@@ -119,6 +119,30 @@ fn resolve_module(
         }
         lower.module.types.push(span);
     }
+    for tag in &unit.tags {
+        match &tag.body {
+            ast::TagBody::Record(fields) => {
+                for field in fields {
+                    if let ast::FieldItemKind::Comment(comment) = &field.value {
+                        lower
+                            .module
+                            .comments
+                            .push(field.derive(comment.comment.text.clone()));
+                    }
+                }
+            }
+            ast::TagBody::Enum { enumerators, .. } => {
+                for enumerator in enumerators {
+                    if let ast::EnumItemKind::Comment(comment) = &enumerator.value {
+                        lower
+                            .module
+                            .comments
+                            .push(enumerator.derive(comment.comment.text.clone()));
+                    }
+                }
+            }
+        }
+    }
     for global in &mut lower.module.globals {
         if global.definition
             && let Type::Array { length, .. } = &mut global.value.variable.ty
@@ -242,7 +266,13 @@ fn lower_item(
     features: StandardFeatures,
 ) -> Result<(), ResolveError> {
     match &declaration.value {
-        DeclKind::Comment(_) | DeclKind::StaticAssert(_) => {}
+        DeclKind::Comment(comment) => {
+            lower
+                .module
+                .comments
+                .push(declaration.derive(comment.comment.text.clone()));
+        }
+        DeclKind::StaticAssert(_) => {}
         DeclKind::Attribute(attributes) => {
             if lower.types.flavor().is_gcc() {
                 for attribute in attributes {
@@ -1503,7 +1533,10 @@ impl Lowerer {
                     .apply(&mut self.context.region, &pragma.kind, placement)?;
                 return Ok(());
             }
-            StmtKind::Comment(_) => return Ok(()),
+            StmtKind::Comment(comment) => {
+                result.push(statement.derive(Statement::Comment(comment.comment.text.clone())));
+                return Ok(());
+            }
             _ => self.compound_start = false,
         }
         let mut annotations = Vec::new();

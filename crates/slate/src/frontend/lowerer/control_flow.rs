@@ -87,7 +87,7 @@ fn collect_labels(statements: &[Statement], labels: &mut Vec<BindingId>) {
     }
 }
 
-fn children(statement: &ir::Statement) -> Vec<&[Statement]> {
+pub(super) fn children(statement: &ir::Statement) -> Vec<&[Statement]> {
     match statement {
         ir::Statement::Block(body)
         | ir::Statement::Switch { body, .. }
@@ -144,12 +144,14 @@ pub(super) fn needs_dispatch(statements: &[Statement]) -> bool {
                         },
                         _ => body,
                     };
-                    body.first().is_some_and(|first| {
-                        !matches!(
-                            first.value,
-                            ir::Statement::Case { .. } | ir::Statement::Default { .. }
-                        )
-                    })
+                    body.iter()
+                        .find(|statement| !matches!(statement.value, ir::Statement::Comment(_)))
+                        .is_some_and(|first| {
+                            !matches!(
+                                first.value,
+                                ir::Statement::Case { .. } | ir::Statement::Default { .. }
+                            )
+                        })
                 }
                 _ => false,
             }

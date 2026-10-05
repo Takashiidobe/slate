@@ -16,6 +16,7 @@ pub struct Module {
     pub globals: Vec<Span<Global>>,
     pub functions: Vec<Span<Function>>,
     pub metadata: Metadata,
+    pub comments: Vec<Span<Vec<String>>>,
 }
 
 const _: fn() = || {
@@ -165,6 +166,7 @@ impl From<Value> for Evaluation {
 
 #[derive(Debug, Clone)]
 pub enum Statement {
+    Comment(Vec<String>),
     Temporary {
         id: BindingId,
         ty: Type,
@@ -244,6 +246,7 @@ impl Module {
             globals: Vec::new(),
             functions: Vec::new(),
             metadata: Metadata::new(),
+            comments: Vec::new(),
         }
     }
 

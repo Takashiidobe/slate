@@ -641,6 +641,11 @@ exceptions        = "ignore" | "observable" ;
 
 ## Metadata
 
+With `--show-comments`, source comment groups print as
+`comment string [spelling=file:offset+length, expansion=file:offset+length];`.
+Module comments precede the target; statement comments remain in their body.
+These are non-executing metadata and are absent from default dumps.
+
 ```ebnf
 metadata = "[" key "=" string "]" ;          (* only with --show-metadata *)
 ```

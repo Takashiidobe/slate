@@ -860,7 +860,7 @@ fn translate_slate_project(
         outputs
             .into_par_iter()
             .map(|(output, program)| {
-                backend::write_pretty_rust(&output, &program.emit())?;
+                backend::write_rust(&output, &program.emit())?;
                 Ok(output)
             })
             .collect()

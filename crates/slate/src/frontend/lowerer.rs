@@ -10,6 +10,7 @@ use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
 mod arithmetic;
 mod atomics;
 mod calls;
+mod comments;
 mod control_flow;
 mod errors;
 mod f80;
@@ -63,6 +64,7 @@ struct Tables<'m> {
     over_aligned: HashMap<BindingId, u64>,
     target: &'m TargetInfo,
     metadata: &'m ir::Metadata,
+    comments: &'m [Span<Vec<String>>],
     unit: &'m str,
     types: HashMap<TypeId, &'m Span<ir::TypeDefinition>>,
     record_names: HashMap<TypeId, String>,
@@ -81,6 +83,7 @@ struct Dependencies {
     compound_literals: Vec<Item>,
     address_taken: BTreeSet<String>,
     taken_functions: HashSet<BindingId>,
+    emitted_comments: HashSet<slate_parser::ast::NodeId>,
     native_entries: BTreeMap<String, rust::ExternFnDecl>,
     long_double_exports: BTreeMap<String, String>,
     bit_units: Vec<Item>,
@@ -341,6 +344,7 @@ impl<'m> ModuleLowerer<'m> {
             over_aligned: HashMap::new(),
             target: &module.target,
             metadata: &module.metadata,
+            comments: &module.comments,
             unit: &options.unit,
             types: module
                 .types
@@ -663,6 +667,8 @@ impl<'m> ModuleLowerer<'m> {
         if !features.is_empty() {
             items.insert(0, Item::CrateAttrs(features));
         }
+        let items =
+            comments::module_comments(self.module, &tables, &dependencies.emitted_comments, items);
         Lowered {
             program: rust::Program { items },
             barriers,

@@ -30,6 +30,10 @@ int read_item(Item *p) {
 
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: module {
+// DEFAULT-NEXT:     comment "/* file comment */" [spelling=[[#FILE0:]]:0+18, expansion={{[0-9]+}}:0+18];
+// DEFAULT-NEXT:     comment "/* trailing comment */" [spelling=[[#FILE0]]:434+22, expansion=[[#FILE0]]:434+22];
+// DEFAULT-NEXT:     comment "/* field comment */" [spelling=[[#FILE0]]:43+19, expansion=[[#FILE0]]:43+19];
+// DEFAULT-NEXT:     comment "/* enumerator comment */" [spelling=[[#FILE0]]:99+24, expansion=[[#FILE0]]:99+24];
 // DEFAULT-NEXT:     target "x86_64-unknown-linux-gnu" {
 // DEFAULT-NEXT:         endian = little;
 // DEFAULT-NEXT:         pointer [size=8, align=8];
@@ -60,11 +64,14 @@ int read_item(Item *p) {
 // DEFAULT-NEXT:         %[[VALUE_DONE:[0-9]+]] DONE = const<i32>(1);
 // DEFAULT-NEXT:     } [size=4, align=4];
 // DEFAULT-NEXT:     fn %[[VALUE_read_item:[0-9]+]] @read_item(%[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_Item]]>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         comment "/* function comment */" [spelling=[[#FILE0]]:170+22, expansion=[[#FILE0]]:170+22];
 // DEFAULT-NEXT:         {
+// DEFAULT-NEXT:             comment "/* empty block comment */" [spelling=[[#FILE0]]:201+25, expansion=[[#FILE0]]:201+25];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic];
 // DEFAULT-NEXT:         {
+// DEFAULT-NEXT:             comment "/* statement expression comment */" [spelling=[[#FILE0]]:283+34, expansion=[[#FILE0]]:283+34];
 // DEFAULT-NEXT:             write<i32>(%[[VALUE0]], read<i32>(field0(deref(read<ptr<@type[[TYPE_Item]]>>(%[[VALUE_p]])))));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_x]], read<i32>(%[[VALUE0]]));

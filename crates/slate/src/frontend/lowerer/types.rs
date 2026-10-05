@@ -166,6 +166,7 @@ impl FunctionLowerer<'_, '_> {
         let is_union = matches!(record_kind, ir::RecordKind::Union);
         let record = |fields, packed: Option<u64>, align: Option<u64>| rust::RecordDef {
             comments: Vec::new(),
+            trailing_comments: Vec::new(),
             vis: rust::Visibility::Private,
             field_vis: rust::Visibility::Private,
             is_union,
@@ -184,6 +185,7 @@ impl FunctionLowerer<'_, '_> {
         };
         let pack = self.record_pack(fields, layout);
         let mut lowered = Vec::new();
+        let mut comment_start = self.tables.types[&id].expansion;
         let mut end = 0u64;
         let mut align = 1u64;
         let mut units = BTreeSet::new();
@@ -242,8 +244,10 @@ impl FunctionLowerer<'_, '_> {
             }
             end = end.max(offset + size);
             align = align.max(field_align);
+            let comments = self.take_comments(comment_start, field.expansion.offset);
+            comment_start.offset = field.expansion.offset;
             lowered.push(rust::RecordField {
-                comments: Vec::new(),
+                comments,
                 name: field_name.into(),
                 ty,
             });
@@ -266,7 +270,11 @@ impl FunctionLowerer<'_, '_> {
             };
             lowered.push(padding_field(lowered.len(), padding));
         }
-        Ok(record(lowered, pack, raised))
+        let loc = self.tables.types[&id].expansion;
+        let trailing = self.take_comments(comment_start, loc.offset + loc.length);
+        let mut record = record(lowered, pack, raised);
+        record.trailing_comments = trailing;
+        Ok(record)
     }
 
     fn record_pack(

@@ -52,6 +52,7 @@ impl Hoister {
         for statement in body {
             let span = statement.clone().with_value(());
             let statement = match statement.value {
+                Statement::Comment(text) => Statement::Comment(text),
                 Statement::Expression(value) => {
                     self.discard(value, Some(span.clone()), &mut out)?;
                     continue;

@@ -49,6 +49,7 @@ fn expr_only_deref(expr: &Expr, name: Ident) -> bool {
 
 fn kind_only_deref_uses(kind: &NodeKind, name: Ident) -> bool {
     match kind {
+        NodeKind::Comment(_) => true,
         NodeKind::Let { init, .. } => init.as_ref().is_none_or(|e| expr_only_deref(e, name)),
         NodeKind::LetIf {
             cond,
@@ -156,6 +157,7 @@ fn all_uses_deref_transitively(
 
 fn kind_own_substitute_var(kind: &mut NodeKind, name: &str, replacement: &Expr) -> bool {
     match kind {
+        NodeKind::Comment(_) => false,
         NodeKind::Let { init, .. } => init
             .as_mut()
             .is_some_and(|e| e.substitute_var(name, replacement)),

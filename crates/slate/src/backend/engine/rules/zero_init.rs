@@ -48,6 +48,7 @@ fn expr_is_pure_and_closed(expr: &Expr) -> bool {
 fn kind_reads_var(kind: &NodeKind, name: Ident) -> bool {
     let name_str = name.as_str();
     match kind {
+        NodeKind::Comment(_) => false,
         NodeKind::Let {
             name: declared,
             init,

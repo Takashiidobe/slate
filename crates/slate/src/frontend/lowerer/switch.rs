@@ -35,10 +35,15 @@ pub(super) fn switch_label<'a>(
         } if *owner == switch => (None, body),
         _ => return Ok(None),
     };
-    let mut arm = match body.first() {
+    let leading = body
+        .iter()
+        .take_while(|statement| matches!(statement.value, ir::Statement::Comment(_)))
+        .count();
+    let mut arm = match body.get(leading) {
         Some(first) => match switch_label(first, switch)? {
             Some(mut nested) => {
-                nested.body.extend(&body[1..]);
+                nested.body.splice(0..0, body[..leading].iter());
+                nested.body.extend(&body[leading + 1..]);
                 nested
             }
             None => SwitchArm {
@@ -108,7 +113,11 @@ pub(super) fn contains_switch_label(statements: &[&ir::Statement], switch: Bindi
 pub(super) fn ends_in_jump(statement: &ir::Statement) -> bool {
     match statement {
         ir::Statement::Break(_) | ir::Statement::Continue(_) | ir::Statement::Return(_) => true,
-        ir::Statement::Block(body) => body.last().is_some_and(|last| ends_in_jump(last)),
+        ir::Statement::Block(body) => body
+            .iter()
+            .rev()
+            .find(|statement| !matches!(statement.value, ir::Statement::Comment(_)))
+            .is_some_and(|last| ends_in_jump(last)),
         _ => false,
     }
 }
@@ -128,11 +137,18 @@ impl FunctionLowerer<'_, '_> {
             _ => body,
         };
         let mut arms: Vec<SwitchArm> = Vec::new();
+        let mut leading_comments = Vec::new();
         for statement in statements {
             match switch_label(statement, id)? {
-                Some(arm) => arms.push(arm),
+                Some(mut arm) => {
+                    arm.body.splice(0..0, leading_comments.drain(..));
+                    arms.push(arm);
+                }
                 None => match arms.last_mut() {
                     Some(arm) => arm.body.push(statement),
+                    None if matches!(statement.value, ir::Statement::Comment(_)) => {
+                        leading_comments.push(statement);
+                    }
                     None => {
                         return Err(unsupported_switch("statement before first case"));
                     }
@@ -276,8 +292,10 @@ fn merge_empty_arms(arms: Vec<SwitchArm>) -> Vec<SwitchArm> {
         pending.values.append(&mut arm.values);
         pending.default |= arm.default;
         if index + 1 < count && arm.body.iter().all(|statement| is_empty(statement)) {
+            pending.body.extend(arm.body);
             continue;
         }
+        arm.body.splice(0..0, pending.body.drain(..));
         arm.values = std::mem::take(&mut pending.values);
         arm.default = std::mem::take(&mut pending.default);
         merged.push(arm);
@@ -287,7 +305,7 @@ fn merge_empty_arms(arms: Vec<SwitchArm>) -> Vec<SwitchArm> {
 
 fn is_empty(statement: &ir::Statement) -> bool {
     match statement {
-        ir::Statement::Null => true,
+        ir::Statement::Null | ir::Statement::Comment(_) => true,
         ir::Statement::Block(body) => body.iter().all(|statement| is_empty(statement)),
         _ => false,
     }
@@ -371,7 +389,11 @@ fn case_pattern(value: CaseValue) -> Result<Option<rust::Pattern>> {
 }
 
 fn falls_through(arm: &SwitchArm) -> bool {
-    !arm.body.last().is_some_and(|last| ends_in_jump(last))
+    !arm.body
+        .iter()
+        .rev()
+        .find(|statement| !matches!(statement.value, ir::Statement::Comment(_)))
+        .is_some_and(|last| ends_in_jump(last))
 }
 
 fn unsupported_switch(detail: &str) -> Failure {

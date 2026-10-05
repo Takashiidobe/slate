@@ -499,6 +499,7 @@ pub struct RecordField {
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct RecordDef {
     pub comments: Vec<Comment>,
+    pub trailing_comments: Vec<Comment>,
     pub vis: Visibility,
     pub field_vis: Visibility,
     pub is_union: bool,
@@ -730,6 +731,7 @@ pub struct InlineAsm {
 )]
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Stmt {
+    Comment(Comment),
     Let {
         name: String,
         mutable: bool,
@@ -1440,6 +1442,7 @@ impl Stmt {
 
     pub fn child_bodies_mut(&mut self) -> Vec<&mut Vec<Stmt>> {
         match self {
+            Stmt::Comment(_) => Vec::new(),
             Stmt::LetIf {
                 then_body,
                 else_body,
@@ -2202,6 +2205,7 @@ impl Expr {
 
 fn stmt_reads_var(stmt: &Stmt, name: &str) -> bool {
     match stmt {
+        Stmt::Comment(_) => false,
         Stmt::Let {
             init: Some(expr), ..
         } => expr.reads_var(name),
@@ -2277,6 +2281,7 @@ fn stmt_reads_var(stmt: &Stmt, name: &str) -> bool {
 
 fn stmt_collect_offset_calls<'a>(stmt: &'a Stmt, out: &mut Vec<(&'a Ident, &'a str, &'a Expr)>) {
     match stmt {
+        Stmt::Comment(_) => {}
         Stmt::Let {
             init: Some(expr), ..
         } => expr.collect_offset_calls(out),
@@ -2368,6 +2373,7 @@ fn stmt_collect_offset_calls<'a>(stmt: &'a Stmt, out: &mut Vec<(&'a Ident, &'a s
 
 fn stmt_collect_calls<'a>(stmt: &'a Stmt, out: &mut Vec<(&'a Ident, &'a [Expr])>) {
     match stmt {
+        Stmt::Comment(_) => {}
         Stmt::Let {
             init: Some(expr), ..
         } => expr.collect_calls(out),
@@ -2459,6 +2465,7 @@ fn stmt_collect_calls<'a>(stmt: &'a Stmt, out: &mut Vec<(&'a Ident, &'a [Expr])>
 
 fn stmt_collect_vars(stmt: &Stmt, out: &mut Vec<Ident>) {
     match stmt {
+        Stmt::Comment(_) => {}
         Stmt::Let {
             init: Some(expr), ..
         } => expr.collect_vars(out),
@@ -2556,6 +2563,7 @@ fn stmt_collect_vars(stmt: &Stmt, out: &mut Vec<Ident>) {
 
 fn stmt_substitute_var(stmt: &mut Stmt, name: &str, replacement: &Expr) -> bool {
     match stmt {
+        Stmt::Comment(_) => false,
         Stmt::Let {
             init: Some(expr), ..
         } => expr.substitute_var(name, replacement),

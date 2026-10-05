@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use crate::backend::rust_ast::{
-    BinOp, Block, Expr, FnParam, Ident, InlineAsm, Label, MatchArm, Pattern, Stmt, Type,
+    BinOp, Block, Comment, Expr, FnParam, Ident, InlineAsm, Label, MatchArm, Pattern, Stmt, Type,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -23,6 +23,7 @@ pub(in crate::backend) struct MatchArmNode {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub(in crate::backend) enum NodeKindTag {
+    Comment,
     Let,
     LetIf,
     Assign,
@@ -44,10 +45,11 @@ pub(in crate::backend) enum NodeKindTag {
 }
 
 impl NodeKindTag {
-    pub(in crate::backend) const COUNT: usize = 18;
+    pub(in crate::backend) const COUNT: usize = 19;
 }
 
 pub(in crate::backend) enum NodeKind {
+    Comment(Comment),
     Let {
         name: Ident,
         mutable: bool,
@@ -122,6 +124,7 @@ pub(in crate::backend) enum NodeKind {
 impl NodeKind {
     pub(in crate::backend) fn tag(&self) -> NodeKindTag {
         match self {
+            NodeKind::Comment(_) => NodeKindTag::Comment,
             NodeKind::Let { .. } => NodeKindTag::Let,
             NodeKind::LetIf { .. } => NodeKindTag::LetIf,
             NodeKind::Assign { .. } => NodeKindTag::Assign,
@@ -166,6 +169,7 @@ impl NodeKind {
 
     pub(in crate::backend) fn child_lists_mut(&mut self) -> Vec<&mut Vec<NodeId>> {
         match self {
+            NodeKind::Comment(_) => Vec::new(),
             NodeKind::LetIf {
                 then_body,
                 else_body,
@@ -199,6 +203,7 @@ impl NodeKind {
 
     pub(in crate::backend) fn child_lists(&self) -> Vec<&Vec<NodeId>> {
         match self {
+            NodeKind::Comment(_) => Vec::new(),
             NodeKind::LetIf {
                 then_body,
                 else_body,
@@ -249,6 +254,7 @@ fn expr_call_anchor(expr: &Expr) -> Option<Ident> {
 fn own_reads(kind: &NodeKind) -> Vec<Ident> {
     let mut out = Vec::new();
     match kind {
+        NodeKind::Comment(_) => {}
         NodeKind::Let { init, .. } => {
             if let Some(init) = init {
                 init.collect_vars(&mut out);
@@ -640,6 +646,7 @@ pub(in crate::backend) fn insert_stmts(
 fn build_stmt(arena: &mut Arena, parent: Option<NodeId>, stmt: Stmt) -> NodeId {
     let id = arena.reserve(parent);
     let kind = match stmt {
+        Stmt::Comment(comment) => NodeKind::Comment(comment),
         Stmt::Let {
             name,
             mutable,
@@ -765,6 +772,7 @@ fn reify_stmt(arena: &Arena, id: NodeId, out: &mut Vec<Stmt>) {
         return;
     };
     let stmt = match kind {
+        NodeKind::Comment(comment) => Stmt::Comment(comment.clone()),
         NodeKind::Let {
             name,
             mutable,

@@ -164,14 +164,27 @@ impl FunctionLowerer<'_, '_> {
         } else {
             self.lower_statement_list(body)?
         };
+        statements.extend(self.remaining_statement_comments(body));
         statements.splice(0..0, std::mem::take(&mut self.hoisted));
         if matches!(function.fallthrough, Some(ir::Fallthrough::ReturnZero))
-            && !matches!(statements.last(), Some(Stmt::Return(_)))
+            && !matches!(
+                statements
+                    .iter()
+                    .rev()
+                    .find(|statement| !matches!(statement, Stmt::Comment(_))),
+                Some(Stmt::Return(_))
+            )
         {
             statements.push(Stmt::Return(Some(Expr::Value(rust::RustValue::I64(0)))));
         }
         if matches!(function.fallthrough, Some(ir::Fallthrough::UndefinedIfUsed))
-            && !matches!(statements.last(), Some(Stmt::Return(_)))
+            && !matches!(
+                statements
+                    .iter()
+                    .rev()
+                    .find(|statement| !matches!(statement, Stmt::Comment(_))),
+                Some(Stmt::Return(_))
+            )
         {
             statements.push(Stmt::Return(Some(zeroed())));
         }

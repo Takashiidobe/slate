@@ -13,6 +13,7 @@ use std::fmt;
 pub struct DisplayModule<'a> {
     module: &'a Module,
     show_metadata: bool,
+    show_comments: bool,
     show_spans: bool,
     compact: bool,
 }
@@ -22,6 +23,7 @@ impl Module {
         DisplayModule {
             module: self,
             show_metadata,
+            show_comments: false,
             show_spans: false,
             compact: false,
         }
@@ -29,6 +31,11 @@ impl Module {
 }
 
 impl DisplayModule<'_> {
+    pub fn with_comments(mut self, show_comments: bool) -> Self {
+        self.show_comments = show_comments;
+        self
+    }
+
     pub fn compact(mut self) -> Self {
         self.compact = true;
         self
@@ -170,6 +177,7 @@ fn asm_attributes(f: &mut fmt::Formatter<'_>, asm: &InlineAsm) -> fmt::Result {
 #[derive(Clone, Copy)]
 struct Printer<'a> {
     metadata: Option<&'a Metadata>,
+    show_comments: bool,
     compact: bool,
 }
 
@@ -177,6 +185,7 @@ impl DisplayModule<'_> {
     fn printer(&self) -> Printer<'_> {
         Printer {
             metadata: self.show_metadata.then_some(&self.module.metadata),
+            show_comments: self.show_comments,
             compact: self.compact,
         }
     }
@@ -198,6 +207,7 @@ impl fmt::Display for StatementLines<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         Printer {
             metadata: None,
+            show_comments: false,
             compact: false,
         }
         .statements(f, std::slice::from_ref(self.0), 0)
@@ -402,8 +412,15 @@ impl Printer<'_> {
         indent: usize,
     ) -> fmt::Result {
         for statement in body {
+            if matches!(statement.value, Statement::Comment(_)) && !self.show_comments {
+                continue;
+            }
             write!(f, "{:indent$}", "")?;
             match &statement.value {
+                Statement::Comment(text) => {
+                    write!(f, "comment {:?}", text.join("\n"))?;
+                    locations(f, statement.spelling, statement.expansion)?;
+                }
                 Statement::Temporary {
                     id,
                     ty,
@@ -660,6 +677,13 @@ impl fmt::Display for DisplayModule<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let printer = self.printer();
         writeln!(f, "module {{")?;
+        if self.show_comments {
+            for comment in &self.module.comments {
+                write!(f, "    comment {:?}", comment.value.join("\n"))?;
+                locations(f, comment.spelling, comment.expansion)?;
+                writeln!(f, ";")?;
+            }
+        }
         let target = &self.module.target;
         writeln!(f, "    target \"{}\" {{", target.triple)?;
         writeln!(f, "        endian = {};", target.endian.as_str())?;

@@ -207,6 +207,7 @@ pub(super) fn stmt_exprs_mut<'a>(stmt: &'a mut Stmt, out: &mut Vec<&'a mut Expr>
 
 pub(super) fn visit_kind_exprs(kind: &NodeKind, mut f: impl FnMut(&Expr)) {
     match kind {
+        NodeKind::Comment(_) => {}
         NodeKind::Let { init, .. } => init.as_ref().into_iter().for_each(&mut f),
         NodeKind::LetIf {
             cond,
@@ -244,6 +245,7 @@ pub(super) fn visit_kind_exprs(kind: &NodeKind, mut f: impl FnMut(&Expr)) {
 
 pub(super) fn visit_kind_exprs_mut(kind: &mut NodeKind, mut f: impl FnMut(&mut Expr)) {
     match kind {
+        NodeKind::Comment(_) => {}
         NodeKind::Let { init, .. } => init.as_mut().into_iter().for_each(&mut f),
         NodeKind::LetIf {
             cond,

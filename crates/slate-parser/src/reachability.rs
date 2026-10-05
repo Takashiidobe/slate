@@ -137,6 +137,16 @@ impl<'a> Reachability<'a> {
         if !self.reachable.insert(id) {
             return;
         }
+        let mut previous = id;
+        while previous > 0 {
+            previous -= 1;
+            if self.nodes[previous].expansion.file != self.nodes[id].expansion.file
+                || !matches!(self.nodes[previous].value, DeclKind::Comment(_))
+            {
+                break;
+            }
+            self.reachable.insert(previous);
+        }
         match &self.nodes[id].value {
             DeclKind::Comment(_) | DeclKind::Pragma(_) => {}
             DeclKind::Attribute(attributes) => self.mark_attributes(attributes),

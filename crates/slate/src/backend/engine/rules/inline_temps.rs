@@ -448,6 +448,7 @@ fn expr_any(expr: &Expr, pred: &mut dyn FnMut(&Expr) -> bool) -> bool {
 
 fn stmt_any_expr(stmt: &Stmt, pred: &mut dyn FnMut(&Expr) -> bool) -> bool {
     match stmt {
+        Stmt::Comment(_) => false,
         Stmt::Let { init, .. } => init.as_ref().is_some_and(|e| expr_any(e, pred)),
         Stmt::LetIf {
             cond,
@@ -512,6 +513,7 @@ fn stmt_any_expr(stmt: &Stmt, pred: &mut dyn FnMut(&Expr) -> bool) -> bool {
 
 fn stmt_e_ident_count(stmt: &Stmt, name: Ident) -> usize {
     match stmt {
+        Stmt::Comment(_) => 0,
         Stmt::Let { init, .. } => init.as_ref().map_or(0, |e| e_ident_count(e, name)),
         Stmt::LetIf {
             cond,
@@ -658,6 +660,7 @@ fn is_option_like_type(ty: &Type) -> bool {
 
 fn kind_own_ident_count(kind: &NodeKind, name: Ident) -> usize {
     match kind {
+        NodeKind::Comment(_) => 0,
         NodeKind::Let { init, .. } => init.as_ref().map_or(0, |e| e_ident_count(e, name)),
         NodeKind::LetIf {
             cond,
@@ -808,6 +811,7 @@ fn node_ident_count(arena: &Arena, id: NodeId, name: Ident) -> usize {
 
 fn kind_own_effects(kind: &NodeKind) -> Effects {
     match kind {
+        NodeKind::Comment(_) => Effects::default(),
         NodeKind::Let { init, .. } => init.as_ref().map_or(Effects::default(), expr_effects),
         NodeKind::LetIf {
             cond,
@@ -868,6 +872,7 @@ fn node_effects(arena: &Arena, id: NodeId) -> Effects {
 
 fn kind_own_expr_any(kind: &NodeKind, pred: &mut dyn FnMut(&Expr) -> bool) -> bool {
     match kind {
+        NodeKind::Comment(_) => false,
         NodeKind::Let { init, .. } => init.as_ref().is_some_and(|e| expr_any(e, pred)),
         NodeKind::LetIf {
             cond,
@@ -1113,6 +1118,7 @@ fn is_movable_pure_temp(arena: &Arena, id: NodeId) -> bool {
 
 fn kind_own_substitute_var(kind: &mut NodeKind, name: &str, replacement: &Expr) -> bool {
     match kind {
+        NodeKind::Comment(_) => false,
         NodeKind::Let { init, .. } => init
             .as_mut()
             .is_some_and(|e| e.substitute_var(name, replacement)),
