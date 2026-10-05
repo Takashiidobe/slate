@@ -22,6 +22,8 @@ pub(super) fn builtin_intrinsic(
             Some("llvm.copysign")
         }
         "__builtin_bswap16" | "__builtin_bswap32" | "__builtin_bswap64" => Some("llvm.bswap"),
+        "__builtin_frame_address" => Some("llvm.frameaddress"),
+        "__builtin_return_address" => Some("llvm.returnaddress"),
         _ => None,
     };
     catalog(module.target.family).find(|intrinsic| {
