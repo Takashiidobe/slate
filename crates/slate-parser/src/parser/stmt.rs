@@ -106,6 +106,7 @@ impl Parser {
                     specifiers,
                     declarator,
                     attributes: Vec::new(),
+                    comments: Vec::new(),
                 }),
                 None => {
                     let span = tokens
@@ -123,6 +124,7 @@ impl Parser {
                         )),
                         declarator: Declarator::Name(name.clone()),
                         attributes: Vec::new(),
+                        comments: Vec::new(),
                     })
                 }
             })
@@ -146,6 +148,12 @@ impl Parser {
             let (pragmas, comments): (Vec<_>, Vec<_>) = self
                 .statement_annotations(tokens, start, position - 1)?
                 .into_iter()
+                .map(|stmt| {
+                    stmt.map(|kind| match kind {
+                        StmtKind::Comment(group) => StmtKind::Comment(group.into_trailing()),
+                        kind => kind,
+                    })
+                })
                 .partition(|stmt| matches!(stmt.value, StmtKind::Pragma(_)));
             stmts.extend(pragmas);
             stmts.push(span_tokens(stmt, &tokens[start..position], self.context()));

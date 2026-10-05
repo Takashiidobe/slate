@@ -15,8 +15,8 @@ int value(int n) {
 
 // SLATE-FILECHECK-BEGIN IR
 // IR: module {
-// IR-NEXT:     comment "/* parser-file-comment */" [spelling=[[#FILE0:]]:0+25, expansion={{[0-9]+}}:0+25];
-// IR-NEXT:     comment "/* parser-field-comment */" [spelling=[[#FILE0]]:45+26, expansion=[[#FILE0]]:45+26];
+// IR-NEXT:     comment leading "/* parser-file-comment */" [spelling=[[#FILE0:]]:0+25, expansion={{[0-9]+}}:0+25];
+// IR-NEXT:     comment leading "/* parser-field-comment */" [spelling=[[#FILE0]]:45+26, expansion=[[#FILE0]]:45+26];
 // IR-NEXT:     target "x86_64-unknown-linux-gnu" {
 // IR-NEXT:         endian = little;
 // IR-NEXT:         pointer [size=8, align=8];
@@ -42,11 +42,11 @@ int value(int n) {
 // IR-NEXT:         field0 n: i32;
 // IR-NEXT:     } [size=4, align=4, offsets=[0]];
 // IR-NEXT:     fn %[[VALUE_value:[0-9]+]] @value(%[[VALUE_n:[0-9]+]] n: i32 [c="int"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(int)"] {
-// IR-NEXT:         comment "/* parser-local-comment */" [spelling=[[#FILE0]]:109+26, expansion=[[#FILE0]]:109+26];
+// IR-NEXT:         comment leading "/* parser-local-comment */" [spelling=[[#FILE0]]:109+26, expansion=[[#FILE0]]:109+26];
 // IR-NEXT:         let %[[VALUE_v:[0-9]+]] v: @type[[TYPE_Value]] [storage=automatic] = aggregate<@type[[TYPE_Value]], zero_fill=false>(field0 = read<i32>(%[[VALUE_n]])) [c="struct Value"];
-// IR-NEXT:         comment "/* parser-return-comment */" [spelling=[[#FILE0]]:166+27, expansion=[[#FILE0]]:166+27];
+// IR-NEXT:         comment leading "/* parser-return-comment */" [spelling=[[#FILE0]]:166+27, expansion=[[#FILE0]]:166+27];
 // IR-NEXT:         return read<i32>(field0(%[[VALUE_v]]));
-// IR-NEXT:         comment "/* parser-trailing-comment */" [spelling=[[#FILE0]]:214+29, expansion=[[#FILE0]]:214+29];
+// IR-NEXT:         comment detached "/* parser-trailing-comment */" [spelling=[[#FILE0]]:214+29, expansion=[[#FILE0]]:214+29];
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

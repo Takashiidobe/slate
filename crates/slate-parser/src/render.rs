@@ -1,6 +1,6 @@
 use crate::ast::{
-    DeclKind, EnumItemKind, FieldItemKind, FunctionDefinition, Stmt, StmtKind, TagBody,
-    TagDefinition, TranslationUnit,
+    DeclKind, Declaration, Declarator, EnumItemKind, FieldItemKind, FunctionDefinition,
+    ParameterList, Stmt, StmtKind, TagBody, TagDefinition, TranslationUnit,
 };
 use std::fmt::Debug;
 use std::io::{self, Write};
@@ -181,19 +181,56 @@ fn strip_comments(unit: &mut TranslationUnit) {
 }
 
 fn strip_decl_comments(decl: &mut DeclKind) {
-    if let DeclKind::Function(function) = decl {
-        strip_function_comments(function);
+    match decl {
+        DeclKind::Function(function) => strip_function_comments(function),
+        DeclKind::Declaration(declaration) => strip_declaration_comments(declaration),
+        _ => {}
     }
 }
 
 fn strip_function_comments(function: &mut FunctionDefinition) {
+    strip_declarator_comments(&mut function.declarator);
     strip_stmt_comments(&mut function.body);
+}
+
+fn strip_declaration_comments(declaration: &mut Declaration) {
+    for declarator in &mut declaration.declarators {
+        strip_declarator_comments(&mut declarator.value.declarator);
+    }
+}
+
+fn strip_declarator_comments(declarator: &mut Declarator) {
+    match declarator {
+        Declarator::Function { inner, parameters } => {
+            if let ParameterList::Prototype { parameters, .. }
+            | ParameterList::IdentifierList { parameters } = parameters
+            {
+                for parameter in parameters {
+                    parameter.value.comments.clear();
+                    strip_declarator_comments(&mut parameter.value.declarator);
+                }
+            }
+            strip_declarator_comments(inner);
+        }
+        Declarator::Grouped(inner)
+        | Declarator::Attributed { inner, .. }
+        | Declarator::Pointer { inner, .. }
+        | Declarator::Array { inner, .. } => strip_declarator_comments(inner),
+        Declarator::Abstract | Declarator::Name(_) => {}
+    }
 }
 
 fn strip_tag_comments(tag: &mut TagDefinition) {
     match &mut tag.body {
         TagBody::Record(fields) => {
-            fields.retain(|field| !matches!(field.value, FieldItemKind::Comment(_)))
+            fields.retain(|field| !matches!(field.value, FieldItemKind::Comment(_)));
+            for field in fields {
+                if let FieldItemKind::Field(field) = &mut field.value {
+                    for declarator in &mut field.declarators {
+                        strip_declarator_comments(&mut declarator.value.declarator);
+                    }
+                }
+            }
         }
         TagBody::Enum { enumerators, .. } => {
             enumerators.retain(|item| !matches!(item.value, EnumItemKind::Comment(_)))
@@ -211,6 +248,7 @@ fn strip_stmt_comments(stmts: &mut Vec<Stmt>) {
 fn strip_stmt_children(stmt: &mut StmtKind) {
     match stmt {
         StmtKind::Block(body) => strip_stmt_comments(body),
+        StmtKind::Decl(declaration) => strip_declaration_comments(declaration),
         StmtKind::While { body, .. }
         | StmtKind::DoWhile { body, .. }
         | StmtKind::Switch { body, .. } => strip_stmt_children(&mut body.value),

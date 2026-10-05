@@ -351,8 +351,9 @@ impl Parser {
             let decl = self.parse_external_item(tokens, position)?;
             let mut comments = Vec::new();
             for annotation in self.input.take(tokens, start, position.saturating_sub(1)) {
-                if matches!(annotation.value, Annotation::Comment(_)) {
-                    comments.push(self.declaration_annotation(annotation)?);
+                if let Annotation::Comment(group) = &annotation.value {
+                    let group = group.clone().into_trailing();
+                    comments.push(annotation.with_value(DeclKind::Comment(group)));
                 } else {
                     decls.push(self.declaration_annotation(annotation)?);
                 }

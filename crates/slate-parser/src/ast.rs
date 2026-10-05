@@ -1540,6 +1540,8 @@ pub struct ParameterDeclarationKind {
     pub declarator: Declarator,
     #[debug(skip_if = Vec::is_empty)]
     pub attributes: Vec<Span<Attribute>>,
+    #[debug(skip_if = Vec::is_empty)]
+    pub comments: Vec<Span<CommentGroup>>,
 }
 
 #[derive(CustomDebug, Clone, PartialEq)]
@@ -1646,6 +1648,25 @@ pub enum EnumItemKind {
 #[derive(CustomDebug, Clone, PartialEq)]
 pub struct CommentGroup {
     pub comment: Comment,
+    pub attach: CommentAttach,
+    #[debug(skip_if = is_false)]
+    pub doc: bool,
+}
+
+impl CommentGroup {
+    pub fn into_trailing(self) -> Self {
+        Self {
+            attach: CommentAttach::Trailing,
+            ..self
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum CommentAttach {
+    Leading,
+    Trailing,
+    Detached,
 }
 
 #[derive(Debug, Clone, PartialEq)]

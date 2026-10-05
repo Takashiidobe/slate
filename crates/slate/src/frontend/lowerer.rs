@@ -64,7 +64,7 @@ struct Tables<'m> {
     over_aligned: HashMap<BindingId, u64>,
     target: &'m TargetInfo,
     metadata: &'m ir::Metadata,
-    comments: &'m [Span<Vec<String>>],
+    comments: &'m [Span<ir::Comment>],
     unit: &'m str,
     types: HashMap<TypeId, &'m Span<ir::TypeDefinition>>,
     record_names: HashMap<TypeId, String>,

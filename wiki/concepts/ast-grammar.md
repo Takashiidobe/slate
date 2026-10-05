@@ -70,7 +70,8 @@ decl_line = "decl[" int "]" [ " #" int ] ": " span<DeclKind> ;
 - The `TranslationUnit`'s `dialect` (flavor, standard, target, options) is
   not printed.
 - Without `--show-comments`, `Comment` items are removed from declarations,
-  function bodies, records and enums before printing.
+  function bodies, records and enums, and parameter `comments` are cleared,
+  before printing.
 
 ## Spans
 
@@ -113,8 +114,9 @@ InitDeclaratorKind = InitDeclaratorKind {
                        initializer?: Some(Initializer) } ;
 StaticAssert       = StaticAssert { condition: expr, message?: Some(string) } ;
 
-CommentGroup = CommentGroup { comment: Comment } ;
-Comment      = Comment { text: vec<string>, loc: Loc } ;
+CommentGroup  = CommentGroup { comment: Comment, attach: CommentAttach, doc?: true } ;
+CommentAttach = "Leading" | "Trailing" | "Detached" ;
+Comment       = Comment { text: vec<string>, loc: Loc } ;
 Loc          = Loc { file: FileId, offset: int, length: int } ;
 ```
 
@@ -222,7 +224,8 @@ ParameterList            = Prototype { parameters: vec<span<ParameterDeclaration
 ParameterDeclarationKind = ParameterDeclarationKind {
                              specifiers: DeclarationSpecifiers,
                              declarator: Declarator,
-                             attributes?: vec<span<Attribute>> } ;
+                             attributes?: vec<span<Attribute>>,
+                             comments?: vec<span<CommentGroup>> } ;
 ```
 
 - Declarators keep the written nesting, not the derivation order:

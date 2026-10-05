@@ -52,6 +52,7 @@ pub enum PPNodeKind {
     Comment {
         text: String,
         provenance: Provenance,
+        layout: CommentLayout,
     },
     Code {
         tokens: Vec<Span<Token>>,
@@ -62,6 +63,84 @@ pub enum PPNodeKind {
         tokens: Vec<Span<Token>>,
         provenance: Provenance,
     },
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct CommentLayout {
+    pub placement: CommentPlacement,
+    pub column: usize,
+    pub follower: CommentFollower,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum CommentPlacement {
+    OwnLine,
+    AfterCode,
+    Directive,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum CommentFollower {
+    SameLineComment,
+    NextLineComment,
+    Code,
+    Separated,
+}
+
+impl CommentLayout {
+    fn scan(source: &str, loc: Loc, directive: bool) -> Self {
+        let bytes = source.as_bytes();
+        let start = loc.offset.min(bytes.len());
+        let line_start = bytes[..start]
+            .iter()
+            .rposition(|&byte| byte == b'\n')
+            .map_or(0, |newline| newline + 1);
+        let placement = if directive {
+            CommentPlacement::Directive
+        } else if bytes[line_start..start].iter().all(u8::is_ascii_whitespace) {
+            CommentPlacement::OwnLine
+        } else {
+            CommentPlacement::AfterCode
+        };
+        let mut index = (loc.offset + loc.length).min(bytes.len());
+        let mut newlines = 0;
+        while let Some(&byte) = bytes.get(index) {
+            match byte {
+                b'#' if conditional_directive(&source[index + 1..]) => {
+                    index += bytes[index..]
+                        .iter()
+                        .position(|&byte| byte == b'\n')
+                        .unwrap_or(bytes.len() - index);
+                }
+                b'\n' => newlines += 1,
+                b'\\' if matches!(bytes.get(index + 1), Some(b'\n' | b'\r')) => {}
+                _ if byte.is_ascii_whitespace() => {}
+                _ => break,
+            }
+            index += 1;
+        }
+        let follower = match (newlines, bytes.get(index..index + 2)) {
+            (2.., _) | (_, None) => CommentFollower::Separated,
+            (0, Some(b"/*" | b"//")) => CommentFollower::SameLineComment,
+            (_, Some(b"/*" | b"//")) => CommentFollower::NextLineComment,
+            (_, Some([b'#' | b'}', _])) => CommentFollower::Separated,
+            _ => CommentFollower::Code,
+        };
+        Self {
+            placement,
+            column: start - line_start,
+            follower,
+        }
+    }
+}
+
+fn conditional_directive(rest: &str) -> bool {
+    let name = rest
+        .trim_start_matches([' ', '\t'])
+        .split(|c: char| !c.is_ascii_alphanumeric() && c != '_')
+        .next()
+        .unwrap_or("");
+    DirectiveName::from_spelling(name).is_conditional()
 }
 
 const GNU_COMPATIBILITY_MACROS: [(&str, &str); 5] = [
@@ -909,7 +988,9 @@ impl<'a> Preprocessor<'a> {
         while let Some(line) = file.source.next_line() {
             let line = match line {
                 Line::Directive(directive, comments) => {
-                    self.push_comments(&mut nodes, comments);
+                    if !directive.name.is_conditional() {
+                        self.push_comments(&mut nodes, comments, true);
+                    }
                     self.source_position = Some(directive.loc);
                     let name = directive.name;
                     let depth = file.conditionals.len();
@@ -951,10 +1032,16 @@ impl<'a> Preprocessor<'a> {
                 }
                 Line::Text(line) => line,
             };
-            self.push_comments(&mut nodes, line.comments);
+            let first_code = line.tokens.first().map(|token| token.spelling.offset);
+            let (leading, after_code): (Vec<_>, Vec<_>) =
+                line.comments.into_iter().partition(|comment| {
+                    first_code.is_none_or(|first| comment.spelling.offset < first)
+                });
+            self.push_comments(&mut nodes, leading, false);
             if line.tokens.is_empty() {
                 continue;
             }
+            file.group.trailing.splice(0..0, after_code);
             if !matches!(guard, GuardScan::Open(_)) {
                 guard = GuardScan::Unguarded;
             }
@@ -968,7 +1055,7 @@ impl<'a> Preprocessor<'a> {
             if let Some(loc) = group.loc() {
                 nodes.extend(self.emit_line(loc, pieces));
             }
-            self.push_comments(&mut nodes, group.trailing);
+            self.push_comments(&mut nodes, group.trailing, false);
             nodes.extend(group.deferred);
         }
         if let Some(open) = file.conditionals.last() {
@@ -1100,14 +1187,20 @@ impl<'a> Preprocessor<'a> {
         }
     }
 
-    fn push_comments(&self, nodes: &mut Vec<PPNode>, comments: Vec<Span<String>>) {
+    fn push_comments(&self, nodes: &mut Vec<PPNode>, comments: Vec<Span<String>>, directive: bool) {
         for comment in comments {
             let provenance = self.provenance(comment.spelling);
+            let layout = CommentLayout::scan(
+                self.source(comment.spelling.file),
+                comment.spelling,
+                directive,
+            );
             nodes.push(
                 Span::new(
                     PPNodeKind::Comment {
                         text: comment.value,
                         provenance,
+                        layout,
                     },
                     comment.spelling,
                     comment.spelling,

@@ -27,7 +27,7 @@ pub(super) enum DirectiveName {
 }
 
 impl DirectiveName {
-    fn from_spelling(spelling: &str) -> Self {
+    pub(super) fn from_spelling(spelling: &str) -> Self {
         match spelling {
             "if" => Self::If,
             "ifdef" => Self::Ifdef,
@@ -49,6 +49,20 @@ impl DirectiveName {
             "ident" | "sccs" => Self::Ident,
             _ => Self::Unknown,
         }
+    }
+
+    pub(super) fn is_conditional(self) -> bool {
+        matches!(
+            self,
+            Self::If
+                | Self::Ifdef
+                | Self::Ifndef
+                | Self::Elif
+                | Self::Elifdef
+                | Self::Elifndef
+                | Self::Else
+                | Self::Endif
+        )
     }
 }
 

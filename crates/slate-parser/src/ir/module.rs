@@ -2,7 +2,7 @@ use super::{
     AbiSignature, Atomicity, BindingId, FenceScope, Global, InlineAsm, Parameters, Place, Type,
     TypeDefinition, Value, Variable,
 };
-use crate::ast::{NodeId, Span};
+use crate::ast::{CommentAttach, CommentGroup, NodeId, Span};
 use crate::target_info::TargetInfo;
 use std::collections::HashMap;
 
@@ -16,7 +16,24 @@ pub struct Module {
     pub globals: Vec<Span<Global>>,
     pub functions: Vec<Span<Function>>,
     pub metadata: Metadata,
-    pub comments: Vec<Span<Vec<String>>>,
+    pub comments: Vec<Span<Comment>>,
+}
+
+#[derive(Debug, Clone)]
+pub struct Comment {
+    pub text: Vec<String>,
+    pub attach: CommentAttach,
+    pub doc: bool,
+}
+
+impl From<&CommentGroup> for Comment {
+    fn from(group: &CommentGroup) -> Self {
+        Self {
+            text: group.comment.text.clone(),
+            attach: group.attach,
+            doc: group.doc,
+        }
+    }
 }
 
 const _: fn() = || {
@@ -166,7 +183,7 @@ impl From<Value> for Evaluation {
 
 #[derive(Debug, Clone)]
 pub enum Statement {
-    Comment(Vec<String>),
+    Comment(Comment),
     Temporary {
         id: BindingId,
         ty: Type,

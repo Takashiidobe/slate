@@ -1,9 +1,10 @@
 use super::*;
 use slate_parser::ast::Loc;
 
-pub(super) fn comment(text: &[String]) -> rust::Comment {
+pub(super) fn comment(source: &ir::Comment) -> rust::Comment {
     rust::Comment {
-        lines: text
+        lines: source
+            .text
             .iter()
             .flat_map(|text| text.lines().map(str::to_owned))
             .collect(),
@@ -75,7 +76,7 @@ pub(super) fn module_comments(
             Some((index, loc))
         })
         .collect();
-    let mut comments = BTreeMap::<usize, Vec<&Span<Vec<String>>>>::new();
+    let mut comments = BTreeMap::<usize, Vec<&Span<ir::Comment>>>::new();
     for source in &module.comments {
         if emitted.contains(&source.id) {
             continue;

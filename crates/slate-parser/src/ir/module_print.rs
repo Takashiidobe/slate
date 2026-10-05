@@ -1,11 +1,11 @@
 use super::{
-    ArrayExtent, AsmConstraintLocation, AsmOperandKind, DllStorage, Evaluation, FloatType,
+    ArrayExtent, AsmConstraintLocation, AsmOperandKind, Comment, DllStorage, Evaluation, FloatType,
     InlineAsm, Inlining, Linkage, MemoryEffects, Metadata, Module, NumericType, Parameters,
     RecordKind, Statement, StorageDuration, SymbolAttributes, TargetFeature, TlsModel, Type,
     TypeDefinitionKind, Variable, Visibility,
 };
 use crate::{
-    ast::{Loc, NodeId, Span},
+    ast::{CommentAttach, Loc, NodeId, Span},
     ir::Fallthrough,
 };
 use std::fmt;
@@ -417,8 +417,8 @@ impl Printer<'_> {
             }
             write!(f, "{:indent$}", "")?;
             match &statement.value {
-                Statement::Comment(text) => {
-                    write!(f, "comment {:?}", text.join("\n"))?;
+                Statement::Comment(comment) => {
+                    write!(f, "{comment}")?;
                     locations(f, statement.spelling, statement.expansion)?;
                 }
                 Statement::Temporary {
@@ -673,13 +673,25 @@ impl Printer<'_> {
     }
 }
 
+impl fmt::Display for Comment {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let attach = match self.attach {
+            CommentAttach::Leading => "leading",
+            CommentAttach::Trailing => "trailing",
+            CommentAttach::Detached => "detached",
+        };
+        let doc = if self.doc { " doc" } else { "" };
+        write!(f, "comment {attach}{doc} {:?}", self.text.join("\n"))
+    }
+}
+
 impl fmt::Display for DisplayModule<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let printer = self.printer();
         writeln!(f, "module {{")?;
         if self.show_comments {
             for comment in &self.module.comments {
-                write!(f, "    comment {:?}", comment.value.join("\n"))?;
+                write!(f, "    {}", comment.value)?;
                 locations(f, comment.spelling, comment.expansion)?;
                 writeln!(f, ";")?;
             }

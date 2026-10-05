@@ -48,9 +48,9 @@ impl FunctionLowerer<'_, '_> {
         statement: &slate_parser::ast::Span<ir::Statement>,
     ) -> Result<Stmt> {
         Ok(match &statement.value {
-            ir::Statement::Comment(text) => {
+            ir::Statement::Comment(comment) => {
                 self.dependencies.emitted_comments.insert(statement.id);
-                Stmt::Comment(comments::comment(text))
+                Stmt::Comment(comments::comment(comment))
             }
             ir::Statement::Temporary {
                 id,

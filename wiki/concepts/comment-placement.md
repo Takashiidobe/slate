@@ -41,13 +41,17 @@ Text is also rendered raw: `// /*`, `// **`.
 
 ## Ownership model
 
-The parser classifies every comment, since only it sees newlines and blank
-lines. Owned comments are fields of their node in the AST, the IR, and the Rust
-AST, so reordering and rewriting move them for free. Only detached comments are
-placed by position, and they anchor to a node id, never to an offset search.
+The preprocessor and parser classify every comment, since only they see
+newlines and blank lines. In the AST a comment stays a sibling item tagged
+`attach: Leading | Trailing | Detached`; its owner is the next sibling
+(`Leading`) or the previous one (`Trailing`). Parameters have no sibling list,
+so `ParameterDeclaration.comments` holds theirs. Rules:
+[ast-spec](ast-spec.md#comments).
 
-`comment_group()` must split groups at blank lines: a blank line is what
-separates a section comment from the leading comment of the next item.
+From the IR on, owned comments become fields of their node in the IR and the
+Rust AST, so reordering and rewriting move them for free. Only detached
+comments are placed by position, and they anchor to a node id, never to an
+offset search.
 
 ## Taxonomy
 
@@ -100,7 +104,9 @@ marker makes that certain.
 | File prologue | `//!` |
 | Section comments, every in-body comment, commented-out code | `//` |
 
-Positional promotion is the default for `translate-project`. Statement-level
+Positional promotion is the default for `translate-project` and single-file
+`translate` (it must not churn FileCheck fixtures, which render the parser IR,
+not Rust). Statement-level
 `///` would trigger `unused_doc_comments`, and a `///` with no following item
 or a `//!` after an item is a hard error; the ownership model rules both out.
 

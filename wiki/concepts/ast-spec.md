@@ -317,7 +317,7 @@ ParameterList =
     | Void                                        // (void)
     | Empty                                       // (); meaning per standard, decided by sema
 
-ParameterDeclaration { specifiers, declarator: Declarator, attributes, provenance }
+ParameterDeclaration { specifiers, declarator: Declarator, attributes, comments: Vec<Span<CommentGroup>>, provenance }
 ```
 
 `int (*fp)(int)` is
@@ -464,15 +464,37 @@ SwitchLabel = Case(Expr) | CaseRange { start: Expr, end: Expr } | Default
 ## Comments
 
 ```
-CommentGroup { comment: Comment }
+CommentGroup { comment: Comment, attach: Leading | Trailing | Detached, doc: bool }
 Comment { text: Vec<String>, loc: Loc }
 ```
 
-- Consecutive comments with no code between (blank lines allowed) form one
-  group. `text` keeps each comment's raw text; `loc` spans first to last.
-  Never spans files.
-- Groups appear only as `ExternalItem`, `BlockItem`, `MemberItem`,
-  `EnumItem`. Comments inside expressions or declarators are dropped.
+Taxonomy and rationale: [comment-placement](comment-placement.md).
+
+- The preprocessor records each comment's layout from the source text
+  (`pp::CommentLayout`): own line, after code on the same line, or on a
+  directive line; its column; and what follows it (a comment on the same or
+  next line, code, or a blank line / directive / `}` / end of file).
+  Conditional directives (`#if` … `#endif`) are looked through, so a comment
+  directly above `#ifndef X` still leads the declaration inside.
+- Comments after code on a line are emitted after that line's code, so they
+  sit after the item they trail.
+- Comments on conditional-directive lines (`#endif /* X */`) are dropped;
+  comments on other directive lines (`#define X 1 /* doc */`) are `Detached`.
+- Consecutive comments form one group unless a blank line separates them. A
+  `Trailing` group only absorbs following own-line comments at the same
+  column (a continuation). `text` keeps each comment's raw text; `loc` spans
+  first to last. Never spans files.
+- `attach`: `Trailing` if the group starts after code on its line; `Leading`
+  if it is on its own lines and code follows directly; otherwise `Detached`.
+  The owner of a `Leading` group is the next sibling; of a `Trailing` group,
+  the previous sibling (the enclosing item if there is none).
+- Comments inside a declaration, statement, or field (expressions,
+  initializers, multi-line calls) become `Trailing` siblings after it.
+- `doc`: the first comment starts with `/**`, `/*!`, `///`, or `//!`
+  (not `/**/`, `/***`, `////`).
+- Groups appear as `ExternalItem`, `BlockItem`, `MemberItem`, `EnumItem`,
+  and `ParameterDeclaration.comments`. A parameter takes the comments inside
+  its tokens and the `Trailing` comments after its comma.
 
 ## Expressions
 

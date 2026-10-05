@@ -127,7 +127,7 @@ fn resolve_module(
                         lower
                             .module
                             .comments
-                            .push(field.derive(comment.comment.text.clone()));
+                            .push(field.derive(crate::ir::Comment::from(comment)));
                     }
                 }
             }
@@ -137,9 +137,32 @@ fn resolve_module(
                         lower
                             .module
                             .comments
-                            .push(enumerator.derive(comment.comment.text.clone()));
+                            .push(enumerator.derive(crate::ir::Comment::from(comment)));
                     }
                 }
+            }
+        }
+    }
+    for declaration in &unit.decls {
+        let declarators: Vec<_> = match &declaration.value {
+            DeclKind::Function(function) => vec![&function.declarator],
+            DeclKind::Declaration(declaration) => declaration
+                .declarators
+                .iter()
+                .map(|declarator| &declarator.value.declarator)
+                .collect(),
+            _ => Vec::new(),
+        };
+        for parameter in declarators
+            .into_iter()
+            .filter_map(ast::Declarator::function_parameters)
+            .flat_map(ast::ParameterList::parameters)
+        {
+            for comment in &parameter.value.comments {
+                lower
+                    .module
+                    .comments
+                    .push(comment.derive(crate::ir::Comment::from(&comment.value)));
             }
         }
     }
@@ -270,7 +293,7 @@ fn lower_item(
             lower
                 .module
                 .comments
-                .push(declaration.derive(comment.comment.text.clone()));
+                .push(declaration.derive(crate::ir::Comment::from(comment)));
         }
         DeclKind::StaticAssert(_) => {}
         DeclKind::Attribute(attributes) => {
@@ -1534,7 +1557,7 @@ impl Lowerer {
                 return Ok(());
             }
             StmtKind::Comment(comment) => {
-                result.push(statement.derive(Statement::Comment(comment.comment.text.clone())));
+                result.push(statement.derive(Statement::Comment(comment.into())));
                 return Ok(());
             }
             _ => self.compound_start = false,

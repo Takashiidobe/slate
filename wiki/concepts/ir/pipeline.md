@@ -58,10 +58,13 @@ AST ──sema (check + lower)──▶ IR ──analysis pass(es)──▶ IR +
   type definitions it happens to create (`ir_metadata_single_owner.c`).
 - Parentheses are transparent; the inner operation keeps its own span.
 - Source comments are non-executing metadata: `Module.comments` retains file,
-  declaration, record, and enum comment groups; `Statement::Comment` retains
-  their positions inside bodies. Both carry raw text and source spans.
+  declaration, record, enum, and parameter comment groups; `Statement::Comment`
+  retains their positions inside bodies. Both hold an `ir::Comment` (raw text,
+  `attach`, `doc`; see [comment-placement](../comment-placement.md)) and source
+  spans.
 - Effects normalization keeps comments in order. Default IR dumps hide them;
-  `--show-comments` explicitly prints `comment "raw text"` with source locations.
+  `--show-comments` prints `comment <attach> [doc] "raw text"` with source
+  locations.
 - Rust lowering emits ordinary comments, anchors declaration comments by source
   location, and keeps field comments on their fields. Comments in unreachable
   dispatcher blocks are retained at the end of the generated function.

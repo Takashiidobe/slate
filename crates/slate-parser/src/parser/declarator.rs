@@ -341,7 +341,7 @@ impl<'a> DeclaratorParser<'a> {
                         super::Annotation::Comment(group) => Some(
                             annotation
                                 .clone()
-                                .with_value(FieldItemKind::Comment(group.clone())),
+                                .with_value(FieldItemKind::Comment(group.clone().into_trailing())),
                         ),
                         _ => None,
                     }),
@@ -400,11 +400,8 @@ impl<'a> DeclaratorParser<'a> {
                 &self.tokens[start..self.pos],
                 self.context,
             ));
-            if self.matches(Token::Comma) {
+            if self.matches(Token::Comma) || self.peek() == Some(&Token::RBrace) {
                 continue;
-            }
-            if self.matches(Token::RBrace) {
-                break;
             }
             return Err(DeclaratorError::ExpectedCommaOrRBrace);
         }
@@ -825,6 +822,43 @@ impl<'a> DeclaratorParser<'a> {
         Some(keyword)
     }
 
+    fn attach_parameter_comments(
+        &self,
+        parameters: &mut [ParameterDeclaration],
+        bounds: &[(usize, usize)],
+    ) {
+        let Some(parser) = self.context.parser() else {
+            return;
+        };
+        for (index, &(start, end)) in bounds.iter().enumerate() {
+            for annotation in parser.input.take_comments(self.tokens, start, start) {
+                let super::Annotation::Comment(group) = &annotation.value else {
+                    continue;
+                };
+                let owner = match group.attach {
+                    CommentAttach::Trailing => index.saturating_sub(1),
+                    CommentAttach::Leading | CommentAttach::Detached => index,
+                };
+                let group = group.clone();
+                parameters[owner]
+                    .value
+                    .comments
+                    .push(annotation.with_value(group));
+            }
+            if end > start {
+                for annotation in parser.input.take_comments(self.tokens, start + 1, end) {
+                    if let super::Annotation::Comment(group) = &annotation.value {
+                        let group = group.clone().into_trailing();
+                        parameters[index]
+                            .value
+                            .comments
+                            .push(annotation.with_value(group));
+                    }
+                }
+            }
+        }
+    }
+
     pub(super) fn parse_parameters(&mut self) -> Result<ParameterList, DeclaratorError> {
         let _scope = self.context.parser().map(Parser::enter_scope);
         let open = self.pos;
@@ -860,6 +894,7 @@ impl<'a> DeclaratorParser<'a> {
         }
 
         let mut parameters = Vec::new();
+        let mut bounds = Vec::new();
         let mut variadic = false;
         loop {
             if self.matches(Token::Ellipsis) {
@@ -895,10 +930,12 @@ impl<'a> DeclaratorParser<'a> {
                     specifiers,
                     declarator,
                     attributes,
+                    comments: Vec::new(),
                 },
                 &self.tokens[parameter_start..self.pos],
                 self.context,
             ));
+            bounds.push((parameter_start, self.pos));
             if self.matches(Token::RParen) {
                 break;
             }
@@ -907,6 +944,7 @@ impl<'a> DeclaratorParser<'a> {
                 DeclaratorError::ExpectedToken(Token::Comma, "between parameters"),
             )?;
         }
+        self.attach_parameter_comments(&mut parameters, &bounds);
         if accepts_identifier_list && let Some(parser) = self.context.parser() {
             self.definition_bindings = parser
                 .names

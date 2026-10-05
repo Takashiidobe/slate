@@ -1,7 +1,7 @@
 use super::undo::UndoLog;
-use crate::ast::{Comment, CommentGroup, Span, SpanRangeIndex};
+use crate::ast::{Comment, CommentAttach, CommentGroup, Span, SpanRangeIndex};
 use crate::lexer::Token;
-use crate::pp::{PPNode, PPNodeKind};
+use crate::pp::{CommentFollower, CommentLayout, CommentPlacement, PPNode, PPNodeKind};
 use std::cell::RefCell;
 use std::collections::BTreeMap;
 
@@ -25,27 +25,38 @@ impl ParserInput {
     pub fn new(nodes: Vec<PPNode>) -> Self {
         let mut input = Self::default();
         let annotations = input.annotations.get_mut();
+        let mut open: Option<(CommentLayout, CommentLayout)> = None;
         for node in nodes {
+            let layouts = open.take();
             match node.value {
                 PPNodeKind::Code { tokens, .. } => input.tokens.extend(tokens),
-                PPNodeKind::Comment { ref text, .. } => {
+                PPNodeKind::Comment {
+                    ref text, layout, ..
+                } => {
                     let entries = annotations.entry(input.tokens.len()).or_default();
-                    if let Some(previous) = entries.last_mut()
+                    if let Some((first, last)) = layouts
+                        && joins(first, last, layout)
+                        && let Some(previous) = entries.last_mut()
                         && previous.expansion.file == node.expansion.file
                         && let Annotation::Comment(group) = &mut previous.value
                     {
                         group.comment.text.push(text.clone());
                         group.comment.loc = group.comment.loc.through(node.expansion);
+                        group.attach = attachment(first, layout);
                         previous.spelling = previous.spelling.through(node.spelling);
                         previous.expansion = previous.expansion.through(node.expansion);
+                        open = Some((first, layout));
                     } else {
                         let group = CommentGroup {
                             comment: Comment {
                                 text: vec![text.clone()],
                                 loc: node.expansion,
                             },
+                            attach: attachment(layout, layout),
+                            doc: is_doc_comment(text),
                         };
                         entries.push(node.map(|_| Annotation::Comment(group)));
+                        open = Some((layout, layout));
                     }
                 }
                 PPNodeKind::Pragma { ref tokens, .. } => {
@@ -184,4 +195,34 @@ impl ParserInput {
             .flatten()
             .collect()
     }
+}
+
+fn joins(first: CommentLayout, last: CommentLayout, next: CommentLayout) -> bool {
+    match last.follower {
+        CommentFollower::SameLineComment => true,
+        CommentFollower::NextLineComment => match first.placement {
+            CommentPlacement::OwnLine => next.placement == CommentPlacement::OwnLine,
+            CommentPlacement::AfterCode => {
+                next.placement == CommentPlacement::OwnLine && next.column == first.column
+            }
+            CommentPlacement::Directive => false,
+        },
+        CommentFollower::Code | CommentFollower::Separated => false,
+    }
+}
+
+fn attachment(first: CommentLayout, last: CommentLayout) -> CommentAttach {
+    match (first.placement, last.follower) {
+        (CommentPlacement::AfterCode, _) => CommentAttach::Trailing,
+        (CommentPlacement::OwnLine, CommentFollower::Code) => CommentAttach::Leading,
+        _ => CommentAttach::Detached,
+    }
+}
+
+fn is_doc_comment(text: &str) -> bool {
+    let marked = |prefix: &str, repeat: char| {
+        text.strip_prefix(prefix)
+            .is_some_and(|rest| !rest.starts_with(repeat) && rest != "/")
+    };
+    marked("/**", '*') || marked("///", '/') || text.starts_with("/*!") || text.starts_with("//!")
 }

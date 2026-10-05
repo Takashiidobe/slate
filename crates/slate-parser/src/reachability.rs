@@ -163,7 +163,9 @@ impl<'a> Reachability<'a> {
         while previous > 0 {
             previous -= 1;
             if self.nodes[previous].expansion.file != self.nodes[id].expansion.file
-                || !self.root_files.contains(&self.nodes[previous].provenance.file)
+                || !self
+                    .root_files
+                    .contains(&self.nodes[previous].provenance.file)
                 || !matches!(self.nodes[previous].value, DeclKind::Comment(_))
             {
                 break;
