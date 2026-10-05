@@ -88,7 +88,7 @@ RECIPES = {
     ),
     "pcre2": CMake(options=["-DPCRE2_BUILD_TESTS=ON"]),
     "utf8proc": CMake(options=["-DUTF8PROC_ENABLE_TESTING=ON"]),
-    "yyjson": CMake(),
+    "yyjson": CMake(options=["-DYYJSON_BUILD_TESTS=ON"]),
     "zlib": CMake(),
     "zstd": CMake(source="build/cmake"),
     "mimalloc": CMake(),

@@ -433,6 +433,24 @@ def ctest_executable(command, build_dir):
     return index, str(path.relative_to(build_dir.resolve()))
 
 
+def ctest_script(command, build_dir):
+    if len(command) != 2 or Path(command[0]).name not in {"bash", "sh"}:
+        return None
+    path = Path(command[1]).resolve()
+    return path if path.is_relative_to(build_dir.resolve()) else None
+
+
+def translated_script(script, build_dir, relinked, sandbox):
+    text = script.read_text()
+    for tool in sorted(relinked, key=len, reverse=True):
+        text = text.replace(str(build_dir.resolve() / tool), str(relinked[tool]))
+    directory = sandbox / "scripts" / script.stem
+    directory.mkdir(parents=True, exist_ok=True)
+    copy = directory / script.name
+    copy.write_text(text)
+    return copy
+
+
 def relink(build_dir, executable, libraries, archive, destination):
     libraries = {(build_dir / library).resolve() for library in libraries}
     command = link_command(build_dir, executable)
@@ -513,11 +531,14 @@ def library_tests(project_dir, build_dir, recipe, archive, database, args, out):
     cases, skipped = [], []
     for case in ctest_cases(build_dir):
         found = ctest_executable(case["command"], build_dir)
+        script = ctest_script(case["command"], build_dir)
         if found:
             cases.append({**case, "index": found[0], "executable": found[1]})
+        elif script and recipe.tools:
+            cases.append({**case, "script": script})
         else:
             skipped.append(case)
-    executables = {case["executable"] for case in cases} | set(recipe.tools)
+    executables = {case["executable"] for case in cases if "executable" in case} | set(recipe.tools)
     if recipe.translate_tests:
         shared_library = archive.with_suffix(".so")
         relinked = {name: translate_executable(project_dir, build_dir, name, recipe, database, args.mode,
@@ -529,8 +550,12 @@ def library_tests(project_dir, build_dir, recipe, archive, database, args, out):
                     for name in sorted(executables)}
 
     def compare(case):
-        command, index = case["command"], case["index"]
+        command = case["command"]
         env = dict(os.environ, **recipe.test_env, **case["env"])
+        if "script" in case:
+            copy = translated_script(case["script"], build_dir, relinked, sandbox)
+            return run_case(command, case["cwd"], env=env), run_case([command[0], str(copy)], copy.parent, env=env)
+        index = case["index"]
         translated = [*command[:index], str(relinked[case["executable"]]), *command[index + 1:]]
         return run_case(command, case["cwd"], env=env), run_case(translated, case["cwd"], env=env)
 
@@ -806,6 +831,13 @@ RECIPES = {
         components=["lib/libevent_extra.a", "lib/libevent_pthreads.a"],
         variants=["lib/libevent.a"],
         compare_stdout=False,
+    ),
+    "yyjson": CMakeLibrary(library="libyyjson.a"),
+    "pcre2": CMakeLibrary(
+        library="libpcre2-8.a",
+        components=["libpcre2-posix.a"],
+        tools=["pcre2test", "pcre2grep"],
+        host_includes=["/usr/include"],
     ),
     "giflib": MakeLibrary(
         make_dir=".",

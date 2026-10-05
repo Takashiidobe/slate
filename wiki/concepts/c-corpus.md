@@ -55,7 +55,8 @@ python3 tools/c_corpus_setup.py [PROJECT ...] [--flavor clang|gcc|msvc ...]
 
 | Project                                                                             | Build                                                                                                                                   | msvc                                                 |
 | ----------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
-| cJSON, libexpat (`expat/`), libuv, libyaml, mimalloc, pcre2, yyjson, zlib           | CMake                                                                                                                                   | CMake                                                |
+| cJSON, libexpat (`expat/`), libuv, libyaml, mimalloc, pcre2, zlib                   | CMake                                                                                                                                   | CMake                                                |
+| yyjson                                                                              | CMake, `YYJSON_BUILD_TESTS=ON`                                                                                                          | CMake                                                |
 | utf8proc                                                                            | CMake, `UTF8PROC_ENABLE_TESTING=ON` (downloads the Unicode test data)                                                                   | CMake                                                |
 | libdeflate                                                                          | CMake, `LIBDEFLATE_BUILD_TESTS=ON`                                                                                                      | CMake                                                |
 | xxHash                                                                              | CMake in `build/cmake`, `DISPATCH=ON` (adds `xxh_x86dispatch.c`)                                                                        | CMake                                                |
@@ -187,7 +188,9 @@ stage, against the relinked tools in `test-tree/`.
   native run; it runs with its `ENVIRONMENT` property, and cases run in
   parallel (`--jobs`), each native then translated. The executable is
   `argv[0]`, or `argv[2]` behind a `bash`/`sh` wrapper script (libexpat's
-  `run.sh`). Cases whose executable is not in the build tree (zlib's
+  `run.sh`). A case that runs a `sh` script from the build tree (pcre2's
+  `pcre2_test.sh`) runs a copy in its own directory with every
+  `build/<tool>` path rewritten to the relinked tool. Cases whose executable is not in the build tree (zlib's
   `cmake` packaging and `llvm-cov` cases) are listed as skipped. Each
   `Differential` then runs a tool over every input glob with the same
   `argv[0]` for both builds and must match the native exit code and
@@ -221,6 +224,10 @@ stage, against the relinked tools in `test-tree/`.
   included, plus both fuzz corpora). libevent (static build): 28 TUs from
   `_core`, `_extra` and `_pthreads`, 84/84 ctest by exit code, 25 minutes
   of test time.
+- yyjson (2026-10-05): 1 TU, 12/12 ctest. pcre2: 32 TUs from
+  `libpcre2-8.a` and `libpcre2-posix.a`, with `pcre2test` and `pcre2grep`
+  relinked (`/usr/include` for `readline`, `zlib` and `bzlib`): 3/3 ctest,
+  `RunTest` and `RunGrepTest` stdout identical to native.
 
 ### Make libraries
 
