@@ -65,9 +65,9 @@ struct MS L { char c; long double d; };
 // IR-NEXT:         field0 c: i8;
 // IR-NEXT:         field1 z: complex<f64>;
 // IR-NEXT:     } [size=20, align=4, offsets=[0, 4]];
-// IR-NEXT:     type @type[[TYPE_P:[0-9]+]] P = enum : u32 {
+// IR-NEXT:     type @type[[TYPE_P:[0-9]+]] P = enum : u8 {
 // IR-NEXT:         %[[VALUE_Q:[0-9]+]] Q = const<i32>(0);
-// IR-NEXT:     } [size=4, align=4];
+// IR-NEXT:     } [size=1, align=1];
 // IR-NEXT:     type @type[[TYPE_C:[0-9]+]] C = struct {
 // IR-NEXT:         field0 c: i8;
 // IR-NEXT:         field1 b: i64b;

@@ -66,18 +66,18 @@ SA (_Alignof (enum e11) == _Alignof (enum e12));
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type[[TYPE_e1:[0-9]+]] e1 = enum : u32 {
+// DEFAULT-NEXT:     type @type[[TYPE_e1:[0-9]+]] e1 = enum : u8 {
 // DEFAULT-NEXT:         %[[VALUE_A:[0-9]+]] A = const<i32>(0);
-// DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type[[TYPE_e2:[0-9]+]] e2 = enum : u32 {
+// DEFAULT-NEXT:     } [size=1, align=1];
+// DEFAULT-NEXT:     type @type[[TYPE_e2:[0-9]+]] e2 = enum : u8 {
 // DEFAULT-NEXT:         %[[VALUE_A]] B = const<i32>(0);
-// DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type[[TYPE_e3:[0-9]+]] e3 = enum : u32 {
+// DEFAULT-NEXT:     } [size=1, align=1];
+// DEFAULT-NEXT:     type @type[[TYPE_e3:[0-9]+]] e3 = enum : u16 {
 // DEFAULT-NEXT:         %[[VALUE_A]] C = const<i32>(256);
-// DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type[[TYPE_e4:[0-9]+]] e4 = enum : u32 {
+// DEFAULT-NEXT:     } [size=2, align=2];
+// DEFAULT-NEXT:     type @type[[TYPE_e4:[0-9]+]] e4 = enum : u16 {
 // DEFAULT-NEXT:         %[[VALUE_A]] D = const<i32>(256);
-// DEFAULT-NEXT:     } [size=4, align=4];
+// DEFAULT-NEXT:     } [size=2, align=2];
 // DEFAULT-NEXT:     type @type[[TYPE_e5:[0-9]+]] e5 = enum : u32 {
 // DEFAULT-NEXT:         %[[VALUE_A]] E = const<i32>(2147483647);
 // DEFAULT-NEXT:     } [size=4, align=4];
@@ -90,12 +90,12 @@ SA (_Alignof (enum e11) == _Alignof (enum e12));
 // DEFAULT-NEXT:     type @type[[TYPE_e8:[0-9]+]] e8 = enum : u32 {
 // DEFAULT-NEXT:         %[[VALUE_A]] H = const<i32>(0);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type[[TYPE_e9:[0-9]+]] e9 = enum : u32 {
+// DEFAULT-NEXT:     type @type[[TYPE_e9:[0-9]+]] e9 = enum : u8 {
 // DEFAULT-NEXT:         %[[VALUE_A]] I = const<i32>(0);
-// DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type[[TYPE_e10:[0-9]+]] e10 = enum : u32 {
+// DEFAULT-NEXT:     } [size=1, align=1];
+// DEFAULT-NEXT:     type @type[[TYPE_e10:[0-9]+]] e10 = enum : u8 {
 // DEFAULT-NEXT:         %[[VALUE_A]] J = const<i32>(0);
-// DEFAULT-NEXT:     } [size=4, align=4];
+// DEFAULT-NEXT:     } [size=1, align=1];
 // DEFAULT-NEXT:     type @type[[TYPE_e11:[0-9]+]] e11 = enum : u32 {
 // DEFAULT-NEXT:         %[[VALUE_A]] K = const<i32>(0);
 // DEFAULT-NEXT:     } [size=4, align=4];

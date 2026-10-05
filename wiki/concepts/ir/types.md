@@ -138,6 +138,10 @@ The shown type is concrete and target-resolved; the C type is metadata
 - Underlying type without a fixed one: from the value range; signed if any
   value is negative, first of `int`, `long`, `long long` that fits
   (`enum { A, B }` is `u32`, `{ A = -1, B = 1ll << 40 }` is `i64`).
+  `__attribute__((packed))` on the definition (after `enum` or after `}`)
+  tries `char` and `short` first, so `{ A = 200 }` is `u8` and
+  `{ A = -1, B = 200 }` is `i16`; enumerators stay `int`. On a later
+  `enum E __attribute__((packed));` it does nothing (`ir_packed_enum.c`).
 - Enumerator type after the enum closes (clang): `int` if no fixed type and
   every value fits `int`; otherwise the underlying type before C23 and the
   enum type from C23 (`enumerators_have_enum_type`). Known gap: clang keeps

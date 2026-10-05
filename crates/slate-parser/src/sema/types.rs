@@ -2317,11 +2317,34 @@ impl TypeResolver {
                     let signed = values
                         .iter()
                         .any(|(_, _, value)| value.sign() == Sign::Minus);
-                    let candidates: Vec<QualType> =
-                        [IntRank::Int, IntRank::Long, IntRank::LongLong]
-                            .into_iter()
-                            .map(|rank| self.ctypes.qual(CTypeKind::Int { rank, signed }))
-                            .collect();
+                    let packed = tag
+                        .attributes
+                        .iter()
+                        .any(|attribute| matches!(&attribute.value, Attribute::Packed));
+                    let narrow = if packed {
+                        vec![
+                            if signed {
+                                CTypeKind::SChar
+                            } else {
+                                CTypeKind::UChar
+                            },
+                            CTypeKind::Int {
+                                rank: IntRank::Short,
+                                signed,
+                            },
+                        ]
+                    } else {
+                        Vec::new()
+                    };
+                    let candidates: Vec<QualType> = narrow
+                        .into_iter()
+                        .chain(
+                            [IntRank::Int, IntRank::Long, IntRank::LongLong]
+                                .into_iter()
+                                .map(|rank| CTypeKind::Int { rank, signed }),
+                        )
+                        .map(|kind| self.ctypes.qual(kind))
+                        .collect();
                     candidates
                         .into_iter()
                         .find(|&candidate| {
