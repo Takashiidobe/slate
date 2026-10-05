@@ -189,6 +189,34 @@ fn general_use(attribute: &Attribute) -> Use {
     }
 }
 
+#[derive(Clone, Copy)]
+pub(super) enum FunctionTypeRule {
+    NoReturn,
+    NonNull,
+    Prototype,
+}
+
+pub(super) fn function_type_attribute(
+    attribute: &Attribute,
+) -> Option<(FunctionTypeRule, &'static str, &'static str)> {
+    match attribute {
+        Attribute::NoReturn => Some((FunctionTypeRule::NoReturn, "noreturn", "function types")),
+        Attribute::Format(_) => Some((FunctionTypeRule::Prototype, "format", "functions")),
+        Attribute::NonNull(_) => Some((
+            FunctionTypeRule::NonNull,
+            "nonnull",
+            "functions, methods, and parameters",
+        )),
+        Attribute::AllocSize(_) => Some((
+            FunctionTypeRule::Prototype,
+            "alloc_size",
+            "non-K&R-style functions",
+        )),
+        Attribute::AllocAlign(_) => Some((FunctionTypeRule::Prototype, "alloc_align", "functions")),
+        _ => None,
+    }
+}
+
 fn inapplicable(
     attribute: &Attribute,
     subject: Subject,
@@ -196,6 +224,9 @@ fn inapplicable(
     let function_only =
         |spelling| (subject != Subject::Function).then_some((spelling, Some("functions")));
     let record = matches!(subject, Subject::Record { .. });
+    if let Some((_, spelling, applies_to)) = function_type_attribute(attribute) {
+        return record.then_some((spelling, Some(applies_to)));
+    }
     match attribute {
         Attribute::Packed => (!record && subject != Subject::Field).then_some(("packed", None)),
         Attribute::TransparentUnion => {
@@ -218,13 +249,8 @@ fn inapplicable(
         Attribute::NoInline => {
             (subject != Subject::Function).then_some(("noinline", Some("functions and statements")))
         }
-        Attribute::AllocSize(_) => (subject != Subject::Function)
-            .then_some(("alloc_size", Some("non-K&R-style functions"))),
-        Attribute::AllocAlign(_) => function_only("alloc_align"),
         Attribute::ReturnsNonNull => function_only("returns_nonnull"),
         Attribute::ReturnsTwice => function_only("returns_twice"),
-        Attribute::NonNull(_) => (subject != Subject::Function && subject != Subject::Parameter)
-            .then_some(("nonnull", Some("functions, methods, and parameters"))),
         Attribute::Constructor(_) => function_only("constructor"),
         Attribute::Destructor(_) => function_only("destructor"),
         Attribute::Naked => function_only("naked"),
@@ -239,7 +265,6 @@ fn inapplicable(
         Attribute::CpuSpecific(_) => function_only("cpu_specific"),
         Attribute::OptimizeNone => function_only("optnone"),
         Attribute::GnuInline => function_only("gnu_inline"),
-        Attribute::Format(_) => function_only("format"),
         Attribute::Sentinel(_) => function_only("sentinel"),
         Attribute::Pure => function_only("pure"),
         Attribute::Const => function_only("const"),

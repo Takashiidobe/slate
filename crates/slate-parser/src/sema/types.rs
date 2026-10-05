@@ -18,7 +18,7 @@ use crate::target_info::{
 };
 use num_bigint::{BigInt, Sign};
 
-use super::attributes::{Subject, Use};
+use super::attributes::{FunctionTypeRule, Subject, Use};
 use super::ctype::{
     CTypeKind, CTypeMetadata, CTypes, Extent, FixedKind, FixedRank, FixedType, FloatKind, IntRank,
     QualType, Qualifiers,
@@ -39,6 +39,13 @@ pub(super) struct ParameterShape {
 pub(super) struct FunctionNames {
     pub plain: String,
     pub pretty: String,
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub(super) enum DeclaredAs {
+    Function,
+    Parameter,
+    Other,
 }
 
 pub(super) struct OffsetOfPath<'e> {
@@ -287,35 +294,51 @@ impl TypeResolver {
         &mut self,
         attributes: impl IntoIterator<Item = &'a Span<Attribute>>,
         declared: QualType,
-        declares_function: bool,
+        declared_as: DeclaredAs,
     ) {
-        let applies = if self.dialect.flavor().is_gcc() {
-            declares_function
-                || self
-                    .ctypes
-                    .pointee(declared)
-                    .is_some_and(|pointee| self.ctypes.is_function(pointee))
-        } else {
-            let mut reached = declared;
-            while let Some(next) = self
+        let gcc = self.dialect.flavor().is_gcc();
+        let points_to_function = self.ctypes.is_function(declared)
+            || self
                 .ctypes
-                .pointee(reached)
-                .or_else(|| self.ctypes.element(reached).map(|(element, _)| element))
-            {
-                reached = next;
-            }
-            self.ctypes.is_function(reached)
-        };
-        if applies {
-            return;
-        }
+                .pointee(declared)
+                .is_some_and(|pointee| self.ctypes.is_function(pointee));
         for attribute in attributes {
-            if matches!(attribute.value, Attribute::NoReturn) {
-                self.warn(
-                    Warning::IgnoredAttributes,
-                    "'noreturn' attribute ignored; it applies only to function types",
-                    attribute,
-                );
+            let Some((rule, spelling, applies_to)) =
+                super::attributes::function_type_attribute(&attribute.value)
+            else {
+                continue;
+            };
+            let applies_to = match (rule, declared_as) {
+                (FunctionTypeRule::NonNull, DeclaredAs::Parameter) if !gcc => {
+                    let pointer = self.ctypes.is_pointer(declared)
+                        || self.ctypes.is_array(declared)
+                        || self.ctypes.is_function(declared);
+                    (!pointer).then_some("pointer arguments")
+                }
+                (FunctionTypeRule::Prototype | FunctionTypeRule::NonNull, _) => {
+                    (!points_to_function).then_some(applies_to)
+                }
+                (FunctionTypeRule::NoReturn, _) if gcc => {
+                    let applies = declared_as == DeclaredAs::Function
+                        || (points_to_function && !self.ctypes.is_function(declared));
+                    (!applies).then_some(applies_to)
+                }
+                (FunctionTypeRule::NoReturn, _) => {
+                    let mut reached = declared;
+                    while let Some(next) = self
+                        .ctypes
+                        .pointee(reached)
+                        .or_else(|| self.ctypes.element(reached).map(|(element, _)| element))
+                    {
+                        reached = next;
+                    }
+                    (!self.ctypes.is_function(reached)).then_some(applies_to)
+                }
+            };
+            if let Some(applies_to) = applies_to {
+                let message =
+                    format!("'{spelling}' attribute ignored; it applies only to {applies_to}");
+                self.warn(Warning::IgnoredAttributes, &message, attribute);
             }
         }
     }
@@ -2294,7 +2317,7 @@ impl TypeResolver {
                         self.check_function_type_attributes(
                             &declaration.specifiers.attributes,
                             resolved,
-                            false,
+                            DeclaredAs::Other,
                         );
                         fields.push(item.derive(Field {
                             name: None,
@@ -2328,7 +2351,7 @@ impl TypeResolver {
                                 .specifiers
                                 .attributes_with(&declarator.declarator, &declarator.attributes),
                             resolved,
-                            false,
+                            DeclaredAs::Other,
                         );
                         let ty = self.object_type(resolved, "void record field")?;
                         let bit_width = declarator

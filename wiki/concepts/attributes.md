@@ -173,20 +173,31 @@ clang 22.1.8 subject behavior; `ok` accepted, `ign`
 | `transparent_union` | `ign` | ok on union, `ign` on struct |
 | `mode` | ok | `err` |
 | `section`, `alias`, `tls_model` | `err` | `err` |
-| `used`, `retain`, `weak`, `common`, `nocommon`, `cleanup`, `nonnull` | `ign` | `ign` |
-| `malloc`, `cold`, `format`, `noinline`, … | `ign` | `ign` |
+| `used`, `retain`, `weak`, `common`, `nocommon`, `cleanup` | `ign` | `ign` |
+| `malloc`, `cold`, `noinline`, … | `ign` | `ign` |
+| `noreturn`, `format`, `nonnull`, `alloc_size`, `alloc_align` | by type (below) | `ign` |
 
-- `noreturn` depends on the declared type, not the `Subject`, so it is
-  checked after type resolution by `TypeResolver::check_function_type_attributes`
-  (declarations, parameters, fields). clang accepts it when peeling pointers
-  and arrays reaches a function type (`void noreturn (*table[2])(int)`,
-  typedefs of function pointers, function typedefs); gcc only on a function
-  declaration or a declarator whose type is a pointer to a function, so
-  `(**p)`, arrays, and a function typedef warn there. Otherwise
-  `-Wignored-attributes`. Attributes on a pointer declarator chunk
-  (`FP *__attribute__((noreturn)) p`) are never checked; gcc warns on them.
-  A call through such a pointer is not marked noreturn in the IR
-  (`{clang,gcc}/linux/x86_64/noreturn_function_pointer.c`).
+- `noreturn`, `format`, `nonnull`, `alloc_size`, and `alloc_align` depend on
+  the declared type, not the `Subject` (`attributes.rs::function_type_attribute`).
+  `inapplicable` only warns for them on a struct/union definition; otherwise
+  `TypeResolver::check_function_type_attributes` checks them after type
+  resolution (declarations, parameters, fields), with `-Wignored-attributes`
+  when they do not apply. Rules, measured against clang 22 and gcc:
+  - `format`, `nonnull`, `alloc_size`, `alloc_align` (both flavors): the type
+    is a function or a pointer to a function, typedefs included
+    (`list_cmp_func_t`, dis-asm `fprintf_ftype`); `(**p)` and arrays warn.
+  - `nonnull` on a parameter: clang accepts any pointer (or array/function,
+    adjusted to a pointer) and warns "pointer arguments" otherwise; gcc
+    applies the function-pointer rule above.
+  - `noreturn`: clang accepts when peeling pointers and arrays reaches a
+    function type (`void noreturn (*table[2])(int)`); gcc only on a function
+    declaration or a pointer to a function, so `(**p)`, arrays, and a
+    function typedef warn.
+  - Attributes on a pointer declarator chunk (`FP *__attribute__((noreturn)) p`,
+    `int *__attribute__((nonnull)) p`) are never checked; gcc warns on them.
+  - None of them reaches the IR for a call through a pointer.
+  - Fixtures: `{clang,gcc}/linux/x86_64/noreturn_function_pointer.c`,
+    `{clang,gcc}/linux/x86_64/function_pointer_prototype_attributes.c`.
 
 Fixtures: `sema/ir_attribute_applicability.c`,
 `sema/attribute_applicability_warnings.c`,

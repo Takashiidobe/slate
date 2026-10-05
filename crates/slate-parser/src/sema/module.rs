@@ -6,7 +6,7 @@ use super::numeric::{Context, ResolveError};
 use super::operand::Operand;
 use super::pragmas::{FloatingPragmas, PragmaPlacement};
 use super::typer::Slot;
-use super::types::{TypeResolver, is_folded};
+use super::types::{DeclaredAs, TypeResolver, is_folded};
 use super::validate::{ERROR_LIMIT, with_sources};
 use super::{SemaError, SemaErrors};
 use crate::ast::{
@@ -830,8 +830,11 @@ impl Lowerer {
             let owner = self.types.owner.replace(parameter.derive(()));
             let resolved =
                 self.resolve_parameter_type(&parameter.specifiers, &parameter.declarator)?;
-            self.types
-                .check_function_type_attributes(attributes(), resolved, false);
+            self.types.check_function_type_attributes(
+                attributes(),
+                resolved,
+                DeclaredAs::Parameter,
+            );
             let declared_array = parameter.declarator.array_parameter().unwrap_or_default();
             let shape = self.types.parameter_shape(resolved, declared_array)?;
             let adjusted = shape.adjusted;
@@ -1032,7 +1035,12 @@ impl Lowerer {
             self.types.check_function_type_attributes(
                 attributes.clone(),
                 resolved,
-                storage_class != StorageClass::Typedef && self.types.ctypes.is_function(resolved),
+                if storage_class != StorageClass::Typedef && self.types.ctypes.is_function(resolved)
+                {
+                    DeclaredAs::Function
+                } else {
+                    DeclaredAs::Other
+                },
             );
             if let Some(value) = value {
                 self.types
