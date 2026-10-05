@@ -20,13 +20,16 @@
 | Variadic C function pointer | Fixed parameters followed by `...` |
 | `storage=thread` global | `#[thread_local] static mut` (crate `#![feature(thread_local)]`); exported ones add `#[unsafe(no_mangle)]`, imports are `#[thread_local]` statics in the extern block |
 | Global, local, or dispatch slot whose `align` exceeds its type's natural alignment | `__SlateAlignN<T>` (`#[repr(C, align(N))]` newtype); the place is `.0`. Includes the x86-64 ABI 16-byte alignment of arrays of 16+ bytes, which clang's vector loads rely on (`object_alignment.c`); extern declarations stay unwrapped |
-| `[visibility=default]` global | Same as no attribute (an exported static already has default visibility); hidden/protected/internal remain barriers |
+| `[visibility=...]` global | Ignored, as for functions: an exported static gets default visibility (`global_visibility_internal.c`) |
 | Const-qualified address | `&raw const`; mutable addresses use `&raw mut` |
 | Volatile read / write | `ptr::read_volatile` / `ptr::write_volatile` on raw addresses |
 | f32 / f64 classification | Float classification methods; zero compares equal to either signed zero |
 | Scalar `__builtin_clz*` / `ctz*` / `popcount*` calls | Unsigned operand's `leading_zeros()` / `trailing_zeros()` / `count_ones()`, cast to the C result type |
 | `__builtin_expect`, `expect_with_probability`, `unpredictable` | The first operand (IR operands are side-effect free) |
 | `__builtin_prefetch` | Empty block |
+| `__builtin_unreachable` | `unsafe { std::hint::unreachable_unchecked() }` |
+| `__builtin_assume(c)`, MSVC `__assume(c)` | `unsafe { std::hint::assert_unchecked(c) }`; the parser has already replaced a side-effecting `c` with `true` |
+| `__builtin_assume_aligned(p, align[, offset])` | `p` cast to the result type; the alignment is not asserted |
 | `__builtin_abort`, `nan*`, `memcpy`, `memmove`, `memset`, `memcmp` | Extern with the library `link_name` |
 | `target("...")` function | `#[target_feature(enable = ...)] unsafe fn` (clang names mapped to rustc: `bmi`→`bmi1`, `pclmul`→`pclmulqdq`, `cx16`→`cmpxchg16b`, `rdrnd`→`rdrand`); `rtm` adds `#![feature(rtm_target_feature)]` |
 | `__builtin_cpu_supports("x")` / `__builtin_cpu_init()` | `std::arch::is_x86_feature_detected!("x")` / empty block |

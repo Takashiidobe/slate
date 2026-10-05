@@ -737,6 +737,47 @@ impl FunctionLowerer<'_, '_> {
                 ..
             } if matches!(
                 self.tables.builtin_name(*id),
+                Some("__builtin_unreachable" | "__builtin_assume" | "__assume")
+            ) =>
+            {
+                let (hint, args) = match (self.tables.builtin_name(*id), arguments.as_slice()) {
+                    (Some("__builtin_unreachable"), []) => {
+                        ("std::hint::unreachable_unchecked", Vec::new())
+                    }
+                    (_, [condition]) => (
+                        "std::hint::assert_unchecked",
+                        vec![self.lower_value(condition)?],
+                    ),
+                    _ => return Err(unsupported_value(value)),
+                };
+                Expr::Unsafe(Box::new(rust::Block {
+                    stmts: Vec::new(),
+                    tail: Some(Box::new(Expr::Call {
+                        func: Box::new(Expr::Var(hint.into())),
+                        args,
+                        binding: CallBinding::Generated,
+                    })),
+                }))
+            }
+            ValueKind::Call {
+                callee: ir::Callee::Direct(id),
+                arguments,
+                ..
+            } if self.tables.builtin_name(*id) == Some("__builtin_assume_aligned") => {
+                let Some(pointer) = arguments.first() else {
+                    return Err(unsupported_value(value));
+                };
+                Expr::Cast {
+                    expr: Box::new(self.lower_value(pointer)?),
+                    ty: self.lower_type(&value.ty)?,
+                }
+            }
+            ValueKind::Call {
+                callee: ir::Callee::Direct(id),
+                arguments,
+                ..
+            } if matches!(
+                self.tables.builtin_name(*id),
                 Some(
                     "__builtin_expect"
                         | "__builtin_expect_with_probability"

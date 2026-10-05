@@ -212,6 +212,11 @@ the callee name.
   and `&*s`, and (clang only) the right side of a comma
   (`TypeResolver::builtin_constant_p`). PostgreSQL's
   `AllocSetContextCreate` asserts this on its context names.
+- `__builtin_assume(c)` and MSVC `__assume(c)` stay calls, but when the
+  lowered `c` has side effects (`effects::has_effects`) it becomes
+  `const<bool>(true)`. Clang ignores such an assumption (`-Wassume`) and
+  never evaluates its operand, so hoisting `x++` out of it would be wrong
+  (`builtin_assume_side_effects.c`).
 - `__builtin_types_compatible_p(A, B)` → `const<i32>(0|1)` with
   `types_compatible="A, B"`, answered by `CTypes::compatible` (6.2.7), the
   predicate redeclaration merging uses. Top-level and element qualifiers

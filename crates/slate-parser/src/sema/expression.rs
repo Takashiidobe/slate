@@ -246,10 +246,25 @@ impl Lowerer {
             Some(id) => id,
             None => self.builtin_declaration(e, builtin, signature)?,
         };
-        let value = match lowered {
+        let mut value = match lowered {
             Some(parts) => self.lowered_call(e, Callee::Direct(id), signature, parts)?,
             None => self.call(e, Callee::Direct(id), signature, arguments)?,
         };
+        if matches!(builtin.record, "Assume" | "MSAssume")
+            && let (
+                ValueKind::Call {
+                    arguments: lowered, ..
+                },
+                [argument],
+            ) = (&mut value.value.node.value, arguments)
+            && let Some(condition) = lowered.first_mut()
+            && super::effects::has_effects(condition)
+        {
+            *condition = Value {
+                ty: condition.ty.clone(),
+                node: argument.derive(ValueKind::Constant(Number::Bool(true))),
+            };
+        }
         Ok(Some(value))
     }
 
