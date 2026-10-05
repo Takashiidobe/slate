@@ -214,9 +214,6 @@ fn c_cache_sidecar(binary: &Path, suffix: &str) -> PathBuf {
     binary.with_file_name(name)
 }
 
-/// Compile a single C translation unit into an object file for later linking.
-/// Compile several C translation units together into one binary (cross-TU link).
-
 pub fn compile_c_multi_with_std_include_and_args(
     srcs: &[PathBuf],
     out: &Path,
@@ -385,12 +382,6 @@ fn run_translate_project(
     }
     Ok(())
 }
-
-/// Build the Cargo crate `translate-project` wrote at `crate_dir`. The crate
-/// is already self-contained (Cargo.toml, vendored `aligned`, a shim build.rs
-/// if needed), so this just invokes `cargo build` and reads back the produced
-/// binary's path from cargo's own JSON build messages, rather than guessing
-/// the binary name from the crate's package name.
 
 pub struct Case {
     pub name: String,

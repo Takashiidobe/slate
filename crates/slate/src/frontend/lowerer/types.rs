@@ -170,7 +170,6 @@ impl FunctionLowerer<'_, '_> {
             vis: rust::Visibility::Private,
             field_vis: rust::Visibility::Private,
             is_union,
-            allow_non_camel_case: !is_camel_case(name),
             name: name.to_owned(),
             fields,
             packed: packed.map(|packed| packed as u32),

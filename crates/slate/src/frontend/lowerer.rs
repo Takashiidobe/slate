@@ -607,7 +607,7 @@ impl<'m> ModuleLowerer<'m> {
                 },
             );
         }
-        let mut features = Vec::new();
+        let mut features = vec![rust::CrateAttr::Allow(vec![rust::Lint::NonCamelCaseTypes])];
         if dependencies.atomic128 {
             items.insert(
                 0,
@@ -664,9 +664,7 @@ impl<'m> ModuleLowerer<'m> {
                 items.push(main_wrapper(arity));
             }
         }
-        if !features.is_empty() {
-            items.insert(0, Item::CrateAttrs(features));
-        }
+        items.insert(0, Item::CrateAttrs(features));
         let items =
             comments::module_comments(self.module, &tables, &dependencies.emitted_comments, items);
         Lowered {

@@ -135,14 +135,3 @@ pub(super) fn record_names(module: &ir::Module) -> HashMap<TypeId, String> {
         })
         .collect()
 }
-
-pub(super) fn is_camel_case(name: &str) -> bool {
-    let name = name.trim_matches('_');
-    let chars: Vec<char> = name.chars().collect();
-    !chars.first().is_some_and(|first| first.is_lowercase())
-        && !name.contains("__")
-        && !chars.windows(2).any(|pair| {
-            let has_case = |c: char| c.is_lowercase() || c.is_uppercase();
-            (has_case(pair[0]) && pair[1] == '_') || (has_case(pair[1]) && pair[0] == '_')
-        })
-}

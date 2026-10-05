@@ -357,9 +357,6 @@ impl<W: Write> Codegen<W> {
             repr.push(Repr::Align(n));
         }
         self.attrs(&[Attr::Repr(repr)])?;
-        if r.allow_non_camel_case {
-            self.out.write_str("#[allow(non_camel_case_types)]\n")?;
-        }
         if record_fields_are_copy(&r.fields) {
             self.out.write_str("#[derive(Clone, Copy)]\n")?;
         } else {

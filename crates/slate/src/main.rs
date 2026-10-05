@@ -814,7 +814,12 @@ fn translate_slate_project(
     for (stem, mut program) in programs {
         for item in &mut program.items {
             if let rust_ast::Item::CrateAttrs(attrs) = item {
-                attrs.retain(|attr| !matches!(attr, rust_ast::CrateAttr::Feature(_)));
+                attrs.retain(|attr| {
+                    !matches!(
+                        attr,
+                        rust_ast::CrateAttr::Feature(_) | rust_ast::CrateAttr::Allow(_)
+                    )
+                });
             }
         }
         program.cargo_features(&mut cargo_features);
@@ -847,11 +852,17 @@ fn translate_slate_project(
         outputs.push((crate_src.join(file).with_extension("rs"), program));
     }
     if root.is_none() {
-        let crate_attrs = rust_features
-            .iter()
-            .copied()
-            .map(rust_ast::CrateAttr::Feature)
-            .collect();
+        let crate_attrs = [rust_ast::CrateAttr::Allow(vec![
+            rust_ast::Lint::NonCamelCaseTypes,
+        ])]
+        .into_iter()
+        .chain(
+            rust_features
+                .iter()
+                .copied()
+                .map(rust_ast::CrateAttr::Feature),
+        )
+        .collect();
         let mut items = vec![rust_ast::Item::CrateAttrs(crate_attrs)];
         items.extend(children);
         outputs.push((crate_src.join("lib.rs"), rust_ast::Program { items }));
