@@ -36,7 +36,10 @@ impl BitBuiltin {
             | "__builtin_clzg" => Self::Clz,
             "__builtin_ctz" | "__builtin_ctzl" | "__builtin_ctzll" | "__builtin_ctzs"
             | "__builtin_ctzg" => Self::Ctz,
-            "__builtin_popcount" | "__builtin_popcountl" | "__builtin_popcountll" => Self::Popcount,
+            "__builtin_popcount"
+            | "__builtin_popcountl"
+            | "__builtin_popcountll"
+            | "__builtin_popcountg" => Self::Popcount,
             "__builtin_parity" | "__builtin_parityl" | "__builtin_parityll" => Self::Parity,
             "__builtin_ffs" | "__builtin_ffsl" | "__builtin_ffsll" => Self::Ffs,
             "__builtin_clrsb" | "__builtin_clrsbl" | "__builtin_clrsbll" => Self::Clrsb,
@@ -349,7 +352,9 @@ pub(super) enum DerivedSignature {
         class: OperandClass,
     },
     Scaled,
-    BitCount,
+    BitCount {
+        fallback: bool,
+    },
     Reduction(OperandClass),
     Declared,
 }
@@ -365,7 +370,8 @@ pub(super) fn derived_signature(builtin: &ClangBuiltin) -> Option<DerivedSignatu
             most: 1,
             class: OperandClass::Any,
         },
-        "Clzg" | "Ctzg" => DerivedSignature::BitCount,
+        "Clzg" | "Ctzg" => DerivedSignature::BitCount { fallback: true },
+        "Popcountg" => DerivedSignature::BitCount { fallback: false },
         "ReduceAdd" | "ReduceMul" | "ReduceAnd" | "ReduceOr" | "ReduceXor" => {
             DerivedSignature::Reduction(OperandClass::Integer)
         }
@@ -588,7 +594,9 @@ impl TypeResolver {
                 let exponent = self.ctypes.int();
                 Ok(self.function_type(operand, vec![operand, exponent]))
             }
-            (DerivedSignature::BitCount, Some(first)) if arity <= 2 => {
+            (DerivedSignature::BitCount { fallback }, Some(first))
+                if arity <= 1 + usize::from(fallback) =>
+            {
                 let operand = self.classified_operand(first, OperandClass::Integer)?;
                 let count = self.ctypes.int();
                 let mut params = vec![operand];
@@ -610,7 +618,7 @@ impl TypeResolver {
             (DerivedSignature::Uniform { .. } | DerivedSignature::Scaled, _) => {
                 Err(ResolveError::Rejected("elementwise builtin arity"))
             }
-            (DerivedSignature::BitCount, _) => {
+            (DerivedSignature::BitCount { .. }, _) => {
                 Err(ResolveError::Rejected("bit-counting builtin arity"))
             }
         }
