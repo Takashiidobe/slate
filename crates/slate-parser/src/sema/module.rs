@@ -88,7 +88,9 @@ fn resolve_module(
             else {
                 *slot = marks.produced(&lower, declaration);
                 if slot.functions.is_empty()
-                    && slot.globals.is_empty()
+                    && (slot.globals.is_empty()
+                        || matches!(declaration.value, DeclKind::Function(_)))
+                    && defines_symbol(&declaration.value)
                     && let Some(name) = declaration.value.names().first().copied()
                 {
                     slot.redefined = lower
@@ -243,6 +245,17 @@ struct Produced {
     redefined: Option<NodeId>,
 }
 
+fn defines_symbol(declaration: &DeclKind) -> bool {
+    match declaration {
+        DeclKind::Function(_) => true,
+        DeclKind::Declaration(item) => item
+            .declarators
+            .iter()
+            .any(|declarator| declarator.initializer.is_some()),
+        _ => false,
+    }
+}
+
 fn attach_declaration_comments(
     comments: &mut Comments,
     unit: &TranslationUnit,
@@ -251,11 +264,9 @@ fn attach_declaration_comments(
     record_tags: &HashMap<NodeId, String>,
 ) {
     let mut siblings = Vec::new();
-    let mut positions = Vec::new();
-    let mut order = Vec::new();
+    let mut placed = Vec::new();
     let mut seen = HashSet::new();
-    for (declaration, produced) in unit.decls.iter().zip(produced) {
-        positions.push(order.len());
+    for (index, (declaration, produced)) in unit.decls.iter().zip(produced).enumerate() {
         if let DeclKind::Comment(group) = &declaration.value {
             siblings.push(Sibling::Comment(declaration.derive(Comment::from(group))));
             continue;
@@ -264,8 +275,8 @@ fn attach_declaration_comments(
             .types
             .iter()
             .filter_map(|id| type_nodes.get(id).copied())
-            .chain(produced.globals.iter().copied())
             .chain(produced.functions.iter().copied())
+            .chain(produced.globals.iter().copied())
             .collect();
         let fresh: Vec<NodeId> = nodes
             .iter()
@@ -283,8 +294,8 @@ fn attach_declaration_comments(
         };
         siblings.push(
             match (
-                fresh.first(),
-                fresh.last(),
+                fresh.first().filter(|_| produced.redefined.is_none()),
+                fresh.last().filter(|_| produced.redefined.is_none()),
                 nodes.first(),
                 produced.redefined,
                 forward,
@@ -297,7 +308,7 @@ fn attach_declaration_comments(
                     },
                     None => Sibling::Node { first, last },
                 },
-                (None, _, Some(&node), _, _) | (None, _, None, Some(node), _) => {
+                (None, _, Some(&node), None, _) | (None, _, _, Some(node), _) => {
                     Sibling::Definition {
                         node,
                         tag: record_tags.get(&node).cloned(),
@@ -307,20 +318,38 @@ fn attach_declaration_comments(
                 _ => Sibling::Skipped,
             },
         );
-        order.extend(
+        if let Some(Sibling::Definition { node, .. }) = siblings.last() {
+            placed.push((*node, declaration.expansion.file, index));
+        }
+        placed.extend(
             fresh
                 .into_iter()
-                .map(|node| (node, declaration.expansion.file)),
+                .map(|node| (node, declaration.expansion.file, index)),
         );
     }
-    positions.push(order.len());
+    let mut last_placement = HashMap::new();
+    for (position, (node, _, _)) in placed.iter().enumerate() {
+        last_placement.insert(*node, position);
+    }
+    let order: Vec<_> = placed
+        .into_iter()
+        .enumerate()
+        .filter(|(position, (node, _, _))| last_placement[node] == *position)
+        .map(|(_, entry)| entry)
+        .collect();
+    let positions: Vec<usize> = (0..=siblings.len())
+        .map(|index| order.iter().filter(|(_, _, decl)| *decl < index).count())
+        .collect();
     for (index, comment) in comments.distribute(siblings) {
         comments.detached.push(Detached {
             comment,
             position: positions[index],
         });
     }
-    comments.order = order;
+    comments.order = order
+        .into_iter()
+        .map(|(node, file, _)| (node, file))
+        .collect();
 }
 
 fn item_error(error: &ResolveError, item: &ast::Decl) -> SemaError {
