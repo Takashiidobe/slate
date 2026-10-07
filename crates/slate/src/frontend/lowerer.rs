@@ -10,6 +10,7 @@ use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
 mod arithmetic;
 mod atomics;
 mod calls;
+mod comment_text;
 mod comments;
 mod control_flow;
 mod errors;
@@ -65,6 +66,7 @@ struct Tables<'m> {
     target: &'m TargetInfo,
     metadata: &'m ir::Metadata,
     comments: &'m ir::Comments,
+    promote_docs: bool,
     unit: &'m str,
     types: HashMap<TypeId, &'m Span<ir::TypeDefinition>>,
     record_names: HashMap<TypeId, String>,
@@ -116,6 +118,7 @@ impl FunctionLowerer<'_, '_> {
 #[derive(Debug, Default, Clone)]
 pub struct LowerOptions {
     pub export_symbols: bool,
+    pub explicit_docs_only: bool,
     pub imported_commons: BTreeSet<String>,
     pub unit: String,
 }
@@ -345,6 +348,7 @@ impl<'m> ModuleLowerer<'m> {
             target: &module.target,
             metadata: &module.metadata,
             comments: &module.comments,
+            promote_docs: !options.explicit_docs_only,
             unit: &options.unit,
             types: module
                 .types

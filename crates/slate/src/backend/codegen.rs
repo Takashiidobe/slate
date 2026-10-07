@@ -2,9 +2,10 @@ use std::fmt::{self, Write};
 
 use crate::backend::rust_ast::{
     Abi, AsmDialect, AsmOperand, AsmReg, AtomicOrdering, AtomicPlace, AtomicRmwOp, AtomicType,
-    Attr, Block, Cfg, Comment, CrateAttr, Derive, Expr, ExternDecl, FnDef, GenericParam, ImplBlock,
-    ImplItem, InlineHint, Item, Method, Path, Pattern, Precedence, Program, RecordDef, RecordField,
-    Repr, RustValue, SelfKind, Stmt, StructDef, StructFields, TraitBound, TraitRef, Type,
+    Attr, Block, Cfg, Comment, CommentAttach, CrateAttr, Derive, Expr, ExternDecl, FnDef,
+    GenericParam, ImplBlock, ImplItem, InlineHint, Item, Method, Path, Pattern, Precedence,
+    Program, RecordDef, RecordField, Repr, RustValue, SelfKind, Stmt, StructDef, StructFields,
+    TraitBound, TraitRef, Type,
 };
 
 const INDENT: &str = "    ";
@@ -150,7 +151,7 @@ impl<W: Write> Codegen<W> {
     fn item(&mut self, item: &Item) -> fmt::Result {
         match item {
             Item::Fn(f) => self.fn_def(f)?,
-            Item::Comment(comment) => self.comment(comment, 0)?,
+            Item::Comment(comment) => self.plain_comment(comment, 0)?,
             Item::CrateAttrs(attrs) => {
                 for attr in attrs {
                     self.out.write_str("#![")?;
@@ -263,14 +264,78 @@ impl<W: Write> Codegen<W> {
     }
 
     fn comment(&mut self, comment: &Comment, depth: usize) -> fmt::Result {
-        for line in &comment.lines {
+        let marker = match (comment.attach, comment.doc) {
+            (CommentAttach::Prologue, _) => "//!",
+            (_, true) => "///",
+            (_, false) => "//",
+        };
+        self.comment_lines(&comment.lines, depth, marker)
+    }
+
+    fn plain_comment(&mut self, comment: &Comment, depth: usize) -> fmt::Result {
+        let marker = match comment.attach {
+            CommentAttach::Prologue => "//!",
+            _ => "//",
+        };
+        self.comment_lines(&comment.lines, depth, marker)
+    }
+
+    fn comment_lines(&mut self, lines: &[String], depth: usize, marker: &str) -> fmt::Result {
+        for line in lines {
             for _ in 0..depth {
                 self.out.write_str(INDENT)?;
             }
             if line.is_empty() {
-                self.out.write_str("//\n")?;
+                writeln!(self.out, "{marker}")?;
             } else {
-                writeln!(self.out, "// {line}")?;
+                writeln!(self.out, "{marker} {line}")?;
+            }
+        }
+        Ok(())
+    }
+
+    fn fn_comments(&mut self, f: &FnDef) -> fmt::Result {
+        for comment in &f.comments {
+            self.comment(comment, 0)?;
+        }
+        let mut notes = Vec::new();
+        let mut arguments = Vec::new();
+        for param in &f.params {
+            let (documented, plain): (Vec<_>, Vec<_>) =
+                param.comments.iter().partition(|comment| comment.doc);
+            for comment in plain {
+                let mut lines = comment.lines.clone();
+                if let Some(first) = lines.first_mut() {
+                    *first = format!("{}: {first}", param.name);
+                }
+                notes.push(lines);
+            }
+            let lines: Vec<&String> = documented
+                .iter()
+                .flat_map(|comment| &comment.lines)
+                .collect();
+            if !lines.is_empty() {
+                arguments.push((&param.name, lines));
+            }
+        }
+        for lines in notes {
+            self.comment_lines(&lines, 0, "//")?;
+        }
+        if arguments.is_empty() {
+            return Ok(());
+        }
+        if f.comments.iter().any(|comment| comment.doc) {
+            self.comment_lines(&[String::new()], 0, "///")?;
+        }
+        self.comment_lines(&["# Arguments".into(), String::new()], 0, "///")?;
+        for (name, lines) in arguments {
+            for (index, line) in lines.into_iter().enumerate() {
+                let line = match (index, line.is_empty()) {
+                    (0, _) => format!("* `{name}` - {line}"),
+                    (_, true) => String::new(),
+                    (_, false) => format!("  {line}"),
+                };
+                self.comment_lines(&[line], 0, "///")?;
             }
         }
         Ok(())
@@ -302,13 +367,7 @@ impl<W: Write> Codegen<W> {
     }
 
     fn fn_def(&mut self, f: &FnDef) -> fmt::Result {
-        for comment in f
-            .comments
-            .iter()
-            .chain(f.params.iter().flat_map(|param| &param.comments))
-        {
-            self.comment(comment, 0)?;
-        }
+        self.fn_comments(f)?;
         self.attrs(&f.attrs)?;
         if let Some(kw) = f.vis.keyword() {
             write!(self.out, "{kw} ")?;
@@ -342,16 +401,13 @@ impl<W: Write> Codegen<W> {
             self.ty(ret)?;
         }
         self.out.write_str(" {\n")?;
-        for (index, stmt) in f.body.iter().enumerate() {
-            if f.ret.is_some()
-                && index + 1 == f.body.len()
-                && let Stmt::Expr(expr) = stmt
-            {
-                self.expr(expr)?;
+        match f.body.split_last() {
+            Some((Stmt::Expr(tail), init)) if f.ret.is_some() => {
+                self.stmts(init)?;
+                self.expr(tail)?;
                 self.out.write_char('\n')?;
-            } else {
-                self.stmt(stmt)?;
             }
+            _ => self.stmts(&f.body)?,
         }
         self.out.write_str("}\n")
     }
@@ -394,7 +450,7 @@ impl<W: Write> Codegen<W> {
             self.out.write_str(",\n")?;
         }
         for comment in &r.trailing_comments {
-            self.comment(comment, 1)?;
+            self.plain_comment(comment, 1)?;
         }
         self.out.write_str("}\n\n")
     }
@@ -782,15 +838,32 @@ impl<W: Write> Codegen<W> {
     }
 
     fn stmts(&mut self, body: &[Stmt]) -> fmt::Result {
-        for stmt in body {
+        let mut index = 0;
+        while index < body.len() {
+            let stmt = &body[index];
+            if !matches!(stmt, Stmt::Comment(_))
+                && let Some(Stmt::Comment(comment)) = body.get(index + 1)
+                && comment.attach == CommentAttach::Trailing
+                && let [line] = comment.lines.as_slice()
+            {
+                let mut inline = Codegen::new(String::new());
+                inline.stmt(stmt)?;
+                let text = inline.into_inner();
+                if text.trim_end().lines().count() == 1 {
+                    writeln!(self.out, "{} // {line}", text.trim_end())?;
+                    index += 2;
+                    continue;
+                }
+            }
             self.stmt(stmt)?;
+            index += 1;
         }
         Ok(())
     }
 
     pub fn stmt(&mut self, stmt: &Stmt) -> fmt::Result {
         match stmt {
-            Stmt::Comment(comment) => self.comment(comment, 0),
+            Stmt::Comment(comment) => self.plain_comment(comment, 0),
             Stmt::Let {
                 name,
                 mutable,

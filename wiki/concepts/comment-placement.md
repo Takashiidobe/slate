@@ -11,6 +11,7 @@
   disappears](#migration-when-an-owner-disappears)
 - [Doc vs regular comments](#doc-vs-regular-comments)
   - [Text normalization](#text-normalization)
+  - [Rendering status](#rendering-status)
   - [Crate settings](#crate-settings)
 - [Declarations and definitions](#declarations-and-definitions)
 - [Item order](#item-order)
@@ -115,7 +116,18 @@ or a `//!` after an item is a hard error; the ownership model rules both out.
 
 Strip `/*`, `*/`, `**` and ` * ` gutters, dedent, drop separator-only lines
 (`*****`), keep interior blank lines (`///` / `//`). Text is not fenced or
-escaped for Markdown.
+escaped for Markdown. Tool annotations (`FALLTHROUGH`, `NOTREACHED`, `ARGSUSED`,
+`NOLINT*`, and similar) are dropped.
+
+### Rendering status
+
+- `translate-project --explicit-docs-only` disables positional promotion;
+  only explicit markers become `///`.
+- The prologue is emitted as `//!` right after the crate attributes.
+- A single-line trailing comment on a statement or local renders on the same
+  line (`let r = 0; // sum`).
+- Enumerator comments have no home yet: enums lower to constants that are
+  inlined, so their comments are dropped.
 
 ### Crate settings
 

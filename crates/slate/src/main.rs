@@ -494,6 +494,7 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
     let mut include_args = Vec::new();
     let mut crate_types = Vec::new();
     let mut flavor = None;
+    let mut explicit_docs_only = false;
     let current_dir = std::env::current_dir().map_err(|e| format!("current directory: {e}"))?;
     let mut index = 0;
     while index < args.len() {
@@ -505,6 +506,7 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
                     .ok_or_else(|| "--compile-commands requires a file".to_string())?;
                 compile_command_paths.push(PathBuf::from(commands));
             }
+            "--explicit-docs-only" => explicit_docs_only = true,
             "--flavor" => {
                 index += 1;
                 let name = args
@@ -565,7 +567,12 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
             flavor,
         },
     ))?;
-    translate_slate_project(Path::new(paths[1]), commands, &crate_types)
+    translate_slate_project(
+        Path::new(paths[1]),
+        commands,
+        &crate_types,
+        explicit_docs_only,
+    )
 }
 
 fn slate_job_count() -> usize {
@@ -709,6 +716,7 @@ fn translate_slate_project(
     crate_dir: &Path,
     commands: Vec<compile_commands::CompileCommand>,
     crate_types: &[String],
+    explicit_docs_only: bool,
 ) -> Result<String, String> {
     use slate::frontend::{self, lowerer};
     let units = parse_slate_units(commands)?;
@@ -745,6 +753,7 @@ fn translate_slate_project(
         .map(|unit| {
             let options = lowerer::LowerOptions {
                 export_symbols: true,
+                explicit_docs_only,
                 imported_commons: imported.remove(&unit.stem).unwrap_or_default(),
                 unit: unit.stem.clone(),
             };

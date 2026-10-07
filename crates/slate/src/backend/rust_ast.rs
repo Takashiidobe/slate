@@ -110,6 +110,7 @@ pub enum CommentAttach {
     Leading,
     Trailing,
     Detached,
+    Prologue,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]

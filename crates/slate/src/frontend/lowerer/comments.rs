@@ -2,18 +2,18 @@ use super::*;
 use slate_parser::ast::{CommentAttach, FileId, NodeId};
 
 pub(super) fn comment(source: &ir::Comment) -> rust::Comment {
+    lowered(source, false)
+}
+
+fn lowered(source: &ir::Comment, doc: bool) -> rust::Comment {
     rust::Comment {
-        lines: source
-            .text
-            .iter()
-            .flat_map(|text| text.lines().map(str::to_owned))
-            .collect(),
+        lines: comment_text::normalize(&source.text),
         attach: match source.attach {
             CommentAttach::Leading => rust::CommentAttach::Leading,
             CommentAttach::Trailing => rust::CommentAttach::Trailing,
             CommentAttach::Detached => rust::CommentAttach::Detached,
         },
-        doc: source.doc,
+        doc: doc || source.doc,
     }
 }
 
@@ -41,11 +41,13 @@ impl FunctionLowerer<'_, '_> {
             return Vec::new();
         };
         self.dependencies.emitted_comments.insert(owner);
+        let promote = self.tables.promote_docs;
         owned
             .leading
             .iter()
             .chain(&owned.trailing)
-            .map(|source| comment(source))
+            .map(|source| lowered(source, promote))
+            .filter(|comment| !comment.lines.is_empty())
             .collect()
     }
 
@@ -54,7 +56,14 @@ impl FunctionLowerer<'_, '_> {
             .comments
             .owned
             .get(&owner)
-            .map(|owned| owned.inner.iter().map(|source| comment(source)).collect())
+            .map(|owned| {
+                owned
+                    .inner
+                    .iter()
+                    .map(|source| comment(source))
+                    .filter(|comment| !comment.lines.is_empty())
+                    .collect()
+            })
             .unwrap_or_default()
     }
 }
@@ -108,13 +117,45 @@ pub(super) fn module_comments(
             })
             .unwrap_or(0)
     };
+    let mut first_offsets = HashMap::<FileId, usize>::new();
+    for source in module
+        .comments
+        .detached
+        .iter()
+        .map(|detached| &detached.comment)
+        .chain(
+            module
+                .comments
+                .owned
+                .values()
+                .flat_map(|owned| owned.iter()),
+        )
+    {
+        let loc = source.expansion;
+        let first = first_offsets.entry(loc.file).or_insert(loc.offset);
+        *first = (*first).min(loc.offset);
+    }
+    let mut prologue = Vec::new();
     let mut placed = BTreeMap::<usize, Vec<rust::Comment>>::new();
     for detached in &module.comments.detached {
-        let file = detached.comment.expansion.file;
+        let loc = detached.comment.expansion;
+        let lowered = comment(&detached.comment.value);
+        if first_offsets.get(&loc.file) == Some(&loc.offset)
+            && !order[..detached.position]
+                .iter()
+                .any(|(_, file)| *file == loc.file)
+        {
+            prologue.push(rust::Comment {
+                attach: rust::CommentAttach::Prologue,
+                doc: true,
+                ..lowered
+            });
+            continue;
+        }
         placed
-            .entry(slot(detached.position, file))
+            .entry(slot(detached.position, loc.file))
             .or_default()
-            .push(comment(&detached.comment.value));
+            .push(lowered);
     }
     for (position, (node, file)) in order.iter().enumerate() {
         if emitted.contains(node) {
@@ -133,14 +174,21 @@ pub(super) fn module_comments(
         );
     }
     let mut output = Vec::new();
+    let prologue_after = usize::from(matches!(items.first(), Some(Item::CrateAttrs(_))));
+    let mut prologue = Some(prologue);
     for (index, item) in items.into_iter().enumerate() {
+        if index == prologue_after {
+            output.extend(prologue.take().into_iter().flatten().map(Item::Comment));
+        }
         if let Some(comments) = placed.remove(&index) {
             output.extend(comments.into_iter().map(Item::Comment));
         }
         output.push(item);
     }
+    output.extend(prologue.into_iter().flatten().map(Item::Comment));
     for comments in placed.into_values() {
         output.extend(comments.into_iter().map(Item::Comment));
     }
+    output.retain(|item| !matches!(item, Item::Comment(comment) if comment.lines.is_empty()));
     output
 }
