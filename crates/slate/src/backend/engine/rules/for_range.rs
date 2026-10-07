@@ -9,8 +9,6 @@ struct RecoveredFor {
     end: Expr,
     mid_body: Vec<NodeId>,
     let_id: NodeId,
-    let_parent: NodeId,
-    let_list_index: usize,
     assign_start_id: NodeId,
     bound_let_id: Option<NodeId>,
     guard_if_id: NodeId,
@@ -25,14 +23,6 @@ fn owning_list(arena: &Arena, id: NodeId) -> Option<(NodeId, usize)> {
         .iter()
         .position(|list| list.contains(&id))?;
     Some((parent_id, list_index))
-}
-
-fn remove_from_list(arena: &mut Arena, parent: NodeId, list_index: usize, id: NodeId) {
-    if let Some(parent_kind) = arena.get_mut(parent)
-        && let Some(list) = parent_kind.child_lists_mut().get_mut(list_index)
-    {
-        list.retain(|&x| x != id);
-    }
 }
 
 fn int_value(expr: &Expr) -> Option<i128> {
@@ -249,7 +239,7 @@ fn plan(arena: &Arena, loop_id: NodeId) -> Option<RecoveredFor> {
     if *decl != ind_var || let_id == assign_start_id {
         return None;
     }
-    let (let_parent, let_list_index) = owning_list(arena, let_id)?;
+    owning_list(arena, let_id)?;
 
     let mut allowed = vec![let_id, assign_start_id];
     subtree_ids(arena, loop_id, &mut allowed);
@@ -267,8 +257,6 @@ fn plan(arena: &Arena, loop_id: NodeId) -> Option<RecoveredFor> {
         end,
         mid_body,
         let_id,
-        let_parent,
-        let_list_index,
         assign_start_id,
         bound_let_id,
         guard_if_id,
@@ -299,27 +287,13 @@ impl NodeRule for ForRangeRecover {
         let Some(plan) = plan(arena, id) else {
             return false;
         };
-        let Some(parent_id) = arena.parent(id) else {
-            return false;
-        };
-        let Some(parent_kind) = arena.get(parent_id) else {
-            return false;
-        };
-        let Some(list_index) = parent_kind
-            .child_lists()
-            .iter()
-            .position(|list| list.contains(&id))
-        else {
-            return false;
-        };
-
-        arena.take(plan.let_id);
-        arena.take(plan.assign_start_id);
+        arena.retire(plan.let_id, Some(id));
+        arena.retire(plan.assign_start_id, Some(id));
         if let Some(bound_let_id) = plan.bound_let_id {
-            arena.take(bound_let_id);
+            arena.retire(bound_let_id, Some(id));
         }
-        arena.discard_subtree(plan.guard_if_id);
-        arena.take(plan.increment_id);
+        arena.retire_subtree(plan.guard_if_id, Some(id));
+        arena.retire(plan.increment_id, Some(id));
 
         arena.set_kind(
             id,
@@ -332,16 +306,6 @@ impl NodeRule for ForRangeRecover {
                 body: plan.mid_body,
             },
         );
-
-        let Some(parent_kind) = arena.get_mut(parent_id) else {
-            unreachable!("for_range: parent_id invalidated by taking an unrelated sibling slot")
-        };
-        let mut child_lists = parent_kind.child_lists_mut();
-        let Some(list) = child_lists.get_mut(list_index) else {
-            unreachable!("for_range: list_index no longer valid on parent_id")
-        };
-        list.retain(|&x| x != plan.assign_start_id);
-        remove_from_list(arena, plan.let_parent, plan.let_list_index, plan.let_id);
         true
     }
 }

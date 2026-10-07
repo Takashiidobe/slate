@@ -30,6 +30,14 @@ conversions and layout remain slate-parser responsibilities.
 - Recover safer representations only from conservative evidence; uncertain aliases or escapes retain raw pointers.
 - The rule registry and implementation are authoritative for current ordering and coverage.
 - [Pointer capability lattice](pointer-capability-lattice.md) defines the interprocedural representation choices.
+- Comments are sibling `Comment` nodes tagged leading, trailing, or detached
+  ([comment-placement](comment-placement.md)). A rule that removes a node must
+  call `Arena::retire` (leaf) or `Arena::retire_subtree` (container) instead of
+  `take` plus a manual list edit, or `release_comments` when it splices the node
+  away itself. The node's leading and trailing comments go to the replacement
+  node, else the next surviving sibling (trailing becomes leading), else the end
+  of the block as detached. Comments inside a discarded subtree move to the
+  replacement as leading.
 
 ## Control-flow rewrites
 

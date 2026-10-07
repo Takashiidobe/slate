@@ -306,19 +306,6 @@ pub(super) fn function_root(arena: &Arena, mut id: NodeId) -> NodeId {
     id
 }
 
-pub(super) fn remove_from_parent(arena: &mut Arena, parent: NodeId, id: NodeId) -> bool {
-    let Some(kind) = arena.get_mut(parent) else {
-        return false;
-    };
-    for list in kind.child_lists_mut() {
-        if let Some(pos) = list.iter().position(|&child| child == id) {
-            list.remove(pos);
-            return true;
-        }
-    }
-    false
-}
-
 pub(super) fn substitute_var_in_subtree(
     arena: &mut Arena,
     id: NodeId,

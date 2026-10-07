@@ -99,7 +99,7 @@ impl NodeRule for LoopToWhile {
         let cond = negate(&cond);
         let guard_id = body[0];
         let stmts = body[1..].to_vec();
-        arena.discard_subtree(guard_id);
+        arena.retire_subtree(guard_id, Some(id));
         arena.set_kind(
             id,
             NodeKind::While {

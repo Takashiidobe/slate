@@ -172,18 +172,7 @@ impl NodeRule for TailBreakDrop {
         if !self.matches(arena, id) {
             return false;
         }
-        let Some((parent, list_index, pos, _)) = position_in_parent(arena, id) else {
-            return false;
-        };
-        let Some(parent_kind) = arena.get_mut(parent) else {
-            return false;
-        };
-        let mut lists = parent_kind.child_lists_mut();
-        let Some(list) = lists.get_mut(list_index) else {
-            return false;
-        };
-        list.remove(pos);
-        arena.take(id);
+        arena.retire(id, None);
         true
     }
 }

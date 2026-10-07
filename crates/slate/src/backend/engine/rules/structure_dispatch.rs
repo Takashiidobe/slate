@@ -409,11 +409,18 @@ impl NodeRule for StructureDispatch {
         let Some(NodeKind::Scope { body }) = arena.get(id) else {
             return false;
         };
-        for child in body.clone() {
-            arena.discard_subtree(child);
+        let old = body.clone();
+        let new = arena::insert_stmts(arena, Some(id), vec![stmt]);
+        let anchor = new.first().copied();
+        arena.set_kind(
+            id,
+            NodeKind::Scope {
+                body: old.iter().chain(&new).copied().collect(),
+            },
+        );
+        for child in old {
+            arena.retire_subtree(child, anchor);
         }
-        let body = arena::insert_stmts(arena, Some(id), vec![stmt]);
-        arena.set_kind(id, NodeKind::Scope { body });
         arena.touch_subtree(id);
         true
     }

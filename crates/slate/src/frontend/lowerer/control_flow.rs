@@ -445,6 +445,7 @@ impl FunctionLowerer<'_, '_> {
         self.dispatch_bindings
             .extend(graph.locals.iter().map(|(id, ..)| *id));
         let mut lowered = Vec::new();
+        let mut storage_positions = HashMap::new();
         for (id, ir_ty, alignment) in graph.locals {
             if self.tables.variably_modified(ir_ty) {
                 return Err(unsupported_type(ir_ty));
@@ -458,6 +459,7 @@ impl FunctionLowerer<'_, '_> {
                 None => ty.clone(),
             };
             let storage = format!("__slate_storage_{}", id.0);
+            storage_positions.insert(id, lowered.len());
             lowered.push(Stmt::Let {
                 name: storage.clone(),
                 mutable: true,
@@ -489,31 +491,62 @@ impl FunctionLowerer<'_, '_> {
             });
         }
         let mut arms = Vec::new();
+        let mut slot_comments = HashMap::<BindingId, Vec<rust::Comment>>::new();
         for (index, block) in blocks.into_iter().enumerate() {
             let last = block.len() - 1;
             let mut body = Vec::new();
+            let mut last_local = None;
             for (position, node) in block.into_iter().enumerate() {
                 let terminal = position == last;
+                let mut diverted = false;
+                if let Node::Statement(statement, _) = &node {
+                    if let ir::Statement::Comment(comment) = &statement.value
+                        && comment.attach == slate_parser::ast::CommentAttach::Trailing
+                        && let Some(id) = last_local
+                    {
+                        self.dependencies.emitted_comments.insert(statement.id);
+                        slot_comments
+                            .entry(id)
+                            .or_default()
+                            .push(comments::comment(comment));
+                        diverted = true;
+                    }
+                    if !diverted {
+                        last_local = declared_local(&statement.value).map(|(id, _)| id);
+                    }
+                    if let Some(id) = last_local.filter(|_| !diverted) {
+                        let start = body
+                            .iter()
+                            .rposition(|statement| {
+                                !matches!(
+                                    statement,
+                                    Stmt::Comment(comment)
+                                        if comment.attach == rust::CommentAttach::Leading
+                                )
+                            })
+                            .map_or(0, |index| index + 1);
+                        slot_comments.entry(id).or_default().extend(
+                            body.drain(start..).filter_map(|statement| match statement {
+                                Stmt::Comment(comment) => Some(comment),
+                                _ => None,
+                            }),
+                        );
+                    }
+                } else {
+                    last_local = None;
+                }
                 body.extend(match node {
                     Node::End => vec![Stmt::Break(Some(rust::Label::new("__slate_dispatch")))],
                     Node::Jump(next) => jump(next),
                     Node::Statement(statement, next) => {
-                        let local = match &statement.value {
-                            ir::Statement::Temporary {
-                                id, initializer, ..
-                            } => Some((*id, initializer.as_ref())),
-                            ir::Statement::Let(variable) => {
-                                Some((variable.id, variable.initializer.as_ref()))
-                            }
-                            _ => None,
-                        };
-                        let mut body = match local {
+                        let mut body = match declared_local(&statement.value) {
                             Some((id, Some(initializer))) => vec![Stmt::Expr(Expr::Call {
                                 func: Box::new(Expr::Var("std::ptr::write".into())),
                                 args: vec![slot_pointer(id), self.lower_value(initializer)?],
                                 binding: CallBinding::Generated,
                             })],
                             Some((_, None)) => Vec::new(),
+                            None if diverted => Vec::new(),
                             None => vec![self.lower_statement(statement)?],
                         };
                         if let Some(next) = next.filter(|_| terminal) {
@@ -615,6 +648,14 @@ impl FunctionLowerer<'_, '_> {
                 args: Vec::new(),
             })],
         });
+        let mut positioned: Vec<_> = slot_comments
+            .into_iter()
+            .filter_map(|(id, comments)| Some((*storage_positions.get(&id)?, comments)))
+            .collect();
+        positioned.sort_by_key(|(position, _)| std::cmp::Reverse(*position));
+        for (position, comments) in positioned {
+            lowered.splice(position..position, comments.into_iter().map(Stmt::Comment));
+        }
         lowered.push(Stmt::Let {
             name: "__slate_state".into(),
             mutable: true,
@@ -634,5 +675,15 @@ impl FunctionLowerer<'_, '_> {
             },
         });
         Ok(lowered)
+    }
+}
+
+fn declared_local(statement: &ir::Statement) -> Option<(BindingId, Option<&ir::Value>)> {
+    match statement {
+        ir::Statement::Temporary {
+            id, initializer, ..
+        } => Some((*id, initializer.as_ref())),
+        ir::Statement::Let(variable) => Some((variable.id, variable.initializer.as_ref())),
+        _ => None,
     }
 }

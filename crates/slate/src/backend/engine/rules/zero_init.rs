@@ -134,16 +134,13 @@ fn intervening_ok(arena: &Arena, intervening: &[NodeId], value: &Expr) -> bool {
 }
 
 struct Found {
-    parent: NodeId,
-    list_index: usize,
-    write_pos: usize,
     write_id: NodeId,
 }
 
 fn locate(arena: &Arena, decl_id: NodeId, name: Ident) -> Option<Found> {
     let parent = arena.parent(decl_id)?;
     let lists = arena.get(parent)?.child_lists();
-    for (list_index, list) in lists.iter().enumerate() {
+    for list in lists.iter() {
         let Some(decl_pos) = list.iter().position(|&child| child == decl_id) else {
             continue;
         };
@@ -153,12 +150,8 @@ fn locate(arena: &Arena, decl_id: NodeId, name: Ident) -> Option<Found> {
             }
             let value = qualifying_write_value(arena, sibling, name)?;
             let intervening = &list[decl_pos + 1..offset];
-            return intervening_ok(arena, intervening, value).then_some(Found {
-                parent,
-                list_index,
-                write_pos: offset,
-                write_id: sibling,
-            });
+            return intervening_ok(arena, intervening, value)
+                .then_some(Found { write_id: sibling });
         }
         return None;
     }
@@ -209,7 +202,7 @@ impl NodeRule for ZeroInitFold {
         let Some(found) = locate(arena, id, name) else {
             return false;
         };
-        let Some(mut write_kind) = arena.take(found.write_id) else {
+        let Some(mut write_kind) = arena.retire(found.write_id, Some(id)) else {
             return false;
         };
         let NodeKind::Assign { value, .. } = &mut write_kind else {
@@ -221,15 +214,6 @@ impl NodeRule for ZeroInitFold {
             unreachable!("zero_init: id invalidated by taking an unrelated sibling slot")
         };
         *init = Some(value);
-
-        let Some(parent_kind) = arena.get_mut(found.parent) else {
-            unreachable!("zero_init: found.parent invalidated by taking an unrelated sibling slot")
-        };
-        let mut child_lists = parent_kind.child_lists_mut();
-        let Some(list) = child_lists.get_mut(found.list_index) else {
-            unreachable!("zero_init: list_index no longer valid on found.parent")
-        };
-        list.remove(found.write_pos);
         true
     }
 }

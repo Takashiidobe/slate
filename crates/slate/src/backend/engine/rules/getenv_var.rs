@@ -56,17 +56,6 @@ fn nearest_preceding_write(arena: &Arena, id: NodeId, name: Ident) -> Option<Nod
         .copied()
 }
 
-fn remove_from_list(arena: &mut Arena, id: NodeId) {
-    let Some((parent_id, list_index)) = owning_list(arena, id) else {
-        return;
-    };
-    if let Some(parent_kind) = arena.get_mut(parent_id)
-        && let Some(list) = parent_kind.child_lists_mut().get_mut(list_index)
-    {
-        list.retain(|&x| x != id);
-    }
-}
-
 fn peel_casts(expr: &Expr) -> &Expr {
     match expr {
         Expr::Cast { expr, .. } => peel_casts(expr),
@@ -286,15 +275,12 @@ impl NodeRule for GetenvVar {
             return false;
         };
 
-        remove_from_list(arena, plan.getenv_site_id);
-        arena.take(plan.getenv_site_id);
+        arena.retire(plan.getenv_site_id, Some(id));
         if let Some(decl_id) = plan.decl_id {
-            remove_from_list(arena, decl_id);
-            arena.take(decl_id);
+            arena.retire(decl_id, Some(id));
         }
         if let Some(bool_let_id) = plan.bool_let_id {
-            remove_from_list(arena, bool_let_id);
-            arena.take(bool_let_id);
+            arena.retire(bool_let_id, Some(id));
         }
 
         let var_call = Expr::Call {

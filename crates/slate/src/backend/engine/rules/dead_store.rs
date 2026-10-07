@@ -78,27 +78,7 @@ impl NodeRule for DeadStore {
             return true;
         }
 
-        let Some(parent) = arena.parent(id) else {
-            return false;
-        };
-        let Some(parent_kind) = arena.get(parent) else {
-            return false;
-        };
-        let lists = parent_kind.child_lists();
-        let Some((list_index, pos)) = lists.iter().enumerate().find_map(|(list_index, list)| {
-            list.iter()
-                .position(|&child| child == id)
-                .map(|pos| (list_index, pos))
-        }) else {
-            return false;
-        };
-
-        let _ = arena.take(id);
-        if let Some(parent_kind) = arena.get_mut(parent)
-            && let Some(list) = parent_kind.child_lists_mut().get_mut(list_index)
-        {
-            list.remove(pos);
-        }
+        arena.retire(id, None);
         true
     }
 }

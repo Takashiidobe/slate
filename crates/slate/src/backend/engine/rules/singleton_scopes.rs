@@ -65,6 +65,7 @@ impl NodeRule for ScopeFlatten {
         let Some(parent_id) = arena.parent(id) else {
             return false;
         };
+        arena.release_comments(id, None);
         let Some(NodeKind::Scope { body: children }) = arena.take(id) else {
             return false;
         };

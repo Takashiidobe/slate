@@ -268,11 +268,6 @@ impl NodeRule for RawPtrAliasElide {
         }
         arena.touch_subtree(root);
 
-        let Some(parent) = arena.parent(id) else {
-            return false;
-        };
-        let _ = arena.take(id);
-        let _ = walk::remove_from_parent(arena, parent, id);
-        true
+        arena.retire(id, None).is_some()
     }
 }

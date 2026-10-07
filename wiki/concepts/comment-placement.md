@@ -85,9 +85,10 @@ Requirement tags such as `EVIDENCE-OF:` and `IMP:` are content and stay.
 
 When lowering or a rewrite rule deletes or merges a node, its comments go to,
 in order: the replacement node, the next surviving sibling, the parent block's
-inner-trailing slot. This is one rule-engine helper used by every rule
-(`inline_temps`, slot hoisting, dispatcher lowering) rather than per-rule
-handling. A local hoisted into a `__slate_slot` carries its comment onto the
+inner-trailing slot. This is one rule-engine helper (`Arena::retire`,
+`retire_subtree`, `release_comments`) used by every rule (`inline_temps`,
+`zero_init`, `for_range`, ...) rather than per-rule handling; dispatcher
+lowering does the slot case in `lower_dispatch`. A local hoisted into a `__slate_slot` carries its comment onto the
 synthesized slot `let`.
 
 ## Doc vs regular comments

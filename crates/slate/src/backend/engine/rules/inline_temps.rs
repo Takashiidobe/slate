@@ -1468,12 +1468,7 @@ impl NodeRule for LateInlineTemps {
         }
         arena.touch_subtree(found.consumer_id);
 
-        let _ = arena.take(id);
-        if let Some(parent_kind) = arena.get_mut(found.parent)
-            && let Some(list) = parent_kind.child_lists_mut().get_mut(found.list_index)
-        {
-            list.remove(found.decl_pos);
-        }
+        arena.retire(id, Some(found.consumer_id));
         true
     }
 }
@@ -1591,23 +1586,14 @@ impl NodeRule for EffectfulTempForward {
         }
         arena.touch_subtree(found.consumer_id);
 
-        let _ = arena.take(id);
-        if let Some(parent_kind) = arena.get_mut(found.parent)
-            && let Some(list) = parent_kind.child_lists_mut().get_mut(found.list_index)
-        {
-            list.remove(found.decl_pos);
-        }
+        arena.retire(id, Some(found.consumer_id));
         true
     }
 }
 
 struct AsmOutputFold {
-    parent: NodeId,
-    list_index: usize,
     asm_id: NodeId,
     let_id: NodeId,
-    let_pos: usize,
-    assign_pos: usize,
     tmp: Ident,
     named: Ident,
 }
@@ -1642,10 +1628,7 @@ fn locate_asm_output_fold(arena: &Arena, assign_id: NodeId) -> Option<AsmOutputF
 
     let parent = arena.parent(assign_id)?;
     let lists = arena.get(parent)?.child_lists();
-    let (list_index, list) = lists
-        .iter()
-        .enumerate()
-        .find_map(|(index, list)| list.contains(&assign_id).then_some((index, *list)))?;
+    let list = lists.into_iter().find(|list| list.contains(&assign_id))?;
     let assign_pos = list.iter().position(|&child| child == assign_id)?;
     if assign_pos == 0 {
         return None;
@@ -1674,7 +1657,7 @@ fn locate_asm_output_fold(arena: &Arena, assign_id: NodeId) -> Option<AsmOutputF
     if !matches!(arena.get(let_id), Some(NodeKind::Let { init: None, .. })) {
         return None;
     }
-    let let_pos = list.iter().position(|&child| child == let_id)?;
+    list.contains(&let_id).then_some(())?;
 
     let root = walk::function_root(arena, assign_id);
     if node_ident_count(arena, root, tmp) != 2 {
@@ -1682,12 +1665,8 @@ fn locate_asm_output_fold(arena: &Arena, assign_id: NodeId) -> Option<AsmOutputF
     }
 
     Some(AsmOutputFold {
-        parent,
-        list_index,
         asm_id,
         let_id,
-        let_pos,
-        assign_pos,
         tmp,
         named,
     })
@@ -1738,20 +1717,8 @@ impl NodeRule for AsmOutputTempFold {
             .unwrap_or_else(|| unreachable!("asm_output_fold: operand invalidated since locate"));
         *bound = Expr::Var(found.named);
 
-        let _ = arena.take(id);
-        let _ = arena.take(found.let_id);
-        let Some(parent_kind) = arena.get_mut(found.parent) else {
-            unreachable!("asm_output_fold: parent invalidated since locate")
-        };
-        let Some(list) = parent_kind
-            .child_lists_mut()
-            .into_iter()
-            .nth(found.list_index)
-        else {
-            unreachable!("asm_output_fold: list_index invalidated since locate")
-        };
-        list.remove(found.assign_pos);
-        list.remove(found.let_pos);
+        arena.retire(id, Some(found.asm_id));
+        arena.retire(found.let_id, Some(found.asm_id));
         true
     }
 }
@@ -2025,12 +1992,7 @@ impl NodeRule for InlineConstArgTemps {
         }
         arena.touch_subtree(found.consumer_id);
 
-        let _ = arena.take(id);
-        if let Some(parent_kind) = arena.get_mut(found.parent)
-            && let Some(list) = parent_kind.child_lists_mut().get_mut(found.list_index)
-        {
-            list.remove(found.decl_pos);
-        }
+        arena.retire(id, Some(found.consumer_id));
         true
     }
 }

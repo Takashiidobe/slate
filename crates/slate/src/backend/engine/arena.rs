@@ -1,7 +1,8 @@
 use std::collections::HashMap;
 
 use crate::backend::rust_ast::{
-    BinOp, Block, Comment, Expr, FnParam, Ident, InlineAsm, Label, MatchArm, Pattern, Stmt, Type,
+    BinOp, Block, Comment, CommentAttach, Expr, FnParam, Ident, InlineAsm, Label, MatchArm,
+    Pattern, Stmt, Type,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -491,6 +492,163 @@ impl Arena {
             self.defs.remove(&name);
         }
         kind
+    }
+
+    fn locate(&self, id: NodeId) -> Option<(NodeId, usize, usize)> {
+        let parent = self.parent(id)?;
+        self.get(parent)?
+            .child_lists()
+            .iter()
+            .enumerate()
+            .find_map(|(list_index, list)| {
+                list.iter()
+                    .position(|&child| child == id)
+                    .map(|pos| (parent, list_index, pos))
+            })
+    }
+
+    fn list_mut(&mut self, parent: NodeId, list_index: usize) -> Option<&mut Vec<NodeId>> {
+        self.get_mut(parent)?
+            .child_lists_mut()
+            .into_iter()
+            .nth(list_index)
+    }
+
+    fn comment_attach(&self, id: NodeId) -> Option<CommentAttach> {
+        match self.get(id) {
+            Some(NodeKind::Comment(comment)) => Some(comment.attach),
+            _ => None,
+        }
+    }
+
+    fn set_attach(&mut self, id: NodeId, attach: CommentAttach) {
+        if let Some(NodeKind::Comment(comment)) = self.get_mut(id) {
+            comment.attach = attach;
+        }
+    }
+
+    fn move_before(&mut self, comments: &[NodeId], anchor: NodeId) {
+        if self.locate(anchor).is_none() {
+            return;
+        }
+        for &comment in comments {
+            if let Some((parent, list_index, pos)) = self.locate(comment)
+                && let Some(list) = self.list_mut(parent, list_index)
+            {
+                list.remove(pos);
+            }
+        }
+        let Some((parent, list_index, pos)) = self.locate(anchor) else {
+            return;
+        };
+        if let Some(list) = self.list_mut(parent, list_index) {
+            list.splice(pos..pos, comments.iter().copied());
+        }
+        for &comment in comments {
+            self.set_parent(comment, Some(parent));
+        }
+    }
+
+    fn descendant_comments(&self, id: NodeId) -> Vec<NodeId> {
+        let mut found = Vec::new();
+        let Some(kind) = self.get(id) else {
+            return found;
+        };
+        for &child in kind.child_lists().into_iter().flatten() {
+            if self.comment_attach(child).is_some() {
+                found.push(child);
+            } else {
+                found.extend(self.descendant_comments(child));
+            }
+        }
+        found
+    }
+
+    pub(in crate::backend) fn release_comments(&mut self, id: NodeId, replacement: Option<NodeId>) {
+        let Some((parent, list_index, pos)) = self.locate(id) else {
+            return;
+        };
+        let Some(siblings) = self
+            .get(parent)
+            .and_then(|kind| kind.child_lists().into_iter().nth(list_index))
+            .cloned()
+        else {
+            return;
+        };
+        let mut start = pos;
+        while start > 0 && self.comment_attach(siblings[start - 1]) == Some(CommentAttach::Leading)
+        {
+            start -= 1;
+        }
+        let mut end = pos + 1;
+        while end < siblings.len()
+            && self.comment_attach(siblings[end]) == Some(CommentAttach::Trailing)
+        {
+            end += 1;
+        }
+        let released: Vec<NodeId> = siblings[start..pos]
+            .iter()
+            .chain(&siblings[pos + 1..end])
+            .copied()
+            .collect();
+        if released.is_empty() {
+            return;
+        }
+        for &comment in &siblings[pos + 1..end] {
+            self.set_attach(comment, CommentAttach::Leading);
+        }
+        if let Some(replacement) = replacement
+            && replacement != id
+        {
+            self.move_before(&released, replacement);
+            return;
+        }
+        let successor = siblings[end..]
+            .iter()
+            .any(|&sibling| self.comment_attach(sibling).is_none());
+        if !successor {
+            for comment in released {
+                self.set_attach(comment, CommentAttach::Detached);
+            }
+        }
+    }
+
+    pub(in crate::backend) fn retire(
+        &mut self,
+        id: NodeId,
+        replacement: Option<NodeId>,
+    ) -> Option<NodeKind> {
+        self.release_comments(id, replacement);
+        if let Some((parent, list_index, pos)) = self.locate(id)
+            && let Some(list) = self.list_mut(parent, list_index)
+        {
+            list.remove(pos);
+        }
+        self.take(id)
+    }
+
+    pub(in crate::backend) fn retire_subtree(&mut self, id: NodeId, replacement: Option<NodeId>) {
+        let anchor = replacement.filter(|&replacement| replacement != id);
+        if self.comment_attach(id).is_some() {
+            if let Some(anchor) = anchor
+                && self.parent(id) != self.parent(anchor)
+            {
+                self.move_before(&[id], anchor);
+            }
+            return;
+        }
+        self.release_comments(id, replacement);
+        let interior = self.descendant_comments(id);
+        for &comment in &interior {
+            self.set_attach(comment, CommentAttach::Leading);
+        }
+        self.move_before(&interior, anchor.unwrap_or(id));
+        if let Some((parent, list_index, pos)) = self.locate(id)
+            && let Some(list) = self.list_mut(parent, list_index)
+        {
+            list.remove(pos);
+        }
+        self.discard_subtree(id);
     }
 
     pub(in crate::backend) fn discard_subtree(&mut self, id: NodeId) {

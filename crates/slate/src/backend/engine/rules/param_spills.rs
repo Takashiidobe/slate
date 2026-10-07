@@ -1,4 +1,3 @@
-use super::walk;
 use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{FunctionOptimizer, NodeId, NodeKind, NodeKindTag};
 use crate::backend::rust_ast::Expr;
@@ -59,9 +58,6 @@ impl NodeRule for ParamSpillFold {
         if !arena.rename_param(source, name, mutable) {
             return false;
         }
-        if arena.take(id).is_none() {
-            return false;
-        }
-        walk::remove_from_parent(arena, parent, id)
+        arena.retire(id, None).is_some()
     }
 }

@@ -131,18 +131,9 @@ impl NodeRule for ReturnSlotFold {
         if !arena.return_type().is_some_and(copy_type) {
             return false;
         }
-        if let Some((store, list_index, pos, value)) = preceding_slot_store(arena, id) {
-            let Some(parent) = arena.parent(id) else {
-                return false;
-            };
+        if let Some((store, _, _, value)) = preceding_slot_store(arena, id) {
             arena.set_kind(id, NodeKind::Return(Some(value)));
-            let _ = arena.take(store);
-            if let Some(list) = arena
-                .get_mut(parent)
-                .and_then(|kind| kind.child_lists_mut().into_iter().nth(list_index))
-            {
-                list.remove(pos - 1);
-            }
+            arena.retire(store, Some(id));
             return true;
         }
         false

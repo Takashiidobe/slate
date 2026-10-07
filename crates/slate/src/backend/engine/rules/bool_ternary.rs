@@ -139,7 +139,7 @@ impl NodeRule for BoolTernaryFold {
 
         let init = build(fold, cond, then_resolved, else_resolved);
         for stmt in dead_stmts {
-            arena.discard_subtree(stmt);
+            arena.retire_subtree(stmt, Some(id));
         }
         arena.set_kind(
             id,
