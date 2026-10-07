@@ -57,17 +57,27 @@ AST ──sema (check + lower)──▶ IR ──analysis pass(es)──▶ IR +
   exactly one node. A declarator's C type annotates the declared entity, not
   type definitions it happens to create (`ir_metadata_single_owner.c`).
 - Parentheses are transparent; the inner operation keeps its own span.
-- Source comments are non-executing metadata: `Module.comments` retains file,
-  declaration, record, enum, and parameter comment groups; `Statement::Comment`
-  retains their positions inside bodies. Both hold an `ir::Comment` (raw text,
-  `attach`, `doc`; see [comment-placement](../comment-placement.md)) and source
-  spans.
+- Source comments are non-executing metadata held in `Module.comments`
+  (`ir::Comments`); `Statement::Comment` keeps tagged sibling comments inside
+  bodies. Every comment is an `ir::Comment` (raw text, `attach`, `doc`; see
+  [comment-placement](../comment-placement.md)) with source spans.
+  - `owned` maps the `NodeId` of a function, global, type definition, field,
+    enumerator, or parameter to its `leading`, `trailing`, and `inner`
+    comments. Sema resolves ownership from the AST siblings, so consumers never
+    see the AST.
+  - `detached` lists file prologue and section comments, each with a
+    `position` into `order`.
+  - `order` lists the top-level IR nodes in source order with their file, so a
+    detached comment anchors by node id: the next emitted node of the same
+    file, else the previous one.
 - Effects normalization keeps comments in order. Default IR dumps hide them;
   `--show-comments` prints `comment <attach> [doc] "raw text"` with source
   locations.
-- Rust lowering emits ordinary comments, anchors declaration comments by source
-  location, and keeps field comments on their fields. Comments in unreachable
-  dispatcher blocks are retained at the end of the generated function.
+- Rust lowering moves owned comments onto the Rust node (`FnDef`, `FnParam`,
+  `Item::Static`, `RecordDef`, `RecordField`) and anchors detached comments, and
+  owned comments whose node is not emitted, to the next emitted item by node id.
+  Comments in unreachable dispatcher blocks are retained at the end of the
+  generated function.
 - `translate-project` always formats with rustfmt. Single-file output uses
   rustfmt when it contains comments, since syn/prettyplease discard them.
 

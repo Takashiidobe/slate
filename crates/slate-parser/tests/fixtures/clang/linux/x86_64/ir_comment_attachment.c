@@ -56,21 +56,8 @@ int use_f(void) { return f(1, 2) + g + h; }
 // DEFAULT: module {
 // DEFAULT-NEXT:     comment detached "/*\n** file prologue\n*/" [spelling=[[#FILE0:]]:0+22, expansion={{[0-9]+}}:0+22];
 // DEFAULT-NEXT:     comment detached "/* section */" [spelling=[[#FILE0]]:44+13, expansion=[[#FILE0]]:44+13];
-// DEFAULT-NEXT:     comment leading "/* leading record */" [spelling=[[#FILE0]]:59+20, expansion=[[#FILE0]]:59+20];
 // DEFAULT-NEXT:     comment detached "/* directive */" [spelling=[[#FILE0]]:271+15, expansion=[[#FILE0]]:271+15];
-// DEFAULT-NEXT:     comment leading doc "/** explicit doc */" [spelling=[[#FILE0]]:287+19, expansion=[[#FILE0]]:287+19];
-// DEFAULT-NEXT:     comment trailing "/* trailing g starts\n                  ** and continues */" [spelling=[[#FILE0]]:325+58, expansion=[[#FILE0]]:325+58];
-// DEFAULT-NEXT:     comment leading "/**/" [spelling=[[#FILE0]]:384+4, expansion=[[#FILE0]]:384+4];
-// DEFAULT-NEXT:     comment leading "/*\n** guarded doc\n*/" [spelling=[[#FILE0]]:397+20, expansion=[[#FILE0]]:397+20];
-// DEFAULT-NEXT:     comment leading "/* leading f */" [spelling=[[#FILE0]]:504+15, expansion=[[#FILE0]]:504+15];
 // DEFAULT-NEXT:     comment detached "/* eof */" [spelling=[[#FILE0]]:773+9, expansion=[[#FILE0]]:773+9];
-// DEFAULT-NEXT:     comment trailing "/* trailing a */" [spelling=[[#FILE0]]:110+16, expansion=[[#FILE0]]:110+16];
-// DEFAULT-NEXT:     comment leading "/* leading b */" [spelling=[[#FILE0]]:129+15, expansion=[[#FILE0]]:129+15];
-// DEFAULT-NEXT:     comment detached "/* dangling */" [spelling=[[#FILE0]]:156+14, expansion=[[#FILE0]]:156+14];
-// DEFAULT-NEXT:     comment trailing "/* trailing READY */" [spelling=[[#FILE0]]:199+20, expansion=[[#FILE0]]:199+20];
-// DEFAULT-NEXT:     comment trailing "/* trailing DONE */" [spelling=[[#FILE0]]:231+19, expansion=[[#FILE0]]:231+19];
-// DEFAULT-NEXT:     comment trailing "/* param x */" [spelling=[[#FILE0]]:547+13, expansion=[[#FILE0]]:547+13];
-// DEFAULT-NEXT:     comment trailing "/* param y */" [spelling=[[#FILE0]]:574+13, expansion=[[#FILE0]]:574+13];
 // DEFAULT-NEXT:     target "x86_64-unknown-linux-gnu" {
 // DEFAULT-NEXT:         endian = little;
 // DEFAULT-NEXT:         pointer [size=8, align=8];
@@ -92,18 +79,31 @@ int use_f(void) { return f(1, 2) + g + h; }
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     comment leading "/* leading record */" [spelling=[[#FILE0]]:59+20, expansion=[[#FILE0]]:59+20];
+// DEFAULT-NEXT:     comment detached "/* dangling */" [spelling=[[#FILE0]]:156+14, expansion=[[#FILE0]]:156+14];
 // DEFAULT-NEXT:     type @type[[TYPE_record:[0-9]+]] record = struct {
+// DEFAULT-NEXT:         comment trailing "/* trailing a */" [spelling=[[#FILE0]]:110+16, expansion=[[#FILE0]]:110+16];
 // DEFAULT-NEXT:         field0 a: i32;
+// DEFAULT-NEXT:         comment leading "/* leading b */" [spelling=[[#FILE0]]:129+15, expansion=[[#FILE0]]:129+15];
 // DEFAULT-NEXT:         field1 b: i32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
 // DEFAULT-NEXT:     type @type[[TYPE_state:[0-9]+]] state = enum : u32 {
+// DEFAULT-NEXT:         comment trailing "/* trailing READY */" [spelling=[[#FILE0]]:199+20, expansion=[[#FILE0]]:199+20];
 // DEFAULT-NEXT:         %[[VALUE_READY:[0-9]+]] READY = const<i32>(0);
+// DEFAULT-NEXT:         comment trailing "/* trailing DONE */" [spelling=[[#FILE0]]:231+19, expansion=[[#FILE0]]:231+19];
 // DEFAULT-NEXT:         %[[VALUE_DONE:[0-9]+]] DONE = const<i32>(1);
 // DEFAULT-NEXT:     } [size=4, align=4];
+// DEFAULT-NEXT:     comment leading doc "/** explicit doc */" [spelling=[[#FILE0]]:287+19, expansion=[[#FILE0]]:287+19];
+// DEFAULT-NEXT:     comment trailing "/* trailing g starts\n                  ** and continues */" [spelling=[[#FILE0]]:325+58, expansion=[[#FILE0]]:325+58];
 // DEFAULT-NEXT:     global %[[VALUE_g:[0-9]+]] g: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     comment leading "/**/" [spelling=[[#FILE0]]:384+4, expansion=[[#FILE0]]:384+4];
 // DEFAULT-NEXT:     global %[[VALUE_h:[0-9]+]] h: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     comment leading "/*\n** guarded doc\n*/" [spelling=[[#FILE0]]:397+20, expansion=[[#FILE0]]:397+20];
 // DEFAULT-NEXT:     fn %[[VALUE_guarded:[0-9]+]] @guarded() -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_call:[0-9]+]] @call(%[[VALUE0:[0-9]+]] <unnamed>: i32, %[[VALUE1:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external];
+// DEFAULT-NEXT:     comment leading "/* leading f */" [spelling=[[#FILE0]]:504+15, expansion=[[#FILE0]]:504+15];
+// DEFAULT-NEXT:     param x comment trailing "/* param x */" [spelling=[[#FILE0]]:547+13, expansion=[[#FILE0]]:547+13];
+// DEFAULT-NEXT:     param y comment trailing "/* param y */" [spelling=[[#FILE0]]:574+13, expansion=[[#FILE0]]:574+13];
 // DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_x:[0-9]+]] x: i32, %[[VALUE_y:[0-9]+]] y: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_r:[0-9]+]] r: i32 [storage=automatic];
 // DEFAULT-NEXT:         comment trailing "/* trailing r */" [spelling=[[#FILE0]]:604+16, expansion=[[#FILE0]]:604+16];

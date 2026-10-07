@@ -15,8 +15,6 @@ int value(int n) {
 
 // SLATE-FILECHECK-BEGIN IR
 // IR: module {
-// IR-NEXT:     comment leading "/* parser-file-comment */" [spelling=[[#FILE0:]]:0+25, expansion={{[0-9]+}}:0+25];
-// IR-NEXT:     comment leading "/* parser-field-comment */" [spelling=[[#FILE0]]:45+26, expansion=[[#FILE0]]:45+26];
 // IR-NEXT:     target "x86_64-unknown-linux-gnu" {
 // IR-NEXT:         endian = little;
 // IR-NEXT:         pointer [size=8, align=8];
@@ -38,7 +36,9 @@ int value(int n) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
+// IR-NEXT:     comment leading "/* parser-file-comment */" [spelling=[[#FILE0:]]:0+25, expansion={{[0-9]+}}:0+25];
 // IR-NEXT:     type @type[[TYPE_Value:[0-9]+]] Value = struct {
+// IR-NEXT:         comment leading "/* parser-field-comment */" [spelling=[[#FILE0]]:45+26, expansion=[[#FILE0]]:45+26];
 // IR-NEXT:         field0 n: i32;
 // IR-NEXT:     } [size=4, align=4, offsets=[0]];
 // IR-NEXT:     fn %[[VALUE_value:[0-9]+]] @value(%[[VALUE_n:[0-9]+]] n: i32 [c="int"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(int)"] {

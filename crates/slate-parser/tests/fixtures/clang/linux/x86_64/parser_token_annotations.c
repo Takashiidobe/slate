@@ -30,10 +30,7 @@ int read_item(Item *p) {
 
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: module {
-// DEFAULT-NEXT:     comment leading "/* file comment */" [spelling=[[#FILE0:]]:0+18, expansion={{[0-9]+}}:0+18];
-// DEFAULT-NEXT:     comment detached "/* trailing comment */" [spelling=[[#FILE0]]:434+22, expansion=[[#FILE0]]:434+22];
-// DEFAULT-NEXT:     comment leading "/* field comment */" [spelling=[[#FILE0]]:43+19, expansion=[[#FILE0]]:43+19];
-// DEFAULT-NEXT:     comment leading "/* enumerator comment */" [spelling=[[#FILE0]]:99+24, expansion=[[#FILE0]]:99+24];
+// DEFAULT-NEXT:     comment detached "/* trailing comment */" [spelling=[[#FILE0:]]:434+22, expansion={{[0-9]+}}:434+22];
 // DEFAULT-NEXT:     target "x86_64-unknown-linux-gnu" {
 // DEFAULT-NEXT:         endian = little;
 // DEFAULT-NEXT:         pointer [size=8, align=8];
@@ -55,11 +52,14 @@ int read_item(Item *p) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     comment leading "/* file comment */" [spelling=[[#FILE0]]:0+18, expansion=[[#FILE0]]:0+18];
 // DEFAULT-NEXT:     type @type[[TYPE_Item:[0-9]+]] Item = struct {
+// DEFAULT-NEXT:         comment leading "/* field comment */" [spelling=[[#FILE0]]:43+19, expansion=[[#FILE0]]:43+19];
 // DEFAULT-NEXT:         field0 value: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_Item_2:[0-9]+]] Item = @type[[TYPE_Item]];
 // DEFAULT-NEXT:     type @type[[TYPE_State:[0-9]+]] State = enum : u32 {
+// DEFAULT-NEXT:         comment leading "/* enumerator comment */" [spelling=[[#FILE0]]:99+24, expansion=[[#FILE0]]:99+24];
 // DEFAULT-NEXT:         %[[VALUE_READY:[0-9]+]] READY = const<i32>(0);
 // DEFAULT-NEXT:         %[[VALUE_DONE:[0-9]+]] DONE = const<i32>(1);
 // DEFAULT-NEXT:     } [size=4, align=4];

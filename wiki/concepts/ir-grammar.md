@@ -643,8 +643,10 @@ exceptions        = "ignore" | "observable" ;
 
 With `--show-comments`, source comment groups print as
 `comment ("leading" | "trailing" | "detached") ["doc"] string [spelling=file:offset+length, expansion=file:offset+length];`.
-Module comments precede the target; statement comments remain in their body.
-Parameter comments are module comments for now.
+Detached comments precede the target; statement comments remain in their body.
+Owned comments print on their own lines directly above their owner (type,
+field, enumerator, global, or function); a parameter's comments print above its
+function prefixed with `param <name>`.
 These are non-executing metadata and are absent from default dumps.
 
 ```ebnf

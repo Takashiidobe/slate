@@ -184,11 +184,13 @@ impl FunctionLowerer<'_, '_> {
         };
         let pack = self.record_pack(fields, layout);
         let mut lowered = Vec::new();
-        let mut comment_start = self.tables.types[&id].expansion;
+        let owner = self.tables.types[&id].id;
+        let mut pending = Vec::new();
         let mut end = 0u64;
         let mut align = 1u64;
         let mut units = BTreeSet::new();
         for (index, field) in fields.iter().enumerate() {
+            pending.extend(self.claim_comments(field.id));
             if (field.access.atomic && !self.tables.atomic_scalar(&field.ty))
                 || (field.access.volatile && field.bit_width.is_some())
             {
@@ -243,10 +245,8 @@ impl FunctionLowerer<'_, '_> {
             }
             end = end.max(offset + size);
             align = align.max(field_align);
-            let comments = self.take_comments(comment_start, field.expansion.offset);
-            comment_start.offset = field.expansion.offset;
             lowered.push(rust::RecordField {
-                comments,
+                comments: std::mem::take(&mut pending),
                 name: field_name.into(),
                 ty,
             });
@@ -269,10 +269,12 @@ impl FunctionLowerer<'_, '_> {
             };
             lowered.push(padding_field(lowered.len(), padding));
         }
-        let loc = self.tables.types[&id].expansion;
-        let trailing = self.take_comments(comment_start, loc.offset + loc.length);
         let mut record = record(lowered, pack, raised);
-        record.trailing_comments = trailing;
+        record.comments = self.claim_comments(owner);
+        record.trailing_comments = pending;
+        record
+            .trailing_comments
+            .extend(self.claim_inner_comments(owner));
         Ok(record)
     }
 

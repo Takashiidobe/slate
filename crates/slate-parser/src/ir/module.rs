@@ -1,6 +1,6 @@
 use super::{
-    AbiSignature, Atomicity, BindingId, FenceScope, Global, InlineAsm, Parameters, Place, Type,
-    TypeDefinition, Value, Variable,
+    AbiSignature, Atomicity, BindingId, Comments, FenceScope, Global, InlineAsm, Parameters, Place,
+    Type, TypeDefinition, Value, Variable,
 };
 use crate::ast::{CommentAttach, CommentGroup, NodeId, Span};
 use crate::target_info::TargetInfo;
@@ -16,7 +16,7 @@ pub struct Module {
     pub globals: Vec<Span<Global>>,
     pub functions: Vec<Span<Function>>,
     pub metadata: Metadata,
-    pub comments: Vec<Span<Comment>>,
+    pub comments: Comments,
 }
 
 #[derive(Debug, Clone)]
@@ -263,7 +263,7 @@ impl Module {
             globals: Vec::new(),
             functions: Vec::new(),
             metadata: Metadata::new(),
-            comments: Vec::new(),
+            comments: Comments::default(),
         }
     }
 

@@ -10,7 +10,8 @@ use super::types::{DeclaredAs, TypeResolver, is_folded};
 use super::validate::{ERROR_LIMIT, with_sources};
 use super::{SemaError, SemaErrors};
 use crate::ast::{
-    self, DeclKind, Declarator, ParameterList, Span, Stmt, StmtKind, StorageClass, TranslationUnit,
+    self, DeclKind, Declarator, NodeId, ParameterList, Span, Stmt, StmtKind, StorageClass,
+    TranslationUnit,
 };
 use crate::compiler_args::CompilerFlavor;
 use crate::const_expr::{IntegerLiteral, IntegerSizeSuffix, IntegerSuffix, Radix};
@@ -69,15 +70,23 @@ fn resolve_module(
     };
     let mut poisoned = HashSet::new();
     let mut error_count = 0;
+    let mut produced: Vec<Produced> = Vec::with_capacity(unit.decls.len());
     for (declaration, item) in unit.decls.iter().zip(items) {
+        produced.push(Produced::default());
+        let slot = produced.last_mut().expect("just pushed");
         if let Some(diagnostics) = lower.types.item_diagnostics.remove(&declaration.id) {
             lower.types.diagnostics.extend(diagnostics);
         }
         let errors: Vec<ResolveError> = if item.errors.is_empty() {
+            let mut marks = Marks::default();
             let Err(error) = lower
                 .declare_implicit_functions(item.declared.clone())
-                .and_then(|()| lower_item(&mut lower, declaration, unit.dialect.features()))
+                .and_then(|()| {
+                    marks = Marks::of(&lower);
+                    lower_item(&mut lower, declaration, unit.dialect.features())
+                })
             else {
+                *slot = marks.produced(&lower, declaration);
                 continue;
             };
             lower.reset_after_failed_item();
@@ -104,6 +113,7 @@ fn resolve_module(
     if error_count > 0 {
         with_sources(std::mem::take(&mut lower.types.diagnostics), files)?;
     }
+    let mut type_nodes = HashMap::new();
     for definition in &lower.types.definitions {
         let span = if let Some(owner) = lower.types.owners.get(&definition.id) {
             owner.derive(definition.clone())
@@ -117,55 +127,24 @@ fn resolve_module(
         if let Some(entries) = lower.alias_annotations.remove(&definition.id) {
             lower.module.annotate(&span, entries);
         }
+        if let Some(inner) = lower.types.inner_comments.remove(&definition.id) {
+            lower
+                .module
+                .comments
+                .owned
+                .entry(span.id)
+                .or_default()
+                .inner = inner;
+        }
+        type_nodes.insert(definition.id, span.id);
         lower.module.types.push(span);
     }
-    for tag in &unit.tags {
-        match &tag.body {
-            ast::TagBody::Record(fields) => {
-                for field in fields {
-                    if let ast::FieldItemKind::Comment(comment) = &field.value {
-                        lower
-                            .module
-                            .comments
-                            .push(field.derive(crate::ir::Comment::from(comment)));
-                    }
-                }
-            }
-            ast::TagBody::Enum { enumerators, .. } => {
-                for enumerator in enumerators {
-                    if let ast::EnumItemKind::Comment(comment) = &enumerator.value {
-                        lower
-                            .module
-                            .comments
-                            .push(enumerator.derive(crate::ir::Comment::from(comment)));
-                    }
-                }
-            }
-        }
-    }
-    for declaration in &unit.decls {
-        let declarators: Vec<_> = match &declaration.value {
-            DeclKind::Function(function) => vec![&function.declarator],
-            DeclKind::Declaration(declaration) => declaration
-                .declarators
-                .iter()
-                .map(|declarator| &declarator.value.declarator)
-                .collect(),
-            _ => Vec::new(),
-        };
-        for parameter in declarators
-            .into_iter()
-            .filter_map(ast::Declarator::function_parameters)
-            .flat_map(ast::ParameterList::parameters)
-        {
-            for comment in &parameter.value.comments {
-                lower
-                    .module
-                    .comments
-                    .push(comment.derive(crate::ir::Comment::from(&comment.value)));
-            }
-        }
-    }
+    lower
+        .module
+        .comments
+        .owned
+        .extend(std::mem::take(&mut lower.types.comments.owned));
+    attach_declaration_comments(&mut lower.module.comments, unit, &produced, &type_nodes);
     for global in &mut lower.module.globals {
         if global.definition
             && let Type::Array { length, .. } = &mut global.value.variable.ty
@@ -179,6 +158,97 @@ fn resolve_module(
     })?;
     let diagnostics = with_sources(lower.types.diagnostics, files)?;
     Ok((lower.module, diagnostics))
+}
+
+#[derive(Default)]
+struct Marks {
+    definitions: usize,
+    globals: usize,
+    functions: usize,
+}
+
+impl Marks {
+    fn of(lower: &Lowerer) -> Self {
+        Self {
+            definitions: lower.types.definitions.len(),
+            globals: lower.module.globals.len(),
+            functions: lower.module.functions.len(),
+        }
+    }
+
+    fn produced(&self, lower: &Lowerer, declaration: &ast::Decl) -> Produced {
+        let mut types: Vec<TypeId> = match &declaration.value {
+            DeclKind::Declaration(item) => lower.types.defined_tag_type(&item.specifiers),
+            _ => None,
+        }
+        .into_iter()
+        .collect();
+        for definition in &lower.types.definitions[self.definitions..] {
+            if !types.contains(&definition.id) {
+                types.push(definition.id);
+            }
+        }
+        Produced {
+            types,
+            globals: lower.module.globals[self.globals..]
+                .iter()
+                .map(|global| global.id)
+                .collect(),
+            functions: lower.module.functions[self.functions..]
+                .iter()
+                .map(|function| function.id)
+                .collect(),
+        }
+    }
+}
+
+#[derive(Default)]
+struct Produced {
+    types: Vec<TypeId>,
+    globals: Vec<NodeId>,
+    functions: Vec<NodeId>,
+}
+
+fn attach_declaration_comments(
+    comments: &mut Comments,
+    unit: &TranslationUnit,
+    produced: &[Produced],
+    type_nodes: &HashMap<TypeId, NodeId>,
+) {
+    let mut siblings = Vec::new();
+    let mut positions = Vec::new();
+    let mut order = Vec::new();
+    for (declaration, produced) in unit.decls.iter().zip(produced) {
+        positions.push(order.len());
+        if let DeclKind::Comment(group) = &declaration.value {
+            siblings.push(Sibling::Comment(declaration.derive(Comment::from(group))));
+            continue;
+        }
+        let nodes: Vec<NodeId> = produced
+            .types
+            .iter()
+            .filter_map(|id| type_nodes.get(id).copied())
+            .chain(produced.globals.iter().copied())
+            .chain(produced.functions.iter().copied())
+            .collect();
+        siblings.push(match (nodes.first(), nodes.last()) {
+            (Some(&first), Some(&last)) => Sibling::Node { first, last },
+            _ => Sibling::Skipped,
+        });
+        order.extend(
+            nodes
+                .into_iter()
+                .map(|node| (node, declaration.expansion.file)),
+        );
+    }
+    positions.push(order.len());
+    for (index, comment) in comments.distribute(siblings) {
+        comments.detached.push(Detached {
+            comment,
+            position: positions[index],
+        });
+    }
+    comments.order = order;
 }
 
 fn item_error(error: &ResolveError, item: &ast::Decl) -> SemaError {
@@ -289,12 +359,7 @@ fn lower_item(
     features: StandardFeatures,
 ) -> Result<(), ResolveError> {
     match &declaration.value {
-        DeclKind::Comment(comment) => {
-            lower
-                .module
-                .comments
-                .push(declaration.derive(crate::ir::Comment::from(comment)));
-        }
+        DeclKind::Comment(_) => {}
         DeclKind::StaticAssert(_) => {}
         DeclKind::Attribute(attributes) => {
             if lower.types.flavor().is_gcc() {
@@ -960,6 +1025,9 @@ impl Lowerer {
                 });
                 self.module
                     .annotate(&slot, self.types.render(promoted).entries());
+                self.module
+                    .comments
+                    .own_groups(slot.id, &parameter.comments);
                 fixed.push(slot);
                 continue;
             }
@@ -980,6 +1048,9 @@ impl Lowerer {
                 c_entries.push(metadata);
             }
             self.module.annotate(&lowered, c_entries);
+            self.module
+                .comments
+                .own_groups(lowered.id, &parameter.comments);
             fixed.push(lowered);
         }
         Ok(Parameters::Prototype {

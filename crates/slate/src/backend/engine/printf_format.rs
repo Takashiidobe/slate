@@ -373,6 +373,7 @@ fn fflush_extern_decl() -> ExternFnDecl {
         declared_type: None,
         trusted_headers: Default::default(),
         params: vec![FnParam {
+            comments: Vec::new(),
             name: "_0".into(),
             mutable: false,
             ty: file_ptr_type(),

@@ -46,6 +46,7 @@ fn f80_assign_impl(trait_: StdTrait, shim: &str) -> Item {
         name: trait_.method().into(),
         self_kind: SelfKind::RefMut,
         params: vec![FnParam {
+            comments: Vec::new(),
             name: shim_param("o"),
             mutable: false,
             ty: Type::LongDouble,
@@ -72,6 +73,7 @@ fn f80_binop_impl(trait_: StdTrait, shim: &str) -> Item {
         name: trait_.method().into(),
         self_kind: SelfKind::Value,
         params: vec![FnParam {
+            comments: Vec::new(),
             name: shim_param("o"),
             mutable: false,
             ty: Type::LongDouble,
@@ -123,6 +125,7 @@ fn f80_partial_eq_impl() -> Item {
         name: StdTrait::PartialEq.method().into(),
         self_kind: SelfKind::Ref,
         params: vec![FnParam {
+            comments: Vec::new(),
             name: shim_param("other"),
             mutable: false,
             ty: Type::Ref {
@@ -197,6 +200,7 @@ fn f80_partial_ord_impl() -> Item {
         name: StdTrait::PartialOrd.method().into(),
         self_kind: SelfKind::Ref,
         params: vec![FnParam {
+            comments: Vec::new(),
             name: shim_param("other"),
             mutable: false,
             ty: Type::Ref {
@@ -225,6 +229,7 @@ fn f80_call(name: &str, args: Vec<Expr>) -> Expr {
 
 fn f80_param(name: &str, ty: Type) -> FnParam {
     FnParam {
+        comments: Vec::new(),
         name: shim_param(name),
         mutable: false,
         ty,

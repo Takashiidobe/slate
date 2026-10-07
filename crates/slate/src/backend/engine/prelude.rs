@@ -260,12 +260,14 @@ fn ato_int_prelude(name: &str, ret: Prim, target: &slate_parser::target_info::Ta
     ];
 
     Item::Fn(FnDef {
+        comments: Vec::new(),
         attrs: Vec::new(),
         vis: Visibility::Private,
         unsafe_: false,
         abi: None,
         name: name.into(),
         params: vec![FnParam {
+            comments: Vec::new(),
             name: "s".into(),
             mutable: false,
             ty: Type::Ptr {

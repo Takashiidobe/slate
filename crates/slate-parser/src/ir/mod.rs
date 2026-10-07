@@ -1,6 +1,7 @@
 mod abi;
 mod asm;
 mod atomic;
+mod comments;
 mod declarations;
 mod module;
 mod module_print;
@@ -15,6 +16,7 @@ pub use asm::{
     AsmRejectReason, AsmRejection, AsmSymbol, AsmTiedInput, InlineAsm,
 };
 pub use atomic::{Atomicity, CompareExchangeForm, FenceScope, MemoryOrder, SyncScope, Weakness};
+pub use comments::{Comments, Detached, OwnedComments, Sibling};
 pub use declarations::{
     Access, AggregateMember, AggregateTarget, ArrayExtent, ArrayParameter, BitFieldAccess,
     BitFieldUnit, Enumerator, Field, Global, Parameter, Parameters, Place, PlaceKind, RecordKind,

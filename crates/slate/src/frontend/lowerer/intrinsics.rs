@@ -368,6 +368,7 @@ impl FunctionLowerer<'_, '_> {
                 expr
             });
             fixed.push(FnParam {
+                comments: Vec::new(),
                 name: format!("arg{index}"),
                 mutable: false,
                 ty: ty.clone(),

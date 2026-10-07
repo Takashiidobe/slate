@@ -9,9 +9,9 @@ use crate::ast::{
 use crate::compiler_args::{CompilerFlavor, LanguageStandard};
 use crate::diagnostics::{DiagnosticContext, Warning};
 use crate::ir::{
-    Access, ArrayExtent, ArrayParameter, BindingId, BitFieldUnit, CallConv, Enumerator, Field,
-    Number, NumericType, PointerSpace, RecordKind, RecordLayout, Type, TypeDefinition,
-    TypeDefinitionKind, TypeId, Value, ValueKind,
+    Access, ArrayExtent, ArrayParameter, BindingId, BitFieldUnit, CallConv, Comment, Enumerator,
+    Field, Number, NumericType, PointerSpace, RecordKind, RecordLayout, Sibling, Type,
+    TypeDefinition, TypeDefinitionKind, TypeId, Value, ValueKind,
 };
 use crate::target_info::{
     LongDoubleFormat, StorageLayout, TargetEnvironment, TargetFamily, TargetInfo,
@@ -63,6 +63,8 @@ pub struct TypeResolver {
     tag_definitions: HashMap<TagId, BindingId>,
     aliases: HashMap<BindingId, QualType>,
     pub definitions: Vec<TypeDefinition>,
+    pub(super) comments: crate::ir::Comments,
+    pub(super) inner_comments: HashMap<TypeId, Vec<Span<crate::ir::Comment>>>,
     pub(super) extents: HashMap<crate::ast::NodeId, BindingId>,
     pub(super) references: HashMap<crate::ast::NodeId, BindingId>,
     pub(super) function_references: HashSet<crate::ast::NodeId>,
@@ -127,6 +129,8 @@ impl TypeResolver {
             tag_definitions: HashMap::new(),
             aliases: HashMap::new(),
             definitions: Vec::new(),
+            comments: crate::ir::Comments::default(),
+            inner_comments: HashMap::new(),
             extents: HashMap::new(),
             references: HashMap::new(),
             function_references: HashSet::new(),
@@ -392,6 +396,13 @@ impl TypeResolver {
             }
         }
         Ok(())
+    }
+
+    pub(super) fn defined_tag_type(&self, specifiers: &DeclarationSpecifiers) -> Option<TypeId> {
+        match &specifiers.ty {
+            TypeSpecifier::Tag(TagSpecifier::Definition(id)) => self.tag_ids.get(id).copied(),
+            _ => None,
+        }
     }
 
     pub fn tag_span<'a>(
@@ -2293,7 +2304,9 @@ impl TypeResolver {
                 let mut field_types = Vec::new();
                 let mut counters = Vec::new();
                 let mut requests = Vec::new();
+                let mut item_starts = Vec::with_capacity(items.len() + 1);
                 for item in items {
+                    item_starts.push(fields.len());
                     if let FieldItemKind::StaticAssert(assertion) = &item.value {
                         let failure = super::assertion::static_assertion_error(self, assertion);
                         self.diagnostics.extend(failure);
@@ -2398,6 +2411,27 @@ impl TypeResolver {
                         )?);
                     }
                 }
+                item_starts.push(fields.len());
+                let siblings = items
+                    .iter()
+                    .enumerate()
+                    .map(|(index, item)| match &item.value {
+                        FieldItemKind::Comment(group) => {
+                            Sibling::Comment(item.derive(Comment::from(group)))
+                        }
+                        _ => {
+                            let produced = &fields[item_starts[index]..item_starts[index + 1]];
+                            match (produced.first(), produced.last()) {
+                                (Some(first), Some(last)) => Sibling::Node {
+                                    first: first.id,
+                                    last: last.id,
+                                },
+                                _ => Sibling::Skipped,
+                            }
+                        }
+                    })
+                    .collect();
+                self.own_member_comments(id, siblings);
                 let packed = tag
                     .attributes
                     .iter()
@@ -2609,6 +2643,7 @@ impl TypeResolver {
                 };
                 let enumerator_type = self.ir_type(enumerator_c);
                 let mut entries = Vec::new();
+                let mut enumerator_nodes = HashMap::new();
                 let wrap_to = match self.ir_type(underlying_c) {
                     Type::Numeric(NumericType::Integer { width, signed, .. })
                         if is_fixed || !fits_int =>
@@ -2638,12 +2673,30 @@ impl TypeResolver {
                             c: enumerator_c,
                         },
                     );
-                    entries.push(item.derive(Enumerator {
+                    let lowered = item.derive(Enumerator {
                         id: BindingId(entries.len() as u32),
                         name: enumerator.name.clone(),
                         value,
-                    }));
+                    });
+                    enumerator_nodes.insert(item.id, lowered.id);
+                    entries.push(lowered);
                 }
+                let siblings = enumerators
+                    .iter()
+                    .map(|item| match &item.value {
+                        EnumItemKind::Comment(group) => {
+                            Sibling::Comment(item.derive(Comment::from(group)))
+                        }
+                        EnumItemKind::Enumerator(_) => match enumerator_nodes.get(&item.id) {
+                            Some(&node) => Sibling::Node {
+                                first: node,
+                                last: node,
+                            },
+                            None => Sibling::Skipped,
+                        },
+                    })
+                    .collect();
+                self.own_member_comments(id, siblings);
                 TypeDefinitionKind::Enum {
                     underlying: Some(underlying.clone()),
                     enumerators: Some(entries),
@@ -2778,6 +2831,18 @@ impl TypeResolver {
                 .iter()
                 .zip(current)
                 .all(|(a, b)| same_member(&self.ctypes, *a, *b))
+    }
+
+    fn own_member_comments(&mut self, id: TypeId, siblings: Vec<Sibling>) {
+        let inner: Vec<_> = self
+            .comments
+            .distribute(siblings)
+            .into_iter()
+            .map(|(_, comment)| comment)
+            .collect();
+        if !inner.is_empty() {
+            self.inner_comments.insert(id, inner);
+        }
     }
 
     pub(super) fn types_compatible(
@@ -3997,6 +4062,7 @@ fn resolve_parameters(
             array: shape.array,
         });
         module.annotate(&lowered, resolver.render(resolved).entries());
+        module.comments.own_groups(lowered.id, &parameter.comments);
         fixed.push(lowered);
         *next_binding += 1;
     }

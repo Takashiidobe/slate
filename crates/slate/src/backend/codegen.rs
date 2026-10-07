@@ -192,6 +192,7 @@ impl<W: Write> Codegen<W> {
                 self.out.write_str(";\n")?;
             }
             Item::Static {
+                comments,
                 attrs,
                 vis,
                 mutable,
@@ -199,6 +200,9 @@ impl<W: Write> Codegen<W> {
                 ty,
                 init,
             } => {
+                for comment in comments {
+                    self.comment(comment, 0)?;
+                }
                 self.attrs(attrs)?;
                 if let Some(kw) = vis.keyword() {
                     write!(self.out, "{kw} ")?;
@@ -298,6 +302,13 @@ impl<W: Write> Codegen<W> {
     }
 
     fn fn_def(&mut self, f: &FnDef) -> fmt::Result {
+        for comment in f
+            .comments
+            .iter()
+            .chain(f.params.iter().flat_map(|param| &param.comments))
+        {
+            self.comment(comment, 0)?;
+        }
         self.attrs(&f.attrs)?;
         if let Some(kw) = f.vis.keyword() {
             write!(self.out, "{kw} ")?;

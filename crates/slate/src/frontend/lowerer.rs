@@ -64,7 +64,7 @@ struct Tables<'m> {
     over_aligned: HashMap<BindingId, u64>,
     target: &'m TargetInfo,
     metadata: &'m ir::Metadata,
-    comments: &'m [Span<ir::Comment>],
+    comments: &'m ir::Comments,
     unit: &'m str,
     types: HashMap<TypeId, &'m Span<ir::TypeDefinition>>,
     record_names: HashMap<TypeId, String>,
@@ -412,17 +412,21 @@ impl<'m> ModuleLowerer<'m> {
                     name,
                     ty,
                 }),
-                Ok((ty, Some(init))) => self.items.push(Item::Static {
-                    attrs: thread_local
-                        .into_iter()
-                        .chain(exported.then_some(Attr::NoMangle))
-                        .collect(),
-                    vis: rust::Visibility::Private,
-                    mutable: true,
-                    name,
-                    ty,
-                    init,
-                }),
+                Ok((ty, Some(init))) => {
+                    let comments = self.lowerer().claim_comments(global.id);
+                    self.items.push(Item::Static {
+                        comments,
+                        attrs: thread_local
+                            .into_iter()
+                            .chain(exported.then_some(Attr::NoMangle))
+                            .collect(),
+                        vis: rust::Visibility::Private,
+                        mutable: true,
+                        name,
+                        ty,
+                        init,
+                    });
+                }
                 Ok((ty, None)) => self.externs.push(rust::ExternDecl::Static {
                     attrs: thread_local,
                     mutable: true,

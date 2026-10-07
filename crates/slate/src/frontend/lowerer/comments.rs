@@ -1,5 +1,5 @@
 use super::*;
-use slate_parser::ast::Loc;
+use slate_parser::ast::{CommentAttach, FileId, NodeId};
 
 pub(super) fn comment(source: &ir::Comment) -> rust::Comment {
     rust::Comment {
@@ -8,6 +8,12 @@ pub(super) fn comment(source: &ir::Comment) -> rust::Comment {
             .iter()
             .flat_map(|text| text.lines().map(str::to_owned))
             .collect(),
+        attach: match source.attach {
+            CommentAttach::Leading => rust::CommentAttach::Leading,
+            CommentAttach::Trailing => rust::CommentAttach::Trailing,
+            CommentAttach::Detached => rust::CommentAttach::Detached,
+        },
+        doc: source.doc,
     }
 }
 
@@ -30,93 +36,111 @@ impl FunctionLowerer<'_, '_> {
         comments
     }
 
-    pub(super) fn take_comments(&mut self, start: Loc, end: usize) -> Vec<rust::Comment> {
+    pub(super) fn claim_comments(&mut self, owner: NodeId) -> Vec<rust::Comment> {
+        let Some(owned) = self.tables.comments.owned.get(&owner) else {
+            return Vec::new();
+        };
+        self.dependencies.emitted_comments.insert(owner);
+        owned
+            .leading
+            .iter()
+            .chain(&owned.trailing)
+            .map(|source| comment(source))
+            .collect()
+    }
+
+    pub(super) fn claim_inner_comments(&self, owner: NodeId) -> Vec<rust::Comment> {
         self.tables
             .comments
-            .iter()
-            .filter(|&source| {
-                source.expansion.file == start.file
-                    && source.expansion.offset >= start.offset
-                    && source.expansion.offset < end
-                    && self.dependencies.emitted_comments.insert(source.id)
-            })
-            .map(|source| comment(&source.value))
-            .collect()
+            .owned
+            .get(&owner)
+            .map(|owned| owned.inner.iter().map(|source| comment(source)).collect())
+            .unwrap_or_default()
     }
 }
 
 pub(super) fn module_comments(
     module: &ir::Module,
     tables: &Tables<'_>,
-    emitted: &HashSet<slate_parser::ast::NodeId>,
+    emitted: &HashSet<NodeId>,
     items: Vec<Item>,
 ) -> Vec<Item> {
-    let origins: Vec<_> = items
+    let nodes: Vec<Option<NodeId>> = items
         .iter()
-        .enumerate()
-        .filter_map(|(index, item)| {
-            let loc = match item {
-                Item::Fn(function) => module
-                    .functions
-                    .iter()
-                    .find(|source| tables.names[&source.value.id].rust == function.name.as_str())
-                    .map(|source| source.expansion),
-                Item::Static { name, .. } => module
-                    .globals
-                    .iter()
-                    .find(|source| tables.bindings.get(&source.variable.id) == Some(name))
-                    .map(|source| source.expansion),
-                Item::Record(record) => module
-                    .types
-                    .iter()
-                    .find(|source| tables.record_names.get(&source.value.id) == Some(&record.name))
-                    .map(|source| source.expansion),
-                _ => None,
-            }?;
-            Some((index, loc))
+        .map(|item| match item {
+            Item::Fn(function) => module
+                .functions
+                .iter()
+                .find(|source| tables.names[&source.value.id].rust == function.name.as_str())
+                .map(|source| source.id),
+            Item::Static { name, .. } => module
+                .globals
+                .iter()
+                .find(|source| tables.bindings.get(&source.variable.id) == Some(name))
+                .map(|source| source.id),
+            Item::Record(record) => module
+                .types
+                .iter()
+                .find(|source| tables.record_names.get(&source.value.id) == Some(&record.name))
+                .map(|source| source.id),
+            _ => None,
         })
         .collect();
-    let mut comments = BTreeMap::<usize, Vec<&Span<ir::Comment>>>::new();
-    for source in &module.comments {
-        if emitted.contains(&source.id) {
+    let index_of: HashMap<NodeId, usize> = nodes
+        .iter()
+        .enumerate()
+        .filter_map(|(index, node)| Some((((*node)?), index)))
+        .collect();
+    let order = &module.comments.order;
+    let slot = |position: usize, file: FileId| -> usize {
+        let emitted_in_file = |(node, node_file): &(NodeId, FileId)| {
+            index_of.get(node).filter(|_| *node_file == file).copied()
+        };
+        order[position..]
+            .iter()
+            .find_map(emitted_in_file)
+            .or_else(|| {
+                order[..position]
+                    .iter()
+                    .rev()
+                    .find_map(emitted_in_file)
+                    .map(|index| index + 1)
+            })
+            .unwrap_or(0)
+    };
+    let mut placed = BTreeMap::<usize, Vec<rust::Comment>>::new();
+    for detached in &module.comments.detached {
+        let file = detached.comment.expansion.file;
+        placed
+            .entry(slot(detached.position, file))
+            .or_default()
+            .push(comment(&detached.comment.value));
+    }
+    for (position, (node, file)) in order.iter().enumerate() {
+        if emitted.contains(node) {
             continue;
         }
-        let loc = source.expansion;
-        let next = origins
-            .iter()
-            .filter(|(_, origin)| origin.file == loc.file && origin.offset >= loc.offset)
-            .min_by_key(|(_, origin)| origin.offset)
-            .map(|(index, _)| *index);
-        let previous = origins
-            .iter()
-            .filter(|(_, origin)| origin.file == loc.file)
-            .max_by_key(|(_, origin)| origin.offset)
-            .map(|(index, _)| index + 1);
-        comments
-            .entry(next.or(previous).unwrap_or(items.len()))
-            .or_default()
-            .push(source);
-    }
-    for sources in comments.values_mut() {
-        sources.sort_by_key(|source| (source.expansion.file.0, source.expansion.offset));
+        let Some(owned) = module.comments.owned.get(node) else {
+            continue;
+        };
+        placed.entry(slot(position, *file)).or_default().extend(
+            owned
+                .leading
+                .iter()
+                .chain(&owned.trailing)
+                .chain(&owned.inner)
+                .map(|source| comment(&source.value)),
+        );
     }
     let mut output = Vec::new();
     for (index, item) in items.into_iter().enumerate() {
-        if let Some(sources) = comments.remove(&index) {
-            output.extend(
-                sources
-                    .into_iter()
-                    .map(|source| Item::Comment(comment(&source.value))),
-            );
+        if let Some(comments) = placed.remove(&index) {
+            output.extend(comments.into_iter().map(Item::Comment));
         }
         output.push(item);
     }
-    for sources in comments.into_values() {
-        output.extend(
-            sources
-                .into_iter()
-                .map(|source| Item::Comment(comment(&source.value))),
-        );
+    for comments in placed.into_values() {
+        output.extend(comments.into_iter().map(Item::Comment));
     }
     output
 }

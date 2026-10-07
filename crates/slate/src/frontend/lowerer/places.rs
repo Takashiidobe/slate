@@ -185,6 +185,7 @@ impl FunctionLowerer<'_, '_> {
                 return Ok(Expr::Var(name.into()));
             }
             self.dependencies.compound_literals.push(Item::Static {
+                comments: Vec::new(),
                 attrs: Vec::new(),
                 vis: rust::Visibility::Private,
                 mutable: true,

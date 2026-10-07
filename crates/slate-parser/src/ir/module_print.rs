@@ -1,8 +1,8 @@
 use super::{
-    ArrayExtent, AsmConstraintLocation, AsmOperandKind, Comment, DllStorage, Evaluation, FloatType,
-    InlineAsm, Inlining, Linkage, MemoryEffects, Metadata, Module, NumericType, Parameters,
-    RecordKind, Statement, StorageDuration, SymbolAttributes, TargetFeature, TlsModel, Type,
-    TypeDefinitionKind, Variable, Visibility,
+    ArrayExtent, AsmConstraintLocation, AsmOperandKind, Comment, Comments, DllStorage, Evaluation,
+    FloatType, InlineAsm, Inlining, Linkage, MemoryEffects, Metadata, Module, NumericType,
+    Parameters, RecordKind, Statement, StorageDuration, SymbolAttributes, TargetFeature, TlsModel,
+    Type, TypeDefinitionKind, Variable, Visibility,
 };
 use crate::{
     ast::{CommentAttach, Loc, NodeId, Span},
@@ -177,6 +177,7 @@ fn asm_attributes(f: &mut fmt::Formatter<'_>, asm: &InlineAsm) -> fmt::Result {
 #[derive(Clone, Copy)]
 struct Printer<'a> {
     metadata: Option<&'a Metadata>,
+    comments: Option<&'a Comments>,
     show_comments: bool,
     compact: bool,
 }
@@ -185,6 +186,7 @@ impl DisplayModule<'_> {
     fn printer(&self) -> Printer<'_> {
         Printer {
             metadata: self.show_metadata.then_some(&self.module.metadata),
+            comments: self.show_comments.then_some(&self.module.comments),
             show_comments: self.show_comments,
             compact: self.compact,
         }
@@ -207,6 +209,7 @@ impl fmt::Display for StatementLines<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         Printer {
             metadata: None,
+            comments: None,
             show_comments: false,
             compact: false,
         }
@@ -223,6 +226,28 @@ impl fmt::Display for DisplayStatement<'_> {
 impl Printer<'_> {
     fn table(&self) -> Option<&Metadata> {
         self.metadata
+    }
+
+    fn owned(
+        &self,
+        f: &mut fmt::Formatter<'_>,
+        id: NodeId,
+        indent: usize,
+        owner: Option<&str>,
+    ) -> fmt::Result {
+        let Some(owned) = self.comments.and_then(|comments| comments.owned.get(&id)) else {
+            return Ok(());
+        };
+        for comment in owned.iter() {
+            write!(f, "{:indent$}", "")?;
+            if let Some(owner) = owner {
+                write!(f, "{owner} ")?;
+            }
+            write!(f, "{}", comment.value)?;
+            locations(f, comment.spelling, comment.expansion)?;
+            writeln!(f, ";")?;
+        }
+        Ok(())
     }
 
     fn variable(&self, f: &mut fmt::Formatter<'_>, variable: &Variable) -> fmt::Result {
@@ -690,7 +715,8 @@ impl fmt::Display for DisplayModule<'_> {
         let printer = self.printer();
         writeln!(f, "module {{")?;
         if self.show_comments {
-            for comment in &self.module.comments {
+            for detached in &self.module.comments.detached {
+                let comment = &detached.comment;
                 write!(f, "    {}", comment.value)?;
                 locations(f, comment.spelling, comment.expansion)?;
                 writeln!(f, ";")?;
@@ -755,6 +781,7 @@ impl fmt::Display for DisplayModule<'_> {
             }
         }
         for definition in &self.module.types {
+            printer.owned(f, definition.id, 4, None)?;
             write!(f, "    type @type{}", definition.value.id.0)?;
             if let Some(name) = &definition.name {
                 write!(f, " {name}")?;
@@ -777,6 +804,7 @@ impl fmt::Display for DisplayModule<'_> {
                     if let Some(fields) = fields {
                         writeln!(f, " {{")?;
                         for (index, field) in fields.iter().enumerate() {
+                            printer.owned(f, field.id, 8, None)?;
                             write!(
                                 f,
                                 "        field{index} {}: {}{}{}",
@@ -830,6 +858,7 @@ impl fmt::Display for DisplayModule<'_> {
                     if let Some(enumerators) = enumerators {
                         writeln!(f, " {{")?;
                         for enumerator in enumerators {
+                            printer.owned(f, enumerator.id, 8, None)?;
                             write!(
                                 f,
                                 "        %{} {} = {}",
@@ -861,6 +890,7 @@ impl fmt::Display for DisplayModule<'_> {
             writeln!(f, ";")?;
         }
         for global in &self.module.globals {
+            printer.owned(f, global.id, 4, None)?;
             write!(
                 f,
                 "    {} ",
@@ -882,6 +912,14 @@ impl fmt::Display for DisplayModule<'_> {
             writeln!(f, ";")?;
         }
         for function in &self.module.functions {
+            printer.owned(f, function.id, 4, None)?;
+            if let Parameters::Prototype { fixed, .. } = &function.parameters {
+                for parameter in fixed {
+                    let owner =
+                        format!("param {}", parameter.name.as_deref().unwrap_or("<unnamed>"));
+                    printer.owned(f, parameter.id, 4, Some(&owner))?;
+                }
+            }
             write!(f, "    fn %{} @{}(", function.value.id.0, function.name)?;
             match &function.parameters {
                 Parameters::Unprototyped => f.write_str("unprototyped")?,

@@ -340,6 +340,7 @@ impl FunctionLowerer<'_, '_> {
                     .into_iter()
                     .enumerate()
                     .map(|(index, ty)| FnParam {
+                        comments: Vec::new(),
                         name: format!("_{index}"),
                         mutable: false,
                         ty,

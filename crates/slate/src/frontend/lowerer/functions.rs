@@ -39,6 +39,7 @@ pub(super) fn main_wrapper(arity: usize) -> Item {
     ]
     .into_iter()
     .map(|(name, ty)| FnParam {
+        comments: Vec::new(),
         name: name.into(),
         mutable: false,
         ty,
@@ -52,6 +53,7 @@ pub(super) fn main_wrapper(arity: usize) -> Item {
         })
         .collect();
     Item::Fn(FnDef {
+        comments: Vec::new(),
         attrs: vec![Attr::NoMangle],
         vis: rust::Visibility::Private,
         unsafe_: true,
@@ -113,6 +115,7 @@ impl FunctionLowerer<'_, '_> {
                 .iter()
                 .map(|parameter| {
                     Ok(FnParam {
+                        comments: Vec::new(),
                         name: binding_name(parameter.value.id, &self.tables.bindings),
                         mutable: false,
                         ty: self
@@ -144,6 +147,7 @@ impl FunctionLowerer<'_, '_> {
             .iter()
             .map(|param| {
                 Ok(FnParam {
+                    comments: self.claim_comments(param.id),
                     name: binding_name(param.value.id, &self.tables.bindings),
                     mutable: true,
                     ty: self
@@ -154,6 +158,7 @@ impl FunctionLowerer<'_, '_> {
             .collect::<Result<Vec<_>>>()?;
         if *variadic {
             params.push(FnParam {
+                comments: Vec::new(),
                 name: VA_ARGS.into(),
                 mutable: true,
                 ty: rust::Type::Variadic,
@@ -190,6 +195,7 @@ impl FunctionLowerer<'_, '_> {
         }
         let target_feature = self.tables.target_feature_attr(function)?;
         Ok(Item::Fn(FnDef {
+            comments: self.claim_comments(function.id),
             unsafe_: *variadic || target_feature.is_some(),
             attrs: target_feature.into_iter().collect(),
             vis: rust::Visibility::Private,

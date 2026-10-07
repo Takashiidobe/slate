@@ -58,6 +58,7 @@ pub enum Item {
         path: Path,
     },
     Static {
+        comments: Vec<Comment>,
         attrs: Vec<Attr>,
         vis: Visibility,
         mutable: bool,
@@ -100,6 +101,15 @@ pub struct SupportModule {
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Comment {
     pub lines: Vec<String>,
+    pub attach: CommentAttach,
+    pub doc: bool,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum CommentAttach {
+    Leading,
+    Trailing,
+    Detached,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -533,6 +543,7 @@ pub struct ExternFnDecl {
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct FnDef {
+    pub comments: Vec<Comment>,
     pub attrs: Vec<Attr>,
     pub vis: Visibility,
     pub unsafe_: bool,
@@ -545,6 +556,7 @@ pub struct FnDef {
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct FnParam {
+    pub comments: Vec<Comment>,
     pub name: String,
     pub mutable: bool,
     pub ty: Type,
