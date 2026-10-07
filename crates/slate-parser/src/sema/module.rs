@@ -87,6 +87,25 @@ fn resolve_module(
                 })
             else {
                 *slot = marks.produced(&lower, declaration);
+                if slot.functions.is_empty()
+                    && slot.globals.is_empty()
+                    && let Some(name) = declaration.value.names().first().copied()
+                {
+                    slot.redefined = lower
+                        .module
+                        .functions
+                        .iter()
+                        .find(|function| function.value.name == name)
+                        .map(|function| function.id)
+                        .or_else(|| {
+                            lower
+                                .module
+                                .globals
+                                .iter()
+                                .find(|global| global.variable.name == name)
+                                .map(|global| global.id)
+                        });
+                }
                 continue;
             };
             lower.reset_after_failed_item();
@@ -144,7 +163,20 @@ fn resolve_module(
         .comments
         .owned
         .extend(std::mem::take(&mut lower.types.comments.owned));
-    attach_declaration_comments(&mut lower.module.comments, unit, &produced, &type_nodes);
+    let record_tags: HashMap<NodeId, String> = lower
+        .types
+        .definitions
+        .iter()
+        .filter(|definition| matches!(definition.kind, TypeDefinitionKind::Record { .. }))
+        .filter_map(|definition| Some((*type_nodes.get(&definition.id)?, definition.name.clone()?)))
+        .collect();
+    attach_declaration_comments(
+        &mut lower.module.comments,
+        unit,
+        &produced,
+        &type_nodes,
+        &record_tags,
+    );
     for global in &mut lower.module.globals {
         if global.definition
             && let Type::Array { length, .. } = &mut global.value.variable.ty
@@ -198,6 +230,7 @@ impl Marks {
                 .iter()
                 .map(|function| function.id)
                 .collect(),
+            redefined: None,
         }
     }
 }
@@ -207,6 +240,7 @@ struct Produced {
     types: Vec<TypeId>,
     globals: Vec<NodeId>,
     functions: Vec<NodeId>,
+    redefined: Option<NodeId>,
 }
 
 fn attach_declaration_comments(
@@ -214,10 +248,12 @@ fn attach_declaration_comments(
     unit: &TranslationUnit,
     produced: &[Produced],
     type_nodes: &HashMap<TypeId, NodeId>,
+    record_tags: &HashMap<NodeId, String>,
 ) {
     let mut siblings = Vec::new();
     let mut positions = Vec::new();
     let mut order = Vec::new();
+    let mut seen = HashSet::new();
     for (declaration, produced) in unit.decls.iter().zip(produced) {
         positions.push(order.len());
         if let DeclKind::Comment(group) = &declaration.value {
@@ -231,12 +267,48 @@ fn attach_declaration_comments(
             .chain(produced.globals.iter().copied())
             .chain(produced.functions.iter().copied())
             .collect();
-        siblings.push(match (nodes.first(), nodes.last()) {
-            (Some(&first), Some(&last)) => Sibling::Node { first, last },
-            _ => Sibling::Skipped,
-        });
+        let fresh: Vec<NodeId> = nodes
+            .iter()
+            .copied()
+            .filter(|node| seen.insert(*node))
+            .collect();
+        let forward = match &declaration.value {
+            DeclKind::Declaration(item) => match &item.specifiers.ty {
+                ast::TypeSpecifier::Tag(ast::TagSpecifier::Reference { name, .. }) => {
+                    Some(name.value.clone())
+                }
+                _ => None,
+            },
+            _ => None,
+        };
+        siblings.push(
+            match (
+                fresh.first(),
+                fresh.last(),
+                nodes.first(),
+                produced.redefined,
+                forward,
+            ) {
+                (Some(&first), Some(&last), _, _, _) => match record_tags.get(&first) {
+                    Some(tag) => Sibling::Record {
+                        first,
+                        last,
+                        tag: tag.clone(),
+                    },
+                    None => Sibling::Node { first, last },
+                },
+                (None, _, Some(&node), _, _) | (None, _, None, Some(node), _) => {
+                    Sibling::Definition {
+                        node,
+                        tag: record_tags.get(&node).cloned(),
+                    }
+                }
+                (None, _, None, None, Some(tag)) => Sibling::Forward { tag },
+                _ => Sibling::Skipped,
+            },
+        );
         order.extend(
-            nodes
+            fresh
                 .into_iter()
                 .map(|node| (node, declaration.expansion.file)),
         );

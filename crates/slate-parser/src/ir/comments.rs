@@ -2,6 +2,10 @@ use super::Comment;
 use crate::ast::{CommentAttach, CommentGroup, FileId, NodeId, Span};
 use std::collections::HashMap;
 
+fn plain(comments: Vec<(usize, Span<Comment>)>) -> Vec<Span<Comment>> {
+    comments.into_iter().map(|(_, comment)| comment).collect()
+}
+
 #[derive(Debug, Clone, Default)]
 pub struct Comments {
     pub owned: HashMap<NodeId, OwnedComments>,
@@ -34,7 +38,22 @@ pub struct Detached {
 
 pub enum Sibling {
     Comment(Span<Comment>),
-    Node { first: NodeId, last: NodeId },
+    Node {
+        first: NodeId,
+        last: NodeId,
+    },
+    Definition {
+        node: NodeId,
+        tag: Option<String>,
+    },
+    Record {
+        first: NodeId,
+        last: NodeId,
+        tag: String,
+    },
+    Forward {
+        tag: String,
+    },
     Skipped,
 }
 
@@ -63,6 +82,7 @@ impl Comments {
         let mut unowned = Vec::new();
         let mut pending = Vec::new();
         let mut previous = None;
+        let mut forwards = HashMap::<String, Vec<(usize, Span<Comment>)>>::new();
         for (index, sibling) in siblings.into_iter().enumerate() {
             match sibling {
                 Sibling::Comment(comment) => match (comment.attach, previous) {
@@ -82,9 +102,45 @@ impl Comments {
                     }
                     previous = Some(last);
                 }
+                Sibling::Definition { node, tag } => {
+                    let fallback = tag.and_then(|tag| forwards.remove(&tag)).map(plain);
+                    if !pending.is_empty() {
+                        self.owned.entry(node).or_default().leading = std::mem::take(&mut pending);
+                    } else if let Some(fallback) = fallback
+                        && self
+                            .owned
+                            .get(&node)
+                            .is_none_or(|owned| owned.leading.is_empty())
+                    {
+                        self.owned.entry(node).or_default().leading = fallback;
+                    }
+                    previous = Some(node);
+                }
+                Sibling::Record { first, last, tag } => {
+                    let fallback = forwards.remove(&tag).map(plain);
+                    if pending.is_empty() {
+                        pending = fallback.unwrap_or_default();
+                    }
+                    if !pending.is_empty() {
+                        self.owned
+                            .entry(first)
+                            .or_default()
+                            .leading
+                            .append(&mut pending);
+                    }
+                    previous = Some(last);
+                }
+                Sibling::Forward { tag } => {
+                    forwards
+                        .entry(tag)
+                        .or_default()
+                        .extend(pending.drain(..).map(|comment| (index, comment)));
+                    previous = None;
+                }
                 Sibling::Skipped => previous = None,
             }
         }
+        unowned.extend(forwards.into_values().flatten());
         unowned.extend(pending.into_iter().map(|comment| (count, comment)));
         unowned
     }

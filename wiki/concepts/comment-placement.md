@@ -145,6 +145,13 @@ definition carry a leading comment, the definition's wins; the prototype's is
 the fallback. Typedef and tag comments for the same record merge the same way,
 definition first.
 
+Sema implements this in `attach_declaration_comments` with three sibling
+kinds: `Definition` (a later definition of an existing function, global, or
+record replaces the leading comments only when it has its own), `Forward` (a
+`struct S;` or `typedef struct S S;` parks its comments under the tag name),
+and `Record` (the tag's definition takes them as a fallback). Unused forward
+comments become detached at their position.
+
 ## Item order
 
 Items from a source file are emitted in source order, functions included;
