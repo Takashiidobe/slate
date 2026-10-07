@@ -310,7 +310,7 @@ harness = false
     let lib_section = lib_crate_types.map_or_else(String::new, |types| {
         let types: Vec<String> = types.iter().map(|ty| format!("\"{ty}\"")).collect();
         format!(
-            "\n[lib]\npath = \"src/lib.rs\"\ncrate-type = [{}]\n",
+            "\n[lib]\npath = \"src/lib.rs\"\ndoctest = false\ncrate-type = [{}]\n",
             types.join(", ")
         )
     });
@@ -863,6 +863,7 @@ fn translate_slate_project(
     if root.is_none() {
         let crate_attrs = [rust_ast::CrateAttr::Allow(vec![
             rust_ast::Lint::NonCamelCaseTypes,
+            rust_ast::Lint::RustdocAll,
         ])]
         .into_iter()
         .chain(

@@ -201,6 +201,7 @@ pub enum Lint {
     SuspiciousRuntimeSymbolDefinitions,
     UnpredictableFunctionPointerComparisons,
     UnusedComparisons,
+    RustdocAll,
 }
 
 impl Lint {
@@ -217,6 +218,7 @@ impl Lint {
                 "unpredictable_function_pointer_comparisons"
             }
             Lint::UnusedComparisons => "unused_comparisons",
+            Lint::RustdocAll => "rustdoc::all",
         }
     }
 }
