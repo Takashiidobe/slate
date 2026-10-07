@@ -850,7 +850,20 @@ fn translate_slate_project(
                 }
                 _ => true,
             });
-            program.items.splice(0..0, children.iter().cloned());
+            let prologue = program
+                .items
+                .iter()
+                .take_while(|item| {
+                    matches!(
+                        item,
+                        rust_ast::Item::Comment(comment)
+                            if comment.attach == rust_ast::CommentAttach::Prologue
+                    )
+                })
+                .count();
+            program
+                .items
+                .splice(prologue..prologue, children.iter().cloned());
             program
                 .items
                 .insert(0, rust_ast::Item::CrateAttrs(crate_attrs));

@@ -201,6 +201,13 @@ pub(super) fn module_comments(
     }
     let mut output = Vec::new();
     let prologue_after = usize::from(matches!(items.first(), Some(Item::CrateAttrs(_))));
+    if prologue_after == 1
+        && let Some(mut leading) = placed.remove(&0)
+    {
+        let later = placed.entry(1).or_default();
+        leading.append(later);
+        *later = leading;
+    }
     let mut prologue = Some(prologue);
     for (index, item) in items.into_iter().enumerate() {
         if index == prologue_after {
