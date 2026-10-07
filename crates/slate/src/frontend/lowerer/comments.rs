@@ -95,6 +95,32 @@ pub(super) fn module_comments(
             _ => None,
         })
         .collect();
+    let rank: HashMap<NodeId, usize> = module
+        .comments
+        .order
+        .iter()
+        .enumerate()
+        .map(|(position, (node, _))| (*node, position))
+        .collect();
+    let slots: Vec<usize> = nodes
+        .iter()
+        .enumerate()
+        .filter(|(_, node)| node.is_some_and(|node| rank.contains_key(&node)))
+        .map(|(index, _)| index)
+        .collect();
+    let mut sorted = slots.clone();
+    sorted.sort_by_key(|&index| rank[&nodes[index].expect("ranked item has a node")]);
+    let mut items: Vec<Option<Item>> = items.into_iter().map(Some).collect();
+    let mut nodes = nodes;
+    let moved: Vec<(Option<Item>, Option<NodeId>)> = sorted
+        .iter()
+        .map(|&index| (items[index].take(), nodes[index]))
+        .collect();
+    for (&slot, (item, node)) in slots.iter().zip(moved) {
+        items[slot] = item;
+        nodes[slot] = node;
+    }
+    let items: Vec<Item> = items.into_iter().flatten().collect();
     let index_of: HashMap<NodeId, usize> = nodes
         .iter()
         .enumerate()
