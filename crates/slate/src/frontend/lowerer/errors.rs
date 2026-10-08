@@ -117,6 +117,10 @@ pub enum Invariant {
     UnresolvedType(TypeId),
     #[error("non-constant case value")]
     NonConstantCase,
+    #[error("asm operand index {0} is out of bounds")]
+    AsmOperandIndex(usize),
+    #[error("asm operand has no width")]
+    AsmOperandWidth,
 }
 
 #[derive(Debug, Clone, Error)]

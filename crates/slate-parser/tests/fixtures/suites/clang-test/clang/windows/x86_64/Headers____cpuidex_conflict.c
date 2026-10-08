@@ -46,8 +46,8 @@ void test_cpuidex(unsigned level, unsigned count) {
 // DEFAULT-NEXT:     type @type[[TYPE_size_t:[0-9]+]] size_t = u64;
 // DEFAULT-NEXT:     global %[[VALUE_cpuid_info:[0-9]+]] cpuid_info: array<i32, 4> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE___cpuidex:[0-9]+]] @__cpuidex(%[[VALUE___cpu_info:[0-9]+]] __cpu_info: ptr<i32> [array=4], %[[VALUE___leaf:[0-9]+]] __leaf: i32, %[[VALUE___subleaf:[0-9]+]] __subleaf: i32) -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         asm "  xchg{q|}  {%%|}rbx,%q1\\n  cpuid\\n  xchg{q|}  {%%|}rbx,%q1" [dialect=att] [options=pure,nomem,nostack] {
-// DEFAULT-NEXT:             template: "  xchgq  " %% "rbx," %q1(64) "\\n  cpuid\\n  xchgq  " %% "rbx," %q1(64);
+// DEFAULT-NEXT:         asm "  xchg{q|}  {%%|}rbx,%q1\n  cpuid\n  xchg{q|}  {%%|}rbx,%q1" [dialect=att] [options=pure,nomem,nostack] {
+// DEFAULT-NEXT:             template: "  xchgq  " %% "rbx," %q1(64) "\n  cpuid\n  xchgq  " %% "rbx," %q1(64);
 // DEFAULT-NEXT:             inlateout 0 "a" [{ax}] width 32 place<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE___cpu_info]]), const<i32>(0)))) from read<i32>(%[[VALUE___leaf]]);
 // DEFAULT-NEXT:             lateout 1 "r" [reg] width 32 place<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE___cpu_info]]), const<i32>(1))));
 // DEFAULT-NEXT:             inlateout 2 "c" [{cx}] width 32 place<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE___cpu_info]]), const<i32>(2)))) from read<i32>(%[[VALUE___subleaf]]);

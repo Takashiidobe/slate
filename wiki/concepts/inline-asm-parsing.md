@@ -38,7 +38,8 @@ lowering of the IR is tracked under epic `slate-3f8g.4.17`.
 ## GNU asm: parser
 
 `src/parser/asm.rs`. The template is the concatenation of adjacent narrow
-string literals; wide and unicode literals are rejected.
+string literals, decoded separately before concatenation and template analysis;
+wide and unicode literals are rejected.
 
 - Template pieces: `%%`, `%=`, `%N`, `%[name]`, `%<letter>N` (letter kept as
   a modifier), and labels. Label operands number after all operands, so

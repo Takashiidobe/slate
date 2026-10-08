@@ -12,6 +12,7 @@
 - [MSVC `__asm`](#msvc-__asm)
 - [Naked functions](#naked-functions)
 - [File-scope asm](#file-scope-asm)
+- [Slate lowering](#slate-lowering)
 <!-- /toc -->
 
 Part of the [IR spec](../ir-spec.md). MSVC `__asm` parsing and effects are in
@@ -26,6 +27,8 @@ inputs as values, clobbers, and goto labels as `BindingId`s. The
 instructions themselves are never parsed; Slate treats the template as text
 with holes.
 
+- Templates and text pieces contain decoded C string characters, including
+  newlines and tabs; the Rust emitter must not decode them again.
 - `InlineAsm::operands` is one list in GCC order (outputs, then inputs), so
   `AsmPiece::Operand { index }` is a direct subscript. A `Label(n)` piece
   indexes the label list, so `%l1` and `%l[done]` both print `%l0` when
@@ -213,3 +216,21 @@ File-scope `asm` lowers to `Module::asm`, a source-ordered list of
 it stays out of `globals`/`functions`. It reuses `InlineAsm` because the GNU
 personality accepts operands there, bound like a statement asm's; labels are
 impossible.
+
+## Slate lowering
+
+- `slate/src/frontend/lowerer/asm.rs` consumes selected classes and pieces;
+  `backend/rust_ast.rs` stores operands/options and `backend/codegen.rs` emits `asm!`.
+- Core support: x86-64 `reg`/`reg_abcd` with 16/32/64-bit integers or pointers,
+  integer `const` operands, and register clobbers. Other classes/types remain barriers.
+- Outputs use scratch temporaries, then ordinary place writeback (including volatile stores).
+  Tied inputs retain their input expression; directions come from `AsmOperand::direction()`.
+- Register placeholders use the reference view or operand width. Literal braces escape;
+  percent pieces become `%`; ordinary AT&T constants receive `$`.
+- Unused operands get references in assembler comments to satisfy Rust's operand-use check.
+- Extended asm maps parser options directly. Basic asm uses the decoded template with
+  `raw`; its empty piece list does not distinguish text references.
+- `memory`/`cc`/`unwind` clobbers are represented by the computed options;
+  register clobbers become discarded `lateout` operands. Reserved registers remain barriers.
+- Symbols, memory operands, special immediate modifiers, asm goto, naked/module asm,
+  and operand type bridges are tracked by the other `slate-3f8g.4.17` children.

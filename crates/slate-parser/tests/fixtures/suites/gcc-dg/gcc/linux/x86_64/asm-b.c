@@ -75,8 +75,8 @@ main (void)
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<u16>) -> void>(%[[VALUE_foo]], addr_of<ptr<u16>>(%[[VALUE_x]]));
 // DEFAULT-NEXT:         let %[[VALUE_y:[0-9]+]] y: u32 [storage=automatic] [const] = widen<u32, reason=assign>(read<u16>(%[[VALUE_x]]));
 // DEFAULT-NEXT:         write<ptr<volatile u16>>(%[[VALUE_z]], pointer_cast<ptr<volatile u16>, reason=assign>(addr_of<ptr<u16>>(%[[VALUE_x]])));
-// DEFAULT-NEXT:         asm volatile "movb %b1,1(%2)\\n\\tmovb %h1,(%2)" [dialect=att] [options=nostack] {
-// DEFAULT-NEXT:             template: "movb " %b1(8) ",1(" %2 ")\\n\\tmovb " %h1(high8) ",(" %2 ")";
+// DEFAULT-NEXT:         asm volatile "movb %b1,1(%2)\n\tmovb %h1,(%2)" [dialect=att] [options=nostack] {
+// DEFAULT-NEXT:             template: "movb " %b1(8) ",1(" %2 ")\n\tmovb " %h1(high8) ",(" %2 ")";
 // DEFAULT-NEXT:             lateout 0 "m" [mem] width 16 place<u16, volatile>(deref(read<ptr<volatile u16>>(%[[VALUE_z]])));
 // DEFAULT-NEXT:             in 1 "Q" [reg_abcd] width 32 read<u32>(%[[VALUE_y]]);
 // DEFAULT-NEXT:             in 2 "R" [reg_legacy] width 64 read<ptr<volatile u16>>(%[[VALUE_z]]);

@@ -228,6 +228,7 @@ pub enum Feature {
     AtomicVolatile,
     ArmTargetFeature,
     AsmGotoWithOutputs,
+    AsmUnwind,
     Breakpoint,
     CVariadic,
     F16,
@@ -248,6 +249,7 @@ impl Feature {
             Feature::AtomicVolatile => "atomic_volatile",
             Feature::ArmTargetFeature => "arm_target_feature",
             Feature::AsmGotoWithOutputs => "asm_goto_with_outputs",
+            Feature::AsmUnwind => "asm_unwind",
             Feature::Breakpoint => "breakpoint",
             Feature::CVariadic => "c_variadic",
             Feature::F16 => "f16",
@@ -663,9 +665,30 @@ pub struct Block {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum AsmDialect {
-    Att,
-    Intel,
+pub enum AsmOption {
+    Pure,
+    NoMem,
+    ReadOnly,
+    NoStack,
+    PreservesFlags,
+    MayUnwind,
+    AttSyntax,
+    Raw,
+}
+
+impl AsmOption {
+    pub fn spelling(self) -> &'static str {
+        match self {
+            Self::Pure => "pure",
+            Self::NoMem => "nomem",
+            Self::ReadOnly => "readonly",
+            Self::NoStack => "nostack",
+            Self::PreservesFlags => "preserves_flags",
+            Self::MayUnwind => "may_unwind",
+            Self::AttSyntax => "att_syntax",
+            Self::Raw => "raw",
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -732,9 +755,8 @@ impl AsmOperand {
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct InlineAsm {
     pub template: String,
-    pub dialect: Option<AsmDialect>,
     pub operands: Vec<AsmOperand>,
-    pub raw: bool,
+    pub options: Vec<AsmOption>,
 }
 
 #[expect(

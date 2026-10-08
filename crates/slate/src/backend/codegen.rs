@@ -1,11 +1,11 @@
 use std::fmt::{self, Write};
 
 use crate::backend::rust_ast::{
-    Abi, AsmDialect, AsmOperand, AsmReg, AtomicOrdering, AtomicPlace, AtomicRmwOp, AtomicType,
-    Attr, Block, Cfg, Comment, CommentAttach, CrateAttr, Derive, Expr, ExternDecl, FnDef,
-    GenericParam, ImplBlock, ImplItem, InlineHint, Item, Method, Path, Pattern, Precedence,
-    Program, RecordDef, RecordField, Repr, RustValue, SelfKind, Stmt, StructDef, StructFields,
-    TraitBound, TraitRef, Type,
+    Abi, AsmOperand, AsmReg, AtomicOrdering, AtomicPlace, AtomicRmwOp, AtomicType, Attr, Block,
+    Cfg, Comment, CommentAttach, CrateAttr, Derive, Expr, ExternDecl, FnDef, GenericParam,
+    ImplBlock, ImplItem, InlineHint, Item, Method, Path, Pattern, Precedence, Program, RecordDef,
+    RecordField, Repr, RustValue, SelfKind, Stmt, StructDef, StructFields, TraitBound, TraitRef,
+    Type,
 };
 
 const INDENT: &str = "    ";
@@ -984,16 +984,14 @@ impl<W: Write> Codegen<W> {
                         }
                     }
                 }
-                let mut options = Vec::new();
-                if matches!(asm.dialect, Some(AsmDialect::Att)) {
-                    options.push("att_syntax");
-                }
-                if asm.raw {
-                    options.push("raw");
-                }
-                if !options.is_empty() {
+                if !asm.options.is_empty() {
                     self.out.write_str(", options(")?;
-                    self.out.write_str(&options.join(", "))?;
+                    for (index, option) in asm.options.iter().enumerate() {
+                        if index != 0 {
+                            self.out.write_str(", ")?;
+                        }
+                        self.out.write_str(option.spelling())?;
+                    }
                     self.out.write_char(')')?;
                 }
                 self.out.write_str(");\n")

@@ -70,6 +70,9 @@ impl FunctionLowerer<'_, '_> {
                 self.lower_vla_let(variable)?
             }
             ir::Statement::Let(variable) => {
+                if variable.register.is_some() {
+                    self.register_locals.insert(variable.id);
+                }
                 let init = variable
                     .initializer
                     .as_ref()
@@ -274,6 +277,7 @@ impl FunctionLowerer<'_, '_> {
                     })
                 })?)
             }
+            ir::Statement::Asm(asm) => self.lower_asm(statement, asm)?,
             ir::Statement::Null => Stmt::Block(rust::Block::default()),
             _ => {
                 return Err(Construct::Statement {

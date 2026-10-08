@@ -59,15 +59,15 @@ test_longlong_from_mem (long long *x)
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test_longlong:[0-9]+]] @test_longlong(%[[VALUE_x:[0-9]+]] x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         asm "foo\\t%0" [dialect=att] [options=pure,nomem,nostack] {
-// DEFAULT-NEXT:             template: "foo\\t" %0;
+// DEFAULT-NEXT:         asm "foo\t%0" [dialect=att] [options=pure,nomem,nostack] {
+// DEFAULT-NEXT:             template: "foo\t" %0;
 // DEFAULT-NEXT:             inlateout 0 "{rcx}" [{cx}] width 64 place<i64>(%[[VALUE_x]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         return read<i64>(%[[VALUE_x]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test_longlong_from_mem:[0-9]+]] @test_longlong_from_mem(%[[VALUE_x_2:[0-9]+]] x: ptr<i64>) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         asm "foo\\t%0" [dialect=att] [options=pure,nomem,nostack] {
-// DEFAULT-NEXT:             template: "foo\\t" %0;
+// DEFAULT-NEXT:         asm "foo\t%0" [dialect=att] [options=pure,nomem,nostack] {
+// DEFAULT-NEXT:             template: "foo\t" %0;
 // DEFAULT-NEXT:             inlateout 0 "{rcx}" [{cx}] width 64 place<i64>(deref(read<ptr<i64>>(%[[VALUE_x_2]])));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         return read<i64>(deref(read<ptr<i64>>(%[[VALUE_x_2]])));

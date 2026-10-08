@@ -51,8 +51,8 @@ test (void)
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test:[0-9]+]] @test() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         asm "foo\\t%0" [dialect=att] [options=nomem,nostack] {
-// DEFAULT-NEXT:             template: "foo\\t" %0;
+// DEFAULT-NEXT:         asm "foo\t%0" [dialect=att] [options=nomem,nostack] {
+// DEFAULT-NEXT:             template: "foo\t" %0;
 // DEFAULT-NEXT:             in 0 "{xmm0}" [{xmm0}] width 128 widen<i128, reason=explicit>(const<i32>(42));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }

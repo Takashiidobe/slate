@@ -109,57 +109,57 @@ test_long_from_mem (long *x)
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test_char:[0-9]+]] @test_char(%[[VALUE_x:[0-9]+]] x: i8) -> i8 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         asm "foo\\t%0" [dialect=att] [options=pure,nomem,nostack] {
-// DEFAULT-NEXT:             template: "foo\\t" %0;
+// DEFAULT-NEXT:         asm "foo\t%0" [dialect=att] [options=pure,nomem,nostack] {
+// DEFAULT-NEXT:             template: "foo\t" %0;
 // DEFAULT-NEXT:             inlateout 0 "{rcx}" [{cx}] width 8 place<i8>(%[[VALUE_x]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         return read<i8>(%[[VALUE_x]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test_char_from_mem:[0-9]+]] @test_char_from_mem(%[[VALUE_x_2:[0-9]+]] x: ptr<i8>) -> i8 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         asm "foo\\t%0" [dialect=att] [options=pure,nomem,nostack] {
-// DEFAULT-NEXT:             template: "foo\\t" %0;
+// DEFAULT-NEXT:         asm "foo\t%0" [dialect=att] [options=pure,nomem,nostack] {
+// DEFAULT-NEXT:             template: "foo\t" %0;
 // DEFAULT-NEXT:             inlateout 0 "{rcx}" [{cx}] width 8 place<i8>(deref(read<ptr<i8>>(%[[VALUE_x_2]])));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         return read<i8>(deref(read<ptr<i8>>(%[[VALUE_x_2]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test_short:[0-9]+]] @test_short(%[[VALUE_x_3:[0-9]+]] x: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         asm "foo\\t%0" [dialect=att] [options=pure,nomem,nostack] {
-// DEFAULT-NEXT:             template: "foo\\t" %0;
+// DEFAULT-NEXT:         asm "foo\t%0" [dialect=att] [options=pure,nomem,nostack] {
+// DEFAULT-NEXT:             template: "foo\t" %0;
 // DEFAULT-NEXT:             inlateout 0 "{rcx}" [{cx}] width 16 place<i16>(%[[VALUE_x_3]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         return read<i16>(%[[VALUE_x_3]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test_short_from_mem:[0-9]+]] @test_short_from_mem(%[[VALUE_x_4:[0-9]+]] x: ptr<i16>) -> i16 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         asm "foo\\t%0" [dialect=att] [options=pure,nomem,nostack] {
-// DEFAULT-NEXT:             template: "foo\\t" %0;
+// DEFAULT-NEXT:         asm "foo\t%0" [dialect=att] [options=pure,nomem,nostack] {
+// DEFAULT-NEXT:             template: "foo\t" %0;
 // DEFAULT-NEXT:             inlateout 0 "{rcx}" [{cx}] width 16 place<i16>(deref(read<ptr<i16>>(%[[VALUE_x_4]])));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         return read<i16>(deref(read<ptr<i16>>(%[[VALUE_x_4]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test_int:[0-9]+]] @test_int(%[[VALUE_x_5:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         asm "foo\\t%0" [dialect=att] [options=pure,nomem,nostack] {
-// DEFAULT-NEXT:             template: "foo\\t" %0;
+// DEFAULT-NEXT:         asm "foo\t%0" [dialect=att] [options=pure,nomem,nostack] {
+// DEFAULT-NEXT:             template: "foo\t" %0;
 // DEFAULT-NEXT:             inlateout 0 "{rcx}" [{cx}] width 32 place<i32>(%[[VALUE_x_5]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_x_5]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test_int_from_mem:[0-9]+]] @test_int_from_mem(%[[VALUE_x_6:[0-9]+]] x: ptr<i32>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         asm "foo\\t%0" [dialect=att] [options=pure,nomem,nostack] {
-// DEFAULT-NEXT:             template: "foo\\t" %0;
+// DEFAULT-NEXT:         asm "foo\t%0" [dialect=att] [options=pure,nomem,nostack] {
+// DEFAULT-NEXT:             template: "foo\t" %0;
 // DEFAULT-NEXT:             inlateout 0 "{rcx}" [{cx}] width 32 place<i32>(deref(read<ptr<i32>>(%[[VALUE_x_6]])));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         return read<i32>(deref(read<ptr<i32>>(%[[VALUE_x_6]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test_long:[0-9]+]] @test_long(%[[VALUE_x_7:[0-9]+]] x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         asm "foo\\t%0" [dialect=att] [options=pure,nomem,nostack] {
-// DEFAULT-NEXT:             template: "foo\\t" %0;
+// DEFAULT-NEXT:         asm "foo\t%0" [dialect=att] [options=pure,nomem,nostack] {
+// DEFAULT-NEXT:             template: "foo\t" %0;
 // DEFAULT-NEXT:             inlateout 0 "{rcx}" [{cx}] width 64 place<i64>(%[[VALUE_x_7]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         return read<i64>(%[[VALUE_x_7]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test_long_from_mem:[0-9]+]] @test_long_from_mem(%[[VALUE_x_8:[0-9]+]] x: ptr<i64>) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         asm "foo\\t%0" [dialect=att] [options=pure,nomem,nostack] {
-// DEFAULT-NEXT:             template: "foo\\t" %0;
+// DEFAULT-NEXT:         asm "foo\t%0" [dialect=att] [options=pure,nomem,nostack] {
+// DEFAULT-NEXT:             template: "foo\t" %0;
 // DEFAULT-NEXT:             inlateout 0 "{rcx}" [{cx}] width 64 place<i64>(deref(read<ptr<i64>>(%[[VALUE_x_8]])));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         return read<i64>(deref(read<ptr<i64>>(%[[VALUE_x_8]])));

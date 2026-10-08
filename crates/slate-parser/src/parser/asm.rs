@@ -7,7 +7,7 @@ use crate::ast::{
     GnuAsm, Span, StorageClass,
 };
 use crate::error::ParseError;
-use crate::lexer::{Keyword, Token};
+use crate::lexer::{Keyword, Lexer, Token};
 use crate::target::x86::decode_register;
 use crate::target_info::TargetFamily;
 
@@ -50,7 +50,15 @@ fn asm_string(tokens: &[Span<Token>], pos: &mut usize) -> Result<Span<String>, S
     let mut value = String::new();
     while let Some(token) = tokens.get(*pos) {
         match &token.value {
-            Token::StringLit(piece) => value.push_str(piece),
+            Token::StringLit(piece) => {
+                let chars = piece.chars().collect::<Vec<_>>();
+                let decoded = Lexer::decode_escapes(&chars, 0, chars.len())
+                    .into_iter()
+                    .map(char::from_u32)
+                    .collect::<Option<String>>()
+                    .ok_or("invalid character in asm string")?;
+                value.push_str(&decoded);
+            }
             Token::WideStringLit(_) => {
                 return Err("cannot use wide string literal in `asm`".into());
             }

@@ -63,16 +63,16 @@ memmove (void *__dest, __const void *__src, size_t __n)
 // DEFAULT-NEXT:         let %[[VALUE___d1:[0-9]+]] __d1: u64 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE___d2:[0-9]+]] __d2: u64 [storage=automatic];
 // DEFAULT-NEXT:         if lt<ptr<void>>(read<ptr<void>>(%[[VALUE___dest]]), pointer_cast<ptr<void>, reason=usual_arith>(read<ptr<const void>>(%[[VALUE___src]])))
-// DEFAULT-NEXT:             asm volatile "cld\\n\\trep\\n\\tmovsb" [dialect=att] [options=nostack] {
-// DEFAULT-NEXT:                 template: "cld\\n\\trep\\n\\tmovsb";
+// DEFAULT-NEXT:             asm volatile "cld\n\trep\n\tmovsb" [dialect=att] [options=nostack] {
+// DEFAULT-NEXT:                 template: "cld\n\trep\n\tmovsb";
 // DEFAULT-NEXT:                 inout 0 "c" [{cx}] width 64 place<u64>(%[[VALUE___d0]]) from read<i32>(%[[VALUE___n]]);
 // DEFAULT-NEXT:                 inout 1 "S" [{si}] width 64 place<u64>(%[[VALUE___d1]]) from read<ptr<const void>>(%[[VALUE___src]]);
 // DEFAULT-NEXT:                 inout 2 "D" [{di}] width 64 place<u64>(%[[VALUE___d2]]) from read<ptr<void>>(%[[VALUE___dest]]);
 // DEFAULT-NEXT:                 clobbers: memory;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             asm volatile "std\\n\\trep\\n\\tmovsb\\n\\tcld" [dialect=att] [options=nostack] {
-// DEFAULT-NEXT:                 template: "std\\n\\trep\\n\\tmovsb\\n\\tcld";
+// DEFAULT-NEXT:             asm volatile "std\n\trep\n\tmovsb\n\tcld" [dialect=att] [options=nostack] {
+// DEFAULT-NEXT:                 template: "std\n\trep\n\tmovsb\n\tcld";
 // DEFAULT-NEXT:                 inout 0 "c" [{cx}] width 64 place<u64>(%[[VALUE___d0]]) from read<i32>(%[[VALUE___n]]);
 // DEFAULT-NEXT:                 inout 1 "S" [{si}] width 64 place<u64>(%[[VALUE___d1]]) from ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(pointer_cast<ptr<const i8>, reason=explicit>(read<ptr<const void>>(%[[VALUE___src]])), sub<i32, overflow=ub>(read<i32>(%[[VALUE___n]]), const<i32>(1)));
 // DEFAULT-NEXT:                 inout 2 "D" [{di}] width 64 place<u64>(%[[VALUE___d2]]) from ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(pointer_cast<ptr<i8>, reason=explicit>(read<ptr<void>>(%[[VALUE___dest]])), sub<i32, overflow=ub>(read<i32>(%[[VALUE___n]]), const<i32>(1)));

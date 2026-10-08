@@ -8,6 +8,7 @@ use slate_parser::target_info::TargetInfo;
 use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
 
 mod arithmetic;
+mod asm;
 mod atomics;
 mod calls;
 mod comment_text;
@@ -75,6 +76,7 @@ struct Tables<'m> {
 #[derive(Default)]
 struct Dependencies {
     atomic_volatile: bool,
+    asm_unwind: bool,
     atomic128: bool,
     long_double: bool,
     simd: bool,
@@ -104,6 +106,7 @@ struct FunctionLowerer<'a, 'm> {
     hoisted: Vec<Stmt>,
     dispatch_bindings: HashSet<BindingId>,
     aligned_locals: HashSet<BindingId>,
+    register_locals: HashSet<BindingId>,
     old_value: Option<Expr>,
 }
 
@@ -386,6 +389,7 @@ impl<'m> ModuleLowerer<'m> {
             hoisted: Vec::new(),
             dispatch_bindings: HashSet::new(),
             aligned_locals: HashSet::new(),
+            register_locals: HashSet::new(),
             old_value: None,
         }
     }
@@ -616,6 +620,9 @@ impl<'m> ModuleLowerer<'m> {
             );
         }
         let mut features = vec![rust::CrateAttr::Allow(vec![rust::Lint::NonCamelCaseTypes])];
+        if dependencies.asm_unwind {
+            features.push(rust::CrateAttr::Feature(rust::Feature::AsmUnwind));
+        }
         if dependencies.atomic128 {
             items.insert(
                 0,

@@ -595,7 +595,8 @@ Designator indices are unevaluated.
   (`src/attribute_support.rs`, e.g. `dllimport` off Windows); malformed
   ones are `Invalid`. Each keeps its span and placement (specifiers,
   declarators, init-declarators, tag definitions, statements).
-- `GnuAsm`: parsed template, operands with constraints, clobbers, labels.
+- `GnuAsm`: decoded template, operands with constraints, clobbers, labels.
+  Asm string escapes decode per literal before concatenation and template analysis.
 - `MsAsm`: instructions of optional label, prefixes, mnemonic, MASM
   operands. Registers, numbers, operators decoded; names left to sema.
   Exception: `TYPE int` in the msvc flavor parses to `TypeKeyword`.

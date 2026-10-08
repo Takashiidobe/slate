@@ -68,13 +68,12 @@ impl FunctionLowerer<'_, '_> {
                 },
                 Stmt::InlineAsm(rust::InlineAsm {
                     template: format!("mov {{}}, {register}"),
-                    dialect: None,
                     operands: vec![rust::AsmOperand::Out {
                         reg: rust::AsmReg::Class("reg".into()),
                         late: true,
                         value: Expr::Var(temp.as_str().into()),
                     }],
-                    raw: false,
+                    options: Vec::new(),
                 }),
             ],
             tail: Some(Box::new(Expr::Cast {

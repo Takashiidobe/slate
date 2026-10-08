@@ -49,15 +49,15 @@ int normal(int x) {
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_identity:[0-9]+]] @identity(%[[VALUE_x:[0-9]+]] x: i32) -> i32 [linkage=external] [naked] [fallthrough=ub] {
-// IR-NEXT:         asm "mov %edi, %eax\\n\\tret" [dialect=att];
+// IR-NEXT:         asm "mov %edi, %eax\n\tret" [dialect=att];
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_two:[0-9]+]] @two() -> void [linkage=external] [naked] [fallthrough=ub] {
 // IR-NEXT:         asm "nop" [dialect=att];
 // IR-NEXT:         asm "ret" [dialect=att];
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_constant:[0-9]+]] @constant() -> void [linkage=external] [naked] [fallthrough=ub] {
-// IR-NEXT:         asm volatile "mov %0, %%eax\\n\\tret" [dialect=att] {
-// IR-NEXT:             template: "mov " %0 ", " %% "eax\\n\\tret";
+// IR-NEXT:         asm volatile "mov %0, %%eax\n\tret" [dialect=att] {
+// IR-NEXT:             template: "mov " %0 ", " %% "eax\n\tret";
 // IR-NEXT:             in 0 "i" [imm | sym] -> imm width 32 const<i32>(42);
 // IR-NEXT:         }
 // IR-NEXT:     }
