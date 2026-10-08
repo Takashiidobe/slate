@@ -148,17 +148,134 @@ impl FunctionLowerer<'_, '_> {
         }
     }
 
-    fn asm_scalar_type(&mut self, ty: &ir::Type) -> Result<rust::Type> {
+    fn asm_full_storage(&self, ty: &ir::Type) -> bool {
         match self.tables.resolve_type(ty) {
-            ir::Type::Numeric(ir::NumericType::Integer {
-                width: 16 | 32 | 64,
-                ..
-            })
-            | ir::Type::Pointer { .. } => self.lower_type(ty),
-            _ => Err(unsupported_asm(format!(
-                "operand type {ty} needs a register bridge"
-            ))),
+            ir::Type::Defined(id) => {
+                let Some(ir::TypeDefinitionKind::Record {
+                    kind,
+                    fields: Some(fields),
+                    layout: Some(layout),
+                }) = self.tables.types.get(id).map(|definition| &definition.kind)
+                else {
+                    return false;
+                };
+                if fields
+                    .iter()
+                    .any(|field| field.bit_width.is_some() || !self.asm_full_storage(&field.ty))
+                {
+                    return false;
+                }
+                let sizes = fields
+                    .iter()
+                    .map(|field| self.tables.storage_of(&field.ty).map(|(size, _)| size));
+                if matches!(kind, ir::RecordKind::Union) {
+                    sizes.into_iter().all(|size| size == Some(layout.size))
+                } else {
+                    sizes
+                        .collect::<Option<Vec<_>>>()
+                        .is_some_and(|sizes| sizes.iter().sum::<u64>() == layout.size)
+                }
+            }
+            ir::Type::Bool => false,
+            ir::Type::Array { element, .. } => self.asm_full_storage(element),
+            ir::Type::Numeric(_) | ir::Type::Pointer { .. } => true,
+            _ => false,
         }
+    }
+
+    fn asm_bits_type(&self, ty: &ir::Type) -> Result<rust::Type> {
+        if !matches!(self.tables.resolve_type(ty), ir::Type::Bool) && !self.asm_full_storage(ty) {
+            return Err(unsupported_asm(
+                "aggregate operand needs a field-wise bridge",
+            ));
+        }
+        let size = self.tables.storage_of(ty).map(|(size, _)| size);
+        let prim = match size {
+            Some(1) => Prim::U8,
+            Some(2) => Prim::U16,
+            Some(4) => Prim::U32,
+            Some(8) => Prim::U64,
+            _ => {
+                return Err(unsupported_asm(format!(
+                    "operand type {ty} needs a register bridge"
+                )));
+            }
+        };
+        Ok(rust::Type::Prim(prim))
+    }
+
+    fn asm_scratch_type(&self, operand: &ir::AsmOperand) -> Result<rust::Type> {
+        let (output, input) = match &operand.kind {
+            ir::AsmOperandKind::In(value) => (&value.ty, None),
+            ir::AsmOperandKind::Out { place, .. } => (&place.ty, None),
+            ir::AsmOperandKind::InOut { place, input, .. } => {
+                (&place.ty, input.as_ref().map(|input| &input.value.ty))
+            }
+            _ => return Err(unsupported_asm("non-value register operand")),
+        };
+        let width = |ty| -> Result<u32> {
+            match self.asm_bits_type(ty)? {
+                rust::Type::Prim(Prim::U8) => Ok(8),
+                rust::Type::Prim(Prim::U16) => Ok(16),
+                rust::Type::Prim(Prim::U32) => Ok(32),
+                rust::Type::Prim(Prim::U64) => Ok(64),
+                _ => unreachable!(),
+            }
+        };
+        let bits = width(output)?.max(input.map(width).transpose()?.unwrap_or(0));
+        Ok(rust::Type::Prim(match bits {
+            8 => Prim::U32,
+            16 => Prim::U16,
+            32 => Prim::U32,
+            _ => Prim::U64,
+        }))
+    }
+
+    fn asm_encode(&mut self, value: Expr, ty: &ir::Type, scratch: &rust::Type) -> Result<Expr> {
+        let bits = self.asm_bits_type(ty)?;
+        let source = self.lower_type(ty)?;
+        let value = if matches!(source, rust::Type::Prim(_) | rust::Type::Ptr { .. })
+            && !matches!(
+                source,
+                rust::Type::Prim(Prim::F16 | Prim::F32 | Prim::F64 | Prim::F128)
+            ) {
+            Expr::Cast {
+                expr: Box::new(value),
+                ty: bits,
+            }
+        } else {
+            Expr::Transmute {
+                from: source,
+                to: bits,
+                expr: Box::new(value),
+            }
+        };
+        Ok(Expr::Cast {
+            expr: Box::new(value),
+            ty: scratch.clone(),
+        })
+    }
+
+    fn asm_decode(&mut self, value: Expr, ty: &ir::Type) -> Result<Expr> {
+        let bits = self.asm_bits_type(ty)?;
+        let target = self.lower_type(ty)?;
+        let value = Expr::Cast {
+            expr: Box::new(value),
+            ty: bits,
+        };
+        Ok(if matches!(target, rust::Type::Prim(Prim::Bool)) {
+            Expr::Binary {
+                op: BinOp::Ne,
+                lhs: Box::new(value),
+                rhs: Box::new(Expr::Value(0i64.into())),
+            }
+        } else {
+            Expr::Transmute {
+                from: self.asm_bits_type(ty)?,
+                to: target,
+                expr: Box::new(value),
+            }
+        })
     }
 
     fn asm_read(&mut self, statement: &Span<ir::Statement>, place: &ir::Place) -> Result<Expr> {
@@ -232,14 +349,15 @@ impl FunctionLowerer<'_, '_> {
             };
             let lowered = match &operand.kind {
                 ir::AsmOperandKind::In(value) => {
-                    self.asm_scalar_type(&value.ty)?;
+                    let scratch = self.asm_scratch_type(operand)?;
+                    let input = self.lower_value(value)?;
                     rust::AsmOperand::In {
                         reg,
-                        value: self.lower_value(value)?,
+                        value: self.asm_encode(input, &value.ty, &scratch)?,
                     }
                 }
                 ir::AsmOperandKind::Out { place, .. } | ir::AsmOperandKind::InOut { place, .. } => {
-                    let ty = self.asm_scalar_type(&place.ty)?;
+                    let ty = self.asm_scratch_type(operand)?;
                     let temp = self.next_temp();
                     prefix.push(Stmt::Let {
                         name: temp.clone(),
@@ -248,7 +366,8 @@ impl FunctionLowerer<'_, '_> {
                         init: None,
                     });
                     let output = Expr::Var(temp.as_str().into());
-                    writebacks.push(self.lower_assignment(place, output.clone())?);
+                    let decoded = self.asm_decode(output.clone(), &place.ty)?;
+                    writebacks.push(self.lower_assignment(place, decoded)?);
                     let late = matches!(
                         operand.direction(),
                         ir::AsmDirection::LateOut | ir::AsmDirection::InLateOut
@@ -257,14 +376,13 @@ impl FunctionLowerer<'_, '_> {
                         ir::AsmOperandKind::InOut { input, .. } => {
                             let input = match input {
                                 Some(input) => {
-                                    if self.asm_scalar_type(&input.value.ty)? != ty {
-                                        return Err(unsupported_asm(
-                                            "tied input needs a type bridge",
-                                        ));
-                                    }
-                                    self.lower_value(&input.value)?
+                                    let value = self.lower_value(&input.value)?;
+                                    self.asm_encode(value, &input.value.ty, &ty)?
                                 }
-                                None => self.asm_read(statement, place)?,
+                                None => {
+                                    let value = self.asm_read(statement, place)?;
+                                    self.asm_encode(value, &place.ty, &ty)?
+                                }
                             };
                             rust::AsmOperand::InOut {
                                 reg,

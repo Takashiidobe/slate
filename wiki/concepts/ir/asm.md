@@ -221,8 +221,15 @@ impossible.
 
 - `slate/src/frontend/lowerer/asm.rs` consumes selected classes and pieces;
   `backend/rust_ast.rs` stores operands/options and `backend/codegen.rs` emits `asm!`.
-- Core support: x86-64 `reg`/`reg_abcd` with 16/32/64-bit integers or pointers,
-  integer `const` operands, and register clobbers. Other classes/types remain barriers.
+- Core support: x86-64 `reg`/`reg_abcd`, integer `const` operands, and register clobbers.
+- Register type bridges use unsigned 16/32/64-bit scratch operands. Bytes widen to 32 bits;
+  tied operands use the larger storage width and outputs truncate before writeback.
+- Integer/enum and raw pointer inputs cast; floats, nullable function pointers, and small
+  aggregates transmute through their storage-sized integer. `_Bool` inputs cast to a byte;
+  outputs test the byte against zero, matching Clang's asm storage/load behavior.
+- Aggregate transmutes require 1/2/4/8-byte, fully occupied storage and fields accepting
+  every bit pattern. Padding, partial union members, bit-fields, and nested bools need
+  field-wise bridges; other register classes remain barriers.
 - Outputs use scratch temporaries, then ordinary place writeback (including volatile stores).
   Tied inputs retain their input expression; directions come from `AsmOperand::direction()`.
 - Register placeholders use the reference view or operand width. Literal braces escape;
@@ -233,4 +240,4 @@ impossible.
 - `memory`/`cc`/`unwind` clobbers are represented by the computed options;
   register clobbers become discarded `lateout` operands. Reserved registers remain barriers.
 - Symbols, memory operands, special immediate modifiers, asm goto, naked/module asm,
-  and operand type bridges are tracked by the other `slate-3f8g.4.17` children.
+  and additional operand classes are tracked by the other `slate-3f8g.4.17` children.
