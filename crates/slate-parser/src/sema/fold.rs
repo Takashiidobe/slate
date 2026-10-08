@@ -54,6 +54,31 @@ pub(super) fn bit_builtin(
     fallback: Option<&Value>,
     target: Target,
 ) -> Option<BigInt> {
+    if matches!(builtin, BitBuiltin::RotateLeft | BitBuiltin::RotateRight) {
+        let (width, false) = integer_type(&argument.ty)? else {
+            return None;
+        };
+        let bits = normalize(integer_constant(argument, target)?, width, false);
+        let count = integer_constant(fallback?, target)?;
+        if count.sign() == Sign::Minus && target.flavor.is_gcc() {
+            return None;
+        }
+        let width_value = BigInt::from(width);
+        let count = u32::try_from((count % &width_value + &width_value) % &width_value).ok()?;
+        if count == 0 {
+            return Some(bits);
+        }
+        let (left, right) = if builtin == BitBuiltin::RotateLeft {
+            (count, width - count)
+        } else {
+            (width - count, count)
+        };
+        return Some(normalize(
+            (bits.clone() << left) | (bits >> right),
+            width,
+            false,
+        ));
+    }
     let (width, _) = integer_type(&argument.ty).filter(|(width, _)| *width <= 128)?;
     let bits = u128::try_from(normalize(integer_constant(argument, target)?, width, false)).ok()?;
     let unused = 128 - width;
@@ -82,6 +107,7 @@ pub(super) fn bit_builtin(
         }
         BitBuiltin::Bswap => return Some((bits.swap_bytes() >> unused).into()),
         BitBuiltin::Bitreverse => return Some((bits.reverse_bits() >> unused).into()),
+        BitBuiltin::RotateLeft | BitBuiltin::RotateRight => return None,
     };
     Some(count.into())
 }

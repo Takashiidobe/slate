@@ -46,13 +46,21 @@ resolve through `sema/types.rs` and `sema/ctype/`.
 - `__builtin_add_overflow`, `__builtin_sub_overflow`, `__builtin_mul_overflow`
 - `__builtin_umul_overflow`, `__builtin_umull_overflow`, `__builtin_umulll_overflow`
 - `__builtin_rotateleft{8,16,32,64}`, `__builtin_rotateright{8,16,32,64}`
+- `__builtin_stdc_rotate_left`, `__builtin_stdc_rotate_right`: retained calls
+  preserve both operand types, return the first unsigned integer type, and
+  evaluate each argument once. Standard, extended, and bit-precise widths
+  are supported without integer promotions. Required constant evaluation
+  rotates modulo the value width; negative counts normalize under clang
+  and are undefined under gcc ([GCC](https://gcc.gnu.org/onlinedocs/gcc/Bit-Operation-Builtins.html),
+  [Clang](https://clang.llvm.org/docs/LanguageExtensions.html)).
 - `__builtin_clz`, `__builtin_ctz`, `__builtin_popcount`, `__builtin_parity`,
   `__builtin_ffs`, `__builtin_clrsb`, with their registered width suffixes
 - `__builtin_clzg`, `__builtin_ctzg`, `__builtin_popcountg`
 - `__builtin_bswap{16,32,64}`, `__builtin_bitreverse{8,16,32,64}`
 
 Parser: `sema/expression.rs` and `sema/vector_builtins.rs` emit overflow IR;
-`sema/fold.rs` folds constant bit queries. Slate: `lowerer/arithmetic.rs` handles
+`sema/fold.rs` folds constant bit queries and type-generic rotations.
+Retained polymorphic builtin declarations are keyed by name and C signature. Slate: `lowerer/arithmetic.rs` handles
 overflow, `lowerer/values.rs` handles rotations and scalar bit counts, and
 `lowerer/intrinsics.rs` handles mapped bit operations.
 

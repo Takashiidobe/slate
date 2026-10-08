@@ -23,7 +23,7 @@ pub(super) struct Lowerer {
     pub module: Module,
     pub names: NameResolution,
     pub function_declarations: HashMap<BindingId, super::function::FunctionDeclarations>,
-    pub builtin_declarations: HashMap<&'static str, BindingId>,
+    pub builtin_declarations: HashMap<(&'static str, QualType), BindingId>,
     pub alias_annotations: HashMap<TypeId, Vec<(String, String)>>,
     pub next_id: u32,
     pub break_targets: Vec<BindingId>,
@@ -137,10 +137,11 @@ impl Lowerer {
         builtin: &'static ClangBuiltin,
         signature: QualType,
     ) -> Result<BindingId, ResolveError> {
-        if let Some(&id) = self.builtin_declarations.get(builtin.name) {
+        let declared = self.types.builtin_signature(builtin).unwrap_or(signature);
+        let key = (builtin.name, declared);
+        if let Some(&id) = self.builtin_declarations.get(&key) {
             return Ok(id);
         }
-        let declared = self.types.builtin_signature(builtin).unwrap_or(signature);
         let ty = self.types.ir_type(declared);
         let Type::Function {
             return_type,
@@ -200,7 +201,7 @@ impl Lowerer {
         self.module
             .annotate(&function, builtin.declaration_metadata());
         self.module.functions.push(function);
-        self.builtin_declarations.insert(builtin.name, id);
+        self.builtin_declarations.insert(key, id);
         Ok(id)
     }
 

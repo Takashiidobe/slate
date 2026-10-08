@@ -1016,7 +1016,21 @@ impl TypeResolver {
                             Some(self.ctypes.lvalue_conversion(typed.c))
                         }
                     };
-                    Some(self.derived_signature(builtin, derived, arguments.len(), first)?)
+                    let second = if derived == DerivedSignature::Rotate {
+                        match arguments.get(1) {
+                            Some(argument) => Some(self.operand_type(argument)?),
+                            None => None,
+                        }
+                    } else {
+                        None
+                    };
+                    Some(self.derived_signature(
+                        builtin,
+                        derived,
+                        arguments.len(),
+                        first,
+                        second,
+                    )?)
                 }
                 None => self.builtin_signature(builtin),
             };

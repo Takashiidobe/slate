@@ -24,6 +24,8 @@ pub(super) enum BitBuiltin {
     Clrsb,
     Bswap,
     Bitreverse,
+    RotateLeft,
+    RotateRight,
 }
 
 impl BitBuiltin {
@@ -48,9 +50,14 @@ impl BitBuiltin {
             | "__builtin_bitreverse16"
             | "__builtin_bitreverse32"
             | "__builtin_bitreverse64" => Self::Bitreverse,
+            "__builtin_stdc_rotate_left" => Self::RotateLeft,
+            "__builtin_stdc_rotate_right" => Self::RotateRight,
             _ => return None,
         };
         let generic = name.ends_with('g');
+        if matches!(builtin, Self::RotateLeft | Self::RotateRight) {
+            return (arguments.len() == 2).then_some((builtin, arguments));
+        }
         match arguments.len() {
             1 => Some((builtin, arguments)),
             2 if generic && matches!(builtin, Self::Clz | Self::Ctz) => Some((builtin, arguments)),
@@ -354,6 +361,7 @@ pub(super) enum DerivedSignature {
         class: OperandClass,
     },
     Scaled,
+    Rotate,
     BitCount {
         fallback: bool,
     },
@@ -374,6 +382,7 @@ pub(super) fn derived_signature(builtin: &ClangBuiltin) -> Option<DerivedSignatu
         },
         "Clzg" | "Ctzg" => DerivedSignature::BitCount { fallback: true },
         "Popcountg" => DerivedSignature::BitCount { fallback: false },
+        "StdcRotateLeft" | "StdcRotateRight" => DerivedSignature::Rotate,
         "ReduceAdd" | "ReduceMul" | "ReduceAnd" | "ReduceOr" | "ReduceXor" => {
             DerivedSignature::Reduction(OperandClass::Integer)
         }
@@ -575,6 +584,7 @@ impl TypeResolver {
         derived: DerivedSignature,
         arity: usize,
         first: Option<QualType>,
+        second: Option<QualType>,
     ) -> Result<QualType, ResolveError> {
         match (derived, first) {
             (DerivedSignature::Declared, _) => {
@@ -595,6 +605,19 @@ impl TypeResolver {
                 let operand = self.classified_operand(first, OperandClass::Floating)?;
                 let exponent = self.ctypes.int();
                 Ok(self.function_type(operand, vec![operand, exponent]))
+            }
+            (DerivedSignature::Rotate, Some(first)) if arity == 2 => {
+                let second = second.ok_or(ResolveError::Internal("rotate count type"))?;
+                if !matches!(
+                    self.ctypes.canonical_kind(first),
+                    CTypeKind::UChar
+                        | CTypeKind::Int { signed: false, .. }
+                        | CTypeKind::BitInt { signed: false, .. }
+                ) || !self.ctypes.is_integer(second)
+                {
+                    return Err(ResolveError::Rejected("rotate builtin operand type"));
+                }
+                Ok(self.function_type(first, vec![first, second]))
             }
             (DerivedSignature::BitCount { fallback }, Some(first))
                 if arity <= 1 + usize::from(fallback) =>
@@ -623,6 +646,7 @@ impl TypeResolver {
             (DerivedSignature::BitCount { .. }, _) => {
                 Err(ResolveError::Rejected("bit-counting builtin arity"))
             }
+            (DerivedSignature::Rotate, _) => Err(ResolveError::Rejected("rotate builtin arity")),
         }
     }
 
