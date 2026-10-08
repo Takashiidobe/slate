@@ -1,0 +1,2215 @@
+{
+  "metadata": {
+    "timestamp": "2026-10-08T02:07:00.620954+00:00",
+    "platform": "Linux-7.2.8-2-cachyos-x86_64-with-glibc2.44",
+    "cpu": "AMD Ryzen 5 7600 6-Core Processor",
+    "cpu_affinity": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "slate_commit": "6feeeed9737a2a93fd1a350b4c1c122b48747267",
+    "project_commit": "90d1f7f199cc55b13c7fdb5839d1409806633fdb",
+    "clang_version": "clang version 24.0.0git (https://github.com/Takashiidobe/llvm-project.git 58dd40228595ddb2fdf7ffe587392545f018e2e8)\nTarget: x86_64-unknown-linux-gnu\nThread model: posix\nInstalledDir: /home/takashi/llvm-project/build-cir/bin",
+    "binary_sha256": {
+      "slate": "4a642e7a3f72cf654338cb0c3ee1e9f3be2de13c4b85e4c1d4c332152d546a09",
+      "clang": "99196399d340f1178acd588b0dcf06d0835d3a21c501a55b17b21d4f3e6a1927"
+    },
+    "source_sha256": {
+      "codegen.c": "b0491ac6438c8e9d125e4c1752057c1820826c3629ccc7fa68d7ef98a224fc4e",
+      "hashmap.c": "3c34396d0bf6df362dbdec740580c2b8fdd54dd74a1624ffcb8824bd1f1bcbdb",
+      "main.c": "b2b6570363dd7ebdd4d456e555501639422b410bbcd4d1eb3150bc18a675e46c",
+      "parse.c": "6fba1f2497f443819c3b936e206f5d1045c3a16ed378fc34bfb5b2e478126c92",
+      "preprocess.c": "9fec813839210036d772eb8ba40980e3af70bf7166ba81b8e3814a659d83b3f1",
+      "strings.c": "e7e413d70e6f1d3582eb783999132a0a7fb9cd7b370f6320d73886a2fa6e8c5e",
+      "tokenize.c": "787f83b0f009ea69763e6aca3243f73224214068931b29c98fa60068f8b235dd",
+      "type.c": "a8756271f3be4bceb3cd4820ce3251f55a1fbee241a428ba24e2c7e003feb327",
+      "unicode.c": "67311a3aab39522bc7555a8318840c971dfd01b0e92943da62d8b28d2091f953",
+      "chibicc.h": "8154bbef23f84ecdfdb325c8965e6ffa6e1c03a1b78a7316e98256f1728900a2"
+    },
+    "method": "sequential complete project; one validation/warmup pass per tool; alternating order; text IR to /dev/null; O0, no debug info; default CIR passes/verifier; each tool uses its default headers; Linux wait4 peak RSS, max across sequential files",
+    "clang_build": [
+      "CMAKE_BUILD_TYPE:STRING=Release",
+      "LLVM_ENABLE_ASSERTIONS:BOOL=OFF",
+      "LLVM_ENABLE_PROJECTS:STRING=clang;mlir"
+    ]
+  },
+  "commands": {
+    "slate": [
+      [
+        "/home/takashi/Projects/slate/target/test-cache/release/slate-parser",
+        "ir",
+        "/home/takashi/c-corpus/chibicc/codegen.c",
+        "--flavor=clang",
+        "-target=x86_64-unknown-linux-gnu",
+        "-std=c11",
+        "-fno-common",
+        "-Wall",
+        "-Wno-switch"
+      ],
+      [
+        "/home/takashi/Projects/slate/target/test-cache/release/slate-parser",
+        "ir",
+        "/home/takashi/c-corpus/chibicc/hashmap.c",
+        "--flavor=clang",
+        "-target=x86_64-unknown-linux-gnu",
+        "-std=c11",
+        "-fno-common",
+        "-Wall",
+        "-Wno-switch"
+      ],
+      [
+        "/home/takashi/Projects/slate/target/test-cache/release/slate-parser",
+        "ir",
+        "/home/takashi/c-corpus/chibicc/main.c",
+        "--flavor=clang",
+        "-target=x86_64-unknown-linux-gnu",
+        "-std=c11",
+        "-fno-common",
+        "-Wall",
+        "-Wno-switch"
+      ],
+      [
+        "/home/takashi/Projects/slate/target/test-cache/release/slate-parser",
+        "ir",
+        "/home/takashi/c-corpus/chibicc/parse.c",
+        "--flavor=clang",
+        "-target=x86_64-unknown-linux-gnu",
+        "-std=c11",
+        "-fno-common",
+        "-Wall",
+        "-Wno-switch"
+      ],
+      [
+        "/home/takashi/Projects/slate/target/test-cache/release/slate-parser",
+        "ir",
+        "/home/takashi/c-corpus/chibicc/preprocess.c",
+        "--flavor=clang",
+        "-target=x86_64-unknown-linux-gnu",
+        "-std=c11",
+        "-fno-common",
+        "-Wall",
+        "-Wno-switch"
+      ],
+      [
+        "/home/takashi/Projects/slate/target/test-cache/release/slate-parser",
+        "ir",
+        "/home/takashi/c-corpus/chibicc/strings.c",
+        "--flavor=clang",
+        "-target=x86_64-unknown-linux-gnu",
+        "-std=c11",
+        "-fno-common",
+        "-Wall",
+        "-Wno-switch"
+      ],
+      [
+        "/home/takashi/Projects/slate/target/test-cache/release/slate-parser",
+        "ir",
+        "/home/takashi/c-corpus/chibicc/tokenize.c",
+        "--flavor=clang",
+        "-target=x86_64-unknown-linux-gnu",
+        "-std=c11",
+        "-fno-common",
+        "-Wall",
+        "-Wno-switch"
+      ],
+      [
+        "/home/takashi/Projects/slate/target/test-cache/release/slate-parser",
+        "ir",
+        "/home/takashi/c-corpus/chibicc/type.c",
+        "--flavor=clang",
+        "-target=x86_64-unknown-linux-gnu",
+        "-std=c11",
+        "-fno-common",
+        "-Wall",
+        "-Wno-switch"
+      ],
+      [
+        "/home/takashi/Projects/slate/target/test-cache/release/slate-parser",
+        "ir",
+        "/home/takashi/c-corpus/chibicc/unicode.c",
+        "--flavor=clang",
+        "-target=x86_64-unknown-linux-gnu",
+        "-std=c11",
+        "-fno-common",
+        "-Wall",
+        "-Wno-switch"
+      ]
+    ],
+    "clang": [
+      [
+        "/home/takashi/llvm-project/build-cir/bin/clang-23",
+        "-emit-cir",
+        "/home/takashi/c-corpus/chibicc/codegen.c",
+        "--target=x86_64-unknown-linux-gnu",
+        "-O0",
+        "-std=c11",
+        "-fno-common",
+        "-Wall",
+        "-Wno-switch",
+        "-o",
+        "/dev/null"
+      ],
+      [
+        "/home/takashi/llvm-project/build-cir/bin/clang-23",
+        "-emit-cir",
+        "/home/takashi/c-corpus/chibicc/hashmap.c",
+        "--target=x86_64-unknown-linux-gnu",
+        "-O0",
+        "-std=c11",
+        "-fno-common",
+        "-Wall",
+        "-Wno-switch",
+        "-o",
+        "/dev/null"
+      ],
+      [
+        "/home/takashi/llvm-project/build-cir/bin/clang-23",
+        "-emit-cir",
+        "/home/takashi/c-corpus/chibicc/main.c",
+        "--target=x86_64-unknown-linux-gnu",
+        "-O0",
+        "-std=c11",
+        "-fno-common",
+        "-Wall",
+        "-Wno-switch",
+        "-o",
+        "/dev/null"
+      ],
+      [
+        "/home/takashi/llvm-project/build-cir/bin/clang-23",
+        "-emit-cir",
+        "/home/takashi/c-corpus/chibicc/parse.c",
+        "--target=x86_64-unknown-linux-gnu",
+        "-O0",
+        "-std=c11",
+        "-fno-common",
+        "-Wall",
+        "-Wno-switch",
+        "-o",
+        "/dev/null"
+      ],
+      [
+        "/home/takashi/llvm-project/build-cir/bin/clang-23",
+        "-emit-cir",
+        "/home/takashi/c-corpus/chibicc/preprocess.c",
+        "--target=x86_64-unknown-linux-gnu",
+        "-O0",
+        "-std=c11",
+        "-fno-common",
+        "-Wall",
+        "-Wno-switch",
+        "-o",
+        "/dev/null"
+      ],
+      [
+        "/home/takashi/llvm-project/build-cir/bin/clang-23",
+        "-emit-cir",
+        "/home/takashi/c-corpus/chibicc/strings.c",
+        "--target=x86_64-unknown-linux-gnu",
+        "-O0",
+        "-std=c11",
+        "-fno-common",
+        "-Wall",
+        "-Wno-switch",
+        "-o",
+        "/dev/null"
+      ],
+      [
+        "/home/takashi/llvm-project/build-cir/bin/clang-23",
+        "-emit-cir",
+        "/home/takashi/c-corpus/chibicc/tokenize.c",
+        "--target=x86_64-unknown-linux-gnu",
+        "-O0",
+        "-std=c11",
+        "-fno-common",
+        "-Wall",
+        "-Wno-switch",
+        "-o",
+        "/dev/null"
+      ],
+      [
+        "/home/takashi/llvm-project/build-cir/bin/clang-23",
+        "-emit-cir",
+        "/home/takashi/c-corpus/chibicc/type.c",
+        "--target=x86_64-unknown-linux-gnu",
+        "-O0",
+        "-std=c11",
+        "-fno-common",
+        "-Wall",
+        "-Wno-switch",
+        "-o",
+        "/dev/null"
+      ],
+      [
+        "/home/takashi/llvm-project/build-cir/bin/clang-23",
+        "-emit-cir",
+        "/home/takashi/c-corpus/chibicc/unicode.c",
+        "--target=x86_64-unknown-linux-gnu",
+        "-O0",
+        "-std=c11",
+        "-fno-common",
+        "-Wall",
+        "-Wno-switch",
+        "-o",
+        "/dev/null"
+      ]
+    ]
+  },
+  "validated_ir": [
+    {
+      "tool": "slate",
+      "source": "codegen.c",
+      "bytes": 267929,
+      "sha256": "c630a15ef6dbb80dfeb6ba464b55448a6d710588f2b6f79e3379d658bf004926"
+    },
+    {
+      "tool": "slate",
+      "source": "hashmap.c",
+      "bytes": 40431,
+      "sha256": "4f77dc289a45d76af3d1bc5d84db661c48642c80a26a3ecb8624f314fd31bedf"
+    },
+    {
+      "tool": "slate",
+      "source": "main.c",
+      "bytes": 147600,
+      "sha256": "c1c66c920f5f92b87dbca988c4ba25becd168c769f9b5aa557b141ddc6250284"
+    },
+    {
+      "tool": "slate",
+      "source": "parse.c",
+      "bytes": 449401,
+      "sha256": "39b2b31195fa1e20d29582d0320c0f05cc415ea355da054d14ee900fe9c6d357"
+    },
+    {
+      "tool": "slate",
+      "source": "preprocess.c",
+      "bytes": 181876,
+      "sha256": "437b2f573975da4aaffc2453a2c23e3cd049a249c1ec60fea4180c37ef3fea26"
+    },
+    {
+      "tool": "slate",
+      "source": "strings.c",
+      "bytes": 7699,
+      "sha256": "1e8e6a90df2096a049443cc562448c4c1eb90a75c0c38885427d9c170c255193"
+    },
+    {
+      "tool": "slate",
+      "source": "tokenize.c",
+      "bytes": 140319,
+      "sha256": "4fa57b3987d9e8fed96839346bb1256f9c3a0ee815a1cb9205f1eac2ea2a7a78"
+    },
+    {
+      "tool": "slate",
+      "source": "type.c",
+      "bytes": 45699,
+      "sha256": "e156d7323bd159ac5e5117c43f026923bfde6110eb9a8a923f812fac5abd1999"
+    },
+    {
+      "tool": "slate",
+      "source": "unicode.c",
+      "bytes": 46462,
+      "sha256": "0efe4bbcd74886ac269ddd540116528166869489b8b3ffb5aa7c4fc4a328470b"
+    },
+    {
+      "tool": "clang",
+      "source": "codegen.c",
+      "bytes": 839332,
+      "sha256": "70c7873b5204e0cfbb3690a58a1d5bfbe4db10580f22683ad079003dc0124498"
+    },
+    {
+      "tool": "clang",
+      "source": "hashmap.c",
+      "bytes": 128818,
+      "sha256": "288f1628df68e22edd618accb617adea771ae741fb6dab69957d3aad8c24d0d6"
+    },
+    {
+      "tool": "clang",
+      "source": "main.c",
+      "bytes": 520011,
+      "sha256": "5a457592d9095f154954ce7caebc51212b3d199a26877365c3125ee201b3ae4b"
+    },
+    {
+      "tool": "clang",
+      "source": "parse.c",
+      "bytes": 1994269,
+      "sha256": "f922c3d94c58216e6d3c8e3cb8f7dd3675badc857fd46aee1cc242b9ddd135c8"
+    },
+    {
+      "tool": "clang",
+      "source": "preprocess.c",
+      "bytes": 813532,
+      "sha256": "c92fcb33a5426143707b2f4738f356ecc7dc1bb5a76c3450ad88405b53bd4ff9"
+    },
+    {
+      "tool": "clang",
+      "source": "strings.c",
+      "bytes": 22937,
+      "sha256": "2798610720cf7813b703cade5b25f73a72045527c781bf9fab0fcfb6dbb29add"
+    },
+    {
+      "tool": "clang",
+      "source": "tokenize.c",
+      "bytes": 540414,
+      "sha256": "c848e338d1d59bf9f93f18dc6ad7ec284a88c2e639c97f36a86bfff7ec683e09"
+    },
+    {
+      "tool": "clang",
+      "source": "type.c",
+      "bytes": 207851,
+      "sha256": "fcc84bd933b2a3894ee02aaa4b2f8b6acf63dda8791c1ba6139f8be71fa8583c"
+    },
+    {
+      "tool": "clang",
+      "source": "unicode.c",
+      "bytes": 69378,
+      "sha256": "98697a369c368f2201634287c028ad7bd8b8cb413c884d53d0b9937db573c54f"
+    }
+  ],
+  "samples": {
+    "slate": [
+      {
+        "iteration": 1,
+        "project_wall_seconds": 0.33193114799905743,
+        "peak_rss_mib": 33.55078125,
+        "files": [
+          {
+            "source": "codegen.c",
+            "wall_seconds": 0.043851080001331866,
+            "user_seconds": 0.03751,
+            "system_seconds": 0.005071,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 4518,
+            "major_faults": 0
+          },
+          {
+            "source": "hashmap.c",
+            "wall_seconds": 0.027939597999647958,
+            "user_seconds": 0.021521,
+            "system_seconds": 0.006150999999999999,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 3752,
+            "major_faults": 0
+          },
+          {
+            "source": "main.c",
+            "wall_seconds": 0.035133346000293386,
+            "user_seconds": 0.030921999999999998,
+            "system_seconds": 0.0039829999999999996,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 4111,
+            "major_faults": 0
+          },
+          {
+            "source": "parse.c",
+            "wall_seconds": 0.06644353599949682,
+            "user_seconds": 0.050781,
+            "system_seconds": 0.015224,
+            "peak_rss_mib": 33.55078125,
+            "minor_faults": 6926,
+            "major_faults": 0
+          },
+          {
+            "source": "preprocess.c",
+            "wall_seconds": 0.039251469999726396,
+            "user_seconds": 0.027271,
+            "system_seconds": 0.011692,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 4635,
+            "major_faults": 0
+          },
+          {
+            "source": "strings.c",
+            "wall_seconds": 0.025792311998884543,
+            "user_seconds": 0.016722,
+            "system_seconds": 0.008792,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 3653,
+            "major_faults": 0
+          },
+          {
+            "source": "tokenize.c",
+            "wall_seconds": 0.03597154099952604,
+            "user_seconds": 0.028412,
+            "system_seconds": 0.007110999999999999,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 4125,
+            "major_faults": 0
+          },
+          {
+            "source": "type.c",
+            "wall_seconds": 0.028570577000209596,
+            "user_seconds": 0.020227,
+            "system_seconds": 0.008086,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 3736,
+            "major_faults": 0
+          },
+          {
+            "source": "unicode.c",
+            "wall_seconds": 0.027824263999718823,
+            "user_seconds": 0.020437999999999998,
+            "system_seconds": 0.007128,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 3333,
+            "major_faults": 0
+          }
+        ],
+        "wall_seconds": 0.3307777239988354,
+        "user_seconds": 0.253804,
+        "system_seconds": 0.073238,
+        "minor_faults": 38789,
+        "major_faults": 0
+      },
+      {
+        "iteration": 2,
+        "project_wall_seconds": 0.3336683029992855,
+        "peak_rss_mib": 33.70703125,
+        "files": [
+          {
+            "source": "codegen.c",
+            "wall_seconds": 0.04357664199960709,
+            "user_seconds": 0.039237,
+            "system_seconds": 0.004014,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 4521,
+            "major_faults": 0
+          },
+          {
+            "source": "hashmap.c",
+            "wall_seconds": 0.02867434999825491,
+            "user_seconds": 0.021226,
+            "system_seconds": 0.007075,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 3745,
+            "major_faults": 0
+          },
+          {
+            "source": "main.c",
+            "wall_seconds": 0.03598170199984452,
+            "user_seconds": 0.030730999999999998,
+            "system_seconds": 0.0049559999999999995,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 4106,
+            "major_faults": 0
+          },
+          {
+            "source": "parse.c",
+            "wall_seconds": 0.06681000699973083,
+            "user_seconds": 0.054471,
+            "system_seconds": 0.011892999999999999,
+            "peak_rss_mib": 33.70703125,
+            "minor_faults": 6935,
+            "major_faults": 0
+          },
+          {
+            "source": "preprocess.c",
+            "wall_seconds": 0.039345492999927956,
+            "user_seconds": 0.032032,
+            "system_seconds": 0.00699,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 4216,
+            "major_faults": 0
+          },
+          {
+            "source": "strings.c",
+            "wall_seconds": 0.02603099000043585,
+            "user_seconds": 0.019814,
+            "system_seconds": 0.0059429999999999995,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 3652,
+            "major_faults": 0
+          },
+          {
+            "source": "tokenize.c",
+            "wall_seconds": 0.03610082500017597,
+            "user_seconds": 0.028848,
+            "system_seconds": 0.006967999999999999,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 4548,
+            "major_faults": 0
+          },
+          {
+            "source": "type.c",
+            "wall_seconds": 0.029109942999639316,
+            "user_seconds": 0.017922999999999998,
+            "system_seconds": 0.010943999999999999,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 3736,
+            "major_faults": 0
+          },
+          {
+            "source": "unicode.c",
+            "wall_seconds": 0.026821023999218596,
+            "user_seconds": 0.023544,
+            "system_seconds": 0.003068,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 3333,
+            "major_faults": 0
+          }
+        ],
+        "wall_seconds": 0.33245097599683504,
+        "user_seconds": 0.267826,
+        "system_seconds": 0.061850999999999996,
+        "minor_faults": 38792,
+        "major_faults": 0
+      },
+      {
+        "iteration": 3,
+        "project_wall_seconds": 0.33315117600068334,
+        "peak_rss_mib": 33.44921875,
+        "files": [
+          {
+            "source": "codegen.c",
+            "wall_seconds": 0.04290340099942114,
+            "user_seconds": 0.037647,
+            "system_seconds": 0.004951,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 4522,
+            "major_faults": 0
+          },
+          {
+            "source": "hashmap.c",
+            "wall_seconds": 0.02833210000062536,
+            "user_seconds": 0.025061,
+            "system_seconds": 0.003009,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 3693,
+            "major_faults": 0
+          },
+          {
+            "source": "main.c",
+            "wall_seconds": 0.035718593000638066,
+            "user_seconds": 0.026326,
+            "system_seconds": 0.009120999999999999,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 4110,
+            "major_faults": 0
+          },
+          {
+            "source": "parse.c",
+            "wall_seconds": 0.06692479999946954,
+            "user_seconds": 0.057277999999999996,
+            "system_seconds": 0.009189,
+            "peak_rss_mib": 33.44921875,
+            "minor_faults": 6936,
+            "major_faults": 0
+          },
+          {
+            "source": "preprocess.c",
+            "wall_seconds": 0.04009535700060951,
+            "user_seconds": 0.032594,
+            "system_seconds": 0.007143,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 4640,
+            "major_faults": 0
+          },
+          {
+            "source": "strings.c",
+            "wall_seconds": 0.026088051999977324,
+            "user_seconds": 0.019892,
+            "system_seconds": 0.005961999999999999,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 3651,
+            "major_faults": 0
+          },
+          {
+            "source": "tokenize.c",
+            "wall_seconds": 0.037213559000520036,
+            "user_seconds": 0.031372,
+            "system_seconds": 0.005055,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 4551,
+            "major_faults": 0
+          },
+          {
+            "source": "type.c",
+            "wall_seconds": 0.028541104999021627,
+            "user_seconds": 0.020499999999999997,
+            "system_seconds": 0.007803999999999999,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 3740,
+            "major_faults": 0
+          },
+          {
+            "source": "unicode.c",
+            "wall_seconds": 0.026186364000750473,
+            "user_seconds": 0.020999,
+            "system_seconds": 0.004999,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 3333,
+            "major_faults": 0
+          }
+        ],
+        "wall_seconds": 0.3320033310010331,
+        "user_seconds": 0.271669,
+        "system_seconds": 0.057233,
+        "minor_faults": 39176,
+        "major_faults": 0
+      },
+      {
+        "iteration": 4,
+        "project_wall_seconds": 0.33173556400106463,
+        "peak_rss_mib": 33.703125,
+        "files": [
+          {
+            "source": "codegen.c",
+            "wall_seconds": 0.04366076499900373,
+            "user_seconds": 0.036488,
+            "system_seconds": 0.006901,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 4519,
+            "major_faults": 0
+          },
+          {
+            "source": "hashmap.c",
+            "wall_seconds": 0.02796308799952385,
+            "user_seconds": 0.019802999999999998,
+            "system_seconds": 0.007917,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 3745,
+            "major_faults": 0
+          },
+          {
+            "source": "main.c",
+            "wall_seconds": 0.036250840001230245,
+            "user_seconds": 0.023999,
+            "system_seconds": 0.011994999999999999,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 4112,
+            "major_faults": 0
+          },
+          {
+            "source": "parse.c",
+            "wall_seconds": 0.06693116099995677,
+            "user_seconds": 0.055399,
+            "system_seconds": 0.011080999999999999,
+            "peak_rss_mib": 33.703125,
+            "minor_faults": 6941,
+            "major_faults": 0
+          },
+          {
+            "source": "preprocess.c",
+            "wall_seconds": 0.03924824099885882,
+            "user_seconds": 0.027888999999999997,
+            "system_seconds": 0.010962999999999999,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 4635,
+            "major_faults": 0
+          },
+          {
+            "source": "strings.c",
+            "wall_seconds": 0.025656987998445402,
+            "user_seconds": 0.02054,
+            "system_seconds": 0.004892,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 3651,
+            "major_faults": 0
+          },
+          {
+            "source": "tokenize.c",
+            "wall_seconds": 0.03593177100083267,
+            "user_seconds": 0.028558999999999998,
+            "system_seconds": 0.006901999999999999,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 4550,
+            "major_faults": 0
+          },
+          {
+            "source": "type.c",
+            "wall_seconds": 0.028516784999737865,
+            "user_seconds": 0.023246,
+            "system_seconds": 0.005051,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 3734,
+            "major_faults": 0
+          },
+          {
+            "source": "unicode.c",
+            "wall_seconds": 0.02650688399990031,
+            "user_seconds": 0.020227,
+            "system_seconds": 0.006071,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 3336,
+            "major_faults": 0
+          }
+        ],
+        "wall_seconds": 0.33066652299748966,
+        "user_seconds": 0.25615,
+        "system_seconds": 0.07177299999999999,
+        "minor_faults": 39223,
+        "major_faults": 0
+      },
+      {
+        "iteration": 5,
+        "project_wall_seconds": 0.3317982270000357,
+        "peak_rss_mib": 33.65625,
+        "files": [
+          {
+            "source": "codegen.c",
+            "wall_seconds": 0.042696534999777214,
+            "user_seconds": 0.035348,
+            "system_seconds": 0.007063,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 4519,
+            "major_faults": 0
+          },
+          {
+            "source": "hashmap.c",
+            "wall_seconds": 0.0276232380001602,
+            "user_seconds": 0.021307,
+            "system_seconds": 0.006091999999999999,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 3696,
+            "major_faults": 0
+          },
+          {
+            "source": "main.c",
+            "wall_seconds": 0.035238528998888796,
+            "user_seconds": 0.025983,
+            "system_seconds": 0.008995999999999999,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 4108,
+            "major_faults": 0
+          },
+          {
+            "source": "parse.c",
+            "wall_seconds": 0.06695218099957856,
+            "user_seconds": 0.056447,
+            "system_seconds": 0.010095,
+            "peak_rss_mib": 33.65625,
+            "minor_faults": 6937,
+            "major_faults": 0
+          },
+          {
+            "source": "preprocess.c",
+            "wall_seconds": 0.03974725599982776,
+            "user_seconds": 0.031362,
+            "system_seconds": 0.008095999999999999,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 4640,
+            "major_faults": 0
+          },
+          {
+            "source": "strings.c",
+            "wall_seconds": 0.025948246999178082,
+            "user_seconds": 0.018501999999999998,
+            "system_seconds": 0.0072109999999999995,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 3654,
+            "major_faults": 0
+          },
+          {
+            "source": "tokenize.c",
+            "wall_seconds": 0.035775275000560214,
+            "user_seconds": 0.027631,
+            "system_seconds": 0.007906,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 4124,
+            "major_faults": 0
+          },
+          {
+            "source": "type.c",
+            "wall_seconds": 0.0290726530001848,
+            "user_seconds": 0.026872,
+            "system_seconds": 0.00199,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 3744,
+            "major_faults": 0
+          },
+          {
+            "source": "unicode.c",
+            "wall_seconds": 0.027680949999194127,
+            "user_seconds": 0.02059,
+            "system_seconds": 0.006862,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 3758,
+            "major_faults": 0
+          }
+        ],
+        "wall_seconds": 0.33073486399734975,
+        "user_seconds": 0.264042,
+        "system_seconds": 0.064311,
+        "minor_faults": 39180,
+        "major_faults": 0
+      },
+      {
+        "iteration": 6,
+        "project_wall_seconds": 0.33584622899979877,
+        "peak_rss_mib": 33.44921875,
+        "files": [
+          {
+            "source": "codegen.c",
+            "wall_seconds": 0.043731687001127284,
+            "user_seconds": 0.041388999999999995,
+            "system_seconds": 0.002025,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 4527,
+            "major_faults": 0
+          },
+          {
+            "source": "hashmap.c",
+            "wall_seconds": 0.02794158800134028,
+            "user_seconds": 0.021748,
+            "system_seconds": 0.005924,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 3750,
+            "major_faults": 0
+          },
+          {
+            "source": "main.c",
+            "wall_seconds": 0.035816767000142136,
+            "user_seconds": 0.030625999999999997,
+            "system_seconds": 0.00494,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 4112,
+            "major_faults": 0
+          },
+          {
+            "source": "parse.c",
+            "wall_seconds": 0.06793101000039314,
+            "user_seconds": 0.054591999999999995,
+            "system_seconds": 0.012889999999999999,
+            "peak_rss_mib": 33.44921875,
+            "minor_faults": 6934,
+            "major_faults": 0
+          },
+          {
+            "source": "preprocess.c",
+            "wall_seconds": 0.039921102001244435,
+            "user_seconds": 0.033664,
+            "system_seconds": 0.005951,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 4639,
+            "major_faults": 0
+          },
+          {
+            "source": "strings.c",
+            "wall_seconds": 0.0260399700000562,
+            "user_seconds": 0.016141,
+            "system_seconds": 0.009675,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 3650,
+            "major_faults": 0
+          },
+          {
+            "source": "tokenize.c",
+            "wall_seconds": 0.036315901999842026,
+            "user_seconds": 0.030031,
+            "system_seconds": 0.006023,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 4546,
+            "major_faults": 0
+          },
+          {
+            "source": "type.c",
+            "wall_seconds": 0.029329250000955653,
+            "user_seconds": 0.021109,
+            "system_seconds": 0.00804,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 3736,
+            "major_faults": 0
+          },
+          {
+            "source": "unicode.c",
+            "wall_seconds": 0.027708670999345486,
+            "user_seconds": 0.019468,
+            "system_seconds": 0.00779,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 3331,
+            "major_faults": 0
+          }
+        ],
+        "wall_seconds": 0.33473594700444664,
+        "user_seconds": 0.268768,
+        "system_seconds": 0.063258,
+        "minor_faults": 39225,
+        "major_faults": 0
+      },
+      {
+        "iteration": 7,
+        "project_wall_seconds": 0.3336572119987977,
+        "peak_rss_mib": 33.4609375,
+        "files": [
+          {
+            "source": "codegen.c",
+            "wall_seconds": 0.04342838800039317,
+            "user_seconds": 0.033104,
+            "system_seconds": 0.010029,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 4522,
+            "major_faults": 0
+          },
+          {
+            "source": "hashmap.c",
+            "wall_seconds": 0.027861996000865474,
+            "user_seconds": 0.022501999999999998,
+            "system_seconds": 0.005118,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 3754,
+            "major_faults": 0
+          },
+          {
+            "source": "main.c",
+            "wall_seconds": 0.0356333519994223,
+            "user_seconds": 0.026532,
+            "system_seconds": 0.008842,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 4108,
+            "major_faults": 0
+          },
+          {
+            "source": "parse.c",
+            "wall_seconds": 0.06707197400100995,
+            "user_seconds": 0.05452,
+            "system_seconds": 0.012119,
+            "peak_rss_mib": 33.4609375,
+            "minor_faults": 6933,
+            "major_faults": 0
+          },
+          {
+            "source": "preprocess.c",
+            "wall_seconds": 0.03997383299974899,
+            "user_seconds": 0.035560999999999995,
+            "system_seconds": 0.0040609999999999995,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 4638,
+            "major_faults": 0
+          },
+          {
+            "source": "strings.c",
+            "wall_seconds": 0.02587067500098783,
+            "user_seconds": 0.019481,
+            "system_seconds": 0.0061519999999999995,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 3650,
+            "major_faults": 0
+          },
+          {
+            "source": "tokenize.c",
+            "wall_seconds": 0.036034314000062295,
+            "user_seconds": 0.028821,
+            "system_seconds": 0.006931,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 4124,
+            "major_faults": 0
+          },
+          {
+            "source": "type.c",
+            "wall_seconds": 0.029072811999867554,
+            "user_seconds": 0.024006,
+            "system_seconds": 0.004794,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 3733,
+            "major_faults": 0
+          },
+          {
+            "source": "unicode.c",
+            "wall_seconds": 0.02761989800092124,
+            "user_seconds": 0.020267,
+            "system_seconds": 0.007110999999999999,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 3763,
+            "major_faults": 0
+          }
+        ],
+        "wall_seconds": 0.3325672420032788,
+        "user_seconds": 0.264794,
+        "system_seconds": 0.06515699999999999,
+        "minor_faults": 39225,
+        "major_faults": 0
+      },
+      {
+        "iteration": 8,
+        "project_wall_seconds": 0.33648197799993795,
+        "peak_rss_mib": 33.5078125,
+        "files": [
+          {
+            "source": "codegen.c",
+            "wall_seconds": 0.043593791999228415,
+            "user_seconds": 0.036201,
+            "system_seconds": 0.007052999999999999,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 4523,
+            "major_faults": 0
+          },
+          {
+            "source": "hashmap.c",
+            "wall_seconds": 0.028371370999593637,
+            "user_seconds": 0.024139999999999998,
+            "system_seconds": 0.004026,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 3753,
+            "major_faults": 0
+          },
+          {
+            "source": "main.c",
+            "wall_seconds": 0.03613594600028591,
+            "user_seconds": 0.028846,
+            "system_seconds": 0.0069689999999999995,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 4119,
+            "major_faults": 0
+          },
+          {
+            "source": "parse.c",
+            "wall_seconds": 0.06717161800042959,
+            "user_seconds": 0.055777,
+            "system_seconds": 0.010934,
+            "peak_rss_mib": 33.5078125,
+            "minor_faults": 6807,
+            "major_faults": 0
+          },
+          {
+            "source": "preprocess.c",
+            "wall_seconds": 0.040080397000565426,
+            "user_seconds": 0.033818,
+            "system_seconds": 0.005974,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 4636,
+            "major_faults": 0
+          },
+          {
+            "source": "strings.c",
+            "wall_seconds": 0.02626294599940593,
+            "user_seconds": 0.017376,
+            "system_seconds": 0.008695,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 3659,
+            "major_faults": 0
+          },
+          {
+            "source": "tokenize.c",
+            "wall_seconds": 0.0370214529993973,
+            "user_seconds": 0.028748,
+            "system_seconds": 0.007946,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 4545,
+            "major_faults": 0
+          },
+          {
+            "source": "type.c",
+            "wall_seconds": 0.029578947000118205,
+            "user_seconds": 0.024269,
+            "system_seconds": 0.005065,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 3733,
+            "major_faults": 0
+          },
+          {
+            "source": "unicode.c",
+            "wall_seconds": 0.027021669999157893,
+            "user_seconds": 0.020859,
+            "system_seconds": 0.005961,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 3334,
+            "major_faults": 0
+          }
+        ],
+        "wall_seconds": 0.3352381399981823,
+        "user_seconds": 0.270034,
+        "system_seconds": 0.062623,
+        "minor_faults": 39109,
+        "major_faults": 0
+      },
+      {
+        "iteration": 9,
+        "project_wall_seconds": 0.3373160840001219,
+        "peak_rss_mib": 33.66015625,
+        "files": [
+          {
+            "source": "codegen.c",
+            "wall_seconds": 0.04394491399943945,
+            "user_seconds": 0.035692999999999996,
+            "system_seconds": 0.007916,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 4520,
+            "major_faults": 0
+          },
+          {
+            "source": "hashmap.c",
+            "wall_seconds": 0.028242487000170513,
+            "user_seconds": 0.020037,
+            "system_seconds": 0.008021,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 3697,
+            "major_faults": 0
+          },
+          {
+            "source": "main.c",
+            "wall_seconds": 0.03643573599947558,
+            "user_seconds": 0.029337,
+            "system_seconds": 0.006833,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 4111,
+            "major_faults": 0
+          },
+          {
+            "source": "parse.c",
+            "wall_seconds": 0.06779226700018626,
+            "user_seconds": 0.056313999999999996,
+            "system_seconds": 0.011064,
+            "peak_rss_mib": 33.66015625,
+            "minor_faults": 6946,
+            "major_faults": 0
+          },
+          {
+            "source": "preprocess.c",
+            "wall_seconds": 0.04077383600088069,
+            "user_seconds": 0.036333,
+            "system_seconds": 0.004142,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 4639,
+            "major_faults": 0
+          },
+          {
+            "source": "strings.c",
+            "wall_seconds": 0.026330358999985037,
+            "user_seconds": 0.022031,
+            "system_seconds": 0.003986,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 3653,
+            "major_faults": 0
+          },
+          {
+            "source": "tokenize.c",
+            "wall_seconds": 0.03623089000029722,
+            "user_seconds": 0.029969,
+            "system_seconds": 0.005983,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 4124,
+            "major_faults": 0
+          },
+          {
+            "source": "type.c",
+            "wall_seconds": 0.02943136300018523,
+            "user_seconds": 0.021134,
+            "system_seconds": 0.008054,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 3796,
+            "major_faults": 0
+          },
+          {
+            "source": "unicode.c",
+            "wall_seconds": 0.02699755899993761,
+            "user_seconds": 0.018859,
+            "system_seconds": 0.007944999999999999,
+            "peak_rss_mib": 24.12109375,
+            "minor_faults": 3337,
+            "major_faults": 0
+          }
+        ],
+        "wall_seconds": 0.3361794110005576,
+        "user_seconds": 0.269707,
+        "system_seconds": 0.063944,
+        "minor_faults": 38823,
+        "major_faults": 0
+      }
+    ],
+    "clang": [
+      {
+        "iteration": 1,
+        "project_wall_seconds": 0.32610102299986465,
+        "peak_rss_mib": 80.06640625,
+        "files": [
+          {
+            "source": "codegen.c",
+            "wall_seconds": 0.04631342500033497,
+            "user_seconds": 0.043182,
+            "system_seconds": 0.010803,
+            "peak_rss_mib": 73.71875,
+            "minor_faults": 4291,
+            "major_faults": 0
+          },
+          {
+            "source": "hashmap.c",
+            "wall_seconds": 0.02182054200056882,
+            "user_seconds": 0.018882,
+            "system_seconds": 0.004961,
+            "peak_rss_mib": 70.5859375,
+            "minor_faults": 3122,
+            "major_faults": 0
+          },
+          {
+            "source": "main.c",
+            "wall_seconds": 0.03414742600034515,
+            "user_seconds": 0.035421,
+            "system_seconds": 0.004667999999999999,
+            "peak_rss_mib": 73.140625,
+            "minor_faults": 3695,
+            "major_faults": 0
+          },
+          {
+            "source": "parse.c",
+            "wall_seconds": 0.08621168500030763,
+            "user_seconds": 0.097661,
+            "system_seconds": 0.009751,
+            "peak_rss_mib": 80.06640625,
+            "minor_faults": 6189,
+            "major_faults": 0
+          },
+          {
+            "source": "preprocess.c",
+            "wall_seconds": 0.04468069600079616,
+            "user_seconds": 0.045808999999999996,
+            "system_seconds": 0.007643,
+            "peak_rss_mib": 73.53125,
+            "minor_faults": 4238,
+            "major_faults": 0
+          },
+          {
+            "source": "strings.c",
+            "wall_seconds": 0.01720630199997686,
+            "user_seconds": 0.009838999999999999,
+            "system_seconds": 0.008028,
+            "peak_rss_mib": 69.16015625,
+            "minor_faults": 2942,
+            "major_faults": 0
+          },
+          {
+            "source": "tokenize.c",
+            "wall_seconds": 0.03336692199991376,
+            "user_seconds": 0.032208,
+            "system_seconds": 0.0074329999999999995,
+            "peak_rss_mib": 72.76171875,
+            "minor_faults": 3752,
+            "major_faults": 0
+          },
+          {
+            "source": "type.c",
+            "wall_seconds": 0.02335927900094248,
+            "user_seconds": 0.020665,
+            "system_seconds": 0.0051649999999999995,
+            "peak_rss_mib": 70.90234375,
+            "minor_faults": 3263,
+            "major_faults": 0
+          },
+          {
+            "source": "unicode.c",
+            "wall_seconds": 0.017646415000854176,
+            "user_seconds": 0.011947,
+            "system_seconds": 0.006977,
+            "peak_rss_mib": 69.26953125,
+            "minor_faults": 3038,
+            "major_faults": 0
+          }
+        ],
+        "wall_seconds": 0.32475269200404,
+        "user_seconds": 0.315614,
+        "system_seconds": 0.065429,
+        "minor_faults": 34530,
+        "major_faults": 0
+      },
+      {
+        "iteration": 2,
+        "project_wall_seconds": 0.3254479529987293,
+        "peak_rss_mib": 79.21484375,
+        "files": [
+          {
+            "source": "codegen.c",
+            "wall_seconds": 0.045793329998559784,
+            "user_seconds": 0.044427,
+            "system_seconds": 0.009113,
+            "peak_rss_mib": 73.83203125,
+            "minor_faults": 4288,
+            "major_faults": 0
+          },
+          {
+            "source": "hashmap.c",
+            "wall_seconds": 0.020879854000668274,
+            "user_seconds": 0.019842,
+            "system_seconds": 0.003266,
+            "peak_rss_mib": 70.484375,
+            "minor_faults": 3130,
+            "major_faults": 0
+          },
+          {
+            "source": "main.c",
+            "wall_seconds": 0.03427385999930266,
+            "user_seconds": 0.032957,
+            "system_seconds": 0.005979,
+            "peak_rss_mib": 72.609375,
+            "minor_faults": 3672,
+            "major_faults": 0
+          },
+          {
+            "source": "parse.c",
+            "wall_seconds": 0.08717620500101475,
+            "user_seconds": 0.094333,
+            "system_seconds": 0.01363,
+            "peak_rss_mib": 79.21484375,
+            "minor_faults": 6174,
+            "major_faults": 0
+          },
+          {
+            "source": "preprocess.c",
+            "wall_seconds": 0.044243031999940285,
+            "user_seconds": 0.043684,
+            "system_seconds": 0.009438,
+            "peak_rss_mib": 72.859375,
+            "minor_faults": 4255,
+            "major_faults": 0
+          },
+          {
+            "source": "strings.c",
+            "wall_seconds": 0.016590694000115036,
+            "user_seconds": 0.010759999999999999,
+            "system_seconds": 0.006464,
+            "peak_rss_mib": 68.375,
+            "minor_faults": 2930,
+            "major_faults": 0
+          },
+          {
+            "source": "tokenize.c",
+            "wall_seconds": 0.03321785800108046,
+            "user_seconds": 0.03427,
+            "system_seconds": 0.005912,
+            "peak_rss_mib": 71.8046875,
+            "minor_faults": 3734,
+            "major_faults": 0
+          },
+          {
+            "source": "type.c",
+            "wall_seconds": 0.023652797000977444,
+            "user_seconds": 0.018517,
+            "system_seconds": 0.007645,
+            "peak_rss_mib": 70.92578125,
+            "minor_faults": 3252,
+            "major_faults": 0
+          },
+          {
+            "source": "unicode.c",
+            "wall_seconds": 0.018379667999397498,
+            "user_seconds": 0.015257999999999999,
+            "system_seconds": 0.004242,
+            "peak_rss_mib": 69.640625,
+            "minor_faults": 3048,
+            "major_faults": 0
+          }
+        ],
+        "wall_seconds": 0.3242072980010562,
+        "user_seconds": 0.314048,
+        "system_seconds": 0.065689,
+        "minor_faults": 34483,
+        "major_faults": 0
+      },
+      {
+        "iteration": 3,
+        "project_wall_seconds": 0.32593563800037373,
+        "peak_rss_mib": 79.98046875,
+        "files": [
+          {
+            "source": "codegen.c",
+            "wall_seconds": 0.045833811000193236,
+            "user_seconds": 0.040323,
+            "system_seconds": 0.013425999999999999,
+            "peak_rss_mib": 73.68359375,
+            "minor_faults": 4285,
+            "major_faults": 0
+          },
+          {
+            "source": "hashmap.c",
+            "wall_seconds": 0.021507072999156662,
+            "user_seconds": 0.013203999999999999,
+            "system_seconds": 0.011002,
+            "peak_rss_mib": 70.19140625,
+            "minor_faults": 3128,
+            "major_faults": 0
+          },
+          {
+            "source": "main.c",
+            "wall_seconds": 0.03357281799981138,
+            "user_seconds": 0.029022,
+            "system_seconds": 0.010291,
+            "peak_rss_mib": 72.56640625,
+            "minor_faults": 3684,
+            "major_faults": 0
+          },
+          {
+            "source": "parse.c",
+            "wall_seconds": 0.08708896200005256,
+            "user_seconds": 0.099326,
+            "system_seconds": 0.010119999999999999,
+            "peak_rss_mib": 79.98046875,
+            "minor_faults": 6189,
+            "major_faults": 0
+          },
+          {
+            "source": "preprocess.c",
+            "wall_seconds": 0.04330707299959613,
+            "user_seconds": 0.04251,
+            "system_seconds": 0.009979,
+            "peak_rss_mib": 73.43359375,
+            "minor_faults": 4262,
+            "major_faults": 0
+          },
+          {
+            "source": "strings.c",
+            "wall_seconds": 0.017482160999861662,
+            "user_seconds": 0.012258,
+            "system_seconds": 0.0055769999999999995,
+            "peak_rss_mib": 69.48828125,
+            "minor_faults": 2944,
+            "major_faults": 0
+          },
+          {
+            "source": "tokenize.c",
+            "wall_seconds": 0.03333807200033334,
+            "user_seconds": 0.035872999999999995,
+            "system_seconds": 0.003993,
+            "peak_rss_mib": 72.6796875,
+            "minor_faults": 3755,
+            "major_faults": 0
+          },
+          {
+            "source": "type.c",
+            "wall_seconds": 0.024615405998702045,
+            "user_seconds": 0.021405,
+            "system_seconds": 0.005612,
+            "peak_rss_mib": 70.6875,
+            "minor_faults": 3262,
+            "major_faults": 0
+          },
+          {
+            "source": "unicode.c",
+            "wall_seconds": 0.017959825998332235,
+            "user_seconds": 0.013063,
+            "system_seconds": 0.006039999999999999,
+            "peak_rss_mib": 69.10546875,
+            "minor_faults": 3042,
+            "major_faults": 0
+          }
+        ],
+        "wall_seconds": 0.32470520199603925,
+        "user_seconds": 0.306984,
+        "system_seconds": 0.07604,
+        "minor_faults": 34551,
+        "major_faults": 0
+      },
+      {
+        "iteration": 4,
+        "project_wall_seconds": 0.32729693799956294,
+        "peak_rss_mib": 81.1640625,
+        "files": [
+          {
+            "source": "codegen.c",
+            "wall_seconds": 0.046627425001133815,
+            "user_seconds": 0.04562,
+            "system_seconds": 0.007245,
+            "peak_rss_mib": 73.7265625,
+            "minor_faults": 4279,
+            "major_faults": 0
+          },
+          {
+            "source": "hashmap.c",
+            "wall_seconds": 0.021186861999012763,
+            "user_seconds": 0.020154,
+            "system_seconds": 0.003362,
+            "peak_rss_mib": 69.48046875,
+            "minor_faults": 3119,
+            "major_faults": 0
+          },
+          {
+            "source": "main.c",
+            "wall_seconds": 0.03328812000108883,
+            "user_seconds": 0.030076,
+            "system_seconds": 0.008749999999999999,
+            "peak_rss_mib": 72.296875,
+            "minor_faults": 3670,
+            "major_faults": 0
+          },
+          {
+            "source": "parse.c",
+            "wall_seconds": 0.08702157999869087,
+            "user_seconds": 0.100033,
+            "system_seconds": 0.009274,
+            "peak_rss_mib": 81.1640625,
+            "minor_faults": 6213,
+            "major_faults": 0
+          },
+          {
+            "source": "preprocess.c",
+            "wall_seconds": 0.043910772999879555,
+            "user_seconds": 0.04416,
+            "system_seconds": 0.009030999999999999,
+            "peak_rss_mib": 73.78125,
+            "minor_faults": 4275,
+            "major_faults": 0
+          },
+          {
+            "source": "strings.c",
+            "wall_seconds": 0.018287054999746033,
+            "user_seconds": 0.012327999999999999,
+            "system_seconds": 0.005111999999999999,
+            "peak_rss_mib": 69.36328125,
+            "minor_faults": 2942,
+            "major_faults": 0
+          },
+          {
+            "source": "tokenize.c",
+            "wall_seconds": 0.03330291099882743,
+            "user_seconds": 0.033481,
+            "system_seconds": 0.006359,
+            "peak_rss_mib": 72.87109375,
+            "minor_faults": 3753,
+            "major_faults": 0
+          },
+          {
+            "source": "type.c",
+            "wall_seconds": 0.02400643799956015,
+            "user_seconds": 0.023388,
+            "system_seconds": 0.003343,
+            "peak_rss_mib": 70.6171875,
+            "minor_faults": 3263,
+            "major_faults": 0
+          },
+          {
+            "source": "unicode.c",
+            "wall_seconds": 0.01848825000161014,
+            "user_seconds": 0.013786999999999999,
+            "system_seconds": 0.005305,
+            "peak_rss_mib": 68.91796875,
+            "minor_faults": 3043,
+            "major_faults": 0
+          }
+        ],
+        "wall_seconds": 0.3261194139995496,
+        "user_seconds": 0.323027,
+        "system_seconds": 0.057781,
+        "minor_faults": 34557,
+        "major_faults": 0
+      },
+      {
+        "iteration": 5,
+        "project_wall_seconds": 0.32402354999976524,
+        "peak_rss_mib": 80.14453125,
+        "files": [
+          {
+            "source": "codegen.c",
+            "wall_seconds": 0.045567271999971126,
+            "user_seconds": 0.045875,
+            "system_seconds": 0.0073409999999999994,
+            "peak_rss_mib": 73.7109375,
+            "minor_faults": 4286,
+            "major_faults": 0
+          },
+          {
+            "source": "hashmap.c",
+            "wall_seconds": 0.0211692930006393,
+            "user_seconds": 0.018868,
+            "system_seconds": 0.004445,
+            "peak_rss_mib": 70.60546875,
+            "minor_faults": 3129,
+            "major_faults": 0
+          },
+          {
+            "source": "main.c",
+            "wall_seconds": 0.034360251998805325,
+            "user_seconds": 0.033221,
+            "system_seconds": 0.0071189999999999995,
+            "peak_rss_mib": 71.30859375,
+            "minor_faults": 3670,
+            "major_faults": 0
+          },
+          {
+            "source": "parse.c",
+            "wall_seconds": 0.08649446300114505,
+            "user_seconds": 0.09408899999999999,
+            "system_seconds": 0.013571,
+            "peak_rss_mib": 80.14453125,
+            "minor_faults": 6221,
+            "major_faults": 0
+          },
+          {
+            "source": "preprocess.c",
+            "wall_seconds": 0.04268573499939521,
+            "user_seconds": 0.036197,
+            "system_seconds": 0.015250999999999999,
+            "peak_rss_mib": 73.42578125,
+            "minor_faults": 4231,
+            "major_faults": 0
+          },
+          {
+            "source": "strings.c",
+            "wall_seconds": 0.017418658000678988,
+            "user_seconds": 0.01104,
+            "system_seconds": 0.0070339999999999995,
+            "peak_rss_mib": 69.6171875,
+            "minor_faults": 2944,
+            "major_faults": 0
+          },
+          {
+            "source": "tokenize.c",
+            "wall_seconds": 0.033469584999693325,
+            "user_seconds": 0.035755999999999996,
+            "system_seconds": 0.003979,
+            "peak_rss_mib": 72.2578125,
+            "minor_faults": 3747,
+            "major_faults": 0
+          },
+          {
+            "source": "type.c",
+            "wall_seconds": 0.02379943199957779,
+            "user_seconds": 0.017721999999999998,
+            "system_seconds": 0.008860999999999999,
+            "peak_rss_mib": 70.45703125,
+            "minor_faults": 3261,
+            "major_faults": 0
+          },
+          {
+            "source": "unicode.c",
+            "wall_seconds": 0.017658816001130617,
+            "user_seconds": 0.015122,
+            "system_seconds": 0.0037819999999999998,
+            "peak_rss_mib": 69.6171875,
+            "minor_faults": 3045,
+            "major_faults": 0
+          }
+        ],
+        "wall_seconds": 0.32262350600103673,
+        "user_seconds": 0.30789,
+        "system_seconds": 0.071383,
+        "minor_faults": 34534,
+        "major_faults": 0
+      },
+      {
+        "iteration": 6,
+        "project_wall_seconds": 0.32491219700023066,
+        "peak_rss_mib": 79.828125,
+        "files": [
+          {
+            "source": "codegen.c",
+            "wall_seconds": 0.04441447699900891,
+            "user_seconds": 0.044634,
+            "system_seconds": 0.007284,
+            "peak_rss_mib": 74.671875,
+            "minor_faults": 4287,
+            "major_faults": 0
+          },
+          {
+            "source": "hashmap.c",
+            "wall_seconds": 0.02101479800148809,
+            "user_seconds": 0.0186,
+            "system_seconds": 0.004665,
+            "peak_rss_mib": 69.8046875,
+            "minor_faults": 3115,
+            "major_faults": 0
+          },
+          {
+            "source": "main.c",
+            "wall_seconds": 0.03374150400122744,
+            "user_seconds": 0.034756999999999996,
+            "system_seconds": 0.004797,
+            "peak_rss_mib": 71.25390625,
+            "minor_faults": 3673,
+            "major_faults": 0
+          },
+          {
+            "source": "parse.c",
+            "wall_seconds": 0.08788042600099288,
+            "user_seconds": 0.097506,
+            "system_seconds": 0.01128,
+            "peak_rss_mib": 79.828125,
+            "minor_faults": 6225,
+            "major_faults": 0
+          },
+          {
+            "source": "preprocess.c",
+            "wall_seconds": 0.04367305400046462,
+            "user_seconds": 0.045473,
+            "system_seconds": 0.007097,
+            "peak_rss_mib": 73.76953125,
+            "minor_faults": 4271,
+            "major_faults": 0
+          },
+          {
+            "source": "strings.c",
+            "wall_seconds": 0.01642645900028583,
+            "user_seconds": 0.009514,
+            "system_seconds": 0.007438999999999999,
+            "peak_rss_mib": 69.4375,
+            "minor_faults": 2938,
+            "major_faults": 0
+          },
+          {
+            "source": "tokenize.c",
+            "wall_seconds": 0.03363188000002992,
+            "user_seconds": 0.034623999999999995,
+            "system_seconds": 0.0059689999999999995,
+            "peak_rss_mib": 72.54296875,
+            "minor_faults": 3759,
+            "major_faults": 0
+          },
+          {
+            "source": "type.c",
+            "wall_seconds": 0.02472785000099975,
+            "user_seconds": 0.020797,
+            "system_seconds": 0.005484,
+            "peak_rss_mib": 70.640625,
+            "minor_faults": 3260,
+            "major_faults": 0
+          },
+          {
+            "source": "unicode.c",
+            "wall_seconds": 0.018218622000858886,
+            "user_seconds": 0.013899,
+            "system_seconds": 0.00556,
+            "peak_rss_mib": 70.75390625,
+            "minor_faults": 3063,
+            "major_faults": 0
+          }
+        ],
+        "wall_seconds": 0.32372907000535633,
+        "user_seconds": 0.319804,
+        "system_seconds": 0.059574999999999996,
+        "minor_faults": 34591,
+        "major_faults": 0
+      },
+      {
+        "iteration": 7,
+        "project_wall_seconds": 0.33190888999888557,
+        "peak_rss_mib": 80.3125,
+        "files": [
+          {
+            "source": "codegen.c",
+            "wall_seconds": 0.047536981999655836,
+            "user_seconds": 0.04455,
+            "system_seconds": 0.010825999999999999,
+            "peak_rss_mib": 73.94140625,
+            "minor_faults": 4275,
+            "major_faults": 0
+          },
+          {
+            "source": "hashmap.c",
+            "wall_seconds": 0.021289266000167117,
+            "user_seconds": 0.018195,
+            "system_seconds": 0.005363,
+            "peak_rss_mib": 70.26953125,
+            "minor_faults": 3122,
+            "major_faults": 0
+          },
+          {
+            "source": "main.c",
+            "wall_seconds": 0.03313090600022406,
+            "user_seconds": 0.031567,
+            "system_seconds": 0.007025,
+            "peak_rss_mib": 71.99609375,
+            "minor_faults": 3670,
+            "major_faults": 0
+          },
+          {
+            "source": "parse.c",
+            "wall_seconds": 0.08948264500031655,
+            "user_seconds": 0.097163,
+            "system_seconds": 0.013734,
+            "peak_rss_mib": 80.3125,
+            "minor_faults": 6195,
+            "major_faults": 0
+          },
+          {
+            "source": "preprocess.c",
+            "wall_seconds": 0.04528741299873218,
+            "user_seconds": 0.041602,
+            "system_seconds": 0.012178999999999999,
+            "peak_rss_mib": 73.5859375,
+            "minor_faults": 4265,
+            "major_faults": 0
+          },
+          {
+            "source": "strings.c",
+            "wall_seconds": 0.016564561999985017,
+            "user_seconds": 0.011857,
+            "system_seconds": 0.005397,
+            "peak_rss_mib": 69.234375,
+            "minor_faults": 2938,
+            "major_faults": 0
+          },
+          {
+            "source": "tokenize.c",
+            "wall_seconds": 0.035309840999616426,
+            "user_seconds": 0.035769999999999996,
+            "system_seconds": 0.005363,
+            "peak_rss_mib": 72.46484375,
+            "minor_faults": 3755,
+            "major_faults": 0
+          },
+          {
+            "source": "type.c",
+            "wall_seconds": 0.023470981999707874,
+            "user_seconds": 0.024283,
+            "system_seconds": 0.001735,
+            "peak_rss_mib": 70.171875,
+            "minor_faults": 3250,
+            "major_faults": 0
+          },
+          {
+            "source": "unicode.c",
+            "wall_seconds": 0.0187329079999472,
+            "user_seconds": 0.014187,
+            "system_seconds": 0.004735,
+            "peak_rss_mib": 69.40625,
+            "minor_faults": 3042,
+            "major_faults": 0
+          }
+        ],
+        "wall_seconds": 0.33080550499835226,
+        "user_seconds": 0.319174,
+        "system_seconds": 0.066357,
+        "minor_faults": 34512,
+        "major_faults": 0
+      },
+      {
+        "iteration": 8,
+        "project_wall_seconds": 0.3266340999998647,
+        "peak_rss_mib": 79.58984375,
+        "files": [
+          {
+            "source": "codegen.c",
+            "wall_seconds": 0.04462315399905492,
+            "user_seconds": 0.047373,
+            "system_seconds": 0.004862,
+            "peak_rss_mib": 73.55859375,
+            "minor_faults": 4271,
+            "major_faults": 0
+          },
+          {
+            "source": "hashmap.c",
+            "wall_seconds": 0.02239917999941099,
+            "user_seconds": 0.016174,
+            "system_seconds": 0.007174,
+            "peak_rss_mib": 70.33203125,
+            "minor_faults": 3130,
+            "major_faults": 0
+          },
+          {
+            "source": "main.c",
+            "wall_seconds": 0.03404664200024854,
+            "user_seconds": 0.022132,
+            "system_seconds": 0.017703999999999998,
+            "peak_rss_mib": 72.3984375,
+            "minor_faults": 3684,
+            "major_faults": 0
+          },
+          {
+            "source": "parse.c",
+            "wall_seconds": 0.08714084399980493,
+            "user_seconds": 0.09240699999999999,
+            "system_seconds": 0.015399999999999999,
+            "peak_rss_mib": 79.58984375,
+            "minor_faults": 6182,
+            "major_faults": 0
+          },
+          {
+            "source": "preprocess.c",
+            "wall_seconds": 0.04392242199901375,
+            "user_seconds": 0.049680999999999996,
+            "system_seconds": 0.003489,
+            "peak_rss_mib": 73.40625,
+            "minor_faults": 4261,
+            "major_faults": 0
+          },
+          {
+            "source": "strings.c",
+            "wall_seconds": 0.018134230000214302,
+            "user_seconds": 0.015507,
+            "system_seconds": 0.002216,
+            "peak_rss_mib": 69.2421875,
+            "minor_faults": 2942,
+            "major_faults": 0
+          },
+          {
+            "source": "tokenize.c",
+            "wall_seconds": 0.03373356299925945,
+            "user_seconds": 0.035385,
+            "system_seconds": 0.005046,
+            "peak_rss_mib": 71.56640625,
+            "minor_faults": 3735,
+            "major_faults": 0
+          },
+          {
+            "source": "type.c",
+            "wall_seconds": 0.023838463001084165,
+            "user_seconds": 0.020586999999999998,
+            "system_seconds": 0.005719999999999999,
+            "peak_rss_mib": 70.62109375,
+            "minor_faults": 3258,
+            "major_faults": 0
+          },
+          {
+            "source": "unicode.c",
+            "wall_seconds": 0.017520011999295093,
+            "user_seconds": 0.016553,
+            "system_seconds": 0.0022129999999999997,
+            "peak_rss_mib": 69.90625,
+            "minor_faults": 3043,
+            "major_faults": 0
+          }
+        ],
+        "wall_seconds": 0.32535850999738614,
+        "user_seconds": 0.315799,
+        "system_seconds": 0.06382399999999999,
+        "minor_faults": 34506,
+        "major_faults": 0
+      },
+      {
+        "iteration": 9,
+        "project_wall_seconds": 0.3309774520002975,
+        "peak_rss_mib": 80.05078125,
+        "files": [
+          {
+            "source": "codegen.c",
+            "wall_seconds": 0.046316994999870076,
+            "user_seconds": 0.052066999999999995,
+            "system_seconds": 0.002146,
+            "peak_rss_mib": 73.78515625,
+            "minor_faults": 4278,
+            "major_faults": 0
+          },
+          {
+            "source": "hashmap.c",
+            "wall_seconds": 0.02252523300012399,
+            "user_seconds": 0.016323999999999998,
+            "system_seconds": 0.007618,
+            "peak_rss_mib": 71.05078125,
+            "minor_faults": 3136,
+            "major_faults": 0
+          },
+          {
+            "source": "main.c",
+            "wall_seconds": 0.034386543000437086,
+            "user_seconds": 0.031585,
+            "system_seconds": 0.008426,
+            "peak_rss_mib": 71.28125,
+            "minor_faults": 3659,
+            "major_faults": 0
+          },
+          {
+            "source": "parse.c",
+            "wall_seconds": 0.08761489800053823,
+            "user_seconds": 0.091263,
+            "system_seconds": 0.017884,
+            "peak_rss_mib": 80.05078125,
+            "minor_faults": 6198,
+            "major_faults": 0
+          },
+          {
+            "source": "preprocess.c",
+            "wall_seconds": 0.04405782700087002,
+            "user_seconds": 0.047159,
+            "system_seconds": 0.005758999999999999,
+            "peak_rss_mib": 73.203125,
+            "minor_faults": 4257,
+            "major_faults": 0
+          },
+          {
+            "source": "strings.c",
+            "wall_seconds": 0.016909242998735863,
+            "user_seconds": 0.012088999999999999,
+            "system_seconds": 0.005037,
+            "peak_rss_mib": 70.5625,
+            "minor_faults": 2956,
+            "major_faults": 0
+          },
+          {
+            "source": "tokenize.c",
+            "wall_seconds": 0.03441467499942519,
+            "user_seconds": 0.035518,
+            "system_seconds": 0.0050739999999999995,
+            "peak_rss_mib": 72.45703125,
+            "minor_faults": 3765,
+            "major_faults": 0
+          },
+          {
+            "source": "type.c",
+            "wall_seconds": 0.02442435099874274,
+            "user_seconds": 0.017387,
+            "system_seconds": 0.009204,
+            "peak_rss_mib": 70.93359375,
+            "minor_faults": 3267,
+            "major_faults": 0
+          },
+          {
+            "source": "unicode.c",
+            "wall_seconds": 0.01914109100107453,
+            "user_seconds": 0.015820999999999998,
+            "system_seconds": 0.004527,
+            "peak_rss_mib": 69.51953125,
+            "minor_faults": 3042,
+            "major_faults": 0
+          }
+        ],
+        "wall_seconds": 0.3297908559998177,
+        "user_seconds": 0.31921299999999997,
+        "system_seconds": 0.065675,
+        "minor_faults": 34558,
+        "major_faults": 0
+      }
+    ]
+  },
+  "summary": {
+    "slate": {
+      "wall_seconds": 0.33245097599683504,
+      "project_wall_seconds": 0.3336572119987977,
+      "user_seconds": 0.267826,
+      "system_seconds": 0.063944,
+      "peak_rss_mib": 33.55078125,
+      "wall_min_seconds": 0.33066652299748966,
+      "wall_max_seconds": 0.3361794110005576
+    },
+    "clang": {
+      "wall_seconds": 0.32475269200404,
+      "project_wall_seconds": 0.32610102299986465,
+      "user_seconds": 0.315799,
+      "system_seconds": 0.065675,
+      "peak_rss_mib": 80.05078125,
+      "wall_min_seconds": 0.32262350600103673,
+      "wall_max_seconds": 0.33080550499835226
+    }
+  },
+  "cpu_profiles": {
+    "slate": {
+      "method": "perf record -e cycles:u -F 199; 30 complete project passes, separate from timings; flat self samples, filtered to compiler process; symbols below 1% omitted",
+      "rows": [
+        {
+          "percent": 3.39,
+          "object": "libc.so.6",
+          "symbol": "0x00000000001b7ad3"
+        },
+        {
+          "percent": 2.61,
+          "object": "slate-parser",
+          "symbol": "<slate_parser::lexer::Lexer>::emit"
+        },
+        {
+          "percent": 2.58,
+          "object": "slate-parser",
+          "symbol": "<core::iter::adapters::map::Map<core::iter::adapters::zip::Zip<alloc::vec::into_iter::IntoIter<slate_parser::ast::Span<slate_parser::lexer::Token>>, alloc::vec::into_iter::IntoIter<bool>>, <slate_parser::lexer::Lexer>::tokenize_lines::{closure#0}> as core::iter::traits::iterator::Iterator>::fold::<(), core::iter::traits::iterator::Iterator::for_each::call<slate_parser::lexer::LineToken, <alloc::vec::Vec<slate_parser::lexer::LineToken>>::extend_trusted<core::iter::adapters::map::Map<core::iter::adapters::zip::Zip<alloc::vec::into_iter::IntoIter<slate_parser::ast::Span<slate_parser::lexer::Token>>, alloc::vec::into_iter::IntoIter<bool>>, <slate_parser::lexer::Lexer>::tokenize_lines::{closure#0}>>::{closure#0}>::{closure#0}>"
+        },
+        {
+          "percent": 2.58,
+          "object": "slate-parser",
+          "symbol": "<slate_parser::pp::syntax::TokenSource>::physical_line"
+        },
+        {
+          "percent": 2.51,
+          "object": "slate-parser",
+          "symbol": "<slate_parser::lexer::Lexer>::with_offset"
+        },
+        {
+          "percent": 2.25,
+          "object": "libc.so.6",
+          "symbol": "cfree"
+        },
+        {
+          "percent": 2.24,
+          "object": "slate-parser",
+          "symbol": "<slate_parser::pp::Preprocessor>::parse_source"
+        },
+        {
+          "percent": 2.01,
+          "object": "slate-parser",
+          "symbol": "slate_parser::parser::attributes::parse_attribute_groups"
+        },
+        {
+          "percent": 1.99,
+          "object": "libc.so.6",
+          "symbol": "0x00000000000bc70d"
+        },
+        {
+          "percent": 1.87,
+          "object": "libc.so.6",
+          "symbol": "0x00000000000bc6f4"
+        },
+        {
+          "percent": 1.68,
+          "object": "libc.so.6",
+          "symbol": "0x00000000000be099"
+        },
+        {
+          "percent": 1.65,
+          "object": "slate-parser",
+          "symbol": "<slate_parser::lexer::Lexer>::run"
+        },
+        {
+          "percent": 1.62,
+          "object": "slate-parser",
+          "symbol": "core::slice::memchr::memrchr_aligned"
+        },
+        {
+          "percent": 1.56,
+          "object": "slate-parser",
+          "symbol": "<core::hash::sip::Hasher<core::hash::sip::Sip13Rounds> as core::hash::Hasher>::write"
+        },
+        {
+          "percent": 1.39,
+          "object": "slate-parser",
+          "symbol": "<std::hash::random::RandomState as core::hash::BuildHasher>::hash_one::<&slate_parser::ir::declarations::TypeId>"
+        },
+        {
+          "percent": 1.24,
+          "object": "slate-parser",
+          "symbol": "<slate_parser::pp::Preprocessor>::branch_taken"
+        },
+        {
+          "percent": 1.17,
+          "object": "slate-parser",
+          "symbol": "slate_parser::sema::builtins::clang_builtin"
+        },
+        {
+          "percent": 1.16,
+          "object": "libc.so.6",
+          "symbol": "malloc"
+        }
+      ]
+    },
+    "clang": {
+      "method": "perf record -e cycles:u -F 199; 30 complete project passes, separate from timings; flat self samples, filtered to compiler process; symbols below 1% omitted",
+      "rows": [
+        {
+          "percent": 4.78,
+          "object": "clang-23",
+          "symbol": "std::pair<llvm::detail::DenseSetImpl<(anonymous namespace)::ParametricStorageUniquer::HashedStorage, llvm::DenseMap<(anonymous namespace)::ParametricStorageUniquer::HashedStorage, llvm::detail::DenseSetEmpty, (anonymous namespace)::ParametricStorageUniquer::StorageKeyInfo, llvm::detail::DenseSetPair<(anonymous namespace)::ParametricStorageUniquer::HashedStorage> > >::DenseSetIterator<false>, bool> llvm::detail::DenseSetImpl<(anonymous namespace)::ParametricStorageUniquer::HashedStorage, llvm::DenseMap<(anonymous namespace)::ParametricStorageUniquer::HashedStorage, llvm::detail::DenseSetEmpty, (anonymous namespace)::ParametricStorageUniquer::StorageKeyInfo, llvm::detail::DenseSetPair<(anonymous namespace)::ParametricStorageUniquer::HashedStorage> > >::insert_as<(anonymous namespace)::ParametricStorageUniquer::LookupKey>((anonymous namespace)::ParametricStorageUniquer::HashedStorage&&, (anonymous namespace)::ParametricStorageUniquer::LookupKey const&)"
+        },
+        {
+          "percent": 2.85,
+          "object": "clang-23",
+          "symbol": "llvm::xxh3_64bits(unsigned char const*, unsigned long)"
+        },
+        {
+          "percent": 2.67,
+          "object": "clang-23",
+          "symbol": "clang::Lexer::LexTokenInternal(clang::Token&)"
+        },
+        {
+          "percent": 2.54,
+          "object": "clang-23",
+          "symbol": "mlir::StringAttr::get(mlir::MLIRContext*, llvm::Twine const&)"
+        },
+        {
+          "percent": 1.41,
+          "object": "clang-23",
+          "symbol": "llvm::raw_ostream::write(char const*, unsigned long)"
+        },
+        {
+          "percent": 1.34,
+          "object": "libc.so.6",
+          "symbol": "pthread_rwlock_unlock"
+        },
+        {
+          "percent": 1.04,
+          "object": "clang-23",
+          "symbol": "clang::SourceManager::getLineNumber(clang::FileID, unsigned int, bool*) const"
+        }
+      ]
+    }
+  }
+}
