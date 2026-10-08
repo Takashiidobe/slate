@@ -9,9 +9,10 @@ use std::fs;
 use std::io;
 use std::path::Path;
 
-// deeply nested sources outgrow the default main-thread stack long before NESTING_LIMIT
+#[cfg(not(target_family = "wasm"))]
 const STACK_SIZE: usize = 256 << 20;
 
+#[cfg(not(target_family = "wasm"))]
 fn main() -> miette::Result<()> {
     std::thread::Builder::new()
         .stack_size(STACK_SIZE)
@@ -19,6 +20,11 @@ fn main() -> miette::Result<()> {
         .map_err(|error| miette::miette!(error))?
         .join()
         .map_err(|_| miette::miette!("parser thread panicked"))?
+}
+
+#[cfg(target_family = "wasm")]
+fn main() -> miette::Result<()> {
+    run()
 }
 
 fn run() -> miette::Result<()> {

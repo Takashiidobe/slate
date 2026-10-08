@@ -1,0 +1,118 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+root=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+out=${1:-"$root/dist"}
+sysroot_targets=(x86_64-unknown-linux-gnu i686-unknown-linux-gnu armv7-unknown-linux-gnueabihf aarch64-unknown-linux-gnu)
+headerless_targets=(x86_64-pc-windows-msvc i686-pc-windows-msvc aarch64-pc-windows-msvc thumbv7a-pc-windows-msvc)
+compilers=(clang gcc)
+
+die() {
+    printf 'build.sh: %s\n' "$*" >&2
+    exit 1
+}
+
+slate_headers=${SLATE_HEADERS:-}
+if [[ -z $slate_headers ]]; then
+    case $(uname -s) in
+        Darwin)
+            slate_headers="$HOME/Library/Application Support/Slate"
+            ;;
+        MINGW*|MSYS*|CYGWIN*)
+            [[ -n ${LOCALAPPDATA:-} ]] || die "LOCALAPPDATA is unset; set SLATE_HEADERS"
+            slate_headers="$LOCALAPPDATA/Slate/data"
+            if command -v cygpath >/dev/null 2>&1; then
+                slate_headers=$(cygpath -u "$slate_headers")
+            fi
+            ;;
+        *)
+            if [[ ${XDG_DATA_HOME:-} == /* ]]; then
+                slate_headers="$XDG_DATA_HOME/slate"
+            else
+                slate_headers="$HOME/.local/share/slate"
+            fi
+            ;;
+    esac
+fi
+
+latest_profile() {
+    find "$slate_headers/compiler-headers" -mindepth 1 -maxdepth 1 -type d -name "$1-*" -printf '%f\n' | sort -V | tail -n 1
+}
+
+for compiler in "${compilers[@]}"; do
+    [[ -n $(latest_profile "$compiler") ]] || die "no $compiler headers in $slate_headers/compiler-headers; run: slate sysroot install"
+done
+for target in "${sysroot_targets[@]}"; do
+    [[ -d $slate_headers/sysroots/$target ]] || die "missing sysroot $target; run: slate sysroot install $target"
+done
+
+CARGO_TARGET_WASM32_WASIP1_RUSTFLAGS="-C link-arg=-zstack-size=16777216" \
+CARGO_PROFILE_RELEASE_LTO=true \
+CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1 \
+CARGO_PROFILE_RELEASE_OPT_LEVEL=s \
+CARGO_PROFILE_RELEASE_STRIP=true \
+    cargo build --release --target wasm32-wasip1 --no-default-features -p slate-parser \
+    --manifest-path "$root/../Cargo.toml" --target-dir "$root/target"
+
+rm -rf "$out"
+mkdir -p "$out/headers"
+cp -r "$root/frontend/." "$out/"
+
+hashed() {
+    local path=$1 stem=$2 ext=$3 hash
+    hash=$(sha256sum "$path" | cut -c1-12)
+    mv "$path" "$out/$stem.$hash.$ext"
+    printf '%s\n' "$stem.$hash.$ext"
+}
+
+pack() {
+    local dir=$1 name=$2 select=${3:-.}
+    (cd "$dir" && find "$select" \( -path '*/include/*' -o -name 'COPYING*' -o -name 'LICENSE*' \) \( -type f -o -type l \) -print0 \
+        | LC_ALL=C sort -z \
+        | tar --null -T - --dereference --format=ustar --owner=0 --group=0 --numeric-owner --mtime=@0 -cf -) \
+        | gzip -9n > "$out/headers/$name.tar.gz"
+    local bytes path
+    bytes=$(stat -c %s "$out/headers/$name.tar.gz")
+    path=$(hashed "$out/headers/$name.tar.gz" "headers/$name" tar.gz)
+    printf '{ "path": "%s", "bytes": %s }\n' "$path" "$bytes"
+}
+
+join_lines() {
+    local IFS=$'\n'
+    printf '%s\n' "$*" | sed '$!s/$/,/'
+}
+
+worker=$(hashed "$out/parser-worker.js" parser-worker js)
+grep -q "'parser-worker.js'" "$out/index.html" || die "index.html no longer references parser-worker.js"
+sed -i "s|'parser-worker.js'|'$worker'|" "$out/index.html"
+
+cp "$root/target/wasm32-wasip1/release/slate-parser.wasm" "$out/slate-parser.wasm"
+wasm=$(hashed "$out/slate-parser.wasm" slate-parser wasm)
+
+compiler_entries=()
+for compiler in "${compilers[@]}"; do
+    profile=$(latest_profile "$compiler")
+    compiler_entries+=("    \"$compiler\": $(pack "$slate_headers/compiler-headers" "$profile" "$profile")")
+done
+
+target_entries=()
+for target in "${sysroot_targets[@]}"; do
+    target_entries+=("    \"$target\": $(pack "$slate_headers/sysroots/$target" "$target")")
+done
+for target in "${headerless_targets[@]}"; do
+    target_entries+=("    \"$target\": null")
+done
+
+cat > "$out/manifest.json" <<EOF
+{
+  "wasm": "$wasm",
+  "compilerHeaders": {
+$(join_lines "${compiler_entries[@]}")
+  },
+  "targets": {
+$(join_lines "${target_entries[@]}")
+  }
+}
+EOF
+
+du -ah "$out/$wasm" "$out/headers"/* | sort -k2

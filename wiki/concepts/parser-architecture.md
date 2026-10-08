@@ -8,6 +8,7 @@
 - [Strictness policy](#strictness-policy)
 - [Priorities](#priorities)
 - [Oracles and inputs](#oracles-and-inputs)
+- [Browser explorer](#browser-explorer)
 <!-- /toc -->
 
 The decisions every change is judged against. The detail lives in the
@@ -94,3 +95,11 @@ records work still to do, not accepted behavior.
 | Sysroots and compiler headers | `crates/slate-sysroots` library (`cargo run -p slate-c2rust -- sysroot install <triple>` or `sysroot install compiler-headers <flavor>`), found through `SLATE_SYSROOTS`. Fix broken or missing headers (for example missing intrinsics headers) there, not here |
 
 Differences between versions of the same compiler are out of scope.
+
+## Browser explorer
+
+- `www-parser/` mirrors the Slate demo in `www/`; see [build and hosting](../../www-parser/README.md).
+- `wasm32-wasip1` runs the CLI directly; native builds use a dedicated thread.
+- `www-parser/build.sh` reserves a 16 MiB WASM stack and packages lazy compiler/target headers.
+- The worker runs `parse` and `ir` separately per target; AST output survives IR failures.
+- Diagnostics use CLI text per output tab; source processing stays in the browser.

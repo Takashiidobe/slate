@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Slate Parser: Explore C AST and IR</title>
+<link rel="stylesheet" href="assets/codemirror.min.css">
+<link rel="stylesheet" href="assets/codemirror-dialog.min.css">
+<link rel="stylesheet" href="assets/codemirror-material-darker.min.css">
+<style>
+* { box-sizing: border-box; } body { margin: 0; background: #101b35; color: #eaf2ff; font: 15px/1.5 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; } main { max-width: 1400px; margin: auto; padding: 32px; } h1 { margin: 0; font-size: 28px; } p { color: #9bb4d1; } a { color: #60a5fa; } .toolbar { display: grid; gap: 10px; margin: 24px 0 12px; } .row { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; } select, button { font: inherit; border-radius: 6px; padding: 8px 12px; } select, #flags { background: #192b52; color: #eaf2ff; border: 1px solid #365a91; } #flags { flex: 1 1 220px; font: 14px ui-monospace, SFMono-Regular, Menlo, monospace; border-radius: 6px; padding: 8px 12px; } #targets { display: flex; flex-wrap: wrap; gap: 4px 10px; margin: 0; padding: 6px 10px 10px; border: 1px solid #365a91; border-radius: 6px; } #targets legend { padding: 0 4px; } #targets label { white-space: nowrap; } button { background: #3b82f6; color: #eff6ff; border: 0; font-weight: 700; cursor: pointer; } .grid { display: grid; grid-template-columns: minmax(0, 1fr) 12px minmax(0, 1fr); column-gap: 0; row-gap: 16px; } section { min-width: 0; } .section-header { display: flex; align-items: center; justify-content: space-between; } h2 { font-size: 18px; color: #d9e8ff; margin: 0 0 8px; } .copy-button { display: inline-flex; align-items: center; justify-content: center; padding: 5px; } .copy-button svg { width: 16px; height: 16px; fill: currentColor; } .splitter { cursor: col-resize; background: transparent; border-radius: 6px; touch-action: none; } .splitter:hover, .splitter:focus-visible { background: transparent; outline: none; } .editor-shell { position: relative; width: 100%; height: 520px; min-height: 240px; resize: vertical; overflow: hidden; } .CodeMirror { height: 100%; border: 1px solid #374151; border-radius: 8px; font: 15px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; tab-size: 4; } .CodeMirror-scroll { overflow: auto; } .stale .CodeMirror { opacity: .45; } .diagnostics-gutter { width: 14px; } .diagnostic-marker { color: #f87171; font-size: 12px; cursor: default; } .error-line { background: rgba(248, 113, 113, .14); } #diagnostics { position: absolute; left: 1px; right: 1px; bottom: 1px; z-index: 5; max-height: 60%; overflow: auto; margin: 0; padding: 10px 12px; background: #2a1215; color: #fecaca; border-top: 1px solid #7f1d1d; border-radius: 0 0 8px 8px; font: 13px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace; white-space: pre-wrap; } #status { min-height: 24px; color: #9bb4d1; } #status.ok { color: #4ade80; } #status.error { color: #f87171; } .spinner { display: none; width: 14px; height: 14px; border: 2px solid #9bb4d1; border-right-color: transparent; border-radius: 50%; animation: spin .7s linear infinite; } .toolbar.busy .spinner { display: inline-block; } @keyframes spin { to { transform: rotate(360deg); } } @media (max-width: 800px) { main { padding: 18px; } .row > select { flex: 1 1 auto; } #flags { flex-basis: 100%; } #targets { flex-basis: 100%; } .grid { grid-template-columns: 1fr; } .splitter { display: none; } .editor-shell { height: 360px; } }
+.diagnostic-range-error { text-decoration: underline wavy #f87171; text-underline-offset: 3px; }
+.diagnostic-range-warning { text-decoration: underline wavy #fbbf24; text-underline-offset: 3px; }
+.diagnostic-range-note { text-decoration: underline dotted #60a5fa; text-underline-offset: 3px; }
+.diagnostic-marker.warning { color: #fbbf24; }
+.diagnostic-marker.note { color: #60a5fa; }
+.warning-line { background: rgba(251, 191, 36, .08); }
+.diagnostic-entry + .diagnostic-entry { margin-top: 12px; padding-top: 12px; border-top: 1px solid #7f1d1d; }
+.diagnostic-message { margin: 0; white-space: pre-wrap; }
+.diagnostic-location { display: block; background: transparent; color: #93c5fd; font: inherit; font-weight: 400; text-align: left; padding: 2px 0; }
+.diagnostic-location:disabled { color: #9bb4d1; cursor: default; }
+.diagnostic-help { margin: 4px 0 0; color: #d9e8ff; white-space: pre-wrap; }
+#diagnostics { white-space: normal; }
+[role=tablist] { display: flex; gap: 6px; margin-bottom: 8px; } [role=tab] { background: #192b52; color: #9bb4d1; padding: 5px 14px; } [role=tab][aria-selected=true] { background: #3b82f6; color: #eff6ff; } [role=tab]:focus-visible { outline: 2px solid #eaf2ff; outline-offset: 2px; }
+</style>
+<main>
+<h1>Slate Parser: Explore C AST and IR</h1>
+<p><a href="https://github.com/Takashiidobe/slate">GitHub</a> - <a href="https://github.com/Takashiidobe/slate/tree/main/crates/slate-parser">Documentation</a></p>
+<div class="toolbar"><div class="row"><select id="examples" aria-label="Example"><option value=""></option></select><select id="compiler" aria-label="Compiler"><option value="clang">Clang</option><option value="gcc">GCC</option><option value="msvc">MSVC</option></select><input id="flags" type="text" spellcheck="false" autocomplete="off" placeholder="Compiler flags, e.g. -fwrapv -DNDEBUG" aria-label="Compiler flags"><select id="keymap" aria-label="Editor key bindings"><option value="default">Standard</option><option value="vim">Vim</option><option value="emacs">Emacs</option></select></div><div class="row"><fieldset id="targets"><legend>Targets</legend></fieldset><button id="parse">Parse</button><button id="share" type="button">Share</button><button id="compiler-explorer" type="button">Compiler Explorer</button><span class="spinner" aria-label="Parsing"></span><span id="status" role="status"></span></div></div>
+<div class="grid"><section><div class="section-header"><h2>C</h2><button id="copy-c" class="copy-button" type="button" aria-label="Copy C program" title="Copy C program"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1Zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2Zm0 16H8V7h11v14Z"/></svg></button></div><div class="editor-shell"><textarea id="c" spellcheck="false"></textarea></div></section><div class="splitter" role="separator" aria-label="Resize editor panes" aria-valuemin="20" aria-valuemax="80" aria-valuenow="50" tabindex="0"></div><section><div class="section-header"><div role="tablist" aria-label="Parser output"><button id="ast-tab" type="button" role="tab" aria-selected="true" aria-controls="output-panel" tabindex="0">AST</button><button id="ir-tab" type="button" role="tab" aria-selected="false" aria-controls="output-panel" tabindex="-1">IR</button></div><button id="copy-output" class="copy-button" type="button" aria-label="Copy parser output" title="Copy parser output"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1Zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2-2V7h11v14H8v2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2Z"/></svg></button></div><div class="editor-shell" id="output-panel" role="tabpanel" aria-labelledby="ast-tab"><textarea id="output" spellcheck="false"></textarea><div id="diagnostics" aria-label="Parser diagnostics" aria-live="polite" hidden></div></div></section></div>
+<p>Parse C entirely in your browser. Switch between the textual AST and typed IR. Linux headers load on demand; Windows targets support code without system headers.</p>
+</main>
+<script src="assets/codemirror.min.js"></script>
+<script src="assets/codemirror-dialog.min.js"></script>
+<script src="assets/codemirror-searchcursor.min.js"></script>
+<script src="assets/codemirror-clike.min.js"></script>
+<script>
+const select = document.querySelector('#examples'); const compilerSelect = document.querySelector('#compiler'); const flagsInput = document.querySelector('#flags'); const targetsFieldset = document.querySelector('#targets'); const keymap = document.querySelector('#keymap'); const toolbar = document.querySelector('.toolbar'); const button = document.querySelector('#parse'); const share = document.querySelector('#share'); const compilerExplorer = document.querySelector('#compiler-explorer'); const copyC = document.querySelector('#copy-c'); const copyOutput = document.querySelector('#copy-output'); const status = document.querySelector('#status'); const outputPanel = document.querySelector('#output-panel'); const diagnostics = document.querySelector('#diagnostics'); let hasParse = false;
+const storage = { get(key) { try { return localStorage.getItem(key); } catch { return null; } }, set(key, value) { try { localStorage.setItem(key, value); } catch {} } };
+function setStatus(text, kind = '') { status.textContent = text; status.className = kind; }
+const source = CodeMirror.fromTextArea(document.querySelector('#c'), { mode: 'text/x-csrc', theme: 'material-darker', lineNumbers: true, indentUnit: 2, tabSize: 2, gutters: ['diagnostics-gutter', 'CodeMirror-linenumbers'] });
+const result = CodeMirror.fromTextArea(document.querySelector('#output'), { mode: null, theme: 'material-darker', lineNumbers: true, readOnly: true });
+const editorGrid = document.querySelector('.grid'); const splitter = document.querySelector('.splitter'); const leftPane = editorGrid.querySelector('section'); const minPaneWidth = 240; const splitterWidth = 12;
+for (const editor of [source, result]) { new ResizeObserver(() => editor.refresh()).observe(editor.getWrapperElement().parentElement); }
+function setSplit(clientX) { if (getComputedStyle(editorGrid).gridTemplateColumns.split(' ').length < 3) return; const bounds = editorGrid.getBoundingClientRect(); const available = bounds.width - splitterWidth; const left = Math.max(minPaneWidth, Math.min(available - minPaneWidth, clientX - bounds.left - splitterWidth / 2)); editorGrid.style.gridTemplateColumns = `${left}px ${splitterWidth}px ${available - left}px`; splitter.setAttribute('aria-valuenow', Math.round(left / available * 100)); source.refresh(); result.refresh(); }
+splitter.addEventListener('pointerdown', (event) => { splitter.setPointerCapture(event.pointerId); setSplit(event.clientX); });
+splitter.addEventListener('pointermove', (event) => { if (splitter.hasPointerCapture(event.pointerId)) setSplit(event.clientX); });
+splitter.addEventListener('keydown', (event) => { if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return; event.preventDefault(); const bounds = editorGrid.getBoundingClientRect(); const left = leftPane.getBoundingClientRect().width + (event.key === 'ArrowRight' ? 16 : -16); setSplit(bounds.left + left + splitterWidth / 2); });
+const keymapScripts = { vim: 'assets/codemirror-vim.min.js', emacs: 'assets/codemirror-emacs.min.js' }; const loadedKeymaps = new Map();
+function loadKeymap(name) { if (!keymapScripts[name]) return Promise.resolve(); if (!loadedKeymaps.has(name)) loadedKeymaps.set(name, new Promise((resolve, reject) => { document.head.append(Object.assign(document.createElement('script'), { src: keymapScripts[name], onload: resolve, onerror: () => { loadedKeymaps.delete(name); reject(new Error(`Failed to load ${name} key bindings.`)); } })); })); return loadedKeymaps.get(name); }
+async function setKeymap(name) { try { await loadKeymap(name); source.setOption('keyMap', name); storage.set('slate-parser:keymap', name); } catch (error) { setStatus(error.message, 'error'); } }
+keymap.value = keymapScripts[storage.get('slate-parser:keymap')] ? storage.get('slate-parser:keymap') : 'default'; setKeymap(keymap.value);
+keymap.addEventListener('change', () => setKeymap(keymap.value));
+let examples = []; let settingSource = false;
+function setSource(value) { settingSource = true; source.setValue(value); settingSource = false; }
+function encodeProgram(program) { const bytes = new TextEncoder().encode(program); let binary = ''; for (const byte of bytes) binary += String.fromCharCode(byte); return btoa(binary).replaceAll('+', '-').replaceAll('/', '_').replaceAll('=', ''); }
+function decodeProgram(value) { const base64 = value.replaceAll('-', '+').replaceAll('_', '/'); const padded = base64 + '='.repeat((4 - base64.length % 4) % 4); const binary = atob(padded); return new TextDecoder().decode(Uint8Array.from(binary, (character) => character.charCodeAt(0))); }
+const linuxTargets = [['x86_64-unknown-linux-gnu', 'x86_64 Linux'], ['i686-unknown-linux-gnu', 'i686 Linux'], ['armv7-unknown-linux-gnueabihf', 'ARMv7 Linux'], ['aarch64-unknown-linux-gnu', 'AArch64 Linux']];
+const windowsTargets = [['x86_64-pc-windows-msvc', 'x64 Windows'], ['i686-pc-windows-msvc', 'x86 Windows'], ['aarch64-pc-windows-msvc', 'ARM64 Windows'], ['thumbv7a-pc-windows-msvc', 'ARM Windows']];
+const compilerTargets = { clang: [...linuxTargets, windowsTargets[0], windowsTargets[2]], gcc: linuxTargets, msvc: windowsTargets };
+function selectedTargets() { return Array.from(targetsFieldset.querySelectorAll('input[name="target"]:checked'), (input) => input.value); }
+function renderTargets(wanted) { const available = compilerTargets[compilerSelect.value]; const kept = available.filter(([target]) => wanted.includes(target)).map(([target]) => target); const checked = kept.length ? kept : [available[0][0]]; const legend = targetsFieldset.querySelector('legend'); targetsFieldset.replaceChildren(legend, ...available.map(([target, label]) => { const input = Object.assign(document.createElement('input'), { type: 'checkbox', name: 'target', value: target, checked: checked.includes(target) }); const wrapper = document.createElement('label'); wrapper.append(input, ` ${label}`); return wrapper; })); }
+function currentState() { return { code: source.getValue(), compiler: compilerSelect.value, flags: flagsInput.value.trim(), targets: selectedTargets() }; }
+function applyState({ code, compiler, flags, targets }) { if (compilerTargets[compiler]) compilerSelect.value = compiler; flagsInput.value = flags ?? ''; renderTargets(targets ?? []); setSource(code); }
+function stateParams({ code, compiler, flags, targets }) { const params = new URLSearchParams({ code: encodeProgram(code), compiler }); if (flags) params.set('flags', flags); params.set('targets', targets.join(',')); return params; }
+function saveState() { const state = currentState(); storage.set('slate-parser:state', JSON.stringify(state)); history.replaceState(null, '', `${location.pathname}#${stateParams(state)}`); }
+function linkedState() { const hash = new URLSearchParams(location.hash.slice(1)); const params = hash.has('code') ? hash : new URLSearchParams(location.search); if (!params.has('code')) return null; return { code: decodeProgram(params.get('code')), compiler: params.get('compiler'), flags: params.get('flags'), targets: (params.get('targets') ?? '').split(',') }; }
+function storedState() { try { const state = JSON.parse(storage.get('slate-parser:state')); return typeof state?.code === 'string' ? state : null; } catch { return null; } }
+function choose() { const example = examples.find(({ name }) => name === select.value); if (!example) return; applyState({ code: example.source, compiler: example.compiler, flags: example.flags, targets: example.targets }); source.focus(); parseSoon(0); }
+let markedLines = []; let markedRanges = [];
+function clearMarkers() { for (const [line, className] of markedLines) source.removeLineClass(line, 'background', className); markedLines = []; for (const range of markedRanges) range.clear(); markedRanges = []; source.clearGutter('diagnostics-gutter'); }
+function clearDiagnostics() { clearMarkers(); diagnostics.replaceChildren(); diagnostics.hidden = true; }
+function jumpToDiagnostic(position) { source.focus(); source.setCursor(position); source.scrollIntoView(position, 80); }
+function showDiagnostics(messages, snapshot, fallback = '') {
+  clearDiagnostics();
+  const offsets = [0]; const indices = [0]; let bytes = 0; let index = 0;
+  for (const character of snapshot) { const point = character.codePointAt(0); bytes += point <= 0x7f ? 1 : point <= 0x7ff ? 2 : point <= 0xffff ? 3 : 4; index += character.length; offsets.push(bytes); indices.push(index); }
+  function byteIndex(offset) { let low = 0; let high = offsets.length - 1; while (low < high) { const mid = Math.ceil((low + high) / 2); if (offsets[mid] <= offset) low = mid; else high = mid - 1; } return indices[low]; }
+  function position(label) {
+    if (label.file !== '/work/input.c' && label.file !== 'input.c') return null;
+    if (Number.isInteger(label.byteOffset) && label.byteOffset >= 0 && label.byteOffset <= bytes) return source.posFromIndex(byteIndex(label.byteOffset));
+    if (Number.isInteger(label.line) && label.line > 0 && label.line <= source.lineCount()) return { line: label.line - 1, ch: Math.max(0, (label.column ?? 1) - 1) };
+    return null;
+  }
+  const gutters = new Map();
+  for (const diagnostic of messages) {
+    const severity = ['error', 'warning', 'note'].includes(diagnostic.severity) ? diagnostic.severity : 'error';
+    const entry = Object.assign(document.createElement('div'), { className: 'diagnostic-entry' });
+    const heading = Object.assign(document.createElement('p'), { className: 'diagnostic-message', textContent: `${severity}: ${diagnostic.message}${diagnostic.code ? ` [${diagnostic.code}]` : ''}${diagnostic.target ? ` (${diagnostic.target})` : ''}` });
+    entry.append(heading);
+    for (const label of diagnostic.labels ?? []) {
+      const from = position(label); const location = Object.assign(document.createElement('button'), { type: 'button', className: 'diagnostic-location', disabled: !from });
+      location.textContent = `${label.file?.replace('/work/input.c', 'input.c') ?? 'source'}${from ? `:${from.line + 1}:${from.ch + 1}` : label.line ? `:${label.line}:${label.column ?? 1}` : ''}${label.message ? ` — ${label.message}` : ''}`;
+      if (from) {
+        location.addEventListener('click', () => jumpToDiagnostic(from));
+        const title = `${diagnostic.message}${label.message ? ` — ${label.message}` : ''}`;
+        let to = from;
+        if (Number.isInteger(label.byteOffset)) to = source.posFromIndex(byteIndex(Math.min(bytes, label.byteOffset + Math.max(0, label.byteLength ?? 0))));
+        if (to.line === from.line && to.ch === from.ch && from.ch < source.getLine(from.line).length) to = { line: from.line, ch: from.ch + (source.getLine(from.line).codePointAt(from.ch) > 0xffff ? 2 : 1) };
+        if (to.line !== from.line || to.ch !== from.ch) markedRanges.push(source.markText(from, to, { className: `diagnostic-range-${severity}`, title }));
+        const className = severity === 'error' ? 'error-line' : severity === 'warning' ? 'warning-line' : '';
+        if (className) markedLines.push([source.addLineClass(from.line, 'background', className), className]);
+        const gutter = gutters.get(from.line) ?? { severity, position: from, messages: [] };
+        if (severity === 'error' || severity === 'warning' && gutter.severity === 'note') gutter.severity = severity;
+        gutter.messages.push(title); gutters.set(from.line, gutter);
+      }
+      entry.append(location);
+    }
+    if (diagnostic.help) entry.append(Object.assign(document.createElement('p'), { className: 'diagnostic-help', textContent: diagnostic.help }));
+    diagnostics.append(entry);
+  }
+  for (const [line, gutter] of gutters) {
+    const marker = Object.assign(document.createElement('span'), { className: `diagnostic-marker ${gutter.severity}`, textContent: '●', title: gutter.messages.join('\n') });
+    marker.addEventListener('click', () => jumpToDiagnostic(gutter.position)); source.setGutterMarker(line, 'diagnostics-gutter', marker);
+  }
+  if (!messages.length && fallback) diagnostics.append(Object.assign(document.createElement('pre'), { className: 'diagnostic-message', textContent: fallback }));
+  diagnostics.hidden = !diagnostics.childNodes.length;
+}
+const outputTabs = { ast: document.querySelector('#ast-tab'), ir: document.querySelector('#ir-tab') };
+let activeView = 'ast'; let outputs = null; let outputSnapshot = '';
+function showOutput() {
+  for (const [view, tab] of Object.entries(outputTabs)) { tab.setAttribute('aria-selected', String(view === activeView)); tab.tabIndex = view === activeView ? 0 : -1; }
+  outputPanel.setAttribute('aria-labelledby', `${activeView}-tab`);
+  if (!outputs) return;
+  const output = outputs[activeView];
+  result.setValue(output.text);
+  if (hasParse) showDiagnostics(output.diagnostics, outputSnapshot); else clearDiagnostics();
+  outputPanel.classList.toggle('stale', !hasParse || !output.ok);
+}
+for (const [view, tab] of Object.entries(outputTabs)) {
+  tab.addEventListener('click', () => { activeView = view; showOutput(); });
+  tab.addEventListener('keydown', (event) => { if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return; event.preventDefault(); activeView = event.key === 'Home' ? 'ast' : event.key === 'End' ? 'ir' : activeView === 'ast' ? 'ir' : 'ast'; showOutput(); outputTabs[activeView].focus(); });
+}
+function showOutputs(value, snapshot) { outputs = value; outputSnapshot = snapshot; hasParse = true; showOutput(); }
+function showError(text, messages, snapshot) { outputs = null; result.setValue(''); showDiagnostics(messages, snapshot, text); outputPanel.classList.add('stale'); hasParse = false; }
+const fetchOk = (path) => fetch(path).then((response) => response.ok ? response : Promise.reject(new Error(`${path} failed (${response.status})`)));
+fetchOk('examples/index.json').then((response) => response.json()).then((groups) => Promise.all(groups.map(async ({ group, examples }) => ({ group, examples: await Promise.all(examples.map(async (example) => ({ ...example, source: await (await fetchOk(`examples/${example.file}`)).text() }))) })))).then((loaded) => { for (const { group, examples: grouped } of loaded) { const optgroup = document.createElement('optgroup'); optgroup.label = group; for (const { name } of grouped) optgroup.append(new Option(name, name)); select.append(optgroup); examples.push(...grouped); } let state = null; try { state = linkedState(); } catch { setStatus('The shared program link is invalid.', 'error'); } state ??= storedState(); if (state) { applyState(state); select.value = examples.find((example) => example.source === state.code)?.name ?? ''; parseSoon(0); } else { select.value = examples[0]?.name ?? ''; choose(); } }).catch((error) => { setStatus(String(error), 'error'); });
+source.on('change', () => { clearDiagnostics(); hasParse = false; outputPanel.classList.add('stale'); if (settingSource) return; select.value = ''; parseSoon(); });
+select.addEventListener('change', choose);
+compilerSelect.addEventListener('change', () => { renderTargets(selectedTargets()); parseSoon(0); });
+flagsInput.addEventListener('input', () => parseSoon());
+flagsInput.addEventListener('keydown', (event) => { if (event.key === 'Enter') parseSoon(0); });
+targetsFieldset.addEventListener('change', () => parseSoon(0));
+button.addEventListener('click', () => parseSoon(0));
+share.addEventListener('click', async () => { saveState(); try { await navigator.clipboard.writeText(location.href); setStatus('Share link copied.', 'ok'); } catch { window.prompt('Copy this share link:', location.href); } });
+async function copy(value, label) { try { await navigator.clipboard.writeText(value); setStatus(`${label} copied.`, 'ok'); } catch { window.prompt(`Copy ${label}:`, value); } }
+copyC.addEventListener('click', () => copy(source.getValue(), 'C program'));
+copyOutput.addEventListener('click', () => copy(result.getValue(), activeView === 'ast' ? 'AST' : 'IR'));
+const explorerCompilers = { clang: { 'x86_64-unknown-linux-gnu': ['cclang2210', ''], 'i686-unknown-linux-gnu': ['cclang2210', '-m32'], 'armv7-unknown-linux-gnueabihf': ['armv7-cclang2210', ''], 'aarch64-unknown-linux-gnu': ['armv8-cclang2210', ''], 'x86_64-pc-windows-msvc': ['cclang2210', '--target=x86_64-pc-windows-msvc'], 'aarch64-pc-windows-msvc': ['armv8-cclang2210', '--target=aarch64-pc-windows-msvc'] }, gcc: { 'x86_64-unknown-linux-gnu': ['cg162', ''], 'i686-unknown-linux-gnu': ['cg162', '-m32'], 'armv7-unknown-linux-gnueabihf': ['carmg1610', ''], 'aarch64-unknown-linux-gnu': ['carm64g1610', ''] }, msvc: { 'x86_64-pc-windows-msvc': ['vc_v19_latest_x64', ''], 'i686-pc-windows-msvc': ['vc_v19_latest_x86', ''], 'aarch64-pc-windows-msvc': ['vc_v19_latest_arm64', ''] } };
+function explorerCompiler() { const compilers = explorerCompilers[compilerSelect.value]; const [id, targetFlags] = compilers[selectedTargets()[0]] ?? Object.values(compilers)[0]; const standard = compilerSelect.value === 'msvc' ? '/std:clatest' : '-std=c23 -O0'; return { id, options: [standard, targetFlags, flagsInput.value.trim()].filter(Boolean).join(' ') }; }
+compilerExplorer.addEventListener('click', async () => { const tab = window.open('about:blank', '_blank'); if (!tab) { setStatus('Allow pop-ups to open Compiler Explorer.', 'error'); return; } tab.opener = null; try { const sessions = [{ id: 1, language: 'c', source: source.getValue(), compilers: [], executors: [{ compiler: explorerCompiler() }] }]; const response = await fetch('https://godbolt.org/api/shortener', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ sessions }) }); if (!response.ok) throw new Error(`Compiler Explorer failed (${response.status})`); const body = await response.json(); tab.location.href = body.url; } catch (error) { tab.close(); setStatus(error instanceof Error ? error.message : String(error), 'error'); } });
+let worker; let nextRequest = 0; const pending = new Map(); const parseTimeoutMs = 30000;
+function startWorker() { worker = new Worker('parser-worker.js', { type: 'module' }); worker.addEventListener('message', ({ data }) => { if (data.type === 'status') { setStatus(data.text); return; } const request = pending.get(data.id); if (!request) return; pending.delete(data.id); clearTimeout(request.timer); if (data.ok) request.resolve(data); else request.reject(Object.assign(new Error(data.error), { diagnostics: data.diagnostics ?? [] })); }); worker.addEventListener('error', (event) => { for (const request of pending.values()) { clearTimeout(request.timer); request.reject(new Error(event.message || 'Slate Parser worker failed to load.')); } pending.clear(); worker.terminate(); worker = undefined; }); }
+function parseInWorker(request) { if (!worker) startWorker(); const id = nextRequest++; return new Promise((resolve, reject) => { const timer = setTimeout(() => { pending.delete(id); worker.terminate(); worker = undefined; reject(new Error(`Parsing timed out after ${parseTimeoutMs / 1000}s.`)); }, parseTimeoutMs); pending.set(id, { resolve, reject, timer }); worker.postMessage({ id, ...request }); }); }
+let debounce; let parsing = false; let stale = false; const typingDelayMs = 300;
+function parseSoon(delay = typingDelayMs) { clearDiagnostics(); hasParse = false; outputPanel.classList.add('stale'); clearTimeout(debounce); debounce = setTimeout(parse, delay); }
+async function parse() {
+  clearTimeout(debounce); saveState();
+  if (parsing) { stale = true; return; }
+  parsing = true; stale = false; toolbar.classList.add('busy');
+  const snapshot = currentState(); const stillCurrent = () => JSON.stringify(snapshot) === JSON.stringify(currentState());
+  try {
+    const targets = selectedTargets(); if (!targets.length) throw new Error('Select at least one target.');
+    const { outputs: parsedOutputs, ms } = await parseInWorker({ source: snapshot.code, targets, compiler: snapshot.compiler, flags: snapshot.flags });
+    if (!stale && stillCurrent()) { showOutputs(parsedOutputs, snapshot.code); const failed = Object.entries(parsedOutputs).filter(([, output]) => !output.ok).map(([view]) => view.toUpperCase()); setStatus(failed.length ? `${failed.join(' and ')} failed. See diagnostics in its tab.` : `Parsed AST and IR in ${Math.round(ms)} ms.`, failed.length ? 'error' : 'ok'); }
+  } catch (error) {
+    if (!stale && stillCurrent()) { showError(error instanceof Error ? error.message : String(error), error.diagnostics ?? [], snapshot.code); setStatus('Parsing failed.', 'error'); }
+  } finally {
+    parsing = false; toolbar.classList.remove('busy');
+    if (stale || !stillCurrent()) parseSoon(0);
+  }
+}
+</script>

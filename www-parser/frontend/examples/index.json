@@ -1,0 +1,31 @@
+[
+  {
+    "group": "Clang",
+    "examples": [
+      { "name": "Goto", "file": "goto_forward.c", "compiler": "clang", "targets": ["x86_64-unknown-linux-gnu"] },
+      { "name": "Switch fallthrough", "file": "switch_fallthrough.c", "compiler": "clang", "targets": ["x86_64-unknown-linux-gnu"] },
+      { "name": "Bitfields", "file": "bitfield_ops.c", "compiler": "clang", "targets": ["x86_64-unknown-linux-gnu"] },
+      { "name": "Long double", "file": "long_double_f80_arithmetic.c", "compiler": "clang", "targets": ["x86_64-unknown-linux-gnu"] },
+      { "name": "Alignment", "file": "aligned_struct.c", "compiler": "clang", "targets": ["x86_64-unknown-linux-gnu"] },
+      { "name": "Architecture predefines", "file": "arch_targets.c", "compiler": "clang", "targets": ["x86_64-unknown-linux-gnu", "i686-unknown-linux-gnu", "armv7-unknown-linux-gnueabihf", "aarch64-unknown-linux-gnu"] },
+      { "name": "Multi-target preprocessing", "file": "multitarget_cfg.c", "compiler": "clang", "flags": "-DMY_FEATURE", "targets": ["x86_64-unknown-linux-gnu", "aarch64-unknown-linux-gnu"] },
+      { "name": "OS targets", "file": "os_targets.c", "compiler": "clang", "targets": ["x86_64-unknown-linux-gnu", "x86_64-pc-windows-msvc"] }
+    ]
+  },
+  {
+    "group": "GCC",
+    "examples": [
+      { "name": "Compiler identity (try Clang)", "file": "compiler_identity.c", "compiler": "gcc", "targets": ["x86_64-unknown-linux-gnu"] },
+      { "name": "-ftrapv -fwrapv (Clang traps, GCC wraps)", "file": "overflow_flags.c", "compiler": "gcc", "flags": "-ftrapv -fwrapv", "targets": ["x86_64-unknown-linux-gnu"] },
+      { "name": "GNU extensions", "file": "gnu_extensions.c", "compiler": "gcc", "targets": ["x86_64-unknown-linux-gnu"] }
+    ]
+  },
+  {
+    "group": "MSVC",
+    "examples": [
+      { "name": "LLP64 data model (try GCC)", "file": "data_model.c", "compiler": "msvc", "targets": ["x86_64-pc-windows-msvc"] },
+      { "name": "Bitfield layout (try GCC)", "file": "bitfield_layout.c", "compiler": "msvc", "targets": ["x86_64-pc-windows-msvc"] },
+      { "name": "MSVC extensions", "file": "msvc_extensions.c", "compiler": "msvc", "targets": ["x86_64-pc-windows-msvc", "aarch64-pc-windows-msvc"] }
+    ]
+  }
+]
