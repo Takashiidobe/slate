@@ -1,244 +1,135 @@
 # Builtins
 
 <!-- toc -->
-- [Registry](#registry)
-- [Builtins as functions](#builtins-as-functions)
-  - [Redeclared builtins (clang
-    flavor)](#redeclared-builtins-clang-flavor)
-  - [MSVC implicit declarations](#msvc-implicit-declarations)
-- [Custom lowering](#custom-lowering)
+- [Compile-time queries and types](#compile-time-queries-and-types)
+- [Source location and function
+  names](#source-location-and-function-names)
+- [Integer arithmetic and bits](#integer-arithmetic-and-bits)
+- [Floating point](#floating-point)
+- [Control flow and hints](#control-flow-and-hints)
+- [Variadic arguments](#variadic-arguments)
 - [Vector builtin expansion](#vector-builtin-expansion)
-- [Recognized by callee name](#recognized-by-callee-name)
-  - [`va_list`](#va_list)
-  - [Source location and function
-    names](#source-location-and-function-names)
-  - [Constant queries](#constant-queries)
+- [Atomic operations](#atomic-operations)
+- [Library and target intrinsic
+  calls](#library-and-target-intrinsic-calls)
 <!-- /toc -->
 
-Part of the [IR spec](../ir-spec.md). Atomic builtins are in
-[atomics](atomics.md); how builtin calls print is in
-[calls and ABI](calls-abi.md#calls).
+Supported by slate-parser, grouped by category. Retained calls reach Slate's
+[scalar lowering](../../../crates/slate/src/frontend/lowerer/values.rs) or
+[intrinsic lowering](../intrinsic-lowering.md); parser support alone does not
+imply Rust lowering for every call.
 
-## Registry
+## Compile-time queries and types
 
-- Clang's `Builtins.td`, `BuiltinsX86.td`, and `BuiltinsX86_64.td` are
-  expanded through `clang-tblgen` into one table each in
-  `src/sema/clang_builtins.rs` (`CLANG_BUILTINS`, `CLANG_X86_BUILTINS`,
-  `CLANG_X86_64_BUILTINS`), sharing one prototype pool. The generator parses
-  each prototype into a typed `BuiltinPrototype` and emits
-  `BuiltinAttribute`/`BuiltinLanguage` enums; an unparseable prototype fails
-  generation.
-- Target tables apply only under the clang flavor: x86 gets the x86 table,
-  x86-64 both. `__builtin_ia32_*` and `__rdtsc` are unresolved on other
-  targets and under gcc and MSVC (`clang/linux/x86_64/ir_x86_target_builtins.c`,
-  `error/clang/linux/aarch64/x86_target_builtin.c`). `Features` is recorded
-  but not checked.
-- `_Vector<N, T>` prototypes are GNU `vector_size` vectors (`vector<T, N>`).
-- `TypeResolver::builtin_signature` derives the call signature. None is
-  derived (and the call reports an unsupported builtin) for
-  `CustomTypeChecking`, variadic prototypes with no named parameters, and
-  prototypes naming types outside the model (ObjC `id`, HLSL resources, C++
-  references, ext-vectors). `FILE`, `jmp_buf`, `sigjmp_buf` and `ucontext_t`
-  take the file-scope typedef of that name in clang flavor, as clang does
-  (`NameResolution::builtin_typedefs`); without one there is no signature.
-  Array parameters decay to pointers, as in clang's builtin prototypes.
-- Some `CustomTypeChecking` builtins get a signature derived from the first
-  argument instead (`derived_signature`). `__builtin_reduce_*` takes a vector
-  and returns its element type: `add`/`mul`/`and`/`or`/`xor` need integer
-  elements, `max`/`min` arithmetic ones, `maximum`/`minimum` floating ones
-  (`clang/linux/x86_64/ir_reduce_builtins.c`,
-  `error/clang/linux/x86_64/reduce-builtin-operand.c`). Clang 22 does not
-  know `__builtin_reduce_assoc_fadd`/`in_order_fadd`, so they stay
-  unsupported. The implicit declaration takes the first call's signature;
-  each call carries its own.
-- Named types resolve to the target's canonical types, not to typedefs the
-  unit declares.
+- `__builtin_constant_p`
+- `__builtin_types_compatible_p`
+- `__builtin_choose_expr`
+- `__builtin_classify_type`
+- `__builtin_bit_cast`
+- `__builtin_addressof`
+- `__builtin_counted_by_ref`
 
-## Builtins as functions
+Lowered in `slate-parser/src/sema/expression.rs`; constant and type queries
+resolve through `sema/types.rs` and `sema/ctype/`.
 
-Builtins look like functions, as clang's lazily created `FunctionDecl`s do.
+## Source location and function names
 
-- A builtin used without a declaration gets one implicit `fn` per spelling
-  with unnamed parameters and the registry prototype
-  (`fn %9 @__builtin_abort() -> void [linkage=external] [noreturn]`).
-  Every builtin function carries `c_builtin` metadata, plus `c_builtin_kind`
-  (`library`, `builtin`, `atomic`, `language`: clang's `ClangBuiltinKind`)
-  and, when the registry names one, `c_builtin_header`. Only a `library`
-  builtin from a non-intrinsic header has a library symbol; the rest
-  (`__rdtsc`, `__debugbreak`, `_mm_pause` from `emmintrin.h`) exist only in
-  clang codegen (`ir_builtin_kind_metadata.c`). A builtin used only inside
-  unevaluated `sizeof`/`_Generic` leaves no declaration.
-- That implicit declaration redeclares any function of the same name with
-  linkage: it binds to an earlier block-scope `extern` or a later one at any
-  scope, and the unit gets one `fn`. Calls before the later declaration keep
-  the builtin's signature (`gcc/.../ir_implicit_builtin_redeclared.c`).
-- Attributes: `NoReturn` → `[noreturn]`; `Const`/`Pure` →
-  `[memory=none]`/`[memory=read]`, like GNU `const`/`pure` (`const` wins).
-  `ConstIgnoringErrno` doesn't count; `NoThrow` is dropped (C without
-  `-fexceptions` never unwinds) (`ir_builtin_noreturn.c`).
+- `__builtin_LINE`, `__builtin_COLUMN`
+- `__builtin_FILE`, `__builtin_FILE_NAME`, `__builtin_FUNCTION`
+- `__func__`, `__FUNCTION__`, `__PRETTY_FUNCTION__`
 
-### Redeclared builtins (clang flavor)
+`sema/expression.rs`: `source_location` emits constants or string globals;
+`Lowerer::place` handles predefined function names.
 
-- An ordinary declaration keeps builtin status when, as in clang, it has
-  external linkage and a type compatible with the builtin (an unprototyped
-  `int abs();`, a `const` parameter, or a missing `noreturn` still match).
-  Calls use the builtin's signature, and the declaration gains `noreturn`
-  and `c_builtin`.
-- An incompatible or `static` declaration shadows the builtin. With
-  external linkage it still inherits `noreturn` (clang merges it into the
-  function type: `int exit(long);` is `[noreturn]`), but not `Const`/`Pure`
-  (`ir_redeclared_builtins.c`).
-- gcc (`builtin_prefixed_library.c`) and MSVC keep compiling after such a
-  call.
-- MSVC flavor: library builtins (`ClangBuiltinKind::Library`: `exit`,
-  `abort`, `toupper`, `cbrt`) get neither `noreturn` nor `Const`/`Pure`,
-  declared or implicit; cl.exe learns noreturn only from
-  `__declspec(noreturn)`. They keep `c_builtin`, which names the libc
-  entity rather than claiming semantics (`msvc/linux/x86_64/ir_library_builtins.c`).
-- `-fno-builtin`, `-fno-builtin-<name>` and `-ffreestanding`
-  (`CompilerOptions::library_builtins`, checked in `clang_builtin`) make
-  a library builtin an ordinary function: no `c_builtin`, no implicit
-  builtin signature, no attributes. `__builtin_<name>` still works
-  (`clang/linux/x86_64/freestanding_library_builtins.c`).
-- Header provenance plays no part: it decides libc identity for Rust, not
-  builtin semantics.
+## Integer arithmetic and bits
 
-### MSVC implicit declarations
+- `__builtin_add_overflow`, `__builtin_sub_overflow`, `__builtin_mul_overflow`
+- `__builtin_umul_overflow`, `__builtin_umull_overflow`, `__builtin_umulll_overflow`
+- `__builtin_rotateleft{8,16,32,64}`, `__builtin_rotateright{8,16,32,64}`
+- `__builtin_clz`, `__builtin_ctz`, `__builtin_popcount`, `__builtin_parity`,
+  `__builtin_ffs`, `__builtin_clrsb`, with their registered width suffixes
+- `__builtin_clzg`, `__builtin_ctzg`, `__builtin_popcountg`
+- `__builtin_bswap{16,32,64}`, `__builtin_bitreverse{8,16,32,64}`
 
-Under the MSVC flavor, calling an undeclared non-builtin identifier declares
-`extern int name()` at file scope, as cl.exe does (C4013, level 3, so
-`-Wimplicit-function-declaration` is off by default). The unit gets one
-unprototyped `fn` with `c_implicit` metadata before the first calling item;
-later calls reuse it, a compatible later declaration merges, and an
-incompatible one is the C2371 conflicting-types error. Only call targets are
-declared this way; clang and gcc keep rejecting
-(`msvc/windows/i686/implicit_function_declaration.c` and its error
-variants).
+Parser: `sema/expression.rs` and `sema/vector_builtins.rs` emit overflow IR;
+`sema/fold.rs` folds constant bit queries. Slate: `lowerer/arithmetic.rs` handles
+overflow, `lowerer/values.rs` handles rotations and scalar bit counts, and
+`lowerer/intrinsics.rs` handles mapped bit operations.
 
-## Custom lowering
+## Floating point
 
-Builtins whose result can't come from a prototype dispatch on their tblgen
-record through `builtins::custom_builtin`, which returns a typed
-`CustomBuiltin` rather than matching spellings at the call site.
+- `__builtin_isnan`, `__builtin_isinf`, `__builtin_isfinite`, `__builtin_isnormal`
+- `__builtin_issubnormal`, `__builtin_iszero`, `__builtin_issignaling`
+- `__builtin_signbit`, `__builtin_signbitf`, `__builtin_signbitl`
+- `__builtin_isinf_sign`, `__builtin_fpclassify`
+- `__builtin_isgreater`, `__builtin_isgreaterequal`, `__builtin_isless`,
+  `__builtin_islessequal`, `__builtin_isunordered`, `__builtin_islessgreater`
+- `__builtin_complex`
+- `__builtin_inf`, `__builtin_huge_val`, with `f` and `l` forms
+- `__builtin_flt_rounds`
 
-| Builtin | IR |
-| --- | --- |
-| `isnan`, `isinf`, `isfinite`, `isnormal`, `issubnormal`, `iszero`, `issignaling`, `signbit` | `from_bool<int>(float_class<bool, test=..>(x))`, a non-trapping class test |
-| `isinf_sign` | nested `conditional<int>` over two class tests (-1/0/1) |
-| `isgreater`, `isgreaterequal`, `isless`, `islessequal` | the ordinary comparison with `exceptions=ignore` |
-| `isunordered`, `islessgreater` | two quiet tests joined by bitwise `or<int>` (both operands always evaluate; `islessgreater` is `lt \| gt`, false for NaN) |
-| `__builtin_complex(re, im)` | `aggregate<complex<T>>` |
-| `__builtin_add/sub/mul_overflow` | `overflow_add/sub/mul<bool>(l, r, place)`: math-domain result stored through `place`, returns whether it overflowed |
-| `__builtin_bit_cast` | `bit_cast<T>` |
-| `__builtin_shufflevector`, `__builtin_convertvector` | see [vectors](type-families.md#vector) |
-| `__builtin_counted_by_ref(base->m)` | `addr_of<ptr<C>>` of `base->counter` when `m` has `counted_by(counter)` (C is the counter's declared type, base qualifiers dropped as in clang); otherwise `null<ptr<void>>` without evaluating the argument |
+Classification, quiet comparisons, and complex construction expand in
+`sema/expression.rs::custom_builtin`. Slate handles scalar classification and
+infinities in `lowerer/values.rs`. `flt_rounds` calls the C helper in
+`frontend/shims/fenv.c`, mapping `fegetround()` to `FLT_ROUNDS` values.
 
-Fixture: `ir_implicit_builtins.c`.
+## Control flow and hints
 
-- `__builtin_umul_overflow`, `__builtin_umull_overflow`, and
-  `__builtin_umulll_overflow` use the same expansion dispatch: convert operands
-  through the unsigned int/long/long long prototype, then emit
-  `overflow_mul<bool>(l, r, deref(result))`.
-- Unlike generic `__builtin_mul_overflow`, typed forms convert operands before
-  the math-domain multiplication (`builtin_unsigned_mul_overflow.c`).
+- `__builtin_unreachable`, `__builtin_assume`, `__assume`
+- `__builtin_expect`, `__builtin_expect_with_probability`, `__builtin_unpredictable`
+- `__builtin_prefetch`, `__builtin_assume_aligned`
+- `__builtin_cpu_init`, `__builtin_cpu_supports`
 
-`__builtin_counted_by_ref` takes a parenthesized `.`/`->` member of pointer
-or array type (both oracles reject anything else,
-`error/clang/linux/x86_64/counted-by-ref-not-member.c`). Clang's extra
-errors (an argument with side effects; the result assigned, passed,
-returned, subscripted, or used in a binary operator) are not checked, and
-gcc has none of them. `counted_by_or_null` and `sized_by` stay unmodeled, so
-members carrying them give `void *`, as in clang (`ir_counted_by_ref.c`).
+Parser: `sema/expression.rs::function_like_builtin`. Slate: `lowerer/values.rs`
+for hints and `lowerer/target_features.rs` for CPU feature queries.
+
+## Variadic arguments
+
+- `__builtin_va_list`
+- `__builtin_va_arg`, `__builtin_va_start`, `__builtin_va_end`, `__builtin_va_copy`
+
+`slate-parser/src/target_info.rs` selects the target's `va_list` layout;
+`sema/expression.rs` emits the variadic IR operations. Slate lowers them in
+`lowerer/values.rs` and `lowerer/statements.rs`.
 
 ## Vector builtin expansion
 
-Builtins that clang's CGBuiltin expands by hand, rather than mapping to one
-intrinsic through a `ClangBuiltin` alias, expand in sema
-(`builtins::expansion`, `sema/vector_builtins.rs`). Arguments convert through
-the prototype or derived signature first. No builtin declaration is made, so
-no extern with vector parameters reaches Slate.
+- `__builtin_shufflevector`, `__builtin_convertvector`
+- `__builtin_reduce_{add,mul,and,or,xor,max,min,maximum,minimum}`
+- `__builtin_elementwise_{popcount,max,min,fma}`
+- `__builtin_ia32_extract*`, `__builtin_ia32_vextractf128_*`
+- `__builtin_ia32_pternlog{d,q}{128,256,512}_mask[z]`
+- `__builtin_ia32_reduce_f{add,mul}_p{s,d}512`
 
-| Builtin | IR |
-| --- | --- |
-| `__builtin_reduce_{add,mul,and,or,xor,max,min,maximum,minimum}` | `intrinsic<llvm.vector.reduce.*>`; max/min pick `s`/`u`/`f` from the element, maximum/minimum are `fmaximum`/`fminimum` |
-| `__builtin_elementwise_{popcount,max,min,fma}` | `intrinsic<llvm.ctpop>`, `llvm.{s,u}{max,min}` or `llvm.{max,min}num`, `llvm.fma` |
-| `__builtin_ia32_extract*` / `vextractf128_*` | one-operand `shuffle` of lanes `(imm mod n) * width ..`; `_mask` forms need an all-ones constant mask, and an effectful passthrough is kept by `sequence` |
-| `__builtin_ia32_pternlog{d,q}{128,256,512}_mask[z]` | `intrinsic<llvm.x86.avx512.pternlog.*>(a, b, c, imm)` with an all-ones constant mask |
-| `__rdtsc()` | `intrinsic<u64, llvm.x86.rdtsc>()`; clang's x86 `__rdtsc` record has no `ClangBuiltin` alias (only `__builtin_ia32_rdtsc` does) |
-| `__builtin_ia32_reduce_f{add,mul}_p{s,d}512(init, v)` | `init op` a halving tree: each level combines the low and high halves with a vector `add`/`mul`, ending with `lane 0` of a one-lane vector. Clang emits a `reassoc` reduction, which LLVM lowers to this order; an intrinsic call cannot carry `reassoc` |
+`sema/expression.rs` handles shuffle and conversion;
+`sema/vector_builtins.rs` expands reductions and target operations into vector
+IR or LLVM intrinsics. Masked extract and ternary-logic forms require all-ones
+masks. Slate consumes these in `lowerer/vectors.rs` and `lowerer/intrinsics.rs`.
+See [vector types](type-families.md#vector) for supported shapes.
 
-- Each tree level is bound once with `capture<%t>`, the same once-binding
-  used by GNU `a ?: b` and VLA extents, so the operand is evaluated once.
-- A builtin whose immediate or mask is not constant falls back to an ordinary
-  builtin call with the arguments that are already lowered.
+## Atomic operations
 
-Fixture: `ir_vector_builtin_expansion.c`.
+- `__c11_atomic_*`
+- `__atomic_*`
+- `__scoped_atomic_*`
+- `__sync_*`
 
-## Recognized by callee name
+Lowered by `slate-parser/src/sema/atomic.rs` into reads, writes, updates,
+compare-exchanges, and fences; Rust lowering is in `slate/src/frontend/lowerer/atomics.rs`.
+Supported operations and ordering rules: [atomic builtins](atomics.md#atomic-builtins).
 
-These are clang keywords rather than `Builtins.td` records, so sema matches
-the callee name.
+## Library and target intrinsic calls
 
-### `va_list`
+- `__rdtsc`
+- `__builtin_memcpy`, `__builtin_memmove`, `__builtin_memset`, `__builtin_memcmp`
+- `__builtin_strlen`, `__builtin_strcmp`, `__builtin_strncmp`, `__builtin_strchr`
+- Registered allocation, math, and process-control library builtins
+- Target builtin aliases in the generated intrinsic catalog, including
+  supported `__builtin_ia32_*` calls
 
-- `__builtin_va_list` follows clang's per-target `BuiltinVaListKind`
-  (`TargetInfo::va_list_kind`). Where clang makes it `char *` (Windows,
-  i686, aarch64 Darwin) it is exactly `char *` and the va builtins take a
-  `ptr<i8>` place. Elsewhere it is the opaque `va_list` type: 24/8 on
-  x86-64 SysV, 32/8 on AAPCS64, pointer-sized on 32-bit ARM. The ABI's
-  array-to-pointer decay of a `va_list` parameter is not modeled; it passes
-  as one handle.
-- `__builtin_va_arg(ap, T)` is `va_arg<T>(place)`, a reading effect that
-  advances the list; `T` may be a record (`ir_va_arg.c`).
-- `va_start(place)`, `va_end(place)`, `va_copy(dest, src)` are void effect
-  values; `va_start`'s last-parameter argument is dropped
-  (`ir_va_start_end_copy.c`).
-
-### Source location and function names
-
-- `__builtin_LINE`/`COLUMN` fold to `int` constants; `__builtin_FILE`,
-  `FILE_NAME`, `FUNCTION` become an internal `.strN` global. The position
-  comes from the callee token's `Loc` via `Files::position`, not from
-  `Provenance`: the preprocessor stamps one `Provenance` per logical line,
-  so its column is always the line's first token.
-- `__func__`, `__FUNCTION__`, `__PRETTY_FUNCTION__` are internal `char[N]`
-  lvalues (so `sizeof`, indexing, decay work), bound in `Lowerer::place`
-  ahead of name resolution, one `.strN` per occurrence. gcc spells
-  `__PRETTY_FUNCTION__` as the bare name; clang spells the declaration
-  (`unsigned long n(int)`, via `CTypes::declaration_spelling`). Outside a
-  function: `""`, and `"top level"` for the pretty form
-  (`ir_function_name_builtins.c`, `ir_function_name_builtins_gcc.c`).
-
-### Constant queries
-
-- `__builtin_constant_p(x)` → `const<i32>(0|1)` with `c_builtin` metadata;
-  the operand is not evaluated. 1 when the lowered operand folds, else 0
-  (clang `-O0`'s answer). It is an integer constant expression. A pointer
-  operand is also 1 when it is the start of a string literal, through
-  parens, casts, `?:` with a constant condition, `+ 0`/`- 0`, `&s[0]`
-  and `&*s`, and (clang only) the right side of a comma
-  (`TypeResolver::builtin_constant_p`). PostgreSQL's
-  `AllocSetContextCreate` asserts this on its context names.
-- `__builtin_assume(c)` and MSVC `__assume(c)` stay calls, but when the
-  lowered `c` has side effects (`effects::has_effects`) it becomes
-  `const<bool>(true)`. Clang ignores such an assumption (`-Wassume`) and
-  never evaluates its operand, so hoisting `x++` out of it would be wrong
-  (`builtin_assume_side_effects.c`).
-- `__builtin_types_compatible_p(A, B)` → `const<i32>(0|1)` with
-  `types_compatible="A, B"`, answered by `CTypes::compatible` (6.2.7), the
-  predicate redeclaration merging uses. Top-level and element qualifiers
-  are ignored; distinct C integer types sharing an IR type are
-  incompatible; an enum matches its underlying type but no other enum;
-  `int[]` matches `int[5]`; `int(*)()` matches `int(*)(int)` before C23 but
-  not from C23 (verified with clang 22 and gcc 16).
-- `__builtin_choose_expr`: see [control flow](control-flow.md#resolved-away-before-the-ir).
-- Bit builtins (`BitBuiltin`: `clz`, `ctz`, `popcount`, `parity`, `ffs`,
-  `clrsb` with their `l`/`ll`/`s` forms, `bswap16/32/64`,
-  `bitreverse8..64`, and `clzg`/`ctzg` with an optional fallback) fold
-  where a constant is required: array sizes, enumerators, case labels,
-  designators, `_Static_assert` (`constant_value_with_context` →
-  `fold::bit_builtin`). Each argument is converted to the builtin's
-  parameter type first (`clzl(1)` is 63). `clz`/`ctz` of zero without a
-  fallback is not a constant under clang; gcc folds it to the width. Kernel
-  `ilog2()` depends on this. Elsewhere they stay calls in the IR.
-  `popcountg` has no typing rule yet.
+`sema/builtins.rs` resolves signatures from `sema/clang_builtins.rs` and
+`sema/expression.rs` emits calls with `c_builtin` metadata. Slate maps library
+symbols through `lowerer/names.rs` and intrinsic aliases through
+`lowerer/intrinsics.rs` plus `lowerer/intrinsics_table.rs`.
+`__rdtsc` expands in `sema/vector_builtins.rs`. See
+[intrinsic lowering](../intrinsic-lowering.md) for catalog and signature limits.
