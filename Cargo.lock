@@ -1694,6 +1694,7 @@ dependencies = [
  "custom_debug",
  "directories",
  "foldhash",
+ "js-sys",
  "libc",
  "libtest-mimic",
  "miette",

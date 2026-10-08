@@ -24,6 +24,9 @@ num-bigint.workspace = true
 rustc_apfloat.workspace = true
 thiserror.workspace = true
 
+[target.'cfg(all(target_arch = "wasm32", target_os = "unknown"))'.dependencies]
+js-sys = "0.3"
+
 [dev-dependencies]
 serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true

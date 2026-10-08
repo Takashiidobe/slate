@@ -316,7 +316,7 @@ impl<'a> Preprocessor<'a> {
             counter: Cell::new(0),
             source_position: None,
             hide_sets: HideSets::new(),
-            build_time: SystemTime::now(),
+            build_time: build_time(),
             dialect,
         };
         preprocessor.configure()?;
@@ -1818,4 +1818,16 @@ fn stringized_source<'t>(tokens: impl IntoIterator<Item = &'t Span<Token>>) -> S
         previous = Some(token);
     }
     text
+}
+
+fn build_time() -> SystemTime {
+    #[cfg(all(target_arch = "wasm32", target_os = "unknown"))]
+    {
+        let seconds = js_sys::Date::now() / 1000.0;
+        SystemTime::UNIX_EPOCH + std::time::Duration::from_secs_f64(seconds)
+    }
+    #[cfg(not(all(target_arch = "wasm32", target_os = "unknown")))]
+    {
+        SystemTime::now()
+    }
 }
