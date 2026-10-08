@@ -567,6 +567,12 @@ MemberDesignator = Vec<Field(Span<String>) | Index(Expr)>
   associations never match. A type-name operand (C2y; gcc and clang accept
   earlier) matches as written: `_Generic(const int, int: 1, const int: 2)`
   is 2.
+- Variably modified association and controlling types retain their array
+  bounds as expressions or `*`, including bounds with side effects. Parsing
+  neither evaluates bounds nor selects an association. N3348 permits VM
+  associations in C2y; checking that constraint requires semantic type
+  resolution, including typedefs. VM matching and unevaluated bounds are
+  tracked in `slate-parser-cxg.20.17`.
 - Whether an identifier is a type (`_Generic`, `sizeof(x)`, `(x)(y)`) comes
   from the typedef-name set.
 
