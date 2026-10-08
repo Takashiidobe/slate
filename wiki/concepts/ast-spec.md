@@ -452,7 +452,7 @@ SwitchLabel = Case(Expr) | CaseRange { start: Expr, end: Expr } | Default
   The spanned declaration stays in the selection scope; an absent
   condition/discriminant means the declared object's value is tested.
   A present expression follows the source semicolon. Availability:
-  GCC flavor, C2y/GNU2y only (`selection_declarations`); Clang/MSVC reject.
+  C2y/GNU2y only in every flavor (`selection_declarations`).
   Selection-specific constraints and IR lowering are unimplemented.
 - Grammar examples: `if (int x = f())`, `if (int x = f(); x > 0)`,
   `switch (int x = f())`, `switch (int x, y; x + y)`.

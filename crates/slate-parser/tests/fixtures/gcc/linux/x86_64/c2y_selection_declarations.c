@@ -52,8 +52,8 @@ void selections(int n) {
 // SLATE-FILECHECK-STD IR c2y
 
 // SLATE-FILECHECK-BEGIN C23
-// C23: Error:   × selection statement declarations require C2y in the GCC flavor
-// C23: ╰─▶ selection statement declarations require C2y in the GCC flavor
+// C23: Error:   × selection statement declarations require C2y
+// C23: ╰─▶ selection statement declarations require C2y
 // C23: ╭─[tests/fixtures/gcc/linux/x86_64/c2y_selection_declarations.c:6:9]
 // C23: 5 │ void selections(int n) {
 // C23: 6 │     if (int x = get())
@@ -62,8 +62,8 @@ void selections(int n) {
 // C23: ╰────
 // SLATE-FILECHECK-END C23
 // SLATE-FILECHECK-BEGIN GNU23
-// GNU23: Error:   × selection statement declarations require C2y in the GCC flavor
-// GNU23: ╰─▶ selection statement declarations require C2y in the GCC flavor
+// GNU23: Error:   × selection statement declarations require C2y
+// GNU23: ╰─▶ selection statement declarations require C2y
 // GNU23: ╭─[tests/fixtures/gcc/linux/x86_64/c2y_selection_declarations.c:6:9]
 // GNU23: 5 │ void selections(int n) {
 // GNU23: 6 │     if (int x = get())

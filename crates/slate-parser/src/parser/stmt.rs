@@ -233,7 +233,7 @@ impl Parser {
             return Err(self.error_at_tokens(
                 tokens,
                 0,
-                "selection statement declarations require C2y in the GCC flavor",
+                "selection statement declarations require C2y",
             ));
         }
         let semi = top_level_semi(tokens);

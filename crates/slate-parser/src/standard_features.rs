@@ -163,7 +163,6 @@ impl StandardFeatures {
                 .unwrap_or(features.microsoft_extensions),
             CompilerFlavor::Gcc => false,
         };
-        features.selection_declarations &= flavor.is_gcc();
         features.octal_prefix = !flavor.is_msvc();
         features.keyword_countof = !flavor.is_msvc();
         if flavor.is_gcc() {
