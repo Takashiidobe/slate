@@ -580,6 +580,11 @@ MemberDesignator = Vec<Field(Span<String>) | Index(Expr)>
 
 Lexical content is decoded; C types are assigned by sema.
 
+- Delimited `\o{...}`, `\x{...}`, and `\u{...}` escapes (C2y N3353)
+  decode in character constants, strings, and `#if`, including earlier modes.
+  Octal/hex escapes produce numeric code units; Unicode escapes encode a
+  character in the literal's encoding. Braces terminate the digits.
+
 ```
 IntegerLiteral {
     value: BigUint,

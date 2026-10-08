@@ -904,15 +904,15 @@ impl Lexer {
     fn universal_character_name_end(&self, at: usize) -> usize {
         let len = self.chars.len();
         match (self.char_at(at + 1), self.char_at(at + 2)) {
-            (Some('u'), _) => (at + 6).min(len),
-            (Some('U'), _) => (at + 10).min(len),
-            (Some('N'), Some('{')) => {
+            (Some('u' | 'o' | 'x' | 'N'), Some('{')) => {
                 let mut end = at + 3;
                 while self.char_at(end).is_some_and(|c| c != '}') {
                     end += 1;
                 }
                 end.saturating_add(1).min(len)
             }
+            (Some('u'), _) => (at + 6).min(len),
+            (Some('U'), _) => (at + 10).min(len),
             _ => (at + 2).min(len),
         }
     }
@@ -984,6 +984,27 @@ impl Lexer {
             };
         }
         let j = i + 1;
+        if matches!(Self::char_in(chars, j, end), Some('o' | 'x' | 'u'))
+            && Self::char_in(chars, j + 1, end) == Some('{')
+        {
+            let radix = if chars[j] == 'o' { 8 } else { 16 };
+            let mut next = j + 2;
+            let mut value = 0u32;
+            while let Some(digit) = Self::char_in(chars, next, end).and_then(|c| c.to_digit(radix))
+            {
+                value = value.wrapping_mul(radix).wrapping_add(digit);
+                next += 1;
+            }
+            if Self::char_in(chars, next, end) == Some('}') {
+                next += 1;
+            }
+            let unit = if chars[j] == 'u' {
+                SourceUnit::Character(value)
+            } else {
+                SourceUnit::CodeUnit(value)
+            };
+            return (unit, next);
+        }
         let (value, next) = match Self::char_in(chars, j, end) {
             Some('n') => (0x0A, j + 1),
             Some('t') => (0x09, j + 1),
