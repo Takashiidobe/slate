@@ -715,6 +715,7 @@ pub enum AsmOperand {
         output: Expr,
     },
     Const(Expr),
+    Sym(Expr),
     Label {
         state: Expr,
         value: Expr,
@@ -725,7 +726,10 @@ pub enum AsmOperand {
 impl AsmOperand {
     pub fn visit_exprs(&self, f: &mut impl FnMut(&Expr)) {
         match self {
-            Self::In { value, .. } | Self::Out { value, .. } | Self::Const(value) => f(value),
+            Self::In { value, .. }
+            | Self::Out { value, .. }
+            | Self::Const(value)
+            | Self::Sym(value) => f(value),
             Self::InOut { input, output, .. } => {
                 f(input);
                 f(output);
@@ -739,7 +743,10 @@ impl AsmOperand {
 
     pub fn visit_exprs_mut(&mut self, f: &mut impl FnMut(&mut Expr)) {
         match self {
-            Self::In { value, .. } | Self::Out { value, .. } | Self::Const(value) => f(value),
+            Self::In { value, .. }
+            | Self::Out { value, .. }
+            | Self::Const(value)
+            | Self::Sym(value) => f(value),
             Self::InOut { input, output, .. } => {
                 f(input);
                 f(output);

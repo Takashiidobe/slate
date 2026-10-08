@@ -1206,7 +1206,7 @@ fn asm_operand_read_expr(op: &AsmOperand) -> Option<&Expr> {
     match op {
         AsmOperand::In { value, .. } | AsmOperand::Const(value) => Some(value),
         AsmOperand::InOut { input, .. } => Some(input),
-        AsmOperand::Out { .. } | AsmOperand::Label { .. } => None,
+        AsmOperand::Out { .. } | AsmOperand::Label { .. } | AsmOperand::Sym(_) => None,
     }
 }
 

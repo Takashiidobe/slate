@@ -85,20 +85,64 @@ fn asm_template(asm: &ir::InlineAsm) -> Result<String> {
                     .operands
                     .get(*index)
                     .ok_or(Invariant::AsmOperandIndex(*index))?;
-                used[*index] = true;
                 match &operand.selected {
                     Some(ir::AsmOperandClass::Register(_)) => {
                         if modifier.is_some() && view.is_none() {
                             return Err(unsupported_asm(format!("operand modifier {modifier:?}")));
                         }
+                        used[*index] = true;
                         let modifier = register_modifier(operand, *view)?;
                         template.push_str(&format!("{{{index}:{modifier}}}"));
                     }
-                    Some(ir::AsmOperandClass::Immediate) if modifier.is_none() => {
-                        if asm.dialect == Some(ir::AsmDialect::Att) {
+                    Some(ir::AsmOperandClass::Immediate) => match modifier {
+                        None | Some('c' | 'P' | 'p') => {
+                            used[*index] = true;
+                            if modifier.is_none() && asm.dialect == Some(ir::AsmDialect::Att) {
+                                template.push('$');
+                            }
+                            template.push_str(&format!("{{{index}}}"));
+                        }
+                        Some('n') => {
+                            let ir::AsmOperandKind::In(value) = &operand.kind else {
+                                return Err(unsupported_asm("negated non-value operand"));
+                            };
+                            let number = match &value.node.value {
+                                ValueKind::Constant(Number::Integer(number)) => number.to_string(),
+                                ValueKind::Constant(Number::SignedInteger(number)) => {
+                                    number.to_string()
+                                }
+                                _ => return Err(unsupported_asm("negated non-integer constant")),
+                            };
+                            if let Some(positive) = number.strip_prefix('-') {
+                                template.push_str(positive);
+                            } else {
+                                template.push('-');
+                                template.push_str(&number);
+                            }
+                        }
+                        _ => {
+                            return Err(unsupported_asm(format!(
+                                "immediate modifier {modifier:?}"
+                            )));
+                        }
+                    },
+                    Some(ir::AsmOperandClass::Symbol) => {
+                        if !matches!(modifier, None | Some('c' | 'P' | 'p')) {
+                            return Err(unsupported_asm(format!("symbol modifier {modifier:?}")));
+                        }
+                        let ir::AsmOperandKind::Symbol(symbol) = &operand.kind else {
+                            return Err(unsupported_asm("non-symbol operand"));
+                        };
+                        used[*index] = true;
+                        if modifier.is_none() && asm.dialect == Some(ir::AsmDialect::Att) {
                             template.push('$');
                         }
                         template.push_str(&format!("{{{index}}}"));
+                        if symbol.offset > 0 {
+                            template.push_str(&format!("+{}", symbol.offset));
+                        } else if symbol.offset < 0 {
+                            template.push_str(&symbol.offset.to_string());
+                        }
                     }
                     _ => {
                         return Err(unsupported_asm(format!(
@@ -119,7 +163,9 @@ fn asm_template(asm: &ir::InlineAsm) -> Result<String> {
                     let modifier = register_modifier(operand, None)?;
                     format!("{{{index}:{modifier}}}")
                 }
-                Some(ir::AsmOperandClass::Immediate) => format!("{{{index}}}"),
+                Some(ir::AsmOperandClass::Immediate | ir::AsmOperandClass::Symbol) => {
+                    format!("{{{index}}}")
+                }
                 _ => return Err(unsupported_asm(format!("unused operand {index}"))),
             };
             template.push_str(&format!("\n# {reference}"));
@@ -129,6 +175,48 @@ fn asm_template(asm: &ir::InlineAsm) -> Result<String> {
 }
 
 impl FunctionLowerer<'_, '_> {
+    fn asm_symbol(&mut self, symbol: &ir::AsmSymbol) -> Result<Expr> {
+        let id = symbol.binding;
+        if let Some(function) = self.tables.names.get(&id) {
+            if self.tables.intrinsics.contains_key(&id) || function.builtin.is_some() {
+                return Err(unsupported_asm("builtin symbol operand"));
+            }
+            self.dependencies.taken_functions.insert(id);
+            self.dependencies
+                .address_taken
+                .insert(function.rust.clone());
+            return Ok(Expr::Var(function.rust.as_str().into()));
+        }
+        if let Some(bytes) = self.tables.strings.get(&id) {
+            let name = format!("__slate_asm_string_{}", id.0);
+            self.dependencies
+                .asm_strings
+                .entry(id.0)
+                .or_insert_with(|| Item::Static {
+                    comments: Vec::new(),
+                    attrs: Vec::new(),
+                    vis: rust::Visibility::Private,
+                    mutable: false,
+                    name: name.clone(),
+                    ty: rust::Type::Array {
+                        elem: Box::new(rust::Type::Prim(Prim::U8)),
+                        len: bytes.len() as u64,
+                    },
+                    init: Expr::Unary {
+                        op: rust::UnaryOp::Deref,
+                        expr: Box::new(Expr::ByteStr(bytes.clone())),
+                    },
+                });
+            return Ok(Expr::Var(name.as_str().into()));
+        }
+        if self.tables.statics.contains(&id) {
+            return Ok(Expr::Var(
+                binding_name(id, &self.tables.bindings).as_str().into(),
+            ));
+        }
+        Err(unsupported_asm(format!("symbol binding {id:?}")))
+    }
+
     fn asm_fixed_place(&self, place: &ir::Place) -> bool {
         match place.kind {
             PlaceKind::Binding(id) => {
@@ -340,6 +428,13 @@ impl FunctionLowerer<'_, '_> {
                         )));
                     }
                     operands.push(rust::AsmOperand::Const(self.lower_value(value)?));
+                    continue;
+                }
+                Some(ir::AsmOperandClass::Symbol) => {
+                    let ir::AsmOperandKind::Symbol(symbol) = &operand.kind else {
+                        return Err(unsupported_asm(format!("non-symbol operand {index}")));
+                    };
+                    operands.push(rust::AsmOperand::Sym(self.asm_symbol(symbol)?));
                     continue;
                 }
                 Some(ir::AsmOperandClass::Register(

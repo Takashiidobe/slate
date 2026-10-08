@@ -77,6 +77,7 @@ struct Tables<'m> {
 struct Dependencies {
     atomic_volatile: bool,
     asm_unwind: bool,
+    asm_strings: BTreeMap<u32, Item>,
     atomic128: bool,
     long_double: bool,
     simd: bool,
@@ -564,6 +565,7 @@ impl<'m> ModuleLowerer<'m> {
         });
         items.splice(0..0, records.chain(wrappers).chain(bit_units));
         items.extend(dependencies.compound_literals);
+        items.extend(dependencies.asm_strings.into_values());
         for item in &mut items {
             if let Item::Fn(function) = item
                 && function.abi.is_none()

@@ -969,6 +969,10 @@ impl<W: Write> Codegen<W> {
                             self.out.write_str("const ")?;
                             self.expr(value)?;
                         }
+                        AsmOperand::Sym(value) => {
+                            self.out.write_str("sym ")?;
+                            self.expr(value)?;
+                        }
                         AsmOperand::Label {
                             state,
                             value,

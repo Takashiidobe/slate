@@ -753,6 +753,8 @@ fn classes(letters: &str, family: TargetFamily) -> Vec<AsmOperandClass> {
             (_, "r") => AsmOperandClass::Register(AsmRegisterClass::Reg),
             (_, "m" | "o") => AsmOperandClass::Memory,
             (_, "n") => AsmOperandClass::Immediate,
+            (_, "s") => AsmOperandClass::Symbol,
+            (_, "Ws") if x86 => AsmOperandClass::Symbol,
             (_, "i") => {
                 classes.extend([AsmOperandClass::Immediate, AsmOperandClass::Symbol]);
                 continue;

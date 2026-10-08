@@ -89,7 +89,7 @@ whole asm: the first where every operand has a usable class.
   i686 but `reg_legacy` on x86-64.
 - Multi-letter: x86 `Y`/`W`/`j`/`B`, AArch64 `U` (three chars), Arm `U`.
   `?`, `!`, `*`, `^`, `$` are hints and skipped; `#` ends the alternative.
-  Anything else (`l`, `X`, `s`, `p`, ...) is `Unresolved`, never guessed.
+  Anything else (`l`, `X`, `p`, ...) is `Unresolved`, never guessed.
 - `reg_legacy` and `vreg_low8` (AArch64 `y`) have no Rust class; emission
   pins a free explicit register from the set, avoiding the asm's other
   explicit operands and clobbers.
@@ -99,6 +99,7 @@ whole asm: the first where every operand has a usable class.
 
 ### Immediates and symbols
 
+- `s` and x86 `Ws` offer only `Symbol`.
 - `i` (and `g`) offer `Symbol` besides `Immediate`; `n` and target
   immediate letters offer only `Immediate`.
 - An input selects `Symbol` when it folds to a static-storage object or
@@ -233,11 +234,14 @@ impossible.
 - Outputs use scratch temporaries, then ordinary place writeback (including volatile stores).
   Tied inputs retain their input expression; directions come from `AsmOperand::direction()`.
 - Register placeholders use the reference view or operand width. Literal braces escape;
-  percent pieces become `%`; ordinary AT&T constants receive `$`.
+  percent pieces become `%`; ordinary AT&T constants and symbols receive `$`.
+- `%c`/`%P`/`%p` suppress the prefix; `%n` folds a negated integer per reference.
+  Symbol operands use Rust `sym` item paths with signed byte offsets in the template;
+  functions retain the C ABI and string operands get named byte-array statics.
 - Unused operands get references in assembler comments to satisfy Rust's operand-use check.
 - Extended asm maps parser options directly. Basic asm uses the decoded template with
   `raw`; its empty piece list does not distinguish text references.
 - `memory`/`cc`/`unwind` clobbers are represented by the computed options;
   register clobbers become discarded `lateout` operands. Reserved registers remain barriers.
-- Symbols, memory operands, special immediate modifiers, asm goto, naked/module asm,
+- Memory operands, other immediate modifiers, asm goto, naked/module asm,
   and additional operand classes are tracked by the other `slate-3f8g.4.17` children.
