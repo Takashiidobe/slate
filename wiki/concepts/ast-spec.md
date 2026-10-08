@@ -357,6 +357,16 @@ are always the operator; `alignof` only with `keyword_alignof` (C23).
 `_Countof` is the operator only with `keyword_countof` (gcc and clang in
 every mode); msvc leaves it an identifier.
 
+- Compound literals accept `constexpr`, `register`, `static`, and
+  `thread_local` / `_Thread_local` from C23 in every flavor
+  (`compound_literal_storage`). Preserve `storage`, `is_constexpr`,
+  and `is_thread_local` in `TypeName.specifiers`.
+- Ordinary compound literals and their AST shape are unchanged. Explicit
+  storage-class semantics are unimplemented; typing reports
+  `Unimplemented` rather than erasing the specifiers.
+- Reference: GCC `gcc.dg/c23-complit-{2,3,9}.c` and
+  `c2y-register-array-{2,3}.c`.
+
 ### `FunctionDefinition`
 
 ```
@@ -533,7 +543,7 @@ Taxonomy and rationale: [comment-placement](comment-placement.md).
 | `Member { base, field: Span<String>, arrow: bool }` | `.` / `->` |
 | `Index { base, index }` | as written |
 | `Cast { ty: TypeName, value }` | |
-| `CompoundLiteral { ty: TypeName, storage, initializer: InitializerList }` | C23 storage |
+| `CompoundLiteral { ty: TypeName, initializer: Vec<InitializerItem> }` | C23 storage specifiers remain in `ty.specifiers` |
 | `SizeOfExpr`, `SizeOfType`, `AlignOf`, `AlignOfExpr` | |
 | `CountOfExpr`, `CountOfType { ty: TypeName }` | C2y `_Countof`; parsed like `sizeof` |
 | `MaxOf { ty: TypeName }`, `MinOf { ty: TypeName }` | `_Maxof(type-name)` / `_Minof(type-name)`; retain the operand, without range evaluation |
@@ -659,6 +669,7 @@ c23`, plain and `-pedantic`; `warn` = only under `-pedantic`.
 | --- | --- | --- | --- | --- |
 | VLAs, `[*]` parameters | C99 | warn | warn | extension |
 | compound literals | C99 | warn | warn | extension |
+| storage-class specifiers in compound literals | C23 | err | extension | C23+ in every flavor (`compound_literal_storage`) |
 | designated initializers | C99 | warn | warn | extension |
 | declarations after statements | C99 | warn | warn | extension |
 | flexible array members | C99 | warn | warn | extension |

@@ -1202,6 +1202,11 @@ impl Lowerer {
                 ty: ty_name,
                 initializer,
             } => {
+                if ty_name.specifiers.has_storage_class() {
+                    return Err(ResolveError::Unimplemented(
+                        "compound literal storage-class specifiers",
+                    ));
+                }
                 let extents = self.type_name_extents(ty_name)?;
                 let resolved = self.resolve_type_name(ty_name)?;
                 let access = self.types.access_of(resolved);

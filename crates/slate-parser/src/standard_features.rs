@@ -42,6 +42,7 @@ pub struct StandardFeatures {
     pub keyword_type_limits: bool,
     pub named_loops: bool,
     pub selection_declarations: bool,
+    pub compound_literal_storage: bool,
     pub enumerators_have_enum_type: bool,
     pub conditional_pointers: crate::sema::PointerMerge,
     pub compatible_tag_redefinitions: bool,
@@ -112,6 +113,7 @@ impl StandardFeatures {
                 standard,
                 LanguageStandard::C2y | LanguageStandard::Gnu2y
             ),
+            compound_literal_storage: c23,
             enumerators_have_enum_type: c23,
             conditional_pointers: crate::sema::PointerMerge::EXACT,
             compatible_tag_redefinitions: c23,

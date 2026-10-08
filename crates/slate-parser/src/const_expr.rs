@@ -295,6 +295,8 @@ pub enum ConstExprError {
     ExpectedIdentifier,
     #[error("expected type name")]
     ExpectedTypeName,
+    #[error("storage-class specifiers in compound literals require C23")]
+    CompoundLiteralStorage,
     #[error("unexpected token `{0:?}`")]
     UnexpectedToken(Token),
     #[error("expected integer expression")]
@@ -1511,7 +1513,13 @@ impl<'a> Parser<'a> {
         };
         let alignas =
             matches!(next, Token::Ident(name) if matches!(name.as_str(), "_Alignas" | "alignas"));
-        if !alignas && !starts_type_name(next, self.context) {
+        let storage = matches!(
+            next,
+            Token::Keyword(
+                Keyword::Constexpr | Keyword::Register | Keyword::Static | Keyword::ThreadLocal
+            )
+        );
+        if !alignas && !storage && !starts_type_name(next, self.context) {
             return Ok(None);
         }
         let Some((ty, end)) = self.try_parse_type_name(self.position + 1, |end| {
@@ -1520,6 +1528,9 @@ impl<'a> Parser<'a> {
         }) else {
             return Ok(None);
         };
+        if ty.specifiers.has_storage_class() && !self.features().compound_literal_storage {
+            return Err(ConstExprError::CompoundLiteralStorage);
+        }
         self.position = end + 1;
         let initializer = self.parse_initializer_list()?;
         Ok(Some(self.node(

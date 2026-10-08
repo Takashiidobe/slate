@@ -574,6 +574,11 @@ impl TypeResolver {
                 Typed::rvalue(self.ctypes.unqualified(to))
             }
             ExprKind::CompoundLiteral { ty, initializer } => {
+                if ty.specifiers.has_storage_class() {
+                    return Err(ResolveError::Unimplemented(
+                        "compound literal storage-class specifiers",
+                    ));
+                }
                 let resolved = self.type_name(ty)?;
                 let c = match self.ctypes.element(resolved) {
                     Some((element, Extent::Incomplete)) => {

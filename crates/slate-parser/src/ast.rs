@@ -1584,6 +1584,12 @@ pub struct DeclarationSpecifiers {
     pub attributes: Vec<Span<Attribute>>,
 }
 
+impl DeclarationSpecifiers {
+    pub(crate) fn has_storage_class(&self) -> bool {
+        self.storage != StorageClass::None || self.is_constexpr || self.is_thread_local
+    }
+}
+
 #[derive(CustomDebug, Clone, PartialEq)]
 pub struct Declaration {
     pub specifiers: DeclarationSpecifiers,

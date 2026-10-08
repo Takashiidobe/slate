@@ -86,6 +86,8 @@ The richer three-view design is in [open design](open-design.md#string-literal-v
   printed `compound_literal %id [storage=..] [align=N] = <init>`. Each has
   a fresh `BindingId`; its type is the initializer's (`(int[]){1,2}` is
   `array<i32, 2>`). Storage is static outside a function, automatic inside.
+- Explicit storage-class specifiers in a compound literal are preserved
+  in the AST but typing reports `Unimplemented`; they are not yet lowered.
 - `alignment` comes from `_Alignas` in the type name (DR 444, accepted by
   gcc; clang rejects it, slate accepts it in every flavor). It is resolved
   like a local's `_Alignas` from the `_Alignas` request and the literal's
