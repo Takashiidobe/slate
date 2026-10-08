@@ -764,8 +764,44 @@ impl TypeResolver {
                 let target = self.target_info().clone();
                 Typed::rvalue(self.ctypes.size_type(&target))
             }
-            ExprKind::MaxOf { .. } | ExprKind::MinOf { .. } => {
-                return Err(ResolveError::Unimplemented("integer type limits"));
+            ExprKind::MaxOf { ty } | ExprKind::MinOf { ty } => {
+                let c = self.type_name(ty)?;
+                if !self.ctypes.is_integer(c) {
+                    return Err(ResolveError::Rejected(
+                        "integer type limit requires an integer type",
+                    ));
+                }
+                let c = self.ctypes.unqualified(c);
+                let underlying = match self.ctypes.canonical_kind(c) {
+                    CTypeKind::Enum(_) => {
+                        self.ctypes
+                            .enum_underlying(c)
+                            .ok_or(ResolveError::Rejected(
+                                "integer type limit of an incomplete enum",
+                            ))?
+                    }
+                    _ => c,
+                };
+                let ty = self.ir_type(underlying);
+                let maximum = matches!(e.value, ExprKind::MaxOf { .. });
+                let value = match ty {
+                    Type::Bool => crate::ir::Number::Bool(maximum),
+                    Type::Numeric(NumericType::Integer { width, signed, .. }) => {
+                        let magnitude =
+                            num_bigint::BigInt::from(1u8) << (width - u32::from(signed));
+                        let value = if maximum {
+                            magnitude - 1u8
+                        } else if signed {
+                            -magnitude
+                        } else {
+                            num_bigint::BigInt::from(0u8)
+                        };
+                        super::fold::integer_number(&ty, value)
+                    }
+                    _ => return Err(ResolveError::Internal("integer type limit representation")),
+                };
+                self.integer_limits.insert(e.id, value);
+                Typed::rvalue(c)
             }
             ExprKind::CountOfType { ty } => {
                 let resolved = self.type_name(ty)?;
@@ -1712,6 +1748,8 @@ impl TypeResolver {
             ExprKind::IntegerLiteral(literal) => !literal.imaginary,
             ExprKind::CharLiteral(_)
             | ExprKind::BoolLiteral(_)
+            | ExprKind::MaxOf { .. }
+            | ExprKind::MinOf { .. }
             | ExprKind::OffsetOf { .. }
             | ExprKind::TypesCompatible { .. } => true,
             ExprKind::Identifier(_) => self

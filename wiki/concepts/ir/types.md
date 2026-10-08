@@ -3,6 +3,7 @@
 <!-- toc -->
 - [Shown type vs C type](#shown-type-vs-c-type)
 - [Scalar formats](#scalar-formats)
+  - [Integer type limits](#integer-type-limits)
   - [Integer literals](#integer-literals)
   - [`_BitInt`](#_bitint)
 - [Tags](#tags)
@@ -72,6 +73,22 @@ The shown type is concrete and target-resolved; the C type is metadata
 - Float constants keep exact bits. f32/f64 print as round-trippable
   decimals (signed zero included); other formats print via `rustc_apfloat`;
   NaNs print as hex bits in every format.
+
+### Integer type limits
+
+- `_Maxof(T)` / `_Minof(T)` require a complete integer type, including
+  `bool`, enums, and `_BitInt`. Results have the unqualified, non-atomic
+  operand type without integer promotion.
+- The checker records the resolved constant per expression; constant
+  evaluation and lowering read that fact. Signed limits are
+  `-(1 << (width - 1))` and `(1 << (width - 1)) - 1`; unsigned limits are
+  `0` and `(1 << width) - 1`; `bool` limits are `false` and `true`.
+- Target layout determines plain-char signedness and standard integer
+  widths; enum limits use the underlying type. Arbitrary supported
+  `_BitInt` widths use arbitrary-precision integers.
+- Operands are unevaluated; ordinary arithmetic around the limit stays
+  structured in IR. These operators are integer constant expressions,
+  including zero-valued null pointer constants.
 
 ### Integer literals
 

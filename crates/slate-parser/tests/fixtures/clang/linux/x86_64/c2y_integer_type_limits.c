@@ -36,7 +36,8 @@ int replaced = _Maxof(int);
 // SLATE-FILECHECK-DEFINES GNU23
 // SLATE-FILECHECK-STD GNU23 gnu23
 // SLATE-FILECHECK-ERROR GNU23
-// SLATE-FILECHECK-IR-ERROR IR
+// SLATE-FILECHECK-DEFINES IR
+// SLATE-FILECHECK-PREFIX-ARGS IR --dump-ir
 // SLATE-FILECHECK-STD IR c2y
 
 // SLATE-FILECHECK-BEGIN C23
@@ -59,25 +60,6 @@ int replaced = _Maxof(int);
 // GNU23: 10 │     _Maxof(char);
 // GNU23: ╰────
 // SLATE-FILECHECK-END GNU23
-// SLATE-FILECHECK-BEGIN IR
-// IR: Error:   × semantic analysis failed
-// IR: Error:
-// IR: × not implemented: integer type limits
-// IR: ╭─[tests/fixtures/clang/linux/x86_64/c2y_integer_type_limits.c:6:1]
-// IR: 5 │
-// IR: 6 │ int largest = _Maxof(int);
-// IR: · ──────────────────────────
-// IR: 7 │
-// IR: ╰────
-// IR: Error:
-// IR: × not implemented: integer type limits
-// IR: ╭─[tests/fixtures/clang/linux/x86_64/c2y_integer_type_limits.c:9:15]
-// IR: 8 │ void limits(int n) {
-// IR: 9 │     int bound[_Maxof(unsigned char)];
-// IR: ·               ─────────────────────
-// IR: 10 │     _Maxof(char);
-// IR: ╰────
-// SLATE-FILECHECK-END IR
 // SLATE-FILECHECK-BEGIN C2Y
 // C2Y: decl[{{[0-9]+}}]: Declaration(
 // C2Y-NEXT:       Declaration {
@@ -1022,3 +1004,48 @@ int replaced = _Maxof(int);
 // GNU2Y-NEXT:       },
 // GNU2Y-NEXT:   )
 // SLATE-FILECHECK-END GNU2Y
+// SLATE-FILECHECK-BEGIN IR
+// IR: module {
+// IR-NEXT:     target "x86_64-unknown-linux-gnu" {
+// IR-NEXT:         endian = little;
+// IR-NEXT:         pointer [size=8, align=8];
+// IR-NEXT:         stack_alignment = 16;
+// IR-NEXT:         long_double = f80;
+// IR-NEXT:         storage bool [size=1, align=1];
+// IR-NEXT:         storage i8, u8 [size=1, align=1];
+// IR-NEXT:         storage i16, u16 [size=2, align=2];
+// IR-NEXT:         storage i32, u32 [size=4, align=4];
+// IR-NEXT:         storage i64, u64 [size=8, align=8];
+// IR-NEXT:         storage i128, u128 [size=16, align=16];
+// IR-NEXT:         storage bf16 [size=2, align=2];
+// IR-NEXT:         storage f16 [size=2, align=2];
+// IR-NEXT:         storage f32 [size=4, align=4];
+// IR-NEXT:         storage f64 [size=8, align=8];
+// IR-NEXT:         storage f80 [size=16, align=16];
+// IR-NEXT:         storage f128 [size=16, align=16];
+// IR-NEXT:         storage d32 [size=4, align=4];
+// IR-NEXT:         storage d64 [size=8, align=8];
+// IR-NEXT:         storage d128 [size=16, align=16];
+// IR-NEXT:     }
+// IR-NEXT:     type @type[[TYPE_word:[0-9]+]] word = u64;
+// IR-NEXT:     type @type[[TYPE_huge:[0-9]+]] huge = u575b;
+// IR-NEXT:     global %[[VALUE_largest:[0-9]+]] largest: i32 [storage=static] = const<i32>(2147483647) [linkage=external];
+// IR-NEXT:     global %[[VALUE_replaced:[0-9]+]] replaced: i32 [storage=static] = const<i32>(7) [linkage=external];
+// IR-NEXT:     fn %[[VALUE_limits:[0-9]+]] @limits(%[[VALUE_n:[0-9]+]] n: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// IR-NEXT:         let %[[VALUE_bound:[0-9]+]] bound: array<i32, 255> [storage=automatic] [align=16];
+// IR-NEXT:         const<i8>(127);
+// IR-NEXT:         const<u16>(0);
+// IR-NEXT:         const<u64>(18446744073709551615);
+// IR-NEXT:         const<u64>(0);
+// IR-NEXT:         const<i5b>(15);
+// IR-NEXT:         const<u1b>(0);
+// IR-NEXT:         const<u575b>(123665200736552267030251260509823595017565674550605919957031528046448612553265933585158200530621522494798835713008069669675682517153375604983773077550946583958303386074349567);
+// IR-NEXT:         const<i575b>(-61832600368276133515125630254911797508782837275302959978515764023224306276632966792579100265310761247399417856504034834837841258576687802491886538775473291979151693037174784);
+// IR-NEXT:         const<i32>(2147483647);
+// IR-NEXT:         const<u32>(0);
+// IR-NEXT:         const<i32>(2147483647);
+// IR-NEXT:         add<i32, overflow=ub>(const<i32>(2147483647), const<i32>(-2147483648));
+// IR-NEXT:         const<i32>(1);
+// IR-NEXT:     }
+// IR-NEXT: }
+// SLATE-FILECHECK-END IR

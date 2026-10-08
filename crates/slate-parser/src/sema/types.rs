@@ -72,6 +72,7 @@ pub struct TypeResolver {
     pub(super) entities: super::entity::Entities,
     pub(super) typeof_operands: HashMap<crate::ast::NodeId, QualType>,
     pub(super) expression_types: HashMap<crate::ast::NodeId, super::typer::Typed>,
+    pub(super) integer_limits: HashMap<crate::ast::NodeId, Number>,
     pub(super) conversions: HashMap<crate::ast::NodeId, super::ctype::convert::Conversion>,
     pub(super) operand_conversions:
         HashMap<(crate::ast::NodeId, super::typer::Slot), Vec<super::typer::Step>>,
@@ -138,6 +139,7 @@ impl TypeResolver {
             entities: super::entity::Entities::default(),
             typeof_operands: HashMap::new(),
             expression_types: HashMap::new(),
+            integer_limits: HashMap::new(),
             conversions: HashMap::new(),
             operand_conversions: HashMap::new(),
             computation_types: HashMap::new(),
@@ -810,7 +812,15 @@ impl TypeResolver {
                 )
             }
             ExprKind::MaxOf { .. } | ExprKind::MinOf { .. } => {
-                return Err(ResolveError::Unimplemented("integer type limits"));
+                let c = self.typed(e)?.c;
+                let value =
+                    self.integer_limits
+                        .get(&e.id)
+                        .cloned()
+                        .ok_or(ResolveError::Internal(
+                            "integer type limit not recorded by the checker",
+                        ))?;
+                (c, ValueKind::Constant(value))
             }
             ExprKind::CountOfType { ty } => {
                 let c = self.type_name(ty)?;
