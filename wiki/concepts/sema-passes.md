@@ -123,6 +123,9 @@ lowering reads its facts and derives no types
   operands (`sizeof`, `_Generic` control, `typeof`, `__auto_type`
   initializers, classify and derived-signature builtins), and `typeof`
   resolution (`expression_type`). Nothing is lowered speculatively.
+- Compound-literal storage duration is recorded in `compound_storage`.
+  Foldable constexpr literal reads and member reads are recorded in
+  `constexpr_values`; lowering consumes them without recreating their types.
 - Memoizes `Typed { c, lvalue, bits }` per `NodeId` in `expression_types`.
   Only successes are memoized (an enum body is typed before its
   enumerators exist). Missing rules return `Unimplemented`.

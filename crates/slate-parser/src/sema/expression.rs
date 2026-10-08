@@ -1203,11 +1203,6 @@ impl Lowerer {
                 ty: ty_name,
                 initializer,
             } => {
-                if ty_name.specifiers.has_storage_class() {
-                    return Err(ResolveError::Unimplemented(
-                        "compound literal storage-class specifiers",
-                    ));
-                }
                 let extents = self.type_name_extents(ty_name)?;
                 let resolved = self.resolve_type_name(ty_name)?;
                 let access = self.types.access_of(resolved);
@@ -1223,12 +1218,14 @@ impl Lowerer {
                 let object = self.fresh();
                 let ty = value.ty.clone();
                 let c = self.lvalue_result(e)?;
-                self.types.entities.declare(object, c, false);
-                let storage = if self.in_function {
-                    StorageDuration::Automatic
-                } else {
-                    StorageDuration::Static
-                };
+                self.types.entities.declare(
+                    object,
+                    c,
+                    ty_name.specifiers.storage == crate::ast::StorageClass::Register,
+                );
+                let storage = self.types.compound_storage.get(&e.id).copied().ok_or(
+                    ResolveError::Internal("compound literal storage not recorded by the checker"),
+                )?;
                 let alignas = ty_name.specifiers.attributes.iter().filter(|attribute| {
                     matches!(attribute.value, crate::ast::Attribute::AlignAs(_))
                 });
@@ -1994,6 +1991,9 @@ impl Lowerer {
     }
 
     fn lower_expr(&mut self, e: &Expr) -> Result<Operand, ResolveError> {
+        if let Some(value) = self.types.constexpr_values.get(&e.id) {
+            return Ok(value.clone());
+        }
         if let ExprKind::Call { callee, arguments } = &e.value {
             if let Some(value) = self.function_like_builtin(e, callee, arguments)? {
                 return Ok(value);

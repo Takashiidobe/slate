@@ -85,9 +85,24 @@ The richer three-view design is in [open design](open-design.md#string-literal-v
 - `PlaceKind::CompoundLiteral { object, storage, alignment, initializer }`,
   printed `compound_literal %id [storage=..] [align=N] = <init>`. Each has
   a fresh `BindingId`; its type is the initializer's (`(int[]){1,2}` is
-  `array<i32, 2>`). Storage is static outside a function, automatic inside.
-- Explicit storage-class specifiers in a compound literal are preserved
-  in the AST but typing reports `Unimplemented`; they are not yet lowered.
+  `array<i32, 2>`). Without explicit specifiers, storage is static outside functions and
+  parameter lists, automatic inside them.
+- C23 compound literals accept `constexpr`, `register`, `static`, and
+  `thread_local`. The checker records storage duration per expression;
+  lowering consumes that fact. Explicit `static` gives static duration even
+  inside a function, and `thread_local` gives thread duration. A block-scope
+  thread-local literal requires `static`; thread storage cannot combine with
+  `register` or `constexpr`, and file-scope literals cannot use `register`.
+- Static and thread literals require constant initializers. Each source
+  occurrence has its own binding; static initialization runs once, while
+  automatic initialization runs whenever the expression is evaluated.
+  Thread literals designate one object per thread. Rust consumption of thread
+  compound literals is tracked in `slate-pljq`.
+- `constexpr` implies const qualification, including inferred arrays. Scalar
+  literals and scalar members can participate in constant expressions using
+  the recorded initializer plan. Volatile, atomic, and restrict-qualified
+  object types are rejected. Address-taking is rejected for register literals,
+  their members, and their array elements; direct element access is preserved.
 - `alignment` comes from `_Alignas` in the type name (DR 444, accepted by
   gcc; clang rejects it, slate accepts it in every flavor). It is resolved
   like a local's `_Alignas` from the `_Alignas` request and the literal's

@@ -43,6 +43,7 @@ pub(super) fn validate(
         pragmas: FloatingPragmas::new(unit.dialect.flavor(), region),
         region,
         compound_start: false,
+        in_function: false,
     };
     for (declaration, item) in unit.decls.iter().zip(items) {
         for id in item.declared.clone().map(BindingId) {
@@ -98,6 +99,7 @@ struct Checker<'a> {
     pragmas: FloatingPragmas,
     region: FloatingRegion,
     compound_start: bool,
+    in_function: bool,
 }
 
 #[derive(Default)]
@@ -195,6 +197,7 @@ impl Checker<'_> {
         owner: Option<Span<()>>,
         function: &FunctionDefinition,
     ) {
+        let enclosing_scope = std::mem::replace(&mut self.in_function, true);
         let owner_linkage = owner.is_some();
         let attributes = function
             .specifiers
@@ -293,6 +296,7 @@ impl Checker<'_> {
         self.compound(&function.body);
         self.types.function_names = enclosing;
         self.context = enclosing_context;
+        self.in_function = enclosing_scope;
     }
 
     fn declaration(&mut self, at: &Span<()>, declaration: &Declaration, global: bool) {
@@ -446,6 +450,52 @@ impl Checker<'_> {
                         InitializerSource::Initializer(initializer),
                     );
                     self.element(declarator, result);
+                }
+            }
+        }
+    }
+
+    fn constexpr_literal_type(&self, c: QualType) -> bool {
+        let qualifiers = self.types.ctypes.quals(c);
+        if qualifiers.is_volatile || qualifiers.is_atomic || qualifiers.is_restrict {
+            return false;
+        }
+        match self.types.ctypes.canonical_kind(c) {
+            super::ctype::CTypeKind::Array { element, .. } => self.constexpr_literal_type(*element),
+            super::ctype::CTypeKind::Record { id, .. } => self
+                .types
+                .record_fields
+                .get(id)
+                .is_none_or(|fields| fields.iter().all(|c| self.constexpr_literal_type(*c))),
+            _ => true,
+        }
+    }
+
+    fn constant_literal_initializer(&mut self, initializer: &Initializer, constexpr: bool) {
+        match initializer {
+            Initializer::List(items) => {
+                for item in items {
+                    self.constant_literal_initializer(&item.value, constexpr);
+                }
+            }
+            Initializer::Expr(expr) => {
+                if let Err((at, reason)) = (InvalidConstantArithmetic {
+                    types: self.types,
+                    flavor: self.unit.dialect.flavor(),
+                })
+                .visit_expr(expr)
+                {
+                    self.errors.push(error(
+                        at.provenance,
+                        at.expansion,
+                        format!("initializer element is not a compile-time constant: {reason}"),
+                    ));
+                }
+                if !literal_initializer_constant(self.types, expr, constexpr) {
+                    self.reject(
+                        expr,
+                        "compound literal initializer is not a constant expression",
+                    );
                 }
             }
         }
@@ -1157,6 +1207,13 @@ impl Checker<'_> {
             self.errors
                 .push(error(at.provenance, at.expansion, rejection.to_string()));
         }
+        if constexpr_literal_root(expr)
+            && let Ok(c) = self.types.expression_type(expr)
+            && self.types.ctypes.element(c).is_none()
+            && let Ok(value) = self.types.constant_value(expr)
+        {
+            self.types.constexpr_values.insert(expr.id, value);
+        }
     }
 
     fn subexpressions(&mut self, expr: &Expr) {
@@ -1283,18 +1340,56 @@ impl Checker<'_> {
             }
             ExprKind::CompoundLiteral { ty, initializer } => {
                 self.type_name(ty);
+                let global = !self.in_function;
+                let specifiers = &ty.specifiers;
+                let storage = if specifiers.is_thread_local {
+                    crate::ir::StorageDuration::Thread
+                } else if global || specifiers.storage == StorageClass::Static {
+                    crate::ir::StorageDuration::Static
+                } else {
+                    crate::ir::StorageDuration::Automatic
+                };
+                self.types.compound_storage.insert(expr.id, storage);
+                if global && specifiers.storage == StorageClass::Register {
+                    self.reject(expr, "register compound literal at file scope");
+                }
+                if specifiers.is_thread_local
+                    && ((!global && specifiers.storage != StorageClass::Static)
+                        || specifiers.storage == StorageClass::Register
+                        || specifiers.is_constexpr)
+                {
+                    self.reject(
+                        expr,
+                        "invalid storage-class combination for thread-local compound literal",
+                    );
+                }
                 for item in initializer {
                     self.initializer(&item.value);
                 }
-                if let Ok(literal) = self.types.typed(expr)
-                    && !self.variable_array(literal.c)
-                {
-                    let result = self.types.record_initializer(
-                        expr.id,
-                        literal.c,
-                        InitializerSource::CompoundLiteral(initializer),
-                    );
-                    self.element(expr, result);
+                if let Ok(literal) = self.types.typed(expr) {
+                    if specifiers.is_constexpr && !self.constexpr_literal_type(literal.c) {
+                        self.reject(expr, "constexpr compound literal has volatile, atomic, or restrict-qualified type");
+                    }
+                    if self.variable_array(literal.c) {
+                        self.reject(expr, "compound literal has variable length array type");
+                    } else {
+                        let result = self.types.record_initializer(
+                            expr.id,
+                            literal.c,
+                            InitializerSource::CompoundLiteral(initializer),
+                        );
+                        self.element(expr, result);
+                        if specifiers.is_constexpr
+                            || storage != crate::ir::StorageDuration::Automatic
+                        {
+                            for item in initializer {
+                                self.constant_literal_initializer(
+                                    &item.value,
+                                    specifiers.is_constexpr,
+                                );
+                            }
+                        }
+                    }
                 }
             }
             ExprKind::Generic {
@@ -1407,10 +1502,12 @@ impl Checker<'_> {
             }
             Declarator::Function { inner, parameters } => {
                 self.declarator(inner);
+                let enclosing_scope = std::mem::replace(&mut self.in_function, true);
                 for parameter in parameters.parameters() {
                     self.specifier(&parameter.specifiers.ty);
                     self.declarator(&parameter.declarator);
                 }
+                self.in_function = enclosing_scope;
             }
             Declarator::Abstract | Declarator::Name(_) => {}
         }
@@ -1668,8 +1765,107 @@ pub(super) fn static_assertion_error(
     Some(error(condition.provenance, condition.expansion, message))
 }
 
+fn constexpr_literal_root(expr: &Expr) -> bool {
+    match &expr.value {
+        ExprKind::Paren(inner) => constexpr_literal_root(inner),
+        ExprKind::Member {
+            base, arrow: false, ..
+        } => constexpr_literal_root(base),
+        ExprKind::CompoundLiteral { ty, .. } => ty.specifiers.is_constexpr,
+        _ => false,
+    }
+}
+
+fn literal_initializer_constant(types: &mut TypeResolver, expr: &Expr, constexpr: bool) -> bool {
+    if types.constant_value(expr).is_ok() {
+        return true;
+    }
+    match &expr.value {
+        ExprKind::Paren(inner) | ExprKind::Cast { value: inner, .. } => {
+            literal_initializer_constant(types, inner, constexpr)
+        }
+        ExprKind::StringLiteral(_) => true,
+        ExprKind::Call { callee, arguments } => {
+            !matches!(call_shape(expr, callee, arguments), Shape::NotConstant(_))
+        }
+        ExprKind::CompoundLiteral { initializer, .. } if !constexpr => initializer
+            .iter()
+            .all(|item| literal_initializer_list(types, &item.value, false)),
+        ExprKind::Unary {
+            op: UnaryOp::AddrOf,
+            operand,
+        } if !constexpr => constant_literal_address(types, operand),
+        ExprKind::Identifier(_) if !constexpr => {
+            types
+                .expression_type(expr)
+                .is_ok_and(|c| types.ctypes.is_function(c) || types.ctypes.element(c).is_some())
+                && constant_literal_address(types, expr)
+        }
+        ExprKind::Unary {
+            op: UnaryOp::Plus | UnaryOp::Minus | UnaryOp::Not | UnaryOp::BitNot,
+            operand,
+        } => literal_initializer_constant(types, operand, constexpr),
+        ExprKind::Binary { left, right, .. } => {
+            literal_initializer_constant(types, left, constexpr)
+                && literal_initializer_constant(types, right, constexpr)
+        }
+        ExprKind::Conditional {
+            condition,
+            then_value,
+            else_value,
+        } => match types.constant_integer(condition) {
+            Ok(value) if value.sign() == Sign::NoSign => {
+                literal_initializer_constant(types, else_value, constexpr)
+            }
+            Ok(_) => then_value
+                .as_ref()
+                .is_none_or(|value| literal_initializer_constant(types, value, constexpr)),
+            Err(_) => false,
+        },
+        _ => false,
+    }
+}
+
+fn literal_initializer_list(
+    types: &mut TypeResolver,
+    initializer: &Initializer,
+    constexpr: bool,
+) -> bool {
+    match initializer {
+        Initializer::Expr(expr) => literal_initializer_constant(types, expr, constexpr),
+        Initializer::List(items) => items
+            .iter()
+            .all(|item| literal_initializer_list(types, &item.value, constexpr)),
+    }
+}
+
+fn constant_literal_address(types: &mut TypeResolver, expr: &Expr) -> bool {
+    match &expr.value {
+        ExprKind::Paren(inner) => constant_literal_address(types, inner),
+        ExprKind::Identifier(_) => types.references.get(&expr.id).is_some_and(|id| {
+            types.entities.storage(*id) == Some(crate::ir::StorageDuration::Static)
+                || types.entities.linkage(*id).is_some()
+        }),
+        ExprKind::StringLiteral(_) => true,
+        ExprKind::Member {
+            base, arrow: false, ..
+        } => constant_literal_address(types, base),
+        ExprKind::Index { base, index } => {
+            constant_literal_address(types, base) && types.constant_integer(index).is_ok()
+        }
+        ExprKind::CompoundLiteral { .. } => {
+            types.compound_storage.get(&expr.id) == Some(&crate::ir::StorageDuration::Static)
+        }
+        _ => false,
+    }
+}
+
 fn ice_shape<'e>(types: &mut TypeResolver, expr: &'e Expr) -> Shape<'e> {
     match &expr.value {
+        ExprKind::CompoundLiteral { ty, .. } if ty.specifiers.is_constexpr => Shape::Constant,
+        ExprKind::Member { .. } | ExprKind::Index { .. } if types.constant_value(expr).is_ok() => {
+            Shape::Constant
+        }
         ExprKind::IntegerLiteral(_)
         | ExprKind::FloatLiteral(_)
         | ExprKind::CharLiteral(_)

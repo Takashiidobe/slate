@@ -992,6 +992,234 @@ fn initializer_exprs<'e>(source: InitializerSource<'e>) -> HashMap<NodeId, &'e E
     exprs
 }
 
+impl TypeResolver {
+    pub(super) fn constant_member(
+        &self,
+        mut value: Value,
+        field: &str,
+        anchor: &Expr,
+    ) -> Result<Value, ResolveError> {
+        let (Shape::Struct(fields) | Shape::Union(fields)) = self.shape(&value.ty)? else {
+            return Err(ResolveError::Rejected("constant member of non-record"));
+        };
+        let path = self
+            .field_path(&fields, field)
+            .ok_or(ResolveError::Rejected("unknown constant member"))?;
+        for (target, ty) in path {
+            value = constant_projection(self, value, target, ty, anchor)?;
+        }
+        Ok(value)
+    }
+
+    fn initializer_builder(&self, c: QualType) -> Result<Builder, ResolveError> {
+        let ty = self.ir_type(c);
+        Ok(Builder {
+            shape: self.shape(&ty)?,
+            ty,
+            members: Vec::new(),
+            frontier: 0,
+            tail_disjoint: false,
+        })
+    }
+
+    pub(super) fn constant_initializer(
+        &mut self,
+        anchor: &Expr,
+        c: QualType,
+        source: InitializerSource<'_>,
+    ) -> Result<Value, ResolveError> {
+        if !self.initializer_plans.contains_key(&anchor.id) {
+            self.record_initializer(anchor.id, c, source)
+                .map_err(|error| error.error)?;
+        }
+        let plan = self
+            .initializer_plans
+            .get(&anchor.id)
+            .cloned()
+            .ok_or(ResolveError::Internal("missing constant initializer plan"))??;
+        let exprs = initializer_exprs(source);
+        let context = super::numeric::Context::for_dialect(self.dialect());
+        let mut root = None;
+        for write in &plan.writes {
+            let element = |types: &mut TypeResolver, id: NodeId, to: QualType| {
+                let expr = exprs.get(&id).copied().ok_or(ResolveError::Internal(
+                    "missing constant initializer element",
+                ))?;
+                let operand = types.constant_value(expr)?;
+                if types.ctypes.compatible(operand.c, to) {
+                    Ok(operand.value)
+                } else {
+                    types
+                        .arithmetic_conversion(&context, operand, to, ConversionReason::Assign)
+                        .map(|operand| operand.value)
+                }
+            };
+            let entry = match &write.value {
+                Planned::Element { expr, to } => Entry::Leaf(element(self, *expr, *to)?),
+                Planned::Braced(c) | Planned::Open(c) => Entry::Sub(self.initializer_builder(*c)?),
+                Planned::Complex { c, parts } => {
+                    let component = self.ctypes.arithmetic_component(*c);
+                    let mut members = Vec::new();
+                    for (index, id) in parts.iter().enumerate() {
+                        members.push(AggregateMember {
+                            target: AggregateTarget::Index(index as u64),
+                            value: element(self, *id, component)?,
+                        });
+                    }
+                    Entry::Leaf(Value {
+                        ty: self.ir_type(*c),
+                        node: anchor.derive(ValueKind::Aggregate {
+                            members,
+                            zero_fill: false,
+                        }),
+                    })
+                }
+                Planned::CodeUnits { expr, c } => Entry::Leaf(
+                    self.string_initializer(
+                        exprs
+                            .get(expr)
+                            .copied()
+                            .ok_or(ResolveError::Internal("missing string initializer"))?,
+                        *c,
+                    )?,
+                ),
+            };
+            place_entry(&mut root, write, entry, &|c| self.initializer_builder(c))?;
+        }
+        let value = finish_entry(root, &anchor.derive(()))?;
+        self.constant_zero(value, c, anchor)
+    }
+
+    pub(super) fn constant_zero(
+        &mut self,
+        value: Value,
+        c: QualType,
+        anchor: &Expr,
+    ) -> Result<Value, ResolveError> {
+        if matches!(&value.node.value, ValueKind::Aggregate { members, zero_fill: true } if members.is_empty())
+            && matches!(self.shape(&value.ty)?, Shape::Scalar)
+        {
+            if self.ctypes.is_pointer(c) {
+                return Ok(Value {
+                    ty: value.ty,
+                    node: anchor.derive(ValueKind::Null),
+                });
+            }
+            let integer = self.ctypes.int();
+            let operand = self.operand(
+                anchor,
+                integer,
+                ValueKind::Constant(Number::Integer(0u8.into())),
+            );
+            let context = super::numeric::Context::for_dialect(self.dialect());
+            return self
+                .arithmetic_conversion(&context, operand, c, ConversionReason::Assign)
+                .map(|operand| operand.value);
+        }
+        Ok(value)
+    }
+
+    fn string_initializer(&mut self, e: &Expr, c: QualType) -> Result<Value, ResolveError> {
+        let ty = self.ir_type(c);
+        let Some(literal) = self.string_array(e, &ty)? else {
+            return Err(ResolveError::Internal("string initializer is not a string"));
+        };
+        let Type::Array { element, length } = ty else {
+            return Err(ResolveError::Internal("string initializer for non-array"));
+        };
+        let mut units = literal.execution_units(self.dialect().target().wchar_width);
+        units.push(0);
+        let length = length.unwrap_or(units.len() as u64);
+        units.resize(length as usize, 0);
+        Ok(Value {
+            ty: Type::Array {
+                element,
+                length: Some(length),
+            },
+            node: e.derive(ValueKind::CodeUnits(units)),
+        })
+    }
+}
+
+fn constant_projection(
+    types: &TypeResolver,
+    value: Value,
+    target: AggregateTarget,
+    ty: Type,
+    anchor: &Expr,
+) -> Result<Value, ResolveError> {
+    let zero_kind = match types.shape(&ty)? {
+        Shape::Scalar if matches!(ty, Type::Pointer { .. }) => ValueKind::Null,
+        Shape::Scalar => ValueKind::Constant(Number::Integer(0u8.into())),
+        _ => ValueKind::Aggregate {
+            members: Vec::new(),
+            zero_fill: true,
+        },
+    };
+    let zero = || Value {
+        ty: ty.clone(),
+        node: anchor.derive(zero_kind.clone()),
+    };
+    match value.node.value {
+        ValueKind::Aggregate { members, zero_fill } => {
+            for member in members.into_iter().rev() {
+                let matches = member.target == target
+                    || matches!((member.target, target), (AggregateTarget::Range { start, end }, AggregateTarget::Index(index)) if (start..=end).contains(&index));
+                if matches {
+                    return Ok(member.value);
+                }
+            }
+            if zero_fill {
+                Ok(zero())
+            } else {
+                Err(ResolveError::Rejected("uninitialized constant member"))
+            }
+        }
+        ValueKind::CodeUnits(units) => {
+            let AggregateTarget::Index(index) = target else {
+                return Err(ResolveError::Internal("field of constant string"));
+            };
+            let unit = units
+                .get(index as usize)
+                .copied()
+                .ok_or(ResolveError::Rejected("constant array index out of bounds"))?;
+            Ok(Value {
+                ty,
+                node: anchor.derive(ValueKind::Constant(Number::Integer(unit.into()))),
+            })
+        }
+        _ => Err(ResolveError::Rejected("nonconstant aggregate projection")),
+    }
+}
+
+fn place_entry(
+    root: &mut Option<Entry>,
+    write: &Write,
+    entry: Entry,
+    fresh: &impl Fn(QualType) -> Result<Builder, ResolveError>,
+) -> Result<(), ResolveError> {
+    match (root, write.path.as_slice()) {
+        (root, []) => *root = Some(entry),
+        (Some(Entry::Sub(builder)), path) => {
+            builder.place(path, &entry, matches!(write.value, Planned::Open(_)), fresh)?
+        }
+        _ => {
+            return Err(ResolveError::Internal(
+                "initializer path outside the object",
+            ));
+        }
+    }
+    Ok(())
+}
+
+fn finish_entry(root: Option<Entry>, anchor: &Span<()>) -> Result<Value, ResolveError> {
+    match root {
+        Some(Entry::Leaf(value)) => Ok(value),
+        Some(Entry::Sub(builder)) => builder.finish(anchor),
+        None => Err(ResolveError::Internal("empty initializer plan")),
+    }
+}
+
 impl Lowerer {
     pub(super) fn initializer_value(
         &mut self,
@@ -1005,24 +1233,9 @@ impl Lowerer {
         let mut root: Option<Entry> = None;
         for write in &plan.writes {
             let entry = self.planned_entry(&write.value, &exprs)?;
-            match (&mut root, write.path.as_slice()) {
-                (_, []) => root = Some(entry),
-                (Some(Entry::Sub(builder)), path) => {
-                    let open = matches!(write.value, Planned::Open(_));
-                    builder.place(path, &entry, open, &|c| self.fresh_builder(c))?
-                }
-                _ => {
-                    return Err(ResolveError::Internal(
-                        "initializer path outside the object",
-                    ));
-                }
-            }
+            place_entry(&mut root, write, entry, &|c| self.fresh_builder(c))?;
         }
-        match root {
-            Some(Entry::Leaf(value)) => Ok(value),
-            Some(Entry::Sub(builder)) => builder.finish(anchor),
-            None => Err(ResolveError::Internal("empty initializer plan")),
-        }
+        finish_entry(root, anchor)
     }
 
     // the checker plans variably modified types with unbound extents, so lowering plans them again
@@ -1056,14 +1269,9 @@ impl Lowerer {
     }
 
     fn fresh_builder(&self, c: QualType) -> Result<Builder, ResolveError> {
-        let ty = self.types.ir_type(c);
-        Ok(Builder {
-            shape: self.types.shape(&ty).map_err(ResolveError::checked)?,
-            ty,
-            members: Vec::new(),
-            frontier: 0,
-            tail_disjoint: false,
-        })
+        self.types
+            .initializer_builder(c)
+            .map_err(ResolveError::checked)
     }
 
     fn planned_entry(
@@ -1112,26 +1320,9 @@ impl Lowerer {
     }
 
     fn string_array_initializer(&mut self, e: &Expr, c: QualType) -> Result<Value, ResolveError> {
-        let ty = self.types.ir_type(c);
-        let Some(literal) = self
-            .types
-            .string_array(e, &ty)
-            .map_err(ResolveError::checked)?
-        else {
-            return Err(ResolveError::Internal("string initializer is not a string"));
-        };
-        let Type::Array { element, length } = ty else {
-            return Err(ResolveError::Internal("string initializer for non-array"));
-        };
-        let mut units = literal.execution_units(self.context.target.wchar_width);
-        units.push(0);
-        let length = length.unwrap_or(units.len() as u64);
-        units.resize(length as usize, 0);
-        let ty = Type::Array {
-            element,
-            length: Some(length),
-        };
-        Ok(self.value(e, ty, ValueKind::CodeUnits(units)))
+        self.types
+            .string_initializer(e, c)
+            .map_err(ResolveError::checked)
     }
 }
 

@@ -72,6 +72,8 @@ pub struct TypeResolver {
     pub(super) entities: super::entity::Entities,
     pub(super) typeof_operands: HashMap<crate::ast::NodeId, QualType>,
     pub(super) expression_types: HashMap<crate::ast::NodeId, super::typer::Typed>,
+    pub(super) constexpr_values: HashMap<crate::ast::NodeId, Operand>,
+    pub(super) compound_storage: HashMap<crate::ast::NodeId, crate::ir::StorageDuration>,
     pub(super) integer_limits: HashMap<crate::ast::NodeId, Number>,
     pub(super) conversions: HashMap<crate::ast::NodeId, super::ctype::convert::Conversion>,
     pub(super) operand_conversions:
@@ -139,6 +141,8 @@ impl TypeResolver {
             entities: super::entity::Entities::default(),
             typeof_operands: HashMap::new(),
             expression_types: HashMap::new(),
+            constexpr_values: HashMap::new(),
+            compound_storage: HashMap::new(),
             integer_limits: HashMap::new(),
             conversions: HashMap::new(),
             operand_conversions: HashMap::new(),
@@ -629,6 +633,7 @@ impl TypeResolver {
         context: &super::numeric::Context,
         e: &crate::ast::Expr,
     ) -> Result<Operand, ResolveError> {
+        use super::initializer::InitializerSource;
         use crate::ast::ExprKind;
         let (ty, kind) = match &e.value {
             ExprKind::Paren(inner) => return self.constant_value_with_context(context, inner),
@@ -637,6 +642,26 @@ impl TypeResolver {
                     .constant(e)
                     .cloned()
                     .ok_or(ResolveError::Rejected("nonconstant or unknown identifier"));
+            }
+            ExprKind::CompoundLiteral { ty, initializer } if ty.specifiers.is_constexpr => {
+                let c = self.typed(e)?.c;
+                let value = self.constant_initializer(
+                    e,
+                    c,
+                    InitializerSource::CompoundLiteral(initializer),
+                )?;
+                return Ok(Operand { c, value });
+            }
+            ExprKind::Member {
+                base,
+                field,
+                arrow: false,
+            } => {
+                let c = self.typed(e)?.c;
+                let base = self.constant_value_with_context(context, base)?;
+                let value = self.constant_member(base.value, &field.value, e)?;
+                let value = self.constant_zero(value, c, e)?;
+                return Ok(Operand { c, value });
             }
             ExprKind::CharLiteral(literal) => {
                 let (ty, number) = self.character_constant(literal)?;

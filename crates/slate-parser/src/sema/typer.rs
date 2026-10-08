@@ -574,19 +574,16 @@ impl TypeResolver {
                 Typed::rvalue(self.ctypes.unqualified(to))
             }
             ExprKind::CompoundLiteral { ty, initializer } => {
-                if ty.specifiers.has_storage_class() {
-                    return Err(ResolveError::Unimplemented(
-                        "compound literal storage-class specifiers",
-                    ));
-                }
                 let resolved = self.type_name(ty)?;
                 let c = match self.ctypes.element(resolved) {
                     Some((element, Extent::Incomplete)) => {
                         let length = self.inferred_array_length(element, initializer)?;
-                        self.ctypes.qual(CTypeKind::Array {
-                            element,
-                            extent: Extent::Fixed(length),
-                        })
+                        self.ctypes
+                            .qual(CTypeKind::Array {
+                                element,
+                                extent: Extent::Fixed(length),
+                            })
+                            .with(self.ctypes.quals(resolved))
                     }
                     _ => resolved,
                 };
@@ -1752,6 +1749,12 @@ impl TypeResolver {
             | ExprKind::MinOf { .. }
             | ExprKind::OffsetOf { .. }
             | ExprKind::TypesCompatible { .. } => true,
+            ExprKind::CompoundLiteral { ty, .. } if ty.specifiers.is_constexpr => self
+                .expression_type(e)
+                .is_ok_and(|c| self.ctypes.is_integer(c)),
+            ExprKind::Member { .. } | ExprKind::Index { .. } => self
+                .constant_value(e)
+                .is_ok_and(|operand| self.ctypes.is_integer(operand.c)),
             ExprKind::Identifier(_) => self
                 .constant(e)
                 .is_some_and(|constant| self.ctypes.is_integer(constant.c)),
@@ -1910,12 +1913,7 @@ impl TypeResolver {
         if let ExprKind::Paren(inner) = &operand.value {
             return self.addressable(inner, typed);
         }
-        if matches!(operand.value, ExprKind::Identifier(_))
-            && self
-                .references
-                .get(&operand.id)
-                .is_some_and(|id| self.entities.is_register(id))
-        {
+        if self.register_rooted(operand) {
             return Err(ResolveError::Rejected(
                 "address of register variable requested",
             ));
@@ -1930,6 +1928,28 @@ impl TypeResolver {
             return Err(ResolveError::Rejected("address of an rvalue"));
         }
         Ok(())
+    }
+
+    fn register_rooted(&mut self, operand: &Expr) -> bool {
+        match &operand.value {
+            ExprKind::Paren(inner) => self.register_rooted(inner),
+            ExprKind::Member {
+                base, arrow: false, ..
+            } => self.register_rooted(base),
+            ExprKind::Index { base, .. } => {
+                self.typed(base)
+                    .is_ok_and(|typed| self.ctypes.element(typed.c).is_some())
+                    && self.register_rooted(base)
+            }
+            ExprKind::CompoundLiteral { ty, .. } => {
+                ty.specifiers.storage == crate::ast::StorageClass::Register
+            }
+            ExprKind::Identifier(_) => self
+                .references
+                .get(&operand.id)
+                .is_some_and(|id| self.entities.is_register(id)),
+            _ => false,
+        }
     }
 
     fn vector_component(&mut self, e: &Expr) -> bool {

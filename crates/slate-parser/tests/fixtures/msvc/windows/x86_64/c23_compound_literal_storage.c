@@ -33,7 +33,6 @@ void literals(int i) {
 // SLATE-FILECHECK-ERROR GNU17
 // SLATE-FILECHECK-DEFINES IR
 // SLATE-FILECHECK-PREFIX-ARGS IR --dump-ir
-// SLATE-FILECHECK-IR-ERROR IR
 // SLATE-FILECHECK-STD IR c23
 
 // SLATE-FILECHECK-BEGIN C17
@@ -56,25 +55,6 @@ void literals(int i) {
 // GNU17: 4 │
 // GNU17: ╰────
 // SLATE-FILECHECK-END GNU17
-// SLATE-FILECHECK-BEGIN IR
-// IR: Error:   × semantic analysis failed
-// IR: Error:
-// IR: × not implemented: compound literal storage-class specifiers
-// IR: ╭─[tests/fixtures/msvc/windows/x86_64/c23_compound_literal_storage.c:3:1]
-// IR: 2 │ struct pair { int values[2]; };
-// IR: 3 │ int *global = &(static int){1};
-// IR: · ───────────────────────────────
-// IR: 4 │
-// IR: ╰────
-// IR: Error:
-// IR: × not implemented: compound literal storage-class specifiers
-// IR: ╭─[tests/fixtures/msvc/windows/x86_64/c23_compound_literal_storage.c:6:5]
-// IR: 5 │ void literals(int i) {
-// IR: 6 │     (register int[2]){2, 3}[i];
-// IR: ·     ───────────────────────
-// IR: 7 │     (register struct pair){.values = {4, 5{{[}][}]}}.values[i];
-// IR: ╰────
-// SLATE-FILECHECK-END IR
 // SLATE-FILECHECK-BEGIN C23
 // C23: tag[{{[0-9]+}}]: TagDefinition {
 // C23-NEXT:       id: TagId(
@@ -2683,3 +2663,45 @@ void literals(int i) {
 // GNU2Y-NEXT:       },
 // GNU2Y-NEXT:   )
 // SLATE-FILECHECK-END GNU2Y
+// SLATE-FILECHECK-BEGIN IR
+// IR: module {
+// IR-NEXT:     target "x86_64-pc-windows-msvc" {
+// IR-NEXT:         endian = little;
+// IR-NEXT:         pointer [size=8, align=8];
+// IR-NEXT:         stack_alignment = 16;
+// IR-NEXT:         long_double = f64;
+// IR-NEXT:         storage bool [size=1, align=1];
+// IR-NEXT:         storage i8, u8 [size=1, align=1];
+// IR-NEXT:         storage i16, u16 [size=2, align=2];
+// IR-NEXT:         storage i32, u32 [size=4, align=4];
+// IR-NEXT:         storage i64, u64 [size=8, align=8];
+// IR-NEXT:         storage i128, u128 [size=16, align=16];
+// IR-NEXT:         storage bf16 [size=2, align=2];
+// IR-NEXT:         storage f16 [size=2, align=2];
+// IR-NEXT:         storage f32 [size=4, align=4];
+// IR-NEXT:         storage f64 [size=8, align=8];
+// IR-NEXT:         storage f128 [size=16, align=16];
+// IR-NEXT:         storage d32 [size=4, align=4];
+// IR-NEXT:         storage d64 [size=8, align=8];
+// IR-NEXT:         storage d128 [size=16, align=16];
+// IR-NEXT:     }
+// IR-NEXT:     type @type[[TYPE_T:[0-9]+]] T = i32;
+// IR-NEXT:     type @type[[TYPE_pair:[0-9]+]] pair = struct {
+// IR-NEXT:         field0 values: array<i32, 2>;
+// IR-NEXT:     } [size=8, align=4, offsets=[0]];
+// IR-NEXT:     global %[[VALUE_global:[0-9]+]] global: ptr<i32> [storage=static] = addr_of<ptr<i32>>(compound_literal %[[VALUE0:[0-9]+]] [storage=static] = const<i32>(1)) [linkage=external];
+// IR-NEXT:     fn %[[VALUE_literals:[0-9]+]] @literals(%[[VALUE_i:[0-9]+]] i: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// IR-NEXT:         read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(compound_literal %[[VALUE1:[0-9]+]] [storage=automatic] = aggregate<array<i32, 2>, zero_fill=false>(index0 = const<i32>(2), index1 = const<i32>(3))), read<i32>(%[[VALUE_i]]))));
+// IR-NEXT:         read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(field0(compound_literal %[[VALUE2:[0-9]+]] [storage=automatic] = aggregate<@type[[TYPE_pair]], zero_fill=false>(field0 = aggregate<array<i32, 2>, zero_fill=false>(index0 = const<i32>(4), index1 = const<i32>(5))))), read<i32>(%[[VALUE_i]]))));
+// IR-NEXT:         addr_of<ptr<i32>>(compound_literal %[[VALUE3:[0-9]+]] [storage=static] = const<i32>(6));
+// IR-NEXT:         const<i32>(7);
+// IR-NEXT:         const<i32>(8);
+// IR-NEXT:         addr_of<ptr<const i32>>(compound_literal %[[VALUE4:[0-9]+]] [storage=static] = const<i32>(9));
+// IR-NEXT:         addr_of<ptr<i32>>(compound_literal %[[VALUE5:[0-9]+]] [storage=thread] = const<i32>(10));
+// IR-NEXT:         addr_of<ptr<i32>>(compound_literal %[[VALUE6:[0-9]+]] [storage=thread] = const<i32>(11));
+// IR-NEXT:         addr_of<ptr<i32>>(compound_literal %[[VALUE7:[0-9]+]] [storage=thread] = const<i32>(12));
+// IR-NEXT:         read<i32>(compound_literal %[[VALUE8:[0-9]+]] [storage=static] [align=16] = const<i32>(14));
+// IR-NEXT:         read<i32>(compound_literal %[[VALUE9:[0-9]+]] [storage=automatic] = const<i32>(15));
+// IR-NEXT:     }
+// IR-NEXT: }
+// SLATE-FILECHECK-END IR
