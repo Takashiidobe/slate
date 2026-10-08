@@ -9,3 +9,6 @@ target/
 .llog/
 
 **/__pycache__/**
+
+# Local Netlify folder
+.netlify

@@ -2,7 +2,7 @@
 <html lang="en">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Slate Parser: Explore C AST and IR</title>
+<title>Slate's C Parser</title>
 <link rel="stylesheet" href="assets/codemirror.min.css">
 <link rel="stylesheet" href="assets/codemirror-dialog.min.css">
 <link rel="stylesheet" href="assets/codemirror-material-darker.min.css">
@@ -23,22 +23,24 @@
 [role=tablist] { display: flex; gap: 6px; margin-bottom: 8px; } [role=tab] { background: #192b52; color: #9bb4d1; padding: 5px 14px; } [role=tab][aria-selected=true] { background: #3b82f6; color: #eff6ff; } [role=tab]:focus-visible { outline: 2px solid #eaf2ff; outline-offset: 2px; }
 </style>
 <main>
-<h1>Slate Parser: Explore C AST and IR</h1>
+<h1>Slate's C Parser</h1>
 <p><a href="https://github.com/Takashiidobe/slate">GitHub</a> - <a href="https://github.com/Takashiidobe/slate/tree/main/crates/slate-parser">Documentation</a></p>
 <div class="toolbar"><div class="row"><select id="examples" aria-label="Example"><option value=""></option></select><select id="compiler" aria-label="Compiler"><option value="clang">Clang</option><option value="gcc">GCC</option><option value="msvc">MSVC</option></select><input id="flags" type="text" spellcheck="false" autocomplete="off" placeholder="Compiler flags, e.g. -fwrapv -DNDEBUG" aria-label="Compiler flags"><select id="keymap" aria-label="Editor key bindings"><option value="default">Standard</option><option value="vim">Vim</option><option value="emacs">Emacs</option></select></div><div class="row"><fieldset id="targets"><legend>Targets</legend></fieldset><button id="parse">Parse</button><button id="share" type="button">Share</button><button id="compiler-explorer" type="button">Compiler Explorer</button><span class="spinner" aria-label="Parsing"></span><span id="status" role="status"></span></div></div>
 <div class="grid"><section><div class="section-header"><h2>C</h2><button id="copy-c" class="copy-button" type="button" aria-label="Copy C program" title="Copy C program"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1Zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2Zm0 16H8V7h11v14Z"/></svg></button></div><div class="editor-shell"><textarea id="c" spellcheck="false"></textarea></div></section><div class="splitter" role="separator" aria-label="Resize editor panes" aria-valuemin="20" aria-valuemax="80" aria-valuenow="50" tabindex="0"></div><section><div class="section-header"><div role="tablist" aria-label="Parser output"><button id="ast-tab" type="button" role="tab" aria-selected="true" aria-controls="output-panel" tabindex="0">AST</button><button id="ir-tab" type="button" role="tab" aria-selected="false" aria-controls="output-panel" tabindex="-1">IR</button></div><button id="copy-output" class="copy-button" type="button" aria-label="Copy parser output" title="Copy parser output"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1Zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2-2V7h11v14H8v2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2Z"/></svg></button></div><div class="editor-shell" id="output-panel" role="tabpanel" aria-labelledby="ast-tab"><textarea id="output" spellcheck="false"></textarea><div id="diagnostics" aria-label="Parser diagnostics" aria-live="polite" hidden></div></div></section></div>
-<p>Parse C entirely in your browser. Switch between the textual AST and typed IR. Linux headers load on demand; Windows targets support code without system headers.</p>
 </main>
 <script src="assets/codemirror.min.js"></script>
 <script src="assets/codemirror-dialog.min.js"></script>
 <script src="assets/codemirror-searchcursor.min.js"></script>
 <script src="assets/codemirror-clike.min.js"></script>
+<script src="assets/codemirror-simple.min.js"></script>
+<script src="assets/codemirror-rust.min.js"></script>
+<script src="assets/codemirror-slate-ir.js"></script>
 <script>
 const select = document.querySelector('#examples'); const compilerSelect = document.querySelector('#compiler'); const flagsInput = document.querySelector('#flags'); const targetsFieldset = document.querySelector('#targets'); const keymap = document.querySelector('#keymap'); const toolbar = document.querySelector('.toolbar'); const button = document.querySelector('#parse'); const share = document.querySelector('#share'); const compilerExplorer = document.querySelector('#compiler-explorer'); const copyC = document.querySelector('#copy-c'); const copyOutput = document.querySelector('#copy-output'); const status = document.querySelector('#status'); const outputPanel = document.querySelector('#output-panel'); const diagnostics = document.querySelector('#diagnostics'); let hasParse = false;
 const storage = { get(key) { try { return localStorage.getItem(key); } catch { return null; } }, set(key, value) { try { localStorage.setItem(key, value); } catch {} } };
 function setStatus(text, kind = '') { status.textContent = text; status.className = kind; }
 const source = CodeMirror.fromTextArea(document.querySelector('#c'), { mode: 'text/x-csrc', theme: 'material-darker', lineNumbers: true, indentUnit: 2, tabSize: 2, gutters: ['diagnostics-gutter', 'CodeMirror-linenumbers'] });
-const result = CodeMirror.fromTextArea(document.querySelector('#output'), { mode: null, theme: 'material-darker', lineNumbers: true, readOnly: true });
+const result = CodeMirror.fromTextArea(document.querySelector('#output'), { mode: 'rust', theme: 'material-darker', lineNumbers: true, readOnly: true });
 const editorGrid = document.querySelector('.grid'); const splitter = document.querySelector('.splitter'); const leftPane = editorGrid.querySelector('section'); const minPaneWidth = 240; const splitterWidth = 12;
 for (const editor of [source, result]) { new ResizeObserver(() => editor.refresh()).observe(editor.getWrapperElement().parentElement); }
 function setSplit(clientX) { if (getComputedStyle(editorGrid).gridTemplateColumns.split(' ').length < 3) return; const bounds = editorGrid.getBoundingClientRect(); const available = bounds.width - splitterWidth; const left = Math.max(minPaneWidth, Math.min(available - minPaneWidth, clientX - bounds.left - splitterWidth / 2)); editorGrid.style.gridTemplateColumns = `${left}px ${splitterWidth}px ${available - left}px`; splitter.setAttribute('aria-valuenow', Math.round(left / available * 100)); source.refresh(); result.refresh(); }
@@ -120,6 +122,7 @@ let activeView = 'ast'; let outputs = null; let outputSnapshot = '';
 function showOutput() {
   for (const [view, tab] of Object.entries(outputTabs)) { tab.setAttribute('aria-selected', String(view === activeView)); tab.tabIndex = view === activeView ? 0 : -1; }
   outputPanel.setAttribute('aria-labelledby', `${activeView}-tab`);
+  result.setOption('mode', activeView === 'ast' ? 'rust' : 'slate-ir');
   if (!outputs) return;
   const output = outputs[activeView];
   result.setValue(output.text);
