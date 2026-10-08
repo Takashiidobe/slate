@@ -1,5 +1,7 @@
 # slate-parser
 
+See a demo of this on the [web](https://slate-parser.takashiidobe.com/).
+
 slate-parser is Slate's C frontend. It preprocesses and parses C, performs
 semantic analysis, and emits a typed IR that Slate translates to Rust.
 Compiler personalities (`--flavor=clang|gcc|msvc`) model differences in
