@@ -274,6 +274,8 @@ impl Resolver {
             | StmtKind::Comment(_)
             | StmtKind::ReturnVoid
             | StmtKind::Attribute(_)
+            | StmtKind::NamedBreak(_)
+            | StmtKind::NamedContinue(_)
             | StmtKind::Break
             | StmtKind::Continue
             | StmtKind::Pragma(_) => Ok(()),

@@ -364,6 +364,8 @@ impl<'a> Reachability<'a> {
             | StmtKind::ReturnVoid
             | StmtKind::LocalLabelDecl(_)
             | StmtKind::Goto(_)
+            | StmtKind::NamedBreak(_)
+            | StmtKind::NamedContinue(_)
             | StmtKind::Break
             | StmtKind::Continue
             | StmtKind::Pragma(_) => {}

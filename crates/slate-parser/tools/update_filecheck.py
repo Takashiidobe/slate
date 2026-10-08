@@ -206,7 +206,7 @@ def render(
         command.extend(extra_args)
         command.extend(placement_args(fixture))
         filecheck_args = fixture_args(source)
-        if not any(arg.startswith("--dump-ir") for arg in filecheck_args):
+        if "// SLATE-FILECHECK-AST" not in source.splitlines() and not any(arg.startswith("--dump-ir") for arg in filecheck_args):
             command.append("--dump-ir")
         for line in source.splitlines():
             if line.strip().startswith("// SLATE-FILECHECK-ARGS "):
@@ -237,7 +237,7 @@ def render_warnings(
         command.extend(extra_args)
         command.extend(placement_args(fixture))
         filecheck_args = fixture_args(source)
-        if not any(arg.startswith("--dump-ir") for arg in filecheck_args):
+        if "// SLATE-FILECHECK-AST" not in source.splitlines() and not any(arg.startswith("--dump-ir") for arg in filecheck_args):
             command.append("--dump-ir")
         for line in source.splitlines():
             if line.strip().startswith("// SLATE-FILECHECK-ARGS "):

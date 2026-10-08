@@ -436,6 +436,8 @@ impl Walk<'_> {
             | StmtKind::MsAsm(_)
             | StmtKind::Goto(_)
             | StmtKind::ComputedGoto(_)
+            | StmtKind::NamedBreak(_)
+            | StmtKind::NamedContinue(_)
             | StmtKind::Break
             | StmtKind::Continue => {}
         }

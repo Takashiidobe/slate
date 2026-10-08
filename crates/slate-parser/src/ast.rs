@@ -374,6 +374,8 @@ pub enum StmtKind {
     Pragma(Pragma),
     Break,
     Continue,
+    NamedBreak(Span<String>),
+    NamedContinue(Span<String>),
 }
 
 #[derive(Debug, Clone, PartialEq)]

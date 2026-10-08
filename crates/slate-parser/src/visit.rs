@@ -187,6 +187,8 @@ pub fn walk_stmt<V: Visitor + ?Sized>(visitor: &mut V, stmt: &Stmt) -> Result<()
         | StmtKind::MsAsm(_)
         | StmtKind::Goto(_)
         | StmtKind::Pragma(_)
+        | StmtKind::NamedBreak(_)
+        | StmtKind::NamedContinue(_)
         | StmtKind::Break
         | StmtKind::Continue => Ok(()),
     }

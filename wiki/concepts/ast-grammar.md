@@ -285,6 +285,8 @@ StmtKind = "Null" | "Break" | "Continue" | "ReturnVoid"
          | Labeled { label: span<string>, body: stmt }
          | SwitchLabel { label: SwitchLabel, body: stmt }
          | "LocalLabelDecl(" vec<span<string>> ")"
+         | "NamedBreak(" span<string> ")"
+         | "NamedContinue(" span<string> ")"
          | "Goto(" span<string> ")"
          | "ComputedGoto(" expr ")"
          | "Asm(" GnuAsm ")"

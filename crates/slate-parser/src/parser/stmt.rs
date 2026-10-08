@@ -196,14 +196,33 @@ impl Parser {
         )))
     }
 
-    pub(super) fn parse_simple_keyword_stmt(
+    fn parse_loop_jump(
         &self,
         cursor: &mut TokenCursor,
-        stmt: StmtKind,
+        is_continue: bool,
     ) -> Result<StmtKind, ParseError> {
         cursor.pos += 1;
+        let label = if let Some(Token::Ident(name)) = cursor.peek() {
+            if !self.features().named_loops {
+                return Err(cursor.error("named loop jumps require C2y"));
+            }
+            let label = span_tokens(
+                name.to_string(),
+                &cursor.tokens[cursor.pos..cursor.pos + 1],
+                self.context(),
+            );
+            cursor.pos += 1;
+            Some(label)
+        } else {
+            None
+        };
         cursor.expect(Token::Semi, "expected `;`")?;
-        Ok(stmt)
+        Ok(match (is_continue, label) {
+            (false, None) => StmtKind::Break,
+            (true, None) => StmtKind::Continue,
+            (false, Some(label)) => StmtKind::NamedBreak(label),
+            (true, Some(label)) => StmtKind::NamedContinue(label),
+        })
     }
 
     pub(super) fn starts_declaration(&self, tokens: &[Span<Token>], pos: usize) -> bool {
@@ -369,12 +388,8 @@ impl Parser {
                     ))
                 }
             }
-            Some(Token::Keyword(Keyword::Break)) => {
-                self.parse_simple_keyword_stmt(cursor, StmtKind::Break)
-            }
-            Some(Token::Keyword(Keyword::Continue)) => {
-                self.parse_simple_keyword_stmt(cursor, StmtKind::Continue)
-            }
+            Some(Token::Keyword(Keyword::Break)) => self.parse_loop_jump(cursor, false),
+            Some(Token::Keyword(Keyword::Continue)) => self.parse_loop_jump(cursor, true),
             Some(Token::Keyword(Keyword::Goto))
                 if tokens.value_at(cursor.pos + 1) == Some(&Token::Star) =>
             {

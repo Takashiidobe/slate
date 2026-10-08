@@ -555,7 +555,9 @@ fn fixture_source(fixture: &Path) -> String {
 
 fn fixture_ir_args(fixture: &Path) -> Vec<String> {
     let mut args = fixture_args(fixture);
-    if !args.iter().any(|arg| arg.starts_with("--dump-ir")) {
+    let source = decode_source_bytes(&std::fs::read(fixture).expect("read fixture"));
+    let ast_only = source.lines().any(|line| line == "// SLATE-FILECHECK-AST");
+    if !ast_only && !args.iter().any(|arg| arg.starts_with("--dump-ir")) {
         args.push("--dump-ir".into());
     }
     args
@@ -804,6 +806,8 @@ fn summarize_evaluated_decl(decl: &DeclKind) -> Vec<DeclSummary> {
                     | StmtKind::Goto(_)
                     | StmtKind::ComputedGoto(_)
                     | StmtKind::NestedFunction(_)
+                    | StmtKind::NamedBreak(_)
+                    | StmtKind::NamedContinue(_)
                     | StmtKind::Break
                     | StmtKind::Continue => None,
                 })

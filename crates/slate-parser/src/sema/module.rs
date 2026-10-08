@@ -1907,6 +1907,9 @@ impl Lowerer {
                     .map(|r| r.binding)
                     .ok_or(ResolveError::Internal("missing goto binding"))?,
             ),
+            StmtKind::NamedBreak(_) | StmtKind::NamedContinue(_) => {
+                return Err(ResolveError::Unimplemented("named loop jumps"));
+            }
             StmtKind::Labeled { label, body } => Statement::Label {
                 id: *self
                     .names

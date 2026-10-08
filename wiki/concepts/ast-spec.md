@@ -434,6 +434,8 @@ StmtKind =
     | ComputedGoto(Expr)                        // GNU goto *p
     | Continue
     | Break
+    | NamedContinue(Span<String>)
+    | NamedBreak(Span<String>)
     | Return(Expr)
     | ReturnVoid
     | Attribute(Vec<Span<Attribute>>)          // standalone [[fallthrough]];
@@ -444,6 +446,9 @@ StmtKind =
 SwitchLabel = Case(Expr) | CaseRange { start: Expr, end: Expr } | Default
 ```
 
+- Named jumps preserve the target spelling and span in C2y/GNU2y only
+  (`StandardFeatures::named_loops`). Target validation and IR lowering
+  are unimplemented.
 - Control-flow bodies are one `Box<Stmt>`; braced bodies are `Block`.
   `Null` is `;`; an empty compound is `Block([])`.
 - Scopes: C89/GNU89, only compound statements. C99+, each

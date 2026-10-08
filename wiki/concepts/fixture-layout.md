@@ -26,6 +26,8 @@ tests/fixtures/[error/ | suites/<name>/]<flavor>/[<os>/[<arch> | <triple>]]/<fix
 | `suites/<name>/` | Imported suites (`gcc-dg`, `gcc-torture`, `clang-test`), written by sweep tools with `--migrate`. gcc-torture and gcc-dg run under both `gcc/` and `clang/` (gcc-dg under `clang/` only where clang accepts it, with the test's `-std`). A test in one flavor only is either rejected by the other oracle or has a gap under `slate-parser-cxg`. |
 | `inputs/` | Headers and sysroots reached via directives (`SLATE-FILECHECK-ISYSTEM`, `-I`, `--sysroot`, `-include`). Headers included relative to a fixture sit beside it, copied per directory. |
 
+- `SLATE-FILECHECK-AST` selects AST output instead of the default IR
+  output for parser-only fixtures.
 - One file covers one compiler and target; multi-config fixtures are one
   file per directory (`target_registry.c`). File names don't repeat the
   directory.
