@@ -276,9 +276,11 @@ pub fn walk_expr<V: Visitor + ?Sized>(visitor: &mut V, expr: &Expr) -> Result<()
             }
             Ok(())
         }
-        ExprKind::SizeOfType { ty } | ExprKind::AlignOf { ty } | ExprKind::CountOfType { ty } => {
-            visitor.visit_type_name(ty)
-        }
+        ExprKind::SizeOfType { ty }
+        | ExprKind::AlignOf { ty }
+        | ExprKind::CountOfType { ty }
+        | ExprKind::MaxOf { ty }
+        | ExprKind::MinOf { ty } => visitor.visit_type_name(ty),
         ExprKind::OffsetOf { ty, member } => {
             visitor.visit_type_name(ty)?;
             visitor.visit_expr(member)

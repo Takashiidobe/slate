@@ -336,6 +336,8 @@ ExprKind = "Identifier(" string ")"
          | AlignOf { ty: TypeName }
          | "CountOfExpr(" expr ")"
          | CountOfType { ty: TypeName }
+         | MaxOf { ty: TypeName }
+         | MinOf { ty: TypeName }
          | OffsetOf { ty: TypeName, member: expr }
          | Generic { controlling: GenericControl,
                      associations: vec<GenericAssociation> }

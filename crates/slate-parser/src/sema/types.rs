@@ -809,6 +809,9 @@ impl TypeResolver {
                     ValueKind::Constant(Number::Integer(n.into())),
                 )
             }
+            ExprKind::MaxOf { .. } | ExprKind::MinOf { .. } => {
+                return Err(ResolveError::Unimplemented("integer type limits"));
+            }
             ExprKind::CountOfType { ty } => {
                 let c = self.type_name(ty)?;
                 self.constant_count(c)?

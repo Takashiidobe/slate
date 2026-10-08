@@ -421,7 +421,9 @@ impl<'a> Reachability<'a> {
             }
             ExprKind::SizeOfType { ty }
             | ExprKind::AlignOf { ty }
-            | ExprKind::CountOfType { ty } => self.mark_type_name(ty),
+            | ExprKind::CountOfType { ty }
+            | ExprKind::MaxOf { ty }
+            | ExprKind::MinOf { ty } => self.mark_type_name(ty),
             ExprKind::OffsetOf { ty, member } => {
                 self.mark_type_name(ty);
                 self.mark_expr(member);

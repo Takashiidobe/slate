@@ -759,6 +759,9 @@ impl TypeResolver {
                 let target = self.target_info().clone();
                 Typed::rvalue(self.ctypes.size_type(&target))
             }
+            ExprKind::MaxOf { .. } | ExprKind::MinOf { .. } => {
+                return Err(ResolveError::Unimplemented("integer type limits"));
+            }
             ExprKind::CountOfType { ty } => {
                 let resolved = self.type_name(ty)?;
                 self.count_extent(resolved)?;

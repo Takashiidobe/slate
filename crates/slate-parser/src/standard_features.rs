@@ -39,6 +39,7 @@ pub struct StandardFeatures {
     pub digit_separators: bool,
     pub octal_prefix: bool,
     pub keyword_countof: bool,
+    pub keyword_type_limits: bool,
     pub named_loops: bool,
     pub selection_declarations: bool,
     pub enumerators_have_enum_type: bool,
@@ -102,6 +103,10 @@ impl StandardFeatures {
             digit_separators: c23,
             octal_prefix: true,
             keyword_countof: true,
+            keyword_type_limits: matches!(
+                standard,
+                LanguageStandard::C2y | LanguageStandard::Gnu2y
+            ),
             named_loops: matches!(standard, LanguageStandard::C2y | LanguageStandard::Gnu2y),
             selection_declarations: matches!(
                 standard,

@@ -995,6 +995,9 @@ impl<'a> Parser<'a> {
             ExprKind::CountOfType { .. } | ExprKind::CountOfExpr(_) => {
                 Err(ConstExprError::NotConstant("_Countof"))
             }
+            ExprKind::MaxOf { .. } | ExprKind::MinOf { .. } => Err(
+                ConstExprError::RequiresSemanticEvaluation("integer type limits"),
+            ),
             ExprKind::OffsetOf { .. } => Err(ConstExprError::NotConstant("offsetof")),
             ExprKind::TypesCompatible { .. } => {
                 Err(ConstExprError::NotConstant("types compatible"))
@@ -1665,6 +1668,27 @@ impl<'a> Parser<'a> {
         if self.consume(&Token::Alignof) {
             let operand = self.parse_unary()?;
             return Ok(self.node(ExprKind::AlignOfExpr(operand), start));
+        }
+        if matches!(self.peek(), Some(Token::Maxof | Token::Minof)) {
+            let maximum = self.take() == Some(Token::Maxof);
+            self.expect(Token::LParen)?;
+            if !self
+                .peek()
+                .is_some_and(|token| starts_type_name(token, self.context))
+            {
+                return Err(ConstExprError::ExpectedTypeName);
+            }
+            let (ty, end) = self
+                .try_parse_type_name(self.position, |_| true)
+                .ok_or(ConstExprError::ExpectedTypeName)?;
+            self.position = end;
+            self.expect(Token::RParen)?;
+            let kind = if maximum {
+                ExprKind::MaxOf { ty }
+            } else {
+                ExprKind::MinOf { ty }
+            };
+            return Ok(self.node(kind, start));
         }
         if self.peek() == Some(&Token::Countof)
             && self.peek_at(1) == Some(&Token::LParen)

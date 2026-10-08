@@ -536,6 +536,7 @@ Taxonomy and rationale: [comment-placement](comment-placement.md).
 | `CompoundLiteral { ty: TypeName, storage, initializer: InitializerList }` | C23 storage |
 | `SizeOfExpr`, `SizeOfType`, `AlignOf`, `AlignOfExpr` | |
 | `CountOfExpr`, `CountOfType { ty: TypeName }` | C2y `_Countof`; parsed like `sizeof` |
+| `MaxOf { ty: TypeName }`, `MinOf { ty: TypeName }` | `_Maxof(type-name)` / `_Minof(type-name)`; retain the operand, without range evaluation |
 | `OffsetOf { ty: TypeName, member: MemberDesignator }` | `offsetof`, `__builtin_offsetof` |
 | `Generic { controlling: GenericControl, associations }` | |
 | `VaArg { list, ty: TypeName }` | |
@@ -670,6 +671,7 @@ c23`, plain and `-pedantic`; `warn` = only under `-pedantic`.
 | `0b` literals | C23 | warn | warn | extension |
 | `0o`/`0O` literals (radix `Octal`, also in `#if`) | C2y | warn | warn | extension; msvc rejects (`octal_prefix`) |
 | `_Countof` | C2y | warn | warn | extension; msvc identifier (`keyword_countof`) |
+| `_Maxof` / `_Minof` | C2y proposal | err | extension | C2y/GNU2y in every flavor (`keyword_type_limits`); identifiers earlier |
 | digit separators (`1'000`) | C23 | char constant | char constant | gated by `digit_separators` |
 
 Digit separators are gated because pre-C23 `'` starts a character constant
@@ -678,6 +680,11 @@ in valid code: gcc.dg's `#define m(x) 0` / `m(1'2)+(3'4)` is 0 in C11 and
 `StandardFeatures::digit_separators`. A separator consumes the next
 character, so the `e`/`p` sign rule doesn't apply across it: `0x0'e-0xe` is
 `0x0'e`, `-`, `0xe`.
+
+- Integer type limits require a parenthesized type-name, including typedefs
+  and `_BitInt` widths. Reference: GCC `gcc.dg/maxof-bitint.c` and
+  `maxof-bitint575.c`. Integer-operand validation, result typing, range
+  evaluation, and IR lowering remain unimplemented.
 
 ## Migration
 

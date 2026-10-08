@@ -1177,7 +1177,9 @@ impl Checker<'_> {
             }
             ExprKind::SizeOfType { ty }
             | ExprKind::AlignOf { ty }
-            | ExprKind::CountOfType { ty } => self.type_name(ty),
+            | ExprKind::CountOfType { ty }
+            | ExprKind::MaxOf { ty }
+            | ExprKind::MinOf { ty } => self.type_name(ty),
             ExprKind::OffsetOf { ty, member } => {
                 self.type_name(ty);
                 self.expression(member);
@@ -1677,6 +1679,8 @@ fn ice_shape<'e>(types: &mut TypeResolver, expr: &'e Expr) -> Shape<'e> {
         | ExprKind::AlignOf { .. }
         | ExprKind::SizeOfExpr(_)
         | ExprKind::AlignOfExpr(_)
+        | ExprKind::MaxOf { .. }
+        | ExprKind::MinOf { .. }
         | ExprKind::CountOfType { .. }
         | ExprKind::CountOfExpr(_)
         | ExprKind::OffsetOf { .. }

@@ -2482,6 +2482,9 @@ impl Lowerer {
                 };
                 Ok(self.layout_constant(e, amount, key, ty.to_string()))
             }
+            ExprKind::MaxOf { .. } | ExprKind::MinOf { .. } => {
+                Err(ResolveError::Unimplemented("integer type limits"))
+            }
             ExprKind::CountOfType { ty } => {
                 let extents = self.type_name_extents(ty)?;
                 let resolved = self.resolve_type_name(ty)?;
