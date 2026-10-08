@@ -1,5 +1,16 @@
 #define _GNU_SOURCE
 #include <math.h>
+#include <fenv.h>
+
+int __slate_fenv_flt_rounds(void) {
+  switch (fegetround()) {
+  case FE_TOWARDZERO: return 0;
+  case FE_TONEAREST: return 1;
+  case FE_UPWARD: return 2;
+  case FE_DOWNWARD: return 3;
+  default: return -1;
+  }
+}
 
 double __slate_fenv_add_f64(double a, double b) { return a + b; }
 float __slate_fenv_add_f32(float a, float b) { return a + b; }

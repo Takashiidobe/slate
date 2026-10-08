@@ -589,10 +589,10 @@ impl<'m> ModuleLowerer<'m> {
                 long_double::f80_shim_decls()
                     .into_iter()
                     .filter(|decl| decl.name.starts_with("__slate_f80_"))
-                    .chain(dependencies.bridges.into_values())
                     .map(rust::ExternDecl::Fn),
             );
         }
+        externs.extend(dependencies.bridges.into_values().map(rust::ExternDecl::Fn));
         if !dependencies.intrinsics.is_empty() {
             items.insert(
                 0,

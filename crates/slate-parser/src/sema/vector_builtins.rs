@@ -19,6 +19,24 @@ impl Lowerer {
     ) -> Result<Result<Operand, LoweredCall>, ResolveError> {
         let result_type = self.types.ir_type(returned);
         let kind = match expansion {
+            Expansion::Overflow(op) => {
+                let [left, right, pointer]: [Value; 3] = arguments
+                    .try_into()
+                    .map_err(|_| ResolveError::Internal("overflow builtin argument count"))?;
+                let Type::Pointer { pointee, .. } = &pointer.ty else {
+                    return Err(ResolveError::Internal("overflow builtin result pointer"));
+                };
+                ValueKind::Overflow {
+                    op,
+                    left: Box::new(left),
+                    right: Box::new(right),
+                    result: Place {
+                        ty: *pointee.clone(),
+                        kind: PlaceKind::Deref(Box::new(pointer)),
+                        access: Access::default(),
+                    },
+                }
+            }
             Expansion::Reduce(reduction) => {
                 let element = arguments
                     .first()

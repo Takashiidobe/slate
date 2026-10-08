@@ -29,6 +29,20 @@ fn bit_count_method(builtin: &str) -> Option<&'static str> {
     }
 }
 
+fn rotate_method(builtin: &str) -> Option<&'static str> {
+    match builtin {
+        "__builtin_rotateleft8"
+        | "__builtin_rotateleft16"
+        | "__builtin_rotateleft32"
+        | "__builtin_rotateleft64" => Some("rotate_left"),
+        "__builtin_rotateright8"
+        | "__builtin_rotateright16"
+        | "__builtin_rotateright32"
+        | "__builtin_rotateright64" => Some("rotate_right"),
+        _ => None,
+    }
+}
+
 fn prim_width(prim: Prim) -> u32 {
     match prim {
         Prim::I8 | Prim::U8 => 8,
@@ -695,6 +709,39 @@ impl FunctionLowerer<'_, '_> {
                 ))),
                 ty: self.lower_type(&value.ty)?,
             },
+            ValueKind::Call {
+                callee: ir::Callee::Direct(id),
+                arguments,
+                ..
+            } if let Some(method) = self.tables.builtin_name(*id).and_then(rotate_method) => {
+                let [operand, count] = arguments.as_slice() else {
+                    return Err(unsupported_value(value));
+                };
+                Expr::MethodCall {
+                    recv: Box::new(self.lower_value(operand)?),
+                    method: method.into(),
+                    args: vec![Expr::Cast {
+                        expr: Box::new(self.lower_value(count)?),
+                        ty: rust::Type::Prim(Prim::U32),
+                    }],
+                }
+            }
+            ValueKind::Call {
+                callee: ir::Callee::Direct(id),
+                arguments,
+                ..
+            } if self.tables.builtin_name(*id) == Some("__builtin_flt_rounds") => {
+                if !arguments.is_empty() {
+                    return Err(unsupported_value(value));
+                }
+                let returned = self.lower_type(&value.ty)?;
+                self.call_c_bridge(
+                    "__slate_fenv_flt_rounds".into(),
+                    Vec::new(),
+                    returned,
+                    Vec::new(),
+                )
+            }
             ValueKind::Call {
                 callee: ir::Callee::Direct(id),
                 arguments,

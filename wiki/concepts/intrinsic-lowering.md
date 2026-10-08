@@ -44,6 +44,14 @@
 - Parser `intrinsic<T, llvm.name>(..)` values, produced by sema's
   [vector builtin expansion](ir/builtins.md#vector-builtin-expansion), find
   their entry by LLVM name and take the same path.
+- Scalar `__builtin_rotateleft/right{8,16,32,64}` calls use Rust integer
+  `rotate_left`/`rotate_right`; counts convert to `u32` and wrap modulo width.
+- `__builtin_flt_rounds()` calls `__slate_fenv_flt_rounds` in
+  `frontend/shims/fenv.c`: `fegetround()` maps target `FE_TOWARDZERO`,
+  `FE_TONEAREST`, `FE_UPWARD`, `FE_DOWNWARD` to 0, 1, 2, 3; unknown modes to -1.
+  Each call reads the current environment; no host rounding constants are used.
+- C bridge declarations emit independently of f80 support; the shim collector
+  includes the fenv runtime whenever a `__slate_fenv_*` bridge is requested.
 - x86 f80 fabs/copysign reuse the existing long-double runtime shims.
 
 - Parser IR supplies C builtin signatures;

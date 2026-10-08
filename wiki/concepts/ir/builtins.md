@@ -135,6 +135,13 @@ record through `builtins::custom_builtin`, which returns a typed
 
 Fixture: `ir_implicit_builtins.c`.
 
+- `__builtin_umul_overflow`, `__builtin_umull_overflow`, and
+  `__builtin_umulll_overflow` use the same expansion dispatch: convert operands
+  through the unsigned int/long/long long prototype, then emit
+  `overflow_mul<bool>(l, r, deref(result))`.
+- Unlike generic `__builtin_mul_overflow`, typed forms convert operands before
+  the math-domain multiplication (`builtin_unsigned_mul_overflow.c`).
+
 `__builtin_counted_by_ref` takes a parenthesized `.`/`->` member of pointer
 or array type (both oracles reject anything else,
 `error/clang/linux/x86_64/counted-by-ref-not-member.c`). Clang's extra

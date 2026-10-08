@@ -270,6 +270,7 @@ pub(super) fn custom_builtin(builtin: &ClangBuiltin) -> Option<CustomBuiltin> {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(super) enum Expansion {
+    Overflow(ArithOp),
     Reduce(Reduction),
     Popcount,
     Max,
@@ -296,6 +297,7 @@ pub(super) enum Reduction {
 
 pub(super) fn expansion(builtin: &ClangBuiltin) -> Option<Expansion> {
     Some(match builtin.record {
+        "UmulOverflow" => Expansion::Overflow(ArithOp::Mul),
         "ReduceAdd" => Expansion::Reduce(Reduction::Add),
         "ReduceMul" => Expansion::Reduce(Reduction::Mul),
         "ReduceAnd" => Expansion::Reduce(Reduction::And),

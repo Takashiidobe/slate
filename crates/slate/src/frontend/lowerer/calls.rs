@@ -81,4 +81,44 @@ impl FunctionLowerer<'_, '_> {
             call
         })
     }
+
+    pub(super) fn call_c_bridge(
+        &mut self,
+        name: String,
+        params: Vec<rust::Type>,
+        ret: rust::Type,
+        args: Vec<Expr>,
+    ) -> Expr {
+        self.dependencies
+            .bridges
+            .entry(name.clone())
+            .or_insert_with(|| rust::ExternFnDecl {
+                attrs: Vec::new(),
+                name: name.clone(),
+                identity: FunctionIdentity::Unknown,
+                declared_type: None,
+                trusted_headers: Default::default(),
+                params: params
+                    .into_iter()
+                    .enumerate()
+                    .map(|(index, ty)| FnParam {
+                        comments: Vec::new(),
+                        name: format!("_{index}"),
+                        mutable: false,
+                        ty,
+                    })
+                    .collect(),
+                variadic: false,
+                ret: (!matches!(ret, rust::Type::Unit)).then_some(ret),
+                safe: false,
+            });
+        Expr::Unsafe(Box::new(rust::Block {
+            stmts: Vec::new(),
+            tail: Some(Box::new(Expr::Call {
+                func: Box::new(Expr::Var(name.into())),
+                args,
+                binding: CallBinding::Generated,
+            })),
+        }))
+    }
 }
