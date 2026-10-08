@@ -137,6 +137,33 @@ pub fn walk_stmt<V: Visitor + ?Sized>(visitor: &mut V, stmt: &Stmt) -> Result<()
             }
             Ok(())
         }
+        StmtKind::IfDeclaration {
+            declaration,
+            condition,
+            then_branch,
+            else_branch,
+        } => {
+            visitor.visit_declaration(declaration)?;
+            if let Some(condition) = condition {
+                visitor.visit_expr(condition)?;
+            }
+            visitor.visit_stmt(then_branch)?;
+            if let Some(branch) = else_branch {
+                visitor.visit_stmt(branch)?;
+            }
+            Ok(())
+        }
+        StmtKind::SwitchDeclaration {
+            declaration,
+            discriminant,
+            body,
+        } => {
+            visitor.visit_declaration(declaration)?;
+            if let Some(discriminant) = discriminant {
+                visitor.visit_expr(discriminant)?;
+            }
+            visitor.visit_stmt(body)
+        }
         StmtKind::While { condition, body }
         | StmtKind::Switch {
             discriminant: condition,

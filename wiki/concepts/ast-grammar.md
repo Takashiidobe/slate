@@ -277,6 +277,10 @@ StmtKind = "Null" | "Break" | "Continue" | "ReturnVoid"
          | Attributed { attributes: vec<span<Attribute>>, body: stmt }
          | "Block(" vec<stmt> ")"
          | If { condition: expr, then_branch: stmt, else_branch: opt<stmt> }
+         | IfDeclaration { declaration: span<Declaration>, condition: opt<expr>,
+                           then_branch: stmt, else_branch: opt<stmt> }
+         | SwitchDeclaration { declaration: span<Declaration>,
+                               discriminant: opt<expr>, body: stmt }
          | While { condition: expr, body: stmt }
          | DoWhile { body: stmt, condition: expr }
          | For { init: opt<stmt>, condition: opt<expr>,

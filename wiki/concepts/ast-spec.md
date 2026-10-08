@@ -425,6 +425,8 @@ StmtKind =
     | Expr(Expr)
     | If { condition, then_branch: Box<Stmt>, else_branch: Option<Box<Stmt>> }
     | Switch { discriminant, body: Box<Stmt> }
+    | IfDeclaration { declaration: Box<Span<Declaration>>, condition: Option<Expr>, then_branch: Box<Stmt>, else_branch: Option<Box<Stmt>> }
+    | SwitchDeclaration { declaration: Box<Span<Declaration>>, discriminant: Option<Expr>, body: Box<Stmt> }
     | While { condition, body: Box<Stmt> }
     | DoWhile { body: Box<Stmt>, condition }
     | For { init: Option<Box<Stmt>>, condition: Option<Expr>, increment: Option<Expr>, body: Box<Stmt> }
@@ -446,6 +448,16 @@ StmtKind =
 SwitchLabel = Case(Expr) | CaseRange { start: Expr, end: Expr } | Default
 ```
 
+- Selection declarations use `IfDeclaration` / `SwitchDeclaration`.
+  The spanned declaration stays in the selection scope; an absent
+  condition/discriminant means the declared object's value is tested.
+  A present expression follows the source semicolon. Availability:
+  GCC flavor, C2y/GNU2y only (`selection_declarations`); Clang/MSVC reject.
+  Selection-specific constraints and IR lowering are unimplemented.
+- Grammar examples: `if (int x = f())`, `if (int x = f(); x > 0)`,
+  `switch (int x = f())`, `switch (int x, y; x + y)`.
+- Reference cases: GCC `gcc.dg/c2y-if-decls-{1,4,8,11}.c` cover
+  attributes, inferred types, aggregate initializers, and nested clauses.
 - Named jumps preserve the target spelling and span in C2y/GNU2y only
   (`StandardFeatures::named_loops`). Target validation and IR lowering
   are unimplemented.

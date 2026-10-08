@@ -793,6 +793,8 @@ fn summarize_evaluated_decl(decl: &DeclKind) -> Vec<DeclSummary> {
                     | StmtKind::Block(_)
                     | StmtKind::Null
                     | StmtKind::If { .. }
+                    | StmtKind::IfDeclaration { .. }
+                    | StmtKind::SwitchDeclaration { .. }
                     | StmtKind::While { .. }
                     | StmtKind::DoWhile { .. }
                     | StmtKind::For { .. }

@@ -418,6 +418,30 @@ impl Walk<'_> {
                     self.statement(branch);
                 }
             }
+            StmtKind::IfDeclaration {
+                declaration,
+                then_branch,
+                else_branch,
+                ..
+            } => {
+                self.declaration(declaration);
+                for name in declaration.names() {
+                    self.symbol(name);
+                }
+                self.statement(then_branch);
+                if let Some(branch) = else_branch {
+                    self.statement(branch);
+                }
+            }
+            StmtKind::SwitchDeclaration {
+                declaration, body, ..
+            } => {
+                self.declaration(declaration);
+                for name in declaration.names() {
+                    self.symbol(name);
+                }
+                self.statement(body);
+            }
             StmtKind::For { init, body, .. } => {
                 if let Some(init) = init {
                     self.statement(init);

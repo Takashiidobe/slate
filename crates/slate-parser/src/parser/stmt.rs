@@ -225,6 +225,42 @@ impl Parser {
         })
     }
 
+    fn parse_selection_declaration(
+        &self,
+        tokens: &[Span<Token>],
+    ) -> Result<(Box<Span<Declaration>>, Option<Expr>), ParseError> {
+        if !self.features().selection_declarations {
+            return Err(self.error_at_tokens(
+                tokens,
+                0,
+                "selection statement declarations require C2y in the GCC flavor",
+            ));
+        }
+        let semi = top_level_semi(tokens);
+        let end = semi.unwrap_or(tokens.len());
+        let mut declaration_tokens = tokens[..end].to_vec();
+        let terminator = tokens
+            .get(end)
+            .or_else(|| tokens.last())
+            .ok_or_else(|| self.error_at_tokens(tokens, 0, "expected declaration"))?;
+        declaration_tokens.push(terminator.clone().with_value(Token::Semi));
+        let declaration = self.parse_declaration_tokens(&declaration_tokens)?;
+        let declaration = Box::new(span_tokens(declaration, &tokens[..end], self.context()));
+        let condition = if let Some(semi) = semi {
+            if semi + 1 == tokens.len() {
+                return Err(self.error_at_tokens(
+                    tokens,
+                    semi,
+                    "expected expression after selection declaration",
+                ));
+            }
+            Some(self.parse_expression(&tokens[semi + 1..])?)
+        } else {
+            None
+        };
+        Ok((declaration, condition))
+    }
+
     pub(super) fn starts_declaration(&self, tokens: &[Span<Token>], pos: usize) -> bool {
         let pos = if tokens.value_at(pos) == Some(&Token::Ident("__extension__".into())) {
             pos + 1
@@ -456,7 +492,13 @@ impl Parser {
                 }
                 let close = matching_paren(tokens, open)
                     .ok_or_else(|| self.error_at_tokens(tokens, cursor.pos, "expected `)`"))?;
-                let condition = self.parse_expression(&tokens[open + 1..close])?;
+                let clause = &tokens[open + 1..close];
+                let (declaration, condition) = if self.starts_declaration(clause, 0) {
+                    let (declaration, condition) = self.parse_selection_declaration(clause)?;
+                    (Some(declaration), condition)
+                } else {
+                    (None, Some(self.parse_expression(clause)?))
+                };
                 cursor.pos = close + 1;
                 let then_branch = self.parse_body(cursor)?;
                 let else_branch = if cursor.peek() == Some(&Token::Keyword(Keyword::Else)) {
@@ -465,11 +507,22 @@ impl Parser {
                 } else {
                     None
                 };
-                Ok(StmtKind::If {
-                    condition,
-                    then_branch,
-                    else_branch,
-                })
+                if let Some(declaration) = declaration {
+                    Ok(StmtKind::IfDeclaration {
+                        declaration,
+                        condition,
+                        then_branch,
+                        else_branch,
+                    })
+                } else {
+                    Ok(StmtKind::If {
+                        condition: condition.ok_or_else(|| {
+                            self.error_at_tokens(tokens, open + 1, "expected expression")
+                        })?,
+                        then_branch,
+                        else_branch,
+                    })
+                }
             }
             Some(Token::Keyword(Keyword::While)) => {
                 let _scope = self
@@ -602,10 +655,29 @@ impl Parser {
                 }
                 let close = matching_paren(tokens, open)
                     .ok_or_else(|| self.error_at_tokens(tokens, cursor.pos, "expected `)`"))?;
-                let discriminant = self.parse_expression(&tokens[open + 1..close])?;
+                let clause = &tokens[open + 1..close];
+                let (declaration, discriminant) = if self.starts_declaration(clause, 0) {
+                    let (declaration, discriminant) = self.parse_selection_declaration(clause)?;
+                    (Some(declaration), discriminant)
+                } else {
+                    (None, Some(self.parse_expression(clause)?))
+                };
                 cursor.pos = close + 1;
                 let body = self.parse_body(cursor)?;
-                Ok(StmtKind::Switch { discriminant, body })
+                if let Some(declaration) = declaration {
+                    Ok(StmtKind::SwitchDeclaration {
+                        declaration,
+                        discriminant,
+                        body,
+                    })
+                } else {
+                    Ok(StmtKind::Switch {
+                        discriminant: discriminant.ok_or_else(|| {
+                            self.error_at_tokens(tokens, open + 1, "expected expression")
+                        })?,
+                        body,
+                    })
+                }
             }
             _ => {
                 let end = top_level_semi(&tokens[cursor.pos..])

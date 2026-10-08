@@ -40,6 +40,7 @@ pub struct StandardFeatures {
     pub octal_prefix: bool,
     pub keyword_countof: bool,
     pub named_loops: bool,
+    pub selection_declarations: bool,
     pub enumerators_have_enum_type: bool,
     pub conditional_pointers: crate::sema::PointerMerge,
     pub compatible_tag_redefinitions: bool,
@@ -102,6 +103,10 @@ impl StandardFeatures {
             octal_prefix: true,
             keyword_countof: true,
             named_loops: matches!(standard, LanguageStandard::C2y | LanguageStandard::Gnu2y),
+            selection_declarations: matches!(
+                standard,
+                LanguageStandard::C2y | LanguageStandard::Gnu2y
+            ),
             enumerators_have_enum_type: c23,
             conditional_pointers: crate::sema::PointerMerge::EXACT,
             compatible_tag_redefinitions: c23,
@@ -158,6 +163,7 @@ impl StandardFeatures {
                 .unwrap_or(features.microsoft_extensions),
             CompilerFlavor::Gcc => false,
         };
+        features.selection_declarations &= flavor.is_gcc();
         features.octal_prefix = !flavor.is_msvc();
         features.keyword_countof = !flavor.is_msvc();
         if flavor.is_gcc() {

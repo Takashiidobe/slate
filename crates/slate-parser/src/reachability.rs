@@ -321,6 +321,32 @@ impl<'a> Reachability<'a> {
                     self.mark_stmt(else_branch);
                 }
             }
+            StmtKind::IfDeclaration {
+                declaration,
+                condition,
+                then_branch,
+                else_branch,
+            } => {
+                self.mark_declaration(declaration);
+                if let Some(condition) = condition {
+                    self.mark_expr(condition);
+                }
+                self.mark_stmt(then_branch);
+                if let Some(branch) = else_branch {
+                    self.mark_stmt(branch);
+                }
+            }
+            StmtKind::SwitchDeclaration {
+                declaration,
+                discriminant,
+                body,
+            } => {
+                self.mark_declaration(declaration);
+                if let Some(discriminant) = discriminant {
+                    self.mark_expr(discriminant);
+                }
+                self.mark_stmt(body);
+            }
             StmtKind::While { condition, body }
             | StmtKind::DoWhile { body, condition }
             | StmtKind::Switch {

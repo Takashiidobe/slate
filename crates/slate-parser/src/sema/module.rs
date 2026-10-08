@@ -1907,6 +1907,11 @@ impl Lowerer {
                     .map(|r| r.binding)
                     .ok_or(ResolveError::Internal("missing goto binding"))?,
             ),
+            StmtKind::IfDeclaration { .. } | StmtKind::SwitchDeclaration { .. } => {
+                return Err(ResolveError::Unimplemented(
+                    "selection statement declarations",
+                ));
+            }
             StmtKind::NamedBreak(_) | StmtKind::NamedContinue(_) => {
                 return Err(ResolveError::Unimplemented("named loop jumps"));
             }

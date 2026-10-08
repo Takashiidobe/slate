@@ -339,6 +339,17 @@ pub enum StmtKind {
         then_branch: Box<Stmt>,
         else_branch: Option<Box<Stmt>>,
     },
+    IfDeclaration {
+        declaration: Box<Span<Declaration>>,
+        condition: Option<Expr>,
+        then_branch: Box<Stmt>,
+        else_branch: Option<Box<Stmt>>,
+    },
+    SwitchDeclaration {
+        declaration: Box<Span<Declaration>>,
+        discriminant: Option<Expr>,
+        body: Box<Stmt>,
+    },
     While {
         condition: Expr,
         body: Box<Stmt>,

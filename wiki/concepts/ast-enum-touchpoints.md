@@ -56,6 +56,9 @@ Shape notes:
 - `Labeled { label, body }` and `SwitchLabel { label, body }` nest their
   target, so `case 1: case 2: x;` is one nested `SwitchLabel`. Walkers must
   recurse into `body`.
+- `IfDeclaration` and `SwitchDeclaration` hold a spanned declaration
+  and an optional explicit test expression. Walk the declaration before
+  the expression and bodies; selection scope owns the declaration.
 - `Attribute` is a standalone attribute statement; `Attributed
   { attributes, body }` wraps a statement without adding a scope.
 - `MsAsm` holds no `Expr`; C names are `MsAsmExpr::Name` strings. Name

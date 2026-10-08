@@ -262,6 +262,24 @@ fn strip_stmt_children(stmt: &mut StmtKind) {
                 strip_stmt_children(&mut else_branch.value);
             }
         }
+        StmtKind::IfDeclaration {
+            declaration,
+            then_branch,
+            else_branch,
+            ..
+        } => {
+            strip_declaration_comments(&mut declaration.value);
+            strip_stmt_children(&mut then_branch.value);
+            if let Some(branch) = else_branch {
+                strip_stmt_children(&mut branch.value);
+            }
+        }
+        StmtKind::SwitchDeclaration {
+            declaration, body, ..
+        } => {
+            strip_declaration_comments(&mut declaration.value);
+            strip_stmt_children(&mut body.value);
+        }
         StmtKind::For { init, body, .. } => {
             if let Some(init) = init {
                 strip_stmt_children(&mut init.value);

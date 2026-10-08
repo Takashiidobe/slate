@@ -238,6 +238,8 @@ impl Resolver {
             && matches!(
                 statement.value,
                 StmtKind::If { .. }
+                    | StmtKind::IfDeclaration { .. }
+                    | StmtKind::SwitchDeclaration { .. }
                     | StmtKind::While { .. }
                     | StmtKind::DoWhile { .. }
                     | StmtKind::For { .. }
@@ -303,6 +305,33 @@ impl Resolver {
                     self.control_body(branch)?;
                 }
                 Ok(())
+            }
+            StmtKind::IfDeclaration {
+                declaration,
+                condition,
+                then_branch,
+                else_branch,
+            } => {
+                self.declaration(declaration, &**declaration)?;
+                if let Some(condition) = condition {
+                    self.visit_expr(condition)?;
+                }
+                self.control_body(then_branch)?;
+                if let Some(branch) = else_branch {
+                    self.control_body(branch)?;
+                }
+                Ok(())
+            }
+            StmtKind::SwitchDeclaration {
+                declaration,
+                discriminant,
+                body,
+            } => {
+                self.declaration(declaration, &**declaration)?;
+                if let Some(discriminant) = discriminant {
+                    self.visit_expr(discriminant)?;
+                }
+                self.control_body(body)
             }
             StmtKind::While { condition, body } => {
                 self.visit_expr(condition)?;
