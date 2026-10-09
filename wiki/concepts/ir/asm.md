@@ -89,7 +89,10 @@ whole asm: the first where every operand has a usable class.
   i686 but `reg_legacy` on x86-64.
 - Multi-letter: x86 `Y`/`W`/`j`/`B`, AArch64 `U` (three chars), Arm `U`.
   `?`, `!`, `*`, `^`, `$` are hints and skipped; `#` ends the alternative.
-  Anything else (`l`, `X`, `p`, ...) is `Unresolved`, never guessed.
+  `V` is memory like `m`/`o`. `p` (an address operand) is `reg`: clang
+  accepts it only under `%a` and lowers it `memory(none)`, so the pointer
+  rides in a register and the asm reads no C object. Anything else (`l`,
+  `X`, ...) is `Unresolved`, never guessed.
 - `reg_legacy` and `vreg_low8` (AArch64 `y`) have no Rust class; emission
   pins a free explicit register from the set, avoiding the asm's other
   explicit operands and clobbers.
@@ -119,7 +122,7 @@ whole asm: the first where every operand has a usable class.
 
 ### Memory operands
 
-- A memory-class input (`m`, `o`, Arm `Q`, or `rm` whose register won't
+- A memory-class input (`m`, `o`, `V`, Arm `Q`, or `rm` whose register won't
   fit) on an addressable lvalue is `InPlace(place)`, emitted as
   `in(reg) &raw const x`. An input that chose a register reads the place.
   With no alternative chosen, any memory-capable constraint gives
@@ -243,5 +246,9 @@ impossible.
   `raw`; its empty piece list does not distinguish text references.
 - `memory`/`cc`/`unwind` clobbers are represented by the computed options;
   register clobbers become discarded `lateout` operands. Reserved registers remain barriers.
-- Memory operands, other immediate modifiers, asm goto, naked/module asm,
+- Memory operands pass their address `in(reg)`: `InPlace` as `&raw const`, memory `Out` and
+  `InOut` as `&raw mut`, and an unaddressable `In(value)` spills to a temporary first. A
+  reference prints `({N:r})` (AT&T) or `<size> ptr [{N:r}]` (Intel, size from the width);
+  `%H` adds 8. `%a` on a register operand prints the same reference without a size.
+- Other immediate modifiers, asm goto, naked/module asm,
   and additional operand classes are tracked by the other `slate-3f8g.4.17` children.

@@ -64,6 +64,41 @@ fn register_modifier(operand: &ir::AsmOperand, view: Option<ir::AsmRegisterView>
     }
 }
 
+fn memory_reference(
+    asm: &ir::InlineAsm,
+    operand: &ir::AsmOperand,
+    index: usize,
+    displacement: Option<u32>,
+) -> Result<String> {
+    let base = match operand.kind {
+        ir::AsmOperandKind::In(_)
+        | ir::AsmOperandKind::InPlace(_)
+        | ir::AsmOperandKind::Out { .. }
+        | ir::AsmOperandKind::InOut { .. } => format!("{{{index}:r}}"),
+        _ => return Err(unsupported_asm("address of a non-value operand")),
+    };
+    Ok(match (asm.dialect, displacement) {
+        (Some(ir::AsmDialect::Intel), None) => format!("[{base}]"),
+        (Some(ir::AsmDialect::Intel), Some(offset)) => format!("[{base}+{offset}]"),
+        (_, None) => format!("({base})"),
+        (_, Some(offset)) => format!("{offset}({base})"),
+    })
+}
+
+fn intel_size(operand: &ir::AsmOperand) -> Result<&'static str> {
+    match operand.width.ok_or(Invariant::AsmOperandWidth)? {
+        8 => Ok("byte"),
+        16 => Ok("word"),
+        32 => Ok("dword"),
+        64 => Ok("qword"),
+        80 => Ok("tbyte"),
+        128 => Ok("xmmword"),
+        256 => Ok("ymmword"),
+        512 => Ok("zmmword"),
+        width => Err(unsupported_asm(format!("memory operand width {width}"))),
+    }
+}
+
 fn asm_template(asm: &ir::InlineAsm) -> Result<String> {
     if !asm.has_sections() {
         return Ok(asm.template.clone());
@@ -86,6 +121,27 @@ fn asm_template(asm: &ir::InlineAsm) -> Result<String> {
                     .get(*index)
                     .ok_or(Invariant::AsmOperandIndex(*index))?;
                 match &operand.selected {
+                    Some(ir::AsmOperandClass::Register(_)) if *modifier == Some('a') => {
+                        used[*index] = true;
+                        template.push_str(&memory_reference(asm, operand, *index, None)?);
+                    }
+                    Some(ir::AsmOperandClass::Memory) => {
+                        let displacement = match modifier {
+                            None => None,
+                            Some('H') => Some(8),
+                            _ => {
+                                return Err(unsupported_asm(format!(
+                                    "memory modifier {modifier:?}"
+                                )));
+                            }
+                        };
+                        used[*index] = true;
+                        if asm.dialect == Some(ir::AsmDialect::Intel) {
+                            template.push_str(intel_size(operand)?);
+                            template.push_str(" ptr ");
+                        }
+                        template.push_str(&memory_reference(asm, operand, *index, displacement)?);
+                    }
                     Some(ir::AsmOperandClass::Register(_)) => {
                         if modifier.is_some() && view.is_none() {
                             return Err(unsupported_asm(format!("operand modifier {modifier:?}")));
@@ -163,7 +219,11 @@ fn asm_template(asm: &ir::InlineAsm) -> Result<String> {
                     let modifier = register_modifier(operand, None)?;
                     format!("{{{index}:{modifier}}}")
                 }
-                Some(ir::AsmOperandClass::Immediate | ir::AsmOperandClass::Symbol) => {
+                Some(
+                    ir::AsmOperandClass::Immediate
+                    | ir::AsmOperandClass::Symbol
+                    | ir::AsmOperandClass::Memory,
+                ) => {
                     format!("{{{index}}}")
                 }
                 _ => return Err(unsupported_asm(format!("unused operand {index}"))),
@@ -366,6 +426,19 @@ impl FunctionLowerer<'_, '_> {
         })
     }
 
+    fn asm_address(&mut self, place: &ir::Place, mutable: bool) -> Result<Expr> {
+        if let Some(address) = self.vla_address(place)? {
+            return Ok(address);
+        }
+        Ok(match &place.kind {
+            PlaceKind::Deref(pointer) => self.lower_value(pointer)?,
+            _ => Expr::AddrOf {
+                mutable,
+                expr: Box::new(self.lower_place(place)?),
+            },
+        })
+    }
+
     fn asm_read(&mut self, statement: &Span<ir::Statement>, place: &ir::Place) -> Result<Expr> {
         self.lower_value(&ir::Value {
             ty: place.ty.clone(),
@@ -435,6 +508,36 @@ impl FunctionLowerer<'_, '_> {
                         return Err(unsupported_asm(format!("non-symbol operand {index}")));
                     };
                     operands.push(rust::AsmOperand::Sym(self.asm_symbol(symbol)?));
+                    continue;
+                }
+                Some(ir::AsmOperandClass::Memory) => {
+                    let address = match &operand.kind {
+                        ir::AsmOperandKind::InPlace(place) => self.asm_address(place, false)?,
+                        ir::AsmOperandKind::Out { place, .. }
+                        | ir::AsmOperandKind::InOut {
+                            place, input: None, ..
+                        } => self.asm_address(place, true)?,
+                        ir::AsmOperandKind::In(value) => {
+                            let temp = self.next_temp();
+                            prefix.push(Stmt::Let {
+                                name: temp.clone(),
+                                mutable: false,
+                                ty: Some(self.lower_type(&value.ty)?),
+                                init: Some(self.lower_value(value)?),
+                            });
+                            Expr::AddrOf {
+                                mutable: false,
+                                expr: Box::new(Expr::Var(temp.as_str().into())),
+                            }
+                        }
+                        _ => {
+                            return Err(unsupported_asm(format!("memory operand kind at {index}")));
+                        }
+                    };
+                    operands.push(rust::AsmOperand::In {
+                        reg: rust::AsmReg::Class("reg".into()),
+                        value: address,
+                    });
                     continue;
                 }
                 Some(ir::AsmOperandClass::Register(

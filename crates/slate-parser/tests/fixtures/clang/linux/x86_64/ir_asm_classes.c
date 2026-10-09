@@ -11,6 +11,7 @@ void classes(int x, char c, v4f v, long l, long double f, long double g) {
     asm("# %0 %1 %2 %3" : : "t"(f), "u"(g), "v"(v), "X"(x));
     asm("# %0 %1" : "=r,m"(x) : "l,?rn"(l));
     asm("# %0" : : "r#m"(x));
+    asm("# %0 %a1" : "+V"(x) : "p"(&x));
 }
 
 // SLATE-FILECHECK-BEGIN IR
@@ -82,6 +83,11 @@ void classes(int x, char c, v4f v, long l, long double f, long double g) {
 // IR-NEXT:         asm "# %0" [dialect=att] [options=nostack] {
 // IR-NEXT:             template: "# " %0;
 // IR-NEXT:             in 0 "r#m" [reg] width 32 read<i32>(%[[VALUE_x]]);
+// IR-NEXT:         }
+// IR-NEXT:         asm "# %0 %a1" [dialect=att] [options=nostack] {
+// IR-NEXT:             template: "# " %0 " " %a1;
+// IR-NEXT:             inlateout 0 "V" [mem] width 32 place<i32>(%[[VALUE_x]]);
+// IR-NEXT:             in 1 "p" [reg] width 64 addr_of<ptr<i32>>(%[[VALUE_x]]);
 // IR-NEXT:         }
 // IR-NEXT:     }
 // IR-NEXT: }
