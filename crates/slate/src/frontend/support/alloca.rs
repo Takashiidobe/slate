@@ -34,13 +34,15 @@ mod __slate_alloca {
     }
 
     impl Stack {
-        fn allocate(&mut self, size: usize) -> *mut u8 {
+        fn allocate(&mut self, size: usize, align: usize) -> *mut u8 {
             if self.blocks.is_empty() {
                 self.blocks.push(Block::new(BLOCK));
             }
+            let needed = size.saturating_add(align);
             loop {
                 let block = &self.blocks[self.block];
-                let start = self.offset.next_multiple_of(ALIGN);
+                let base = block.base as usize;
+                let start = (base + self.offset).next_multiple_of(align) - base;
                 if start <= block.size && block.size - start >= size {
                     self.offset = start + size;
                     unsafe {
@@ -51,9 +53,9 @@ mod __slate_alloca {
                 }
                 self.block += 1;
                 self.offset = 0;
-                if self.block == self.blocks.len() || self.blocks[self.block].size < size {
+                if self.block == self.blocks.len() || self.blocks[self.block].size < needed {
                     self.blocks.truncate(self.block);
-                    self.blocks.push(Block::new(size.next_multiple_of(ALIGN).max(BLOCK)));
+                    self.blocks.push(Block::new(needed.next_multiple_of(ALIGN).max(BLOCK)));
                 }
             }
         }
@@ -92,7 +94,7 @@ mod __slate_alloca {
     }
 
     #[inline]
-    pub fn alloca(size: usize) -> *mut std::ffi::c_void {
-        STACK.with(|stack| unsafe { (*stack.get()).allocate(size) }).cast()
+    pub fn alloca(size: usize, align: usize) -> *mut std::ffi::c_void {
+        STACK.with(|stack| unsafe { (*stack.get()).allocate(size, align.max(ALIGN)) }).cast()
     }
 }

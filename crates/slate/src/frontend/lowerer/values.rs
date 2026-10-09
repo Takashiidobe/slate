@@ -732,21 +732,38 @@ impl FunctionLowerer<'_, '_> {
                 ..
             } if matches!(
                 self.tables.builtin_name(*id),
-                Some("__builtin_alloca" | "__builtin_alloca_uninitialized" | "alloca" | "_alloca")
+                Some(
+                    "__builtin_alloca"
+                        | "__builtin_alloca_uninitialized"
+                        | "alloca"
+                        | "_alloca"
+                        | "__builtin_alloca_with_align"
+                        | "__builtin_alloca_with_align_uninitialized"
+                )
             ) =>
             {
-                let [size] = arguments.as_slice() else {
-                    return Err(unsupported_value(value));
+                let as_usize = |expr| Expr::Cast {
+                    expr: Box::new(expr),
+                    ty: rust::Type::Prim(Prim::Usize),
+                };
+                let (size, align) = match arguments.as_slice() {
+                    [size] => (size, Expr::Value(rust::RustValue::Usize(16))),
+                    [size, bits] => (
+                        size,
+                        Expr::Binary {
+                            op: BinOp::Div,
+                            lhs: Box::new(as_usize(self.lower_value(bits)?)),
+                            rhs: Box::new(Expr::Value(rust::RustValue::Usize(8))),
+                        },
+                    ),
+                    _ => return Err(unsupported_value(value)),
                 };
                 self.uses_alloca = true;
                 self.dependencies.alloca = true;
                 Expr::Cast {
                     expr: Box::new(Expr::Call {
                         func: Box::new(Expr::Var("__slate_alloca::alloca".into())),
-                        args: vec![Expr::Cast {
-                            expr: Box::new(self.lower_value(size)?),
-                            ty: rust::Type::Prim(Prim::Usize),
-                        }],
+                        args: vec![as_usize(self.lower_value(size)?), align],
                         binding: CallBinding::Generated,
                     }),
                     ty: self.lower_type(&value.ty)?,
