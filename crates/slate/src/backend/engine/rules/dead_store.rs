@@ -7,7 +7,15 @@ use super::inline_temps::expr_effects;
 fn is_dead_let(arena: &Arena, id: NodeId) -> bool {
     matches!(
         arena.get(id),
-        Some(NodeKind::Let { name, init: Some(_), .. }) if arena.def_use_neighbors(*name).is_empty()
+        Some(NodeKind::Let { name, init: Some(init), .. })
+            if arena.def_use_neighbors(*name).is_empty() && !is_drop_guard(init)
+    )
+}
+
+fn is_drop_guard(expr: &Expr) -> bool {
+    matches!(
+        expr,
+        Expr::Call { func, .. } if matches!(&**func, Expr::Var(name) if name.as_str() == "__slate_alloca::Mark::new")
     )
 }
 

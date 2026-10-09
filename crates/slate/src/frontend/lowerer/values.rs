@@ -730,6 +730,32 @@ impl FunctionLowerer<'_, '_> {
                 callee: ir::Callee::Direct(id),
                 arguments,
                 ..
+            } if matches!(
+                self.tables.builtin_name(*id),
+                Some("__builtin_alloca" | "__builtin_alloca_uninitialized" | "alloca" | "_alloca")
+            ) =>
+            {
+                let [size] = arguments.as_slice() else {
+                    return Err(unsupported_value(value));
+                };
+                self.uses_alloca = true;
+                self.dependencies.alloca = true;
+                Expr::Cast {
+                    expr: Box::new(Expr::Call {
+                        func: Box::new(Expr::Var("__slate_alloca::alloca".into())),
+                        args: vec![Expr::Cast {
+                            expr: Box::new(self.lower_value(size)?),
+                            ty: rust::Type::Prim(Prim::Usize),
+                        }],
+                        binding: CallBinding::Generated,
+                    }),
+                    ty: self.lower_type(&value.ty)?,
+                }
+            }
+            ValueKind::Call {
+                callee: ir::Callee::Direct(id),
+                arguments,
+                ..
             } if self.tables.builtin_name(*id) == Some("__builtin_flt_rounds") => {
                 if !arguments.is_empty() {
                     return Err(unsupported_value(value));

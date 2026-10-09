@@ -171,6 +171,21 @@ impl FunctionLowerer<'_, '_> {
         };
         statements.extend(self.remaining_statement_comments(body));
         statements.splice(0..0, std::mem::take(&mut self.hoisted));
+        if self.uses_alloca {
+            statements.insert(
+                0,
+                Stmt::Let {
+                    name: "__slate_alloca_mark".into(),
+                    mutable: false,
+                    ty: None,
+                    init: Some(Expr::Call {
+                        func: Box::new(Expr::Var("__slate_alloca::Mark::new".into())),
+                        args: Vec::new(),
+                        binding: CallBinding::Generated,
+                    }),
+                },
+            );
+        }
         if matches!(function.fallthrough, Some(ir::Fallthrough::ReturnZero))
             && !matches!(
                 statements

@@ -75,6 +75,7 @@ struct Tables<'m> {
 
 #[derive(Default)]
 struct Dependencies {
+    alloca: bool,
     atomic_volatile: bool,
     asm_unwind: bool,
     asm_strings: BTreeMap<u32, Item>,
@@ -109,6 +110,7 @@ struct FunctionLowerer<'a, 'm> {
     aligned_locals: HashSet<BindingId>,
     register_locals: HashSet<BindingId>,
     old_value: Option<Expr>,
+    uses_alloca: bool,
 }
 
 impl FunctionLowerer<'_, '_> {
@@ -392,6 +394,7 @@ impl<'m> ModuleLowerer<'m> {
             aligned_locals: HashSet::new(),
             register_locals: HashSet::new(),
             old_value: None,
+            uses_alloca: false,
         }
     }
 
@@ -631,6 +634,16 @@ impl<'m> ModuleLowerer<'m> {
                 Item::SupportModule(rust::SupportModule {
                     name: "__slate_atomic128".into(),
                     source: include_str!("support/atomic128.rs").into(),
+                    exports: Vec::new(),
+                }),
+            );
+        }
+        if dependencies.alloca {
+            items.insert(
+                0,
+                Item::SupportModule(rust::SupportModule {
+                    name: "__slate_alloca".into(),
+                    source: include_str!("support/alloca.rs").into(),
                     exports: Vec::new(),
                 }),
             );
