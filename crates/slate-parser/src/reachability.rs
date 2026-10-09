@@ -484,6 +484,7 @@ impl<'a> Reachability<'a> {
                 }
             }
             ExprKind::StatementExpression(body) => self.mark_stmts(body),
+            ExprKind::StaticAssert(assertion) => self.mark_expr(&assertion.condition),
             ExprKind::IntegerLiteral(_)
             | ExprKind::FloatLiteral(_)
             | ExprKind::CharLiteral(_)

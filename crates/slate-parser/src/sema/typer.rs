@@ -458,6 +458,7 @@ impl TypeResolver {
             ExprKind::CharLiteral(literal) => Typed::rvalue(self.character_constant(literal)?.0),
             ExprKind::StringLiteral(literal) => Typed::lvalue(self.string_type(literal)),
             ExprKind::NullPtrLiteral => Typed::rvalue(self.ctypes.qual(CTypeKind::NullPtr)),
+            ExprKind::StaticAssert(_) => Typed::rvalue(self.ctypes.qual(CTypeKind::Void)),
             ExprKind::Generic {
                 controlling,
                 associations,

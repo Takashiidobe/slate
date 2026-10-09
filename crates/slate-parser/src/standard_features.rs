@@ -42,6 +42,7 @@ pub struct StandardFeatures {
     pub keyword_type_limits: bool,
     pub named_loops: bool,
     pub selection_declarations: bool,
+    pub static_assert_expressions: bool,
     pub compound_literal_storage: bool,
     pub enumerators_have_enum_type: bool,
     pub conditional_pointers: crate::sema::PointerMerge,
@@ -113,6 +114,7 @@ impl StandardFeatures {
                 standard,
                 LanguageStandard::C2y | LanguageStandard::Gnu2y
             ),
+            static_assert_expressions: false,
             compound_literal_storage: c23,
             enumerators_have_enum_type: c23,
             conditional_pointers: crate::sema::PointerMerge::EXACT,
@@ -174,6 +176,7 @@ impl StandardFeatures {
         features.keyword_countof = !flavor.is_msvc();
         if flavor.is_gcc() {
             features.widest_integer_literal_fallback = true;
+            features.static_assert_expressions = true;
             // gcc drops _Atomic, and before c23 qualifiers of an array's elements, from `?:` pointers
             features.conditional_pointers = crate::sema::PointerMerge {
                 array_element_quals: features.enumerators_have_enum_type,

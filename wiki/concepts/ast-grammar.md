@@ -346,7 +346,8 @@ ExprKind = "Identifier(" string ")"
          | BitCast { ty: TypeName, value: expr }
          | ConvertVector { ty: TypeName, value: expr }
          | "LabelAddress(" span<string> ")"
-         | "StatementExpression(" vec<stmt> ")" ;
+         | "StatementExpression(" vec<stmt> ")"
+         | "StaticAssert(" StaticAssert ")" ;
 
 GenericControl     = "Expr(" expr ")" | Type { ty: TypeName } ;
 GenericAssociation = Type { ty: TypeName, value: expr } | "Default(" expr ")" ;

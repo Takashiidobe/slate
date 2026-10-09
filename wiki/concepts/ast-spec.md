@@ -484,7 +484,8 @@ SwitchLabel = Case(Expr) | CaseRange { start: Expr, end: Expr } | Default
   after it gets `Null`.
 - Cases are found by walking the body (Duff's device). Case expressions and
   range endpoints use the expression parser.
-- `For.init` is absent, a declaration, or an expression statement.
+- `For.init` is absent, a declaration, a `StaticAssert`, or an expression
+  statement.
 - `Attributed` keeps attachment without adding a scope. Attributes before a
   declaration stay on the declaration.
 
@@ -555,6 +556,7 @@ Taxonomy and rationale: [comment-placement](comment-placement.md).
 | `ConvertVector { ty: TypeName, value }` | `__builtin_convertvector` |
 | `LabelAddress(Span<String>)` | GNU `&&label` |
 | `StatementExpression(CompoundStatement)` | GNU `({ ... })` |
+| `StaticAssert(Box<StaticAssert>)` | C2y `static_assert` expression; `void` |
 
 ```
 GenericControl = Expr(Expr) | Type(TypeName)
@@ -575,6 +577,11 @@ MemberDesignator = Vec<Field(Span<String>) | Index(Expr)>
   tracked in `slate-parser-cxg.20.17`.
 - Whether an identifier is a type (`_Generic`, `sizeof(x)`, `(x)(y)`) comes
   from the typedef-name set.
+- `StaticAssert` expressions are gcc-only (`static_assert_expressions`): gcc
+  accepts them in every mode, clang 23 in none. A statement or `for` init that
+  starts with the keyword is still the declaration form. The checker
+  evaluates the assertion wherever the expression appears, including
+  `typeof`; lowering emits `void`.
 
 ## Literals
 

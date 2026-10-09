@@ -2050,6 +2050,10 @@ impl Lowerer {
                 let c = self.result(e)?;
                 Ok(self.operand(e, c, ValueKind::Null))
             }
+            ExprKind::StaticAssert(_) => {
+                let c = self.result(e)?;
+                Ok(self.operand(e, c, ValueKind::Void))
+            }
             ExprKind::StringLiteral(literal) => {
                 let lvalue = self.string_literal(e, literal)?;
                 self.read(e, lvalue)

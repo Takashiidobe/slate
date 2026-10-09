@@ -1410,6 +1410,7 @@ impl Checker<'_> {
                     }
                 }
             }
+            ExprKind::StaticAssert(assertion) => self.assertion(assertion),
             _ => {}
         }
     }

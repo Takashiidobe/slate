@@ -607,6 +607,13 @@ impl Parser {
                 let increment_tokens = &rest[second_semi + 1..];
                 let init = if init_tokens.is_empty() {
                     None
+                } else if init_tokens.value_at(0) == Some(&Token::Keyword(Keyword::StaticAssert)) {
+                    let assertion = self.parse_static_assert(&clause[..=first_semi])?;
+                    Some(Box::new(span_tokens(
+                        StmtKind::StaticAssert(assertion),
+                        init_tokens,
+                        self.context(),
+                    )))
                 } else if self.starts_declaration(init_tokens, 0) {
                     let declaration = self.parse_declaration_tokens(&clause[..=first_semi])?;
                     Some(Box::new(span_tokens(

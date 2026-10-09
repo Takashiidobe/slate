@@ -85,6 +85,8 @@ One expression type, built by `const_expr::Parser` in every context
   makes `sizeof`/`typeof`/`_Generic` of it an error.
 - `src/reachability.rs`: `Reachability::mark_expr`; mark identifiers and
   embedded type names.
+- `src/sema/assertion.rs`: `Checker::subexpressions` has a catch-all; add an
+  arm if the variant holds subexpressions or needs a check of its own.
 - `tests/filecheck.rs`: wildcards; no change.
 
 Shape notes:

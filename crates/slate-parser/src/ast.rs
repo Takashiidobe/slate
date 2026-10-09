@@ -211,6 +211,7 @@ pub enum ExprKind {
     StatementExpression(Vec<Stmt>),
     BoolLiteral(bool),
     NullPtrLiteral,
+    StaticAssert(Box<StaticAssert>),
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -304,6 +305,9 @@ impl std::fmt::Display for ExprKind {
             Self::BoolLiteral(true) => formatter.write_str("true"),
             Self::BoolLiteral(false) => formatter.write_str("false"),
             Self::NullPtrLiteral => formatter.write_str("nullptr"),
+            Self::StaticAssert(assertion) => {
+                write!(formatter, "_Static_assert({})", assertion.condition)
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 use crate::ast::{
     Designator, Expr, ExprKind, FixedPointKind, FixedPointRank, GenericAssociation, GenericControl,
-    Initializer, InitializerItem, IntegerType, Span, SpanRangeIndex, TypeName, TypeSpecifier,
+    Initializer, InitializerItem, IntegerType, Span, SpanRangeIndex, StaticAssert, TypeName,
+    TypeSpecifier,
 };
 use crate::compiler_args::CompilerFlavor;
 use crate::lexer::{Keyword, Lexer, Token, TokenSpanExt};
@@ -295,6 +296,8 @@ pub enum ConstExprError {
     ExpectedIdentifier,
     #[error("expected type name")]
     ExpectedTypeName,
+    #[error("expected static assertion message")]
+    ExpectedStaticAssertMessage,
     #[error("storage-class specifiers in compound literals require C23")]
     CompoundLiteralStorage,
     #[error("unexpected token `{0:?}`")]
@@ -1130,6 +1133,7 @@ impl<'a> Parser<'a> {
             }
             ExprKind::BoolLiteral(value) => Ok(i64::from(*value)),
             ExprKind::NullPtrLiteral => Err(ConstExprError::NotConstant("nullptr")),
+            ExprKind::StaticAssert(_) => Err(ConstExprError::NotConstant("static assertion")),
         }
     }
 
@@ -1925,6 +1929,11 @@ impl<'a> Parser<'a> {
                 return self.parse_types_compatible(start);
             }
             Some(Token::Ident(value)) if value == "_Generic" => return self.parse_generic(start),
+            Some(Token::Keyword(Keyword::StaticAssert))
+                if self.features().static_assert_expressions =>
+            {
+                return self.parse_static_assert(start);
+            }
             Some(Token::Ident(value))
                 if value == "true" && self.features().keyword_bool_true_false.is_accepted() =>
             {
@@ -1964,6 +1973,29 @@ impl<'a> Parser<'a> {
         self.position = close + 1;
         self.expect(Token::RParen)?;
         Ok(self.node(ExprKind::StatementExpression(body), start))
+    }
+
+    fn parse_static_assert(&mut self, start: usize) -> Result<Expr, ConstExprError> {
+        self.expect(Token::LParen)?;
+        let condition = self.parse_assignment()?;
+        let message = if self.consume(&Token::Comma) {
+            let mut pieces = Vec::new();
+            while let Some(piece) = self.peek().and_then(crate::parser::string_literal_content) {
+                pieces.push(piece.to_owned());
+                self.position += 1;
+            }
+            if pieces.is_empty() {
+                return Err(ConstExprError::ExpectedStaticAssertMessage);
+            }
+            Some(pieces.concat())
+        } else {
+            None
+        };
+        self.expect(Token::RParen)?;
+        Ok(self.node(
+            ExprKind::StaticAssert(Box::new(StaticAssert { condition, message })),
+            start,
+        ))
     }
 
     fn parse_generic(&mut self, start: usize) -> Result<Expr, ConstExprError> {
