@@ -180,6 +180,7 @@ impl FunctionLowerer<'_, '_> {
                 )
             }
             ValueKind::VaArg { list } if self.tables.is_long_double(&value.ty) => {
+                self.dependencies.long_double = true;
                 Expr::Unsafe(Box::new(rust::Block {
                     stmts: Vec::new(),
                     tail: Some(Box::new(Expr::Call {

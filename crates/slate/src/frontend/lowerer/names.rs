@@ -1,16 +1,24 @@
 use super::*;
 
+pub(super) fn path_keyword_free(name: &str) -> String {
+    if matches!(name, "crate" | "self" | "Self" | "super") {
+        format!("{name}_")
+    } else {
+        name.to_owned()
+    }
+}
+
 pub(super) fn rust_binding_name(name: &str) -> String {
     const KEYWORDS: &[&str] = &[
-        "as", "break", "const", "continue", "crate", "else", "enum", "extern", "false", "fn",
-        "for", "if", "impl", "in", "let", "loop", "match", "mod", "move", "mut", "pub", "ref",
-        "return", "self", "Self", "static", "struct", "super", "trait", "true", "type", "unsafe",
-        "use", "where", "while", "async", "await", "dyn",
+        "as", "break", "const", "continue", "else", "enum", "extern", "false", "fn", "for", "if",
+        "impl", "in", "let", "loop", "match", "mod", "move", "mut", "pub", "ref", "return",
+        "static", "struct", "trait", "true", "type", "unsafe", "use", "where", "while", "async",
+        "await", "dyn",
     ];
     if KEYWORDS.contains(&name) {
         format!("r#{name}")
     } else {
-        name.to_owned()
+        path_keyword_free(name)
     }
 }
 

@@ -511,7 +511,7 @@ impl FunctionLowerer<'_, '_> {
 
 pub(super) fn field_name(field: &ir::Field, index: usize) -> String {
     match &field.name {
-        Some(name) => name.as_str().into(),
+        Some(name) => path_keyword_free(name.as_str()),
         None => format!("__slate_anon_{index}"),
     }
 }

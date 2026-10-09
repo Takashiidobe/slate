@@ -64,6 +64,9 @@ struct SysrootRawArgs {
 }
 
 fn main() -> ExitCode {
+    let _ = rayon::ThreadPoolBuilder::new()
+        .stack_size(WORKER_STACK_BYTES)
+        .build_global();
     let cli = Cli::parse();
     match cli.command {
         Command::EmitSlateIr(raw) => match raw.args.split_last() {
@@ -642,9 +645,12 @@ fn parse_slate_units(
     collect_all_errors(results)
 }
 
+const WORKER_STACK_BYTES: usize = 64 << 20;
+
 fn slate_worker_pool() -> Result<rayon::ThreadPool, String> {
     rayon::ThreadPoolBuilder::new()
         .num_threads(slate_job_count())
+        .stack_size(WORKER_STACK_BYTES)
         .build()
         .map_err(|error| format!("build worker pool: {error}"))
 }

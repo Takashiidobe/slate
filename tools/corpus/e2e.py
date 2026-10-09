@@ -66,6 +66,7 @@ class CMakeLibrary:
     test_env: dict[str, str] = field(default_factory=dict)
     compare_stdout: bool = True
     translate_tests: bool = False
+    suite: Callable | None = None
     benchmark: Callable | None = None
 
 
@@ -273,6 +274,123 @@ def zlib_benchmark(project_dir, build_dir, sandbox, out, args):
     return {"geomean_ratio": round(statistics.geometric_mean(ratios.values()), 3), "report": "bench.md"}
 
 
+def runtests_outcome(path):
+    text = path.read_text(errors="replace")
+    done = re.search(r"TESTDONE: (\d+) tests out of (\d+) reported OK", text)
+    failed = re.search(r"TESTFAIL: These test cases failed: (.*)", text)
+    ok, total = (int(done[1]), int(done[2])) if done else (0, 0)
+    return ok, total, set(failed[1].split()) if failed else set()
+
+
+def curl_suite(project_dir, build_dir, relinked, archive, out, args):
+    shared = out / "suite-lib"
+    shutil.rmtree(shared, ignore_errors=True)
+    shared.mkdir()
+    (shared / "libcurl.so.4").symlink_to(archive.with_suffix(".so"))
+    command = ["perl", str(project_dir / "tests/runtests.pl"), "-a", "-s", f"-j{args.jobs}"]
+    selection = ["~flaky", "~timing-dependent"]
+    native_code, native_seconds = run([*command, *selection], out / "suite-native.log", cwd=build_dir / "tests",
+                                      timeout=args.test_timeout)
+    env = dict(os.environ, LD_LIBRARY_PATH=str(shared))
+    code, seconds = run([*command, "-c", str(relinked["src/curl"]), *selection], out / "suite.log",
+                        cwd=build_dir / "tests", env=env, timeout=args.test_timeout)
+    native_ok, native_total, native_failed = runtests_outcome(out / "suite-native.log")
+    ok, total, failed = runtests_outcome(out / "suite.log")
+    regressions = sorted(failed - native_failed, key=int)
+    if not total:
+        regressions.append(f"no TESTDONE (exit {code})")
+    return {"native_ok": native_ok, "native_total": native_total, "ok": ok, "total": total,
+            "regressions": regressions, "native_seconds": native_seconds, "seconds": seconds,
+            "log": "suite.log", "native_log": "suite-native.log"}
+
+
+NGINX_CONF = """daemon off;
+worker_processes 4;
+pid {work}/nginx.pid;
+error_log {work}/error.log;
+events {{ worker_connections 1024; }}
+http {{
+    access_log off;
+    sendfile on;
+    keepalive_requests 1000000;
+    client_body_temp_path {work}/body;
+    proxy_temp_path {work}/proxy;
+    fastcgi_temp_path {work}/fastcgi;
+    uwsgi_temp_path {work}/uwsgi;
+    scgi_temp_path {work}/scgi;
+    server {{ listen 127.0.0.1:{port}; root {work}/www; }}
+}}
+"""
+
+
+def timed(command, cwd):
+    start = time.perf_counter()
+    subprocess.run(command, cwd=cwd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+    return time.perf_counter() - start
+
+
+def curl_benchmark(project_dir, build_dir, sandbox, out, args):
+    work = out / "bench"
+    shutil.rmtree(work, ignore_errors=True)
+    (work / "www").mkdir(parents=True)
+    (work / "www/small.txt").write_bytes(b"x" * 512)
+    with open(work / "www/large.bin", "wb") as handle:
+        chunk = os.urandom(1 << 20)
+        for _ in range(1024):
+            handle.write(chunk)
+    port = free_port()
+    (work / "nginx.conf").write_text(NGINX_CONF.format(work=work, port=port))
+    small = 20000
+    configs = {
+        "file small x20000": [f'url = "file://{work}/www/small.txt"\noutput = "/dev/null"\n'] * small,
+        "http small x20000": [f'url = "http://127.0.0.1:{port}/small.txt"\noutput = "/dev/null"\n'] * small,
+    }
+    for name, lines in configs.items():
+        (work / f"{name.split()[0]}.cfg").write_text("".join(lines))
+    operations = {
+        "file small x20000": ["-s", "-K", "file.cfg"],
+        "http small x20000": ["-s", "-K", "http.cfg"],
+        "file large 1GiB": ["-s", "-o", "/dev/null", f"file://{work}/www/large.bin"],
+        "http large 1GiB": ["-s", "-o", "/dev/null", f"http://127.0.0.1:{port}/large.bin"],
+    }
+    binaries = {"native": build_dir / "src/curl", "translated": sandbox / "src/curl"}
+    server = subprocess.Popen([project_dir.parent / "nginx/objs/nginx", "-p", work, "-c", work / "nginx.conf",
+                               "-e", work / "error.log"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    try:
+        deadline = time.time() + 10
+        while True:
+            try:
+                socket.create_connection(("127.0.0.1", port), 1).close()
+                break
+            except OSError:
+                if time.time() > deadline:
+                    raise RuntimeError("nginx did not start")
+                time.sleep(0.1)
+        samples = {kind: {name: [] for name in operations} for kind in binaries}
+        for kind, binary in binaries.items():
+            for flags in operations.values():
+                timed([binary, *flags], work)
+        for _ in range(args.bench_runs):
+            for name, flags in operations.items():
+                for kind, binary in binaries.items():
+                    samples[kind][name].append(timed([binary, *flags], work))
+    finally:
+        server.terminate()
+        server.wait()
+    medians = {kind: {name: statistics.median(times) for name, times in runs.items()}
+               for kind, runs in samples.items()}
+    ratios = {name: round(medians["translated"][name] / medians["native"][name], 3) for name in operations}
+    (out / "bench.json").write_text(json.dumps({"unit": "seconds", "samples": samples, "medians": medians,
+                                                "ratios": ratios}, indent=1) + "\n")
+    lines = ["| operation | native s | translated s | translated / native |", "| --- | ---: | ---: | ---: |"]
+    lines += [f"| {name} | {medians['native'][name]:.3f} | {medians['translated'][name]:.3f} | {ratios[name]:.3f} |"
+              for name in operations]
+    (out / "bench.md").write_text("\n".join(lines) + "\n")
+    log("\n".join(lines))
+    shutil.rmtree(work)
+    return {"geomean_ratio": round(statistics.geometric_mean(ratios.values()), 3), "report": "bench.md"}
+
+
 def native_arguments(argv, entry):
     kept, skip = [], False
     for argument in argv:
@@ -410,6 +528,8 @@ def executable_units(build_dir, executable, recipe, database, flavor, shared_lib
         elif path.suffix in {".a", ".so"} or ".so." in path.name:
             if path.is_relative_to(build_dir.resolve()) and path.exists():
                 objects += target_objects(build_dir, path)
+            elif Path(token).is_absolute():
+                libraries.append(token)
         elif token.startswith("-l"):
             libraries.append(token)
     return units_for_objects(objects, recipe, database, flavor), libraries
@@ -584,10 +704,18 @@ def library_tests(project_dir, build_dir, recipe, archive, database, args, out):
             mismatches += not same
             rows.append(f"| {differential.tool} {os.path.relpath(path, project_dir)} | {native[0]} | "
                         f"{translated[0]} | {'ok' if same else 'MISMATCH'} |")
+    suite = recipe.suite(project_dir, build_dir, relinked, archive, out, args) if recipe.suite else {}
+    if suite:
+        failures += len(suite["regressions"])
+        seconds["native"] += suite["native_seconds"]
+        seconds["translated"] += suite["seconds"]
+        rows.append(f"| suite | {suite['native_ok']}/{suite['native_total']} ok | "
+                    f"{suite['ok']}/{suite['total']} ok | "
+                    f"{'ok' if not suite['regressions'] else 'REGRESSIONS ' + ' '.join(suite['regressions'])} |")
     lines = ["| case | native exit | translated exit | result |", "| --- | --- | --- | --- |", *rows]
     (out / "test.md").write_text("\n".join(lines) + "\n")
     log("\n".join(lines))
-    return {"ctest": len(cases), "ctest_failures": failures, "ctest_skipped": len(skipped),
+    return {"ctest": len(cases), "ctest_failures": failures, "ctest_skipped": len(skipped), "suite": suite,
             "differential": len(rows) - len(cases) - len(skipped), "mismatches": mismatches, "report": "test.md",
             "native_seconds": round(seconds["native"], 2), "seconds": round(seconds["translated"], 2),
             "test_over_native": round(seconds["translated"] / seconds["native"], 2) if seconds["native"] else None}
@@ -691,6 +819,12 @@ def barrier_report(units, project_dir, out, jobs):
     ]
     (out / "barriers.md").write_text("\n".join(lines) + "\n")
     return len(blocked)
+
+
+def shared_dependencies(library):
+    dynamic = subprocess.run(["readelf", "-d", library], capture_output=True, text=True, check=True).stdout
+    needed = re.findall(r"\(NEEDED\)\s+Shared library: \[([^\]]+)\]", dynamic)
+    return " ".join(f"-C link-arg=-l:{name}" for name in needed if not name.startswith(("libc.so", "ld-linux")))
 
 
 def link_flags(project_dir, recipe, variables):
@@ -847,6 +981,8 @@ RECIPES = {
         compare_stdout=False,
     ),
     "yyjson": CMakeLibrary(library="libyyjson.a"),
+    "curl": CMakeLibrary(library="lib/libcurl.so", tools=["src/curl"], translate_tests=True, suite=curl_suite,
+                         benchmark=curl_benchmark),
     "pcre2": CMakeLibrary(
         library="libpcre2-8.a",
         components=["libpcre2-posix.a"],
@@ -957,9 +1093,9 @@ def main():
     if not finish("check", "failed" if code else "ok", errors=errors, log="check.log"):
         return 1 if code else 0
 
-    env["RUSTFLAGS"] = " ".join(filter(None, [os.environ.get("RUSTFLAGS"), "-A warnings",
-                                              None if library or make_library else
-                                              link_flags(project_dir, recipe, variables)]))
+    native_links = link_flags(project_dir, recipe, variables) if not (library or make_library) else \
+        shared_dependencies(build_dir / recipe.library) if library and recipe.translate_tests else None
+    env["RUSTFLAGS"] = " ".join(filter(None, [os.environ.get("RUSTFLAGS"), "-A warnings", native_links]))
     code, _ = run(["cargo", "build", "--profile", args.profile], out / "build.log", cwd=crate, env=env)
     profile_dir = "debug" if args.profile == "dev" else args.profile
     package = re.search(r'^name = "([^"]+)"', (crate / "Cargo.toml").read_text(), re.MULTILINE)[1]
