@@ -218,7 +218,7 @@ impl Preprocessor<'_> {
         if self.dialect.flavor().is_clang() {
             stamp.end = rparen.end;
         }
-        if invocation.arguments.is_empty() && parameters.len() == 1 && !definition.variadic {
+        if invocation.arguments.is_empty() && parameters.len() == 1 {
             invocation.arguments.push(Vec::new());
         }
         let arguments = &invocation.arguments;
