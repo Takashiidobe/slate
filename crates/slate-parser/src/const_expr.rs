@@ -1207,28 +1207,18 @@ impl<'a> Parser<'a> {
                     BinaryOp::BitAnd => Ok(left.bitand(&right)),
                     BinaryOp::BitXor => Ok(left.bitxor(&right)),
                     BinaryOp::BitOr => Ok(left.bitor(&right)),
-                    BinaryOp::ShiftLeft | BinaryOp::ShiftRight => {
-                        if ctx.is_defined.is_some() && ctx.flavor.is_msvc() {
-                            let shift = u32::try_from(&(&right.value & BigInt::from(63u8)))
-                                .map_err(|_| ConstExprError::InvalidIntegerConstant)?;
-                            return Ok(if *op == BinaryOp::ShiftLeft {
-                                left.shift_left(shift)
-                            } else {
-                                left.shift_right(shift)
-                            });
-                        }
-                        match u32::try_from(&right.value) {
-                            Ok(shift) if shift < left.width => Ok(if *op == BinaryOp::ShiftLeft {
-                                left.shift_left(shift)
-                            } else {
-                                left.shift_right(shift)
-                            }),
-                            _ if ctx.is_defined.is_some() => {
-                                Ok(WideInt::wrap(BigInt::from(0), left.width, left.signed))
-                            }
-                            _ => Err(ConstExprError::InvalidIntegerConstant),
-                        }
+                    BinaryOp::ShiftLeft | BinaryOp::ShiftRight if ctx.is_defined.is_some() => {
+                        Ok(Self::pp_shift(&left, &right, *op, ctx.flavor))
                     }
+                    BinaryOp::ShiftLeft | BinaryOp::ShiftRight => match u32::try_from(&right.value)
+                    {
+                        Ok(shift) if shift < left.width => Ok(if *op == BinaryOp::ShiftLeft {
+                            left.shift_left(shift)
+                        } else {
+                            left.shift_right(shift)
+                        }),
+                        _ => Err(ConstExprError::InvalidIntegerConstant),
+                    },
                     BinaryOp::And => Ok(WideInt::from_i64(
                         (!left.is_zero() && !right.is_zero()) as i64,
                     )),
@@ -1265,8 +1255,8 @@ impl<'a> Parser<'a> {
                     (true, _) => Self::evaluate_wide(else_value, ctx),
                 }?;
                 if ctx.is_defined.is_some() {
-                    let unsigned = Self::pp_unsigned(then_value.as_ref().unwrap_or(condition))?
-                        || Self::pp_unsigned(else_value)?;
+                    let unsigned = Self::pp_unsigned(then_value.as_ref().unwrap_or(condition), ctx)
+                        || Self::pp_unsigned(else_value, ctx);
                     Ok(WideInt::wrap(result.value, 64, !unsigned))
                 } else {
                     Ok(result)
@@ -1280,31 +1270,70 @@ impl<'a> Parser<'a> {
         }
     }
 
-    fn pp_unsigned(expression: &Expr) -> Result<bool, ConstExprError> {
-        Ok(match &expression.value {
-            ExprKind::IntegerLiteral(literal) => literal.suffix.unsigned,
-            ExprKind::Paren(inner) => Self::pp_unsigned(inner)?,
-            ExprKind::Unary { operand, .. } => Self::pp_unsigned(operand)?,
+    fn pp_shift(left: &WideInt, right: &WideInt, op: BinaryOp, flavor: CompilerFlavor) -> WideInt {
+        let mut shift_left = op == BinaryOp::ShiftLeft;
+        let count = if flavor.is_msvc() {
+            &right.value & BigInt::from(63u8)
+        } else if flavor.is_gcc() && right.value.sign() == num_bigint::Sign::Minus {
+            shift_left = !shift_left;
+            -&right.value
+        } else {
+            right.value.clone()
+        };
+        match u32::try_from(&count) {
+            Ok(shift) if shift < left.width => {
+                if shift_left {
+                    left.shift_left(shift)
+                } else {
+                    left.shift_right(shift)
+                }
+            }
+            _ if shift_left => WideInt::wrap(BigInt::from(0), left.width, left.signed),
+            _ if flavor.is_gcc() => left.shift_right(left.width),
+            _ => left.shift_right(left.width - 1),
+        }
+    }
+
+    fn pp_unsigned(expression: &Expr, ctx: EvalContext<'_>) -> bool {
+        match &expression.value {
+            ExprKind::IntegerLiteral(literal) => {
+                literal.suffix.unsigned || literal.value.bits() >= 64
+            }
+            ExprKind::CharLiteral(literal) => ctx
+                .target
+                .is_some_and(|target| !literal.char_type_is_signed(target)),
+            ExprKind::Paren(inner) => Self::pp_unsigned(inner, ctx),
+            ExprKind::Unary {
+                op: UnaryOp::Not, ..
+            } => false,
+            ExprKind::Unary { operand, .. } => Self::pp_unsigned(operand, ctx),
             ExprKind::Cast { ty, value, .. } => match bit_int_width(ty) {
                 Some((_, signed)) => !signed,
-                None => Self::pp_unsigned(value)?,
+                None => Self::pp_unsigned(value, ctx),
             },
-            ExprKind::Conditional { condition, .. } => Self::pp_unsigned(condition)?,
-            ExprKind::Comma { right, .. } => Self::pp_unsigned(right)?,
-            ExprKind::Binary { op, .. } => matches!(
-                op,
+            ExprKind::Conditional {
+                condition,
+                then_value,
+                else_value,
+            } => {
+                Self::pp_unsigned(then_value.as_ref().unwrap_or(condition), ctx)
+                    || Self::pp_unsigned(else_value, ctx)
+            }
+            ExprKind::Comma { right, .. } => Self::pp_unsigned(right, ctx),
+            ExprKind::Binary { op, left, right } => match op {
                 BinaryOp::Less
-                    | BinaryOp::LessEqual
-                    | BinaryOp::Greater
-                    | BinaryOp::GreaterEqual
-                    | BinaryOp::Equal
-                    | BinaryOp::NotEqual
-                    | BinaryOp::And
-                    | BinaryOp::Or
-            ),
-            ExprKind::Call { .. } => true,
+                | BinaryOp::LessEqual
+                | BinaryOp::Greater
+                | BinaryOp::GreaterEqual
+                | BinaryOp::Equal
+                | BinaryOp::NotEqual
+                | BinaryOp::And
+                | BinaryOp::Or => false,
+                BinaryOp::ShiftLeft | BinaryOp::ShiftRight => Self::pp_unsigned(left, ctx),
+                _ => Self::pp_unsigned(left, ctx) || Self::pp_unsigned(right, ctx),
+            },
             _ => false,
-        })
+        }
     }
 
     fn new(tokens: &'a [Span<Token>], context: crate::parser::ParseContext<'a>) -> Self {
