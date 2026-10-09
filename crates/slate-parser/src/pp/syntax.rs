@@ -22,6 +22,8 @@ pub(super) enum DirectiveName {
     Line,
     LineMarker,
     Ident,
+    Assert,
+    Unassert,
     Null,
     Unknown,
 }
@@ -47,6 +49,8 @@ impl DirectiveName {
             "pragma" => Self::Pragma,
             "line" => Self::Line,
             "ident" | "sccs" => Self::Ident,
+            "assert" => Self::Assert,
+            "unassert" => Self::Unassert,
             _ => Self::Unknown,
         }
     }

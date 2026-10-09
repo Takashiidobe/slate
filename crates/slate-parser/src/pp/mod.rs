@@ -280,6 +280,7 @@ pub struct Preprocessor<'a> {
     pragma_once: HashSet<PathBuf>,
     include_guards: HashMap<FileId, String>,
     pushed_macros: HashMap<String, Vec<Option<MacroEntry>>>,
+    assertions: HashMap<String, Vec<Answer>>,
     pub directive_diagnostics: Vec<DirectiveDiagnostic>,
     line_overrides: HashMap<FileId, Vec<LineOverride>>,
     counter: Cell<i64>,
@@ -311,6 +312,7 @@ impl<'a> Preprocessor<'a> {
             pragma_once: HashSet::new(),
             include_guards: HashMap::new(),
             pushed_macros: HashMap::new(),
+            assertions: HashMap::new(),
             directive_diagnostics: Vec::new(),
             line_overrides: HashMap::new(),
             counter: Cell::new(0),
@@ -642,11 +644,45 @@ impl<'a> Preprocessor<'a> {
                 .is_some_and(|entry| entry.definition.builtin)
     }
 
+    fn seed_gnu_linux_assertions(
+        &mut self,
+        family: crate::target_info::TargetFamily,
+    ) -> Result<(), PPError> {
+        use crate::target_info::TargetFamily;
+        let machine = match family {
+            TargetFamily::X86_64 => Some("x86_64"),
+            TargetFamily::X86 => Some("i386"),
+            TargetFamily::Arm32 => Some("arm"),
+            TargetFamily::AArch64 => None,
+        };
+        let mut source =
+            String::from("#assert system(linux)\n#assert system(unix)\n#assert system(posix)\n");
+        if let Some(machine) = machine {
+            source.push_str(&format!(
+                "#assert cpu({machine})\n#assert machine({machine})\n"
+            ));
+        }
+        let file = self
+            .files
+            .intern(PathBuf::from("<target assertions>"), HeaderKind::System);
+        self.parse_source(&source, file)
+            .map(drop)
+            .map_err(|failure| self.render_error(failure))
+    }
+
     fn configure(&mut self) -> Result<(), PPError> {
         let dialect = self.dialect;
         let (target, options, flavor) = (dialect.target(), dialect.options(), dialect.flavor());
         self.seed_builtin_names(flavor);
         self.seed_builtin_macros(target, flavor)?;
+        if flavor.is_gcc()
+            && matches!(
+                target.os,
+                crate::target_info::TargetOs::Linux | crate::target_info::TargetOs::Android
+            )
+        {
+            self.seed_gnu_linux_assertions(target.family)?;
+        }
         if self.macros.contains_key("__GNUC__") {
             use crate::compiler_options::InlineSemantics;
             let (selected, other) = match dialect.inline_semantics() {
@@ -1238,6 +1274,9 @@ impl<'a> Preprocessor<'a> {
             DirectiveName::Line => self.record_line_directive(directive)?,
             DirectiveName::LineMarker => self.record_line_marker(directive),
             DirectiveName::Ident | DirectiveName::Null => {}
+            DirectiveName::Assert | DirectiveName::Unassert if self.dialect.flavor().is_gcc() => {
+                self.record_assertion(directive)?
+            }
             _ => {
                 return Err(PPFailure::at(
                     directive.name_loc,
@@ -1441,7 +1480,7 @@ impl<'a> Preprocessor<'a> {
         directive: &Directive,
         name: &'static str,
     ) -> Result<bool, PPFailure> {
-        let expanded = self.expand_condition(&directive.arguments)?;
+        let expanded = self.expand_condition(&self.expand_assertions(directive)?)?;
         let expanded = self.expand_has_embed(&expanded, directive.loc.file);
         let expanded = self.expand_has_include(&expanded, directive.loc.file);
         let expanded = expand_has_checks(&expanded, self.dialect);
@@ -1464,6 +1503,67 @@ impl<'a> Preprocessor<'a> {
                 },
             )
         })
+    }
+
+    fn record_assertion(&mut self, directive: &Directive) -> Result<(), PPFailure> {
+        let usage = if directive.name == DirectiveName::Assert {
+            AssertionUse::Assert
+        } else {
+            AssertionUse::Unassert
+        };
+        let (predicate, answer, _) = parse_assertion(
+            self.source(directive.loc.file),
+            &directive.arguments,
+            0,
+            usage,
+            directive.end_loc(),
+        )?;
+        let answers = self.assertions.entry(predicate).or_default();
+        match (usage, answer) {
+            (AssertionUse::Assert, Some(answer)) if !answers.contains(&answer) => {
+                answers.push(answer)
+            }
+            (AssertionUse::Unassert, Some(answer)) => answers.retain(|known| *known != answer),
+            (AssertionUse::Unassert, None) => answers.clear(),
+            _ => {}
+        }
+        Ok(())
+    }
+
+    fn expand_assertions(&self, directive: &Directive) -> Result<Vec<Span<Token>>, PPFailure> {
+        let tokens = &directive.arguments;
+        if !self.dialect.flavor().is_gcc() {
+            return Ok(tokens.clone());
+        }
+        let src = self.source(directive.loc.file);
+        let mut expanded = Vec::with_capacity(tokens.len());
+        let mut index = 0;
+        while index < tokens.len() {
+            if tokens[index].value != Token::Hash {
+                expanded.push(tokens[index].clone());
+                index += 1;
+                continue;
+            }
+            let (predicate, answer, next) = parse_assertion(
+                src,
+                tokens,
+                index + 1,
+                AssertionUse::If,
+                directive.end_loc(),
+            )?;
+            let answers = self.assertions.get(&predicate);
+            let holds = match answer {
+                Some(answer) => answers.is_some_and(|answers| answers.contains(&answer)),
+                None => answers.is_some_and(|answers| !answers.is_empty()),
+            };
+            expanded.push(
+                tokens[index]
+                    .clone()
+                    .with_value(Token::IntLit((holds as i64).to_string().into())),
+            );
+            index = next;
+        }
+        Ok(expanded)
     }
 
     fn expand_has_embed(&self, tokens: &[Span<Token>], from: FileId) -> Vec<Span<Token>> {
@@ -1613,6 +1713,71 @@ impl<'a> Preprocessor<'a> {
 enum HeaderName {
     Angled(String),
     Quoted(String),
+}
+
+type Answer = Vec<(Token, bool)>;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum AssertionUse {
+    If,
+    Assert,
+    Unassert,
+}
+
+fn parse_assertion(
+    src: &str,
+    tokens: &[Span<Token>],
+    start: usize,
+    usage: AssertionUse,
+    end: Loc,
+) -> Result<(String, Option<Answer>, usize), PPFailure> {
+    let Some(predicate) = tokens.get(start) else {
+        return Err(PPFailure::at(
+            end,
+            PPErrorKind::Assertion("assertion without predicate"),
+        ));
+    };
+    let Some(name) = identifier(src, predicate) else {
+        return Err(PPFailure::at(
+            predicate.spelling,
+            PPErrorKind::Assertion("predicate must be an identifier"),
+        ));
+    };
+    let mut index = start + 1;
+    if tokens.value_at(index) != Some(&Token::LParen) {
+        let optional =
+            usage == AssertionUse::If || usage == AssertionUse::Unassert && index == tokens.len();
+        if optional {
+            return Ok((name, None, index));
+        }
+        return Err(PPFailure::at(
+            predicate.spelling,
+            PPErrorKind::Assertion("missing `(` after predicate"),
+        ));
+    }
+    index += 1;
+    let mut answer = Vec::new();
+    loop {
+        let Some(token) = tokens.get(index) else {
+            return Err(PPFailure::at(
+                end,
+                PPErrorKind::Assertion("missing `)` to complete answer"),
+            ));
+        };
+        if token.value == Token::RParen {
+            break;
+        }
+        let spaced = token.leading_space && !answer.is_empty();
+        answer.push((token.value.clone(), spaced));
+        index += 1;
+    }
+    if answer.is_empty() {
+        return Err(PPFailure::at(
+            tokens[index].spelling,
+            PPErrorKind::Assertion("predicate's answer is empty"),
+        ));
+    }
+    Ok((name, Some(answer), index + 1))
 }
 
 fn parse_header_name(tokens: &[Span<Token>], start: usize) -> Option<(HeaderName, usize)> {

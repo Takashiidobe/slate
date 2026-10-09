@@ -187,8 +187,9 @@ token plus an interned `HideSet`; file tokens start empty.
 
 - `#ifdef`-family: `is_defined` = defined macro or `is_defined_operator`
   (`__has_include` etc. for the flavor).
-- `#if`: `expand_condition` → `__has_embed` → `__has_include` →
-  `expand_has_checks` → `const_expr::Parser::evaluate_with_defined`.
+- `#if`: `expand_assertions` → `expand_condition` → `__has_embed` →
+  `__has_include` → `expand_has_checks` →
+  `const_expr::Parser::evaluate_with_defined`.
   `expand_condition` runs the stream expander over the directive, and a
   `defined` or `__has_*` name takes its operand unexpanded from the stream.
   That includes a `defined` an expansion produced, with its operand from
@@ -201,6 +202,17 @@ token plus an interned `HideSet`; file tokens start empty.
   defines (`expand_has_check`), with the same operand rule, because gcc and
   clang accept them outside directives. `__has_include`, `__has_include_next`
   and `__has_embed` stay unevaluated, as both compilers reject them there.
+- gcc only: assertions (`#assert`, `#unassert`, `#if #pred(answer)`),
+  following libcpp `directives.cc`. `expand_assertions` replaces
+  `#pred` / `#pred(answer)` with 0 or 1 before macro expansion, so neither
+  the predicate nor the answer expands. An answer is the tokens up to the
+  first `)`, compared by token and by whether each token has leading space,
+  ignoring the first token's. `#unassert pred` drops every answer. Linux
+  targets seed `system(linux|unix|posix)` and `cpu`/`machine` = `x86_64`,
+  `i386` or `arm` (none on aarch64), as gcc's `config/linux.h`,
+  `i386-c.cc` and `arm-c.cc` do. clang rejects both forms, and so do the
+  clang and msvc flavors. gcc's `-Wdeprecated` warning and `-A` are not
+  implemented.
 - clang only: `__has_declspec_attribute` answers from
   `attribute_support::declspec_registered`, and only with
   `microsoft_extensions` (0 on Linux, as clang without `-fms-extensions`).

@@ -74,6 +74,8 @@ pub(super) enum PPErrorKind {
     Directive(String),
     #[error("unsupported preprocessor directive")]
     UnsupportedDirective,
+    #[error("{0}")]
+    Assertion(&'static str),
     #[error("header not found in search path: {0}")]
     HeaderNotFound(String),
     #[error("#include nested too deeply")]
