@@ -155,6 +155,10 @@ Projects that we've tested e2e that translate to Rust:
 - [libevent](https://libevent.org)
 - [yyjson](https://github.com/ibireme/yyjson)
 - [PCRE2](https://github.com/PCRE2Project/pcre2)
+- [curl](https://curl.se)
+  - Translates libcurl and the `curl` tool. Passes all 1690 non-flaky
+    `runtests.pl` tests, and benchmarks within 5% of native over file:// and
+    HTTP transfers.
 
 ### In Progress
 
