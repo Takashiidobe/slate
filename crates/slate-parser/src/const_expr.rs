@@ -958,7 +958,7 @@ impl<'a> Parser<'a> {
             error,
         };
         let expression = parser
-            .parse_conditional()
+            .parse_comma()
             .map_err(|error| at_position(&parser, error))?;
         if parser.peek().is_some() {
             return Err(at_position(&parser, ConstExprError::UnexpectedTokens));
