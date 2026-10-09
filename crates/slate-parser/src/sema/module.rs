@@ -56,6 +56,7 @@ fn resolve_module(
         next_id,
         break_targets: Vec::new(),
         continue_targets: Vec::new(),
+        jump_targets: HashMap::new(),
         switches: Vec::new(),
         in_function: false,
         in_naked_function: false,
@@ -1684,6 +1685,21 @@ impl Lowerer {
         ))
     }
 
+    fn jump_target(&mut self, statement: &Stmt) -> BindingId {
+        let id = self.fresh();
+        self.jump_targets.insert(statement.id, id);
+        id
+    }
+
+    fn named_jump_target(&self, jump: &Stmt) -> Result<BindingId, ResolveError> {
+        self.types
+            .named_jumps
+            .get(&jump.id)
+            .and_then(|target| self.jump_targets.get(target))
+            .copied()
+            .ok_or(ResolveError::Internal("unresolved named jump"))
+    }
+
     fn loop_body(
         &mut self,
         id: BindingId,
@@ -1775,7 +1791,7 @@ impl Lowerer {
                 }
             }
             StmtKind::While { condition, body } => {
-                let id = self.fresh();
+                let id = self.jump_target(statement);
                 let value = self.expr(condition)?;
                 let condition = self.condition(value.value, None)?;
                 let body = self.loop_body(id, body, return_type)?;
@@ -1786,7 +1802,7 @@ impl Lowerer {
                 }
             }
             StmtKind::DoWhile { body, condition } => {
-                let id = self.fresh();
+                let id = self.jump_target(statement);
                 let body = self.loop_body(id, body, return_type)?;
                 let value = self.expr(condition)?;
                 Statement::DoWhile {
@@ -1801,7 +1817,7 @@ impl Lowerer {
                 increment,
                 body,
             } => {
-                let id = self.fresh();
+                let id = self.jump_target(statement);
                 let init = match init {
                     Some(init) => self.statements(std::slice::from_ref(init), return_type)?,
                     None => Vec::new(),
@@ -1841,7 +1857,7 @@ impl Lowerer {
                 if !matches!(discriminant.ty, Type::Numeric(NumericType::Integer { .. })) {
                     return Err(ResolveError::Internal("noninteger switch discriminant"));
                 }
-                let id = self.fresh();
+                let id = self.jump_target(statement);
                 self.break_targets.push(id);
                 self.switches.push(id);
                 let body = self.statements(std::slice::from_ref(body), return_type);
@@ -1912,9 +1928,8 @@ impl Lowerer {
                     "selection statement declarations",
                 ));
             }
-            StmtKind::NamedBreak(_) | StmtKind::NamedContinue(_) => {
-                return Err(ResolveError::Unimplemented("named loop jumps"));
-            }
+            StmtKind::NamedBreak(_) => Statement::Break(self.named_jump_target(statement)?),
+            StmtKind::NamedContinue(_) => Statement::Continue(self.named_jump_target(statement)?),
             StmtKind::Labeled { label, body } => Statement::Label {
                 id: *self
                     .names

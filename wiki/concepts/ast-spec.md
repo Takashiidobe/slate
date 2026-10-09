@@ -468,9 +468,13 @@ SwitchLabel = Case(Expr) | CaseRange { start: Expr, end: Expr } | Default
   `switch (int x = f())`, `switch (int x, y; x + y)`.
 - Reference cases: GCC `gcc.dg/c2y-if-decls-{1,4,8,11}.c` cover
   attributes, inferred types, aggregate initializers, and nested clauses.
-- Named jumps preserve the target spelling and span in C2y/GNU2y only
-  (`StandardFeatures::named_loops`). Target validation and IR lowering
-  are unimplemented.
+- Named jumps preserve the target spelling and span
+  (`StandardFeatures::named_loops`: every mode for gcc, C2y/GNU2y otherwise).
+  The checker resolves each to the innermost enclosing loop or switch its
+  label names, recorded in `TypeResolver::named_jumps`; `continue` needs a
+  loop. gcc lets every label in a chain of labels, `case`/`default` labels,
+  and attributes name the statement; clang only the label directly before it,
+  attributes allowed (`a: b: for` names it `b` only).
 - Control-flow bodies are one `Box<Stmt>`; braced bodies are `Block`.
   `Null` is `;`; an empty compound is `Block([])`.
 - Scopes: C89/GNU89, only compound statements. C99+, each

@@ -21,478 +21,211 @@ choice:
     }
 }
 
-// SLATE-FILECHECK-AST
 // SLATE-FILECHECK-DEFINES C2Y
 // SLATE-FILECHECK-STD C2Y c2y
-// SLATE-FILECHECK-DEFINES GNU2Y
-// SLATE-FILECHECK-STD GNU2Y gnu2y
 // SLATE-FILECHECK-DEFINES C23
 // SLATE-FILECHECK-STD C23 c23
-// SLATE-FILECHECK-ERROR C23
-// SLATE-FILECHECK-DEFINES GNU23
-// SLATE-FILECHECK-STD GNU23 gnu23
-// SLATE-FILECHECK-ERROR GNU23
-// SLATE-FILECHECK-IR-ERROR IR
-// SLATE-FILECHECK-STD IR c2y
+// SLATE-FILECHECK-DEFINES GNU17
+// SLATE-FILECHECK-STD GNU17 gnu17
 
-// SLATE-FILECHECK-BEGIN C23
-// C23: Error:   × named loop jumps require C2y
-// C23: ╰─▶ named loop jumps require C2y
-// C23: ╭─[tests/fixtures/gcc/linux/x86_64/c2y_named_loops.c:6:34]
-// C23: 5 │         while (n) {
-// C23: 6 │             if (n == 1) continue outer;
-// C23: ·                                  ─────
-// C23: 7 │             if (n == 2) break inner;
-// C23: ╰────
-// SLATE-FILECHECK-END C23
-// SLATE-FILECHECK-BEGIN GNU23
-// GNU23: Error:   × named loop jumps require C2y
-// GNU23: ╰─▶ named loop jumps require C2y
-// GNU23: ╭─[tests/fixtures/gcc/linux/x86_64/c2y_named_loops.c:6:34]
-// GNU23: 5 │         while (n) {
-// GNU23: 6 │             if (n == 1) continue outer;
-// GNU23: ·                                  ─────
-// GNU23: 7 │             if (n == 2) break inner;
-// GNU23: ╰────
-// SLATE-FILECHECK-END GNU23
-// SLATE-FILECHECK-BEGIN IR
-// IR: Error:   × semantic analysis failed
-// IR: Error:
-// IR: × not implemented: named loop jumps
-// IR: ╭─[tests/fixtures/gcc/linux/x86_64/c2y_named_loops.c:6:25]
-// IR: 5 │         while (n) {
-// IR: 6 │             if (n == 1) continue outer;
-// IR: ·                         ───────────────
-// IR: 7 │             if (n == 2) break inner;
-// IR: ╰────
-// SLATE-FILECHECK-END IR
 // SLATE-FILECHECK-BEGIN C2Y
-// C2Y: decl[{{[0-9]+}}]: Function(
-// C2Y-NEXT:       FunctionDefinition {
-// C2Y-NEXT:           specifiers: DeclarationSpecifiers {
-// C2Y-NEXT:               ty: Void,
-// C2Y-NEXT:           },
-// C2Y-NEXT:           declarator: Function {
-// C2Y-NEXT:               inner: Name(
-// C2Y-NEXT:                   "named_loops",
-// C2Y-NEXT:               ),
-// C2Y-NEXT:               parameters: Prototype {
-// C2Y-NEXT:                   parameters: [
-// C2Y-NEXT:                       ParameterDeclarationKind {
-// C2Y-NEXT:                           specifiers: DeclarationSpecifiers {
-// C2Y-NEXT:                               ty: Integer(
-// C2Y-NEXT:                                   Ranked {
-// C2Y-NEXT:                                       rank: Int,
-// C2Y-NEXT:                                       signed: true,
-// C2Y-NEXT:                                   },
-// C2Y-NEXT:                               ),
-// C2Y-NEXT:                           },
-// C2Y-NEXT:                           declarator: Name(
-// C2Y-NEXT:                               "n",
-// C2Y-NEXT:                           ),
-// C2Y-NEXT:                       },
-// C2Y-NEXT:                   ],
-// C2Y-NEXT:               },
-// C2Y-NEXT:           },
-// C2Y-NEXT:           body: [
-// C2Y-NEXT:               Labeled {
-// C2Y-NEXT:                   label: "outer",
-// C2Y-NEXT:                   body: For {
-// C2Y-NEXT:                       init: Some(
-// C2Y-NEXT:                           Decl(
-// C2Y-NEXT:                               Declaration {
-// C2Y-NEXT:                                   specifiers: DeclarationSpecifiers {
-// C2Y-NEXT:                                       ty: Integer(
-// C2Y-NEXT:                                           Ranked {
-// C2Y-NEXT:                                               rank: Int,
-// C2Y-NEXT:                                               signed: true,
-// C2Y-NEXT:                                           },
-// C2Y-NEXT:                                       ),
-// C2Y-NEXT:                                   },
-// C2Y-NEXT:                                   declarators: [
-// C2Y-NEXT:                                       InitDeclaratorKind {
-// C2Y-NEXT:                                           declarator: Name(
-// C2Y-NEXT:                                               "i",
-// C2Y-NEXT:                                           ),
-// C2Y-NEXT:                                           initializer: Some(
-// C2Y-NEXT:                                               Expr(
-// C2Y-NEXT:                                                   IntegerLiteral(
-// C2Y-NEXT:                                                       IntegerLiteral {
-// C2Y-NEXT:                                                           value: 0,
-// C2Y-NEXT:                                                           radix: Decimal,
-// C2Y-NEXT:                                                           suffix: IntegerSuffix {
-// C2Y-NEXT:                                                               unsigned: false,
-// C2Y-NEXT:                                                               size: None,
-// C2Y-NEXT:                                                           },
-// C2Y-NEXT:                                                           spelling: "0",
-// C2Y-NEXT:                                                       },
-// C2Y-NEXT:                                                   ),
-// C2Y-NEXT:                                               ),
-// C2Y-NEXT:                                           ),
-// C2Y-NEXT:                                       },
-// C2Y-NEXT:                                   ],
-// C2Y-NEXT:                               },
-// C2Y-NEXT:                           ),
-// C2Y-NEXT:                       ),
-// C2Y-NEXT:                       condition: Some(
-// C2Y-NEXT:                           Binary {
-// C2Y-NEXT:                               op: Less,
-// C2Y-NEXT:                               left: Identifier(
-// C2Y-NEXT:                                   "i",
-// C2Y-NEXT:                               ),
-// C2Y-NEXT:                               right: Identifier(
-// C2Y-NEXT:                                   "n",
-// C2Y-NEXT:                               ),
-// C2Y-NEXT:                           },
-// C2Y-NEXT:                       ),
-// C2Y-NEXT:                       increment: Some(
-// C2Y-NEXT:                           Unary {
-// C2Y-NEXT:                               op: PreIncrement,
-// C2Y-NEXT:                               operand: Identifier(
-// C2Y-NEXT:                                   "i",
-// C2Y-NEXT:                               ),
-// C2Y-NEXT:                           },
-// C2Y-NEXT:                       ),
-// C2Y-NEXT:                       body: Block(
-// C2Y-NEXT:                           [
-// C2Y-NEXT:                               Labeled {
-// C2Y-NEXT:                                   label: "inner",
-// C2Y-NEXT:                                   body: While {
-// C2Y-NEXT:                                       condition: Identifier(
-// C2Y-NEXT:                                           "n",
-// C2Y-NEXT:                                       ),
-// C2Y-NEXT:                                       body: Block(
-// C2Y-NEXT:                                           [
-// C2Y-NEXT:                                               If {
-// C2Y-NEXT:                                                   condition: Binary {
-// C2Y-NEXT:                                                       op: Equal,
-// C2Y-NEXT:                                                       left: Identifier(
-// C2Y-NEXT:                                                           "n",
-// C2Y-NEXT:                                                       ),
-// C2Y-NEXT:                                                       right: IntegerLiteral(
-// C2Y-NEXT:                                                           IntegerLiteral {
-// C2Y-NEXT:                                                               value: 1,
-// C2Y-NEXT:                                                               radix: Decimal,
-// C2Y-NEXT:                                                               suffix: IntegerSuffix {
-// C2Y-NEXT:                                                                   unsigned: false,
-// C2Y-NEXT:                                                                   size: None,
-// C2Y-NEXT:                                                               },
-// C2Y-NEXT:                                                               spelling: "1",
-// C2Y-NEXT:                                                           },
-// C2Y-NEXT:                                                       ),
-// C2Y-NEXT:                                                   },
-// C2Y-NEXT:                                                   then_branch: NamedContinue(
-// C2Y-NEXT:                                                       "outer",
-// C2Y-NEXT:                                                   ),
-// C2Y-NEXT:                                                   else_branch: None,
-// C2Y-NEXT:                                               },
-// C2Y-NEXT:                                               If {
-// C2Y-NEXT:                                                   condition: Binary {
-// C2Y-NEXT:                                                       op: Equal,
-// C2Y-NEXT:                                                       left: Identifier(
-// C2Y-NEXT:                                                           "n",
-// C2Y-NEXT:                                                       ),
-// C2Y-NEXT:                                                       right: IntegerLiteral(
-// C2Y-NEXT:                                                           IntegerLiteral {
-// C2Y-NEXT:                                                               value: 2,
-// C2Y-NEXT:                                                               radix: Decimal,
-// C2Y-NEXT:                                                               suffix: IntegerSuffix {
-// C2Y-NEXT:                                                                   unsigned: false,
-// C2Y-NEXT:                                                                   size: None,
-// C2Y-NEXT:                                                               },
-// C2Y-NEXT:                                                               spelling: "2",
-// C2Y-NEXT:                                                           },
-// C2Y-NEXT:                                                       ),
-// C2Y-NEXT:                                                   },
-// C2Y-NEXT:                                                   then_branch: NamedBreak(
-// C2Y-NEXT:                                                       "inner",
-// C2Y-NEXT:                                                   ),
-// C2Y-NEXT:                                                   else_branch: None,
-// C2Y-NEXT:                                               },
-// C2Y-NEXT:                                               Break,
-// C2Y-NEXT:                                           ],
-// C2Y-NEXT:                                       ),
-// C2Y-NEXT:                                   },
-// C2Y-NEXT:                               },
-// C2Y-NEXT:                               Continue,
-// C2Y-NEXT:                           ],
-// C2Y-NEXT:                       ),
-// C2Y-NEXT:                   },
-// C2Y-NEXT:               },
-// C2Y-NEXT:               Labeled {
-// C2Y-NEXT:                   label: "again",
-// C2Y-NEXT:                   body: DoWhile {
-// C2Y-NEXT:                       body: Block(
-// C2Y-NEXT:                           [
-// C2Y-NEXT:                               If {
-// C2Y-NEXT:                                   condition: Identifier(
-// C2Y-NEXT:                                       "n",
-// C2Y-NEXT:                                   ),
-// C2Y-NEXT:                                   then_branch: NamedContinue(
-// C2Y-NEXT:                                       "again",
-// C2Y-NEXT:                                   ),
-// C2Y-NEXT:                                   else_branch: None,
-// C2Y-NEXT:                               },
-// C2Y-NEXT:                               NamedBreak(
-// C2Y-NEXT:                                   "again",
-// C2Y-NEXT:                               ),
-// C2Y-NEXT:                           ],
-// C2Y-NEXT:                       ),
-// C2Y-NEXT:                       condition: Identifier(
-// C2Y-NEXT:                           "n",
-// C2Y-NEXT:                       ),
-// C2Y-NEXT:                   },
-// C2Y-NEXT:               },
-// C2Y-NEXT:               Labeled {
-// C2Y-NEXT:                   label: "choice",
-// C2Y-NEXT:                   body: Switch {
-// C2Y-NEXT:                       discriminant: Identifier(
-// C2Y-NEXT:                           "n",
-// C2Y-NEXT:                       ),
-// C2Y-NEXT:                       body: Block(
-// C2Y-NEXT:                           [
-// C2Y-NEXT:                               SwitchLabel {
-// C2Y-NEXT:                                   label: Case(
-// C2Y-NEXT:                                       IntegerLiteral(
-// C2Y-NEXT:                                           IntegerLiteral {
-// C2Y-NEXT:                                               value: 0,
-// C2Y-NEXT:                                               radix: Decimal,
-// C2Y-NEXT:                                               suffix: IntegerSuffix {
-// C2Y-NEXT:                                                   unsigned: false,
-// C2Y-NEXT:                                                   size: None,
-// C2Y-NEXT:                                               },
-// C2Y-NEXT:                                               spelling: "0",
-// C2Y-NEXT:                                           },
-// C2Y-NEXT:                                       ),
-// C2Y-NEXT:                                   ),
-// C2Y-NEXT:                                   body: NamedBreak(
-// C2Y-NEXT:                                       "choice",
-// C2Y-NEXT:                                   ),
-// C2Y-NEXT:                               },
-// C2Y-NEXT:                               SwitchLabel {
-// C2Y-NEXT:                                   label: Default,
-// C2Y-NEXT:                                   body: Break,
-// C2Y-NEXT:                               },
-// C2Y-NEXT:                           ],
-// C2Y-NEXT:                       ),
-// C2Y-NEXT:                   },
-// C2Y-NEXT:               },
-// C2Y-NEXT:           ],
-// C2Y-NEXT:       },
-// C2Y-NEXT:   )
+// C2Y: module {
+// C2Y-NEXT:     target "x86_64-unknown-linux-gnu" {
+// C2Y-NEXT:         endian = little;
+// C2Y-NEXT:         pointer [size=8, align=8];
+// C2Y-NEXT:         stack_alignment = 16;
+// C2Y-NEXT:         long_double = f80;
+// C2Y-NEXT:         storage bool [size=1, align=1];
+// C2Y-NEXT:         storage i8, u8 [size=1, align=1];
+// C2Y-NEXT:         storage i16, u16 [size=2, align=2];
+// C2Y-NEXT:         storage i32, u32 [size=4, align=4];
+// C2Y-NEXT:         storage i64, u64 [size=8, align=8];
+// C2Y-NEXT:         storage i128, u128 [size=16, align=16];
+// C2Y-NEXT:         storage bf16 [size=2, align=2];
+// C2Y-NEXT:         storage f16 [size=2, align=2];
+// C2Y-NEXT:         storage f32 [size=4, align=4];
+// C2Y-NEXT:         storage f64 [size=8, align=8];
+// C2Y-NEXT:         storage f80 [size=16, align=16];
+// C2Y-NEXT:         storage f128 [size=16, align=16];
+// C2Y-NEXT:         storage d32 [size=4, align=4];
+// C2Y-NEXT:         storage d64 [size=8, align=8];
+// C2Y-NEXT:         storage d128 [size=16, align=16];
+// C2Y-NEXT:     }
+// C2Y-NEXT:     fn %[[VALUE_named_loops:[0-9]+]] @named_loops(%[[VALUE_n:[0-9]+]] n: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// C2Y-NEXT:         label %[[VALUE_outer:[0-9]+]] outer:
+// C2Y-NEXT:             for %[[VALUE0:[0-9]+]]
+// C2Y-NEXT:                 init:
+// C2Y-NEXT:                     let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic] = const<i32>(0);
+// C2Y-NEXT:                 condition: lt<i32>(read<i32>(%[[VALUE_i]]), read<i32>(%[[VALUE_n]]))
+// C2Y-NEXT:                 increment: {
+// C2Y-NEXT:                     let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
+// C2Y-NEXT:                     let %[[VALUE2:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE1]]), const<i32>(1));
+// C2Y-NEXT:                     write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE2]]));
+// C2Y-NEXT:                     yield void;
+// C2Y-NEXT:                 }
+// C2Y-NEXT:                 body:
+// C2Y-NEXT:                     {
+// C2Y-NEXT:                         label %[[VALUE_inner:[0-9]+]] inner:
+// C2Y-NEXT:                             while %[[VALUE3:[0-9]+]] ne<i32>(read<i32>(%[[VALUE_n]]), const<i32>(0))
+// C2Y-NEXT:                                 {
+// C2Y-NEXT:                                     if eq<i32>(read<i32>(%[[VALUE_n]]), const<i32>(1))
+// C2Y-NEXT:                                         continue %[[VALUE0]];
+// C2Y-NEXT:                                     if eq<i32>(read<i32>(%[[VALUE_n]]), const<i32>(2))
+// C2Y-NEXT:                                         break %[[VALUE3]];
+// C2Y-NEXT:                                     break %[[VALUE3]];
+// C2Y-NEXT:                                 }
+// C2Y-NEXT:                         continue %[[VALUE0]];
+// C2Y-NEXT:                     }
+// C2Y-NEXT:         label %[[VALUE_again:[0-9]+]] again:
+// C2Y-NEXT:             do %[[VALUE4:[0-9]+]]
+// C2Y-NEXT:                 {
+// C2Y-NEXT:                     if ne<i32>(read<i32>(%[[VALUE_n]]), const<i32>(0))
+// C2Y-NEXT:                         continue %[[VALUE4]];
+// C2Y-NEXT:                     break %[[VALUE4]];
+// C2Y-NEXT:                 }
+// C2Y-NEXT:             while ne<i32>(read<i32>(%[[VALUE_n]]), const<i32>(0));
+// C2Y-NEXT:         label %[[VALUE_choice:[0-9]+]] choice:
+// C2Y-NEXT:             switch %[[VALUE5:[0-9]+]] read<i32>(%[[VALUE_n]])
+// C2Y-NEXT:                 {
+// C2Y-NEXT:                     case %[[VALUE5]] const<i32>(0):
+// C2Y-NEXT:                         break %[[VALUE5]];
+// C2Y-NEXT:                     default %[[VALUE5]]:
+// C2Y-NEXT:                         break %[[VALUE5]];
+// C2Y-NEXT:                 }
+// C2Y-NEXT:     }
+// C2Y-NEXT: }
 // SLATE-FILECHECK-END C2Y
-// SLATE-FILECHECK-BEGIN GNU2Y
-// GNU2Y: decl[{{[0-9]+}}]: Function(
-// GNU2Y-NEXT:       FunctionDefinition {
-// GNU2Y-NEXT:           specifiers: DeclarationSpecifiers {
-// GNU2Y-NEXT:               ty: Void,
-// GNU2Y-NEXT:           },
-// GNU2Y-NEXT:           declarator: Function {
-// GNU2Y-NEXT:               inner: Name(
-// GNU2Y-NEXT:                   "named_loops",
-// GNU2Y-NEXT:               ),
-// GNU2Y-NEXT:               parameters: Prototype {
-// GNU2Y-NEXT:                   parameters: [
-// GNU2Y-NEXT:                       ParameterDeclarationKind {
-// GNU2Y-NEXT:                           specifiers: DeclarationSpecifiers {
-// GNU2Y-NEXT:                               ty: Integer(
-// GNU2Y-NEXT:                                   Ranked {
-// GNU2Y-NEXT:                                       rank: Int,
-// GNU2Y-NEXT:                                       signed: true,
-// GNU2Y-NEXT:                                   },
-// GNU2Y-NEXT:                               ),
-// GNU2Y-NEXT:                           },
-// GNU2Y-NEXT:                           declarator: Name(
-// GNU2Y-NEXT:                               "n",
-// GNU2Y-NEXT:                           ),
-// GNU2Y-NEXT:                       },
-// GNU2Y-NEXT:                   ],
-// GNU2Y-NEXT:               },
-// GNU2Y-NEXT:           },
-// GNU2Y-NEXT:           body: [
-// GNU2Y-NEXT:               Labeled {
-// GNU2Y-NEXT:                   label: "outer",
-// GNU2Y-NEXT:                   body: For {
-// GNU2Y-NEXT:                       init: Some(
-// GNU2Y-NEXT:                           Decl(
-// GNU2Y-NEXT:                               Declaration {
-// GNU2Y-NEXT:                                   specifiers: DeclarationSpecifiers {
-// GNU2Y-NEXT:                                       ty: Integer(
-// GNU2Y-NEXT:                                           Ranked {
-// GNU2Y-NEXT:                                               rank: Int,
-// GNU2Y-NEXT:                                               signed: true,
-// GNU2Y-NEXT:                                           },
-// GNU2Y-NEXT:                                       ),
-// GNU2Y-NEXT:                                   },
-// GNU2Y-NEXT:                                   declarators: [
-// GNU2Y-NEXT:                                       InitDeclaratorKind {
-// GNU2Y-NEXT:                                           declarator: Name(
-// GNU2Y-NEXT:                                               "i",
-// GNU2Y-NEXT:                                           ),
-// GNU2Y-NEXT:                                           initializer: Some(
-// GNU2Y-NEXT:                                               Expr(
-// GNU2Y-NEXT:                                                   IntegerLiteral(
-// GNU2Y-NEXT:                                                       IntegerLiteral {
-// GNU2Y-NEXT:                                                           value: 0,
-// GNU2Y-NEXT:                                                           radix: Decimal,
-// GNU2Y-NEXT:                                                           suffix: IntegerSuffix {
-// GNU2Y-NEXT:                                                               unsigned: false,
-// GNU2Y-NEXT:                                                               size: None,
-// GNU2Y-NEXT:                                                           },
-// GNU2Y-NEXT:                                                           spelling: "0",
-// GNU2Y-NEXT:                                                       },
-// GNU2Y-NEXT:                                                   ),
-// GNU2Y-NEXT:                                               ),
-// GNU2Y-NEXT:                                           ),
-// GNU2Y-NEXT:                                       },
-// GNU2Y-NEXT:                                   ],
-// GNU2Y-NEXT:                               },
-// GNU2Y-NEXT:                           ),
-// GNU2Y-NEXT:                       ),
-// GNU2Y-NEXT:                       condition: Some(
-// GNU2Y-NEXT:                           Binary {
-// GNU2Y-NEXT:                               op: Less,
-// GNU2Y-NEXT:                               left: Identifier(
-// GNU2Y-NEXT:                                   "i",
-// GNU2Y-NEXT:                               ),
-// GNU2Y-NEXT:                               right: Identifier(
-// GNU2Y-NEXT:                                   "n",
-// GNU2Y-NEXT:                               ),
-// GNU2Y-NEXT:                           },
-// GNU2Y-NEXT:                       ),
-// GNU2Y-NEXT:                       increment: Some(
-// GNU2Y-NEXT:                           Unary {
-// GNU2Y-NEXT:                               op: PreIncrement,
-// GNU2Y-NEXT:                               operand: Identifier(
-// GNU2Y-NEXT:                                   "i",
-// GNU2Y-NEXT:                               ),
-// GNU2Y-NEXT:                           },
-// GNU2Y-NEXT:                       ),
-// GNU2Y-NEXT:                       body: Block(
-// GNU2Y-NEXT:                           [
-// GNU2Y-NEXT:                               Labeled {
-// GNU2Y-NEXT:                                   label: "inner",
-// GNU2Y-NEXT:                                   body: While {
-// GNU2Y-NEXT:                                       condition: Identifier(
-// GNU2Y-NEXT:                                           "n",
-// GNU2Y-NEXT:                                       ),
-// GNU2Y-NEXT:                                       body: Block(
-// GNU2Y-NEXT:                                           [
-// GNU2Y-NEXT:                                               If {
-// GNU2Y-NEXT:                                                   condition: Binary {
-// GNU2Y-NEXT:                                                       op: Equal,
-// GNU2Y-NEXT:                                                       left: Identifier(
-// GNU2Y-NEXT:                                                           "n",
-// GNU2Y-NEXT:                                                       ),
-// GNU2Y-NEXT:                                                       right: IntegerLiteral(
-// GNU2Y-NEXT:                                                           IntegerLiteral {
-// GNU2Y-NEXT:                                                               value: 1,
-// GNU2Y-NEXT:                                                               radix: Decimal,
-// GNU2Y-NEXT:                                                               suffix: IntegerSuffix {
-// GNU2Y-NEXT:                                                                   unsigned: false,
-// GNU2Y-NEXT:                                                                   size: None,
-// GNU2Y-NEXT:                                                               },
-// GNU2Y-NEXT:                                                               spelling: "1",
-// GNU2Y-NEXT:                                                           },
-// GNU2Y-NEXT:                                                       ),
-// GNU2Y-NEXT:                                                   },
-// GNU2Y-NEXT:                                                   then_branch: NamedContinue(
-// GNU2Y-NEXT:                                                       "outer",
-// GNU2Y-NEXT:                                                   ),
-// GNU2Y-NEXT:                                                   else_branch: None,
-// GNU2Y-NEXT:                                               },
-// GNU2Y-NEXT:                                               If {
-// GNU2Y-NEXT:                                                   condition: Binary {
-// GNU2Y-NEXT:                                                       op: Equal,
-// GNU2Y-NEXT:                                                       left: Identifier(
-// GNU2Y-NEXT:                                                           "n",
-// GNU2Y-NEXT:                                                       ),
-// GNU2Y-NEXT:                                                       right: IntegerLiteral(
-// GNU2Y-NEXT:                                                           IntegerLiteral {
-// GNU2Y-NEXT:                                                               value: 2,
-// GNU2Y-NEXT:                                                               radix: Decimal,
-// GNU2Y-NEXT:                                                               suffix: IntegerSuffix {
-// GNU2Y-NEXT:                                                                   unsigned: false,
-// GNU2Y-NEXT:                                                                   size: None,
-// GNU2Y-NEXT:                                                               },
-// GNU2Y-NEXT:                                                               spelling: "2",
-// GNU2Y-NEXT:                                                           },
-// GNU2Y-NEXT:                                                       ),
-// GNU2Y-NEXT:                                                   },
-// GNU2Y-NEXT:                                                   then_branch: NamedBreak(
-// GNU2Y-NEXT:                                                       "inner",
-// GNU2Y-NEXT:                                                   ),
-// GNU2Y-NEXT:                                                   else_branch: None,
-// GNU2Y-NEXT:                                               },
-// GNU2Y-NEXT:                                               Break,
-// GNU2Y-NEXT:                                           ],
-// GNU2Y-NEXT:                                       ),
-// GNU2Y-NEXT:                                   },
-// GNU2Y-NEXT:                               },
-// GNU2Y-NEXT:                               Continue,
-// GNU2Y-NEXT:                           ],
-// GNU2Y-NEXT:                       ),
-// GNU2Y-NEXT:                   },
-// GNU2Y-NEXT:               },
-// GNU2Y-NEXT:               Labeled {
-// GNU2Y-NEXT:                   label: "again",
-// GNU2Y-NEXT:                   body: DoWhile {
-// GNU2Y-NEXT:                       body: Block(
-// GNU2Y-NEXT:                           [
-// GNU2Y-NEXT:                               If {
-// GNU2Y-NEXT:                                   condition: Identifier(
-// GNU2Y-NEXT:                                       "n",
-// GNU2Y-NEXT:                                   ),
-// GNU2Y-NEXT:                                   then_branch: NamedContinue(
-// GNU2Y-NEXT:                                       "again",
-// GNU2Y-NEXT:                                   ),
-// GNU2Y-NEXT:                                   else_branch: None,
-// GNU2Y-NEXT:                               },
-// GNU2Y-NEXT:                               NamedBreak(
-// GNU2Y-NEXT:                                   "again",
-// GNU2Y-NEXT:                               ),
-// GNU2Y-NEXT:                           ],
-// GNU2Y-NEXT:                       ),
-// GNU2Y-NEXT:                       condition: Identifier(
-// GNU2Y-NEXT:                           "n",
-// GNU2Y-NEXT:                       ),
-// GNU2Y-NEXT:                   },
-// GNU2Y-NEXT:               },
-// GNU2Y-NEXT:               Labeled {
-// GNU2Y-NEXT:                   label: "choice",
-// GNU2Y-NEXT:                   body: Switch {
-// GNU2Y-NEXT:                       discriminant: Identifier(
-// GNU2Y-NEXT:                           "n",
-// GNU2Y-NEXT:                       ),
-// GNU2Y-NEXT:                       body: Block(
-// GNU2Y-NEXT:                           [
-// GNU2Y-NEXT:                               SwitchLabel {
-// GNU2Y-NEXT:                                   label: Case(
-// GNU2Y-NEXT:                                       IntegerLiteral(
-// GNU2Y-NEXT:                                           IntegerLiteral {
-// GNU2Y-NEXT:                                               value: 0,
-// GNU2Y-NEXT:                                               radix: Decimal,
-// GNU2Y-NEXT:                                               suffix: IntegerSuffix {
-// GNU2Y-NEXT:                                                   unsigned: false,
-// GNU2Y-NEXT:                                                   size: None,
-// GNU2Y-NEXT:                                               },
-// GNU2Y-NEXT:                                               spelling: "0",
-// GNU2Y-NEXT:                                           },
-// GNU2Y-NEXT:                                       ),
-// GNU2Y-NEXT:                                   ),
-// GNU2Y-NEXT:                                   body: NamedBreak(
-// GNU2Y-NEXT:                                       "choice",
-// GNU2Y-NEXT:                                   ),
-// GNU2Y-NEXT:                               },
-// GNU2Y-NEXT:                               SwitchLabel {
-// GNU2Y-NEXT:                                   label: Default,
-// GNU2Y-NEXT:                                   body: Break,
-// GNU2Y-NEXT:                               },
-// GNU2Y-NEXT:                           ],
-// GNU2Y-NEXT:                       ),
-// GNU2Y-NEXT:                   },
-// GNU2Y-NEXT:               },
-// GNU2Y-NEXT:           ],
-// GNU2Y-NEXT:       },
-// GNU2Y-NEXT:   )
-// SLATE-FILECHECK-END GNU2Y
+// SLATE-FILECHECK-BEGIN C23
+// C23: module {
+// C23-NEXT:     target "x86_64-unknown-linux-gnu" {
+// C23-NEXT:         endian = little;
+// C23-NEXT:         pointer [size=8, align=8];
+// C23-NEXT:         stack_alignment = 16;
+// C23-NEXT:         long_double = f80;
+// C23-NEXT:         storage bool [size=1, align=1];
+// C23-NEXT:         storage i8, u8 [size=1, align=1];
+// C23-NEXT:         storage i16, u16 [size=2, align=2];
+// C23-NEXT:         storage i32, u32 [size=4, align=4];
+// C23-NEXT:         storage i64, u64 [size=8, align=8];
+// C23-NEXT:         storage i128, u128 [size=16, align=16];
+// C23-NEXT:         storage bf16 [size=2, align=2];
+// C23-NEXT:         storage f16 [size=2, align=2];
+// C23-NEXT:         storage f32 [size=4, align=4];
+// C23-NEXT:         storage f64 [size=8, align=8];
+// C23-NEXT:         storage f80 [size=16, align=16];
+// C23-NEXT:         storage f128 [size=16, align=16];
+// C23-NEXT:         storage d32 [size=4, align=4];
+// C23-NEXT:         storage d64 [size=8, align=8];
+// C23-NEXT:         storage d128 [size=16, align=16];
+// C23-NEXT:     }
+// C23-NEXT:     fn %[[VALUE_named_loops:[0-9]+]] @named_loops(%[[VALUE_n:[0-9]+]] n: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// C23-NEXT:         label %[[VALUE_outer:[0-9]+]] outer:
+// C23-NEXT:             for %[[VALUE0:[0-9]+]]
+// C23-NEXT:                 init:
+// C23-NEXT:                     let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic] = const<i32>(0);
+// C23-NEXT:                 condition: lt<i32>(read<i32>(%[[VALUE_i]]), read<i32>(%[[VALUE_n]]))
+// C23-NEXT:                 increment: {
+// C23-NEXT:                     let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
+// C23-NEXT:                     let %[[VALUE2:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE1]]), const<i32>(1));
+// C23-NEXT:                     write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE2]]));
+// C23-NEXT:                     yield void;
+// C23-NEXT:                 }
+// C23-NEXT:                 body:
+// C23-NEXT:                     {
+// C23-NEXT:                         label %[[VALUE_inner:[0-9]+]] inner:
+// C23-NEXT:                             while %[[VALUE3:[0-9]+]] ne<i32>(read<i32>(%[[VALUE_n]]), const<i32>(0))
+// C23-NEXT:                                 {
+// C23-NEXT:                                     if eq<i32>(read<i32>(%[[VALUE_n]]), const<i32>(1))
+// C23-NEXT:                                         continue %[[VALUE0]];
+// C23-NEXT:                                     if eq<i32>(read<i32>(%[[VALUE_n]]), const<i32>(2))
+// C23-NEXT:                                         break %[[VALUE3]];
+// C23-NEXT:                                     break %[[VALUE3]];
+// C23-NEXT:                                 }
+// C23-NEXT:                         continue %[[VALUE0]];
+// C23-NEXT:                     }
+// C23-NEXT:         label %[[VALUE_again:[0-9]+]] again:
+// C23-NEXT:             do %[[VALUE4:[0-9]+]]
+// C23-NEXT:                 {
+// C23-NEXT:                     if ne<i32>(read<i32>(%[[VALUE_n]]), const<i32>(0))
+// C23-NEXT:                         continue %[[VALUE4]];
+// C23-NEXT:                     break %[[VALUE4]];
+// C23-NEXT:                 }
+// C23-NEXT:             while ne<i32>(read<i32>(%[[VALUE_n]]), const<i32>(0));
+// C23-NEXT:         label %[[VALUE_choice:[0-9]+]] choice:
+// C23-NEXT:             switch %[[VALUE5:[0-9]+]] read<i32>(%[[VALUE_n]])
+// C23-NEXT:                 {
+// C23-NEXT:                     case %[[VALUE5]] const<i32>(0):
+// C23-NEXT:                         break %[[VALUE5]];
+// C23-NEXT:                     default %[[VALUE5]]:
+// C23-NEXT:                         break %[[VALUE5]];
+// C23-NEXT:                 }
+// C23-NEXT:     }
+// C23-NEXT: }
+// SLATE-FILECHECK-END C23
+// SLATE-FILECHECK-BEGIN GNU17
+// GNU17: module {
+// GNU17-NEXT:     target "x86_64-unknown-linux-gnu" {
+// GNU17-NEXT:         endian = little;
+// GNU17-NEXT:         pointer [size=8, align=8];
+// GNU17-NEXT:         stack_alignment = 16;
+// GNU17-NEXT:         long_double = f80;
+// GNU17-NEXT:         storage bool [size=1, align=1];
+// GNU17-NEXT:         storage i8, u8 [size=1, align=1];
+// GNU17-NEXT:         storage i16, u16 [size=2, align=2];
+// GNU17-NEXT:         storage i32, u32 [size=4, align=4];
+// GNU17-NEXT:         storage i64, u64 [size=8, align=8];
+// GNU17-NEXT:         storage i128, u128 [size=16, align=16];
+// GNU17-NEXT:         storage bf16 [size=2, align=2];
+// GNU17-NEXT:         storage f16 [size=2, align=2];
+// GNU17-NEXT:         storage f32 [size=4, align=4];
+// GNU17-NEXT:         storage f64 [size=8, align=8];
+// GNU17-NEXT:         storage f80 [size=16, align=16];
+// GNU17-NEXT:         storage f128 [size=16, align=16];
+// GNU17-NEXT:         storage d32 [size=4, align=4];
+// GNU17-NEXT:         storage d64 [size=8, align=8];
+// GNU17-NEXT:         storage d128 [size=16, align=16];
+// GNU17-NEXT:     }
+// GNU17-NEXT:     fn %[[VALUE_named_loops:[0-9]+]] @named_loops(%[[VALUE_n:[0-9]+]] n: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// GNU17-NEXT:         label %[[VALUE_outer:[0-9]+]] outer:
+// GNU17-NEXT:             for %[[VALUE0:[0-9]+]]
+// GNU17-NEXT:                 init:
+// GNU17-NEXT:                     let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic] = const<i32>(0);
+// GNU17-NEXT:                 condition: lt<i32>(read<i32>(%[[VALUE_i]]), read<i32>(%[[VALUE_n]]))
+// GNU17-NEXT:                 increment: {
+// GNU17-NEXT:                     let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
+// GNU17-NEXT:                     let %[[VALUE2:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE1]]), const<i32>(1));
+// GNU17-NEXT:                     write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE2]]));
+// GNU17-NEXT:                     yield void;
+// GNU17-NEXT:                 }
+// GNU17-NEXT:                 body:
+// GNU17-NEXT:                     {
+// GNU17-NEXT:                         label %[[VALUE_inner:[0-9]+]] inner:
+// GNU17-NEXT:                             while %[[VALUE3:[0-9]+]] ne<i32>(read<i32>(%[[VALUE_n]]), const<i32>(0))
+// GNU17-NEXT:                                 {
+// GNU17-NEXT:                                     if eq<i32>(read<i32>(%[[VALUE_n]]), const<i32>(1))
+// GNU17-NEXT:                                         continue %[[VALUE0]];
+// GNU17-NEXT:                                     if eq<i32>(read<i32>(%[[VALUE_n]]), const<i32>(2))
+// GNU17-NEXT:                                         break %[[VALUE3]];
+// GNU17-NEXT:                                     break %[[VALUE3]];
+// GNU17-NEXT:                                 }
+// GNU17-NEXT:                         continue %[[VALUE0]];
+// GNU17-NEXT:                     }
+// GNU17-NEXT:         label %[[VALUE_again:[0-9]+]] again:
+// GNU17-NEXT:             do %[[VALUE4:[0-9]+]]
+// GNU17-NEXT:                 {
+// GNU17-NEXT:                     if ne<i32>(read<i32>(%[[VALUE_n]]), const<i32>(0))
+// GNU17-NEXT:                         continue %[[VALUE4]];
+// GNU17-NEXT:                     break %[[VALUE4]];
+// GNU17-NEXT:                 }
+// GNU17-NEXT:             while ne<i32>(read<i32>(%[[VALUE_n]]), const<i32>(0));
+// GNU17-NEXT:         label %[[VALUE_choice:[0-9]+]] choice:
+// GNU17-NEXT:             switch %[[VALUE5:[0-9]+]] read<i32>(%[[VALUE_n]])
+// GNU17-NEXT:                 {
+// GNU17-NEXT:                     case %[[VALUE5]] const<i32>(0):
+// GNU17-NEXT:                         break %[[VALUE5]];
+// GNU17-NEXT:                     default %[[VALUE5]]:
+// GNU17-NEXT:                         break %[[VALUE5]];
+// GNU17-NEXT:                 }
+// GNU17-NEXT:     }
+// GNU17-NEXT: }
+// SLATE-FILECHECK-END GNU17

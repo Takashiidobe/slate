@@ -28,6 +28,7 @@ pub(super) struct Lowerer {
     pub next_id: u32,
     pub break_targets: Vec<BindingId>,
     pub continue_targets: Vec<BindingId>,
+    pub jump_targets: HashMap<NodeId, BindingId>,
     pub switches: Vec<BindingId>,
     pub in_function: bool,
     pub in_naked_function: bool,

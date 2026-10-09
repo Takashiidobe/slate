@@ -108,6 +108,14 @@ struct StatementContext {
     loops: usize,
     breakables: usize,
     switches: Vec<Option<QualType>>,
+    labels: Vec<String>,
+    named_targets: Vec<NamedTarget>,
+}
+
+struct NamedTarget {
+    labels: Vec<String>,
+    statement: NodeId,
+    is_loop: bool,
 }
 
 #[derive(Default, Clone, Copy)]
@@ -942,6 +950,12 @@ impl Checker<'_> {
             StmtKind::Comment(_) => return,
             _ => self.compound_start = false,
         }
+        let gcc = self.types.flavor().is_gcc();
+        let labels = match &stmt.value {
+            StmtKind::Labeled { .. } | StmtKind::Attributed { .. } => Vec::new(),
+            StmtKind::SwitchLabel { .. } if gcc => Vec::new(),
+            _ => std::mem::take(&mut self.context.labels),
+        };
         match &stmt.value {
             StmtKind::StaticAssert(assertion) => self.assertion(assertion),
             StmtKind::Decl(declaration) => self.declaration(&stmt.derive(()), declaration, false),
@@ -964,12 +978,12 @@ impl Checker<'_> {
                 }
             }
             StmtKind::DoWhile { condition, body } => {
-                self.loop_body(body);
+                self.loop_body(stmt, labels, body);
                 self.condition(condition);
             }
             StmtKind::While { condition, body } => {
                 self.condition(condition);
-                self.loop_body(body);
+                self.loop_body(stmt, labels, body);
             }
             StmtKind::Switch { discriminant, body } => {
                 self.expression(discriminant);
@@ -983,7 +997,7 @@ impl Checker<'_> {
                 }
                 self.context.breakables += 1;
                 self.context.switches.push(promoted);
-                self.statement(body);
+                self.named_target(stmt, labels, false, body);
                 self.context.switches.pop();
                 self.context.breakables -= 1;
             }
@@ -1002,7 +1016,7 @@ impl Checker<'_> {
                 if let Some(increment) = increment {
                     self.expression(increment);
                 }
-                self.loop_body(body);
+                self.loop_body(stmt, labels, body);
             }
             StmtKind::SwitchLabel { label, body } => {
                 if self.context.switches.is_empty() {
@@ -1051,7 +1065,15 @@ impl Checker<'_> {
                 }
                 self.statement(body)
             }
-            StmtKind::Labeled { body, .. } => self.statement(body),
+            StmtKind::Labeled { label, body } => {
+                if !gcc {
+                    self.context.labels.clear();
+                }
+                self.context.labels.push(label.value.clone());
+                self.statement(body)
+            }
+            StmtKind::NamedBreak(label) => self.named_jump(stmt, label, false),
+            StmtKind::NamedContinue(label) => self.named_jump(stmt, label, true),
             StmtKind::Return(expr) => {
                 self.expression(expr);
                 match self.context.returns {
@@ -1089,12 +1111,56 @@ impl Checker<'_> {
         }
     }
 
-    fn loop_body(&mut self, body: &Stmt) {
+    fn loop_body(&mut self, stmt: &Stmt, labels: Vec<String>, body: &Stmt) {
         self.context.loops += 1;
         self.context.breakables += 1;
-        self.statement(body);
+        self.named_target(stmt, labels, true, body);
         self.context.breakables -= 1;
         self.context.loops -= 1;
+    }
+
+    fn named_target(&mut self, stmt: &Stmt, labels: Vec<String>, is_loop: bool, body: &Stmt) {
+        if labels.is_empty() {
+            return self.statement(body);
+        }
+        self.context.named_targets.push(NamedTarget {
+            labels,
+            statement: stmt.id,
+            is_loop,
+        });
+        self.statement(body);
+        self.context.named_targets.pop();
+    }
+
+    fn named_jump(&mut self, stmt: &Stmt, label: &Span<String>, is_continue: bool) {
+        let target = self
+            .context
+            .named_targets
+            .iter()
+            .rev()
+            .find(|target| target.labels.contains(&label.value));
+        let message = match target {
+            Some(target) if !is_continue || target.is_loop => {
+                self.types.named_jumps.insert(stmt.id, target.statement);
+                return;
+            }
+            Some(_) => format!(
+                "`continue` label `{}` names a switch, not a loop",
+                label.value
+            ),
+            None if is_continue => {
+                format!(
+                    "`continue` label `{}` does not name an enclosing loop",
+                    label.value
+                )
+            }
+            None => format!(
+                "`break` label `{}` does not name an enclosing loop or switch",
+                label.value
+            ),
+        };
+        self.errors
+            .push(error(label.provenance, label.expansion, message));
     }
 
     fn condition(&mut self, condition: &Expr) {

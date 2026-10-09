@@ -177,6 +177,7 @@ impl StandardFeatures {
         if flavor.is_gcc() {
             features.widest_integer_literal_fallback = true;
             features.static_assert_expressions = true;
+            features.named_loops = true;
             // gcc drops _Atomic, and before c23 qualifiers of an array's elements, from `?:` pointers
             features.conditional_pointers = crate::sema::PointerMerge {
                 array_element_quals: features.enumerators_have_enum_type,

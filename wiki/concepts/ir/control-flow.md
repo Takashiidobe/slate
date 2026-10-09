@@ -36,8 +36,10 @@ form was.
   unconditional), and optional increment.
 - Conditions become explicit `bool` values.
 - Loops and switches have ids. `break` names the nearest loop or switch;
-  `continue` the nearest loop, through a switch. Rust lowering consumes
-  these ids and never re-searches parents or label names.
+  `continue` the nearest loop, through a switch. C2y `break label;` and
+  `continue label;` name the labeled statement's id, which may be any
+  enclosing loop or switch. Rust lowering consumes these ids and never
+  re-searches parents or label names.
 - Continuations: `for` → increment, then condition; `while` → condition;
   `do`/`while` → trailing condition.
 - Case labels keep their switch id even nested in loops (Duff's device)
