@@ -39,6 +39,7 @@ pub(super) struct Lowerer {
     pub compound_start: bool,
     pub reserved_extents: HashMap<NodeId, BindingId>,
     pub bare_weakrefs: HashSet<BindingId>,
+    pub register_variables: HashMap<BindingId, AsmRegister>,
 }
 
 impl Lowerer {

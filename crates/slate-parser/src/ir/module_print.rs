@@ -353,16 +353,22 @@ impl Printer<'_> {
                 }
                 f.write_str("]")?;
             }
-            let offered =
-                asm.alternative
-                    .and_then(|alternative| operand.constraint.alternatives.get(alternative))
-                    .map_or(0, |alternative| match &alternative.location {
-                        AsmConstraintLocation::Letters { classes, .. } => classes.len(),
-                        AsmConstraintLocation::HardRegister(_)
-                        | AsmConstraintLocation::Matching(_) => 1,
-                    });
+            let chosen = asm
+                .alternative
+                .and_then(|alternative| operand.constraint.alternatives.get(alternative));
+            let offered = chosen.map_or(0, |alternative| match &alternative.location {
+                AsmConstraintLocation::Letters { classes, .. } => classes.len(),
+                AsmConstraintLocation::HardRegister(_) | AsmConstraintLocation::Matching(_) => 1,
+            });
+            let pinned = matches!(operand.selected, Some(super::AsmOperandClass::Explicit(_)))
+                && chosen.is_some_and(|alternative| match &alternative.location {
+                    AsmConstraintLocation::Letters { classes, .. } => !classes
+                        .iter()
+                        .any(|class| matches!(class, super::AsmOperandClass::Explicit(_))),
+                    _ => false,
+                });
             if let Some(selected) = &operand.selected
-                && offered > 1
+                && (offered > 1 || pinned)
             {
                 write!(f, " -> {selected}")?;
             }

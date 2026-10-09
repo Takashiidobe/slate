@@ -77,6 +77,10 @@ whole asm: the first where every operand has a usable class.
 - Unusable: unresolved letters; x87/MMX/AMX (clobber-only in Rust); a
   register the width doesn't fit; an immediate that isn't an integer
   constant; a symbol that isn't a link-time address; a match on an output.
+- An operand naming a register variable (`register long r10 asm("r10")`)
+  whose chosen register class holds that register selects
+  `Explicit(r10)`, as clang emits `{r10}`; GCC guarantees only this use of
+  local register variables. The printer marks it `[reg] -> {r10}`.
 - Recorded as `InlineAsm::alternative`, `AsmOperand::selected`, and
   `AsmRejection`s. With nothing usable, `alternative` is `None` and
   operands lower unselected (`ir_asm_alternatives.c`).
@@ -245,7 +249,17 @@ impossible.
 - Extended asm maps parser options directly. Basic asm uses the decoded template with
   `raw`; its empty piece list does not distinguish text references.
 - `memory`/`cc`/`unwind` clobbers are represented by the computed options;
-  register clobbers become discarded `lateout` operands. Reserved registers remain barriers.
+  register clobbers become discarded `lateout` operands.
+- Explicit GPR operands become `in("ax")` and friends, ordered after every positional operand
+  (Rust rejects positional operands after explicit ones). Rust forbids template references to
+  explicit registers, so references print the register name at the view or operand width
+  (`%eax`, `%r10d`, `%sil`).
+- `reg_legacy` pins the first of ax, cx, dx, si, di not named by another explicit operand or
+  clobber.
+- LLVM reserves rbx: a `b` operand rides in a scratch `reg` swapped into rbx with `xchg` before
+  and after the template (inputs become `inout(..) => _`, outputs early), and an rbx clobber is
+  saved and restored with `mov` through an early `out(reg) _`. rbp/rsp operands and clobbers
+  remain barriers.
 - Memory operands pass their address `in(reg)`: `InPlace` as `&raw const`, memory `Out` and
   `InOut` as `&raw mut`, and an unaddressable `In(value)` spills to a temporary first. A
   reference prints `({N:r})` (AT&T) or `<size> ptr [{N:r}]` (Intel, size from the width);

@@ -67,6 +67,7 @@ fn resolve_module(
         compound_start: false,
         reserved_extents: HashMap::new(),
         bare_weakrefs: HashSet::new(),
+        register_variables: HashMap::new(),
         context,
     };
     let mut poisoned = HashSet::new();
@@ -1522,6 +1523,9 @@ impl Lowerer {
                 return Err(ResolveError::Internal(
                     "variable length array with static storage duration",
                 ));
+            }
+            if let Some(register) = &variable.register {
+                self.register_variables.insert(id, register.clone());
             }
             if variable.is_const && !variable.access.volatile {
                 match &variable.initializer {

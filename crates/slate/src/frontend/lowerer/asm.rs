@@ -99,7 +99,63 @@ fn intel_size(operand: &ir::AsmOperand) -> Result<&'static str> {
     }
 }
 
-fn asm_template(asm: &ir::InlineAsm) -> Result<String> {
+#[derive(Clone, Copy)]
+enum Slot {
+    Positional(usize),
+    Register(&'static str),
+}
+
+fn gpr_name(canonical: &str, view: Option<ir::AsmRegisterView>, width: u64) -> Option<String> {
+    let bits = match view {
+        Some(ir::AsmRegisterView::HighByte) => {
+            return matches!(canonical, "ax" | "bx" | "cx" | "dx")
+                .then(|| format!("{}h", &canonical[..1]));
+        }
+        Some(ir::AsmRegisterView::Bits(bits)) => bits,
+        None => width,
+    };
+    if let Some(number) = canonical.strip_prefix('r') {
+        return match bits {
+            8 => Some(format!("r{number}b")),
+            16 => Some(format!("r{number}w")),
+            32 => Some(format!("r{number}d")),
+            64 => Some(canonical.to_string()),
+            _ => None,
+        };
+    }
+    let abcd = matches!(canonical, "ax" | "bx" | "cx" | "dx");
+    match bits {
+        8 if abcd => Some(format!("{}l", &canonical[..1])),
+        8 => Some(format!("{canonical}l")),
+        16 => Some(canonical.to_string()),
+        32 => Some(format!("e{canonical}")),
+        64 => Some(format!("r{canonical}")),
+        _ => None,
+    }
+}
+
+fn explicit_reference(
+    asm: &ir::InlineAsm,
+    operand: &ir::AsmOperand,
+    canonical: &str,
+    modifier: Option<char>,
+    view: Option<ir::AsmRegisterView>,
+) -> Result<String> {
+    if modifier.is_some() && view.is_none() {
+        return Err(unsupported_asm(format!(
+            "explicit register modifier {modifier:?}"
+        )));
+    }
+    let width = operand.width.ok_or(Invariant::AsmOperandWidth)?;
+    let name = gpr_name(canonical, view, width)
+        .ok_or_else(|| unsupported_asm(format!("register {canonical} at width {width}")))?;
+    Ok(match asm.dialect {
+        Some(ir::AsmDialect::Att) => format!("%{name}"),
+        _ => name,
+    })
+}
+
+fn asm_template(asm: &ir::InlineAsm, slots: &[Slot]) -> Result<String> {
     if !asm.has_sections() {
         return Ok(asm.template.clone());
     }
@@ -120,10 +176,19 @@ fn asm_template(asm: &ir::InlineAsm) -> Result<String> {
                     .operands
                     .get(*index)
                     .ok_or(Invariant::AsmOperandIndex(*index))?;
+                let slot = match slots[*index] {
+                    Slot::Positional(slot) => slot,
+                    Slot::Register(canonical) => {
+                        template.push_str(&explicit_reference(
+                            asm, operand, canonical, *modifier, *view,
+                        )?);
+                        continue;
+                    }
+                };
                 match &operand.selected {
                     Some(ir::AsmOperandClass::Register(_)) if *modifier == Some('a') => {
                         used[*index] = true;
-                        template.push_str(&memory_reference(asm, operand, *index, None)?);
+                        template.push_str(&memory_reference(asm, operand, slot, None)?);
                     }
                     Some(ir::AsmOperandClass::Memory) => {
                         let displacement = match modifier {
@@ -140,7 +205,7 @@ fn asm_template(asm: &ir::InlineAsm) -> Result<String> {
                             template.push_str(intel_size(operand)?);
                             template.push_str(" ptr ");
                         }
-                        template.push_str(&memory_reference(asm, operand, *index, displacement)?);
+                        template.push_str(&memory_reference(asm, operand, slot, displacement)?);
                     }
                     Some(ir::AsmOperandClass::Register(_)) => {
                         if modifier.is_some() && view.is_none() {
@@ -148,7 +213,7 @@ fn asm_template(asm: &ir::InlineAsm) -> Result<String> {
                         }
                         used[*index] = true;
                         let modifier = register_modifier(operand, *view)?;
-                        template.push_str(&format!("{{{index}:{modifier}}}"));
+                        template.push_str(&format!("{{{slot}:{modifier}}}"));
                     }
                     Some(ir::AsmOperandClass::Immediate) => match modifier {
                         None | Some('c' | 'P' | 'p') => {
@@ -156,7 +221,7 @@ fn asm_template(asm: &ir::InlineAsm) -> Result<String> {
                             if modifier.is_none() && asm.dialect == Some(ir::AsmDialect::Att) {
                                 template.push('$');
                             }
-                            template.push_str(&format!("{{{index}}}"));
+                            template.push_str(&format!("{{{slot}}}"));
                         }
                         Some('n') => {
                             let ir::AsmOperandKind::In(value) = &operand.kind else {
@@ -193,7 +258,7 @@ fn asm_template(asm: &ir::InlineAsm) -> Result<String> {
                         if modifier.is_none() && asm.dialect == Some(ir::AsmDialect::Att) {
                             template.push('$');
                         }
-                        template.push_str(&format!("{{{index}}}"));
+                        template.push_str(&format!("{{{slot}}}"));
                         if symbol.offset > 0 {
                             template.push_str(&format!("+{}", symbol.offset));
                         } else if symbol.offset < 0 {
@@ -212,19 +277,19 @@ fn asm_template(asm: &ir::InlineAsm) -> Result<String> {
         }
     }
     for (index, used) in used.into_iter().enumerate() {
-        if !used {
+        if let (false, Slot::Positional(slot)) = (used, slots[index]) {
             let operand = &asm.operands[index];
             let reference = match operand.selected {
                 Some(ir::AsmOperandClass::Register(_)) => {
                     let modifier = register_modifier(operand, None)?;
-                    format!("{{{index}:{modifier}}}")
+                    format!("{{{slot}:{modifier}}}")
                 }
                 Some(
                     ir::AsmOperandClass::Immediate
                     | ir::AsmOperandClass::Symbol
                     | ir::AsmOperandClass::Memory,
                 ) => {
-                    format!("{{{index}}}")
+                    format!("{{{slot}}}")
                 }
                 _ => return Err(unsupported_asm(format!("unused operand {index}"))),
             };
@@ -277,20 +342,21 @@ impl FunctionLowerer<'_, '_> {
         Err(unsupported_asm(format!("symbol binding {id:?}")))
     }
 
-    fn asm_fixed_place(&self, place: &ir::Place) -> bool {
+    fn asm_fixed_place(&self, place: &ir::Place, pinned: bool) -> bool {
         match place.kind {
             PlaceKind::Binding(id) => {
-                self.register_locals.contains(&id) || self.tables.register_globals.contains_key(&id)
+                (!pinned && self.register_locals.contains(&id))
+                    || self.tables.register_globals.contains_key(&id)
             }
             _ => false,
         }
     }
 
-    fn asm_fixed_input(&self, value: &ir::Value) -> bool {
+    fn asm_fixed_input(&self, value: &ir::Value, pinned: bool) -> bool {
         match &value.node.value {
-            ValueKind::Read { place, .. } => self.asm_fixed_place(place),
+            ValueKind::Read { place, .. } => self.asm_fixed_place(place, pinned),
             ValueKind::Convert { operand, .. } | ValueKind::Copy { operand, .. } => {
-                self.asm_fixed_input(operand)
+                self.asm_fixed_input(operand, pinned)
             }
             _ => false,
         }
@@ -468,20 +534,39 @@ impl FunctionLowerer<'_, '_> {
         }
         let options = asm_options(asm)?;
         let mut operands = Vec::new();
+        let mut explicit = Vec::new();
+        let mut slots = Vec::new();
+        let mut saved_rbx = None;
+        let mut taken = asm
+            .operands
+            .iter()
+            .filter_map(|operand| match &operand.selected {
+                Some(ir::AsmOperandClass::Explicit(register)) => register.canonical,
+                _ => None,
+            })
+            .chain(asm.clobbers.iter().filter_map(|clobber| match clobber {
+                ir::AsmClobber::Register(register) => register.canonical,
+                _ => None,
+            }))
+            .collect::<BTreeSet<_>>();
         let mut prefix = Vec::new();
         let mut writebacks = Vec::new();
         for (index, operand) in asm.operands.iter().enumerate() {
+            let explicit_class = matches!(operand.selected, Some(ir::AsmOperandClass::Explicit(_)));
             let fixed = match &operand.kind {
-                ir::AsmOperandKind::In(value) => self.asm_fixed_input(value),
-                ir::AsmOperandKind::Out { place, .. } => self.asm_fixed_place(place),
+                ir::AsmOperandKind::In(value) => self.asm_fixed_input(value, explicit_class),
+                ir::AsmOperandKind::Out { place, .. } => {
+                    self.asm_fixed_place(place, explicit_class)
+                }
                 ir::AsmOperandKind::InOut { place, input, .. } => {
-                    self.asm_fixed_place(place)
+                    self.asm_fixed_place(place, explicit_class)
                         || input
                             .as_ref()
-                            .is_some_and(|input| self.asm_fixed_input(&input.value))
+                            .is_some_and(|input| self.asm_fixed_input(&input.value, explicit_class))
                 }
                 _ => false,
             };
+            let mut pinned = None;
             if fixed {
                 return Err(unsupported_asm(
                     "register variable needs explicit register lowering",
@@ -500,6 +585,7 @@ impl FunctionLowerer<'_, '_> {
                             "non-integer constant operand {index}"
                         )));
                     }
+                    slots.push(Slot::Positional(operands.len()));
                     operands.push(rust::AsmOperand::Const(self.lower_value(value)?));
                     continue;
                 }
@@ -507,6 +593,7 @@ impl FunctionLowerer<'_, '_> {
                     let ir::AsmOperandKind::Symbol(symbol) = &operand.kind else {
                         return Err(unsupported_asm(format!("non-symbol operand {index}")));
                     };
+                    slots.push(Slot::Positional(operands.len()));
                     operands.push(rust::AsmOperand::Sym(self.asm_symbol(symbol)?));
                     continue;
                 }
@@ -534,6 +621,7 @@ impl FunctionLowerer<'_, '_> {
                             return Err(unsupported_asm(format!("memory operand kind at {index}")));
                         }
                     };
+                    slots.push(Slot::Positional(operands.len()));
                     operands.push(rust::AsmOperand::In {
                         reg: rust::AsmReg::Class("reg".into()),
                         value: address,
@@ -543,6 +631,40 @@ impl FunctionLowerer<'_, '_> {
                 Some(ir::AsmOperandClass::Register(
                     class @ (ir::AsmRegisterClass::Reg | ir::AsmRegisterClass::RegAbcd),
                 )) => rust::AsmReg::Class(class.as_str().into()),
+                Some(ir::AsmOperandClass::Register(ir::AsmRegisterClass::RegLegacy)) => {
+                    let canonical = ["ax", "cx", "dx", "si", "di"]
+                        .into_iter()
+                        .find(|candidate| taken.insert(candidate))
+                        .ok_or_else(|| unsupported_asm("no free legacy register"))?;
+                    pinned = Some(canonical);
+                    rust::AsmReg::Explicit(canonical.into())
+                }
+                Some(ir::AsmOperandClass::Explicit(register)) => {
+                    let canonical = register
+                        .canonical
+                        .filter(|canonical| gpr_name(canonical, None, 64).is_some())
+                        .ok_or_else(|| {
+                            unsupported_asm(format!("explicit register {}", register.spelling))
+                        })?;
+                    match canonical {
+                        "bp" | "sp" => {
+                            return Err(unsupported_asm(format!(
+                                "reserved register operand {canonical}"
+                            )));
+                        }
+                        "bx" if saved_rbx.is_some() => {
+                            return Err(unsupported_asm("second rbx operand"));
+                        }
+                        "bx" => {
+                            saved_rbx = Some(operands.len());
+                            rust::AsmReg::Class("reg".into())
+                        }
+                        _ => {
+                            pinned = Some(canonical);
+                            rust::AsmReg::Explicit(canonical.into())
+                        }
+                    }
+                }
                 selected => return Err(unsupported_asm(format!("operand {index}: {selected:?}"))),
             };
             let lowered = match &operand.kind {
@@ -598,15 +720,50 @@ impl FunctionLowerer<'_, '_> {
                 }
                 _ => return Err(unsupported_asm(format!("operand kind at {index}"))),
             };
-            operands.push(lowered);
+            match (pinned, lowered) {
+                (None, lowered) if explicit_class && saved_rbx == Some(operands.len()) => {
+                    slots.push(Slot::Register("bx"));
+                    operands.push(match lowered {
+                        rust::AsmOperand::In { reg, value } => rust::AsmOperand::InOut {
+                            reg,
+                            late: false,
+                            input: value,
+                            output: Expr::Var("_".into()),
+                        },
+                        rust::AsmOperand::Out { reg, value, .. } => rust::AsmOperand::Out {
+                            reg,
+                            late: false,
+                            value,
+                        },
+                        rust::AsmOperand::InOut {
+                            reg, input, output, ..
+                        } => rust::AsmOperand::InOut {
+                            reg,
+                            late: false,
+                            input,
+                            output,
+                        },
+                        lowered => lowered,
+                    });
+                }
+                (Some(canonical), lowered) => {
+                    slots.push(Slot::Register(canonical));
+                    explicit.push(lowered);
+                }
+                (_, lowered) => {
+                    slots.push(Slot::Positional(operands.len()));
+                    operands.push(lowered);
+                }
+            }
         }
+        let mut saved_rbx = saved_rbx.map(|slot| (slot, true));
         let mut clobbered = BTreeSet::new();
         for clobber in &asm.clobbers {
             if let ir::AsmClobber::Register(register) = clobber {
                 let canonical = register.canonical.ok_or_else(|| {
                     unsupported_asm(format!("unknown clobber {}", register.spelling))
                 })?;
-                if matches!(canonical, "bx" | "bp" | "sp") {
+                if matches!(canonical, "bp" | "sp") {
                     return Err(unsupported_asm(format!(
                         "reserved register clobber {canonical}"
                     )));
@@ -614,14 +771,47 @@ impl FunctionLowerer<'_, '_> {
                 if !clobbered.insert(canonical) {
                     continue;
                 }
-                operands.push(rust::AsmOperand::Out {
+                if canonical == "bx" {
+                    if saved_rbx.is_none() {
+                        saved_rbx = Some((operands.len(), false));
+                        operands.push(rust::AsmOperand::Out {
+                            reg: rust::AsmReg::Class("reg".into()),
+                            late: false,
+                            value: Expr::Var("_".into()),
+                        });
+                    }
+                    continue;
+                }
+                explicit.push(rust::AsmOperand::Out {
                     reg: rust::AsmReg::Explicit(canonical.into()),
                     late: true,
                     value: Expr::Var("_".into()),
                 });
             }
         }
-        let template = asm_template(asm)?;
+        let mut template = asm_template(asm, &slots)?;
+        if let Some((slot, swap)) = saved_rbx {
+            let (save, restore) = match (asm.dialect, swap) {
+                (Some(ir::AsmDialect::Intel), false) => (
+                    format!("mov {{{slot}:r}}, rbx"),
+                    format!("mov rbx, {{{slot}:r}}"),
+                ),
+                (Some(ir::AsmDialect::Intel), _) => {
+                    let swap = format!("xchg {{{slot}:r}}, rbx");
+                    (swap.clone(), swap)
+                }
+                (_, false) => (
+                    format!("mov %rbx, {{{slot}:r}}"),
+                    format!("mov {{{slot}:r}}, %rbx"),
+                ),
+                _ => {
+                    let swap = format!("xchg {{{slot}:r}}, %rbx");
+                    (swap.clone(), swap)
+                }
+            };
+            template = format!("{save}\n{template}\n{restore}");
+        }
+        operands.extend(explicit);
         self.dependencies.asm_unwind |= options.contains(&rust::AsmOption::MayUnwind);
         prefix.push(Stmt::InlineAsm(rust::InlineAsm {
             template,

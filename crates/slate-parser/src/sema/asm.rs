@@ -79,6 +79,14 @@ impl Lowerer {
                     .and_then(|input| input.constraint.value.tied_output()),
             };
             let selected = match choice {
+                Some(Choice::Class(AsmOperandClass::Register(class))) => {
+                    Some(match self.pinned_register(&source.candidate) {
+                        Some(register) if holds(class, &register) => {
+                            AsmOperandClass::Explicit(register)
+                        }
+                        _ => AsmOperandClass::Register(class),
+                    })
+                }
                 Some(Choice::Class(class)) => Some(class),
                 Some(Choice::Tie(_)) | None => None,
             };
@@ -293,6 +301,24 @@ impl Lowerer {
             lvalue,
             addressable,
         })
+    }
+
+    fn pinned_register(&self, candidate: &Candidate<'_>) -> Option<AsmRegister> {
+        let place = match candidate {
+            Candidate::Output(
+                AsmOperandKind::Out { place, .. } | AsmOperandKind::InOut { place, .. },
+            ) => place,
+            Candidate::Value(Value { node, .. }) => match &node.value {
+                ValueKind::Read { place, .. } => place,
+                _ => return None,
+            },
+            Candidate::Lvalue { lvalue, .. } => &lvalue.place,
+            Candidate::Output(_) => return None,
+        };
+        match place.kind {
+            PlaceKind::Binding(id) => self.register_variables.get(&id).cloned(),
+            _ => None,
+        }
     }
 
     fn symbol(&self, value: &Value) -> Option<AsmSymbol> {
@@ -590,6 +616,28 @@ fn fits(register: AsmRegisterClass, width: Option<u64>, family: TargetFamily) ->
         AsmRegisterClass::SReg => width == 32,
         AsmRegisterClass::DReg => width == 64,
         AsmRegisterClass::X87Reg | AsmRegisterClass::MmxReg => false,
+    }
+}
+
+fn holds(class: AsmRegisterClass, register: &AsmRegister) -> bool {
+    let Some(name) = register.canonical else {
+        return false;
+    };
+    let legacy = matches!(name, "ax" | "bx" | "cx" | "dx" | "si" | "di" | "bp" | "sp");
+    let numbered = name
+        .strip_prefix('r')
+        .and_then(|number| number.parse::<u8>().ok())
+        .is_some_and(|number| (8..=15).contains(&number));
+    match class {
+        AsmRegisterClass::Reg => legacy || numbered,
+        AsmRegisterClass::RegLegacy => legacy,
+        AsmRegisterClass::RegAbcd => matches!(name, "ax" | "bx" | "cx" | "dx"),
+        AsmRegisterClass::XmmReg => name.starts_with("xmm"),
+        AsmRegisterClass::YmmReg => name.starts_with("ymm") || name.starts_with("xmm"),
+        AsmRegisterClass::ZmmReg => ["xmm", "ymm", "zmm"]
+            .iter()
+            .any(|prefix| name.starts_with(prefix)),
+        _ => false,
     }
 }
 
