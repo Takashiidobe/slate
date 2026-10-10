@@ -214,6 +214,7 @@ impl TypeResolver {
                         FloatSuffix::F128 | FloatSuffix::Q => FloatKind::Float128,
                         FloatSuffix::DecimalF32 => FloatKind::Decimal32,
                         FloatSuffix::DecimalF64 => FloatKind::Decimal64,
+                        FloatSuffix::DecimalF64x => FloatKind::Decimal64x,
                         FloatSuffix::DecimalF128 => FloatKind::Decimal128,
                     };
                     let component = CTypeKind::Float(kind);

@@ -522,6 +522,22 @@ macro_rules! gcc_decimal_builtins {
             variadic: false,
         }
     };
+    (@prototype fabs $decimal:ident) => {
+        BuiltinPrototype {
+            spelling: "",
+            ret: BuiltinParam {
+                ty: &BuiltinType::Float(FloatKind::$decimal),
+                quals: Qualifiers::NONE,
+                constant: false,
+            },
+            params: &[BuiltinParam {
+                ty: &BuiltinType::Float(FloatKind::$decimal),
+                quals: Qualifiers::NONE,
+                constant: false,
+            }],
+            variadic: false,
+        }
+    };
     (@prototype nan $decimal:ident) => {
         BuiltinPrototype {
             spelling: "",
@@ -545,15 +561,22 @@ macro_rules! gcc_decimal_builtins {
 }
 
 static GCC_DECIMAL_BUILTINS: &[ClangBuiltin] = gcc_decimal_builtins! {
+    "__builtin_fabsd128" "Fabs" fabs Const Decimal128;
+    "__builtin_fabsd32" "Fabs" fabs Const Decimal32;
+    "__builtin_fabsd64" "Fabs" fabs Const Decimal64;
+    "__builtin_fabsd64x" "Fabs" fabs Const Decimal64x;
     "__builtin_infd128" "Inf" inf Const Decimal128;
     "__builtin_infd32" "Inf" inf Const Decimal32;
     "__builtin_infd64" "Inf" inf Const Decimal64;
+    "__builtin_infd64x" "Inf" inf Const Decimal64x;
     "__builtin_nand128" "Nan" nan Pure Decimal128;
     "__builtin_nand32" "Nan" nan Pure Decimal32;
     "__builtin_nand64" "Nan" nan Pure Decimal64;
+    "__builtin_nand64x" "Nan" nan Pure Decimal64x;
     "__builtin_nansd128" "Nans" nan Pure Decimal128;
     "__builtin_nansd32" "Nans" nan Pure Decimal32;
     "__builtin_nansd64" "Nans" nan Pure Decimal64;
+    "__builtin_nansd64x" "Nans" nan Pure Decimal64x;
 };
 
 fn registered_builtin(table: &'static [ClangBuiltin], name: &str) -> Option<&'static ClangBuiltin> {

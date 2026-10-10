@@ -51,15 +51,22 @@ pub(super) fn has_builtin(name: &str, flavor: CompilerFlavor) -> bool {
 }
 
 const GCC_ONLY_BUILTINS: &[&str] = &[
+    "__builtin_fabsd128",
+    "__builtin_fabsd32",
+    "__builtin_fabsd64",
+    "__builtin_fabsd64x",
     "__builtin_infd128",
     "__builtin_infd32",
     "__builtin_infd64",
+    "__builtin_infd64x",
     "__builtin_nand128",
     "__builtin_nand32",
     "__builtin_nand64",
+    "__builtin_nand64x",
     "__builtin_nansd128",
     "__builtin_nansd32",
     "__builtin_nansd64",
+    "__builtin_nansd64x",
 ];
 
 pub(super) fn has_feature(name: &str, flavor: CompilerFlavor, standard: LanguageStandard) -> bool {

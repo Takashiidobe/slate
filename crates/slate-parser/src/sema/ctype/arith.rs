@@ -261,7 +261,7 @@ fn float_rank(kind: FloatKind, target: &TargetInfo) -> (u32, u32) {
         FloatType::F128 | FloatType::D128 => 5,
     };
     let tie = match kind {
-        FloatKind::Float32x | FloatKind::Float64x => 0,
+        FloatKind::Float32x | FloatKind::Float64x | FloatKind::Decimal64x => 0,
         FloatKind::Fp16 | FloatKind::Float => 1,
         FloatKind::Double => 2,
         FloatKind::LongDouble => 3,

@@ -144,12 +144,16 @@ pub enum FloatKind {
     Float128,
     Decimal32,
     Decimal64,
+    Decimal64x,
     Decimal128,
 }
 
 impl FloatKind {
     pub fn is_decimal(self) -> bool {
-        matches!(self, Self::Decimal32 | Self::Decimal64 | Self::Decimal128)
+        matches!(
+            self,
+            Self::Decimal32 | Self::Decimal64 | Self::Decimal64x | Self::Decimal128
+        )
     }
 }
 

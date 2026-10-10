@@ -217,7 +217,7 @@ The base type; never pointers, arrays, or functions (those are declarators).
 | `Int { rank: Short \| Int \| Long \| LongLong \| Int128, signed }` | incl. `__int128_t`/`__uint128_t`; MS `__int16`/`__int32`/`__int64` |
 | `BitInt { width: Expr, signed }` | `_BitInt(N)`, width unevaluated |
 | `Float(FloatKind)` | `float`, `double`, `long double`, `_Float16`, `__fp16`, `_Float128`, … |
-| `Float(Decimal32 \| Decimal64 \| Decimal128)` | `_Decimal32/64/128`; literals `DF`/`DD`/`DL` |
+| `Float(Decimal32 \| Decimal64 \| Decimal64x \| Decimal128)` | `_Decimal32/64/64x/128`; literals `DF`/`DD`/`DL`, `D64x`; `d`/`D` spellings of `D32`, `D64`, `D128` also work |
 | `Complex(FloatKind)`, `Imaginary(FloatKind)` | |
 | `FixedPoint { kind, rank, signed, saturated }` | `_Fract`/`_Accum`, any order, signed unless `unsigned` |
 | `Atomic(TypeName)` | `_Atomic(T)` |

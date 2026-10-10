@@ -175,7 +175,7 @@ IntegerRank  = "Short" | "Int" | "Long" | "LongLong" | "Int128" ;
 FloatingType = "BFloat16" | "Float" | "Float16" | "Fp16"
              | "Float32" | "Float64" | "Float32x" | "Float64x"
              | "Double" | "LongDouble" | "Float128" | "Float128Ext" | "Float80"
-             | "Decimal32" | "Decimal64" | "Decimal128" ;
+             | "Decimal32" | "Decimal64" | "Decimal64x" | "Decimal128" ;
 
 VectorType     = VectorType { element: TypeSpecifier, size: VectorSize } ;
 VectorSize     = "Bytes(" expr ")" | "Lanes(" expr ")" ;

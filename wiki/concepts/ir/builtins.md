@@ -75,7 +75,7 @@ overflow, `lowerer/values.rs` handles rotations and scalar bit counts, and
 - `__builtin_complex`
 - `__builtin_inf`, `__builtin_huge_val`, with `f` and `l` forms
 - `__builtin_flt_rounds`
-- `__builtin_{inf,nan,nans}d{32,64,128}` (gcc only): decimal float values
+- `__builtin_{inf,nan,nans,fabs}d{32,64,128,64x}` (gcc only): decimal float values
   that clang lacks, so they come from `GCC_DECIMAL_BUILTINS` in
   `sema/builtins.rs` rather than the generated clang table. gcc's `float.h`
   builds `DEC_INFINITY`, `DEC_NAN` and `DEC*_SNAN` from them. They stay

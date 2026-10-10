@@ -192,6 +192,6 @@ pub fn float_type(kind: FloatKind, target: &TargetInfo) -> FloatType {
         FloatKind::Float128 => FloatType::F128,
         FloatKind::Decimal32 => FloatType::D32,
         FloatKind::Decimal64 => FloatType::D64,
-        FloatKind::Decimal128 => FloatType::D128,
+        FloatKind::Decimal64x | FloatKind::Decimal128 => FloatType::D128,
     }
 }

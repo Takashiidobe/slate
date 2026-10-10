@@ -1148,6 +1148,7 @@ pub enum FloatingType {
     Float80,
     Decimal32,
     Decimal64,
+    Decimal64x,
     Decimal128,
 }
 

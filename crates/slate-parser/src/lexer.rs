@@ -37,6 +37,7 @@ pub enum Keyword {
     Float80,
     Decimal32,
     Decimal64,
+    Decimal64x,
     Decimal128,
     Int,
     Long,
@@ -130,6 +131,7 @@ impl From<Keyword> for &'static str {
             Keyword::Float80 => "__float80",
             Keyword::Decimal32 => "_Decimal32",
             Keyword::Decimal64 => "_Decimal64",
+            Keyword::Decimal64x => "_Decimal64x",
             Keyword::Decimal128 => "_Decimal128",
             Keyword::Int => "int",
             Keyword::Long => "long",
@@ -1194,6 +1196,9 @@ pub fn keyword_token(word: &str, features: &StandardFeatures) -> Option<Token> {
         }
         "_Decimal64" if features.decimal_floating_point.is_accepted() => {
             Token::Keyword(Keyword::Decimal64)
+        }
+        "_Decimal64x" if features.decimal_floating_point.is_accepted() => {
+            Token::Keyword(Keyword::Decimal64x)
         }
         "_Decimal128" if features.decimal_floating_point.is_accepted() => {
             Token::Keyword(Keyword::Decimal128)

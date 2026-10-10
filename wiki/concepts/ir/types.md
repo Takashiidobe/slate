@@ -37,6 +37,7 @@ The shown type is concrete and target-resolved; the C type is metadata
 | `long double` (x86) | `f80` | |
 | `__float128` | `f128` | |
 | `_Decimal32/64/128` | `d32` / `d64` / `d128` | |
+| `_Decimal64x` | `d128` | distinct C type with decimal128 format; loses ties to `_Decimal128` in arithmetic |
 | `_BitInt(128)` | `i128b` | `c=_BitInt(128)` |
 | `const char *` | `ptr<const i8>` | `c=const char *` |
 | `enum E` / `struct S` | `@typeN` | layout in the module |

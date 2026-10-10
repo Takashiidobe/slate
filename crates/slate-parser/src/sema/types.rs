@@ -1936,6 +1936,7 @@ impl TypeResolver {
                 }
                 FloatingType::Decimal32 => FloatKind::Decimal32,
                 FloatingType::Decimal64 => FloatKind::Decimal64,
+                FloatingType::Decimal64x => FloatKind::Decimal64x,
                 FloatingType::Decimal128 => FloatKind::Decimal128,
                 FloatingType::Float64x | FloatingType::Float128 | FloatingType::Float80 => {
                     return Err(ResolveError::Rejected(

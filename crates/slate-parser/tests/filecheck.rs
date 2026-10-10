@@ -977,6 +977,7 @@ fn type_spelling(ty: &TypeSpecifier) -> String {
             FloatingType::Float80 => "__float80".into(),
             FloatingType::Decimal32 => "_Decimal32".into(),
             FloatingType::Decimal64 => "_Decimal64".into(),
+            FloatingType::Decimal64x => "_Decimal64x".into(),
             FloatingType::Decimal128 => "_Decimal128".into(),
         },
         TypeSpecifier::Complex(element) => format!("_Complex {}", type_spelling(element)),

@@ -1247,6 +1247,7 @@ fn specifier_piece(token: &Token, nothing_before: bool) -> Option<Piece> {
         Keyword::Float80 => Piece::Base(BaseKind::Floating(FloatingType::Float80)),
         Keyword::Decimal32 => Piece::Base(BaseKind::Floating(FloatingType::Decimal32)),
         Keyword::Decimal64 => Piece::Base(BaseKind::Floating(FloatingType::Decimal64)),
+        Keyword::Decimal64x => Piece::Base(BaseKind::Floating(FloatingType::Decimal64x)),
         Keyword::Decimal128 => Piece::Base(BaseKind::Floating(FloatingType::Decimal128)),
         Keyword::Bool
         | Keyword::Void
@@ -1266,6 +1267,7 @@ fn has_complex_form(float: FloatingType) -> bool {
         FloatingType::Fp16
             | FloatingType::Decimal32
             | FloatingType::Decimal64
+            | FloatingType::Decimal64x
             | FloatingType::Decimal128
     )
 }

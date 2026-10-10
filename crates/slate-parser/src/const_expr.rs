@@ -391,6 +391,7 @@ pub enum FloatSuffix {
     W,
     DecimalF32,
     DecimalF64,
+    DecimalF64x,
     DecimalF128,
 }
 
@@ -433,9 +434,9 @@ pub enum FloatValue {
 }
 
 // scanned in order by ends_with, so bf16 must precede f16
-const FLOAT_SUFFIXES: [&str; 18] = [
-    "bf16", "f128", "f64x", "f32x", "f16", "f32", "f64", "d128", "d64", "d32", "df", "dd", "dl",
-    "d", "f", "l", "q", "w",
+const FLOAT_SUFFIXES: [&str; 19] = [
+    "bf16", "f128", "f64x", "f32x", "f16", "f32", "f64", "d128", "d64x", "d64", "d32", "df", "dd",
+    "dl", "d", "f", "l", "q", "w",
 ];
 
 fn float_suffix_from_token(suffix: &str) -> FloatSuffix {
@@ -454,6 +455,7 @@ fn float_suffix_from_token(suffix: &str) -> FloatSuffix {
         "w" => FloatSuffix::W,
         "df" | "d32" => FloatSuffix::DecimalF32,
         "dd" | "d64" => FloatSuffix::DecimalF64,
+        "d64x" => FloatSuffix::DecimalF64x,
         _ => FloatSuffix::DecimalF128,
     }
 }
@@ -477,6 +479,7 @@ fn split_float_spelling(spelling: &str) -> (String, &'static str, bool) {
                 || match *suffix {
                     "f32x" => digits.ends_with("F32x"),
                     "f64x" => digits.ends_with("F64x"),
+                    "d64x" => digits.ends_with("D64x"),
                     _ => false,
                 }
         })
@@ -576,7 +579,7 @@ pub fn resolve_float(literal: &FloatLiteral) -> Result<ResolvedFloat, ConstExprE
         }
         FloatSuffix::DecimalF32 => FloatValue::Decimal32(digits),
         FloatSuffix::DecimalF64 => FloatValue::Decimal64(digits),
-        FloatSuffix::DecimalF128 => FloatValue::Decimal128(digits),
+        FloatSuffix::DecimalF64x | FloatSuffix::DecimalF128 => FloatValue::Decimal128(digits),
     };
     Ok(ResolvedFloat {
         value,
@@ -2265,6 +2268,7 @@ pub(crate) fn starts_type_name(token: &Token, context: crate::parser::ParseConte
                 | Keyword::Float80
                 | Keyword::Decimal32
                 | Keyword::Decimal64
+                | Keyword::Decimal64x
                 | Keyword::Decimal128
                 | Keyword::Int
                 | Keyword::Long

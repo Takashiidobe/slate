@@ -337,6 +337,7 @@ fn float_name(kind: FloatKind) -> &'static str {
         FloatKind::Float128 => "__float128",
         FloatKind::Decimal32 => "_Decimal32",
         FloatKind::Decimal64 => "_Decimal64",
+        FloatKind::Decimal64x => "_Decimal64x",
         FloatKind::Decimal128 => "_Decimal128",
     }
 }
