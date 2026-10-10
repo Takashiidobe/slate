@@ -111,6 +111,13 @@ whole asm: the first where every operand has a usable class.
   both compilers use only rax for a 64-bit `=A` on x86-64. Emission splits
   the value into `ax`/`dx` halves and recombines outputs; a template
   reference names the low register at word width.
+- x86 `@cc<cond>` is `Flags(cond)` (printed `cc(e)`), a flags output for
+  the 28 conditions both compilers accept (`pe`/`po` are rejected by
+  both). The parser rejects it on an input, with an unknown condition, or
+  beside `,` alternatives, as both compilers do. clang alone accepts `+`,
+  floats, and a template reference to the operand; those parse and
+  Slate barriers on them. `@` on other targets stays `Unresolved`
+  (`ir_asm_flag_outputs.c`, `error/asm-flag-output-*.c`).
 - `<`, `>` (clang's backend fails), `E`/`F`/`C`/`G`, and `Y0` (clang
   rejects their operands) stay `Unresolved`, never guessed.
 - `reg_legacy` and `vreg_low8` (AArch64 `y`) have no Rust class; emission
@@ -285,5 +292,9 @@ impossible.
   across statements. Only `const` and `sym` operands are allowed; basic templates escape
   braces instead of using `raw`, and AT&T adds `att_syntax`. A body with anything but asm,
   null statements, and comments is a barrier (`asm_naked_functions.c`).
+- A flags output becomes `out(reg_byte)` into a `u8` temporary with `set<cond> {N}` appended
+  to the template, decoded into the C place like other outputs (`_Bool` tests against zero,
+  integers zero-extend). gcc drops the setcc for `=&@cc`, so the differential fixture avoids
+  early clobbers (`gnu_asm_flag_outputs.c`).
 - Other immediate modifiers, asm goto, module asm,
   and additional operand classes are tracked by the other `slate-3f8g.4.17` children.

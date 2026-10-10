@@ -6,6 +6,7 @@ use super::types::TypeResolver;
 use crate::ast;
 use crate::compiler_args::CompilerFlavor;
 use crate::ir::*;
+use crate::target::x86::flag_condition;
 use crate::target_info::TargetFamily;
 use num_bigint::BigInt;
 
@@ -601,6 +602,7 @@ fn rank(
         AsmOperandClass::Register(_) => Ok(1),
         AsmOperandClass::Pair { .. } if source.width == Some(2 * word(family)) => Ok(2),
         AsmOperandClass::Pair { .. } => Err(AsmRejectReason::Width),
+        AsmOperandClass::Flags(_) => Ok(0),
         AsmOperandClass::Explicit(register) if clobber_only(register) => {
             Err(AsmRejectReason::ClobberOnly)
         }
@@ -799,6 +801,9 @@ fn constraint(constraint: &ast::AsmConstraint, family: TargetFamily) -> AsmConst
 
 fn classes(letters: &str, family: TargetFamily) -> Vec<AsmOperandClass> {
     let x86 = family.is_x86();
+    if x86 && let Some(condition) = flag_condition(letters) {
+        return vec![AsmOperandClass::Flags(condition)];
+    }
     let mut classes = Vec::new();
     let mut rest = letters;
     while let Some(first) = rest.chars().next() {

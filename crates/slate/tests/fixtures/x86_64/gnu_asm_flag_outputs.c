@@ -11,17 +11,6 @@ static int compare_flags(int left, int right) {
   return equal * 100 + above * 10 + less;
 }
 
-static int compare_intel_equal(int left, int right) {
-  int equal;
-
-  __asm__(".intel_syntax noprefix\n\t"
-          "cmp %V1, %V2\n\t"
-          ".att_syntax prefix"
-          : "=@ccz"(equal)
-          : "r"(left), "r"(right));
-  return equal;
-}
-
 static int compare_flag_widths(int value) {
   unsigned short sign;
   unsigned long  nonzero;
@@ -30,9 +19,18 @@ static int compare_flag_widths(int value) {
   return (int)(sign * 10 + nonzero);
 }
 
+static int carry_bool(unsigned a, unsigned b) {
+  _Bool carry;
+  unsigned char zero;
+
+  __asm__("addl %3, %2" : "=@ccc"(carry), "=@ccz"(zero), "+r"(a) : "r"(b));
+  return carry * 10 + zero;
+}
+
 int main(void) {
-  printf("%d %d %d %d %d\n", compare_flags(5, 5), compare_flags(9, 4),
-         compare_flags(-1, 1), compare_intel_equal(7, 7),
-         compare_flag_widths(-1));
+  printf("%d %d %d %d\n", compare_flags(5, 5), compare_flags(9, 4),
+         compare_flags(-1, 1), compare_flag_widths(-1));
+  printf("%d %d %d\n", carry_bool(0xffffffffu, 2), carry_bool(0xffffffffu, 1),
+         carry_bool(1, 2));
   return 0;
 }

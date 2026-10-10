@@ -285,6 +285,10 @@ fn asm_template(asm: &ir::InlineAsm, slots: &[Slot]) -> Result<String> {
     for (index, used) in used.into_iter().enumerate() {
         if let (false, Slot::Positional(slot)) = (used, slots[index]) {
             let operand = &asm.operands[index];
+            if let Some(ir::AsmOperandClass::Flags(condition)) = operand.selected {
+                template.push_str(&format!("\nset{condition} {{{slot}}}"));
+                continue;
+            }
             let reference = match operand.selected {
                 Some(ir::AsmOperandClass::Register(_)) => {
                     let modifier = register_modifier(operand, None)?;
@@ -779,6 +783,28 @@ impl FunctionLowerer<'_, '_> {
                     };
                     slots.push(Slot::Positional(operands.len()));
                     operands.push(rust::AsmOperand::Sym(self.asm_symbol(symbol)?));
+                    continue;
+                }
+                Some(ir::AsmOperandClass::Flags(_)) => {
+                    let ir::AsmOperandKind::Out { place, .. } = &operand.kind else {
+                        return Err(unsupported_asm("read-write flag output"));
+                    };
+                    let temp = self.next_temp();
+                    prefix.push(Stmt::Let {
+                        name: temp.clone(),
+                        mutable: false,
+                        ty: Some(rust::Type::Prim(Prim::U8)),
+                        init: None,
+                    });
+                    let output = Expr::Var(temp.as_str().into());
+                    let decoded = self.asm_decode(output.clone(), &place.ty)?;
+                    writebacks.push(self.lower_assignment(place, decoded)?);
+                    slots.push(Slot::Positional(operands.len()));
+                    operands.push(rust::AsmOperand::Out {
+                        reg: rust::AsmReg::Class("reg_byte".into()),
+                        late: operand.direction() == ir::AsmDirection::LateOut,
+                        value: output,
+                    });
                     continue;
                 }
                 Some(ir::AsmOperandClass::Pair { low, high }) => {

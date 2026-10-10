@@ -304,7 +304,7 @@ asm_alt    = "{" identifier "}" | integer
 asm_class  = "reg" | "reg_abcd" | "reg_legacy" | "vreg_low8" | "xmm_reg" | "ymm_reg" | "zmm_reg" | "kreg" | "x87_reg"
            | "mmx_reg" | "vreg" | "vreg_low16" | "sreg" | "dreg"
            | "mem" | "imm" | "sym" | "{" identifier "}" | "{" identifier ":" identifier "}"
-           | "unresolved(" string ")" ;
+           | "cc(" identifier ")" | "unresolved(" string ")" ;
 asm_place  = "place<" type [ ", volatile" ] ">(" place ")" ;
 asm_symbol = "sym<offset=" [ "-" ] integer ">(" binding ")" ;
 asm_memory = "mem<" ( "read" | "write" | "readwrite" ) ">" asm_place ;

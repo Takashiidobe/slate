@@ -8,7 +8,7 @@ use crate::ast::{
 };
 use crate::error::ParseError;
 use crate::lexer::{Keyword, Lexer, Token};
-use crate::target::x86::decode_register;
+use crate::target::x86::{decode_register, flag_condition};
 use crate::target_info::TargetFamily;
 
 pub(super) fn is_asm_keyword(token: Option<&Token>) -> bool {
@@ -278,6 +278,19 @@ impl Parser {
                 .iter()
                 .any(|alternative| alternative.modifiers.contains(&AsmConstraintModifier::Pic));
             if (self.flavor().is_clang() && hard_register) || (pic && !at_file_scope) {
+                return Err(invalid_constraint(operand, direction));
+            }
+            let flags = constraint.alternatives.iter().any(|alternative| {
+                matches!(&alternative.location, AsmConstraintLocation::Letters(letters) if letters.starts_with('@'))
+            });
+            if flags
+                && dialects
+                && (direction == "input"
+                    || constraint.alternatives.len() > 1
+                    || constraint.alternatives.iter().any(|alternative| {
+                        !matches!(&alternative.location, AsmConstraintLocation::Letters(letters) if flag_condition(letters).is_some())
+                    }))
+            {
                 return Err(invalid_constraint(operand, direction));
             }
             Ok(AsmOperand {

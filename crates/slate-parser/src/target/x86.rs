@@ -129,6 +129,19 @@ const ADDITIONAL_REGISTER_NAMES: &[(&str, usize, X86RegisterWidth)] = &[
     ("r31b", 180, Low8),
 ];
 
+pub const FLAG_CONDITIONS: &[&str] = &[
+    "a", "ae", "b", "be", "c", "e", "g", "ge", "l", "le", "na", "nae", "nb", "nbe", "nc", "ne",
+    "ng", "nge", "nl", "nle", "no", "np", "ns", "nz", "o", "p", "s", "z",
+];
+
+pub fn flag_condition(letters: &str) -> Option<&'static str> {
+    let condition = letters.strip_prefix("@cc")?;
+    FLAG_CONDITIONS
+        .iter()
+        .copied()
+        .find(|known| *known == condition)
+}
+
 pub fn decode_register(name: &str) -> Register {
     lookup(name).map_or_else(|| Register::Other(name.to_string()), Register::X86)
 }
