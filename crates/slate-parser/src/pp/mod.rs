@@ -977,10 +977,27 @@ impl<'a> Preprocessor<'a> {
                 PPErrorKind::InvalidLineDirective,
             ));
         };
-        let Ok(presumed_line) = number.replace('\'', "").parse::<i64>() else {
+        let digits = number.replace('\'', "");
+        if !digits.bytes().all(|byte| byte.is_ascii_digit()) {
             return Err(PPFailure::at(
                 directive.arguments_loc(),
                 PPErrorKind::InvalidLineDirective,
+            ));
+        }
+        let presumed_line = match self.dialect.flavor() {
+            CompilerFlavor::Gcc => Some(i64::from(digits.bytes().fold(0u32, |line, digit| {
+                line.wrapping_mul(10).wrapping_add(u32::from(digit - b'0'))
+            }))),
+            CompilerFlavor::Clang => digits.parse::<u32>().ok().map(i64::from),
+            CompilerFlavor::Msvc => digits
+                .parse::<u64>()
+                .ok()
+                .map(|line| i64::from(line as u32 as i32)),
+        };
+        let Some(presumed_line) = presumed_line else {
+            return Err(PPFailure::at(
+                directive.arguments_loc(),
+                PPErrorKind::LineNumberOutOfRange,
             ));
         };
         let presumed_file = match expanded.get(1) {

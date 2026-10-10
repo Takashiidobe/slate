@@ -268,7 +268,11 @@ token plus an interned `HideSet`; file tokens start empty.
 - `record_pragma` acts on `push_macro`, `pop_macro`, and `once`; every
   other pragma passes through to the parser.
 - `#line` and GNU line markers set `line_overrides`, read by
-  `presumed_location` for `__LINE__` / `__FILE__`.
+  `presumed_location` for `__LINE__` / `__FILE__`. An oversized `#line`
+  number follows each oracle: gcc wraps it modulo 2^32 (and warns), clang
+  rejects anything above 4294967295, and msvc rejects only a 64-bit overflow
+  (C2177) and wraps the rest to a signed 32-bit value, so a negative
+  `__LINE__` expands to `-` followed by the digits.
 - `#error` / `#warning` go to `directive_diagnostics`.
 
 ## Oracle

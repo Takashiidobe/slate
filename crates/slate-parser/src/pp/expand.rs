@@ -175,15 +175,27 @@ impl Preprocessor<'_> {
             return self.expand_has_check(token, stream);
         };
         if entry.definition.builtin {
-            return Ok(Some(
-                match self.expand_builtin_macro(name, &token.token, token.end) {
-                    Some(value) => PPToken {
-                        token: value,
-                        ..token
-                    },
-                    None => token,
-                },
-            ));
+            let Some(value) = self.expand_builtin_macro(name, &token.token, token.end) else {
+                return Ok(Some(token));
+            };
+            let magnitude = match &value.value {
+                Token::IntLit(text) => text.strip_prefix('-').map(str::to_owned),
+                _ => None,
+            };
+            let Some(magnitude) = magnitude else {
+                return Ok(Some(PPToken {
+                    token: value,
+                    ..token
+                }));
+            };
+            stream.push_front(vec![PPToken {
+                token: value.clone().with_value(Token::IntLit(magnitude.into())),
+                ..token.clone()
+            }]);
+            return Ok(Some(PPToken {
+                token: value.with_value(Token::Minus),
+                ..token
+            }));
         }
         if self.hide_sets.contains(token.hide, name) {
             return Ok(Some(token));

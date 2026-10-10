@@ -74,6 +74,8 @@ pub(super) enum PPErrorKind {
     NegativeEmbedOperand,
     #[error("invalid #line directive, expected a digit sequence")]
     InvalidLineDirective,
+    #[error("#line number out of range")]
+    LineNumberOutOfRange,
     #[error("{0}")]
     Directive(String),
     #[error("unsupported preprocessor directive")]
