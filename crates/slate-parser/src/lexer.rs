@@ -616,7 +616,11 @@ impl Lexer {
         let mut chars = Vec::with_capacity(src.len());
         let mut byte_offsets = Vec::with_capacity(src.len() + 1);
         let mut byte_ends = Vec::with_capacity(src.len());
-        let mut byte = 0;
+        let mut byte = if src.starts_with('\u{feff}') {
+            '\u{feff}'.len_utf8()
+        } else {
+            0
+        };
         while let Some((c, len)) = source_char(src, byte, features.trigraphs) {
             let splice_len = match c {
                 '\\' => splice_len(&src[byte + len..], features.whitespace_line_splice),
