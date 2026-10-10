@@ -203,13 +203,17 @@ impl Parser {
         let mut inputs = Vec::new();
         let mut clobbers = Vec::new();
         let mut labels = Vec::new();
-        if cursor.consume(Token::Colon) {
+        let mut half_separator = false;
+        if consume_asm_colon(cursor, &mut half_separator) && !half_separator {
             outputs = self.parse_asm_operands(cursor)?;
         }
-        if cursor.consume(Token::Colon) {
+        if consume_asm_colon(cursor, &mut half_separator) && !half_separator {
             inputs = self.parse_asm_operands(cursor)?;
         }
-        if cursor.consume(Token::Colon) && is_string_literal(cursor.peek()) {
+        if consume_asm_colon(cursor, &mut half_separator)
+            && !half_separator
+            && is_string_literal(cursor.peek())
+        {
             loop {
                 let clobber =
                     asm_string(tokens, &mut cursor.pos).map_err(|error| cursor.error(error))?;
@@ -223,10 +227,13 @@ impl Parser {
                 }
             }
         }
-        if !is_goto && cursor.peek() != Some(&Token::RParen) {
+        if !is_goto && !half_separator && cursor.peek() != Some(&Token::RParen) {
             return Err(cursor.error("expected `)`"));
         }
-        if cursor.consume(Token::Colon) {
+        if consume_asm_colon(cursor, &mut half_separator) {
+            if half_separator {
+                return Err(cursor.error("expected identifier"));
+            }
             loop {
                 let start = cursor.pos;
                 let label = cursor.expect_ident("expected identifier")?;
@@ -395,7 +402,10 @@ impl Parser {
         cursor: &mut TokenCursor<'_, '_>,
     ) -> Result<Vec<RawOperand>, ParseError> {
         let mut operands = Vec::new();
-        if matches!(cursor.peek(), Some(Token::Colon | Token::RParen)) {
+        if matches!(
+            cursor.peek(),
+            Some(Token::Colon | Token::ColonColon | Token::RParen)
+        ) {
             return Ok(operands);
         }
         let tokens = cursor.tokens;
@@ -429,6 +439,18 @@ impl Parser {
                 return Ok(operands);
             }
         }
+    }
+}
+
+fn consume_asm_colon(cursor: &mut TokenCursor<'_, '_>, half_separator: &mut bool) -> bool {
+    if *half_separator {
+        *half_separator = false;
+        true
+    } else if cursor.consume(Token::ColonColon) {
+        *half_separator = true;
+        true
+    } else {
+        cursor.consume(Token::Colon)
     }
 }
 

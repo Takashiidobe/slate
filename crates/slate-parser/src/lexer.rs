@@ -289,6 +289,7 @@ pub enum Token {
     LBracket,
     RBracket,
     Colon,
+    ColonColon,
     Comma,
     Hash,
     HashHash,
@@ -436,6 +437,7 @@ impl From<&Token> for String {
             Token::LBracket => "[".into(),
             Token::RBracket => "]".into(),
             Token::Colon => ":".into(),
+            Token::ColonColon => "::".into(),
             Token::Comma => ",".into(),
             Token::Hash => "#".into(),
             Token::HashHash => "##".into(),
@@ -563,6 +565,13 @@ pub trait TokenSpanExt {
         self.value_at(index).cloned()
     }
     fn values(&self) -> impl Iterator<Item = &Token>;
+    fn scope_len_at(&self, index: usize) -> Option<usize> {
+        match (self.value_at(index), self.value_at(index + 1)) {
+            (Some(Token::ColonColon), _) => Some(1),
+            (Some(Token::Colon), Some(Token::Colon)) => Some(2),
+            _ => None,
+        }
+    }
     fn contains_value(&self, token: &Token) -> bool {
         self.values().any(|value| value == token)
     }
@@ -706,6 +715,9 @@ impl Lexer {
     }
 
     fn try_consume_op(&mut self) -> Option<Token> {
+        if self.features.scope_token && self.try_consume("::") {
+            return Some(Token::ColonColon);
+        }
         for (op, token) in MULTI_CHAR_OPS {
             if self.try_consume(op) {
                 return Some(token.clone());

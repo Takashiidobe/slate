@@ -1842,12 +1842,9 @@ fn has_check_argument(
     }
     let mut name = word(start + 1)?;
     let mut end = start + 2;
-    if scoped
-        && tokens.value_at(end) == Some(&Token::Colon)
-        && tokens.value_at(end + 1) == Some(&Token::Colon)
-    {
-        name = format!("{name}::{}", word(end + 2)?);
-        end += 3;
+    if scoped && let Some(scope_len) = tokens.scope_len_at(end) {
+        name = format!("{name}::{}", word(end + scope_len)?);
+        end += scope_len + 1;
     }
     (tokens.value_at(end) == Some(&Token::RParen)).then_some((name, end + 1))
 }

@@ -69,14 +69,12 @@ fn split_parameters<'t>(
         let invalid = || PPFailure::at(loc, PPErrorKind::InvalidEmbedParameter);
         let first = identifier(src, &tokens[index]).ok_or_else(invalid)?;
         index += 1;
-        let (vendor, name) = if tokens.value_at(index) == Some(&Token::Colon)
-            && tokens.value_at(index + 1) == Some(&Token::Colon)
-        {
+        let (vendor, name) = if let Some(scope_len) = tokens.scope_len_at(index) {
             let name = tokens
-                .get(index + 2)
+                .get(index + scope_len)
                 .and_then(|token| identifier(src, token))
                 .ok_or_else(invalid)?;
-            index += 3;
+            index += scope_len + 1;
             (Some(first), name)
         } else {
             (None, first)

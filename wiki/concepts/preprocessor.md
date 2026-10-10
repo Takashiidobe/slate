@@ -67,6 +67,15 @@ starts a directive and is the stringify operator. Stringify, `##` re-lex
 and `pp` output go through `token_spelling`, which keeps the digraph
 spelling (`STR(<:)` is `"<:"`, as in gcc and clang).
 
+`::` lexes as one `Token::ColonColon` (`StandardFeatures::scope_token`) in
+clang and msvc always and in gcc only for gnu modes and C23, so
+`: ## :` pastes to `::` there. Strict gcc C89..C17 lexes two `Token::Colon`s.
+The consumers that need `::` (`[[ns::attr]]`, `#embed` vendor parameters,
+`__has_c_attribute`) take either form through `TokenSpanExt::scope_len_at`;
+GNU asm treats `::` as two section separators
+(`consume_asm_colon`). slate does not diagnose gcc's "pasting does not give a
+valid preprocessing token" error for strict-mode `: ## :`.
+
 A directive is a line whose first non-comment token is `#`. Conditionals
 are evaluated when the stream reaches them. `skip_group` reads only the
 directives of a skipped group. It tracks nesting and `#else` ordering there,

@@ -227,8 +227,13 @@ fn parse_c23_group(
         }
         let start = cursor.pos;
         let mut name = cursor.expect_ident("expected C23 attribute name")?;
-        if cursor.consume(&Token::Colon) {
+        let scoped = if cursor.consume(&Token::Colon) {
             cursor.expect(Token::Colon, "expected `::` in attribute name")?;
+            true
+        } else {
+            cursor.consume(&Token::ColonColon)
+        };
+        if scoped {
             let last = cursor.expect_ident("expected attribute name after `::`")?;
             name.push_str("::");
             name.push_str(&last);
