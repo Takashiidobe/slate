@@ -22,7 +22,7 @@ pub use error::{DirectiveDiagnostic, DirectiveErrors, PPError};
 use error::{PPErrorKind, PPFailure};
 use expand::{PPToken, Piece, Stream};
 use hide_set::HideSets;
-use include::{include_target, read_source};
+use include::read_source;
 use miette::Severity;
 pub use print::write_preprocessed;
 use std::cell::Cell;
@@ -278,6 +278,7 @@ pub struct Preprocessor<'a> {
     sources: HashMap<FileId, String>,
     pub(crate) line_starts: HashMap<FileId, Vec<usize>>,
     pragma_once: HashSet<PathBuf>,
+    included_files: HashSet<PathBuf>,
     include_guards: HashMap<FileId, String>,
     pushed_macros: HashMap<String, Vec<Option<MacroEntry>>>,
     assertions: HashMap<String, Vec<Answer>>,
@@ -310,6 +311,7 @@ impl<'a> Preprocessor<'a> {
             sources: HashMap::new(),
             line_starts: HashMap::new(),
             pragma_once: HashSet::new(),
+            included_files: HashSet::new(),
             include_guards: HashMap::new(),
             pushed_macros: HashMap::new(),
             assertions: HashMap::new(),
@@ -1254,12 +1256,12 @@ impl<'a> Preprocessor<'a> {
         match directive.name {
             DirectiveName::Define => self.record_define(directive)?,
             DirectiveName::Include | DirectiveName::IncludeNext => {
-                let mut expanded = directive.clone();
-                if !include::spells_header_name(&directive.arguments) {
-                    expanded.arguments = self.expand_macros(&directive.arguments)?;
-                }
-                let include = include_target(self.source(directive.loc.file), &expanded)?;
+                let include = self.expanded_include_target(directive)?;
                 nodes.extend(self.resolve_and_parse_include(&include, directive.arguments_loc())?);
+            }
+            DirectiveName::Import if !self.dialect.flavor().is_msvc() => {
+                let include = self.expanded_include_target(directive)?;
+                nodes.extend(self.resolve_and_parse_import(&include, directive.arguments_loc())?);
             }
             DirectiveName::Embed => nodes.push(self.expand_embed(directive)?),
             DirectiveName::Undef => self.record_undef(directive)?,

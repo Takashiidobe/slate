@@ -97,6 +97,37 @@ pub(super) fn read_source(path: &Path) -> Result<String, PPErrorKind> {
 }
 
 impl Preprocessor<'_> {
+    pub(super) fn expanded_include_target(
+        &mut self,
+        directive: &Directive,
+    ) -> Result<IncludeDirective, PPFailure> {
+        let mut expanded = directive.clone();
+        if !spells_header_name(&directive.arguments) {
+            expanded.arguments = self.expand_macros(&directive.arguments)?;
+        }
+        include_target(self.source(directive.loc.file), &expanded)
+    }
+
+    pub(super) fn resolve_and_parse_import(
+        &mut self,
+        include: &IncludeDirective,
+        directive: Loc,
+    ) -> Result<Vec<PPNode>, PPFailure> {
+        let (resolved, _) = self
+            .resolve_include(include, directive.file)
+            .ok_or_else(|| {
+                PPFailure::at(directive, PPErrorKind::HeaderNotFound(include.to_string()))
+            })?;
+        let once_key = resolved.canonicalize().unwrap_or(resolved);
+        let nodes = if self.included_files.contains(&once_key) {
+            Vec::new()
+        } else {
+            self.resolve_and_parse_include(include, directive)?
+        };
+        self.pragma_once.insert(once_key);
+        Ok(nodes)
+    }
+
     pub(super) fn resolve_and_parse_include(
         &mut self,
         include: &IncludeDirective,
@@ -123,6 +154,7 @@ impl Preprocessor<'_> {
             return Err(PPFailure::at(directive, PPErrorKind::IncludeTooDeep));
         }
         let src = read_source(&resolved).map_err(|kind| PPFailure::at(directive, kind))?;
+        self.included_files.insert(once_key.clone());
         self.open_stack.push(once_key);
         let enclosing_system_header = self.outermost_system_header;
         if kind == HeaderKind::System {

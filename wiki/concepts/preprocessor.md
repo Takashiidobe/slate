@@ -90,6 +90,11 @@ from `<command line>` ([compiler-arg-rules](compiler-arg-rules.md#forced-files-a
   bracket came from a macro, from the tokens joined with their leading
   spaces.
 - `#pragma once` keys on the canonical path.
+- `#import` (gcc and clang; MSVC's type-library `#import` stays unsupported)
+  includes the header only if no earlier `#include` or `#import` entered it,
+  then marks it once-only, so a later `#include` is skipped even after its
+  guard macro is `#undef`ed. gcc's `-Wdeprecated` and clang's pedantic
+  warnings are not emitted.
 - Multiple-include optimization, as in clang: a file whose only code and
   directives are one `#ifndef X` / `#if !defined(X)` group with no
   `#elif`/`#else` at its level (comments may sit outside) records `X`
