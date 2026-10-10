@@ -23,10 +23,13 @@ pub enum Warning {
     UnknownAttributes,
     DeprecatedNonPrototype,
     ImplicitFunctionDeclaration,
+    MacroRedefined,
+    BuiltinMacroRedefined,
+    Deprecated,
 }
 
 impl Warning {
-    pub const ALL: [Self; 19] = [
+    pub const ALL: [Self; 22] = [
         Self::LongLong,
         Self::C99Compat,
         Self::ImplicitlyUnsignedLiteral,
@@ -46,6 +49,9 @@ impl Warning {
         Self::UnknownAttributes,
         Self::DeprecatedNonPrototype,
         Self::ImplicitFunctionDeclaration,
+        Self::MacroRedefined,
+        Self::BuiltinMacroRedefined,
+        Self::Deprecated,
     ];
 
     pub fn name(self) -> &'static str {
@@ -71,6 +77,9 @@ impl Warning {
             Self::UnknownAttributes => "unknown-attributes",
             Self::DeprecatedNonPrototype => "deprecated-non-prototype",
             Self::ImplicitFunctionDeclaration => "implicit-function-declaration",
+            Self::MacroRedefined => "macro-redefined",
+            Self::BuiltinMacroRedefined => "builtin-macro-redefined",
+            Self::Deprecated => "deprecated",
         }
     }
 
@@ -86,6 +95,9 @@ impl Warning {
                 | Self::C23Extensions
                 | Self::PointerSign
                 | Self::IncompatiblePointerTypesDiscardsQualifiers
+                | Self::MacroRedefined
+                | Self::BuiltinMacroRedefined
+                | Self::Deprecated
         )
     }
 
@@ -170,10 +182,14 @@ pub struct DiagnosticContext<'a> {
 
 impl DiagnosticContext<'_> {
     pub fn severity(&self, warning: Warning) -> Option<Severity> {
+        self.severity_as(warning, warning.is_pedantic())
+    }
+
+    pub fn severity_as(&self, warning: Warning, pedantic: bool) -> Option<Severity> {
         let options = self.options;
         let setting = options.settings.get(&warning).copied().unwrap_or_default();
         let default = warning.default_severity(self.standard, self.flavor);
-        let pedantic_group = warning.is_pedantic() && (options.pedantic || options.pedantic_errors);
+        let pedantic_group = pedantic && (options.pedantic || options.pedantic_errors);
         if !setting
             .enabled
             .unwrap_or(default.is_enabled() || pedantic_group || setting.error == Some(true))
@@ -184,9 +200,7 @@ impl DiagnosticContext<'_> {
             return (default.is_error() && setting.error != Some(false)).then_some(Severity::Error);
         }
         let error = setting.error.unwrap_or(
-            options.werror
-                || default.is_error()
-                || (options.pedantic_errors && warning.is_pedantic()),
+            options.werror || default.is_error() || (options.pedantic_errors && pedantic),
         );
         Some(if error {
             Severity::Error

@@ -1,5 +1,6 @@
 use super::Preprocessor;
 use crate::ast::Loc;
+use crate::diagnostics::Warning;
 use crate::files::display_path;
 use miette::{Diagnostic, LabeledSpan, NamedSource, Severity, SourceCode, SourceSpan};
 use thiserror::Error;
@@ -20,11 +21,17 @@ pub struct DirectiveDiagnostic {
     pub severity: Severity,
     pub text: String,
     pub error: PPError,
+    pub warning: Option<Warning>,
 }
 
 impl Diagnostic for DirectiveDiagnostic {
     fn severity(&self) -> Option<Severity> {
         Some(self.severity)
+    }
+
+    fn code(&self) -> Option<Box<dyn std::fmt::Display + '_>> {
+        self.warning
+            .map(|warning| Box::new(format!("-W{warning}")) as Box<dyn std::fmt::Display>)
     }
 
     fn source_code(&self) -> Option<&dyn SourceCode> {

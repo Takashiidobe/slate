@@ -13,6 +13,7 @@ use crate::attribute_support;
 use crate::compiler_args::CompilerFlavor;
 use crate::compiler_options::StackProtector;
 use crate::const_expr;
+use crate::diagnostics::{DiagnosticContext, Warning};
 use crate::dialect::Dialect;
 use crate::files::{Files, SearchPaths, display_path};
 use crate::lexer::{Lexer, Token, TokenSpanExt, keyword_token, token_spelling};
@@ -1292,6 +1293,17 @@ impl<'a> Preprocessor<'a> {
             DirectiveName::LineMarker => self.record_line_marker(directive),
             DirectiveName::Ident | DirectiveName::Null => {}
             DirectiveName::Assert | DirectiveName::Unassert if self.dialect.flavor().is_gcc() => {
+                let spelling = if directive.name == DirectiveName::Assert {
+                    "#assert"
+                } else {
+                    "#unassert"
+                };
+                self.warn(
+                    directive.name_loc,
+                    Warning::Deprecated,
+                    format!("'{spelling}' is a deprecated GCC extension"),
+                    true,
+                );
                 self.record_assertion(directive)?
             }
             _ => {
@@ -1367,7 +1379,18 @@ impl<'a> Preprocessor<'a> {
         directive: &Directive,
         name: &'static str,
     ) -> Result<bool, PPFailure> {
-        let expanded = self.expand_condition(&self.expand_assertions(directive)?)?;
+        let (expanded, assertion_tests) = self.expand_assertions(directive)?;
+        if directive.name == DirectiveName::If {
+            for test in assertion_tests {
+                self.warn(
+                    test,
+                    Warning::Deprecated,
+                    "assertions are a deprecated extension".into(),
+                    true,
+                );
+            }
+        }
+        let expanded = self.expand_condition(&expanded)?;
         let expanded = self.expand_has_embed(&expanded, directive.loc.file)?;
         let expanded = self.expand_has_include(&expanded, directive.loc.file);
         let expanded = expand_has_checks(&expanded, self.dialect);
@@ -1417,13 +1440,17 @@ impl<'a> Preprocessor<'a> {
         Ok(())
     }
 
-    fn expand_assertions(&self, directive: &Directive) -> Result<Vec<Span<Token>>, PPFailure> {
+    fn expand_assertions(
+        &self,
+        directive: &Directive,
+    ) -> Result<(Vec<Span<Token>>, Vec<Loc>), PPFailure> {
         let tokens = &directive.arguments;
         if !self.dialect.flavor().is_gcc() {
-            return Ok(tokens.clone());
+            return Ok((tokens.clone(), Vec::new()));
         }
         let src = self.source(directive.loc.file);
         let mut expanded = Vec::with_capacity(tokens.len());
+        let mut tests = Vec::new();
         let mut index = 0;
         while index < tokens.len() {
             if tokens[index].value != Token::Hash {
@@ -1443,6 +1470,7 @@ impl<'a> Preprocessor<'a> {
                 Some(answer) => answers.is_some_and(|answers| answers.contains(&answer)),
                 None => answers.is_some_and(|answers| !answers.is_empty()),
             };
+            tests.push(tokens[index].spelling);
             expanded.push(
                 tokens[index]
                     .clone()
@@ -1450,7 +1478,7 @@ impl<'a> Preprocessor<'a> {
             );
             index = next;
         }
-        Ok(expanded)
+        Ok((expanded, tests))
     }
 
     fn expand_has_include(&self, tokens: &[Span<Token>], from: FileId) -> Vec<Span<Token>> {
@@ -1515,6 +1543,28 @@ impl<'a> Preprocessor<'a> {
             severity,
             text,
             error,
+            warning: None,
+        });
+    }
+
+    pub(super) fn warn(&mut self, loc: Loc, warning: Warning, message: String, pedantic: bool) {
+        if self.files.kind(loc.file) == HeaderKind::System {
+            return;
+        }
+        let context = DiagnosticContext {
+            options: &self.dialect.options().diagnostics,
+            standard: self.dialect.standard(),
+            flavor: self.dialect.flavor(),
+        };
+        let Some(severity) = context.severity_as(warning, pedantic) else {
+            return;
+        };
+        let error = self.render_error(PPFailure::at(loc, PPErrorKind::Directive(message)));
+        self.directive_diagnostics.push(DirectiveDiagnostic {
+            severity,
+            text: String::new(),
+            error,
+            warning: Some(warning),
         });
     }
 

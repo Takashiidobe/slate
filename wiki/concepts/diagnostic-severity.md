@@ -3,6 +3,7 @@
 <!-- toc -->
 - [Severity resolution](#severity-resolution)
 - [Warnings](#warnings)
+- [Preprocessor warnings](#preprocessor-warnings)
 - [Conversion warnings](#conversion-warnings)
 - [Parameter alignment](#parameter-alignment)
 - [Type-level extension warnings](#type-level-extension-warnings)
@@ -75,6 +76,9 @@ severity(w) =
 | `parameter-alignment` | on | no | alignment attribute on a parameter |
 | `ignored-attributes` | on | no | attribute outside clang's subject list |
 | `unknown-attributes` | on | no | spelling the flavor doesn't register for the target (gcc `-Wattributes`, cl C5030) |
+| `macro-redefined` | on | yes | `#define` of a macro with a different definition (gcc: unnamed, always on; cl C4005), or a gcc always-warn name (below) |
+| `builtin-macro-redefined` | on | yes (not gcc `#undef`) | `#define`/`#undef` of a builtin (below; cl C4117, define ignored) |
+| `deprecated` | on | yes | gcc `#assert`, `#unassert`, and each `#pred(answer)` test in `#if` |
 
 - `c99-compat` is not pedantic: clang keeps it a warning under
   `-pedantic-errors`.
@@ -83,6 +87,31 @@ severity(w) =
 - Literal warnings come from the candidate `select_integer_candidate`
   (`sema/validate.rs`, shared with `sema/numeric.rs`) picked
   ([integer literals](ir/types.md#integer-literals)).
+
+## Preprocessor warnings
+
+`Preprocessor::warn` resolves a named warning through `DiagnosticContext`
+and records a `DirectiveDiagnostic` carrying the `Warning` (printed as its
+`-W` code), so `-Werror=` and `-w` behave as for sema warnings. Nothing is
+raised for a directive in a system header, which also keeps slate's own
+predefine files quiet. Redefinition rules (`redefinition_warning`,
+`pp/define.rs`), verified against gcc 16.2.1, clang 22.1.8 and cl 19.51:
+
+| | gcc | clang | msvc |
+| --- | --- | --- | --- |
+| different definition (tokens, whitespace presence, parameter names, shape) | `'X' redefined` | `'X' macro redefined` | C4005; renaming parameters is not a difference |
+| `__TIME__ __DATE__ __FILE__ __FILE_NAME__ __BASE_FILE__ __TIMESTAMP__` | builtin, even when identical | builtin | C4117 for its reserved builtins, `#define`/`#undef` ignored |
+| other builtins (`__LINE__`, `__COUNTER__`, `__INCLUDE_LEVEL__`, `__has_*`) | `macro-redefined`, even when identical, `#undef` included | builtin | — |
+| `__STDC_*` (gcc: any defined one but `__STDC_FORMAT/LIMIT/CONSTANT_MACROS`) | `macro-redefined`, even when identical, `#undef` included | builtin when predefined | — |
+
+- gcc's `#undef` warnings are plain warnings: `-pedantic-errors` leaves
+  them warnings (`DiagnosticContext::severity_as` with `pedantic = false`).
+- gcc's ordinary redefinition has no option name; slate files it under
+  `macro-redefined`, so `-Wno-macro-redefined` silences it, which gcc
+  cannot do.
+- `deprecated` is gcc only (clang rejects assertions). gcc reports an
+  assertion test only in `#if`, not in an `#elif` reached from a false
+  group; under `-pedantic` gcc words them as `-Wpedantic` instead.
 
 ## Conversion warnings
 
