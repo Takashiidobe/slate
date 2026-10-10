@@ -433,13 +433,14 @@ pub enum FloatValue {
 }
 
 // scanned in order by ends_with, so bf16 must precede f16
-const FLOAT_SUFFIXES: [&str; 14] = [
-    "bf16", "f128", "f64x", "f32x", "f16", "f32", "f64", "df", "dd", "dl", "f", "l", "q", "w",
+const FLOAT_SUFFIXES: [&str; 18] = [
+    "bf16", "f128", "f64x", "f32x", "f16", "f32", "f64", "d128", "d64", "d32", "df", "dd", "dl",
+    "d", "f", "l", "q", "w",
 ];
 
 fn float_suffix_from_token(suffix: &str) -> FloatSuffix {
     match suffix {
-        "" => FloatSuffix::None,
+        "" | "d" => FloatSuffix::None,
         "f" => FloatSuffix::F,
         "l" => FloatSuffix::L,
         "bf16" => FloatSuffix::BF16,
@@ -451,8 +452,8 @@ fn float_suffix_from_token(suffix: &str) -> FloatSuffix {
         "f64x" => FloatSuffix::F64x,
         "q" => FloatSuffix::Q,
         "w" => FloatSuffix::W,
-        "df" => FloatSuffix::DecimalF32,
-        "dd" => FloatSuffix::DecimalF64,
+        "df" | "d32" => FloatSuffix::DecimalF32,
+        "dd" | "d64" => FloatSuffix::DecimalF64,
         _ => FloatSuffix::DecimalF128,
     }
 }
