@@ -257,6 +257,14 @@ impossible.
 - `slate/src/frontend/lowerer/asm.rs` consumes selected classes and pieces;
   `backend/rust_ast.rs` stores operands/options and `backend/codegen.rs` emits `asm!`.
 - Core support: x86-64 `reg`/`reg_abcd`, integer `const` operands, and register clobbers.
+- Vector classes `xmm_reg`/`ymm_reg`/`zmm_reg`/`kreg`: values of up to 4 bytes ride in a `u32`
+  scratch (Rust's xmm classes take no 8/16-bit types), 8-byte values in `u64`, and 16/32/64-byte
+  values (GNU vectors, `__m128`) transmute to `core::arch::x86_64::__m{128,256,512}i`.
+  `kreg` keeps the exact width. References print `{N}` (the class's own register), and a
+  128/256/512-bit view prints `:x`/`:y`/`:z`. Rust needs the feature on the enclosing
+  function: `ymm_reg` needs avx (or a feature that implies it), `zmm_reg`/`kreg` need avx512f,
+  and a 32/64-bit `kreg` needs avx512bw. Without it the operand is a barrier, since the parser
+  widens `x`/`v` to ymm/zmm by width alone (`asm_sse_*.c`, `asm_avx_vector_operands.c`).
 - Register type bridges use unsigned 16/32/64-bit scratch operands. Bytes widen to 32 bits;
   tied operands use the larger storage width and outputs truncate before writeback.
 - Integer/enum and raw pointer inputs cast; floats, nullable function pointers, and small

@@ -38,6 +38,32 @@ fn asm_options(asm: &ir::InlineAsm) -> Result<Vec<rust::AsmOption>> {
     Ok(lowered)
 }
 
+fn register_reference(
+    slot: usize,
+    operand: &ir::AsmOperand,
+    view: Option<ir::AsmRegisterView>,
+) -> Result<String> {
+    let modifier = match operand.selected {
+        Some(ir::AsmOperandClass::Register(ir::AsmRegisterClass::KReg)) if view.is_none() => None,
+        Some(ir::AsmOperandClass::Register(
+            ir::AsmRegisterClass::XmmReg
+            | ir::AsmRegisterClass::YmmReg
+            | ir::AsmRegisterClass::ZmmReg,
+        )) => match view {
+            None => None,
+            Some(ir::AsmRegisterView::Bits(128)) => Some('x'),
+            Some(ir::AsmRegisterView::Bits(256)) => Some('y'),
+            Some(ir::AsmRegisterView::Bits(512)) => Some('z'),
+            Some(view) => return Err(unsupported_asm(format!("vector register view {view:?}"))),
+        },
+        _ => Some(register_modifier(operand, view)?),
+    };
+    Ok(match modifier {
+        Some(modifier) => format!("{{{slot}:{modifier}}}"),
+        None => format!("{{{slot}}}"),
+    })
+}
+
 fn register_modifier(operand: &ir::AsmOperand, view: Option<ir::AsmRegisterView>) -> Result<char> {
     let width = match view {
         Some(ir::AsmRegisterView::HighByte) => {
@@ -517,8 +543,7 @@ fn asm_template(
                             return Err(unsupported_asm(format!("operand modifier {modifier:?}")));
                         }
                         used[*index] = true;
-                        let modifier = register_modifier(operand, *view)?;
-                        template.push_str(&format!("{{{slot}:{modifier}}}"));
+                        template.push_str(&register_reference(slot, operand, *view)?);
                     }
                     Some(ir::AsmOperandClass::Immediate) => match modifier {
                         None | Some('c' | 'P' | 'p') => {
@@ -599,10 +624,7 @@ fn asm_template(
                 continue;
             }
             let reference = match operand.selected {
-                Some(ir::AsmOperandClass::Register(_)) => {
-                    let modifier = register_modifier(operand, None)?;
-                    format!("{{{slot}:{modifier}}}")
-                }
+                Some(ir::AsmOperandClass::Register(_)) => register_reference(slot, operand, None)?,
                 Some(
                     ir::AsmOperandClass::Immediate
                     | ir::AsmOperandClass::Symbol
@@ -711,7 +733,7 @@ impl FunctionLowerer<'_, '_> {
             }
             ir::Type::Bool => false,
             ir::Type::Array { element, .. } => self.asm_full_storage(element),
-            ir::Type::Numeric(_) | ir::Type::Pointer { .. } => true,
+            ir::Type::Numeric(_) | ir::Type::Pointer { .. } | ir::Type::Vector { .. } => true,
             _ => false,
         }
     }
@@ -728,6 +750,12 @@ impl FunctionLowerer<'_, '_> {
             Some(2) => Prim::U16,
             Some(4) => Prim::U32,
             Some(8) => Prim::U64,
+            Some(bytes @ (16 | 32 | 64)) => {
+                return Ok(rust::Type::Custom(format!(
+                    "core::arch::x86_64::__m{}i",
+                    bytes * 8
+                )));
+            }
             _ => {
                 return Err(unsupported_asm(format!(
                     "operand type {ty} needs a register bridge"
@@ -737,7 +765,72 @@ impl FunctionLowerer<'_, '_> {
         Ok(rust::Type::Prim(prim))
     }
 
+    fn asm_vector_scratch_type(
+        &self,
+        operand: &ir::AsmOperand,
+        class: ir::AsmRegisterClass,
+    ) -> Result<rust::Type> {
+        let types = match &operand.kind {
+            ir::AsmOperandKind::In(value) => vec![&value.ty],
+            ir::AsmOperandKind::Out { place, .. } => vec![&place.ty],
+            ir::AsmOperandKind::InOut { place, input, .. } => std::iter::once(&place.ty)
+                .chain(input.as_ref().map(|input| &input.value.ty))
+                .collect(),
+            _ => return Err(unsupported_asm("non-value vector register operand")),
+        };
+        let mut widest = None;
+        for ty in types {
+            let bits = self.asm_bits_type(ty)?;
+            let size = self.tables.storage_of(ty).map_or(0, |(size, _)| size);
+            if widest.as_ref().is_none_or(|(widest, _)| size > *widest) {
+                widest = Some((size, bits));
+            }
+        }
+        let (size, bits) =
+            widest.ok_or_else(|| unsupported_asm("vector operand without a type"))?;
+        Ok(match (class, size) {
+            (ir::AsmRegisterClass::KReg, _) => bits,
+            (_, 1 | 2 | 4) => rust::Type::Prim(Prim::U32),
+            _ => bits,
+        })
+    }
+
+    fn asm_require_feature(&self, class: ir::AsmRegisterClass, width: u64) -> Result<()> {
+        let enabled = |prefix: &str| {
+            self.target_features
+                .iter()
+                .any(|feature| feature.starts_with(prefix))
+        };
+        let required = match class {
+            ir::AsmRegisterClass::XmmReg => return Ok(()),
+            ir::AsmRegisterClass::YmmReg => {
+                enabled("avx") || enabled("fma") || enabled("f16c") || enabled("vaes")
+            }
+            ir::AsmRegisterClass::ZmmReg => enabled("avx512"),
+            ir::AsmRegisterClass::KReg if width > 16 => enabled("avx512bw"),
+            ir::AsmRegisterClass::KReg => enabled("avx512"),
+            _ => return Err(unsupported_asm(format!("vector class {}", class.as_str()))),
+        };
+        if required {
+            Ok(())
+        } else {
+            Err(unsupported_asm(format!(
+                "{} operand needs a target feature on the function",
+                class.as_str()
+            )))
+        }
+    }
+
     fn asm_scratch_type(&self, operand: &ir::AsmOperand) -> Result<rust::Type> {
+        if let Some(ir::AsmOperandClass::Register(
+            class @ (ir::AsmRegisterClass::XmmReg
+            | ir::AsmRegisterClass::YmmReg
+            | ir::AsmRegisterClass::ZmmReg
+            | ir::AsmRegisterClass::KReg),
+        )) = operand.selected
+        {
+            return self.asm_vector_scratch_type(operand, class);
+        }
         let (output, input) = match &operand.kind {
             ir::AsmOperandKind::In(value) => (&value.ty, None),
             ir::AsmOperandKind::Out { place, .. } => (&place.ty, None),
@@ -774,15 +867,18 @@ impl FunctionLowerer<'_, '_> {
             ) {
             Expr::Cast {
                 expr: Box::new(value),
-                ty: bits,
+                ty: bits.clone(),
             }
         } else {
             Expr::Transmute {
                 from: source,
-                to: bits,
+                to: bits.clone(),
                 expr: Box::new(value),
             }
         };
+        if bits == *scratch {
+            return Ok(value);
+        }
         Ok(Expr::Cast {
             expr: Box::new(value),
             ty: scratch.clone(),
@@ -792,9 +888,13 @@ impl FunctionLowerer<'_, '_> {
     fn asm_decode(&mut self, value: Expr, ty: &ir::Type) -> Result<Expr> {
         let bits = self.asm_bits_type(ty)?;
         let target = self.lower_type(ty)?;
-        let value = Expr::Cast {
-            expr: Box::new(value),
-            ty: bits,
+        let value = if matches!(bits, rust::Type::Prim(_)) {
+            Expr::Cast {
+                expr: Box::new(value),
+                ty: bits,
+            }
+        } else {
+            value
         };
         Ok(if matches!(target, rust::Type::Prim(Prim::Bool)) {
             Expr::Binary {
@@ -1331,6 +1431,15 @@ impl FunctionLowerer<'_, '_> {
                 Some(ir::AsmOperandClass::Register(
                     class @ (ir::AsmRegisterClass::Reg | ir::AsmRegisterClass::RegAbcd),
                 )) => rust::AsmReg::Class(class.as_str().into()),
+                Some(ir::AsmOperandClass::Register(
+                    class @ (ir::AsmRegisterClass::XmmReg
+                    | ir::AsmRegisterClass::YmmReg
+                    | ir::AsmRegisterClass::ZmmReg
+                    | ir::AsmRegisterClass::KReg),
+                )) => {
+                    self.asm_require_feature(*class, operand.width.unwrap_or_default())?;
+                    rust::AsmReg::Class(class.as_str().into())
+                }
                 Some(ir::AsmOperandClass::Register(ir::AsmRegisterClass::RegLegacy)) => {
                     let canonical = ["ax", "cx", "dx", "si", "di"]
                         .into_iter()

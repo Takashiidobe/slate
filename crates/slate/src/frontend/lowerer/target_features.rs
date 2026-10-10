@@ -61,6 +61,14 @@ impl Tables<'_> {
     }
 
     pub(super) fn target_feature_attr(&self, function: &ir::Function) -> Result<Option<Attr>> {
+        let enabled = self.enabled_target_features(function)?;
+        Ok((!enabled.is_empty()).then(|| Attr::TargetFeature(enabled.join(","))))
+    }
+
+    pub(super) fn enabled_target_features(
+        &self,
+        function: &ir::Function,
+    ) -> Result<Vec<&'static str>> {
         let unsupported = |detail: String| -> Failure {
             Construct::Function {
                 name: function.name.clone(),
@@ -90,7 +98,7 @@ impl Tables<'_> {
                 | ir::TargetFeature::BranchProtection(_) => {}
             }
         }
-        Ok((!enabled.is_empty()).then(|| Attr::TargetFeature(enabled.join(","))))
+        Ok(enabled)
     }
 
     fn string_argument(&self, value: &ir::Value) -> Option<&str> {

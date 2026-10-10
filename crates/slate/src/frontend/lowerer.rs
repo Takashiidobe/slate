@@ -113,6 +113,7 @@ struct FunctionLowerer<'a, 'm> {
     register_locals: HashSet<BindingId>,
     old_value: Option<Expr>,
     uses_alloca: bool,
+    target_features: Vec<&'static str>,
 }
 
 impl FunctionLowerer<'_, '_> {
@@ -425,6 +426,7 @@ impl<'m> ModuleLowerer<'m> {
             register_locals: HashSet::new(),
             old_value: None,
             uses_alloca: false,
+            target_features: Vec::new(),
         }
     }
 

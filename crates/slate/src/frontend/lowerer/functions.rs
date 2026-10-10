@@ -142,6 +142,7 @@ impl FunctionLowerer<'_, '_> {
             }
             .into());
         };
+        self.target_features = self.tables.enabled_target_features(function)?;
         let ret = self.lower_return(function)?;
         let mut params = fixed
             .iter()
