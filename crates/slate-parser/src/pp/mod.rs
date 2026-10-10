@@ -15,7 +15,7 @@ use crate::compiler_options::StackProtector;
 use crate::const_expr;
 use crate::dialect::Dialect;
 use crate::files::{Files, SearchPaths, display_path};
-use crate::lexer::{Lexer, Token, TokenSpanExt, keyword_token};
+use crate::lexer::{Lexer, Token, TokenSpanExt, keyword_token, token_spelling};
 use crate::target::isa::TargetIsa;
 use crate::target::x86_isa::X86Feature;
 use crate::target_info::TargetFamily;
@@ -293,12 +293,8 @@ pub struct Preprocessor<'a> {
 }
 
 impl<'a> Preprocessor<'a> {
-    fn lex(&self, src: &str) -> Vec<Token> {
-        Lexer::new(FileId(0), src, self.dialect.features())
-            .tokenize()
-            .into_iter()
-            .map(|span| span.value)
-            .collect()
+    fn lex(&self, src: &str) -> Vec<Span<Token>> {
+        Lexer::new(FileId(0), src, self.dialect.features()).tokenize()
     }
 
     pub fn new(search: &'a SearchPaths, dialect: &'a Dialect) -> Result<Self, PPError> {
@@ -1818,7 +1814,7 @@ fn stringized_source<'t>(tokens: impl IntoIterator<Item = &'t Span<Token>>) -> S
         if previous.is_some() && token.leading_space {
             text.push(' ');
         }
-        let spelling = String::from(&token.value);
+        let spelling = token_spelling(token);
         if is_quoted_literal(&token.value) {
             text.extend(spelling.chars().flat_map(|c| match c {
                 '"' | '\\' => vec!['\\', c],

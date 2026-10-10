@@ -58,6 +58,13 @@ before C23 for gcc and clang, off for msvc; `-trigraphs` (gcc, clang) and
 `-ftrigraphs`/`-fno-trigraphs` (clang) override that, last wins. A
 replaced character keeps its three-byte source span.
 
+Digraphs (`<: :> <% %> %: %:%:`) lex as `[ ] { } # ##` with
+`Span::digraph` set, everywhere except strict C89 (`-std=c89`; on in
+C94 and gnu89); clang's `-fdigraphs`/`-fno-digraphs` override. So `%:`
+starts a directive and is the stringify operator. Stringify, `##` re-lex
+and `pp` output go through `token_spelling`, which keeps the digraph
+spelling (`STR(<:)` is `"<:"`, as in gcc and clang).
+
 A directive is a line whose first non-comment token is `#`. Conditionals
 are evaluated when the stream reaches them. `skip_group` reads only the
 directives of a skipped group. It tracks nesting and `#else` ordering there,

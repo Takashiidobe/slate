@@ -468,6 +468,7 @@ pub struct Span<T> {
     pub provenance: Provenance,
     pub macro_origin: Option<Arc<MacroOrigin>>,
     pub leading_space: bool,
+    pub digraph: bool,
 }
 
 impl<T: std::fmt::Debug> std::fmt::Debug for Span<T> {
@@ -497,6 +498,7 @@ impl<T> Span<T> {
             provenance: Provenance::default(),
             macro_origin: None,
             leading_space: false,
+            digraph: false,
         }
     }
 
@@ -540,6 +542,7 @@ impl<T> Span<T> {
             provenance: self.provenance,
             macro_origin: self.macro_origin,
             leading_space: self.leading_space,
+            digraph: self.digraph,
         }
     }
 
@@ -552,6 +555,7 @@ impl<T> Span<T> {
             provenance: self.provenance,
             macro_origin: self.macro_origin.clone(),
             leading_space: self.leading_space,
+            digraph: self.digraph,
         }
     }
 
@@ -564,6 +568,7 @@ impl<T> Span<T> {
             provenance: self.provenance,
             macro_origin: self.macro_origin,
             leading_space: self.leading_space,
+            digraph: self.digraph,
         }
     }
 

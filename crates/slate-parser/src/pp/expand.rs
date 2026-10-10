@@ -4,7 +4,7 @@ use super::syntax::{Directive, DirectiveName, Line};
 use super::{FileInput, MacroDef, Preprocessor, stringized_source};
 use crate::ast::{Loc, MacroOrigin, MacroOriginLink, Span};
 use crate::compiler_args::CompilerFlavor;
-use crate::lexer::{Token, TokenSpanExt};
+use crate::lexer::{Token, TokenSpanExt, token_spelling};
 use std::sync::Arc;
 
 #[derive(Debug, Clone)]
@@ -505,7 +505,7 @@ impl Preprocessor<'_> {
                     Some(
                         self.lex(&decoded)
                             .into_iter()
-                            .map(|token| origin.clone().with_value(token))
+                            .map(|token| origin.clone().with_value(token.value))
                             .collect(),
                     )
                 }
@@ -1005,18 +1005,19 @@ impl Preprocessor<'_> {
         };
         let pasted = self.lex(&format!(
             "{}{}",
-            String::from(&left.token.value),
-            String::from(&right.token.value)
+            token_spelling(&left.token),
+            token_spelling(&right.token)
         ));
-        if pasted.len() != 1 {
+        let [pasted] = pasted.as_slice() else {
             return std::iter::once(left).chain(right_tokens).collect();
-        }
-        let joined = Span::new(
-            pasted[0].clone(),
+        };
+        let mut joined = Span::new(
+            pasted.value.clone(),
             left.token.spelling.through(right.token.spelling),
             left.token.expansion.through(right.token.expansion),
         )
         .with_leading_space(left.token.leading_space);
+        joined.digraph = pasted.digraph;
         std::iter::once(PPToken::from(joined))
             .chain(right_tokens.into_iter().skip(1))
             .collect()

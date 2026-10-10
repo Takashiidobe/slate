@@ -1,5 +1,5 @@
 use crate::compiler_args::{CompilerFlavor, LanguageStandard};
-use crate::compiler_options::{InlineSemantics, MicrosoftFlags};
+use crate::compiler_options::{InlineSemantics, MicrosoftFlags, SourceGraphs};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Availability {
@@ -63,6 +63,7 @@ pub struct StandardFeatures {
     pub x86_segment_keywords: bool,
     pub trigraphs: bool,
     pub whitespace_line_splice: bool,
+    pub digraphs: bool,
 }
 
 impl StandardFeatures {
@@ -141,6 +142,7 @@ impl StandardFeatures {
             x86_segment_keywords: false,
             trigraphs: !standard.is_gnu() && !c23,
             whitespace_line_splice: true,
+            digraphs: !matches!(standard, LanguageStandard::C89),
         }
     }
 
@@ -149,10 +151,13 @@ impl StandardFeatures {
         flavor: CompilerFlavor,
         target: &crate::target_info::TargetInfo,
         microsoft: MicrosoftFlags,
-        trigraphs: Option<bool>,
+        graphs: SourceGraphs,
     ) -> Self {
         let mut features = Self::new(standard);
-        features.trigraphs = trigraphs.unwrap_or(features.trigraphs && !flavor.is_msvc());
+        features.trigraphs = graphs
+            .trigraphs
+            .unwrap_or(features.trigraphs && !flavor.is_msvc());
+        features.digraphs = graphs.digraphs.unwrap_or(features.digraphs);
         (
             features.microsoft_extensions,
             features.microsoft_compatibility,

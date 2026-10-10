@@ -1,7 +1,7 @@
 use super::{PPNode, PPNodeKind};
 use crate::ast::{FileId, Span};
 use crate::files::{Files, decode_source_bytes};
-use crate::lexer::Token;
+use crate::lexer::{Token, token_spelling};
 use std::collections::HashMap;
 use std::io::{self, Write};
 
@@ -47,7 +47,7 @@ impl<'a> Spellings<'a> {
     }
 
     fn spelling(&mut self, token: &Span<Token>) -> String {
-        let canonical = String::from(&token.value);
+        let canonical = token_spelling(token);
         if !matches!(
             token.value,
             Token::Keyword(_)

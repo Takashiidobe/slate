@@ -21,7 +21,7 @@ pub struct CompilerOptions {
     pub strict_flex_arrays: u8,
     pub codegen: CodegenOptions,
     pub macro_prefix_map: Vec<(String, String)>,
-    pub trigraphs: Option<bool>,
+    pub graphs: SourceGraphs,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -88,6 +88,12 @@ pub enum StackProtector {
     Strong,
     All,
     Explicit,
+}
+
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
+pub struct SourceGraphs {
+    pub trigraphs: Option<bool>,
+    pub digraphs: Option<bool>,
 }
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
@@ -174,7 +180,7 @@ impl Default for CompilerOptions {
             strict_flex_arrays: 0,
             codegen: CodegenOptions::default(),
             macro_prefix_map: Vec::new(),
-            trigraphs: None,
+            graphs: SourceGraphs::default(),
         }
     }
 }

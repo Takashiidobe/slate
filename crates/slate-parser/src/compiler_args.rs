@@ -1,6 +1,6 @@
 use crate::compiler_options::{
     CodegenOptions, CompilerOptions, LayoutOptions, LibraryBuiltins, MicrosoftFlags,
-    OperationValues, Pic, StackProtector, TrivialAutoVarInit,
+    OperationValues, Pic, SourceGraphs, StackProtector, TrivialAutoVarInit,
 };
 use crate::diagnostics::{DiagnosticOptions, Warning};
 use crate::files::SearchPaths;
@@ -269,6 +269,7 @@ struct ParsedCompilerArgs {
     gnu89_inline: Option<bool>,
     common: Option<bool>,
     trigraphs: Option<bool>,
+    digraphs: Option<bool>,
     ms_extensions: Option<bool>,
     ms_compatibility: Option<bool>,
     asm_blocks: Option<bool>,
@@ -362,6 +363,7 @@ enum Opt {
     Common,
     Trigraphs,
     ClangTrigraphs,
+    ClangDigraphs,
     MsExtensions,
     MsCompatibility,
     AsmBlocks,
@@ -449,6 +451,7 @@ impl std::fmt::Display for Opt {
             Self::Common => "common",
             Self::Trigraphs => "trigraphs",
             Self::ClangTrigraphs => "ftrigraphs",
+            Self::ClangDigraphs => "fdigraphs",
             Self::MsExtensions => "ms-extensions",
             Self::MsCompatibility => "ms-compatibility",
             Self::AsmBlocks => "asm-blocks",
@@ -550,6 +553,7 @@ impl Opt {
             | Self::ClangX87
             | Self::AsmBlocks
             | Self::ClangTrigraphs
+            | Self::ClangDigraphs
             | Self::MsAnonymousStructs
             | Self::LateParseAttributes
             | Self::Mllvm => &[Clang],
@@ -580,6 +584,7 @@ impl Opt {
             Self::Gnu89Inline => "-fgnu89-inline",
             Self::Common => "-fcommon",
             Self::ClangTrigraphs => "-ftrigraphs",
+            Self::ClangDigraphs => "-fdigraphs",
             Self::MsExtensions => "-fms-extensions",
             Self::MsCompatibility => "-fms-compatibility",
             Self::AsmBlocks => "-fasm-blocks",
@@ -817,8 +822,9 @@ fn ignored_option(argument: &str) -> Option<IgnoredOption> {
         .then_some(IgnoredOption::Alone)
 }
 
-const SWITCH_OPTS: [Opt; 32] = [
+const SWITCH_OPTS: [Opt; 33] = [
     Opt::ClangTrigraphs,
+    Opt::ClangDigraphs,
     Opt::DeleteNullPointerChecks,
     Opt::SmallPic,
     Opt::LargePic,
@@ -905,7 +911,10 @@ impl CompilerArgParser {
         });
         options.codegen = codegen;
         options.common = raw.common.unwrap_or(false);
-        options.trigraphs = raw.trigraphs;
+        options.graphs = SourceGraphs {
+            trigraphs: raw.trigraphs,
+            digraphs: raw.digraphs,
+        };
         options.microsoft = MicrosoftFlags {
             extensions: raw.ms_extensions,
             compatibility: raw.ms_compatibility,
@@ -1020,6 +1029,7 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                 Opt::Gnu89Inline => parsed.gnu89_inline = Some(value),
                 Opt::Common => parsed.common = Some(value),
                 Opt::ClangTrigraphs => parsed.trigraphs = Some(value),
+                Opt::ClangDigraphs => parsed.digraphs = Some(value),
                 Opt::MsExtensions => {
                     parsed.ms_extensions = Some(value);
                     parsed.ms_anonymous_structs = Some(value);

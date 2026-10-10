@@ -507,6 +507,28 @@ const MULTI_CHAR_OPS: &[(&str, Token)] = &[
     ("##", Token::HashHash),
 ];
 
+const DIGRAPHS: &[(&str, Token)] = &[
+    ("%:%:", Token::HashHash),
+    ("%:", Token::Hash),
+    ("<:", Token::LBracket),
+    (":>", Token::RBracket),
+    ("<%", Token::LBrace),
+    ("%>", Token::RBrace),
+];
+
+pub(crate) fn token_spelling(token: &Span<Token>) -> String {
+    token
+        .digraph
+        .then(|| {
+            DIGRAPHS
+                .iter()
+                .find(|(_, digraph)| *digraph == token.value)
+                .map(|(spelling, _)| (*spelling).to_owned())
+        })
+        .flatten()
+        .unwrap_or_else(|| String::from(&token.value))
+}
+
 const SINGLE_CHAR_OPS: &[(char, Token)] = &[
     ('(', Token::LParen),
     (')', Token::RParen),
@@ -669,6 +691,16 @@ impl Lexer {
         }
     }
 
+    fn try_consume_digraph(&mut self) -> Option<Token> {
+        if !self.features.digraphs {
+            return None;
+        }
+        DIGRAPHS
+            .iter()
+            .find(|(digraph, _)| self.try_consume(digraph))
+            .map(|(_, token)| token.clone())
+    }
+
     fn try_consume_op(&mut self) -> Option<Token> {
         for (op, token) in MULTI_CHAR_OPS {
             if self.try_consume(op) {
@@ -819,6 +851,11 @@ impl Lexer {
             }
             let word: String = self.chars[i..self.pos].iter().collect();
             self.emit(Token::Ident(word.into()));
+        } else if let Some(token) = self.try_consume_digraph() {
+            self.emit(token);
+            if let Some(last) = self.tokens.last_mut() {
+                last.digraph = true;
+            }
         } else if let Some(token) = self.try_consume_op() {
             self.emit(token);
         } else {

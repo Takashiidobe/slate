@@ -25,7 +25,7 @@ impl Dialect {
             flavor,
             &target,
             options.microsoft,
-            options.trigraphs,
+            options.graphs,
         );
         Self {
             flavor,
