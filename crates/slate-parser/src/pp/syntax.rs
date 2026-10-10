@@ -134,14 +134,16 @@ pub(super) struct TokenSource<'a> {
     src: &'a str,
     tokens: Vec<LineToken>,
     position: usize,
+    elifdef_directives: bool,
 }
 
 impl<'a> TokenSource<'a> {
-    pub(super) fn new(src: &'a str, tokens: Vec<LineToken>) -> Self {
+    pub(super) fn new(src: &'a str, tokens: Vec<LineToken>, elifdef_directives: bool) -> Self {
         Self {
             src,
             tokens,
             position: 0,
+            elifdef_directives,
         }
     }
 
@@ -226,9 +228,16 @@ impl<'a> TokenSource<'a> {
         Directive {
             name: match &name.value {
                 Token::IntLit(_) => DirectiveName::LineMarker,
-                _ => identifier(self.src, &name).map_or(DirectiveName::Unknown, |name| {
-                    DirectiveName::from_spelling(&name)
-                }),
+                _ => match identifier(self.src, &name)
+                    .map(|name| DirectiveName::from_spelling(&name))
+                {
+                    Some(DirectiveName::Elifdef | DirectiveName::Elifndef)
+                        if !self.elifdef_directives =>
+                    {
+                        DirectiveName::Unknown
+                    }
+                    name => name.unwrap_or(DirectiveName::Unknown),
+                },
             },
             arguments: tokens.collect(),
             name_loc: name.spelling,

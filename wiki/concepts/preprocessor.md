@@ -76,7 +76,11 @@ unterminated `#if`) surface where the stream reaches them. Earlier
 evaluation errors take precedence.
 
 Unknown directives are `UnsupportedDirective`; `#ident` and `#` are
-ignored.
+ignored. `#elifdef` and `#elifndef` are directives under clang in every
+mode, under gcc in gnu modes and C23, and under msvc only in C23
+(`/std:clatest`). Otherwise `TokenSource` names them `Unknown`
+(`StandardFeatures::elifdef_directives`): ignored in a skipped group, an
+error in a taken one, as in gcc's strict ISO modes and cl's C7730.
 
 ## Predefines
 

@@ -913,7 +913,8 @@ impl<'a> Preprocessor<'a> {
         self.files.set_line_starts(file, starts.clone());
         self.line_starts.insert(file, starts);
         let tokens = Lexer::new(file, src, self.dialect.features()).tokenize_lines();
-        self.process(file, TokenSource::new(src, tokens))
+        let elifdef_directives = self.dialect.features().elifdef_directives;
+        self.process(file, TokenSource::new(src, tokens, elifdef_directives))
     }
 
     fn source(&self, file: FileId) -> &str {

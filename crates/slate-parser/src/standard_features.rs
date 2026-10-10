@@ -64,6 +64,7 @@ pub struct StandardFeatures {
     pub trigraphs: bool,
     pub whitespace_line_splice: bool,
     pub digraphs: bool,
+    pub elifdef_directives: bool,
 }
 
 impl StandardFeatures {
@@ -143,6 +144,7 @@ impl StandardFeatures {
             trigraphs: !standard.is_gnu() && !c23,
             whitespace_line_splice: true,
             digraphs: !matches!(standard, LanguageStandard::C89),
+            elifdef_directives: c23 || standard.is_gnu(),
         }
     }
 
@@ -158,6 +160,11 @@ impl StandardFeatures {
             .trigraphs
             .unwrap_or(features.trigraphs && !flavor.is_msvc());
         features.digraphs = graphs.digraphs.unwrap_or(features.digraphs);
+        features.elifdef_directives = match flavor {
+            CompilerFlavor::Gcc => features.elifdef_directives,
+            CompilerFlavor::Clang => true,
+            CompilerFlavor::Msvc => standard.at_least_c23(),
+        };
         (
             features.microsoft_extensions,
             features.microsoft_compatibility,
