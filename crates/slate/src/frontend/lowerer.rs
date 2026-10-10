@@ -78,6 +78,7 @@ struct Dependencies {
     alloca: bool,
     atomic_volatile: bool,
     asm_unwind: bool,
+    asm_goto_with_outputs: bool,
     asm_strings: BTreeMap<u32, Item>,
     atomic128: bool,
     long_double: bool,
@@ -627,6 +628,9 @@ impl<'m> ModuleLowerer<'m> {
         let mut features = vec![rust::CrateAttr::Allow(vec![rust::Lint::NonCamelCaseTypes])];
         if dependencies.asm_unwind {
             features.push(rust::CrateAttr::Feature(rust::Feature::AsmUnwind));
+        }
+        if dependencies.asm_goto_with_outputs {
+            features.push(rust::CrateAttr::Feature(rust::Feature::AsmGotoWithOutputs));
         }
         if dependencies.atomic128 {
             items.insert(

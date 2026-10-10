@@ -977,18 +977,12 @@ impl<W: Write> Codegen<W> {
                             self.out.write_str("sym ")?;
                             self.expr(value)?;
                         }
-                        AsmOperand::Label {
-                            state,
-                            value,
-                            destination,
-                        } => {
+                        AsmOperand::Label { state, value } => {
                             self.out.write_str("label {\n")?;
                             self.expr(state)?;
                             self.out.write_str(" = ")?;
                             self.expr(value)?;
-                            self.out.write_str(";\n")?;
-                            writeln!(self.out, "continue '{};", destination.as_str())?;
-                            self.out.write_char('}')?;
+                            self.out.write_str(";\n}")?;
                         }
                     }
                 }

@@ -10,6 +10,7 @@ enum Node<'a> {
     Branch(&'a ir::Value, usize, usize),
     Switch(&'a ir::Value, Vec<Case<'a>>, usize),
     Indirect(&'a ir::Value, Vec<(BindingId, usize)>),
+    AsmGoto(&'a Statement, &'a ir::InlineAsm, usize, Vec<usize>),
 }
 
 impl Node<'_> {
@@ -19,6 +20,9 @@ impl Node<'_> {
             Self::Jump(next) | Self::Statement(_, Some(next)) | Self::Value(_, next) => {
                 vec![*next]
             }
+            Self::AsmGoto(_, _, next, labels) => std::iter::once(*next)
+                .chain(labels.iter().copied())
+                .collect(),
             Self::Branch(_, yes, no) => vec![*yes, *no],
             Self::Switch(_, cases, default) => cases
                 .iter()
@@ -48,6 +52,12 @@ impl Node<'_> {
             Self::Indirect(_, entries) => {
                 for (_, entry) in entries {
                     *entry = targets[*entry];
+                }
+            }
+            Self::AsmGoto(_, _, next, labels) => {
+                *next = targets[*next];
+                for label in labels {
+                    *label = targets[*label];
                 }
             }
         }
@@ -134,7 +144,8 @@ pub(super) fn needs_dispatch(statements: &[Statement]) -> bool {
         matches!(
             statement.value,
             ir::Statement::Goto(_) | ir::Statement::ComputedGoto(_) | ir::Statement::Label { .. }
-        ) || children(statement).into_iter().any(needs_dispatch)
+        ) || matches!(&statement.value, ir::Statement::Asm(asm) if !asm.labels.is_empty())
+            || children(statement).into_iter().any(needs_dispatch)
             || match &statement.value {
                 ir::Statement::Switch { body, .. } => {
                     let body = match body.as_slice() {
@@ -210,7 +221,7 @@ impl<'a> Graph<'a> {
                 predecessors[next] += 1;
                 if matches!(
                     node,
-                    Node::Branch(..) | Node::Switch(..) | Node::Indirect(..)
+                    Node::Branch(..) | Node::Switch(..) | Node::Indirect(..) | Node::AsmGoto(..)
                 ) {
                     leaders[next] = true;
                 }
@@ -407,13 +418,17 @@ impl<'a> Graph<'a> {
                     .push((variable.id, &variable.ty, variable.alignment));
                 self.push(Node::Statement(statement, Some(next)))
             }
+            ir::Statement::Asm(asm) if !asm.labels.is_empty() => {
+                let labels = asm.labels.iter().map(|id| self.label(*id)).collect();
+                self.push(Node::AsmGoto(statement, asm, next, labels))
+            }
             ir::Statement::Return(_) => self.push(Node::Statement(statement, None)),
             _ => self.push(Node::Statement(statement, Some(next))),
         }
     }
 }
 
-fn state(index: usize) -> Expr {
+pub(super) fn state(index: usize) -> Expr {
     Expr::Value(rust::RustValue::Usize(index))
 }
 
@@ -633,6 +648,11 @@ impl FunctionLowerer<'_, '_> {
                             },
                             arms,
                         }]
+                    }
+                    Node::AsmGoto(statement, asm, next, labels) => {
+                        let mut body = jump(next);
+                        body.insert(1, self.lower_asm(statement, asm, &labels)?);
+                        body
                     }
                 });
             }

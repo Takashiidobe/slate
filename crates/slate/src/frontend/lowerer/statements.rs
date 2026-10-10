@@ -277,7 +277,7 @@ impl FunctionLowerer<'_, '_> {
                     })
                 })?)
             }
-            ir::Statement::Asm(asm) => self.lower_asm(statement, asm)?,
+            ir::Statement::Asm(asm) => self.lower_asm(statement, asm, &[])?,
             ir::Statement::Null => Stmt::Block(rust::Block::default()),
             _ => {
                 return Err(Construct::Statement {

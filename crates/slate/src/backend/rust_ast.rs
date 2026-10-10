@@ -719,7 +719,6 @@ pub enum AsmOperand {
     Label {
         state: Expr,
         value: Expr,
-        destination: Label,
     },
 }
 

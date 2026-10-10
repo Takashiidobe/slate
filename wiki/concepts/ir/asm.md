@@ -310,5 +310,11 @@ impossible.
   and clobber it. References print `%st`, `%st(N)`, or `%mmN`. Spilled outputs drop `pure`
   and the memory options; spilled inputs turn `nomem` into `readonly`
   (`asm_x87_mmx_operands.c`, gcc-torture `990413-2`).
-- Other immediate modifiers, asm goto, module asm,
+- asm goto forces the dispatch loop and becomes a CFG node with the fallthrough plus one
+  successor per label. Slate sets `__slate_state` to the fallthrough before the `asm!`, and each
+  `%lN` is a `label { __slate_state = N; }` operand. A `()` label block resumes after the
+  `asm!`, so writebacks run once on every path, then `continue '__slate_dispatch`. rustc
+  assigns outputs before entering a label block; asm goto with outputs enables
+  `asm_goto_with_outputs` (`gnu_asm_goto.c`, gcc-dg `torture/pr58670`).
+- Other immediate modifiers, module asm,
   and additional operand classes are tracked by the other `slate-3f8g.4.17` children.

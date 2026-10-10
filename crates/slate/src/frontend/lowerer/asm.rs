@@ -250,12 +250,13 @@ fn explicit_reference(
     })
 }
 
-fn asm_template(asm: &ir::InlineAsm, slots: &[Slot]) -> Result<String> {
+fn asm_template(asm: &ir::InlineAsm, slots: &[Slot], labels: &[usize]) -> Result<String> {
     if !asm.has_sections() {
         return Ok(asm.template.clone());
     }
     let mut template = String::new();
     let mut used = vec![false; asm.operands.len()];
+    let mut used_labels = vec![false; labels.len()];
     for piece in &asm.pieces {
         match piece {
             ir::AsmPiece::Text(text) => {
@@ -383,8 +384,18 @@ fn asm_template(asm: &ir::InlineAsm, slots: &[Slot]) -> Result<String> {
                     }
                 }
             }
+            ir::AsmPiece::Label(index) => {
+                let slot = labels
+                    .get(*index)
+                    .ok_or_else(|| unsupported_asm(format!("label operand {index}")))?;
+                used_labels[*index] = true;
+                template.push_str(&format!("{{{slot}}}"));
+            }
             piece => return Err(unsupported_asm(format!("template piece {piece}"))),
         }
+    }
+    for (slot, _) in labels.iter().zip(used_labels).filter(|(_, used)| !used) {
+        template.push_str(&format!("\n# {{{slot}}}"));
     }
     for (index, used) in used.into_iter().enumerate() {
         if let (false, Slot::Positional(slot)) = (used, slots[index]) {
@@ -664,7 +675,7 @@ impl FunctionLowerer<'_, '_> {
                 });
             }
             templates.push(if asm.has_sections() {
-                asm_template(asm, &slots)?
+                asm_template(asm, &slots, &[])?
             } else {
                 asm.template.replace('{', "{{").replace('}', "}}")
             });
@@ -894,12 +905,13 @@ impl FunctionLowerer<'_, '_> {
         &mut self,
         statement: &Span<ir::Statement>,
         asm: &ir::InlineAsm,
+        labels: &[usize],
     ) -> Result<Stmt> {
         if self.tables.target.family != TargetFamily::X86_64 {
             return Err(unsupported_asm("target needs assembly lowering"));
         }
-        if asm.goto || !asm.labels.is_empty() {
-            return Err(unsupported_asm("asm goto"));
+        if asm.labels.len() != labels.len() {
+            return Err(unsupported_asm("asm goto outside dispatch"));
         }
         if !asm.operands.is_empty() && asm.alternative.is_none() {
             return Err(unsupported_asm(format!(
@@ -1279,7 +1291,17 @@ impl FunctionLowerer<'_, '_> {
                 });
             }
         }
-        let mut template = asm_template(asm, &slots)?;
+        let label_slots: Vec<_> = labels
+            .iter()
+            .map(|label| {
+                operands.push(rust::AsmOperand::Label {
+                    state: Expr::Var("__slate_state".into()),
+                    value: control_flow::state(*label),
+                });
+                operands.len() - 1
+            })
+            .collect();
+        let mut template = asm_template(asm, &slots, &label_slots)?;
         if !loads.is_empty() || !stores.is_empty() {
             let pop = match asm.dialect {
                 Some(ir::AsmDialect::Intel) => "fstp st(0)",
@@ -1335,6 +1357,13 @@ impl FunctionLowerer<'_, '_> {
         }
         operands.extend(explicit);
         self.dependencies.asm_unwind |= options.contains(&rust::AsmOption::MayUnwind);
+        self.dependencies.asm_goto_with_outputs |= !labels.is_empty()
+            && operands.iter().any(|operand| {
+                matches!(
+                    operand,
+                    rust::AsmOperand::Out { .. } | rust::AsmOperand::InOut { .. }
+                )
+            });
         prefix.push(Stmt::InlineAsm(rust::InlineAsm {
             template,
             operands,
