@@ -69,6 +69,8 @@ pub(super) enum PPErrorKind {
     ExpectedMacroName(&'static str),
     #[error("{0}")]
     InvalidPaste(String),
+    #[error("newline in string literal")]
+    NewlineInStringLiteral,
     #[error("'defined' cannot be used as a macro name")]
     DefinedAsMacroName,
     #[error("expected `)` after macro parameters")]

@@ -213,12 +213,14 @@ token plus an interned `HideSet`; file tokens start empty.
 - Arguments are prescanned by `expand_isolated`, a stream without a file,
   only where used outside `#`/`##` (all of them if `__VA_OPT__` appears).
   `substitute_function_macro` handles `#`, `##` (re-lex; a paste that
-  doesn't form one token keeps both), `__VA_ARGS__`, `__VA_OPT__`. The
+  doesn't form one token is an error in gcc and clang, msvc keeps both), `__VA_ARGS__`, `__VA_OPT__`. The
   lexer scans numbers as pp-numbers (letters, digits, `_`, `.`, and a sign
   after `e`/`p`), so `name##2_cb` pastes onto the single token `2_cb`.
   A `\` that does not start a UCN (`\u`, `\U`, `\N{`) is a one-character
   token, so `str(\)` is a call. gcc and clang drop a stringified result's
-  final unescaped `\` (`str(\)` is `""`); msvc keeps it, as `cl /EP` does.
+  final unescaped `\` (`str(\)` is `""`); msvc keeps it, as `cl /EP` does, and
+  rejects the program (`newline in string literal`, C2001) when the
+  backslashes at the end are an odd count.
 - Comma elision (`comma_elision`): gcc and clang drop the comma of
   `, ## __VA_ARGS__` when the variadic argument is omitted (`F(a)`, not
   `F(a,)`); for a macro whose only parameter is `...`, `H()` counts as

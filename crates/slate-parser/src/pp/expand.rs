@@ -907,6 +907,14 @@ impl Preprocessor<'_> {
                         argument.iter().map(|token| &token.token),
                         !self.dialect.flavor().is_msvc(),
                     );
+                    if self.dialect.flavor().is_msvc()
+                        && text.chars().rev().take_while(|&c| c == '\\').count() % 2 == 1
+                    {
+                        return Err(PPFailure::at(
+                            token.spelling,
+                            PPErrorKind::NewlineInStringLiteral,
+                        ));
+                    }
                     output.push(PPToken::from(
                         stamp.apply(token).with_value(Token::StringLit(text.into())),
                     ));
