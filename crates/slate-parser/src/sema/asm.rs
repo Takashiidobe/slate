@@ -1,3 +1,4 @@
+use super::ctype::QualType;
 use super::expression::Lowerer;
 use super::fold::{integer_number, integer_with_objects, read_with_objects};
 use super::numeric::ResolveError;
@@ -303,7 +304,7 @@ impl Lowerer {
         let memory_only = constraint.memory_only();
         let lvalue = match self.place(expr) {
             Ok(lvalue) => lvalue,
-            Err(_) if memory_only => {
+            Err(_) if memory_only && !self.types.flavor().is_gcc() => {
                 return Err(ResolveError::Internal(
                     "asm input with a memory-only constraint is not an lvalue",
                 ));
@@ -762,7 +763,9 @@ impl TypeResolver {
         let memory_only = constraint.memory_only();
         let typed = self.typed(&operand.expr)?;
         if !output && !typed.lvalue {
-            return if memory_only {
+            return if memory_only
+                && !(self.flavor().is_gcc() && self.gcc_memory_input(&operand.expr)?)
+            {
                 Err(ResolveError::Rejected(
                     "asm input with a memory-only constraint is not an lvalue",
                 ))
@@ -773,23 +776,64 @@ impl TypeResolver {
         if memory_only && typed.bits.is_some() {
             return Err(ResolveError::Rejected("address of a bit-field"));
         }
-        let mut expr = &operand.expr;
-        while let ast::ExprKind::Paren(inner) = &expr.value {
-            expr = inner;
-        }
-        if memory_only
-            && self.flavor().is_gcc()
-            && matches!(expr.value, ast::ExprKind::Identifier(_))
-            && self
-                .references
-                .get(&expr.id)
-                .is_some_and(|id| self.entities.is_register(id))
-        {
+        if memory_only && self.flavor().is_gcc() && self.register_variable(&operand.expr) {
             return Err(ResolveError::Rejected(
                 "address of register variable requested",
             ));
         }
         Ok(())
+    }
+
+    fn register_variable(&self, mut expr: &ast::Expr) -> bool {
+        while let ast::ExprKind::Paren(inner) = &expr.value {
+            expr = inner;
+        }
+        matches!(expr.value, ast::ExprKind::Identifier(_))
+            && self
+                .references
+                .get(&expr.id)
+                .is_some_and(|id| self.entities.is_register(id))
+    }
+
+    fn gcc_memory_input(&mut self, expr: &ast::Expr) -> Result<bool, ResolveError> {
+        let typed = self.typed(expr)?;
+        match &expr.value {
+            ast::ExprKind::Paren(inner) | ast::ExprKind::Comma { right: inner, .. } => {
+                self.gcc_memory_input(inner)
+            }
+            ast::ExprKind::Conditional { .. } => Ok(!self.ctypes.is_void(typed.c)),
+            ast::ExprKind::Cast { value, .. } => {
+                let inner = self.typed(value)?.c;
+                Ok(self.nop_conversion(typed.c, inner) && self.gcc_memory_input(value)?)
+            }
+            ast::ExprKind::StatementExpression(body) => {
+                match super::expression::statement_expression_parts(body) {
+                    (_, _, Some(result), _) => self.gcc_memory_input(result),
+                    _ => Ok(false),
+                }
+            }
+            _ => Ok(typed.lvalue && typed.bits.is_none() && !self.register_variable(expr)),
+        }
+    }
+
+    fn nop_conversion(&self, outer: QualType, inner: QualType) -> bool {
+        if self.ctypes.compatible_unqualified(outer, inner) {
+            return true;
+        }
+        let precision = |ty: QualType| {
+            if !self.ctypes.is_integer(ty) && !self.ctypes.is_pointer(ty) {
+                return None;
+            }
+            match self.ir_type(ty) {
+                Type::Bool => Some(1),
+                Type::Numeric(NumericType::Integer { width, .. }) => Some(u64::from(width)),
+                erased => self
+                    .storage(erased)
+                    .ok()
+                    .map(|storage| storage.size_bytes * 8),
+            }
+        };
+        precision(outer).is_some_and(|bits| precision(inner) == Some(bits))
     }
 }
 

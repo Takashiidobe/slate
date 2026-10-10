@@ -248,13 +248,25 @@ impl Parser {
         let output_names = operand_names(&outputs);
         let mut names = output_names.clone();
         names.extend(operand_names(&inputs));
+        let read_writes: Vec<usize> = outputs
+            .iter()
+            .enumerate()
+            .filter(|(_, output)| output.constraint.value.contains('+'))
+            .map(|(index, _)| index)
+            .collect();
+        names.extend(read_writes.iter().map(|_| None));
         let operand_count = names.len();
         names.extend(labels.iter().map(|label| Some(label.value.as_str())));
         let dialects = matches!(
             self.dialect().target().family,
             TargetFamily::X86 | TargetFamily::X86_64
         );
-        let pieces = analyze_template(&template.value, &names, operand_count, dialects)
+        let operands = TemplateOperands {
+            names: &names,
+            count: operand_count,
+            read_writes: &read_writes,
+        };
+        let pieces = analyze_template(&template.value, &operands, dialects)
             .map_err(|error| self.error_at_tokens(tokens, template_pos, error))?;
         let constraint_error = |operand: &RawOperand, message: String| {
             self.error_at_tokens(tokens, operand.constraint_pos, message)
@@ -436,10 +448,15 @@ fn decode_clobber(name: &str) -> AsmClobber {
     }
 }
 
+struct TemplateOperands<'a> {
+    names: &'a [Option<&'a str>],
+    count: usize,
+    read_writes: &'a [usize],
+}
+
 fn analyze_template(
     template: &str,
-    names: &[Option<&str>],
-    operand_count: usize,
+    operands: &TemplateOperands<'_>,
     dialects: bool,
 ) -> Result<Vec<AsmTemplatePiece>, String> {
     let mut pieces = Vec::new();
@@ -507,7 +524,7 @@ fn analyze_template(
             let index = rest[..digits]
                 .parse::<usize>()
                 .ok()
-                .filter(|&index| index < names.len())
+                .filter(|&index| index < operands.names.len())
                 .ok_or("invalid operand number in inline asm string")?;
             rest = &rest[digits..];
             index
@@ -520,7 +537,8 @@ fn analyze_template(
                 return Err("empty symbolic operand name in inline asm string".into());
             }
             rest = &symbolic[close + 1..];
-            names
+            operands
+                .names
                 .iter()
                 .position(|candidate| *candidate == Some(name))
                 .ok_or_else(|| {
@@ -529,8 +547,13 @@ fn analyze_template(
         } else {
             return Err("invalid % escape in inline assembly string".into());
         };
-        pieces.push(if index >= operand_count {
-            AsmTemplatePiece::Label(index - operand_count)
+        let hidden = operands.count - operands.read_writes.len();
+        let index = match index.checked_sub(hidden) {
+            Some(read_write) if index < operands.count => operands.read_writes[read_write],
+            _ => index,
+        };
+        pieces.push(if index >= operands.count {
+            AsmTemplatePiece::Label(index - operands.count)
         } else if modifier == Some('l') {
             return Err("`%l` operand isn't a label".into());
         } else {

@@ -33,6 +33,10 @@ with holes.
   `AsmPiece::Operand { index }` is a direct subscript. A `Label(n)` piece
   indexes the label list, so `%l1` and `%l[done]` both print `%l0` when
   `done` is the first label.
+- gcc and clang number one hidden input per `+` output after the explicit
+  inputs and before the labels. The parser resolves a reference to one to
+  its output, which is the same location: with `"+a"(b)` and no inputs,
+  `%q1` is `%q0` (`ir_asm_read_write_operand_numbers.c`).
 - Constraints keep the parsed alternative list; the printer rebuilds the GNU
   spelling from it, so output round-trips the parse.
 - Operand effects hoist ahead of the statement: outputs first in operand
@@ -165,6 +169,14 @@ whole asm: the first where every operand has a usable class.
   rejects bit-fields and lanes under any memory-capable constraint; we
   follow gcc (`ir_asm.c` `memory()`, `ir_asm_memory_gcc.c`,
   `error/asm-memory-*.c`).
+- gcc accepts some non-lvalue memory-only inputs, because its gimplifier
+  still finds memory for them. They are a non-void `?:`, a comma or
+  statement expression whose last operand qualifies, and an integer or
+  pointer cast that keeps the precision, applied to an operand that
+  qualifies. `-fsyntax-only` skips that check, so the real rule needs
+  `gcc -c` to see. The gcc flavor accepts these and lowers them as spilled
+  `In(value)` operands. clang rejects all of them
+  (`ir_asm_memory_gcc_rvalues.c`, `error/gcc/.../asm-memory-not-lvalue.c`).
 
 ## Widths and modifiers
 
