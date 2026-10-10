@@ -1477,7 +1477,8 @@ impl TypeResolver {
         context: ConversionContext,
     ) -> Result<(), ResolveError> {
         let to = self.ctypes.unqualified(to);
-        let null = self.null_pointer_constant(e);
+        let null = (self.ctypes.is_pointer(to) || self.ctypes.is_nullptr(to))
+            && self.null_pointer_constant(e);
         let conversion = self.ctypes.classify_conversion(from, to, context, null)?;
         if conversion.kind == CastKind::Vector
             && self.storage(self.ir_type(from))?.size_bytes
