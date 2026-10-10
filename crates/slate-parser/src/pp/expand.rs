@@ -1,4 +1,4 @@
-use super::error::PPFailure;
+use super::error::{PPErrorKind, PPFailure};
 use super::hide_set::HideSet;
 use super::syntax::{Directive, DirectiveName, Line};
 use super::{FileInput, MacroDef, Preprocessor, stringized_source};
@@ -209,7 +209,7 @@ impl Preprocessor<'_> {
         let name = name.clone();
         let Some(parameters) = &definition.parameters else {
             let hide = self.hide_sets.with(token.hide, &name);
-            let replacement = self.substitute_object_macro(&definition, &stamp);
+            let replacement = self.substitute_object_macro(&definition, &stamp)?;
             let replacement = self.hide_all(replacement, hide);
             stream.push_front(inherit_leading_space(replacement, &token.token));
             return Ok(None);
@@ -267,7 +267,7 @@ impl Preprocessor<'_> {
                 elide_comma,
             },
             &stamp,
-        );
+        )?;
         let hide = self.hide_sets.intersection(token.hide, rparen_hide);
         let hide = self.hide_sets.with(hide, &name);
         let replacement = self.hide_all(replacement, hide);
@@ -865,7 +865,7 @@ impl Preprocessor<'_> {
         parameters: &[String],
         arguments: &Arguments,
         stamp: &Stamp,
-    ) -> Vec<PPToken> {
+    ) -> Result<Vec<PPToken>, PPFailure> {
         let mut output = Vec::new();
         let mut i = 0;
         while i < definition.replacement.len() {
@@ -948,7 +948,14 @@ impl Preprocessor<'_> {
                     stamp,
                     false,
                 );
-                output.extend(self.paste(left, right_tokens));
+                let gnu_comma_paste = left.token.value == Token::Comma
+                    && matches!(&definition.replacement[i + 1].value, Token::Ident(name) if name == "__VA_ARGS__");
+                if gnu_comma_paste {
+                    output.push(left);
+                    output.extend(right_tokens);
+                } else {
+                    output.extend(self.paste(left, right_tokens)?);
+                }
                 i += 2;
                 continue;
             }
@@ -962,7 +969,7 @@ impl Preprocessor<'_> {
             ));
             i += 1;
         }
-        output
+        Ok(output)
     }
 
     fn comma_elision(
@@ -997,7 +1004,11 @@ impl Preprocessor<'_> {
         })
     }
 
-    fn substitute_object_macro(&self, definition: &MacroDef, stamp: &Stamp) -> Vec<PPToken> {
+    fn substitute_object_macro(
+        &self,
+        definition: &MacroDef,
+        stamp: &Stamp,
+    ) -> Result<Vec<PPToken>, PPFailure> {
         let mut output = Vec::new();
         let mut tokens = definition.replacement.iter();
         while let Some(token) = tokens.next() {
@@ -1006,17 +1017,17 @@ impl Preprocessor<'_> {
                 && let Some(right) = tokens.next()
                 && let Some(left) = output.pop()
             {
-                output.extend(self.paste(left, vec![stamp.token(right)]));
+                output.extend(self.paste(left, vec![stamp.token(right)])?);
                 continue;
             }
             output.push(stamp.token(token));
         }
-        output
+        Ok(output)
     }
 
-    fn paste(&self, left: PPToken, right_tokens: Vec<PPToken>) -> Vec<PPToken> {
+    fn paste(&self, left: PPToken, right_tokens: Vec<PPToken>) -> Result<Vec<PPToken>, PPFailure> {
         let Some(right) = right_tokens.first() else {
-            return vec![left];
+            return Ok(vec![left]);
         };
         let pasted = self.lex(&format!(
             "{}{}",
@@ -1024,7 +1035,23 @@ impl Preprocessor<'_> {
             token_spelling(&right.token)
         ));
         let [pasted] = pasted.as_slice() else {
-            return std::iter::once(left).chain(right_tokens).collect();
+            let flavor = self.dialect.flavor();
+            if flavor.is_msvc() {
+                return Ok(std::iter::once(left).chain(right_tokens).collect());
+            }
+            let (left_text, right_text) =
+                (token_spelling(&left.token), token_spelling(&right.token));
+            let message = if flavor.is_gcc() {
+                format!(
+                    "pasting '{left_text}' and '{right_text}' does not give a valid preprocessing token"
+                )
+            } else {
+                format!("pasting formed '{left_text}{right_text}', an invalid preprocessing token")
+            };
+            return Err(PPFailure::at(
+                left.token.spelling.through(right.token.spelling),
+                PPErrorKind::InvalidPaste(message),
+            ));
         };
         let mut joined = Span::new(
             pasted.value.clone(),
@@ -1033,9 +1060,9 @@ impl Preprocessor<'_> {
         )
         .with_leading_space(left.token.leading_space);
         joined.digraph = pasted.digraph;
-        std::iter::once(PPToken::from(joined))
+        Ok(std::iter::once(PPToken::from(joined))
             .chain(right_tokens.into_iter().skip(1))
-            .collect()
+            .collect())
     }
 }
 

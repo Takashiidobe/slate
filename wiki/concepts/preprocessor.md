@@ -73,8 +73,12 @@ clang and msvc always and in gcc only for gnu modes and C23, so
 The consumers that need `::` (`[[ns::attr]]`, `#embed` vendor parameters,
 `__has_c_attribute`) take either form through `TokenSpanExt::scope_len_at`;
 GNU asm treats `::` as two section separators
-(`consume_asm_colon`). slate does not diagnose gcc's "pasting does not give a
-valid preprocessing token" error for strict-mode `: ## :`.
+(`consume_asm_colon`).
+
+A `##` whose result is not one token (`+ ## ;`, strict-gcc `: ## :`) is a
+`PPErrorKind::InvalidPaste` error in gcc and clang, each with its own
+wording; msvc accepts it and keeps the two tokens. `, ## __VA_ARGS__` is
+the GNU comma extension, not a paste, and is exempt (`paste` in `expand.rs`).
 
 A directive is a line whose first non-comment token is `#`. Conditionals
 are evaluated when the stream reaches them. `skip_group` reads only the
