@@ -891,7 +891,10 @@ impl Preprocessor<'_> {
                     macro_argument(name, parameters, arguments.raw).map(<[PPToken]>::to_vec)
                 };
                 if let Some(argument) = argument {
-                    let text = stringized_source(argument.iter().map(|token| &token.token));
+                    let text = stringized_source(
+                        argument.iter().map(|token| &token.token),
+                        !self.dialect.flavor().is_msvc(),
+                    );
                     output.push(PPToken::from(
                         stamp.apply(token).with_value(Token::StringLit(text.into())),
                     ));

@@ -1807,7 +1807,10 @@ fn is_quoted_literal(token: &Token) -> bool {
     )
 }
 
-fn stringized_source<'t>(tokens: impl IntoIterator<Item = &'t Span<Token>>) -> String {
+fn stringized_source<'t>(
+    tokens: impl IntoIterator<Item = &'t Span<Token>>,
+    drop_unescaped_final_backslash: bool,
+) -> String {
     let mut text = String::new();
     let mut previous: Option<&Span<Token>> = None;
     for token in tokens {
@@ -1824,6 +1827,11 @@ fn stringized_source<'t>(tokens: impl IntoIterator<Item = &'t Span<Token>>) -> S
             text.push_str(&spelling);
         }
         previous = Some(token);
+    }
+    if drop_unescaped_final_backslash
+        && text.chars().rev().take_while(|&c| c == '\\').count() % 2 == 1
+    {
+        text.pop();
     }
     text
 }

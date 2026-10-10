@@ -841,11 +841,14 @@ impl Lexer {
                 .collect();
             self.pos = self.past_literal(literal_close);
             self.emit(Token::StringLit(value.into()));
-        } else if c.is_ascii_alphabetic() || matches!(c, '_' | '$' | '\\') {
+        } else if c.is_ascii_alphabetic()
+            || matches!(c, '_' | '$')
+            || self.starts_universal_character_name(i)
+        {
             while self.pos < self.chars.len()
                 && (self.chars[self.pos].is_ascii_alphanumeric()
                     || matches!(self.chars[self.pos], '_' | '$')
-                    || self.chars[self.pos] == '\\')
+                    || self.starts_universal_character_name(self.pos))
             {
                 if self.chars[self.pos] == '\\' {
                     self.pos = self.universal_character_name_end(self.pos);
@@ -941,6 +944,14 @@ impl Lexer {
             Some('\n') | None => close,
             Some(_) => close + 1,
         }
+    }
+
+    fn starts_universal_character_name(&self, at: usize) -> bool {
+        self.char_at(at) == Some('\\')
+            && matches!(
+                (self.char_at(at + 1), self.char_at(at + 2)),
+                (Some('u' | 'U'), _) | (Some('N'), Some('{'))
+            )
     }
 
     fn universal_character_name_end(&self, at: usize) -> usize {

@@ -197,6 +197,9 @@ token plus an interned `HideSet`; file tokens start empty.
   doesn't form one token keeps both), `__VA_ARGS__`, `__VA_OPT__`. The
   lexer scans numbers as pp-numbers (letters, digits, `_`, `.`, and a sign
   after `e`/`p`), so `name##2_cb` pastes onto the single token `2_cb`.
+  A `\` that does not start a UCN (`\u`, `\U`, `\N{`) is a one-character
+  token, so `str(\)` is a call. gcc and clang drop a stringified result's
+  final unescaped `\` (`str(\)` is `""`); msvc keeps it, as `cl /EP` does.
 - Comma elision (`comma_elision`): gcc and clang drop the comma of
   `, ## __VA_ARGS__` when the variadic argument is omitted (`F(a)`, not
   `F(a,)`); for a macro whose only parameter is `...`, `H()` counts as
