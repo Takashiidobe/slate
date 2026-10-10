@@ -54,8 +54,6 @@ fn render_loc(loc: Loc, files: &Files) -> String {
 
 #[derive(Debug, Clone, Error)]
 pub enum Construct {
-    #[error("module assembly")]
-    ModuleAsm,
     #[error("global {name}: {detail}")]
     Global { name: String, detail: String },
     #[error("function {name}: {detail}")]
@@ -81,7 +79,6 @@ pub enum Construct {
 impl Construct {
     pub fn kind(&self) -> &str {
         match self {
-            Self::ModuleAsm => "module-asm",
             Self::Global { .. } => "global",
             Self::Function { .. } => "function",
             Self::Statement { kind, .. } | Self::Value { kind, .. } => kind,

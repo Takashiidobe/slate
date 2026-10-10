@@ -1,11 +1,11 @@
 use std::fmt::{self, Write};
 
 use crate::backend::rust_ast::{
-    Abi, AsmOperand, AsmReg, AtomicOrdering, AtomicPlace, AtomicRmwOp, AtomicType, Attr, Block,
-    Cfg, Comment, CommentAttach, CrateAttr, Derive, Expr, ExternDecl, FnDef, GenericParam,
-    ImplBlock, ImplItem, InlineHint, Item, Method, Path, Pattern, Precedence, Program, RecordDef,
-    RecordField, Repr, RustValue, SelfKind, Stmt, StructDef, StructFields, TraitBound, TraitRef,
-    Type,
+    Abi, AsmKind, AsmOperand, AsmReg, AtomicOrdering, AtomicPlace, AtomicRmwOp, AtomicType, Attr,
+    Block, Cfg, Comment, CommentAttach, CrateAttr, Derive, Expr, ExternDecl, FnDef, GenericParam,
+    ImplBlock, ImplItem, InlineAsm, InlineHint, Item, Method, Path, Pattern, Precedence, Program,
+    RecordDef, RecordField, Repr, RustValue, SelfKind, Stmt, StructDef, StructFields, TraitBound,
+    TraitRef, Type,
 };
 
 const INDENT: &str = "    ";
@@ -259,6 +259,7 @@ impl<W: Write> Codegen<W> {
                 self.item(item)?;
             }
             Item::SupportModule(module) => writeln!(self.out, "{}", module.source)?,
+            Item::GlobalAsm(asm) => self.inline_asm(asm)?,
         }
         Ok(())
     }
@@ -926,78 +927,7 @@ impl<W: Write> Codegen<W> {
                 self.expr(value)?;
                 self.out.write_str(";\n")
             }
-            Stmt::InlineAsm(asm) => {
-                self.out.write_str(if asm.naked {
-                    "core::arch::naked_asm!("
-                } else {
-                    "core::arch::asm!("
-                })?;
-                self.expr(&Expr::Str(asm.template.clone()))?;
-                for operand in &asm.operands {
-                    self.out.write_str(", ")?;
-                    match operand {
-                        AsmOperand::In { reg, value } => {
-                            self.out.write_str("in(")?;
-                            self.asm_reg(reg)?;
-                            self.out.write_str(") ")?;
-                            self.expr(value)?;
-                        }
-                        AsmOperand::Out { reg, late, value } => {
-                            if *late {
-                                self.out.write_str("lateout(")?;
-                            } else {
-                                self.out.write_str("out(")?;
-                            }
-                            self.asm_reg(reg)?;
-                            self.out.write_str(") ")?;
-                            self.expr(value)?;
-                        }
-                        AsmOperand::InOut {
-                            reg,
-                            late,
-                            input,
-                            output,
-                        } => {
-                            if *late {
-                                self.out.write_str("inlateout(")?;
-                            } else {
-                                self.out.write_str("inout(")?;
-                            }
-                            self.asm_reg(reg)?;
-                            self.out.write_str(") ")?;
-                            self.expr(input)?;
-                            self.out.write_str(" => ")?;
-                            self.expr(output)?;
-                        }
-                        AsmOperand::Const(value) => {
-                            self.out.write_str("const ")?;
-                            self.expr(value)?;
-                        }
-                        AsmOperand::Sym(value) => {
-                            self.out.write_str("sym ")?;
-                            self.expr(value)?;
-                        }
-                        AsmOperand::Label { state, value } => {
-                            self.out.write_str("label {\n")?;
-                            self.expr(state)?;
-                            self.out.write_str(" = ")?;
-                            self.expr(value)?;
-                            self.out.write_str(";\n}")?;
-                        }
-                    }
-                }
-                if !asm.options.is_empty() {
-                    self.out.write_str(", options(")?;
-                    for (index, option) in asm.options.iter().enumerate() {
-                        if index != 0 {
-                            self.out.write_str(", ")?;
-                        }
-                        self.out.write_str(option.spelling())?;
-                    }
-                    self.out.write_char(')')?;
-                }
-                self.out.write_str(");\n")
-            }
+            Stmt::InlineAsm(asm) => self.inline_asm(asm),
             Stmt::Expr(e) => {
                 self.expr(e)?;
                 self.out.write_str(";\n")
@@ -1093,6 +1023,79 @@ impl<W: Write> Codegen<W> {
                 self.out.write_str("}\n")
             }
         }
+    }
+
+    fn inline_asm(&mut self, asm: &InlineAsm) -> fmt::Result {
+        self.out.write_str(match asm.kind {
+            AsmKind::Statement => "core::arch::asm!(",
+            AsmKind::Naked => "core::arch::naked_asm!(",
+            AsmKind::Global => "core::arch::global_asm!(",
+        })?;
+        self.expr(&Expr::Str(asm.template.clone()))?;
+        for operand in &asm.operands {
+            self.out.write_str(", ")?;
+            match operand {
+                AsmOperand::In { reg, value } => {
+                    self.out.write_str("in(")?;
+                    self.asm_reg(reg)?;
+                    self.out.write_str(") ")?;
+                    self.expr(value)?;
+                }
+                AsmOperand::Out { reg, late, value } => {
+                    if *late {
+                        self.out.write_str("lateout(")?;
+                    } else {
+                        self.out.write_str("out(")?;
+                    }
+                    self.asm_reg(reg)?;
+                    self.out.write_str(") ")?;
+                    self.expr(value)?;
+                }
+                AsmOperand::InOut {
+                    reg,
+                    late,
+                    input,
+                    output,
+                } => {
+                    if *late {
+                        self.out.write_str("inlateout(")?;
+                    } else {
+                        self.out.write_str("inout(")?;
+                    }
+                    self.asm_reg(reg)?;
+                    self.out.write_str(") ")?;
+                    self.expr(input)?;
+                    self.out.write_str(" => ")?;
+                    self.expr(output)?;
+                }
+                AsmOperand::Const(value) => {
+                    self.out.write_str("const ")?;
+                    self.expr(value)?;
+                }
+                AsmOperand::Sym(value) => {
+                    self.out.write_str("sym ")?;
+                    self.expr(value)?;
+                }
+                AsmOperand::Label { state, value } => {
+                    self.out.write_str("label {\n")?;
+                    self.expr(state)?;
+                    self.out.write_str(" = ")?;
+                    self.expr(value)?;
+                    self.out.write_str(";\n}")?;
+                }
+            }
+        }
+        if !asm.options.is_empty() {
+            self.out.write_str(", options(")?;
+            for (index, option) in asm.options.iter().enumerate() {
+                if index != 0 {
+                    self.out.write_str(", ")?;
+                }
+                self.out.write_str(option.spelling())?;
+            }
+            self.out.write_char(')')?;
+        }
+        self.out.write_str(");\n")
     }
 
     fn asm_reg(&mut self, reg: &AsmReg) -> fmt::Result {

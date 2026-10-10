@@ -89,6 +89,7 @@ pub enum Item {
         item: Box<Item>,
     },
     SupportModule(SupportModule),
+    GlobalAsm(InlineAsm),
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -673,7 +674,6 @@ pub enum AsmOption {
     PreservesFlags,
     MayUnwind,
     AttSyntax,
-    Raw,
 }
 
 impl AsmOption {
@@ -686,7 +686,6 @@ impl AsmOption {
             Self::PreservesFlags => "preserves_flags",
             Self::MayUnwind => "may_unwind",
             Self::AttSyntax => "att_syntax",
-            Self::Raw => "raw",
         }
     }
 }
@@ -763,7 +762,14 @@ pub struct InlineAsm {
     pub template: String,
     pub operands: Vec<AsmOperand>,
     pub options: Vec<AsmOption>,
-    pub naked: bool,
+    pub kind: AsmKind,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum AsmKind {
+    Statement,
+    Naked,
+    Global,
 }
 
 #[expect(

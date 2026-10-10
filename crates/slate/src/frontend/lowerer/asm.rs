@@ -34,9 +34,6 @@ fn asm_options(asm: &ir::InlineAsm) -> Result<Vec<rust::AsmOption>> {
     if asm.dialect == Some(ir::AsmDialect::Att) {
         lowered.push(rust::AsmOption::AttSyntax);
     }
-    if !asm.has_sections() {
-        lowered.push(rust::AsmOption::Raw);
-    }
     Ok(lowered)
 }
 
@@ -250,18 +247,94 @@ fn explicit_reference(
     })
 }
 
-fn asm_template(asm: &ir::InlineAsm, slots: &[Slot], labels: &[usize]) -> Result<String> {
+struct AsmNames<'t> {
+    names: &'t HashMap<String, BindingId>,
+    base: usize,
+    used: Vec<BindingId>,
+    statement_start: bool,
+}
+
+impl<'t> AsmNames<'t> {
+    fn new(names: &'t HashMap<String, BindingId>, base: usize) -> Self {
+        Self {
+            names,
+            base,
+            used: Vec::new(),
+            statement_start: true,
+        }
+    }
+
+    fn slot(&mut self, id: BindingId) -> usize {
+        let position = self
+            .used
+            .iter()
+            .position(|used| *used == id)
+            .unwrap_or_else(|| {
+                self.used.push(id);
+                self.used.len() - 1
+            });
+        self.base + position
+    }
+
+    fn text(&mut self, text: &str) -> String {
+        let symbol_char = |c: char| c.is_ascii_alphanumeric() || matches!(c, '_' | '.' | '$');
+        let mut out = String::new();
+        let mut quoted = false;
+        let mut previous = None;
+        let mut rest = text;
+        while let Some(c) = rest.chars().next() {
+            if !quoted && symbol_char(c) && c != '$' {
+                let end = rest.find(|c| !symbol_char(c)).unwrap_or(rest.len());
+                let word = &rest[..end];
+                let mnemonic = std::mem::replace(&mut self.statement_start, false);
+                let candidate = !mnemonic && !c.is_ascii_digit() && previous != Some('%');
+                match self.names.get(word).filter(|_| candidate) {
+                    Some(id) => {
+                        let slot = self.slot(*id);
+                        out.push_str(&format!("{{{slot}}}"));
+                    }
+                    None => out.push_str(word),
+                }
+                previous = word.chars().last();
+                rest = &rest[end..];
+                continue;
+            }
+            match c {
+                '"' if previous != Some('\\') => quoted = !quoted,
+                '\n' | ';' | ':' if !quoted => self.statement_start = true,
+                _ => {}
+            }
+            match c {
+                '{' => out.push_str("{{"),
+                '}' => out.push_str("}}"),
+                c => out.push(c),
+            }
+            previous = Some(c);
+            rest = &rest[c.len_utf8()..];
+        }
+        out
+    }
+}
+
+fn asm_template(
+    asm: &ir::InlineAsm,
+    slots: &[Slot],
+    labels: &[usize],
+    names: &mut AsmNames,
+) -> Result<String> {
+    names.statement_start = true;
     if !asm.has_sections() {
-        return Ok(asm.template.clone());
+        return Ok(names.text(&asm.template));
     }
     let mut template = String::new();
     let mut used = vec![false; asm.operands.len()];
     let mut used_labels = vec![false; labels.len()];
     for piece in &asm.pieces {
+        if !matches!(piece, ir::AsmPiece::Text(_)) {
+            names.statement_start = false;
+        }
         match piece {
-            ir::AsmPiece::Text(text) => {
-                template.push_str(&text.replace('{', "{{").replace('}', "}}"));
-            }
+            ir::AsmPiece::Text(text) => template.push_str(&names.text(text)),
             ir::AsmPiece::Percent => template.push('%'),
             ir::AsmPiece::Operand {
                 index,
@@ -641,18 +714,32 @@ impl FunctionLowerer<'_, '_> {
     }
 
     pub(super) fn lower_naked_body(&mut self, body: &[Span<ir::Statement>]) -> Result<Stmt> {
+        let mut asms = Vec::new();
+        for statement in body {
+            match &statement.value {
+                ir::Statement::Asm(asm) => asms.push(&**asm),
+                ir::Statement::Null | ir::Statement::Comment(_) => {}
+                _ => return Err(unsupported_asm("naked function with non-asm statements")),
+            }
+        }
+        Ok(Stmt::InlineAsm(
+            self.lower_asm_block(&asms, rust::AsmKind::Naked)?,
+        ))
+    }
+
+    pub(super) fn lower_asm_block(
+        &mut self,
+        asms: &[&ir::InlineAsm],
+        kind: rust::AsmKind,
+    ) -> Result<rust::InlineAsm> {
         if self.tables.target.family != TargetFamily::X86_64 {
             return Err(unsupported_asm("target needs assembly lowering"));
         }
         let mut templates = Vec::new();
         let mut operands = Vec::new();
         let mut dialects = Vec::new();
-        for statement in body {
-            let asm = match &statement.value {
-                ir::Statement::Asm(asm) => asm,
-                ir::Statement::Null | ir::Statement::Comment(_) => continue,
-                _ => return Err(unsupported_asm("naked function with non-asm statements")),
-            };
+        let mut asm_slots = Vec::new();
+        for asm in asms {
             if !asm.operands.is_empty() && asm.alternative.is_none() {
                 return Err(unsupported_asm(format!(
                     "no usable constraint alternative: {:?}",
@@ -674,28 +761,34 @@ impl FunctionLowerer<'_, '_> {
                     }
                 });
             }
-            templates.push(if asm.has_sections() {
-                asm_template(asm, &slots, &[])?
-            } else {
-                asm.template.replace('{', "{{").replace('}', "}}")
-            });
+            asm_slots.push(slots);
             if !dialects.contains(&asm.dialect) {
                 dialects.push(asm.dialect);
             }
+        }
+        let mut names = AsmNames::new(&self.tables.asm_names, operands.len());
+        for (asm, slots) in asms.iter().zip(&asm_slots) {
+            templates.push(asm_template(asm, slots, &[], &mut names)?);
+        }
+        for id in names.used {
+            operands.push(rust::AsmOperand::Sym(self.asm_symbol(&ir::AsmSymbol {
+                binding: id,
+                offset: 0,
+            })?));
         }
         let options = match dialects.as_slice() {
             [] | [Some(ir::AsmDialect::Att)] => vec![rust::AsmOption::AttSyntax],
             [Some(ir::AsmDialect::Intel)] => Vec::new(),
             dialects => {
-                return Err(unsupported_asm(format!("naked dialects {dialects:?}")));
+                return Err(unsupported_asm(format!("asm block dialects {dialects:?}")));
             }
         };
-        Ok(Stmt::InlineAsm(rust::InlineAsm {
+        Ok(rust::InlineAsm {
             template: templates.join("\n"),
             operands,
             options,
-            naked: true,
-        }))
+            kind,
+        })
     }
 
     fn asm_wide_integer(&mut self, ty: &ir::Type) -> Result<rust::Type> {
@@ -1301,7 +1394,14 @@ impl FunctionLowerer<'_, '_> {
                 operands.len() - 1
             })
             .collect();
-        let mut template = asm_template(asm, &slots, &label_slots)?;
+        let mut names = AsmNames::new(&self.tables.asm_names, operands.len());
+        let mut template = asm_template(asm, &slots, &label_slots, &mut names)?;
+        for id in names.used {
+            operands.push(rust::AsmOperand::Sym(self.asm_symbol(&ir::AsmSymbol {
+                binding: id,
+                offset: 0,
+            })?));
+        }
         if !loads.is_empty() || !stores.is_empty() {
             let pop = match asm.dialect {
                 Some(ir::AsmDialect::Intel) => "fstp st(0)",
@@ -1368,7 +1468,7 @@ impl FunctionLowerer<'_, '_> {
             template,
             operands,
             options,
-            naked: false,
+            kind: rust::AsmKind::Statement,
         }));
         prefix.extend(writebacks);
         Ok(Stmt::Unsafe {

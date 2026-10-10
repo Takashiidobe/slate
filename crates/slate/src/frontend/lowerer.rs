@@ -62,6 +62,7 @@ struct Tables<'m> {
     bindings: HashMap<BindingId, String>,
     strings: HashMap<BindingId, Vec<u8>>,
     statics: HashSet<BindingId>,
+    asm_names: HashMap<String, BindingId>,
     register_globals: HashMap<BindingId, &'static str>,
     over_aligned: HashMap<BindingId, u64>,
     target: &'m TargetInfo,
@@ -144,6 +145,36 @@ pub fn lower(
     lowerer.declare()?;
     lowerer.lower_bodies()?;
     Ok(lowerer.assemble())
+}
+
+fn asm_names(
+    module: &ir::Module,
+    options: &LowerOptions,
+    statics: &[&ir::Global],
+) -> HashMap<String, BindingId> {
+    let functions = module
+        .functions
+        .iter()
+        .filter(|function| function.body.is_some() && !function.semantics.inline_only)
+        .map(|function| (&function.name, &function.symbol, function.value.id));
+    let globals = statics
+        .iter()
+        .filter(|global| {
+            global.definition
+                && !matches!(global.variable.storage, ir::StorageDuration::Thread)
+                && !(global.common && options.imported_commons.contains(&global.variable.name))
+        })
+        .map(|global| (&global.variable.name, &global.symbol, global.variable.id));
+    let mut names = HashMap::new();
+    let mut ambiguous = HashSet::new();
+    for (name, symbol, id) in functions.chain(globals) {
+        let name = symbol.asm_name.as_ref().unwrap_or(name);
+        if names.insert(name.clone(), id).is_some() {
+            ambiguous.insert(name.clone());
+        }
+    }
+    names.retain(|name, _| !ambiguous.contains(name));
+    names
 }
 
 fn exports_symbol(options: &LowerOptions, function: &ir::Function) -> bool {
@@ -249,9 +280,6 @@ impl<'m> ModuleLowerer<'m> {
         options: &'m LowerOptions,
     ) -> std::result::Result<Self, InvalidIr> {
         let mut barriers = Vec::new();
-        if let Some(asm) = module.asm.first() {
-            barriers.push(Failure::from(Construct::ModuleAsm).into_public(None, Site::of(asm))?);
-        }
         let mut strings = HashMap::new();
         let mut statics = Vec::new();
         let mut register_globals = HashMap::new();
@@ -350,6 +378,7 @@ impl<'m> ModuleLowerer<'m> {
             bindings,
             strings,
             statics: statics.iter().map(|global| global.variable.id).collect(),
+            asm_names: asm_names(module, options, &statics),
             register_globals,
             over_aligned: HashMap::new(),
             target: &module.target,
@@ -473,6 +502,15 @@ impl<'m> ModuleLowerer<'m> {
                         )
                         .into_public(Some(&function.name), Site::of(function))?,
                 ),
+            }
+        }
+        if let Some(first) = module.asm.first() {
+            let asms: Vec<_> = module.asm.iter().map(|asm| &asm.value).collect();
+            match self.lowerer().lower_asm_block(&asms, rust::AsmKind::Global) {
+                Ok(asm) => self.items.push(Item::GlobalAsm(asm)),
+                Err(error) => self
+                    .barriers
+                    .push(error.into_public(None, Site::of(first))?),
             }
         }
         Ok(())

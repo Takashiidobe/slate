@@ -1092,5 +1092,6 @@ pub fn item_key(item: &Item) -> String {
         ),
         Item::Cfg { item, .. } => item_key(item),
         Item::SupportModule(module) => format!("support-module:{}", module.name),
+        Item::GlobalAsm(asm) => format!("global-asm:{}", asm.template),
     }
 }

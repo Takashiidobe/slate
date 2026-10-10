@@ -273,8 +273,8 @@ impossible.
   Symbol operands use Rust `sym` item paths with signed byte offsets in the template;
   functions retain the C ABI and string operands get named byte-array statics.
 - Unused operands get references in assembler comments to satisfy Rust's operand-use check.
-- Extended asm maps parser options directly. Basic asm uses the decoded template with
-  `raw`; its empty piece list does not distinguish text references.
+- Extended asm maps parser options directly. Basic asm escapes braces in its decoded
+  template instead of using `raw`, so symbol references can become `{N}`.
 - `memory`/`cc`/`unwind` clobbers are represented by the computed options;
   register clobbers become discarded `lateout` operands.
 - Explicit GPR operands become `in("ax")` and friends, ordered after every positional operand
@@ -316,5 +316,12 @@ impossible.
   `asm!`, so writebacks run once on every path, then `continue '__slate_dispatch`. rustc
   assigns outputs before entering a label block; asm goto with outputs enables
   `asm_goto_with_outputs` (`gnu_asm_goto.c`, gcc-dg `torture/pr58670`).
-- Other immediate modifiers, module asm,
+- `Module::asm` joins into one `global_asm!` (source order kept; `att_syntax` for AT&T),
+  sharing the naked-function path: `const`/`sym` operands only.
+- Template text that names a C function or static defined in this unit (`counter(%rip)`,
+  `jmp twice`) is rewritten to a `sym` operand, in `asm!`, `naked_asm!`, and `global_asm!`.
+  This keeps internal linkage and tells rustc the item escapes. It is skipped for the
+  first word of a statement (a mnemonic or label), `%`-prefixed registers, quoted strings,
+  thread-locals, and names defined twice (`gnu_toplevel_asm_symbols.c`).
+- Other immediate modifiers,
   and additional operand classes are tracked by the other `slate-3f8g.4.17` children.
