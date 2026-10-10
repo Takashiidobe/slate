@@ -596,10 +596,8 @@ impl Lexer {
         let mut byte_ends = Vec::with_capacity(src.len());
         let mut byte = 0;
         while let Some((c, len)) = source_char(src, byte, features.trigraphs) {
-            let rest = &src[byte + len..];
             let splice_len = match c {
-                '\\' if rest.starts_with('\n') => 1,
-                '\\' if rest.starts_with("\r\n") => 2,
+                '\\' => splice_len(&src[byte + len..], features.whitespace_line_splice),
                 _ => 0,
             };
             if splice_len == 0 {
@@ -1059,6 +1057,25 @@ impl Lexer {
             e += 1;
         }
         (value, e)
+    }
+}
+
+fn splice_len(after_backslash: &str, whitespace_line_splice: bool) -> usize {
+    let whitespace = if whitespace_line_splice {
+        after_backslash
+            .bytes()
+            .take_while(|byte| matches!(byte, b' ' | b'\t' | b'\x0b' | b'\x0c'))
+            .count()
+    } else {
+        0
+    };
+    let rest = &after_backslash[whitespace..];
+    if rest.starts_with('\n') {
+        whitespace + 1
+    } else if rest.starts_with("\r\n") {
+        whitespace + 2
+    } else {
+        0
     }
 }
 

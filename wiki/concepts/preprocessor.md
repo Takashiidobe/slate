@@ -51,7 +51,9 @@ any nodes produced by directives met inside the arguments.
 
 `Lexer::with_offset` runs translation phases 1 and 2 before scanning:
 trigraphs (when `StandardFeatures::trigraphs`), then backslash-newline
-splices, so `??/` before a newline splices. Trigraphs are on in ISO modes
+splices, so `??/` before a newline splices. gcc and clang also splice a
+backslash followed by spaces, tabs, form feeds or vertical tabs and then a
+newline; msvc does not (`StandardFeatures::whitespace_line_splice`). Trigraphs are on in ISO modes
 before C23 for gcc and clang, off for msvc; `-trigraphs` (gcc, clang) and
 `-ftrigraphs`/`-fno-trigraphs` (clang) override that, last wins. A
 replaced character keeps its three-byte source span.

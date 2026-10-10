@@ -62,6 +62,7 @@ pub struct StandardFeatures {
     pub fixed_point_keywords: bool,
     pub x86_segment_keywords: bool,
     pub trigraphs: bool,
+    pub whitespace_line_splice: bool,
 }
 
 impl StandardFeatures {
@@ -139,6 +140,7 @@ impl StandardFeatures {
             fixed_point_keywords: true,
             x86_segment_keywords: false,
             trigraphs: !standard.is_gnu() && !c23,
+            whitespace_line_splice: true,
         }
     }
 
@@ -177,6 +179,7 @@ impl StandardFeatures {
             CompilerFlavor::Gcc => false,
         };
         features.octal_prefix = !flavor.is_msvc();
+        features.whitespace_line_splice = !flavor.is_msvc();
         features.keyword_countof = !flavor.is_msvc();
         if flavor.is_gcc() {
             features.widest_integer_literal_fallback = true;
