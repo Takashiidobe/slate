@@ -1,4 +1,4 @@
-use crate::compiler_args::LanguageStandard;
+use crate::compiler_args::{CompilerFlavor, LanguageStandard};
 
 mod clang;
 
@@ -49,13 +49,60 @@ pub(super) fn has_builtin(name: &str) -> bool {
     KNOWN_BUILTINS.binary_search(&name).is_ok()
 }
 
-pub(super) fn has_feature(name: &str) -> bool {
-    KNOWN_FEATURES.binary_search(&normalize(name)).is_ok()
+pub(super) fn has_feature(name: &str, flavor: CompilerFlavor, standard: LanguageStandard) -> bool {
+    let name = normalize(name);
+    let standard_feature = match (name, flavor) {
+        (
+            "c_alignas"
+            | "c_alignof"
+            | "c_atomic"
+            | "c_generic_selections"
+            | "c_static_assert"
+            | "c_thread_local",
+            _,
+        )
+        | ("objc_c_static_assert", CompilerFlavor::Clang) => Some(standard.at_least_c11()),
+        ("c_fixed_enum", CompilerFlavor::Clang) | ("cxx_binary_literals", CompilerFlavor::Gcc) => {
+            Some(standard.at_least_c23())
+        }
+        _ => None,
+    };
+    standard_feature.unwrap_or_else(|| match flavor {
+        CompilerFlavor::Gcc => GCC_FEATURES.binary_search(&name).is_ok(),
+        _ => KNOWN_FEATURES.binary_search(&name).is_ok(),
+    })
 }
 
-pub(super) fn has_extension(name: &str) -> bool {
-    has_feature(name) || KNOWN_EXTENSIONS.binary_search(&normalize(name)).is_ok()
+pub(super) fn has_extension(
+    name: &str,
+    flavor: CompilerFlavor,
+    standard: LanguageStandard,
+) -> bool {
+    let extensions = match flavor {
+        CompilerFlavor::Gcc => GCC_EXTENSIONS,
+        _ => KNOWN_EXTENSIONS,
+    };
+    has_feature(name, flavor, standard) || extensions.binary_search(&normalize(name)).is_ok()
 }
+
+const GCC_FEATURES: &[&str] = &[
+    "attribute_deprecated_with_message",
+    "attribute_unavailable_with_message",
+    "enumerator_attributes",
+    "tls",
+];
+
+const GCC_EXTENSIONS: &[&str] = &[
+    "c_alignas",
+    "c_alignof",
+    "c_atomic",
+    "c_generic_selections",
+    "c_static_assert",
+    "c_thread_local",
+    "cxx_binary_literals",
+    "gnu_asm_goto_with_outputs",
+    "gnu_asm_goto_with_outputs_full",
+];
 
 const KNOWN_BUILTINS: &[&str] = &[
     "_Block_object_assign",
@@ -1533,13 +1580,6 @@ const KNOWN_FEATURES: &[&str] = &[
     "attribute_overloadable",
     "attribute_unavailable_with_message",
     "attribute_unused_on_fields",
-    "c_alignas",
-    "c_alignof",
-    "c_atomic",
-    "c_fixed_enum",
-    "c_generic_selections",
-    "c_static_assert",
-    "c_thread_local",
     "c_thread_safety_attributes",
     "clang_atomic_attributes",
     "enumerator_attributes",
@@ -1552,7 +1592,6 @@ const KNOWN_FEATURES: &[&str] = &[
     "objc_bool",
     "objc_bridge_id",
     "objc_bridge_id_on_typedefs",
-    "objc_c_static_assert",
     "objc_nonfragile_abi",
     "objc_property_explicit_atomic",
     "objc_protocol_qualifier_mangling",

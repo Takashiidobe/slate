@@ -1678,8 +1678,8 @@ fn expand_has_checks(tokens: &[Span<Token>], dialect: &Dialect) -> Vec<Span<Toke
         value => value,
     };
     let has_builtin = |name: &str| has_checks::has_builtin(name) as i64;
-    let has_feature = |name: &str| has_checks::has_feature(name) as i64;
-    let has_extension = |name: &str| has_checks::has_extension(name) as i64;
+    let has_feature = |name: &str| has_checks::has_feature(name, flavor, standard) as i64;
+    let has_extension = |name: &str| has_checks::has_extension(name, flavor, standard) as i64;
     let has_declspec_attribute = |name: &str| {
         (microsoft && attribute_support::declspec_registered(name, flavor, target)) as i64
     };

@@ -262,6 +262,15 @@ token plus an interned `HideSet`; file tokens start empty.
   `has_checks/clang.rs` (generated, [generated-sources](generated-sources.md)):
   clang's warning groups, and its keywords sorted by the C modes that
   reserve them (`asm` gnu only, `typeof` gnu or C23, `restrict` C99+).
+- `__has_feature` / `__has_extension` answer per flavor and standard,
+  probed against gcc and clang in every C mode. The C11 names (`c_alignas`,
+  `c_alignof`, `c_atomic`, `c_generic_selections`, `c_static_assert`,
+  `c_thread_local`, and clang's `objc_c_static_assert`) are features only
+  from C11 and extensions always. clang's `c_fixed_enum` and gcc's
+  `cxx_binary_literals` are features only from C23. gcc answers from its own
+  short lists (`GCC_FEATURES`, `GCC_EXTENSIONS`, probed from the installed
+  gcc, whose source is `has_feature_table` in `c-family/c-common.cc`); clang from the
+  tablegen-seeded `KNOWN_FEATURES` / `KNOWN_EXTENSIONS`.
 
 ## Pragmas and line control
 
