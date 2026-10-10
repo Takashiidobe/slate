@@ -74,6 +74,7 @@ impl FunctionLowerer<'_, '_> {
                         value: Expr::Var(temp.as_str().into()),
                     }],
                     options: Vec::new(),
+                    naked: false,
                 }),
             ],
             tail: Some(Box::new(Expr::Cast {

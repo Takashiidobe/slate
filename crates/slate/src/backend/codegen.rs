@@ -927,7 +927,11 @@ impl<W: Write> Codegen<W> {
                 self.out.write_str(";\n")
             }
             Stmt::InlineAsm(asm) => {
-                self.out.write_str("core::arch::asm!(")?;
+                self.out.write_str(if asm.naked {
+                    "core::arch::naked_asm!("
+                } else {
+                    "core::arch::asm!("
+                })?;
                 self.expr(&Expr::Str(asm.template.clone()))?;
                 for operand in &asm.operands {
                     self.out.write_str(", ")?;

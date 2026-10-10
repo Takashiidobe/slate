@@ -164,6 +164,22 @@ impl FunctionLowerer<'_, '_> {
                 ty: rust::Type::Variadic,
             });
         }
+        if function.semantics.naked {
+            for param in &mut params {
+                param.mutable = false;
+            }
+            return Ok(Item::Fn(FnDef {
+                comments: self.claim_comments(function.id),
+                unsafe_: *variadic,
+                attrs: vec![rust::Attr::Naked],
+                vis: rust::Visibility::Private,
+                abi: Some(rust::Abi::CUnwind),
+                name: self.tables.names[&function.value.id].rust.clone(),
+                params,
+                ret,
+                body: vec![self.lower_naked_body(body)?],
+            }));
+        }
         let mut statements = if control_flow::needs_dispatch(body) {
             self.lower_dispatch(body)?
         } else {

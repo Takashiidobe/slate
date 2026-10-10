@@ -521,6 +521,64 @@ impl FunctionLowerer<'_, '_> {
         })
     }
 
+    pub(super) fn lower_naked_body(&mut self, body: &[Span<ir::Statement>]) -> Result<Stmt> {
+        if self.tables.target.family != TargetFamily::X86_64 {
+            return Err(unsupported_asm("target needs assembly lowering"));
+        }
+        let mut templates = Vec::new();
+        let mut operands = Vec::new();
+        let mut dialects = Vec::new();
+        for statement in body {
+            let asm = match &statement.value {
+                ir::Statement::Asm(asm) => asm,
+                ir::Statement::Null | ir::Statement::Comment(_) => continue,
+                _ => return Err(unsupported_asm("naked function with non-asm statements")),
+            };
+            if !asm.operands.is_empty() && asm.alternative.is_none() {
+                return Err(unsupported_asm(format!(
+                    "no usable constraint alternative: {:?}",
+                    asm.rejected
+                )));
+            }
+            let mut slots = Vec::new();
+            for operand in &asm.operands {
+                slots.push(Slot::Positional(operands.len()));
+                operands.push(match (&operand.selected, &operand.kind) {
+                    (Some(ir::AsmOperandClass::Immediate), ir::AsmOperandKind::In(value)) => {
+                        rust::AsmOperand::Const(self.lower_value(value)?)
+                    }
+                    (Some(ir::AsmOperandClass::Symbol), ir::AsmOperandKind::Symbol(symbol)) => {
+                        rust::AsmOperand::Sym(self.asm_symbol(symbol)?)
+                    }
+                    (selected, _) => {
+                        return Err(unsupported_asm(format!("naked operand: {selected:?}")));
+                    }
+                });
+            }
+            templates.push(if asm.has_sections() {
+                asm_template(asm, &slots)?
+            } else {
+                asm.template.replace('{', "{{").replace('}', "}}")
+            });
+            if !dialects.contains(&asm.dialect) {
+                dialects.push(asm.dialect);
+            }
+        }
+        let options = match dialects.as_slice() {
+            [] | [Some(ir::AsmDialect::Att)] => vec![rust::AsmOption::AttSyntax],
+            [Some(ir::AsmDialect::Intel)] => Vec::new(),
+            dialects => {
+                return Err(unsupported_asm(format!("naked dialects {dialects:?}")));
+            }
+        };
+        Ok(Stmt::InlineAsm(rust::InlineAsm {
+            template: templates.join("\n"),
+            operands,
+            options,
+            naked: true,
+        }))
+    }
+
     fn asm_wide_integer(&mut self, ty: &ir::Type) -> Result<rust::Type> {
         let lowered = self.lower_type(ty)?;
         if !matches!(lowered, rust::Type::Prim(Prim::I128 | Prim::U128)) {
@@ -957,6 +1015,7 @@ impl FunctionLowerer<'_, '_> {
             template,
             operands,
             options,
+            naked: false,
         }));
         prefix.extend(writebacks);
         Ok(Stmt::Unsafe {

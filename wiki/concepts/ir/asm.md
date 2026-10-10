@@ -280,5 +280,10 @@ impossible.
   `InOut` as `&raw mut`, and an unaddressable `In(value)` spills to a temporary first. A
   reference prints `({N:r})` (AT&T) or `<size> ptr [{N:r}]` (Intel, size from the width);
   `%H` adds 8. `%a` on a register operand prints the same reference without a size.
-- Other immediate modifiers, asm goto, naked/module asm,
+- A naked function becomes `#[unsafe(naked)] extern "C-unwind" fn` with immutable parameters
+  and one `naked_asm!` joining every asm template with newlines; operand numbers continue
+  across statements. Only `const` and `sym` operands are allowed; basic templates escape
+  braces instead of using `raw`, and AT&T adds `att_syntax`. A body with anything but asm,
+  null statements, and comments is a barrier (`asm_naked_functions.c`).
+- Other immediate modifiers, asm goto, module asm,
   and additional operand classes are tracked by the other `slate-3f8g.4.17` children.

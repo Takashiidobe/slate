@@ -764,6 +764,7 @@ pub struct InlineAsm {
     pub template: String,
     pub operands: Vec<AsmOperand>,
     pub options: Vec<AsmOption>,
+    pub naked: bool,
 }
 
 #[expect(
