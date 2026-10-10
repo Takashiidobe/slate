@@ -703,46 +703,62 @@ impl FunctionLowerer<'_, '_> {
         }
     }
 
-    fn asm_full_storage(&self, ty: &ir::Type) -> bool {
+    fn asm_bridgeable(&self, ty: &ir::Type) -> bool {
         match self.tables.resolve_type(ty) {
-            ir::Type::Defined(id) => {
-                let Some(ir::TypeDefinitionKind::Record {
-                    kind,
+            ir::Type::Defined(id) => matches!(
+                self.tables.types.get(id).map(|definition| &definition.kind),
+                Some(ir::TypeDefinitionKind::Record {
                     fields: Some(fields),
-                    layout: Some(layout),
-                }) = self.tables.types.get(id).map(|definition| &definition.kind)
-                else {
-                    return false;
-                };
-                if fields
+                    layout: Some(_),
+                    ..
+                }) if fields
                     .iter()
-                    .any(|field| field.bit_width.is_some() || !self.asm_full_storage(&field.ty))
-                {
-                    return false;
-                }
-                let sizes = fields
-                    .iter()
-                    .map(|field| self.tables.storage_of(&field.ty).map(|(size, _)| size));
-                if matches!(kind, ir::RecordKind::Union) {
-                    sizes.into_iter().all(|size| size == Some(layout.size))
-                } else {
-                    sizes
-                        .collect::<Option<Vec<_>>>()
-                        .is_some_and(|sizes| sizes.iter().sum::<u64>() == layout.size)
-                }
-            }
-            ir::Type::Bool => false,
-            ir::Type::Array { element, .. } => self.asm_full_storage(element),
-            ir::Type::Numeric(_) | ir::Type::Pointer { .. } | ir::Type::Vector { .. } => true,
+                    .all(|field| field.bit_width.is_some() || self.asm_bridgeable(&field.ty))
+            ),
+            ir::Type::Array { element, .. } => self.asm_bridgeable(element),
+            ir::Type::Bool
+            | ir::Type::Numeric(_)
+            | ir::Type::Pointer { .. }
+            | ir::Type::Vector { .. } => true,
             _ => false,
         }
     }
 
+    fn asm_bool_offsets(&self, ty: &ir::Type, base: u64, offsets: &mut Vec<u64>) {
+        match self.tables.resolve_type(ty) {
+            ir::Type::Bool => offsets.push(base),
+            ir::Type::Array {
+                element,
+                length: Some(length),
+            } => {
+                let size = self.tables.storage_of(element).map_or(0, |(size, _)| size);
+                for index in 0..*length {
+                    self.asm_bool_offsets(element, base + index * size, offsets);
+                }
+            }
+            ir::Type::Defined(id) => {
+                if let Some(ir::TypeDefinitionKind::Record {
+                    kind: ir::RecordKind::Struct,
+                    fields: Some(fields),
+                    layout: Some(layout),
+                }) = self.tables.types.get(id).map(|definition| &definition.kind)
+                {
+                    for (field, offset) in fields.iter().zip(&layout.offsets) {
+                        if field.bit_width.is_none() {
+                            self.asm_bool_offsets(&field.ty, base + offset, offsets);
+                        }
+                    }
+                }
+            }
+            _ => {}
+        }
+    }
+
     fn asm_bits_type(&self, ty: &ir::Type) -> Result<rust::Type> {
-        if !matches!(self.tables.resolve_type(ty), ir::Type::Bool) && !self.asm_full_storage(ty) {
-            return Err(unsupported_asm(
-                "aggregate operand needs a field-wise bridge",
-            ));
+        if !self.asm_bridgeable(ty) {
+            return Err(unsupported_asm(format!(
+                "operand type {ty} needs a register bridge"
+            )));
         }
         let size = self.tables.storage_of(ty).map(|(size, _)| size);
         let prim = match size {
@@ -891,10 +907,61 @@ impl FunctionLowerer<'_, '_> {
         let value = if matches!(bits, rust::Type::Prim(_)) {
             Expr::Cast {
                 expr: Box::new(value),
-                ty: bits,
+                ty: bits.clone(),
             }
         } else {
             value
+        };
+        let mut bools = Vec::new();
+        if !matches!(target, rust::Type::Prim(Prim::Bool)) {
+            self.asm_bool_offsets(ty, 0, &mut bools);
+        }
+        let value = match (&bits, bools.is_empty()) {
+            (_, true) => value,
+            (rust::Type::Prim(prim), false) => {
+                let keep = bools
+                    .iter()
+                    .fold(u128::MAX, |keep, offset| keep & !(0xff << (offset * 8)));
+                let size = self.tables.storage_of(ty).map_or(0, |(size, _)| size);
+                let keep = keep & (u128::MAX >> (128 - size * 8));
+                bools.iter().fold(
+                    Expr::Binary {
+                        op: BinOp::BitAnd,
+                        lhs: Box::new(value.clone()),
+                        rhs: Box::new(Expr::Value(rust::RustValue::TypedUInt(keep, *prim))),
+                    },
+                    |normalized, offset| {
+                        let byte = Expr::Cast {
+                            expr: Box::new(Expr::Binary {
+                                op: BinOp::Shr,
+                                lhs: Box::new(value.clone()),
+                                rhs: Box::new(Expr::Value((*offset as i64 * 8).into())),
+                            }),
+                            ty: rust::Type::Prim(Prim::U8),
+                        };
+                        let flag = Expr::Cast {
+                            expr: Box::new(Expr::Binary {
+                                op: BinOp::Ne,
+                                lhs: Box::new(byte),
+                                rhs: Box::new(Expr::Value(0i64.into())),
+                            }),
+                            ty: bits.clone(),
+                        };
+                        Expr::Binary {
+                            op: BinOp::BitOr,
+                            lhs: Box::new(normalized),
+                            rhs: Box::new(Expr::Binary {
+                                op: BinOp::Shl,
+                                lhs: Box::new(flag),
+                                rhs: Box::new(Expr::Value((*offset as i64 * 8).into())),
+                            }),
+                        }
+                    },
+                )
+            }
+            (_, false) => {
+                return Err(unsupported_asm("_Bool field in a vector register operand"));
+            }
         };
         Ok(if matches!(target, rust::Type::Prim(Prim::Bool)) {
             Expr::Binary {

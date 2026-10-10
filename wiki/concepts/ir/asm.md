@@ -270,9 +270,14 @@ impossible.
 - Integer/enum and raw pointer inputs cast; floats, nullable function pointers, and small
   aggregates transmute through their storage-sized integer. `_Bool` inputs cast to a byte;
   outputs test the byte against zero, matching Clang's asm storage/load behavior.
-- Aggregate transmutes require 1/2/4/8-byte, fully occupied storage and fields accepting
-  every bit pattern. Padding, partial union members, bit-fields, and nested bools need
-  field-wise bridges; other register classes remain barriers.
+- Aggregates of any field shape transmute whole: Slate records spell padding as
+  `__slate_pad_N` byte fields, bit-field units are integer-backed, and locals start zeroed, so
+  every byte (including inactive union bytes) is initialized and no field-wise marshaling is
+  needed. Outputs normalize each byte that holds a `_Bool` field (through nested structs and
+  arrays, not unions or bit-fields) to 0/1 in the scratch integer before the transmute; a
+  `_Bool` field in a vector-register aggregate is a barrier (`asm_aggregate_field_bridge.c`).
+  Bytes C leaves uninitialized (malloc'd records) are uninitialized in Rust for every typed
+  copy, asm or not.
 - Outputs use scratch temporaries, then ordinary place writeback (including volatile stores).
   Tied inputs retain their input expression; directions come from `AsmOperand::direction()`.
 - Register placeholders use the reference view or operand width. Literal braces escape;
