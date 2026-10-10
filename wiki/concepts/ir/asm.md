@@ -74,9 +74,13 @@ whole asm: the first where every operand has a usable class.
   explicit register, then memory. For `rm`, gcc prefers the register and
   clang memory; we take the register, which Rust expresses without a
   pointer.
-- Unusable: unresolved letters; x87/MMX/AMX (clobber-only in Rust); a
-  register the width doesn't fit; an immediate that isn't an integer
+- Unusable: unresolved letters; AMX, `st(2)`..`st(7)`, and `mm` hard
+  registers (clobber-only in Rust); an `=f` output (both compilers reject
+  it); a register the width doesn't fit; an immediate that isn't an integer
   constant; a symbol that isn't a link-time address; a match on an output.
+- x87 `t`/`u`/`f` fit only `float`, `double`, and `long double` (clang
+  can't allocate `{st}` for an integer); MMX `y`/`Ym` fit 32 and 64 bits.
+  Rust can't bind either class, so Slate spills them through memory.
 - An operand naming a register variable (`register long r10 asm("r10")`)
   whose chosen register class holds that register selects
   `Explicit(r10)`, as clang emits `{r10}`; GCC guarantees only this use of
@@ -296,5 +300,15 @@ impossible.
   to the template, decoded into the C place like other outputs (`_Bool` tests against zero,
   integers zero-extend). gcc drops the setcc for `=&@cc`, so the differential fixture avoids
   early clobbers (`gnu_asm_flag_outputs.c`).
+- x87 operands spill through temporaries passed `in(reg)`. Inputs sit where both compilers put
+  them: `t` at st(0), `u` at st(1), `f` inputs below in operand order, loaded deepest first with
+  `flds`/`fldl`/`fldt`. After the template, outputs (`=t`, then `=u`) are popped with
+  `fstp*` into their temporaries. Then every untied input whose register isn't clobbered (the
+  asm didn't pop it) is popped with `fstp %st(0)`. All eight `st` registers are clobbered, so
+  Rust guarantees an empty stack on entry and the spill code leaves it empty.
+- MMX operands pin a free `mm` register, loaded and stored with `movq` (`movd` at 32 bits),
+  and clobber it. References print `%st`, `%st(N)`, or `%mmN`. Spilled outputs drop `pure`
+  and the memory options; spilled inputs turn `nomem` into `readonly`
+  (`asm_x87_mmx_operands.c`, gcc-torture `990413-2`).
 - Other immediate modifiers, asm goto, module asm,
   and additional operand classes are tracked by the other `slate-3f8g.4.17` children.

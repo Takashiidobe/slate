@@ -104,6 +104,101 @@ enum Slot {
     Positional(usize),
     Register(&'static str),
     PairLow(&'static str),
+    Spill(SpillRegister),
+}
+
+fn spill_reference(asm: &ir::InlineAsm, register: SpillRegister) -> String {
+    let name = match register {
+        SpillRegister::Stack(0) => "st".to_string(),
+        SpillRegister::Stack(position) => format!("st({position})"),
+        SpillRegister::Mmx(number) => format!("mm{number}"),
+    };
+    match asm.dialect {
+        Some(ir::AsmDialect::Intel) => name,
+        _ => format!("%{name}"),
+    }
+}
+
+#[derive(Clone, Copy)]
+enum SpillRegister {
+    Stack(usize),
+    Mmx(usize),
+}
+
+struct Spill {
+    register: SpillRegister,
+    bytes: u64,
+    slot: usize,
+}
+
+const MMX_REGISTERS: [&str; 8] = ["mm0", "mm1", "mm2", "mm3", "mm4", "mm5", "mm6", "mm7"];
+const STACK_REGISTERS: [&str; 8] = [
+    "st", "st(1)", "st(2)", "st(3)", "st(4)", "st(5)", "st(6)", "st(7)",
+];
+
+fn stack_positions(asm: &ir::InlineAsm) -> Vec<Option<usize>> {
+    let explicit = |operand: &ir::AsmOperand| match &operand.selected {
+        Some(ir::AsmOperandClass::Explicit(register)) => STACK_REGISTERS[..2]
+            .iter()
+            .position(|name| register.canonical == Some(*name)),
+        _ => None,
+    };
+    let mut next = asm
+        .operands
+        .iter()
+        .filter(|operand| {
+            matches!(
+                operand.kind,
+                ir::AsmOperandKind::In(_) | ir::AsmOperandKind::InOut { .. }
+            )
+        })
+        .filter_map(explicit)
+        .max()
+        .map_or(0, |position| position + 1);
+    asm.operands
+        .iter()
+        .map(|operand| match &operand.selected {
+            Some(ir::AsmOperandClass::Register(ir::AsmRegisterClass::X87Reg)) => {
+                next += 1;
+                Some(next - 1)
+            }
+            _ => explicit(operand),
+        })
+        .collect()
+}
+
+fn spill_instruction(asm: &ir::InlineAsm, spill: &Spill, load: bool) -> String {
+    let intel = asm.dialect == Some(ir::AsmDialect::Intel);
+    let memory = if intel {
+        let size = match spill.bytes {
+            4 => "dword",
+            8 => "qword",
+            _ => "tbyte",
+        };
+        format!("{size} ptr [{{{}:r}}]", spill.slot)
+    } else {
+        format!("({{{}:r}})", spill.slot)
+    };
+    match spill.register {
+        SpillRegister::Stack(_) => {
+            let base = if load { "fld" } else { "fstp" };
+            let suffix = match (intel, spill.bytes) {
+                (true, _) => "",
+                (_, 4) => "s",
+                (_, 8) => "l",
+                _ => "t",
+            };
+            format!("{base}{suffix} {memory}")
+        }
+        SpillRegister::Mmx(number) => {
+            let mnemonic = if spill.bytes == 4 { "movd" } else { "movq" };
+            let register = spill_reference(asm, SpillRegister::Mmx(number));
+            match (intel, load) {
+                (true, true) | (false, false) => format!("{mnemonic} {register}, {memory}"),
+                _ => format!("{mnemonic} {memory}, {register}"),
+            }
+        }
+    }
 }
 
 fn gpr_name(canonical: &str, view: Option<ir::AsmRegisterView>, width: u64) -> Option<String> {
@@ -188,6 +283,15 @@ fn asm_template(asm: &ir::InlineAsm, slots: &[Slot]) -> Result<String> {
                     Slot::PairLow(canonical) => {
                         template
                             .push_str(&explicit_reference(asm, 64, canonical, *modifier, *view)?);
+                        continue;
+                    }
+                    Slot::Spill(register) => {
+                        if modifier.is_some() || view.is_some() {
+                            return Err(unsupported_asm(format!(
+                                "spilled register modifier {modifier:?}"
+                            )));
+                        }
+                        template.push_str(&spill_reference(asm, register));
                         continue;
                     }
                 };
@@ -699,6 +803,93 @@ impl FunctionLowerer<'_, '_> {
         })
     }
 
+    fn asm_spill_bytes(&self, register: SpillRegister, ty: &ir::Type) -> Result<u64> {
+        let bytes = match (register, self.tables.resolve_type(ty)) {
+            (SpillRegister::Stack(_), ir::Type::Numeric(ir::NumericType::Float(float))) => {
+                match float {
+                    ir::FloatType::F32 => Some(4),
+                    ir::FloatType::F64 => Some(8),
+                    ir::FloatType::F80 => Some(16),
+                    _ => None,
+                }
+            }
+            (SpillRegister::Mmx(_), _) => self
+                .tables
+                .storage_of(ty)
+                .map(|(size, _)| size)
+                .filter(|size| matches!(size, 4 | 8)),
+            _ => None,
+        };
+        bytes.ok_or_else(|| unsupported_asm(format!("spilled operand type {ty}")))
+    }
+
+    fn asm_spill(
+        &mut self,
+        statement: &Span<ir::Statement>,
+        operand: &ir::AsmOperand,
+        register: SpillRegister,
+        operands: &mut Vec<rust::AsmOperand>,
+        prefix: &mut Vec<Stmt>,
+        writebacks: &mut Vec<Stmt>,
+    ) -> Result<[Option<Spill>; 2]> {
+        let input = match &operand.kind {
+            ir::AsmOperandKind::In(value)
+            | ir::AsmOperandKind::InOut {
+                input: Some(ir::AsmTiedInput { value, .. }),
+                ..
+            } => Some((self.lower_value(value)?, &value.ty)),
+            ir::AsmOperandKind::InOut {
+                place, input: None, ..
+            } => Some((self.asm_read(statement, place)?, &place.ty)),
+            ir::AsmOperandKind::Out { .. } => None,
+            _ => return Err(unsupported_asm("spilled operand kind")),
+        };
+        let output = match &operand.kind {
+            ir::AsmOperandKind::Out { place, .. } | ir::AsmOperandKind::InOut { place, .. } => {
+                Some(place)
+            }
+            _ => None,
+        };
+        let mut spill = |this: &mut Self, ty: &ir::Type, init: Expr, mutable: bool| {
+            let bytes = this.asm_spill_bytes(register, ty)?;
+            let temp = this.next_temp();
+            prefix.push(Stmt::Let {
+                name: temp.clone(),
+                mutable,
+                ty: Some(this.lower_type(ty)?),
+                init: Some(init),
+            });
+            operands.push(rust::AsmOperand::In {
+                reg: rust::AsmReg::Class("reg".into()),
+                value: Expr::AddrOf {
+                    mutable,
+                    expr: Box::new(Expr::Var(temp.as_str().into())),
+                },
+            });
+            Ok::<_, Failure>((
+                Spill {
+                    register,
+                    bytes,
+                    slot: operands.len() - 1,
+                },
+                temp,
+            ))
+        };
+        let load = match input {
+            Some((value, ty)) => Some(spill(self, ty, value, false)?.0),
+            None => None,
+        };
+        let store = match output {
+            Some(place) => {
+                let (store, temp) = spill(self, &place.ty, zeroed(), true)?;
+                writebacks.push(self.lower_assignment(place, Expr::Var(temp.as_str().into()))?);
+                Some(store)
+            }
+            None => None,
+        };
+        Ok([load, store])
+    }
+
     pub(super) fn lower_asm(
         &mut self,
         statement: &Span<ir::Statement>,
@@ -716,7 +907,7 @@ impl FunctionLowerer<'_, '_> {
                 asm.rejected
             )));
         }
-        let options = asm_options(asm)?;
+        let mut options = asm_options(asm)?;
         let mut operands = Vec::new();
         let mut explicit = Vec::new();
         let mut slots = Vec::new();
@@ -737,6 +928,21 @@ impl FunctionLowerer<'_, '_> {
                 _ => None,
             }))
             .collect::<BTreeSet<_>>();
+        let mut spills = Vec::new();
+        for (operand, position) in asm.operands.iter().zip(stack_positions(asm)) {
+            spills.push(match (position, &operand.selected) {
+                (Some(position), _) => Some(SpillRegister::Stack(position)),
+                (None, Some(ir::AsmOperandClass::Register(ir::AsmRegisterClass::MmxReg))) => {
+                    let number = (0..MMX_REGISTERS.len())
+                        .find(|number| taken.insert(MMX_REGISTERS[*number]))
+                        .ok_or_else(|| unsupported_asm("no free mmx register"))?;
+                    Some(SpillRegister::Mmx(number))
+                }
+                _ => None,
+            });
+        }
+        let mut loads = Vec::new();
+        let mut stores = Vec::new();
         let mut prefix = Vec::new();
         let mut writebacks = Vec::new();
         for (index, operand) in asm.operands.iter().enumerate() {
@@ -759,6 +965,20 @@ impl FunctionLowerer<'_, '_> {
                 return Err(unsupported_asm(
                     "register variable needs explicit register lowering",
                 ));
+            }
+            if let Some(register) = spills[index] {
+                let [load, store] = self.asm_spill(
+                    statement,
+                    operand,
+                    register,
+                    &mut operands,
+                    &mut prefix,
+                    &mut writebacks,
+                )?;
+                loads.extend(load);
+                stores.extend(store);
+                slots.push(Slot::Spill(register));
+                continue;
             }
             let reg = match &operand.selected {
                 Some(ir::AsmOperandClass::Immediate) => {
@@ -982,6 +1202,52 @@ impl FunctionLowerer<'_, '_> {
         }
         let mut saved_rbx = saved_rbx.map(|slot| (slot, true));
         let mut clobbered = BTreeSet::new();
+        let position = |spill: &Spill| match spill.register {
+            SpillRegister::Stack(position) => Some(position),
+            SpillRegister::Mmx(_) => None,
+        };
+        for spills in [&loads, &stores] {
+            let mut positions = spills.iter().filter_map(position).collect::<Vec<_>>();
+            positions.sort_unstable();
+            if positions.len() > STACK_REGISTERS.len()
+                || positions.iter().copied().ne(0..positions.len())
+            {
+                return Err(unsupported_asm(format!("x87 stack layout {positions:?}")));
+            }
+        }
+        loads.sort_by_key(|spill| std::cmp::Reverse(position(spill)));
+        stores.sort_by_key(position);
+        let pops = asm
+            .operands
+            .iter()
+            .zip(&spills)
+            .filter(|(operand, register)| match (&operand.kind, register) {
+                (ir::AsmOperandKind::In(_), Some(SpillRegister::Stack(position))) => {
+                    !asm.clobbers.iter().any(|clobber| {
+                        matches!(clobber, ir::AsmClobber::Register(register)
+                            if register.canonical == Some(STACK_REGISTERS[*position]))
+                    })
+                }
+                _ => false,
+            })
+            .count();
+        let mut spilled = Vec::new();
+        for register in spills.iter().flatten() {
+            match register {
+                SpillRegister::Stack(_) if !clobbered.contains("st") => {
+                    clobbered.extend(STACK_REGISTERS);
+                    spilled
+                        .extend((0..STACK_REGISTERS.len()).map(|number| format!("st({number})")));
+                }
+                SpillRegister::Stack(_) => {}
+                SpillRegister::Mmx(number) => spilled.push(MMX_REGISTERS[*number].to_string()),
+            }
+        }
+        explicit.extend(spilled.into_iter().map(|name| rust::AsmOperand::Out {
+            reg: rust::AsmReg::Explicit(name),
+            late: true,
+            value: Expr::Var("_".into()),
+        }));
         for clobber in &asm.clobbers {
             if let ir::AsmClobber::Register(register) = clobber {
                 let canonical = register.canonical.ok_or_else(|| {
@@ -1014,6 +1280,38 @@ impl FunctionLowerer<'_, '_> {
             }
         }
         let mut template = asm_template(asm, &slots)?;
+        if !loads.is_empty() || !stores.is_empty() {
+            let pop = match asm.dialect {
+                Some(ir::AsmDialect::Intel) => "fstp st(0)",
+                _ => "fstp %st(0)",
+            };
+            template = loads
+                .iter()
+                .map(|spill| spill_instruction(asm, spill, true))
+                .chain(std::iter::once(template))
+                .chain(
+                    stores
+                        .iter()
+                        .map(|spill| spill_instruction(asm, spill, false)),
+                )
+                .chain(std::iter::repeat_n(pop.to_string(), pops))
+                .collect::<Vec<_>>()
+                .join("\n");
+        }
+        if !stores.is_empty() {
+            options.retain(|option| {
+                !matches!(
+                    option,
+                    rust::AsmOption::Pure | rust::AsmOption::NoMem | rust::AsmOption::ReadOnly
+                )
+            });
+        } else if !loads.is_empty() {
+            for option in &mut options {
+                if matches!(option, rust::AsmOption::NoMem) {
+                    *option = rust::AsmOption::ReadOnly;
+                }
+            }
+        }
         if let Some((slot, swap)) = saved_rbx {
             let (save, restore) = match (asm.dialect, swap) {
                 (Some(ir::AsmDialect::Intel), false) => (

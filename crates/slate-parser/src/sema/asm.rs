@@ -240,6 +240,12 @@ impl Lowerer {
                 FloatType::BF16 | FloatType::F16 | FloatType::F32 | FloatType::F64
             )))
         );
+        let x87 = matches!(
+            ty,
+            Some(Type::Numeric(NumericType::Float(
+                FloatType::F32 | FloatType::F64 | FloatType::F80
+            )))
+        );
         let wide = match width {
             Some(256) => Some(AsmRegisterClass::YmmReg),
             Some(512) => Some(AsmRegisterClass::ZmmReg),
@@ -280,6 +286,7 @@ impl Lowerer {
             candidate,
             width: if decays { None } else { width },
             floating,
+            x87,
             constant,
             symbol,
         }
@@ -464,6 +471,7 @@ struct Source<'a> {
     candidate: Candidate<'a>,
     width: Option<u64>,
     floating: bool,
+    x87: bool,
     constant: Option<BigInt>,
     symbol: Option<AsmSymbol>,
 }
@@ -549,10 +557,10 @@ fn choose(
         .map(|alternative| &alternative.location)
         .ok_or(AsmRejectReason::Missing)?;
     match location {
-        AsmConstraintLocation::HardRegister(register) if clobber_only(register) => {
-            Err(AsmRejectReason::ClobberOnly)
-        }
         AsmConstraintLocation::HardRegister(register) => {
+            if clobber_only(register) {
+                stack_register(source, register)?;
+            }
             Ok(Choice::Class(AsmOperandClass::Explicit(register.clone())))
         }
         AsmConstraintLocation::Matching(_) if output => Err(AsmRejectReason::Matching),
@@ -590,8 +598,11 @@ fn rank(
         AsmOperandClass::Immediate if !output && source.constant.is_some() => Ok(0),
         AsmOperandClass::Symbol if !output && source.symbol.is_some() => Ok(0),
         AsmOperandClass::Immediate | AsmOperandClass::Symbol => Err(AsmRejectReason::NotConstant),
-        AsmOperandClass::Register(AsmRegisterClass::X87Reg | AsmRegisterClass::MmxReg) => {
+        AsmOperandClass::Register(AsmRegisterClass::X87Reg) if output => {
             Err(AsmRejectReason::ClobberOnly)
+        }
+        AsmOperandClass::Register(AsmRegisterClass::X87Reg) if !source.x87 => {
+            Err(AsmRejectReason::Width)
         }
         AsmOperandClass::Register(register) if !fits(*register, source.width, family) => {
             Err(AsmRejectReason::Width)
@@ -604,7 +615,7 @@ fn rank(
         AsmOperandClass::Pair { .. } => Err(AsmRejectReason::Width),
         AsmOperandClass::Flags(_) => Ok(0),
         AsmOperandClass::Explicit(register) if clobber_only(register) => {
-            Err(AsmRejectReason::ClobberOnly)
+            stack_register(source, register).map(|()| 2)
         }
         AsmOperandClass::Explicit(_) => Ok(2),
         AsmOperandClass::Memory => Ok(3),
@@ -636,7 +647,8 @@ fn fits(register: AsmRegisterClass, width: Option<u64>, family: TargetFamily) ->
         }
         AsmRegisterClass::SReg => width == 32,
         AsmRegisterClass::DReg => width == 64,
-        AsmRegisterClass::X87Reg | AsmRegisterClass::MmxReg => false,
+        AsmRegisterClass::X87Reg => true,
+        AsmRegisterClass::MmxReg => matches!(width, 32 | 64),
     }
 }
 
@@ -659,6 +671,14 @@ fn holds(class: AsmRegisterClass, register: &AsmRegister) -> bool {
             .iter()
             .any(|prefix| name.starts_with(prefix)),
         _ => false,
+    }
+}
+
+fn stack_register(source: &Source<'_>, register: &AsmRegister) -> Result<(), AsmRejectReason> {
+    match register.canonical {
+        Some("st" | "st(1)") if source.x87 => Ok(()),
+        Some("st" | "st(1)") => Err(AsmRejectReason::Width),
+        _ => Err(AsmRejectReason::ClobberOnly),
     }
 }
 

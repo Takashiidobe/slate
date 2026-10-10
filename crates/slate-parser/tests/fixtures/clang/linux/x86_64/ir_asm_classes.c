@@ -30,6 +30,12 @@ __attribute__((target("avx512f"))) void masks(long l, unsigned char k) {
     asm("# %0" : : "Ym"(l));
 }
 
+void spilled(int i, char c, double d, long double f) {
+    asm("# %0 %1 %2" : "=t"(d), "=u"(f) : "f"(f));
+    asm("# %0" : : "t"(i));
+    asm("# %0 %1" : "=y"(i) : "y"(c));
+}
+
 // SLATE-FILECHECK-BEGIN IR
 // IR: module {
 // IR-NEXT:     target "x86_64-unknown-linux-gnu" {
@@ -88,13 +94,12 @@ __attribute__((target("avx512f"))) void masks(long l, unsigned char k) {
 // IR-NEXT:             in 3 "S" [{si}] width 64 read<i64>(%[[VALUE_l]]);
 // IR-NEXT:             in 4 "D" [{di}] width 64 read<i64>(%[[VALUE_l]]);
 // IR-NEXT:         }
-// IR-NEXT:         asm "# %0 %1 %2 %3" [dialect=att] [options=nostack] [alternative=none] {
+// IR-NEXT:         asm "# %0 %1 %2 %3" [dialect=att] [options=nostack] {
 // IR-NEXT:             template: "# " %0 " " %1 " " %2 " " %3;
 // IR-NEXT:             in 0 "t" [{st}] width 128 read<f80>(%[[VALUE_f]]);
 // IR-NEXT:             in 1 "u" [{st(1)}] width 128 read<f80>(%[[VALUE_g_2]]);
 // IR-NEXT:             in 2 "v" [zmm_reg] width 128 read<vector<f32, 4>>(%[[VALUE_v]]);
-// IR-NEXT:             in 3 "X" [imm | sym | reg | xmm_reg | mem] width 32 place<i32>(%[[VALUE_x]]);
-// IR-NEXT:             rejected: 0 (operand 0: clobber-only);
+// IR-NEXT:             in 3 "X" [imm | sym | reg | xmm_reg | mem] -> reg width 32 read<i32>(%[[VALUE_x]]);
 // IR-NEXT:         }
 // IR-NEXT:         asm "# %0 %1" [dialect=att] [options=pure,nomem,nostack] [alternative=0] {
 // IR-NEXT:             template: "# " %0 " " %1;
@@ -149,10 +154,28 @@ __attribute__((target("avx512f"))) void masks(long l, unsigned char k) {
 // IR-NEXT:             template: "# " %0;
 // IR-NEXT:             in 0 "Yk" [kreg] width 8 read<u8>(%[[VALUE_k]]);
 // IR-NEXT:         }
-// IR-NEXT:         asm "# %0" [dialect=att] [options=nostack] [alternative=none] {
+// IR-NEXT:         asm "# %0" [dialect=att] [options=nostack] {
 // IR-NEXT:             template: "# " %0;
 // IR-NEXT:             in 0 "Ym" [mmx_reg] width 64 read<i64>(%[[VALUE_l_3]]);
-// IR-NEXT:             rejected: 0 (operand 0: clobber-only);
+// IR-NEXT:         }
+// IR-NEXT:     }
+// IR-NEXT:     fn %[[VALUE_spilled:[0-9]+]] @spilled(%[[VALUE_i:[0-9]+]] i: i32, %[[VALUE_c_2:[0-9]+]] c: i8, %[[VALUE_d_2:[0-9]+]] d: f64, %[[VALUE_f_2:[0-9]+]] f: f80) -> void [linkage=external] [fallthrough=ret_void] {
+// IR-NEXT:         asm "# %0 %1 %2" [dialect=att] [options=pure,nomem,nostack] {
+// IR-NEXT:             template: "# " %0 " " %1 " " %2;
+// IR-NEXT:             lateout 0 "t" [{st}] width 64 place<f64>(%[[VALUE_d_2]]);
+// IR-NEXT:             lateout 1 "u" [{st(1)}] width 128 place<f80>(%[[VALUE_f_2]]);
+// IR-NEXT:             in 2 "f" [x87_reg] width 128 read<f80>(%[[VALUE_f_2]]);
+// IR-NEXT:         }
+// IR-NEXT:         asm "# %0" [dialect=att] [options=nostack] [alternative=none] {
+// IR-NEXT:             template: "# " %0;
+// IR-NEXT:             in 0 "t" [{st}] width 32 read<i32>(%[[VALUE_i]]);
+// IR-NEXT:             rejected: 0 (operand 0: width);
+// IR-NEXT:         }
+// IR-NEXT:         asm "# %0 %1" [dialect=att] [options=pure,nomem,nostack] [alternative=none] {
+// IR-NEXT:             template: "# " %0 " " %1;
+// IR-NEXT:             lateout 0 "y" [mmx_reg] width 32 place<i32>(%[[VALUE_i]]);
+// IR-NEXT:             in 1 "y" [mmx_reg] width 8 read<i8>(%[[VALUE_c_2]]);
+// IR-NEXT:             rejected: 0 (operand 1: width);
 // IR-NEXT:         }
 // IR-NEXT:     }
 // IR-NEXT: }

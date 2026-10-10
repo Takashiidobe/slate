@@ -79,10 +79,9 @@ void alternatives(int x, int *p, long double f, struct Big big) {
 // IR-NEXT:             in 0 "l,x" [reg, xmm_reg] width 32 read<i32>(%[[VALUE_x]]);
 // IR-NEXT:             in 1 "r,r" [reg, reg] width 32 read<i32>(%[[VALUE_x]]);
 // IR-NEXT:         }
-// IR-NEXT:         asm "# %0" [dialect=att] [options=nostack] [alternative=none] {
+// IR-NEXT:         asm "# %0" [dialect=att] [options=nostack] {
 // IR-NEXT:             template: "# " %0;
 // IR-NEXT:             in 0 "t" [{st}] width 128 read<f80>(%[[VALUE_f]]);
-// IR-NEXT:             rejected: 0 (operand 0: clobber-only);
 // IR-NEXT:         }
 // IR-NEXT:     }
 // IR-NEXT: }
