@@ -234,15 +234,15 @@ fn explicit_reference(
     modifier: Option<char>,
     view: Option<ir::AsmRegisterView>,
 ) -> Result<String> {
-    if modifier.is_some() && view.is_none() {
+    if !matches!(modifier, None | Some('V')) && view.is_none() {
         return Err(unsupported_asm(format!(
             "explicit register modifier {modifier:?}"
         )));
     }
     let name = gpr_name(canonical, view, width)
         .ok_or_else(|| unsupported_asm(format!("register {canonical} at width {width}")))?;
-    Ok(match asm.dialect {
-        Some(ir::AsmDialect::Att) => format!("%{name}"),
+    Ok(match (asm.dialect, modifier) {
+        (Some(ir::AsmDialect::Att), modifier) if modifier != Some('V') => format!("%{name}"),
         _ => name,
     })
 }
@@ -1033,6 +1033,18 @@ impl FunctionLowerer<'_, '_> {
                 _ => None,
             }))
             .collect::<BTreeSet<_>>();
+        let bare: BTreeSet<usize> = asm
+            .pieces
+            .iter()
+            .filter_map(|piece| match piece {
+                ir::AsmPiece::Operand {
+                    index,
+                    modifier: Some('V'),
+                    ..
+                } => Some(*index),
+                _ => None,
+            })
+            .collect();
         let mut spills = Vec::new();
         for (operand, position) in asm.operands.iter().zip(stack_positions(asm)) {
             spills.push(match (position, &operand.selected) {
@@ -1176,6 +1188,24 @@ impl FunctionLowerer<'_, '_> {
                         value: address,
                     });
                     continue;
+                }
+                Some(ir::AsmOperandClass::Register(
+                    class @ (ir::AsmRegisterClass::Reg | ir::AsmRegisterClass::RegAbcd),
+                )) if bare.contains(&index) => {
+                    let candidates: &[&'static str] = match class {
+                        ir::AsmRegisterClass::RegAbcd => &["ax", "cx", "dx"],
+                        _ => &[
+                            "ax", "cx", "dx", "si", "di", "r8", "r9", "r10", "r11", "r12", "r13",
+                            "r14", "r15",
+                        ],
+                    };
+                    let canonical = candidates
+                        .iter()
+                        .copied()
+                        .find(|candidate| taken.insert(candidate))
+                        .ok_or_else(|| unsupported_asm("no free register for %V"))?;
+                    pinned = Some(canonical);
+                    rust::AsmReg::Explicit(canonical.into())
                 }
                 Some(ir::AsmOperandClass::Register(
                     class @ (ir::AsmRegisterClass::Reg | ir::AsmRegisterClass::RegAbcd),

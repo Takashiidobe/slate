@@ -283,6 +283,11 @@ impossible.
   (`%eax`, `%r10d`, `%sil`).
 - `reg_legacy` pins the first of ax, cx, dx, si, di not named by another explicit operand or
   clobber.
+- `{att|intel}` alternations are already resolved by the parser. Like GCC, Slate does not
+  track `.intel_syntax noprefix` switches inside a template; only `%V` (bare register) is
+  dialect-aware. LLVM rejects `%eax` under `noprefix` and Rust `att_syntax` always prints
+  `{N}` with `%`, so a `reg`/`reg_abcd` operand referenced by `%V` pins a free GPR (ax, cx,
+  dx, si, di, r8-r15; abcd: ax, cx, dx) and prints its bare name (`asm_dialect_switch.c`).
 - LLVM reserves rbx: a `b` operand rides in a scratch `reg` swapped into rbx with `xchg` before
   and after the template (inputs become `inout(..) => _`, outputs early), and an rbx clobber is
   saved and restored with `mov` through an early `out(reg) _`. rbp/rsp operands and clobbers
