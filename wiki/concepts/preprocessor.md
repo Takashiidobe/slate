@@ -24,6 +24,7 @@ stream of `PPNode`s (`Code`, `Comment`, `Pragma`) that the parser reads as
 | `hide_set.rs` | interned hide sets with memoized union and intersection |
 | `define.rs` | `#define` / `#undef` parsing |
 | `include.rs` | include resolution, `#pragma once`, depth limit, outermost system header |
+| `embed.rs` | `#embed` and `__has_embed`, sharing one embed-parameter parser |
 | `has_checks.rs` | hand-maintained `__has_builtin` / `__has_feature` / … answers, seeded from clang tablegen and extended per flavor ([attributes](attributes.md#preprocessor-queries)) |
 
 Include directories come from `compiler_headers.rs` and `sysroot.rs`,
@@ -95,6 +96,16 @@ from `<command line>` ([compiler-arg-rules](compiler-arg-rules.md#forced-files-a
   then marks it once-only, so a later `#include` is skipped even after its
   guard macro is `#undef`ed. gcc's `-Wdeprecated` and clang's pedantic
   warnings are not emitted.
+- `#embed` and `__has_embed` parse the same parameter sequence:
+  `limit`, `prefix`, `suffix`, `if_empty` (also `__x__`), and `offset` under
+  the flavor's vendor prefix (`gnu::` for gcc, `clang::` for clang, none for
+  msvc). `limit`/`offset` take an `#if`-style constant expression; the offset
+  applies before the limit whatever their order. A missing clause or a
+  negative operand is an error in both. An unknown or foreign-vendor
+  parameter is an error in `#embed` and makes `__has_embed` 0. Otherwise
+  `__has_embed` is 2 when the window left after offset and limit is empty,
+  else 1. Only quoted resource names are supported; `<...>` searches
+  `--embed-dir`, which is not modeled.
 - Multiple-include optimization, as in clang: a file whose only code and
   directives are one `#ifndef X` / `#if !defined(X)` group with no
   `#elif`/`#else` at its level (comments may sit outside) records `X`
@@ -201,8 +212,9 @@ token plus an interned `HideSet`; file tokens start empty.
   the expansion or from the directive after it, as gcc and clang do.
   The exception is a query whose operand the compiler macro-expands
   (`expands_has_operand`): the attribute queries under both flavors, plus
-  `__has_builtin`/`__has_feature`/`__has_extension` under gcc only.
-  These go through the expander like any token.
+  `__has_builtin`/`__has_feature`/`__has_extension` under gcc only, and
+  `__has_embed` (its parameters are ordinary text, and `__FILE__` names a
+  resource). These go through the expander like any token.
 - Running text: the expander evaluates every `__has_*` query the flavor
   defines (`expand_has_check`), with the same operand rule, because gcc and
   clang accept them outside directives. `__has_include`, `__has_include_next`

@@ -1,4 +1,5 @@
 mod define;
+mod embed;
 mod error;
 mod expand;
 mod has_checks;
@@ -1338,136 +1339,6 @@ impl<'a> Preprocessor<'a> {
         nodes
     }
 
-    fn expand_embed(&mut self, directive: &Directive) -> Result<PPNode, PPFailure> {
-        let arguments = self.expand_macros(&directive.arguments)?;
-        let Some(Span {
-            value: Token::StringLit(name),
-            ..
-        }) = arguments.first()
-        else {
-            return Err(PPFailure::at(
-                directive.arguments_loc(),
-                PPErrorKind::ExpectedEmbedResource,
-            ));
-        };
-        let include = include::IncludeDirective::Quoted(name.to_string());
-        let (path, _) = self
-            .resolve_include(&include, directive.loc.file)
-            .ok_or_else(|| {
-                PPFailure::at(
-                    arguments[0].spelling,
-                    PPErrorKind::HeaderNotFound(include.to_string()),
-                )
-            })?;
-        let mut bytes = std::fs::read(&path).map_err(|error| {
-            PPFailure::at(
-                arguments[0].spelling,
-                PPErrorKind::ReadFailed {
-                    path: crate::files::display_path(&path),
-                    message: error.to_string(),
-                },
-            )
-        })?;
-        let mut prefix = Vec::new();
-        let mut suffix = Vec::new();
-        let mut if_empty = Vec::new();
-        let mut limit = None;
-        let mut index = 1;
-        while index < arguments.len() {
-            let Some(parameter) = identifier(self.source(directive.loc.file), &arguments[index])
-            else {
-                return Err(PPFailure::at(
-                    arguments[index].spelling,
-                    PPErrorKind::InvalidEmbedParameter,
-                ));
-            };
-            if arguments.value_at(index + 1) != Some(&Token::LParen) {
-                return Err(PPFailure::at(
-                    arguments[index].spelling,
-                    PPErrorKind::InvalidEmbedParameter,
-                ));
-            }
-            let start = index + 2;
-            let mut depth = 1usize;
-            index = start;
-            while index < arguments.len() && depth != 0 {
-                match arguments[index].value {
-                    Token::LParen => depth += 1,
-                    Token::RParen => depth -= 1,
-                    _ => {}
-                }
-                index += 1;
-            }
-            if depth != 0 {
-                return Err(PPFailure::at(
-                    arguments[start - 1].spelling,
-                    PPErrorKind::InvalidEmbedParameter,
-                ));
-            }
-            let replacement = arguments[start..index - 1].to_vec();
-            match parameter.as_str() {
-                "prefix" => prefix = replacement,
-                "suffix" => suffix = replacement,
-                "if_empty" => if_empty = replacement,
-                "limit" => {
-                    let [
-                        Span {
-                            value: Token::IntLit(value),
-                            ..
-                        },
-                    ] = replacement.as_slice()
-                    else {
-                        return Err(PPFailure::at(
-                            arguments[start - 2].spelling,
-                            PPErrorKind::InvalidEmbedParameter,
-                        ));
-                    };
-                    limit = value.parse::<usize>().ok();
-                    if limit.is_none() {
-                        return Err(PPFailure::at(
-                            arguments[start - 2].spelling,
-                            PPErrorKind::InvalidEmbedParameter,
-                        ));
-                    }
-                }
-                _ => {
-                    return Err(PPFailure::at(
-                        arguments[start - 2].spelling,
-                        PPErrorKind::InvalidEmbedParameter,
-                    ));
-                }
-            }
-        }
-        if let Some(limit) = limit {
-            bytes.truncate(limit);
-        }
-        let loc = directive.loc;
-        let is_empty = bytes.is_empty();
-        let mut tokens = if is_empty { if_empty } else { prefix };
-        for (index, byte) in bytes.into_iter().enumerate() {
-            if index != 0 {
-                tokens.push(Span::new(Token::Comma, loc, loc));
-            }
-            tokens.push(Span::new(
-                Token::IntLit(i64::from(byte).to_string().into()),
-                loc,
-                loc,
-            ));
-        }
-        if !is_empty {
-            tokens.extend(suffix);
-        }
-        let provenance = self.provenance(loc);
-        let tokens: Vec<_> = tokens
-            .into_iter()
-            .map(|token| token.with_provenance(provenance))
-            .collect();
-        Ok(
-            Span::new(PPNodeKind::Code { tokens, provenance }, loc, loc)
-                .with_provenance(provenance),
-        )
-    }
-
     fn names_defined_macro(&self, directive: &Directive) -> Result<bool, PPFailure> {
         let (name, _) = self.macro_name(directive, directive_spelling(directive.name))?;
         Ok(self.is_defined(&name))
@@ -1483,7 +1354,7 @@ impl<'a> Preprocessor<'a> {
         name: &'static str,
     ) -> Result<bool, PPFailure> {
         let expanded = self.expand_condition(&self.expand_assertions(directive)?)?;
-        let expanded = self.expand_has_embed(&expanded, directive.loc.file);
+        let expanded = self.expand_has_embed(&expanded, directive.loc.file)?;
         let expanded = self.expand_has_include(&expanded, directive.loc.file);
         let expanded = expand_has_checks(&expanded, self.dialect);
         const_expr::Parser::evaluate_with_defined(&expanded, self.dialect, &|macro_name| {
@@ -1566,32 +1437,6 @@ impl<'a> Preprocessor<'a> {
             index = next;
         }
         Ok(expanded)
-    }
-
-    fn expand_has_embed(&self, tokens: &[Span<Token>], from: FileId) -> Vec<Span<Token>> {
-        let mut expanded = Vec::with_capacity(tokens.len());
-        let mut index = 0;
-        while index < tokens.len() {
-            if tokens.value_at(index) == Some(&Token::Ident("__has_embed".into()))
-                && tokens.value_at(index + 1) == Some(&Token::LParen)
-                && let Some(Token::StringLit(name)) = tokens.value_at(index + 2)
-                && tokens.value_at(index + 3) == Some(&Token::RParen)
-            {
-                let found = self
-                    .resolve_include(&include::IncludeDirective::Quoted(name.to_string()), from)
-                    .is_some();
-                expanded.push(
-                    tokens[index]
-                        .clone()
-                        .with_value(Token::IntLit((found as i64).to_string().into())),
-                );
-                index += 4;
-            } else {
-                expanded.push(tokens[index].clone());
-                index += 1;
-            }
-        }
-        expanded
     }
 
     fn expand_has_include(&self, tokens: &[Span<Token>], from: FileId) -> Vec<Span<Token>> {

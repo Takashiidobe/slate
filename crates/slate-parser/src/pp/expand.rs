@@ -751,7 +751,8 @@ fn expands_has_operand(name: &str, flavor: CompilerFlavor) -> bool {
         "__has_attribute"
         | "__has_c_attribute"
         | "__has_cpp_attribute"
-        | "__has_declspec_attribute" => true,
+        | "__has_declspec_attribute"
+        | "__has_embed" => true,
         "__has_builtin" | "__has_feature" | "__has_extension" => flavor.is_gcc(),
         _ => false,
     }

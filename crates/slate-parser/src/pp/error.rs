@@ -68,6 +68,10 @@ pub(super) enum PPErrorKind {
     ExpectedEmbedResource,
     #[error("invalid #embed parameter")]
     InvalidEmbedParameter,
+    #[error("unknown #embed parameter `{0}`")]
+    UnknownEmbedParameter(String),
+    #[error("negative #embed parameter operand")]
+    NegativeEmbedOperand,
     #[error("invalid #line directive, expected a digit sequence")]
     InvalidLineDirective,
     #[error("{0}")]

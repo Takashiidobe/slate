@@ -951,6 +951,15 @@ impl<'a> Parser<'a> {
         dialect: &'a crate::dialect::Dialect,
         is_defined: &dyn Fn(&str) -> bool,
     ) -> Result<i64, LocatedConstExprError> {
+        Self::evaluate_directive_operand(tokens, dialect, is_defined)
+            .map(|value| i64::from(!value.is_zero()))
+    }
+
+    pub fn evaluate_directive_operand(
+        tokens: &'a [Span<Token>],
+        dialect: &'a crate::dialect::Dialect,
+        is_defined: &dyn Fn(&str) -> bool,
+    ) -> Result<WideInt, LocatedConstExprError> {
         let mut parser = Self::new(tokens, crate::parser::ParseContext::Standalone(dialect));
         parser.directive = true;
         let at_position = |parser: &Self, error| LocatedConstExprError {
@@ -969,7 +978,6 @@ impl<'a> Parser<'a> {
             flavor: dialect.flavor(),
         };
         Self::evaluate_wide(&expression, ctx)
-            .map(|value| i64::from(!value.is_zero()))
             .map_err(|error| LocatedConstExprError { error, token: None })
     }
 
