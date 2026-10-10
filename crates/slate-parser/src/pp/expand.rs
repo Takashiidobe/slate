@@ -215,6 +215,12 @@ impl Preprocessor<'_> {
             return Ok(None);
         };
         if !stream.next_is_lparen() {
+            self.warn_traditional(
+                token.token.expansion,
+                format!(
+                    "function-like macro '{name}' must be used with arguments in traditional C"
+                ),
+            );
             return Ok(Some(token));
         }
         let Some(lparen) = self.next_raw(stream, true)? else {
@@ -481,6 +487,7 @@ impl Preprocessor<'_> {
             _ => None,
         };
         let Some(microsoft) = microsoft else {
+            self.warn_traditional_literal(&token.token);
             pieces.push(Piece::Code(token.token));
             return Ok(true);
         };
@@ -534,6 +541,7 @@ impl Preprocessor<'_> {
             arguments: tokens.clone(),
             name_loc: origin.expansion,
             loc: origin.expansion,
+            indented: false,
         });
         pieces.push(Piece::Pragma {
             tokens,

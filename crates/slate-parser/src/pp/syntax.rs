@@ -89,6 +89,7 @@ pub(super) struct Directive {
     pub(super) arguments: Vec<Span<Token>>,
     pub(super) name_loc: Loc,
     pub(super) loc: Loc,
+    pub(super) indented: bool,
 }
 
 impl Directive {
@@ -216,6 +217,12 @@ impl<'a> TokenSource<'a> {
 
     fn directive(&self, tokens: Vec<Span<Token>>) -> Directive {
         let loc = Span::cover((), &tokens).spelling;
+        let indented = self.src.get(..loc.offset).is_some_and(|before| {
+            before
+                .rsplit('\n')
+                .next()
+                .is_some_and(|line_prefix| !line_prefix.is_empty())
+        });
         let mut tokens = tokens.into_iter().skip(1);
         let Some(name) = tokens.next() else {
             return Directive {
@@ -223,6 +230,7 @@ impl<'a> TokenSource<'a> {
                 arguments: Vec::new(),
                 name_loc: loc,
                 loc,
+                indented,
             };
         };
         Directive {
@@ -242,6 +250,7 @@ impl<'a> TokenSource<'a> {
             arguments: tokens.collect(),
             name_loc: name.spelling,
             loc,
+            indented,
         }
     }
 }

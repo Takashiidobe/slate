@@ -7,6 +7,7 @@ mod hide_set;
 mod include;
 mod print;
 mod syntax;
+mod traditional;
 
 use crate::ast::{FileId, HeaderKind, Loc, Provenance, Span};
 use crate::attribute_support;
@@ -1046,6 +1047,7 @@ impl<'a> Preprocessor<'a> {
                         self.push_comments(&mut nodes, comments, true);
                     }
                     self.source_position = Some(directive.loc);
+                    self.warn_traditional_directive(&directive);
                     let name = directive.name;
                     let depth = file.conditionals.len();
                     let guard_macro = match guard {
@@ -1205,6 +1207,7 @@ impl<'a> Preprocessor<'a> {
                     PPErrorKind::UnterminatedConditional,
                 ));
             };
+            self.warn_traditional_directive(&directive);
             match directive.name {
                 DirectiveName::If | DirectiveName::Ifdef | DirectiveName::Ifndef => {
                     nested.push(Conditional::new(&directive));
@@ -1394,11 +1397,20 @@ impl<'a> Preprocessor<'a> {
         let expanded = self.expand_has_embed(&expanded, directive.loc.file)?;
         let expanded = self.expand_has_include(&expanded, directive.loc.file);
         let expanded = expand_has_checks(&expanded, self.dialect);
-        const_expr::Parser::evaluate_with_defined(&expanded, self.dialect, &|macro_name| {
-            self.is_defined(macro_name)
-        })
-        .map(|value| value != 0)
-        .map_err(|located| {
+        for token in &expanded {
+            self.warn_traditional_literal(token);
+        }
+        let unary_plus_uses = std::cell::RefCell::new(Vec::new());
+        let evaluated = const_expr::Parser::evaluate_with_defined(
+            &expanded,
+            self.dialect,
+            &|macro_name| self.is_defined(macro_name),
+            Some(&unary_plus_uses),
+        );
+        for loc in unary_plus_uses.into_inner() {
+            self.warn_traditional(loc, "traditional C rejects the unary plus operator".into());
+        }
+        evaluated.map(|value| value != 0).map_err(|located| {
             let loc = match located.token {
                 Some(index) => expanded
                     .get(index)

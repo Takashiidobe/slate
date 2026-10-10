@@ -26,10 +26,11 @@ pub enum Warning {
     MacroRedefined,
     BuiltinMacroRedefined,
     Deprecated,
+    Traditional,
 }
 
 impl Warning {
-    pub const ALL: [Self; 22] = [
+    pub const ALL: [Self; 23] = [
         Self::LongLong,
         Self::C99Compat,
         Self::ImplicitlyUnsignedLiteral,
@@ -52,6 +53,7 @@ impl Warning {
         Self::MacroRedefined,
         Self::BuiltinMacroRedefined,
         Self::Deprecated,
+        Self::Traditional,
     ];
 
     pub fn name(self) -> &'static str {
@@ -80,6 +82,7 @@ impl Warning {
             Self::MacroRedefined => "macro-redefined",
             Self::BuiltinMacroRedefined => "builtin-macro-redefined",
             Self::Deprecated => "deprecated",
+            Self::Traditional => "traditional",
         }
     }
 
@@ -107,7 +110,7 @@ impl Warning {
         flavor: CompilerFlavor,
     ) -> DefaultSeverity {
         match self {
-            Self::LongLong | Self::BitIntExtension => DefaultSeverity::Ignored,
+            Self::LongLong | Self::BitIntExtension | Self::Traditional => DefaultSeverity::Ignored,
             Self::DeprecatedNonPrototype if !flavor.is_clang() => DefaultSeverity::Ignored,
             Self::ImplicitFunctionDeclaration if flavor.is_msvc() => DefaultSeverity::Ignored,
             Self::C99Compat if standard.at_least_c99() => DefaultSeverity::Ignored,

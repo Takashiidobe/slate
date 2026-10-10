@@ -79,6 +79,7 @@ severity(w) =
 | `macro-redefined` | on | yes | `#define` of a macro with a different definition (gcc: unnamed, always on; cl C4005), or a gcc always-warn name (below) |
 | `builtin-macro-redefined` | on | yes (not gcc `#undef`) | `#define`/`#undef` of a builtin (below; cl C4117, define ignored) |
 | `deprecated` | on | yes | gcc `#assert`, `#unassert`, and each `#pred(answer)` test in `#if` |
+| `traditional` | off | no | gcc only, `pp/traditional.rs`: a directive whose `#` is indented when K&R has it unindented (`#define #undef #include #if #ifdef #ifndef #else #endif #line`) or unindented when it is not (`#assert #error #pragma #warning #ident #import ...`); every `#elif`; a function-like macro name without `(`; a `U` suffix on an integer literal; a unary `+` in an evaluated part of `#if`; `\x`, `\a`, `\u`, `\U` in a string or character literal |
 
 - `c99-compat` is not pedantic: clang keeps it a warning under
   `-pedantic-errors`.
@@ -112,6 +113,12 @@ predefine files quiet. Redefinition rules (`redefinition_warning`,
 - `deprecated` is gcc only (clang rejects assertions). gcc reports an
   assertion test only in `#if`, not in an `#elif` reached from a false
   group; under `-pedantic` gcc words them as `-Wpedantic` instead.
+- `traditional` follows gcc: directive checks run for every directive,
+  including those in skipped groups (`skip_group`); the `#if` unary plus
+  check hooks the evaluator (`EvalContext::unary_plus_uses`), so
+  `#if 0 && +1` is silent; the literal checks run on each token that
+  reaches the output (`read_piece`) or an `#if`/`#elif` expression, so a
+  macro's literal warns at each use. clang has no such option.
 
 ## Conversion warnings
 

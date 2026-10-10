@@ -674,6 +674,7 @@ pub struct EvalContext<'a> {
     is_defined: Option<&'a dyn Fn(&str) -> bool>,
     target: Option<&'a TargetInfo>,
     flavor: CompilerFlavor,
+    unary_plus_uses: Option<&'a std::cell::RefCell<Vec<crate::ast::Loc>>>,
 }
 
 impl StringLiteral {
@@ -950,8 +951,9 @@ impl<'a> Parser<'a> {
         tokens: &'a [Span<Token>],
         dialect: &'a crate::dialect::Dialect,
         is_defined: &dyn Fn(&str) -> bool,
+        unary_plus_uses: Option<&std::cell::RefCell<Vec<crate::ast::Loc>>>,
     ) -> Result<i64, LocatedConstExprError> {
-        Self::evaluate_directive_operand(tokens, dialect, is_defined)
+        Self::evaluate_directive(tokens, dialect, is_defined, unary_plus_uses)
             .map(|value| i64::from(!value.is_zero()))
     }
 
@@ -959,6 +961,15 @@ impl<'a> Parser<'a> {
         tokens: &'a [Span<Token>],
         dialect: &'a crate::dialect::Dialect,
         is_defined: &dyn Fn(&str) -> bool,
+    ) -> Result<WideInt, LocatedConstExprError> {
+        Self::evaluate_directive(tokens, dialect, is_defined, None)
+    }
+
+    fn evaluate_directive(
+        tokens: &'a [Span<Token>],
+        dialect: &'a crate::dialect::Dialect,
+        is_defined: &dyn Fn(&str) -> bool,
+        unary_plus_uses: Option<&std::cell::RefCell<Vec<crate::ast::Loc>>>,
     ) -> Result<WideInt, LocatedConstExprError> {
         let mut parser = Self::new(tokens, crate::parser::ParseContext::Standalone(dialect));
         parser.directive = true;
@@ -976,6 +987,7 @@ impl<'a> Parser<'a> {
             is_defined: Some(is_defined),
             target: Some(dialect.target()),
             flavor: dialect.flavor(),
+            unary_plus_uses,
         };
         Self::evaluate_wide(&expression, ctx)
             .map_err(|error| LocatedConstExprError { error, token: None })
@@ -1182,6 +1194,11 @@ impl<'a> Parser<'a> {
                     | UnaryOp::Imag),
                 operand,
             } => {
+                if *op == UnaryOp::Plus
+                    && let Some(uses) = ctx.unary_plus_uses
+                {
+                    uses.borrow_mut().push(expression.spelling);
+                }
                 let value = Self::evaluate_wide(operand, ctx)?;
                 Ok(match op {
                     UnaryOp::Plus | UnaryOp::Real => value,
