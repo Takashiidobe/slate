@@ -74,11 +74,10 @@ void alternatives(int x, int *p, long double f, struct Big big) {
 // IR-NEXT:             in 1 "r,m" [reg, mem] width 32 place<i32>(%[[VALUE_x]]);
 // IR-NEXT:             rejected: 0 (operand 0: not-constant);
 // IR-NEXT:         }
-// IR-NEXT:         asm "# %0 %1" [dialect=att] [options=nostack] [alternative=1] {
+// IR-NEXT:         asm "# %0 %1" [dialect=att] [options=nostack] [alternative=0] {
 // IR-NEXT:             template: "# " %0 " " %1;
-// IR-NEXT:             in 0 "l,x" [unresolved("l"), xmm_reg] width 32 read<i32>(%[[VALUE_x]]);
+// IR-NEXT:             in 0 "l,x" [reg, xmm_reg] width 32 read<i32>(%[[VALUE_x]]);
 // IR-NEXT:             in 1 "r,r" [reg, reg] width 32 read<i32>(%[[VALUE_x]]);
-// IR-NEXT:             rejected: 0 (operand 0: unresolved("l"));
 // IR-NEXT:         }
 // IR-NEXT:         asm "# %0" [dialect=att] [options=nostack] [alternative=none] {
 // IR-NEXT:             template: "# " %0;

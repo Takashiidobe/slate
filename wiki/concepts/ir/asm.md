@@ -95,8 +95,24 @@ whole asm: the first where every operand has a usable class.
   `?`, `!`, `*`, `^`, `$` are hints and skipped; `#` ends the alternative.
   `V` is memory like `m`/`o`. `p` (an address operand) is `reg`: clang
   accepts it only under `%a` and lowers it `memory(none)`, so the pointer
-  rides in a register and the asm reads no C object. Anything else (`l`,
-  `X`, ...) is `Unresolved`, never guessed.
+  rides in a register and the asm reads no C object. x86 `l` (index
+  register) is `reg`, which already excludes rsp in Rust. `Yi`/`Yt`/`Y2`
+  are `xmm_reg` (gcc rejects them; clang accepts), `Ym` is `mmx_reg`, and
+  `Yk` is `kreg`, which like it excludes k0.
+- x86 `X` offers imm | sym | reg | xmm_reg | mem. Both compilers put a
+  float or vector in an xmm register, an integer in a GPR, a constant as
+  an immediate, and an oversized aggregate in memory. gcc places `=X`
+  outputs in memory; we follow clang's register.
+- A scalar float (bf16/f16/f32/f64) ranks a GPR class below other
+  registers, so `rx` and `X` choose xmm as gcc does; `r` and `g` still
+  take the GPR.
+- x86 `A` offers `Pair { low: ax, high: dx }` (printed `{dx:ax}`) for an
+  operand twice the word width (u128 on x86-64, u64 on i686), else `{ax}`:
+  both compilers use only rax for a 64-bit `=A` on x86-64. Emission splits
+  the value into `ax`/`dx` halves and recombines outputs; a template
+  reference names the low register at word width.
+- `<`, `>` (clang's backend fails), `E`/`F`/`C`/`G`, and `Y0` (clang
+  rejects their operands) stay `Unresolved`, never guessed.
 - `reg_legacy` and `vreg_low8` (AArch64 `y`) have no Rust class; emission
   pins a free explicit register from the set, avoiding the asm's other
   explicit operands and clobbers.

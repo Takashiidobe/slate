@@ -103,6 +103,7 @@ fn intel_size(operand: &ir::AsmOperand) -> Result<&'static str> {
 enum Slot {
     Positional(usize),
     Register(&'static str),
+    PairLow(&'static str),
 }
 
 fn gpr_name(canonical: &str, view: Option<ir::AsmRegisterView>, width: u64) -> Option<String> {
@@ -136,7 +137,7 @@ fn gpr_name(canonical: &str, view: Option<ir::AsmRegisterView>, width: u64) -> O
 
 fn explicit_reference(
     asm: &ir::InlineAsm,
-    operand: &ir::AsmOperand,
+    width: u64,
     canonical: &str,
     modifier: Option<char>,
     view: Option<ir::AsmRegisterView>,
@@ -146,7 +147,6 @@ fn explicit_reference(
             "explicit register modifier {modifier:?}"
         )));
     }
-    let width = operand.width.ok_or(Invariant::AsmOperandWidth)?;
     let name = gpr_name(canonical, view, width)
         .ok_or_else(|| unsupported_asm(format!("register {canonical} at width {width}")))?;
     Ok(match asm.dialect {
@@ -179,9 +179,15 @@ fn asm_template(asm: &ir::InlineAsm, slots: &[Slot]) -> Result<String> {
                 let slot = match slots[*index] {
                     Slot::Positional(slot) => slot,
                     Slot::Register(canonical) => {
+                        let width = operand.width.ok_or(Invariant::AsmOperandWidth)?;
                         template.push_str(&explicit_reference(
-                            asm, operand, canonical, *modifier, *view,
+                            asm, width, canonical, *modifier, *view,
                         )?);
+                        continue;
+                    }
+                    Slot::PairLow(canonical) => {
+                        template
+                            .push_str(&explicit_reference(asm, 64, canonical, *modifier, *view)?);
                         continue;
                     }
                 };
@@ -515,6 +521,122 @@ impl FunctionLowerer<'_, '_> {
         })
     }
 
+    fn asm_wide_integer(&mut self, ty: &ir::Type) -> Result<rust::Type> {
+        let lowered = self.lower_type(ty)?;
+        if !matches!(lowered, rust::Type::Prim(Prim::I128 | Prim::U128)) {
+            return Err(unsupported_asm(format!("register pair operand type {ty}")));
+        }
+        Ok(lowered)
+    }
+
+    fn asm_pair(
+        &mut self,
+        statement: &Span<ir::Statement>,
+        operand: &ir::AsmOperand,
+        [low, high]: [&'static str; 2],
+        prefix: &mut Vec<Stmt>,
+        writebacks: &mut Vec<Stmt>,
+    ) -> Result<Vec<rust::AsmOperand>> {
+        let wide = rust::Type::Prim(Prim::U128);
+        let half = rust::Type::Prim(Prim::U64);
+        let cast = |expr: Expr, ty: &rust::Type| Expr::Cast {
+            expr: Box::new(expr),
+            ty: ty.clone(),
+        };
+        let shift = |op, expr: Expr| Expr::Binary {
+            op,
+            lhs: Box::new(expr),
+            rhs: Box::new(Expr::Value(64i64.into())),
+        };
+        let input = match &operand.kind {
+            ir::AsmOperandKind::In(value)
+            | ir::AsmOperandKind::InOut {
+                input: Some(ir::AsmTiedInput { value, .. }),
+                ..
+            } => {
+                self.asm_wide_integer(&value.ty)?;
+                Some(self.lower_value(value)?)
+            }
+            ir::AsmOperandKind::InOut {
+                place, input: None, ..
+            } => {
+                self.asm_wide_integer(&place.ty)?;
+                Some(self.asm_read(statement, place)?)
+            }
+            ir::AsmOperandKind::Out { .. } => None,
+            _ => return Err(unsupported_asm("register pair operand kind")),
+        };
+        let halves = match input {
+            Some(input) => {
+                let temp = self.next_temp();
+                prefix.push(Stmt::Let {
+                    name: temp.clone(),
+                    mutable: false,
+                    ty: Some(wide.clone()),
+                    init: Some(cast(input, &wide)),
+                });
+                let whole = Expr::Var(temp.as_str().into());
+                Some([
+                    cast(whole.clone(), &half),
+                    cast(shift(BinOp::Shr, whole), &half),
+                ])
+            }
+            None => None,
+        };
+        let outputs = match &operand.kind {
+            ir::AsmOperandKind::Out { place, .. } | ir::AsmOperandKind::InOut { place, .. } => {
+                let target = self.asm_wide_integer(&place.ty)?;
+                let [low_temp, high_temp] = [self.next_temp(), self.next_temp()];
+                for temp in [&low_temp, &high_temp] {
+                    prefix.push(Stmt::Let {
+                        name: temp.clone(),
+                        mutable: false,
+                        ty: Some(half.clone()),
+                        init: None,
+                    });
+                }
+                let [low_value, high_value] =
+                    [&low_temp, &high_temp].map(|temp| Expr::Var(temp.as_str().into()));
+                let combined = Expr::Binary {
+                    op: BinOp::BitOr,
+                    lhs: Box::new(shift(BinOp::Shl, cast(high_value.clone(), &wide))),
+                    rhs: Box::new(cast(low_value.clone(), &wide)),
+                };
+                writebacks.push(self.lower_assignment(place, cast(combined, &target))?);
+                Some([low_value, high_value])
+            }
+            _ => None,
+        };
+        let late = matches!(
+            operand.direction(),
+            ir::AsmDirection::LateOut | ir::AsmDirection::InLateOut
+        );
+        let registers = [low, high].map(|name| rust::AsmReg::Explicit(name.into()));
+        Ok(match (halves, outputs) {
+            (Some(inputs), Some(outputs)) => registers
+                .into_iter()
+                .zip(inputs.into_iter().zip(outputs))
+                .map(|(reg, (input, output))| rust::AsmOperand::InOut {
+                    reg,
+                    late,
+                    input,
+                    output,
+                })
+                .collect(),
+            (Some(inputs), None) => registers
+                .into_iter()
+                .zip(inputs)
+                .map(|(reg, value)| rust::AsmOperand::In { reg, value })
+                .collect(),
+            (None, Some(outputs)) => registers
+                .into_iter()
+                .zip(outputs)
+                .map(|(reg, value)| rust::AsmOperand::Out { reg, late, value })
+                .collect(),
+            (None, None) => return Err(unsupported_asm("register pair operand kind")),
+        })
+    }
+
     pub(super) fn lower_asm(
         &mut self,
         statement: &Span<ir::Statement>,
@@ -540,10 +662,14 @@ impl FunctionLowerer<'_, '_> {
         let mut taken = asm
             .operands
             .iter()
-            .filter_map(|operand| match &operand.selected {
-                Some(ir::AsmOperandClass::Explicit(register)) => register.canonical,
-                _ => None,
+            .flat_map(|operand| match &operand.selected {
+                Some(ir::AsmOperandClass::Explicit(register)) => vec![register.canonical],
+                Some(ir::AsmOperandClass::Pair { low, high }) => {
+                    vec![low.canonical, high.canonical]
+                }
+                _ => Vec::new(),
             })
+            .flatten()
             .chain(asm.clobbers.iter().filter_map(|clobber| match clobber {
                 ir::AsmClobber::Register(register) => register.canonical,
                 _ => None,
@@ -595,6 +721,20 @@ impl FunctionLowerer<'_, '_> {
                     };
                     slots.push(Slot::Positional(operands.len()));
                     operands.push(rust::AsmOperand::Sym(self.asm_symbol(symbol)?));
+                    continue;
+                }
+                Some(ir::AsmOperandClass::Pair { low, high }) => {
+                    let (Some(low), Some(high)) = (low.canonical, high.canonical) else {
+                        return Err(unsupported_asm("unnamed register pair"));
+                    };
+                    slots.push(Slot::PairLow(low));
+                    explicit.extend(self.asm_pair(
+                        statement,
+                        operand,
+                        [low, high],
+                        &mut prefix,
+                        &mut writebacks,
+                    )?);
                     continue;
                 }
                 Some(ir::AsmOperandClass::Memory) => {

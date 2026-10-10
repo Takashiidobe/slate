@@ -5,6 +5,10 @@ void classes(char c, int x) {
     asm("# %0 %1" : "=q"(c), "=R"(x));
 }
 
+void pairs(int x, long long ll) {
+    asm("# %0 %1" : "=A"(x), "+A"(ll));
+}
+
 // SLATE-FILECHECK-BEGIN IR
 // IR: module {
 // IR-NEXT:     target "i686-unknown-linux-gnu" {
@@ -33,6 +37,13 @@ void classes(char c, int x) {
 // IR-NEXT:             template: "# " %0 " " %1;
 // IR-NEXT:             lateout 0 "q" [reg_abcd] width 8 place<i8>(%[[VALUE_c]]);
 // IR-NEXT:             lateout 1 "R" [reg] width 32 place<i32>(%[[VALUE_x]]);
+// IR-NEXT:         }
+// IR-NEXT:     }
+// IR-NEXT:     fn %[[VALUE_pairs:[0-9]+]] @pairs(%[[VALUE_x_2:[0-9]+]] x: i32, %[[VALUE_ll:[0-9]+]] ll: i64) -> void [linkage=external] [fallthrough=ret_void] {
+// IR-NEXT:         asm "# %0 %1" [dialect=att] [options=pure,nomem,nostack] {
+// IR-NEXT:             template: "# " %0 " " %1;
+// IR-NEXT:             lateout 0 "A" [{dx:ax} | {ax}] -> {ax} width 32 place<i32>(%[[VALUE_x_2]]);
+// IR-NEXT:             inlateout 1 "A" [{dx:ax} | {ax}] -> {dx:ax} width 64 place<i64>(%[[VALUE_ll]]);
 // IR-NEXT:         }
 // IR-NEXT:     }
 // IR-NEXT: }

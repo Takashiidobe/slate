@@ -303,7 +303,8 @@ asm_alt    = "{" identifier "}" | integer
            | [ asm_class { " | " asm_class } ] ;
 asm_class  = "reg" | "reg_abcd" | "reg_legacy" | "vreg_low8" | "xmm_reg" | "ymm_reg" | "zmm_reg" | "kreg" | "x87_reg"
            | "mmx_reg" | "vreg" | "vreg_low16" | "sreg" | "dreg"
-           | "mem" | "imm" | "sym" | "{" identifier "}" | "unresolved(" string ")" ;
+           | "mem" | "imm" | "sym" | "{" identifier "}" | "{" identifier ":" identifier "}"
+           | "unresolved(" string ")" ;
 asm_place  = "place<" type [ ", volatile" ] ">(" place ")" ;
 asm_symbol = "sym<offset=" [ "-" ] integer ">(" binding ")" ;
 asm_memory = "mem<" ( "read" | "write" | "readwrite" ) ">" asm_place ;
@@ -371,8 +372,9 @@ evaluation = value | "{" { statement } "yield" value ";" "}" ;
   a hard register or explicit-register letter (`a` is `{ax}`) as its
   canonical name, a matching operand number, or the letters' classes joined
   by `|`. Class names are Rust's, except `reg_legacy` and `vreg_low8`,
-  subsets that emission pins to an explicit register; a letter we cannot
-  resolve prints as `unresolved("l")`.
+  subsets that emission pins to an explicit register. `{dx:ax}` is the
+  register pair of x86 `A`, high half first; a letter we cannot resolve
+  prints as `unresolved("<")`.
 - An `in` with an `asm_place` is a memory-capable input naming its object;
   the asm may address it in place, so no load precedes the statement.
 - An `in` with an `asm_symbol` selected `sym`: a link-time address, the

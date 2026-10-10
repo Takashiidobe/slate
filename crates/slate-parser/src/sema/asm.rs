@@ -233,6 +233,12 @@ impl Lowerer {
             Candidate::Output(AsmOperandKind::Symbol(_)) => None,
         };
         let width = ty.and_then(|ty| self.width(ty));
+        let floating = matches!(
+            ty,
+            Some(Type::Numeric(NumericType::Float(
+                FloatType::BF16 | FloatType::F16 | FloatType::F32 | FloatType::F64
+            )))
+        );
         let wide = match width {
             Some(256) => Some(AsmRegisterClass::YmmReg),
             Some(512) => Some(AsmRegisterClass::ZmmReg),
@@ -272,6 +278,7 @@ impl Lowerer {
             constraint,
             candidate,
             width: if decays { None } else { width },
+            floating,
             constant,
             symbol,
         }
@@ -455,6 +462,7 @@ struct Source<'a> {
     constraint: AsmConstraint,
     candidate: Candidate<'a>,
     width: Option<u64>,
+    floating: bool,
     constant: Option<BigInt>,
     symbol: Option<AsmSymbol>,
 }
@@ -584,8 +592,15 @@ fn rank(
         AsmOperandClass::Register(AsmRegisterClass::X87Reg | AsmRegisterClass::MmxReg) => {
             Err(AsmRejectReason::ClobberOnly)
         }
-        AsmOperandClass::Register(register) if fits(*register, source.width, family) => Ok(1),
-        AsmOperandClass::Register(_) => Err(AsmRejectReason::Width),
+        AsmOperandClass::Register(register) if !fits(*register, source.width, family) => {
+            Err(AsmRejectReason::Width)
+        }
+        AsmOperandClass::Register(
+            AsmRegisterClass::Reg | AsmRegisterClass::RegAbcd | AsmRegisterClass::RegLegacy,
+        ) if source.floating => Ok(2),
+        AsmOperandClass::Register(_) => Ok(1),
+        AsmOperandClass::Pair { .. } if source.width == Some(2 * word(family)) => Ok(2),
+        AsmOperandClass::Pair { .. } => Err(AsmRejectReason::Width),
         AsmOperandClass::Explicit(register) if clobber_only(register) => {
             Err(AsmRejectReason::ClobberOnly)
         }
@@ -595,16 +610,20 @@ fn rank(
     }
 }
 
+fn word(family: TargetFamily) -> u64 {
+    match family {
+        TargetFamily::X86_64 | TargetFamily::AArch64 => 64,
+        TargetFamily::X86 | TargetFamily::Arm32 => 32,
+    }
+}
+
 fn fits(register: AsmRegisterClass, width: Option<u64>, family: TargetFamily) -> bool {
     let Some(width) = width else {
         return false;
     };
     match register {
         AsmRegisterClass::Reg | AsmRegisterClass::RegAbcd | AsmRegisterClass::RegLegacy => {
-            match family {
-                TargetFamily::X86_64 | TargetFamily::AArch64 => matches!(width, 8 | 16 | 32 | 64),
-                TargetFamily::X86 | TargetFamily::Arm32 => matches!(width, 8 | 16 | 32),
-            }
+            matches!(width, 8 | 16 | 32) || width == word(family)
         }
         AsmRegisterClass::XmmReg => matches!(width, 16 | 32 | 64 | 128),
         AsmRegisterClass::YmmReg => matches!(width, 16 | 32 | 64 | 128 | 256),
@@ -799,6 +818,24 @@ fn classes(letters: &str, family: TargetFamily) -> Vec<AsmOperandClass> {
             (_, "#") => break,
             (_, "?" | "!" | "*" | "^" | "$") => continue,
             (_, "r") => AsmOperandClass::Register(AsmRegisterClass::Reg),
+            (_, "l") if x86 => AsmOperandClass::Register(AsmRegisterClass::Reg),
+            (_, "X") if x86 => {
+                classes.extend([
+                    AsmOperandClass::Immediate,
+                    AsmOperandClass::Symbol,
+                    AsmOperandClass::Register(AsmRegisterClass::Reg),
+                    AsmOperandClass::Register(AsmRegisterClass::XmmReg),
+                    AsmOperandClass::Memory,
+                ]);
+                continue;
+            }
+            (_, "A") if x86 => {
+                classes.push(AsmOperandClass::Pair {
+                    low: register_named("ax"),
+                    high: register_named("dx"),
+                });
+                explicit("ax")
+            }
             (_, "m" | "o" | "V") => AsmOperandClass::Memory,
             (_, "p") => AsmOperandClass::Register(AsmRegisterClass::Reg),
             (_, "n") => AsmOperandClass::Immediate,
@@ -831,7 +868,11 @@ fn classes(letters: &str, family: TargetFamily) -> Vec<AsmOperandClass> {
             (_, "t") if x86 => explicit("st"),
             (_, "u") if x86 => explicit("st(1)"),
             (_, "Yz") if x86 => explicit("xmm0"),
-            (_, "x") if x86 => AsmOperandClass::Register(AsmRegisterClass::XmmReg),
+            (_, "x" | "Yi" | "Yt" | "Y2") if x86 => {
+                AsmOperandClass::Register(AsmRegisterClass::XmmReg)
+            }
+            (_, "Ym") if x86 => AsmOperandClass::Register(AsmRegisterClass::MmxReg),
+            (_, "Yk") if x86 => AsmOperandClass::Register(AsmRegisterClass::KReg),
             (_, "v") if x86 => AsmOperandClass::Register(AsmRegisterClass::ZmmReg),
             (_, "k") if x86 => AsmOperandClass::Register(AsmRegisterClass::KReg),
             (_, "f") if x86 => AsmOperandClass::Register(AsmRegisterClass::X87Reg),
@@ -857,10 +898,14 @@ fn classes(letters: &str, family: TargetFamily) -> Vec<AsmOperandClass> {
 }
 
 fn explicit(name: &'static str) -> AsmOperandClass {
-    AsmOperandClass::Explicit(AsmRegister {
+    AsmOperandClass::Explicit(register_named(name))
+}
+
+fn register_named(name: &'static str) -> AsmRegister {
+    AsmRegister {
         spelling: name.to_string(),
         canonical: Some(name),
-    })
+    }
 }
 
 fn modifier(modifier: &ast::AsmConstraintModifier) -> Option<AsmConstraintModifier> {

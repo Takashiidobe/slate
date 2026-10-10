@@ -289,6 +289,7 @@ pub enum AsmConstraintLocation {
 pub enum AsmOperandClass {
     Register(AsmRegisterClass),
     Explicit(AsmRegister),
+    Pair { low: AsmRegister, high: AsmRegister },
     Memory,
     Immediate,
     Symbol,
@@ -508,6 +509,7 @@ impl fmt::Display for AsmOperandClass {
         match self {
             Self::Register(class) => f.write_str(class.as_str()),
             Self::Explicit(register) => write!(f, "{{{}}}", register.spelling),
+            Self::Pair { low, high } => write!(f, "{{{}:{}}}", high.spelling, low.spelling),
             Self::Memory => f.write_str("mem"),
             Self::Immediate => f.write_str("imm"),
             Self::Symbol => f.write_str("sym"),
