@@ -164,6 +164,7 @@ const BUILTIN_MACROS: [&str; 6] = [
     "__TIMESTAMP__",
 ];
 const GNU_BUILTIN_MACROS: [&str; 3] = ["__FILE_NAME__", "__BASE_FILE__", "__INCLUDE_LEVEL__"];
+const MSVC_BUILTIN_MACROS: [&str; 1] = ["__FUNCTION__"];
 
 const STDC_PREDEF_MACROS: [&str; 6] = [
     "_STDC_PREDEF_H",
@@ -616,7 +617,7 @@ impl<'a> Preprocessor<'a> {
             .intern(PathBuf::from("<built-in>"), HeaderKind::System);
         let provenance = self.provenance(Loc::new(file, 0, 0));
         let gnu = match flavor {
-            CompilerFlavor::Msvc => &[][..],
+            CompilerFlavor::Msvc => &MSVC_BUILTIN_MACROS[..],
             CompilerFlavor::Clang | CompilerFlavor::Gcc => &GNU_BUILTIN_MACROS[..],
         };
         for name in BUILTIN_MACROS.iter().chain(gnu) {
@@ -717,6 +718,16 @@ impl<'a> Preprocessor<'a> {
         {
             let version = if version == 202311 { 202312 } else { version };
             defines.push(format!("__STDC_VERSION__={version}L"));
+            if version >= 201112 {
+                defines.extend(
+                    [
+                        "__STDC_NO_ATOMICS__",
+                        "__STDC_NO_COMPLEX__",
+                        "__STDC_NO_VLA__",
+                    ]
+                    .map(|name| format!("{name}=1")),
+                );
+            }
         }
         if !flavor.is_msvc() {
             defines.extend(self.option_predefines());
