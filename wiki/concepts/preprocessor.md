@@ -49,6 +49,13 @@ lines. Its Code node takes the first line's provenance. Comments of the
 first line come before the node, comments of pulled lines after it, then
 any nodes produced by directives met inside the arguments.
 
+`Lexer::with_offset` runs translation phases 1 and 2 before scanning:
+trigraphs (when `StandardFeatures::trigraphs`), then backslash-newline
+splices, so `??/` before a newline splices. Trigraphs are on in ISO modes
+before C23 for gcc and clang, off for msvc; `-trigraphs` (gcc, clang) and
+`-ftrigraphs`/`-fno-trigraphs` (clang) override that, last wins. A
+replaced character keeps its three-byte source span.
+
 A directive is a line whose first non-comment token is `#`. Conditionals
 are evaluated when the stream reaches them. `skip_group` reads only the
 directives of a skipped group. It tracks nesting and `#else` ordering there,

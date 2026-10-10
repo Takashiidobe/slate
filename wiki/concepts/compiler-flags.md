@@ -65,6 +65,7 @@ each stage is in [configuration-threading](configuration-threading.md).
 | `-ftrapping-math` | gcc, clang | `exceptions=`. Default is observable on gcc, ignored on clang |
 | `-fgnu89-inline` | gcc, clang | inline definition semantics, `__GNUC_GNU_INLINE__` |
 | `-fcommon` | gcc, clang | tentative definitions become common symbols |
+| `-trigraphs` / `-ftrigraphs` (and `-fno-`) | `-trigraphs`: gcc, clang; `-f` forms: clang | `StandardFeatures::trigraphs`, overriding the ISO-before-C23 default ([preprocessor](preprocessor.md#pipeline)) |
 | `-fms-extensions` / `-fms-compatibility` (and `-fno-`) | clang | [MS modes](#ms-modes); gcc and msvc reject them |
 | `-fasm-blocks` / `-fno-asm-blocks` | clang | MS `__asm` blocks on x86 without the rest of MS mode; last wins, MS extensions enable them regardless (`MicrosoftFlags::asm_blocks`) |
 | `-mlong-double-64\|80\|128` | gcc, clang | `TargetInfo.long_double` and its predefines; x86 only |

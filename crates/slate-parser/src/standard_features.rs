@@ -61,6 +61,7 @@ pub struct StandardFeatures {
     pub keyword_float80: bool,
     pub fixed_point_keywords: bool,
     pub x86_segment_keywords: bool,
+    pub trigraphs: bool,
 }
 
 impl StandardFeatures {
@@ -137,6 +138,7 @@ impl StandardFeatures {
             keyword_float80: false,
             fixed_point_keywords: true,
             x86_segment_keywords: false,
+            trigraphs: !standard.is_gnu() && !c23,
         }
     }
 
@@ -145,8 +147,10 @@ impl StandardFeatures {
         flavor: CompilerFlavor,
         target: &crate::target_info::TargetInfo,
         microsoft: MicrosoftFlags,
+        trigraphs: Option<bool>,
     ) -> Self {
         let mut features = Self::new(standard);
+        features.trigraphs = trigraphs.unwrap_or(features.trigraphs && !flavor.is_msvc());
         (
             features.microsoft_extensions,
             features.microsoft_compatibility,

@@ -268,6 +268,7 @@ struct ParsedCompilerArgs {
     trapping_math: Option<bool>,
     gnu89_inline: Option<bool>,
     common: Option<bool>,
+    trigraphs: Option<bool>,
     ms_extensions: Option<bool>,
     ms_compatibility: Option<bool>,
     asm_blocks: Option<bool>,
@@ -359,6 +360,8 @@ enum Opt {
     TrappingMath,
     Gnu89Inline,
     Common,
+    Trigraphs,
+    ClangTrigraphs,
     MsExtensions,
     MsCompatibility,
     AsmBlocks,
@@ -444,6 +447,8 @@ impl std::fmt::Display for Opt {
             Self::TrappingMath => "trapping-math",
             Self::Gnu89Inline => "gnu89-inline",
             Self::Common => "common",
+            Self::Trigraphs => "trigraphs",
+            Self::ClangTrigraphs => "ftrigraphs",
             Self::MsExtensions => "ms-extensions",
             Self::MsCompatibility => "ms-compatibility",
             Self::AsmBlocks => "asm-blocks",
@@ -499,6 +504,7 @@ impl Opt {
             | Self::TrappingMath
             | Self::Gnu89Inline
             | Self::Common
+            | Self::Trigraphs
             | Self::MsExtensions
             | Self::MsCompatibility
             | Self::LongDouble
@@ -543,6 +549,7 @@ impl Opt {
             Self::StackAlignment
             | Self::ClangX87
             | Self::AsmBlocks
+            | Self::ClangTrigraphs
             | Self::MsAnonymousStructs
             | Self::LateParseAttributes
             | Self::Mllvm => &[Clang],
@@ -572,6 +579,7 @@ impl Opt {
             Self::TrappingMath => "-ftrapping-math",
             Self::Gnu89Inline => "-fgnu89-inline",
             Self::Common => "-fcommon",
+            Self::ClangTrigraphs => "-ftrigraphs",
             Self::MsExtensions => "-fms-extensions",
             Self::MsCompatibility => "-fms-compatibility",
             Self::AsmBlocks => "-fasm-blocks",
@@ -809,7 +817,8 @@ fn ignored_option(argument: &str) -> Option<IgnoredOption> {
         .then_some(IgnoredOption::Alone)
 }
 
-const SWITCH_OPTS: [Opt; 31] = [
+const SWITCH_OPTS: [Opt; 32] = [
+    Opt::ClangTrigraphs,
     Opt::DeleteNullPointerChecks,
     Opt::SmallPic,
     Opt::LargePic,
@@ -896,6 +905,7 @@ impl CompilerArgParser {
         });
         options.codegen = codegen;
         options.common = raw.common.unwrap_or(false);
+        options.trigraphs = raw.trigraphs;
         options.microsoft = MicrosoftFlags {
             extensions: raw.ms_extensions,
             compatibility: raw.ms_compatibility,
@@ -1009,6 +1019,7 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                 Opt::TrappingMath => parsed.trapping_math = Some(value),
                 Opt::Gnu89Inline => parsed.gnu89_inline = Some(value),
                 Opt::Common => parsed.common = Some(value),
+                Opt::ClangTrigraphs => parsed.trigraphs = Some(value),
                 Opt::MsExtensions => {
                     parsed.ms_extensions = Some(value);
                     parsed.ms_anonymous_structs = Some(value);
@@ -1086,6 +1097,9 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                     _ => return Err(invalid(argument, "unknown control-flow protection level")),
                 },
             );
+        } else if argument == "-trigraphs" || argument == "--trigraphs" {
+            parsed.saw(Opt::Trigraphs, argument);
+            parsed.trigraphs = Some(true);
         } else if argument == "-pthread" {
             parsed.saw(Opt::Pthread, argument);
             parsed.pthread = true;

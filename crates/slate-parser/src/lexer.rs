@@ -570,6 +570,7 @@ pub struct Lexer {
     base_offset: usize,
     chars: Vec<char>,
     byte_offsets: Vec<usize>,
+    byte_ends: Vec<usize>,
     pos: usize,
     mark: usize,
     line_starts: Option<Vec<bool>>,
@@ -592,20 +593,21 @@ impl Lexer {
     ) -> Self {
         let mut chars = Vec::with_capacity(src.len());
         let mut byte_offsets = Vec::with_capacity(src.len() + 1);
-        let mut indices = src.char_indices();
-        while let Some((byte, c)) = indices.next() {
-            let rest = &src[byte + c.len_utf8()..];
+        let mut byte_ends = Vec::with_capacity(src.len());
+        let mut byte = 0;
+        while let Some((c, len)) = source_char(src, byte, features.trigraphs) {
+            let rest = &src[byte + len..];
             let splice_len = match c {
                 '\\' if rest.starts_with('\n') => 1,
                 '\\' if rest.starts_with("\r\n") => 2,
                 _ => 0,
             };
-            if splice_len > 0 {
-                indices.nth(splice_len - 1);
-                continue;
+            if splice_len == 0 {
+                chars.push(c);
+                byte_offsets.push(byte);
+                byte_ends.push(byte + len);
             }
-            chars.push(c);
-            byte_offsets.push(byte);
+            byte += len + splice_len;
         }
         byte_offsets.push(src.len());
         Self {
@@ -613,6 +615,7 @@ impl Lexer {
             base_offset,
             chars,
             byte_offsets,
+            byte_ends,
             pos: 0,
             mark: 0,
             line_starts: None,
@@ -680,7 +683,7 @@ impl Lexer {
     fn current_loc(&self) -> Loc {
         let start = self.byte_of(self.mark);
         let end = match self.pos.checked_sub(1) {
-            Some(last) if last >= self.mark => self.byte_of(last) + self.chars[last].len_utf8(),
+            Some(last) if last >= self.mark => self.base_offset + self.byte_ends[last],
             _ => start,
         };
         Loc::new(self.file, start, end - start)
@@ -1056,6 +1059,29 @@ impl Lexer {
             e += 1;
         }
         (value, e)
+    }
+}
+
+fn source_char(src: &str, byte: usize, trigraphs: bool) -> Option<(char, usize)> {
+    let rest = &src[byte..];
+    let replacement = match rest.as_bytes() {
+        [b'?', b'?', third, ..] if trigraphs => match third {
+            b'=' => Some('#'),
+            b'(' => Some('['),
+            b'/' => Some('\\'),
+            b')' => Some(']'),
+            b'\'' => Some('^'),
+            b'<' => Some('{'),
+            b'!' => Some('|'),
+            b'>' => Some('}'),
+            b'-' => Some('~'),
+            _ => None,
+        },
+        _ => None,
+    };
+    match replacement {
+        Some(c) => Some((c, 3)),
+        None => rest.chars().next().map(|c| (c, c.len_utf8())),
     }
 }
 
