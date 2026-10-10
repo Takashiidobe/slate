@@ -43,6 +43,8 @@ rule pipeline. Flag effects are in [compiler-flags](compiler-flags.md).
   clang 23 `202400L`, `LanguageStandard::predefined_stdc_version`);
   feature gates compare `stdc_version`, which is `202400` for both.
   Unknown triples and standards are errors.
+- `-ansi` / `--ansi` (gcc, clang) is `-std=c89` and shares the `standard`
+  slot with `-std`, so the later of the two wins.
 - `ignored_option` is the list of driver and output options every flavor
   accepts and ignores (`-c`, `-M*`, `-g*`, `-pipe`,
   `-o`/`-MF`/`-MT`/`-MQ`/`-MJ` with a separate or joined value).

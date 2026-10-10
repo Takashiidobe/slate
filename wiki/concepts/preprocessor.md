@@ -180,7 +180,9 @@ token plus an interned `HideSet`; file tokens start empty.
     `__BASE_FILE__`, `__INCLUDE_LEVEL__`) are entries in `macros` marked
     `builtin`, seeded first by `configure`, so `defined`, `#undef`,
     `#define` and `push_macro` see them. msvc ignores `#define`/`#undef` of
-    its builtins (C4117; `is_reserved_macro`). `__TIMESTAMP__` is the
+    its builtins and of `defined` (C4117; `is_reserved_macro`); gcc and
+    clang reject `#define defined` / `#undef defined` as an error
+    (`reject_defined_name`). `__TIMESTAMP__` is the
     current file's modification time. `__FILE__`, `__BASE_FILE__` and
     `__FILE_NAME__` pass through `CompilerOptions::remap_macro_path`
     (`-fmacro-prefix-map`, [compiler-flags](compiler-flags.md)). `__LINE__` differs per flavor when an invocation spans

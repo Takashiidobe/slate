@@ -53,8 +53,19 @@ impl Preprocessor<'_> {
             })
     }
 
+    fn reject_defined_name(&self, name: &str, token: &Span<Token>) -> Result<(), PPFailure> {
+        if name == "defined" && !self.dialect.flavor().is_msvc() {
+            return Err(PPFailure::at(
+                token.spelling,
+                PPErrorKind::DefinedAsMacroName,
+            ));
+        }
+        Ok(())
+    }
+
     pub(super) fn record_define(&mut self, directive: &Directive) -> Result<(), PPFailure> {
         let (name, name_token) = self.macro_name(directive, "#define")?;
+        self.reject_defined_name(&name, name_token)?;
         if self.is_reserved_macro(&name) {
             self.warn(
                 name_token.spelling,
@@ -134,6 +145,7 @@ impl Preprocessor<'_> {
 
     pub(super) fn record_undef(&mut self, directive: &Directive) -> Result<(), PPFailure> {
         let (name, name_token) = self.macro_name(directive, "#undef")?;
+        self.reject_defined_name(&name, name_token)?;
         if self.is_reserved_macro(&name) {
             self.warn(
                 name_token.spelling,

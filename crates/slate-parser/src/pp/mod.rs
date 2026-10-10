@@ -638,10 +638,11 @@ impl<'a> Preprocessor<'a> {
     // msvc ignores #define and #undef of its builtin macros (warning C4117)
     fn is_reserved_macro(&self, name: &str) -> bool {
         self.dialect.flavor().is_msvc()
-            && self
-                .macros
-                .get(name)
-                .is_some_and(|entry| entry.definition.builtin)
+            && (name == "defined"
+                || self
+                    .macros
+                    .get(name)
+                    .is_some_and(|entry| entry.definition.builtin))
     }
 
     fn seed_gnu_linux_assertions(

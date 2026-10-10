@@ -314,6 +314,7 @@ enum Opt {
     ForceInclude,
     Imacros,
     Standard,
+    Ansi,
     Include,
     Iquote,
     Isystem,
@@ -402,6 +403,7 @@ impl std::fmt::Display for Opt {
             Self::ForceInclude => "include",
             Self::Imacros => "imacros",
             Self::Standard => "std",
+            Self::Ansi => "ansi",
             Self::Include => "I",
             Self::Iquote => "iquote",
             Self::Isystem => "isystem",
@@ -507,6 +509,7 @@ impl Opt {
             | Self::TrappingMath
             | Self::Gnu89Inline
             | Self::Common
+            | Self::Ansi
             | Self::Trigraphs
             | Self::MsExtensions
             | Self::MsCompatibility
@@ -1207,6 +1210,9 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                 argument,
                 "language standard",
             )?);
+        } else if matches!(argument.as_str(), "-ansi" | "--ansi") {
+            parsed.saw(Opt::Ansi, argument);
+            parsed.standard = Some(LanguageStandard::C89);
         } else if let Some(value) = option_value(argument, "I") {
             parsed.saw(Opt::Include, argument);
             parsed
