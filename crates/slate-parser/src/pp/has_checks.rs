@@ -45,9 +45,22 @@ fn normalize(name: &str) -> &str {
     }
 }
 
-pub(super) fn has_builtin(name: &str) -> bool {
+pub(super) fn has_builtin(name: &str, flavor: CompilerFlavor) -> bool {
     KNOWN_BUILTINS.binary_search(&name).is_ok()
+        || (flavor.is_gcc() && GCC_ONLY_BUILTINS.binary_search(&name).is_ok())
 }
+
+const GCC_ONLY_BUILTINS: &[&str] = &[
+    "__builtin_infd128",
+    "__builtin_infd32",
+    "__builtin_infd64",
+    "__builtin_nand128",
+    "__builtin_nand32",
+    "__builtin_nand64",
+    "__builtin_nansd128",
+    "__builtin_nansd32",
+    "__builtin_nansd64",
+];
 
 pub(super) fn has_feature(name: &str, flavor: CompilerFlavor, standard: LanguageStandard) -> bool {
     let name = normalize(name);

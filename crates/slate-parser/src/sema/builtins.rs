@@ -423,10 +423,10 @@ pub(super) fn clang_builtin(name: &str, dialect: &Dialect) -> Option<&'static Cl
     registered_builtin(CLANG_BUILTINS, name)
         .filter(|builtin| builtin.kind != ClangBuiltinKind::Library || library.recognizes(name))
         .or_else(|| match dialect.flavor() {
-            CompilerFlavor::Gcc => {
+            CompilerFlavor::Gcc => registered_builtin(GCC_DECIMAL_BUILTINS, name).or_else(|| {
                 registered_builtin(CLANG_BUILTINS, name.strip_prefix("__builtin_")?)
                     .filter(|builtin| builtin.kind == ClangBuiltinKind::Library)
-            }
+            }),
             CompilerFlavor::Clang => target_builtin(name, dialect.target().family),
             CompilerFlavor::Msvc => None,
         })
@@ -496,6 +496,65 @@ fn gcc_prototype(
         _ => None,
     }
 }
+
+macro_rules! gcc_decimal_builtins {
+    ($($name:literal $record:literal $kind:ident $attribute:ident $decimal:ident;)*) => {
+        &[$(ClangBuiltin {
+            name: $name,
+            record: $record,
+            prototype: Some(&gcc_decimal_builtins!(@prototype $kind $decimal)),
+            kind: ClangBuiltinKind::Builtin,
+            attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::$attribute],
+            languages: None,
+            header: None,
+            features: None,
+        }),*]
+    };
+    (@prototype inf $decimal:ident) => {
+        BuiltinPrototype {
+            spelling: "",
+            ret: BuiltinParam {
+                ty: &BuiltinType::Float(FloatKind::$decimal),
+                quals: Qualifiers::NONE,
+                constant: false,
+            },
+            params: &[],
+            variadic: false,
+        }
+    };
+    (@prototype nan $decimal:ident) => {
+        BuiltinPrototype {
+            spelling: "",
+            ret: BuiltinParam {
+                ty: &BuiltinType::Float(FloatKind::$decimal),
+                quals: Qualifiers::NONE,
+                constant: false,
+            },
+            params: &[BuiltinParam {
+                ty: &BuiltinType::Pointer(&BuiltinParam {
+                    ty: &BuiltinType::Char,
+                    quals: Qualifiers::CONST,
+                    constant: false,
+                }),
+                quals: Qualifiers::NONE,
+                constant: false,
+            }],
+            variadic: false,
+        }
+    };
+}
+
+static GCC_DECIMAL_BUILTINS: &[ClangBuiltin] = gcc_decimal_builtins! {
+    "__builtin_infd128" "Inf" inf Const Decimal128;
+    "__builtin_infd32" "Inf" inf Const Decimal32;
+    "__builtin_infd64" "Inf" inf Const Decimal64;
+    "__builtin_nand128" "Nan" nan Pure Decimal128;
+    "__builtin_nand32" "Nan" nan Pure Decimal32;
+    "__builtin_nand64" "Nan" nan Pure Decimal64;
+    "__builtin_nansd128" "Nans" nan Pure Decimal128;
+    "__builtin_nansd32" "Nans" nan Pure Decimal32;
+    "__builtin_nansd64" "Nans" nan Pure Decimal64;
+};
 
 fn registered_builtin(table: &'static [ClangBuiltin], name: &str) -> Option<&'static ClangBuiltin> {
     table
