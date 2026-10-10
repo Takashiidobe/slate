@@ -639,10 +639,9 @@ impl<'a> Preprocessor<'a> {
     fn is_reserved_macro(&self, name: &str) -> bool {
         self.dialect.flavor().is_msvc()
             && (name == "defined"
-                || self
-                    .macros
-                    .get(name)
-                    .is_some_and(|entry| entry.definition.builtin))
+                || self.macros.get(name).is_some_and(|entry| {
+                    entry.definition.builtin || MSVC_RESERVED_PREDEFINES.contains(&name)
+                }))
     }
 
     fn seed_gnu_linux_assertions(
@@ -1783,6 +1782,16 @@ fn expand_has_checks(tokens: &[Span<Token>], dialect: &Dialect) -> Vec<Span<Toke
 }
 
 // the `__has_*` operators slate evaluates that each compiler also reports to `#ifdef`
+const MSVC_RESERVED_PREDEFINES: &[&str] = &[
+    "__STDC_VERSION__",
+    "__STDC_HOSTED__",
+    "__STDC_NO_ATOMICS__",
+    "__STDC_NO_COMPLEX__",
+    "__STDC_NO_VLA__",
+    "_INTEGRAL_MAX_BITS",
+    "__FUNCTION__",
+];
+
 fn is_defined_operator(name: &str, flavor: CompilerFlavor) -> bool {
     match flavor {
         CompilerFlavor::Msvc => matches!(name, "__has_include" | "__has_c_attribute"),
