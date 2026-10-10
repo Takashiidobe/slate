@@ -288,6 +288,19 @@ impossible.
   dialect-aware. LLVM rejects `%eax` under `noprefix` and Rust `att_syntax` always prints
   `{N}` with `%`, so a `reg`/`reg_abcd` operand referenced by `%V` pins a free GPR (ax, cx,
   dx, si, di, r8-r15; abcd: ax, cx, dx) and prints its bare name (`asm_dialect_switch.c`).
+- `%=` (GCC per-instance id, clang `${:uid}`) has no Rust form: rustc escapes `$`, and a
+  Slate-side counter breaks when LLVM duplicates the asm (inlining, unrolling). A label built
+  around `%=` (`.Lloop%=:`) becomes a numeric local label instead: each name gets a number not
+  already used as `N:` in the template (skipping 0/1-only numbers, which LLVM's Intel parser
+  reads as binary), its definition prints `N:`, and each reference prints `Nf` or `Nb` by
+  position. Every copy resolves to its own definition, including references across
+  `.pushsection` (`asm_unique_id.c`).
+- Where `%=` stops: these stay barriers, each with its own reason. A `%=` name without exactly
+  one `name:` definition (a bare number like `$%=`, a `.set`/`.equ` symbol, a duplicate
+  definition), a name used by a directive that needs a real symbol (`.globl`, `.type`,
+  `.size`, `.weak`, `.hidden`, `.local`, `.protected`, `.internal`, `.set`, `.equ`, `.equiv`,
+  `.symver`), and two `%=` in one name. Each needs a value unique per emitted copy, and only
+  the compiler can produce that.
 - LLVM reserves rbx: a `b` operand rides in a scratch `reg` swapped into rbx with `xchg` before
   and after the template (inputs become `inout(..) => _`, outputs early), and an rbx clobber is
   saved and restored with `mov` through an early `out(reg) _`. rbp/rsp operands and clobbers

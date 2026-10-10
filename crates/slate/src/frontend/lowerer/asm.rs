@@ -1,5 +1,6 @@
 use super::*;
 use slate_parser::target_info::TargetFamily;
+use std::borrow::Cow;
 
 fn unsupported_asm(detail: impl Into<String>) -> Failure {
     Construct::Statement {
@@ -277,7 +278,6 @@ impl<'t> AsmNames<'t> {
     }
 
     fn text(&mut self, text: &str) -> String {
-        let symbol_char = |c: char| c.is_ascii_alphanumeric() || matches!(c, '_' | '.' | '$');
         let mut out = String::new();
         let mut quoted = false;
         let mut previous = None;
@@ -316,6 +316,127 @@ impl<'t> AsmNames<'t> {
     }
 }
 
+const UNIQUE_ID: char = '\u{1}';
+const OTHER_PIECE: char = '\u{2}';
+const SYMBOL_DIRECTIVES: [&str; 13] = [
+    ".globl",
+    ".global",
+    ".type",
+    ".size",
+    ".weak",
+    ".hidden",
+    ".local",
+    ".protected",
+    ".internal",
+    ".set",
+    ".equ",
+    ".equiv",
+    ".symver",
+];
+
+fn symbol_char(c: char) -> bool {
+    c.is_ascii_alphanumeric() || matches!(c, '_' | '.' | '$')
+}
+
+fn unique_labels(pieces: &[ir::AsmPiece]) -> Result<Cow<'_, [ir::AsmPiece]>> {
+    if !pieces
+        .iter()
+        .any(|piece| matches!(piece, ir::AsmPiece::UniqueId))
+    {
+        return Ok(Cow::Borrowed(pieces));
+    }
+    let mut flat = String::new();
+    let mut others = Vec::new();
+    for piece in pieces {
+        match piece {
+            ir::AsmPiece::Text(text) if text.contains([UNIQUE_ID, OTHER_PIECE]) => {
+                return Err(unsupported_asm(
+                    "%= with control characters in the template",
+                ));
+            }
+            ir::AsmPiece::Text(text) => flat.push_str(text),
+            ir::AsmPiece::UniqueId => flat.push(UNIQUE_ID),
+            piece => {
+                flat.push(OTHER_PIECE);
+                others.push(piece.clone());
+            }
+        }
+    }
+    let mut occurrences = Vec::new();
+    for (position, _) in flat.match_indices(UNIQUE_ID) {
+        let start = flat[..position]
+            .rfind(|c| !symbol_char(c))
+            .map_or(0, |index| index + 1);
+        let end = flat[position + 1..]
+            .find(|c| !symbol_char(c))
+            .map_or(flat.len(), |index| position + 1 + index);
+        if flat[..start].ends_with(UNIQUE_ID) || flat[end..].starts_with(UNIQUE_ID) {
+            return Err(unsupported_asm("%= more than once in one label"));
+        }
+        let statement = flat[..start]
+            .rsplit(['\n', ';'])
+            .next()
+            .unwrap_or_default()
+            .trim_start();
+        let directive = statement
+            .split(|c| !symbol_char(c))
+            .next()
+            .unwrap_or_default();
+        if SYMBOL_DIRECTIVES.contains(&directive) {
+            return Err(unsupported_asm(format!(
+                "%= label used as a symbol by {directive}"
+            )));
+        }
+        occurrences.push((start, end, flat[end..].starts_with(':')));
+    }
+    let mut definitions = BTreeMap::<&str, Vec<usize>>::new();
+    for (start, end, definition) in &occurrences {
+        let entry = definitions.entry(&flat[*start..*end]).or_default();
+        if *definition {
+            entry.push(*start);
+        }
+    }
+    let taken: BTreeSet<u64> = flat
+        .split(|c: char| !c.is_ascii_digit() && c != ':')
+        .filter_map(|word| word.strip_suffix(':')?.parse().ok())
+        .collect();
+    let mut numbers = (2u64..)
+        .filter(|number| !taken.contains(number) && number.to_string().contains(|c| c > '1'));
+    let mut labels = HashMap::new();
+    for (name, positions) in &definitions {
+        let [position] = positions.as_slice() else {
+            return Err(unsupported_asm(format!(
+                "%= used outside a label defined once ({} definitions)",
+                positions.len()
+            )));
+        };
+        labels.insert(*name, (numbers.next().unwrap_or_default(), *position));
+    }
+    let mut rewritten = String::new();
+    let mut last = 0;
+    for (start, end, definition) in &occurrences {
+        let (number, defined_at) = labels[&flat[*start..*end]];
+        rewritten.push_str(&flat[last..*start]);
+        rewritten.push_str(&match (*definition, *start < defined_at) {
+            (true, _) => number.to_string(),
+            (false, true) => format!("{number}f"),
+            (false, false) => format!("{number}b"),
+        });
+        last = *end;
+    }
+    rewritten.push_str(&flat[last..]);
+    let mut result = Vec::new();
+    for (index, text) in rewritten.split(OTHER_PIECE).enumerate() {
+        if index > 0 {
+            result.push(others[index - 1].clone());
+        }
+        if !text.is_empty() {
+            result.push(ir::AsmPiece::Text(text.to_string()));
+        }
+    }
+    Ok(Cow::Owned(result))
+}
+
 fn asm_template(
     asm: &ir::InlineAsm,
     slots: &[Slot],
@@ -329,7 +450,7 @@ fn asm_template(
     let mut template = String::new();
     let mut used = vec![false; asm.operands.len()];
     let mut used_labels = vec![false; labels.len()];
-    for piece in &asm.pieces {
+    for piece in unique_labels(&asm.pieces)?.iter() {
         if !matches!(piece, ir::AsmPiece::Text(_)) {
             names.statement_start = false;
         }
