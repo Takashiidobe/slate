@@ -384,7 +384,8 @@ impl Parser {
         let search = self.search.clone();
         let dialect = self.dialect.clone();
         let mut pp = Preprocessor::new(&search, &dialect).map_err(FrontendError::PP)?;
-        let mut nodes = self.prepare_preprocessor(&mut pp)?;
+        let mut nodes = pp.predeclared_typedefs().map_err(FrontendError::PP)?;
+        nodes.extend(self.prepare_preprocessor(&mut pp)?);
         nodes.extend(pp.parse_str("<main>", src).map_err(FrontendError::PP)?);
         self.directive_diagnostics = std::mem::take(&mut pp.directive_diagnostics);
         self.biggest_alignment = resolve_biggest_alignment(&pp.macros, &dialect);
@@ -428,7 +429,8 @@ impl Parser {
         let search = self.search.clone();
         let dialect = self.dialect.clone();
         let mut pp = Preprocessor::new(&search, &dialect).map_err(FrontendError::PP)?;
-        let mut nodes = self.prepare_preprocessor(&mut pp)?;
+        let mut nodes = pp.predeclared_typedefs().map_err(FrontendError::PP)?;
+        nodes.extend(self.prepare_preprocessor(&mut pp)?);
         nodes.extend(
             pp.parse_file_with_source(path, &self.source)
                 .map_err(FrontendError::PP)?,

@@ -147,7 +147,7 @@ gcc's `-fms-extensions` is a different feature; not emulated.
 
 | Follows | Effect |
 | --- | --- |
-| compatibility | predeclared `size_t` (`Sema::Initialize`) |
+| compatibility | predeclared `size_t` (`Sema::Initialize`); slate parses `typedef <size type> size_t;` from `<built-in>` ahead of `-D`/`-include` (`Preprocessor::predeclared_typedefs`, not in `-E` output), so reachability prunes it unless used |
 | compatibility off | `__GNUC__` 4.2.1, `__GNUC_STDC_INLINE__`, `__GXX_ABI_VERSION 1002`, `__STDC__`, `__GCC_ATOMIC_*` (= `__CLANG_ATOMIC_*`, plus `TEST_AND_SET_TRUEVAL 1`) |
 | effective extensions | MS keywords, x86 `__asm {}`, `_MSC_EXTENSIONS` (Windows), `_M_IX86_FP 2` (i686) |
 | requested extensions (Windows) | `_MSC_VER 1933`, `_MSC_FULL_VER`, `_MSC_BUILD`, `_MSVC_CONSTEXPR_ATTRIBUTE`, `_CRT_USE_BUILTIN_OFFSETOF` |

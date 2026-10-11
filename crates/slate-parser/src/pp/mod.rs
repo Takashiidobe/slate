@@ -611,6 +611,25 @@ impl<'a> Preprocessor<'a> {
         Ok((included, nodes))
     }
 
+    pub fn predeclared_typedefs(&mut self) -> Result<Vec<PPNode>, PPError> {
+        if !self.dialect.features().microsoft_compatibility {
+            return Ok(Vec::new());
+        }
+        let target = self.dialect.target();
+        let size_type = if target.pointer_width == target.int_width {
+            "unsigned int"
+        } else if target.pointer_width == target.long_width {
+            "unsigned long"
+        } else {
+            "unsigned long long"
+        };
+        let file = self
+            .files
+            .intern(PathBuf::from("<built-in>"), HeaderKind::System);
+        self.parse_source(&format!("typedef {size_type} size_t;\n"), file)
+            .map_err(|failure| self.render_error(failure))
+    }
+
     fn seed_builtin_names(&mut self, flavor: CompilerFlavor) {
         let file = self
             .files

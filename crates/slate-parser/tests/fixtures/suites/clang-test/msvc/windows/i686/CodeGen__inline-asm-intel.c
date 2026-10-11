@@ -96,6 +96,7 @@ void f(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_size_t:[0-9]+]] size_t = u32;
+// DEFAULT-NEXT:     type @type[[TYPE_size_t_2:[0-9]+]] size_t = u32;
 // DEFAULT-NEXT:     fn %[[VALUE__InterlockedExchange_HLEAcquire:[0-9]+]] @_InterlockedExchange_HLEAcquire(%[[VALUE0:[0-9]+]] <unnamed>: ptr<volatile i32>, %[[VALUE1:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE__InterlockedExchange_HLERelease:[0-9]+]] @_InterlockedExchange_HLERelease(%[[VALUE2:[0-9]+]] <unnamed>: ptr<volatile i32>, %[[VALUE3:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE__InterlockedCompareExchange_HLEAcquire:[0-9]+]] @_InterlockedCompareExchange_HLEAcquire(%[[VALUE4:[0-9]+]] <unnamed>: ptr<volatile i32>, %[[VALUE5:[0-9]+]] <unnamed>: i32, %[[VALUE6:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external];

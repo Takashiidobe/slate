@@ -37,8 +37,9 @@ int format_number(char *buffer, size_t size, int value) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = ptr<i8>;
 // IR-NEXT:     type @type[[TYPE_size_t:[0-9]+]] size_t = u32;
+// IR-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = ptr<i8>;
+// IR-NEXT:     type @type[[TYPE_size_t_2:[0-9]+]] size_t = u32;
 // IR-NEXT:     type @type[[TYPE___crt_locale_pointers:[0-9]+]] __crt_locale_pointers = struct {
 // IR-NEXT:         field0 locinfo: ptr<@type[[TYPE___crt_locale_data:[0-9]+]]>;
 // IR-NEXT:         field1 mbcinfo: ptr<@type[[TYPE___crt_multibyte_data:[0-9]+]]>;
@@ -51,7 +52,7 @@ int format_number(char *buffer, size_t size, int value) {
 // IR-NEXT:         field0 _Placeholder: ptr<void>;
 // IR-NEXT:     } [size=4, align=4, offsets=[0]];
 // IR-NEXT:     type @type[[TYPE_FILE:[0-9]+]] FILE = @type[[TYPE__iobuf]];
-// IR-NEXT:     type @type[[TYPE_size_t_2:[0-9]+]] size_t = u32;
+// IR-NEXT:     type @type[[TYPE_size_t_3:[0-9]+]] size_t = u32;
 // IR-NEXT:     global %[[VALUE__OptionsStorage:[0-9]+]] _OptionsStorage: u64 [storage=static] [linkage=internal];
 // IR-NEXT:     global %[[VALUE_windows_version:[0-9]+]] windows_version: i32 [storage=static] = const<i32>(2560) [linkage=external];
 // IR-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([37, 100, 0]) [linkage=internal];

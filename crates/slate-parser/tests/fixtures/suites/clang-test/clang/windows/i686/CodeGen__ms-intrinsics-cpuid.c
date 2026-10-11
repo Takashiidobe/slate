@@ -47,6 +47,7 @@ void test__cpuidex(int cpuInfo[4], int function_id, int subfunction_id) {
 // DEFAULT-NEXT:     type @type[[TYPE_size_t:[0-9]+]] size_t = u32;
 // DEFAULT-NEXT:     type @type[[TYPE_size_t_2:[0-9]+]] size_t = u32;
 // DEFAULT-NEXT:     type @type[[TYPE_size_t_3:[0-9]+]] size_t = u32;
+// DEFAULT-NEXT:     type @type[[TYPE_size_t_4:[0-9]+]] size_t = u32;
 // DEFAULT-NEXT:     fn %[[VALUE___cpuid:[0-9]+]] @__cpuid(%[[VALUE0:[0-9]+]] <unnamed>: ptr<i32> [array=4], %[[VALUE1:[0-9]+]] <unnamed>: i32) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE___cpuidex:[0-9]+]] @__cpuidex(%[[VALUE2:[0-9]+]] <unnamed>: ptr<i32> [array=4], %[[VALUE3:[0-9]+]] <unnamed>: i32, %[[VALUE4:[0-9]+]] <unnamed>: i32) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_test__cpuid:[0-9]+]] @test__cpuid(%[[VALUE_cpuInfo:[0-9]+]] cpuInfo: ptr<i32> [array=4], %[[VALUE_function_id:[0-9]+]] function_id: i32) -> void [linkage=external] [fallthrough=ret_void] {

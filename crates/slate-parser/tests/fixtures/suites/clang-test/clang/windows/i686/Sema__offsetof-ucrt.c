@@ -51,6 +51,7 @@ _Static_assert(offsetof(struct S, a) == 0, "");
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_size_t:[0-9]+]] size_t = u32;
+// DEFAULT-NEXT:     type @type[[TYPE_size_t_2:[0-9]+]] size_t = u32;
 // DEFAULT-NEXT:     type @type[[TYPE_S:[0-9]+]] S = struct {
 // DEFAULT-NEXT:         field0 a: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];

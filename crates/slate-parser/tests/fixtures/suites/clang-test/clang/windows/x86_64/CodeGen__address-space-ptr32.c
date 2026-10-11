@@ -63,9 +63,10 @@ size_t test_calling_strlen_with_64_bit_pointer ( char *s ) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     type @type[[TYPE_size_t:[0-9]+]] size_t = u64;
 // DEFAULT-NEXT:     type @type[[TYPE_IP32_PTR:[0-9]+]] IP32_PTR = ptr<i32, ptr32_sptr>;
 // DEFAULT-NEXT:     type @type[[TYPE_int_star:[0-9]+]] int_star = ptr<i32>;
-// DEFAULT-NEXT:     type @type[[TYPE_size_t:[0-9]+]] size_t = u64;
+// DEFAULT-NEXT:     type @type[[TYPE_size_t_2:[0-9]+]] size_t = u64;
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: ptr<fn(i32) -> i32, ptr32_sptr> [storage=automatic];
 // DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(const<u64>(4)));

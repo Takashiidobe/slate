@@ -36,6 +36,7 @@ int wmemcmp_test(const wchar_t *s1, const wchar_t *s2, size_t n) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_size_t:[0-9]+]] size_t = u64;
+// DEFAULT-NEXT:     type @type[[TYPE_size_t_2:[0-9]+]] size_t = u64;
 // DEFAULT-NEXT:     type @type[[TYPE_wchar_t:[0-9]+]] wchar_t = u16;
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_wmemcmp:[0-9]+]] @__builtin_wmemcmp(%[[VALUE0:[0-9]+]] <unnamed>: ptr<const u16>, %[[VALUE1:[0-9]+]] <unnamed>: ptr<const u16>, %[[VALUE2:[0-9]+]] <unnamed>: u64) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_wmemcmp_test:[0-9]+]] @wmemcmp_test(%[[VALUE_s1:[0-9]+]] s1: ptr<const u16>, %[[VALUE_s2:[0-9]+]] s2: ptr<const u16>, %[[VALUE_n:[0-9]+]] n: u64) -> i32 [linkage=external] [fallthrough=ub_if_used] {

@@ -37,8 +37,9 @@ int format_number(char *buffer, size_t size, int value) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = ptr<i8>;
 // IR-NEXT:     type @type[[TYPE_size_t:[0-9]+]] size_t = u64;
+// IR-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = ptr<i8>;
+// IR-NEXT:     type @type[[TYPE_size_t_2:[0-9]+]] size_t = u64;
 // IR-NEXT:     type @type[[TYPE___crt_locale_pointers:[0-9]+]] __crt_locale_pointers = struct {
 // IR-NEXT:         field0 locinfo: ptr<@type[[TYPE___crt_locale_data:[0-9]+]]>;
 // IR-NEXT:         field1 mbcinfo: ptr<@type[[TYPE___crt_multibyte_data:[0-9]+]]>;
