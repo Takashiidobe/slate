@@ -269,6 +269,9 @@ statement  = simple { metadata } ";"
            | "case" binding value [ "..." value ] ":" { metadata } body
            | "default" binding ":" { metadata } body
            | "label" binding c_identifier ":" { metadata } body
+           | "seh_try" binding { metadata }
+               "body:" body
+               ( "except" evaluation ":" body | "finally:" body )
            | asm
            | "{" { metadata } body "}" ;
 asm        = "asm" [ " volatile" ] [ " inline" ] [ " goto" ] string
@@ -327,6 +330,7 @@ simple     = "let" binding ":" type "[synthetic" [ ", unsequenced" ] "]"
            | "return" [ value ]
            | "break" binding | "continue" binding
            | "goto" binding | "goto *" value
+           | "seh_leave" binding
            | (* empty: null statement *) ;
 body       = { statement } ;                   (* indented one level deeper *)
 evaluation = value | "{" { statement } "yield" value ";" "}" ;
@@ -481,6 +485,8 @@ core       = "const<" type ">(" constant ")"
              ( bool | "dynamic(" value ")" ) ", success=" order ", failure=" order
              [ sync_scope ] ">(" place ", " value ", " value ")"
            | "old<" type ">"
+           | ( "seh_exception_code" | "seh_exception_info"
+             | "seh_abnormal_termination" ) "<" type ">()"
            | "addr_of<" type ">(" place ")"
            | "array_decay<" type ", length=" opt_int ">(" place ")"
            | "function_decay<" type ">(" place ")"

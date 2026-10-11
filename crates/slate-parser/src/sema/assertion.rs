@@ -110,6 +110,14 @@ struct StatementContext {
     switches: Vec<Option<QualType>>,
     labels: Vec<String>,
     named_targets: Vec<NamedTarget>,
+    seh_try_bodies: usize,
+    seh_except: Option<SehExceptScope>,
+}
+
+#[derive(Clone, Copy, PartialEq)]
+enum SehExceptScope {
+    Filter,
+    Block,
 }
 
 struct NamedTarget {
@@ -1038,6 +1046,29 @@ impl Checker<'_> {
             StmtKind::Continue if self.context.loops == 0 => {
                 self.reject(stmt, "continue outside loop")
             }
+            StmtKind::SehLeave if self.context.seh_try_bodies == 0 => {
+                self.reject(stmt, "'__leave' statement not in __try block")
+            }
+            StmtKind::SehTry { body, handler } => {
+                self.context.seh_try_bodies += 1;
+                self.statement(body);
+                self.context.seh_try_bodies -= 1;
+                match handler {
+                    SehHandler::Except { filter, body } => {
+                        let enclosing = self.context.seh_except.replace(SehExceptScope::Filter);
+                        self.expression(filter);
+                        if let Ok(ty) = self.types.operand_type(filter)
+                            && !self.types.ctypes.is_integer(ty)
+                        {
+                            self.reject(filter, "filter expression has non-integral type");
+                        }
+                        self.context.seh_except = Some(SehExceptScope::Block);
+                        self.statement(body);
+                        self.context.seh_except = enclosing;
+                    }
+                    SehHandler::Finally(body) => self.statement(body),
+                }
+            }
             StmtKind::Attribute(attributes)
                 if self.context.switches.is_empty()
                     && is_fallthrough(attributes)
@@ -1403,6 +1434,7 @@ impl Checker<'_> {
                     self.expression(argument);
                 }
                 self.arguments(callee, arguments);
+                self.seh_builtin_scope(callee);
             }
             ExprKind::CompoundLiteral { ty, initializer } => {
                 self.type_name(ty);
@@ -1518,6 +1550,39 @@ impl Checker<'_> {
             _ => return,
         }
         self.convert_at(cast, value, from, to, ConversionContext::Cast);
+    }
+
+    fn seh_builtin_scope(&mut self, callee: &Expr) {
+        let ExprKind::Identifier(name) = &callee.value else {
+            return;
+        };
+        if !self.types.features().microsoft_extensions {
+            return;
+        }
+        let in_except = self.context.seh_except.is_some();
+        let in_filter = self.context.seh_except == Some(SehExceptScope::Filter);
+        let (allowed, rejection) = match name.as_str() {
+            "_exception_code" => (
+                in_except,
+                "'_exception_code' only allowed in __except block or filter expression",
+            ),
+            "__exception_code" => (
+                in_except,
+                "'__exception_code' only allowed in __except block or filter expression",
+            ),
+            "_exception_info" => (
+                in_filter,
+                "'_exception_info' only allowed in __except filter expression",
+            ),
+            "__exception_info" => (
+                in_filter,
+                "'__exception_info' only allowed in __except filter expression",
+            ),
+            _ => return,
+        };
+        if !allowed {
+            self.reject(callee, rejection);
+        }
     }
 
     fn arguments(&mut self, callee: &Expr, arguments: &[Expr]) {

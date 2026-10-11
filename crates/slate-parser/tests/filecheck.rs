@@ -812,6 +812,8 @@ fn summarize_evaluated_decl(decl: &DeclKind) -> Vec<DeclSummary> {
                     | StmtKind::NestedFunction(_)
                     | StmtKind::NamedBreak(_)
                     | StmtKind::NamedContinue(_)
+                    | StmtKind::SehTry { .. }
+                    | StmtKind::SehLeave
                     | StmtKind::Break
                     | StmtKind::Continue => None,
                 })

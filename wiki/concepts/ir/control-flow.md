@@ -3,6 +3,7 @@
 <!-- toc -->
 - [Function bodies](#function-bodies)
 - [Structured control flow](#structured-control-flow)
+  - [Structured exception handling](#structured-exception-handling)
   - [Statement attributes](#statement-attributes)
   - [Materialized function ends](#materialized-function-ends)
 - [Side-effect hoisting](#side-effect-hoisting)
@@ -49,6 +50,22 @@ form was.
 - Labels, `goto`, and `label_addr<ptr<void>>` use label `BindingId`s,
   distinct for GNU local labels. Computed goto keeps its pointer operand.
 - Fixtures: `ir_control_*.c`.
+
+### Structured exception handling
+
+- `Statement::SehTry { id, body, handler }` keeps MS `__try` as written;
+  `SehHandler` is `Except { filter, body }` or `Finally(body)`.
+  `SehLeave(id)` names the innermost `__try` whose body encloses it.
+- The filter is an `evaluation` like a loop condition: its effects stay
+  attached (`__except (r = f())`), since it runs once per exception.
+  Its value is integer-typed (enums lowered, comparisons `bool`);
+  consumers narrow it to 32 bits as clang does (`long` on Windows).
+- `_exception_code`, `_exception_info`, `_abnormal_termination` and their
+  `__` spellings lower to `ValueKind::Seh(SehIntrinsic)`, effect-free reads
+  of the active exception (`u32`, `ptr<void>`, `i32`), not calls.
+- Slate has no Rust lowering; a function with SEH is a lowering barrier.
+- Fixtures: `clang/windows/x86_64/ir_seh.c`,
+  `error/clang/windows/x86_64/seh_misuse.c`, `suites/clang-test/*/windows/*/CodeGen__exceptions-seh*.c`.
 
 ### Statement attributes
 

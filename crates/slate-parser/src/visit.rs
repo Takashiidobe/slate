@@ -205,9 +205,20 @@ pub fn walk_stmt<V: Visitor + ?Sized>(visitor: &mut V, stmt: &Stmt) -> Result<()
             }
             visitor.visit_stmt(body)
         }
+        StmtKind::SehTry { body, handler } => {
+            visitor.visit_stmt(body)?;
+            match handler {
+                SehHandler::Except { filter, body } => {
+                    visitor.visit_expr(filter)?;
+                    visitor.visit_stmt(body)
+                }
+                SehHandler::Finally(body) => visitor.visit_stmt(body),
+            }
+        }
         StmtKind::Asm(asm) => walk_asm(visitor, asm),
         StmtKind::NestedFunction(function) => visitor.visit_function(function),
-        StmtKind::Comment(_)
+        StmtKind::SehLeave
+        | StmtKind::Comment(_)
         | StmtKind::Null
         | StmtKind::ReturnVoid
         | StmtKind::LocalLabelDecl(_)

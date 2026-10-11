@@ -1,6 +1,6 @@
 use crate::ast::{
     DeclKind, Declaration, Declarator, EnumItemKind, FieldItemKind, FunctionDefinition,
-    ParameterList, Stmt, StmtKind, TagBody, TagDefinition, TranslationUnit,
+    ParameterList, SehHandler, Stmt, StmtKind, TagBody, TagDefinition, TranslationUnit,
 };
 use std::fmt::Debug;
 use std::io::{self, Write};
@@ -290,6 +290,14 @@ fn strip_stmt_children(stmt: &mut StmtKind) {
         | StmtKind::SwitchLabel { body, .. }
         | StmtKind::Attributed { body, .. } => {
             strip_stmt_children(&mut body.value);
+        }
+        StmtKind::SehTry { body, handler } => {
+            strip_stmt_children(&mut body.value);
+            match handler {
+                SehHandler::Except { body, .. } | SehHandler::Finally(body) => {
+                    strip_stmt_children(&mut body.value);
+                }
+            }
         }
         StmtKind::NestedFunction(function) => strip_function_comments(function),
         _ => {}

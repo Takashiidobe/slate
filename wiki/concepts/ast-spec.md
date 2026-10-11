@@ -454,9 +454,22 @@ StmtKind =
     | Attributed { attributes, body: Box<Stmt> }
     | Asm(GnuAsm)
     | MsAsm(MsAsm)                              // MSVC __asm
+    | SehTry { body: Box<Stmt>, handler: SehHandler }
+    | SehLeave                                  // __leave
 
 SwitchLabel = Case(Expr) | CaseRange { start: Expr, end: Expr } | Default
+SehHandler = Except { filter: Expr, body: Box<Stmt> } | Finally(Box<Stmt>)
 ```
+
+- SEH: `__try`, `__except`, `__finally`, and `__leave` are keywords when
+  `microsoft_extensions` is on (msvc, clang on `*-windows-msvc`,
+  `-fms-extensions`). Each body must be a compound statement.
+  The checker (`sema/assertion.rs`) matches clang: `__leave` needs an
+  enclosing `__try` body (a handler does not count, so `__leave` in a
+  nested `__finally` leaves the outer `__try`); the filter must have
+  integer type; `_exception_code` needs an enclosing `__except` filter or
+  block, `_exception_info` the filter. Not yet checked: jumps into a `__try`
+  or handler, and `-Wjump-seh-finally`.
 
 - Selection declarations use `IfDeclaration` / `SwitchDeclaration`.
   The spanned declaration stays in the selection scope; an absent

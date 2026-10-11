@@ -92,6 +92,10 @@ pub enum Keyword {
     Continue,
     Goto,
     StaticAssert,
+    SehTry,
+    SehExcept,
+    SehFinally,
+    SehLeave,
 }
 
 impl Keyword {
@@ -186,6 +190,10 @@ impl From<Keyword> for &'static str {
             Keyword::Continue => "continue",
             Keyword::Goto => "goto",
             Keyword::StaticAssert => "_Static_assert",
+            Keyword::SehTry => "__try",
+            Keyword::SehExcept => "__except",
+            Keyword::SehFinally => "__finally",
+            Keyword::SehLeave => "__leave",
         }
     }
 }
@@ -1226,6 +1234,10 @@ pub fn keyword_token(word: &str, features: &StandardFeatures) -> Option<Token> {
         "__inline" | "__inline__" => Token::Keyword(Keyword::Inline),
         "__forceinline" if features.microsoft_extensions => Token::Keyword(Keyword::ForceInline),
         "__unaligned" if features.microsoft_extensions => Token::Keyword(Keyword::Unaligned),
+        "__try" if features.microsoft_extensions => Token::Keyword(Keyword::SehTry),
+        "__except" if features.microsoft_extensions => Token::Keyword(Keyword::SehExcept),
+        "__finally" if features.microsoft_extensions => Token::Keyword(Keyword::SehFinally),
+        "__leave" if features.microsoft_extensions => Token::Keyword(Keyword::SehLeave),
         "__ptr32" if features.microsoft_extensions => Token::Keyword(Keyword::Ptr32),
         "__ptr64" if features.microsoft_extensions => Token::Keyword(Keyword::Ptr64),
         "__sptr" if features.microsoft_extensions => Token::Keyword(Keyword::Sptr),

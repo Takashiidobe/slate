@@ -252,6 +252,38 @@ pub enum Statement {
         name: String,
         body: Vec<Span<Statement>>,
     },
+    SehTry {
+        id: BindingId,
+        body: Vec<Span<Statement>>,
+        handler: SehHandler,
+    },
+    SehLeave(BindingId),
+}
+
+#[derive(Debug, Clone)]
+pub enum SehHandler {
+    Except {
+        filter: Evaluation,
+        body: Vec<Span<Statement>>,
+    },
+    Finally(Vec<Span<Statement>>),
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum SehIntrinsic {
+    ExceptionCode,
+    ExceptionInfo,
+    AbnormalTermination,
+}
+
+impl std::fmt::Display for SehIntrinsic {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(match self {
+            Self::ExceptionCode => "seh_exception_code",
+            Self::ExceptionInfo => "seh_exception_info",
+            Self::AbnormalTermination => "seh_abnormal_termination",
+        })
+    }
 }
 
 impl Module {

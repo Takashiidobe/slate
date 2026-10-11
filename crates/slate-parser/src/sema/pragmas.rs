@@ -1,8 +1,8 @@
 use super::numeric::ResolveError;
 use crate::ast::{
     DeclKind, Declaration, FloatControl, FloatControlOption, FunctionDefinition, MsStructAction,
-    Pragma, PragmaKind, PragmaStackAction, StdcPragmaOption, StdcPragmaValue, Stmt, StmtKind,
-    TagId, TagSpecifier, TranslationUnit, TypeSpecifier,
+    Pragma, PragmaKind, PragmaStackAction, SehHandler, StdcPragmaOption, StdcPragmaValue, Stmt,
+    StmtKind, TagId, TagSpecifier, TranslationUnit, TypeSpecifier,
 };
 use crate::compiler_args::{CompilerFlavor, LanguageStandard};
 use crate::ir::{
@@ -448,7 +448,16 @@ impl Walk<'_> {
                 }
                 self.statement(body);
             }
-            StmtKind::Comment(_)
+            StmtKind::SehTry { body, handler } => {
+                self.statement(body);
+                match handler {
+                    SehHandler::Except { body, .. } | SehHandler::Finally(body) => {
+                        self.statement(body);
+                    }
+                }
+            }
+            StmtKind::SehLeave
+            | StmtKind::Comment(_)
             | StmtKind::Null
             | StmtKind::Return(_)
             | StmtKind::ReturnVoid

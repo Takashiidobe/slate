@@ -47,6 +47,13 @@ page when a match site is added or removed.
   are pruned.
 - `tests/filecheck.rs`: `summarize_evaluated_decl`; usually add to the
   `=> None` group.
+- `src/sema/assertion.rs`: `Checker::statement` has a catch-all, so the
+  compiler will not flag it; add an arm for a variant that holds statements
+  or expressions, or the checker never types them.
+- `src/sema/effects_statements.rs` and `src/ir/module_print.rs` if the
+  variant lowers to a new `ir::Statement`. Slate's IR walkers
+  (`crates/slate/src/frontend/lowerer/`) have catch-alls; an unhandled
+  statement becomes a lowering barrier.
 
 Shape notes:
 

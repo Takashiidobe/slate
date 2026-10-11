@@ -92,6 +92,11 @@ infinities in `lowerer/values.rs`. `flt_rounds` calls the C helper in
 - `__builtin_expect`, `__builtin_expect_with_probability`, `__builtin_unpredictable`
 - `__builtin_prefetch`, `__builtin_assume_aligned`
 - `__builtin_cpu_init`, `__builtin_cpu_supports`
+- MS SEH: `_exception_code`, `_exception_info`, `_abnormal_termination`
+  (and `__` forms) lower to `seh_*` values; see
+  [control-flow](control-flow.md#structured-exception-handling).
+- MS `__noop(...)`: `const<i32>(0)`; arguments are type-checked (`void` is
+  rejected) and never evaluated.
 
 Parser: `sema/expression.rs::function_like_builtin`. Slate: `lowerer/values.rs`
 for hints and `lowerer/target_features.rs` for CPU feature queries.

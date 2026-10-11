@@ -399,6 +399,17 @@ pub enum StmtKind {
     Continue,
     NamedBreak(Span<String>),
     NamedContinue(Span<String>),
+    SehTry {
+        body: Box<Stmt>,
+        handler: SehHandler,
+    },
+    SehLeave,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum SehHandler {
+    Except { filter: Expr, body: Box<Stmt> },
+    Finally(Box<Stmt>),
 }
 
 #[derive(Debug, Clone, PartialEq)]

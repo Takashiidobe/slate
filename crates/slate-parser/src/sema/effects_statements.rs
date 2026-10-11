@@ -182,6 +182,17 @@ impl Hoister {
                     switch,
                     body: self.statements(body)?,
                 },
+                Statement::SehTry { id, body, handler } => Statement::SehTry {
+                    id,
+                    body: self.statements(body)?,
+                    handler: match handler {
+                        SehHandler::Except { filter, body } => SehHandler::Except {
+                            filter: self.evaluation(filter, false)?,
+                            body: self.statements(body)?,
+                        },
+                        SehHandler::Finally(body) => SehHandler::Finally(self.statements(body)?),
+                    },
+                },
                 Statement::Asm(mut asm) => {
                     let mut placed = Vec::with_capacity(asm.operands.len());
                     for operand in std::mem::take(&mut asm.operands) {
@@ -257,6 +268,7 @@ impl Hoister {
                 | Statement::Fence { .. }
                 | Statement::Break(_)
                 | Statement::Continue(_)
+                | Statement::SehLeave(_)
                 | Statement::Goto(_)) => other,
             };
             out.push(span.with_value(statement));

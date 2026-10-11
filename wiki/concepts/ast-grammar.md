@@ -296,10 +296,14 @@ StmtKind = "Null" | "Break" | "Continue" | "ReturnVoid"
          | "Asm(" GnuAsm ")"
          | "MsAsm(" MsAsm ")"
          | "NestedFunction(" FunctionDefinition ")"
-         | "Pragma(" Pragma ")" ;
+         | "Pragma(" Pragma ")"
+         | SehTry { body: stmt, handler: SehHandler }
+         | "SehLeave" ;
 SwitchLabel = "Case(" expr ")"
             | CaseRange { start: expr, end: expr }
             | "Default" ;
+SehHandler = Except { filter: expr, body: stmt }
+           | "Finally(" stmt ")" ;
 ```
 
 - `Attribute` is an attribute declaration (`[[fallthrough]];`);

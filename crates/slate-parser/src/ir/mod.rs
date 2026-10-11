@@ -24,8 +24,8 @@ pub use declarations::{
 };
 pub use module::{
     Comment, Deallocator, DllStorage, Evaluation, Fallthrough, Function, FunctionSemantics,
-    Inlining, Linkage, MemoryEffects, Metadata, Module, Statement, SymbolAttributes, TargetFeature,
-    TlsModel, Visibility,
+    Inlining, Linkage, MemoryEffects, Metadata, Module, SehHandler, SehIntrinsic, Statement,
+    SymbolAttributes, TargetFeature, TlsModel, Visibility,
 };
 
 pub use names::{Binding, BindingId, BindingKind, NameResolution, Reference};
@@ -64,6 +64,7 @@ pub enum ValueKind {
     },
     Null,
     LabelAddress(BindingId),
+    Seh(SehIntrinsic),
     Void,
     CodeUnits(Vec<u32>),
     Aggregate {
@@ -494,6 +495,7 @@ impl Value {
                 f.write_str(")")
             }
             ValueKind::LabelAddress(id) => write!(f, "label_addr<{}>(%{})", self.ty, id.0),
+            ValueKind::Seh(intrinsic) => write!(f, "{intrinsic}<{}>()", self.ty),
             ValueKind::Void => f.write_str("void"),
             ValueKind::Null => write!(f, "null<{}>", self.ty),
             ValueKind::Read { place, ordering } => {

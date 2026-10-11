@@ -370,6 +370,16 @@ impl<'a> Reachability<'a> {
                 }
                 self.mark_stmt(body);
             }
+            StmtKind::SehTry { body, handler } => {
+                self.mark_stmt(body);
+                match handler {
+                    SehHandler::Except { filter, body } => {
+                        self.mark_expr(filter);
+                        self.mark_stmt(body);
+                    }
+                    SehHandler::Finally(body) => self.mark_stmt(body),
+                }
+            }
             StmtKind::NestedFunction(function) => self.mark_function(function),
             StmtKind::MsAsm(asm) => {
                 for instruction in &asm.instructions {
@@ -386,6 +396,7 @@ impl<'a> Reachability<'a> {
             StmtKind::StaticAssert(assertion) => self.mark_expr(&assertion.condition),
             StmtKind::Asm(asm) => self.mark_gnu_asm(asm),
             StmtKind::Null
+            | StmtKind::SehLeave
             | StmtKind::Comment(_)
             | StmtKind::ReturnVoid
             | StmtKind::LocalLabelDecl(_)

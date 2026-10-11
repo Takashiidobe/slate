@@ -1,7 +1,7 @@
 use crate::ast::{
     AlignAsOperand, ArraySize, Attribute, Decl, DeclKind, Declaration, Declarator, EnumItemKind,
-    Expr, ExprKind, Initializer, InitializerItem, Loc, ParameterList, Span, Stmt, StmtKind,
-    StorageClass, TagBody, TagId as AstTagId, TagSpecifier, TranslationUnit, TypeName,
+    Expr, ExprKind, Initializer, InitializerItem, Loc, ParameterList, SehHandler, Span, Stmt,
+    StmtKind, StorageClass, TagBody, TagId as AstTagId, TagSpecifier, TranslationUnit, TypeName,
     TypeOfOperand, TypeSpecifier,
 };
 use crate::compiler_args::CompilerFlavor;
@@ -280,7 +280,18 @@ impl Resolver {
             | StmtKind::NamedContinue(_)
             | StmtKind::Break
             | StmtKind::Continue
+            | StmtKind::SehLeave
             | StmtKind::Pragma(_) => Ok(()),
+            StmtKind::SehTry { body, handler } => {
+                self.visit_stmt(body)?;
+                match handler {
+                    SehHandler::Except { filter, body } => {
+                        self.visit_expr(filter)?;
+                        self.visit_stmt(body)
+                    }
+                    SehHandler::Finally(body) => self.visit_stmt(body),
+                }
+            }
             StmtKind::LocalLabelDecl(labels) => {
                 for label in labels {
                     self.declare_local_label(label)?;

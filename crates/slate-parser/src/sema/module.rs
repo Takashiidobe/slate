@@ -56,6 +56,7 @@ fn resolve_module(
         next_id,
         break_targets: Vec::new(),
         continue_targets: Vec::new(),
+        seh_leave_targets: Vec::new(),
         jump_targets: HashMap::new(),
         switches: Vec::new(),
         in_function: false,
@@ -445,6 +446,7 @@ impl Lowerer {
     fn reset_after_failed_item(&mut self) {
         self.break_targets.clear();
         self.continue_targets.clear();
+        self.seh_leave_targets.clear();
         self.switches.clear();
         self.ms_asm_return.clear();
         self.in_function = false;
@@ -1855,6 +1857,43 @@ impl Lowerer {
                     .last()
                     .ok_or(ResolveError::Internal("continue outside loop"))?,
             ),
+            StmtKind::SehTry { body, handler } => {
+                let id = self.jump_target(statement);
+                self.seh_leave_targets.push(id);
+                let body = self.statements(std::slice::from_ref(body), return_type);
+                self.seh_leave_targets.pop();
+                let handler = match handler {
+                    ast::SehHandler::Except { filter, body } => {
+                        let mut filter = self.expr(filter)?.value;
+                        if self.enum_underlying(&filter.ty).is_some() {
+                            filter = self.enum_integer(filter);
+                        }
+                        if !matches!(
+                            filter.ty,
+                            Type::Bool | Type::Numeric(NumericType::Integer { .. })
+                        ) {
+                            return Err(ResolveError::Internal(
+                                "filter expression has non-integral type",
+                            ));
+                        }
+                        SehHandler::Except {
+                            filter: filter.into(),
+                            body: self.statements(std::slice::from_ref(body), return_type)?,
+                        }
+                    }
+                    ast::SehHandler::Finally(body) => SehHandler::Finally(
+                        self.statements(std::slice::from_ref(body), return_type)?,
+                    ),
+                };
+                Statement::SehTry {
+                    id,
+                    body: body?,
+                    handler,
+                }
+            }
+            StmtKind::SehLeave => Statement::SehLeave(*self.seh_leave_targets.last().ok_or(
+                ResolveError::Internal("'__leave' statement not in __try block"),
+            )?),
             StmtKind::Switch { discriminant, body } => {
                 let value = self.expr(discriminant)?;
                 let discriminant = self.converted_at(statement, Slot::Discriminant, value)?;

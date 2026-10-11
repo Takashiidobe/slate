@@ -785,6 +785,7 @@ impl Hoister {
             leaf @ (ValueKind::Constant(_)
             | ValueKind::Null
             | ValueKind::LabelAddress(_)
+            | ValueKind::Seh(_)
             | ValueKind::Void
             | ValueKind::CodeUnits(_)) => leaf,
         };
@@ -912,6 +913,7 @@ impl Hoister {
             | ValueKind::Constant(_)
             | ValueKind::Null
             | ValueKind::LabelAddress(_)
+            | ValueKind::Seh(_)
             | ValueKind::Void
             | ValueKind::CodeUnits(_) => false,
         }

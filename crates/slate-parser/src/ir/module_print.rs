@@ -1,8 +1,8 @@
 use super::{
     ArrayExtent, AsmConstraintLocation, AsmOperandKind, Comment, Comments, DllStorage, Evaluation,
     FloatType, InlineAsm, Inlining, Linkage, MemoryEffects, Metadata, Module, NumericType,
-    Parameters, RecordKind, Statement, StorageDuration, SymbolAttributes, TargetFeature, TlsModel,
-    Type, TypeDefinitionKind, Variable, Visibility,
+    Parameters, RecordKind, SehHandler, Statement, StorageDuration, SymbolAttributes,
+    TargetFeature, TlsModel, Type, TypeDefinitionKind, Variable, Visibility,
 };
 use crate::{
     ast::{CommentAttach, Loc, NodeId, Span},
@@ -663,6 +663,27 @@ impl Printer<'_> {
                     self.statements(f, body, indent + 4)?;
                     continue;
                 }
+                Statement::SehTry { id, body, handler } => {
+                    write!(f, "seh_try %{}", id.0)?;
+                    metadata(f, self.table(), statement.id)?;
+                    writeln!(f)?;
+                    writeln!(f, "{:indent$}    body:", "")?;
+                    self.statements(f, body, indent + 8)?;
+                    match handler {
+                        SehHandler::Except { filter, body } => {
+                            write!(f, "{:indent$}    except ", "")?;
+                            self.evaluation(f, filter, indent + 4)?;
+                            writeln!(f, ":")?;
+                            self.statements(f, body, indent + 8)?;
+                        }
+                        SehHandler::Finally(body) => {
+                            writeln!(f, "{:indent$}    finally:", "")?;
+                            self.statements(f, body, indent + 8)?;
+                        }
+                    }
+                    continue;
+                }
+                Statement::SehLeave(id) => write!(f, "seh_leave %{}", id.0)?,
                 Statement::Asm(asm) => {
                     f.write_str("asm")?;
                     if asm.volatile {

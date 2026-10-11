@@ -28,6 +28,7 @@ pub(super) struct Lowerer {
     pub next_id: u32,
     pub break_targets: Vec<BindingId>,
     pub continue_targets: Vec<BindingId>,
+    pub seh_leave_targets: Vec<BindingId>,
     pub jump_targets: HashMap<NodeId, BindingId>,
     pub switches: Vec<BindingId>,
     pub in_function: bool,
@@ -473,6 +474,14 @@ impl Lowerer {
                     Err(_) => Number::SignedInteger(class.into()),
                 };
                 Ok(self.operand(e, c, ValueKind::Constant(number)))
+            }
+            CustomBuiltin::Seh(intrinsic) => {
+                let c = self.result(e)?;
+                Ok(self.operand(e, c, ValueKind::Seh(intrinsic)))
+            }
+            CustomBuiltin::Noop => {
+                let c = self.result(e)?;
+                Ok(self.operand(e, c, ValueKind::Constant(Number::Integer(0u32.into()))))
             }
         }
     }
@@ -1124,7 +1133,7 @@ impl Lowerer {
         )
     }
 
-    fn enum_underlying(&self, ty: &Type) -> Option<Type> {
+    pub(super) fn enum_underlying(&self, ty: &Type) -> Option<Type> {
         match self.kind(ty) {
             Some(TypeDefinitionKind::Enum { underlying, .. }) => underlying.clone(),
             Some(TypeDefinitionKind::Alias(inner)) => self.enum_underlying(inner),

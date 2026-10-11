@@ -7,6 +7,7 @@ use crate::compiler_args::CompilerFlavor;
 use crate::dialect::Dialect;
 use crate::ir::{
     ArithOp, BindingId, CompareOp, FloatClassTest, Linkage, MemoryEffects, PointerSpace,
+    SehIntrinsic,
 };
 use crate::target_info::{TargetFamily, TargetInfo};
 
@@ -243,6 +244,8 @@ pub(super) enum CustomBuiltin {
     FloatClassify,
     Shuffle,
     CountedByRef,
+    Seh(SehIntrinsic),
+    Noop,
 }
 
 pub(super) fn custom_builtin(builtin: &ClangBuiltin) -> Option<CustomBuiltin> {
@@ -271,6 +274,10 @@ pub(super) fn custom_builtin(builtin: &ClangBuiltin) -> Option<CustomBuiltin> {
         "BuiltinAddressof" => CustomBuiltin::AddressOf,
         "BuiltinClassifyType" => CustomBuiltin::ClassifyType,
         "CountedByRef" => CustomBuiltin::CountedByRef,
+        "ExceptionCode" => CustomBuiltin::Seh(SehIntrinsic::ExceptionCode),
+        "ExceptionInfo" => CustomBuiltin::Seh(SehIntrinsic::ExceptionInfo),
+        "AbnormalTermination" => CustomBuiltin::Seh(SehIntrinsic::AbnormalTermination),
+        "Noop" => CustomBuiltin::Noop,
         _ => return None,
     })
 }
@@ -790,6 +797,11 @@ impl TypeResolver {
         }))
     }
 
+    pub(super) fn builtin_return_type(&mut self, builtin: &ClangBuiltin) -> Option<QualType> {
+        let target = self.target_info().clone();
+        self.builtin_param(&builtin.prototype?.ret, &target)
+    }
+
     fn builtin_param(&mut self, param: &BuiltinParam, target: &TargetInfo) -> Option<QualType> {
         Some(self.builtin_type(param.ty, target)?.with(param.quals))
     }
@@ -839,6 +851,14 @@ impl TypeResolver {
                 signed: target.wchar_signed,
             },
             BuiltinType::VaList => return Some(self.ctypes.va_list_type(target)),
+            BuiltinType::Opaque("msuint32_t") => CTypeKind::Int {
+                rank: if super::ctype::rank_width(IntRank::Long, target) == 32 {
+                    IntRank::Long
+                } else {
+                    IntRank::Int
+                },
+                signed: false,
+            },
             BuiltinType::Opaque(name) => {
                 return self.alias(*self.builtin_typedefs.get(*name)?);
             }

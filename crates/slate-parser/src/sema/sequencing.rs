@@ -216,6 +216,7 @@ fn walk(value: &Value, found: &mut Touches) {
         | ValueKind::Constant(_)
         | ValueKind::Null
         | ValueKind::LabelAddress(_)
+        | ValueKind::Seh(_)
         | ValueKind::Void
         | ValueKind::CodeUnits(_) => {}
     }

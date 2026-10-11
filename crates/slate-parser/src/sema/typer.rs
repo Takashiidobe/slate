@@ -970,7 +970,7 @@ impl TypeResolver {
         if let Some((builtin, _)) = self.builtin_callee(callee, arguments)
             && let Some(custom) = super::builtins::custom_builtin(builtin)
         {
-            return self.custom_builtin_type(e, custom, arguments);
+            return self.custom_builtin_type(e, builtin, custom, arguments);
         }
         let signature = self.call_signature(callee, arguments)?;
         if let Some((builtin, _)) = self.builtin_callee(callee, arguments)
@@ -1326,10 +1326,33 @@ impl TypeResolver {
     fn custom_builtin_type(
         &mut self,
         e: &Expr,
+        builtin: &super::builtins::ClangBuiltin,
         custom: CustomBuiltin,
         arguments: &[Expr],
     ) -> Result<Typed, ResolveError> {
         Ok(Typed::rvalue(match custom {
+            CustomBuiltin::Seh(_) => {
+                if !arguments.is_empty() {
+                    return Err(ResolveError::Rejected(
+                        "too many arguments to function call",
+                    ));
+                }
+                self.builtin_return_type(builtin)
+                    .ok_or(ResolveError::Internal("SEH builtin return type"))?
+            }
+            CustomBuiltin::Noop => {
+                for argument in arguments {
+                    let ty = self.operand_type(argument)?;
+                    if self.ctypes.is_void(ty) {
+                        self.rejected_at.get_or_insert(Span {
+                            id: argument.id,
+                            ..argument.derive(())
+                        });
+                        return Err(ResolveError::Rejected("argument type 'void' is incomplete"));
+                    }
+                }
+                self.ctypes.int()
+            }
             CustomBuiltin::Overflow(_) => {
                 let [left, right, result] = arguments else {
                     return Err(ResolveError::Rejected("overflow builtin argument count"));

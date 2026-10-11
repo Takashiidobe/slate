@@ -225,6 +225,17 @@ impl Parser {
         })
     }
 
+    fn parse_seh_block(
+        &self,
+        cursor: &mut TokenCursor,
+        keyword: &str,
+    ) -> Result<Box<Stmt>, ParseError> {
+        if cursor.peek() != Some(&Token::LBrace) {
+            return Err(cursor.error(format!("expected `{{` after {keyword}")));
+        }
+        self.parse_body(cursor)
+    }
+
     fn parse_selection_declaration(
         &self,
         tokens: &[Span<Token>],
@@ -444,6 +455,45 @@ impl Parser {
                 let label = span_tokens(label, &tokens[label_start..cursor.pos], self.context());
                 cursor.expect(Token::Semi, "expected `;` after `goto` label")?;
                 Ok(StmtKind::Goto(label))
+            }
+            Some(Token::Keyword(Keyword::SehLeave)) => {
+                cursor.pos += 1;
+                cursor.expect(Token::Semi, "expected `;` after `__leave`")?;
+                Ok(StmtKind::SehLeave)
+            }
+            Some(Token::Keyword(Keyword::SehTry)) => {
+                cursor.pos += 1;
+                let body = self.parse_seh_block(cursor, "`__try`")?;
+                let handler = match cursor.peek() {
+                    Some(Token::Keyword(Keyword::SehExcept)) => {
+                        let open = cursor.pos + 1;
+                        if tokens.value_at(open) != Some(&Token::LParen) {
+                            return Err(self.error_at_tokens(
+                                tokens,
+                                cursor.pos,
+                                "expected `(` after `__except`",
+                            ));
+                        }
+                        let close = matching_paren(tokens, open).ok_or_else(|| {
+                            self.error_at_tokens(tokens, cursor.pos, "expected `)`")
+                        })?;
+                        let filter = self.parse_expression(&tokens[open + 1..close])?;
+                        cursor.pos = close + 1;
+                        let body = self.parse_seh_block(cursor, "`__except`")?;
+                        SehHandler::Except { filter, body }
+                    }
+                    Some(Token::Keyword(Keyword::SehFinally)) => {
+                        cursor.pos += 1;
+                        SehHandler::Finally(self.parse_seh_block(cursor, "`__finally`")?)
+                    }
+                    _ => {
+                        return Err(cursor.error("expected `__except` or `__finally` block"));
+                    }
+                };
+                Ok(StmtKind::SehTry { body, handler })
+            }
+            Some(Token::Keyword(Keyword::SehExcept | Keyword::SehFinally)) => {
+                Err(cursor.error("expected statement"))
             }
             Some(Token::Keyword(Keyword::Case)) => {
                 let start = cursor.pos + 1;
