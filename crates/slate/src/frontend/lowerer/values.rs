@@ -20,11 +20,18 @@ fn odd_width(ty: &ir::Type) -> Option<(u32, bool, Prim)> {
     Some((width, signed, container))
 }
 
-fn bit_count_method(builtin: &str) -> Option<&'static str> {
+pub(super) fn bit_count_method(builtin: &str) -> Option<&'static str> {
     match builtin {
-        "__builtin_clz" | "__builtin_clzl" | "__builtin_clzll" => Some("leading_zeros"),
-        "__builtin_ctz" | "__builtin_ctzl" | "__builtin_ctzll" => Some("trailing_zeros"),
-        "__builtin_popcount" | "__builtin_popcountl" | "__builtin_popcountll" => Some("count_ones"),
+        "__builtin_clz" | "__builtin_clzl" | "__builtin_clzll" | "__builtin_clzg" => {
+            Some("leading_zeros")
+        }
+        "__builtin_ctz" | "__builtin_ctzl" | "__builtin_ctzll" | "__builtin_ctzg" => {
+            Some("trailing_zeros")
+        }
+        "__builtin_popcount"
+        | "__builtin_popcountl"
+        | "__builtin_popcountll"
+        | "__builtin_popcountg" => Some("count_ones"),
         _ => None,
     }
 }
@@ -102,6 +109,57 @@ impl FunctionLowerer<'_, '_> {
             }
             None => return Err(unsupported_value(value)),
         })
+    }
+
+    fn lower_bit_count(
+        &mut self,
+        value: &ir::Value,
+        method: &str,
+        arguments: &[ir::Value],
+    ) -> Result<Expr> {
+        let Some(operand) = arguments.first() else {
+            return Err(unsupported_value(value));
+        };
+        if odd_width(self.tables.resolve_type(&operand.ty)).is_some() {
+            return Err(unsupported_value(value));
+        }
+        let result = self.lower_type(&value.ty)?;
+        let count = |recv: Expr| Expr::Cast {
+            expr: Box::new(Expr::MethodCall {
+                recv: Box::new(recv),
+                method: method.into(),
+                args: Vec::new(),
+            }),
+            ty: result.clone(),
+        };
+        let fallback = match arguments {
+            [_] => return Ok(count(self.lower_value(operand)?)),
+            [_, fallback] if method != "count_ones" => fallback,
+            _ => return Err(unsupported_value(value)),
+        };
+        let [bits, otherwise] = [self.next_temp(), self.next_temp()];
+        let var = |name: &String| Expr::Var(name.as_str().into());
+        let bind = |name: &String, init: Expr| Stmt::Let {
+            name: name.clone(),
+            mutable: false,
+            ty: None,
+            init: Some(init),
+        };
+        Ok(Expr::Block(Box::new(rust::Block {
+            stmts: vec![
+                bind(&bits, self.lower_value(operand)?),
+                bind(&otherwise, self.lower_value(fallback)?),
+            ],
+            tail: Some(Box::new(Expr::If {
+                cond: Box::new(Expr::Binary {
+                    op: BinOp::Eq,
+                    lhs: Box::new(var(&bits)),
+                    rhs: Box::new(self.lower_number(&Number::Integer(0u32.into()), &operand.ty)?),
+                }),
+                then_expr: Box::new(var(&otherwise)),
+                else_expr: Box::new(count(var(&bits))),
+            })),
+        })))
     }
 
     pub(super) fn lower_evaluation_statements(
@@ -807,20 +865,10 @@ impl FunctionLowerer<'_, '_> {
                 .and_then(bit_count_method)
                 .is_some() =>
             {
-                let ([operand], Some(method)) = (
-                    arguments.as_slice(),
-                    self.tables.builtin_name(*id).and_then(bit_count_method),
-                ) else {
+                let Some(method) = self.tables.builtin_name(*id).and_then(bit_count_method) else {
                     return Err(unsupported_value(value));
                 };
-                Expr::Cast {
-                    expr: Box::new(Expr::MethodCall {
-                        recv: Box::new(self.lower_value(operand)?),
-                        method: method.into(),
-                        args: Vec::new(),
-                    }),
-                    ty: self.lower_type(&value.ty)?,
-                }
+                self.lower_bit_count(value, method, arguments)?
             }
             ValueKind::Call {
                 callee: ir::Callee::Direct(id),

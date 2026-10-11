@@ -491,6 +491,10 @@ impl<'m> ModuleLowerer<'m> {
             if function.body.is_some()
                 || self.tables.intrinsics.contains_key(&function.value.id)
                 || self.tables.passes_long_double(function)
+                || self
+                    .tables
+                    .builtin_name(function.value.id)
+                    .is_some_and(|name| values::bit_count_method(name).is_some())
             {
                 continue;
             }
