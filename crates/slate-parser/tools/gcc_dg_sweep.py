@@ -9,7 +9,7 @@ import subprocess
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-ROOT = Path.home() / "gcc-sparse/gcc/testsuite/gcc.dg"
+ROOT = Path.home() / "gcc/gcc/testsuite/gcc.dg"
 REPO = Path(__file__).resolve().parent.parent
 SLATE = REPO.parents[1] / "target/test-cache/release/slate-parser"
 FIXTURES = REPO / "tests/fixtures/suites/gcc-dg"
