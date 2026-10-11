@@ -37,6 +37,8 @@ pub struct StandardFeatures {
     pub u8_character_constant: Availability,
     pub u8_literals_are_unsigned: bool,
     pub digit_separators: bool,
+    pub identifier_ucns: bool,
+    pub identifier_utf8: bool,
     pub octal_prefix: bool,
     pub keyword_countof: bool,
     pub keyword_type_limits: bool,
@@ -108,6 +110,8 @@ impl StandardFeatures {
             u8_character_constant: c23_keyword,
             u8_literals_are_unsigned: c23,
             digit_separators: c23,
+            identifier_ucns: !c89,
+            identifier_utf8: true,
             octal_prefix: true,
             keyword_countof: true,
             keyword_type_limits: matches!(
@@ -200,6 +204,10 @@ impl StandardFeatures {
             features.widest_integer_literal_fallback = true;
             features.static_assert_expressions = true;
             features.named_loops = true;
+            features.identifier_utf8 = features.identifier_ucns;
+            if standard == LanguageStandard::Gnu99 {
+                features.unicode_literal_prefixes = Availability::Extension;
+            }
             // gcc drops _Atomic, and before c23 qualifiers of an array's elements, from `?:` pointers
             features.conditional_pointers = crate::sema::PointerMerge {
                 array_element_quals: features.enumerators_have_enum_type,

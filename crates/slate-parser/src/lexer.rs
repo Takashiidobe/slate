@@ -865,20 +865,28 @@ impl Lexer {
             self.emit(Token::StringLit(value.into()));
         } else if c.is_ascii_alphabetic()
             || matches!(c, '_' | '$')
-            || self.starts_universal_character_name(i)
+            || self.identifier_utf8(c)
+            || self.identifier_ucn_end(i).is_some()
         {
-            while self.pos < self.chars.len()
-                && (self.chars[self.pos].is_ascii_alphanumeric()
-                    || matches!(self.chars[self.pos], '_' | '$')
-                    || self.starts_universal_character_name(self.pos))
-            {
-                if self.chars[self.pos] == '\\' {
-                    self.pos = self.universal_character_name_end(self.pos);
-                } else {
+            let mut word = String::new();
+            while let Some(&c) = self.chars.get(self.pos) {
+                if c.is_ascii_alphanumeric() || matches!(c, '_' | '$') || self.identifier_utf8(c) {
+                    word.push(c);
                     self.pos += 1;
+                } else if let Some(end) = self.identifier_ucn_end(self.pos) {
+                    let spelling = &self.chars[self.pos..end];
+                    match Self::decode_escapes(&self.chars, self.pos, end)[..] {
+                        [value] => match char::from_u32(value) {
+                            Some(decoded) => word.push(decoded),
+                            None => word.extend(spelling),
+                        },
+                        _ => word.extend(spelling),
+                    }
+                    self.pos = end;
+                } else {
+                    break;
                 }
             }
-            let word: String = self.chars[i..self.pos].iter().collect();
             self.emit(Token::Ident(word.into()));
         } else if let Some(token) = self.try_consume_digraph() {
             self.emit(token);
@@ -904,8 +912,10 @@ impl Lexer {
             let next = self.chars.get(i + 1).copied();
             if matches!(c, 'e' | 'E' | 'p' | 'P') && matches!(next, Some('+' | '-')) {
                 i += 2;
-            } else if c.is_ascii_alphanumeric() || c == '_' || c == '.' {
+            } else if c.is_ascii_alphanumeric() || c == '_' || c == '.' || self.identifier_utf8(c) {
                 i += 1;
+            } else if let Some(end) = self.identifier_ucn_end(i) {
+                i = end;
             } else if c == '\''
                 && self.features.digit_separators
                 && next.is_some_and(|next| next.is_ascii_alphanumeric())
@@ -968,12 +978,33 @@ impl Lexer {
         }
     }
 
-    fn starts_universal_character_name(&self, at: usize) -> bool {
-        self.char_at(at) == Some('\\')
-            && matches!(
-                (self.char_at(at + 1), self.char_at(at + 2)),
-                (Some('u' | 'U'), _) | (Some('N'), Some('{'))
-            )
+    fn identifier_utf8(&self, c: char) -> bool {
+        self.features.identifier_utf8 && !c.is_ascii() && raw_byte_for_char(c).is_none()
+    }
+
+    fn identifier_ucn_end(&self, at: usize) -> Option<usize> {
+        if !self.features.identifier_ucns || self.char_at(at) != Some('\\') {
+            return None;
+        }
+        let hex_run = |from: usize| {
+            (from..)
+                .take_while(|&i| self.char_at(i).is_some_and(|c| c.is_ascii_hexdigit()))
+                .count()
+        };
+        match (self.char_at(at + 1), self.char_at(at + 2)) {
+            (Some('u'), Some('{')) => {
+                let digits = hex_run(at + 3);
+                (digits > 0 && self.char_at(at + 3 + digits) == Some('}'))
+                    .then_some(at + 4 + digits)
+            }
+            (Some('N'), Some('{')) => {
+                let end = self.universal_character_name_end(at);
+                (self.char_at(end - 1) == Some('}')).then_some(end)
+            }
+            (Some('u'), _) => (hex_run(at + 2) >= 4).then_some(at + 6),
+            (Some('U'), _) => (hex_run(at + 2) >= 8).then_some(at + 10),
+            _ => None,
+        }
     }
 
     fn universal_character_name_end(&self, at: usize) -> usize {

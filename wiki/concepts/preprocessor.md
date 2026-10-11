@@ -216,10 +216,17 @@ token plus an interned `HideSet`; file tokens start empty.
   only where used outside `#`/`##` (all of them if `__VA_OPT__` appears).
   `substitute_function_macro` handles `#`, `##` (re-lex; a paste that
   doesn't form one token is an error in gcc and clang, msvc keeps both), `__VA_ARGS__`, `__VA_OPT__`. The
-  lexer scans numbers as pp-numbers (letters, digits, `_`, `.`, and a sign
-  after `e`/`p`), so `name##2_cb` pastes onto the single token `2_cb`.
-  A `\` that does not start a UCN (`\u`, `\U`, `\N{`) is a one-character
-  token, so `str(\)` is a call. gcc and clang drop a stringified result's
+  lexer scans numbers as pp-numbers (letters, digits, `_`, `.`, identifier
+  characters, and a sign after `e`/`p`), so `name##2_cb` pastes onto the
+  single token `2_cb`.
+- Identifiers take non-ASCII UTF-8 characters (`identifier_utf8`: every
+  flavor and mode except gcc before c99; never a raw invalid byte) and,
+  from c99, complete UCNs (`identifier_ucns`: `\u` with 4 hex digits, `\U`
+  with 8, `\u{...}`, `\N{...}`). The lexer decodes each UCN except
+  `\N{...}` (no name table yet) in an `Ident`, so `\u00C1`, `\u00c1`, and `Á` are one name, in macro lookup
+  and in the IR. A `\` that does not start a complete UCN (`\U0000000z`)
+  is a one-character token, so `str(\)` is a call, and in c89 `a\u00aa`
+  is `a` followed by `\`. gcc and clang drop a stringified result's
   final unescaped `\` (`str(\)` is `""`); msvc keeps it, as `cl /EP` does, and
   rejects the program (`newline in string literal`, C2001) when the
   backslashes at the end are an odd count.

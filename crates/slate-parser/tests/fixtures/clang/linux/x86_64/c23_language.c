@@ -320,7 +320,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_same_type_value:[0-9]+]] same_type_value: i32 [storage=automatic] = const<i32>(71);
 // DEFAULT-NEXT:         let %[[VALUE_qualified_value:[0-9]+]] qualified_value: i32 [storage=automatic] [const] = const<i32>(73);
 // DEFAULT-NEXT:         let %[[VALUE_unqualified_value:[0-9]+]] unqualified_value: i32 [storage=automatic] = const<i32>(79);
-// DEFAULT-NEXT:         let %[[VALUE6:[0-9]+]] \u03b1: i32 [storage=automatic] = const<i32>(5);
+// DEFAULT-NEXT:         let %[[VALUE6:[0-9]+]] α: i32 [storage=automatic] = const<i32>(5);
 // DEFAULT-NEXT:         let %[[VALUE_signed_precise:[0-9]+]] signed_precise: i17b [storage=automatic] = truncate<i17b, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(12345)));
 // DEFAULT-NEXT:         let %[[VALUE_unsigned_precise:[0-9]+]] unsigned_precise: u17b [storage=automatic] = const<u17b>(100000);
 // DEFAULT-NEXT:         let %[[VALUE_binary_value:[0-9]+]] binary_value: i32 [storage=automatic] = const<i32>(165);

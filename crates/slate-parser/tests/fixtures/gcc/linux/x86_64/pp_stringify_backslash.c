@@ -39,6 +39,6 @@ int caf\u00e9 = 1;
 // DEFAULT-NEXT:     global %[[VALUE_odd_run:[0-9]+]] odd_run: array<i8, 2> [storage=static] [const] = code_units<array<i8, 2>>([92, 0]) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_before_identifier:[0-9]+]] before_identifier: array<i8, 4> [storage=static] [const] = code_units<array<i8, 4>>([97, 32, 10, 0]) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_lone_argument:[0-9]+]] lone_argument: array<i8, 1> [storage=static] [const] = code_units<array<i8, 1>>([0]) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE0:[0-9]+]] caf\u00e9: i32 [storage=static] = const<i32>(1) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE0:[0-9]+]] café: i32 [storage=static] = const<i32>(1) [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT
