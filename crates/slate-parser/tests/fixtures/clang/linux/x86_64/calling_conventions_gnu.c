@@ -44,7 +44,7 @@ void (__attribute__((pcs("aapcs-vfp"))) *arm_vfp_pointer)(void);
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type[[TYPE_callback:[0-9]+]] callback = ptr<fn() -> void>;
+// DEFAULT-NEXT:     type @type[[TYPE_callback:[0-9]+]] callback = ptr<fn ms_abi() -> void>;
 // DEFAULT-NEXT:     global %[[VALUE_pointer:[0-9]+]] pointer: ptr<fn() -> void> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_register_pointer:[0-9]+]] register_pointer: ptr<fn() -> void> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_vector_pointer:[0-9]+]] vector_pointer: ptr<fn vectorcall() -> void> [storage=static] [linkage=external];
@@ -53,7 +53,7 @@ void (__attribute__((pcs("aapcs-vfp"))) *arm_vfp_pointer)(void);
 // DEFAULT-NEXT:     global %[[VALUE_thiscall_pointer:[0-9]+]] thiscall_pointer: ptr<fn() -> void> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_arm_pointer:[0-9]+]] arm_pointer: ptr<fn() -> void> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_arm_vfp_pointer:[0-9]+]] arm_vfp_pointer: ptr<fn() -> void> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_ms:[0-9]+]] @ms() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_ms:[0-9]+]] @ms() -> void [linkage=external] [abi=win64 ms_abi() -> void];
 // DEFAULT-NEXT:     fn %[[VALUE_sysv:[0-9]+]] @sysv() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_registers:[0-9]+]] @registers(%[[VALUE0:[0-9]+]] <unnamed>: i32, %[[VALUE1:[0-9]+]] <unnamed>: i32) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_fast:[0-9]+]] @fast() -> void [linkage=external];

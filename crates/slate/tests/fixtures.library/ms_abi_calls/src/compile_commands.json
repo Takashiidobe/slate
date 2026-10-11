@@ -1,0 +1,14 @@
+[
+  {
+    "file": "calls.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-std=c23",
+      "-c",
+      "calls.c",
+      "-o",
+      "calls.o"
+    ],
+    "directory": "."
+  }
+]

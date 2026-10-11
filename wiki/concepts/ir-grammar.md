@@ -107,7 +107,7 @@ float_type    = "bf16" | "f16" | "f32" | "f64" | "f80" | "f128"
 access_prefix = "volatile " | "atomic " | "volatile atomic " ;
 ptr_space     = "ptr32_sptr" | "ptr32_uptr" | "ptr64" ;
 fn_type       = "fn" [ " " call_conv ] "(" [ fn_params ] ") -> " type ;
-call_conv     = "stdcall" | "fastcall" | "vectorcall" | "thiscall" ;
+call_conv     = "stdcall" | "fastcall" | "vectorcall" | "thiscall" | "ms_abi" | "sysv_abi" ;
 fn_params     = "unprototyped" | type { ", " type } [ ", ..." ] | "..." ;
 ```
 

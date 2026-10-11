@@ -36,6 +36,8 @@ pub enum CallConv {
     X86Fastcall,
     X86Vectorcall,
     X86Thiscall,
+    Win64,
+    SysV64,
 }
 
 impl CallConv {
@@ -46,7 +48,13 @@ impl CallConv {
             Self::X86Fastcall => "fastcall",
             Self::X86Vectorcall => "vectorcall",
             Self::X86Thiscall => "thiscall",
+            Self::Win64 => "ms_abi",
+            Self::SysV64 => "sysv_abi",
         }
+    }
+
+    pub fn admits_variadic(self) -> bool {
+        matches!(self, Self::C | Self::Win64 | Self::SysV64)
     }
 }
 

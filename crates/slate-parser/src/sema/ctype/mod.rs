@@ -545,7 +545,7 @@ impl CTypes {
     pub fn with_convention(&mut self, q: QualType, convention: CallConv) -> Option<QualType> {
         let q = self.desugar(q);
         let rebuilt = match self.kind(q.ty).clone() {
-            CTypeKind::Function { variadic: true, .. } if convention != CallConv::C => {
+            CTypeKind::Function { variadic: true, .. } if !convention.admits_variadic() => {
                 return Some(q);
             }
             CTypeKind::Function {

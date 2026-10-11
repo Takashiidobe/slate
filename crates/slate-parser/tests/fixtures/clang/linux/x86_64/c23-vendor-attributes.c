@@ -39,7 +39,7 @@
 // C23-NEXT:     fn %[[VALUE_fast:[0-9]+]] @fast() -> void [linkage=external];
 // C23-NEXT:     fn %[[VALUE_vector:[0-9]+]] @vector() -> void [linkage=external] [abi=sysv64 vectorcall() -> void];
 // C23-NEXT:     fn %[[VALUE_method:[0-9]+]] @method(%[[VALUE0:[0-9]+]] <unnamed>: ptr<void>) -> void [linkage=external];
-// C23-NEXT:     fn %[[VALUE_ms:[0-9]+]] @ms() -> void [linkage=external];
+// C23-NEXT:     fn %[[VALUE_ms:[0-9]+]] @ms() -> void [linkage=external] [abi=win64 ms_abi() -> void];
 // C23-NEXT:     fn %[[VALUE_sysv:[0-9]+]] @sysv() -> void [linkage=external];
 // C23-NEXT:     fn %[[VALUE_registers:[0-9]+]] @registers(%[[VALUE1:[0-9]+]] <unnamed>: i32, %[[VALUE2:[0-9]+]] <unnamed>: i32) -> void [linkage=external];
 // C23-NEXT:     fn %[[VALUE_arm:[0-9]+]] @arm() -> void [linkage=external];

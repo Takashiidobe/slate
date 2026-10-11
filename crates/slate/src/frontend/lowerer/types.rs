@@ -452,9 +452,14 @@ impl FunctionLowerer<'_, '_> {
                     parameters,
                     variadic,
                     prototyped: true,
-                    convention: ir::CallConv::C,
+                    convention,
                 } = &**pointee
                 else {
+                    return Err(unsupported_type(ty));
+                };
+                let Some(abi) = self.tables.convention_abi(*convention).filter(|abi| {
+                    *abi == rust::Abi::CUnwind || !self.tables.function_type_passes_long_double(ty)
+                }) else {
                     return Err(unsupported_type(ty));
                 };
                 let mut params = parameters
@@ -465,7 +470,7 @@ impl FunctionLowerer<'_, '_> {
                     params.push(rust::Type::Variadic);
                 }
                 return Ok(rust::Type::FnPtr {
-                    abi: rust::Abi::CUnwind,
+                    abi,
                     params,
                     ret: Box::new(match return_type {
                         Some(ret) => self.lower_type(ret)?,

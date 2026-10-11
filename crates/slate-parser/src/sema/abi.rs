@@ -186,7 +186,7 @@ impl<'a> AbiClassifier<'a> {
         fixed_count: usize,
         calling: CallConv,
     ) -> Result<AbiSignature, ResolveError> {
-        let convention = self.abi_convention(variadic);
+        let convention = self.abi_convention(variadic, calling);
         let mut free_vector_registers = WIN32_VECTOR_REGISTERS;
         let arguments = parameters
             .iter()
@@ -243,7 +243,13 @@ impl<'a> AbiClassifier<'a> {
         })
     }
 
-    fn abi_convention(&self, variadic: bool) -> AbiConvention {
+    fn abi_convention(&self, variadic: bool, calling: CallConv) -> AbiConvention {
+        match (calling, self.target.profile.convention) {
+            (CallConv::Win64, AbiConvention::Aapcs64) => return AbiConvention::WinArm64,
+            (CallConv::Win64, _) => return AbiConvention::Win64,
+            (CallConv::SysV64, _) => return AbiConvention::SysV64,
+            _ => {}
+        }
         match self.target.profile.convention {
             AbiConvention::Aapcs32 if !variadic && self.target.isa.arm_hard_float() => {
                 AbiConvention::Aapcs32HardFloat

@@ -272,6 +272,7 @@ struct ModuleLowerer<'m> {
     dependencies: Dependencies,
     items: Vec<Item>,
     externs: Vec<rust::ExternDecl>,
+    convention_externs: BTreeMap<rust::Abi, Vec<rust::ExternDecl>>,
     barriers: Vec<Barrier>,
 }
 
@@ -411,6 +412,7 @@ impl<'m> ModuleLowerer<'m> {
             dependencies: Dependencies::default(),
             items: Vec::new(),
             externs: Vec::new(),
+            convention_externs: BTreeMap::new(),
             barriers,
         })
     }
@@ -491,6 +493,10 @@ impl<'m> ModuleLowerer<'m> {
             if function.body.is_some()
                 || self.tables.intrinsics.contains_key(&function.value.id)
                 || self.tables.passes_long_double(function)
+                    && function
+                        .abi
+                        .as_ref()
+                        .is_none_or(|abi| abi.calling == ir::CallConv::C)
                 || self
                     .tables
                     .builtin_name(function.value.id)
@@ -499,7 +505,8 @@ impl<'m> ModuleLowerer<'m> {
                 continue;
             }
             match self.lowerer().lower_extern(function) {
-                Ok(decl) => self.externs.push(decl),
+                Ok((rust::Abi::CUnwind, decl)) => self.externs.push(decl),
+                Ok((abi, decl)) => self.convention_externs.entry(abi).or_default().push(decl),
                 Err(error) => self.barriers.push(
                     error
                         .within(
@@ -580,6 +587,7 @@ impl<'m> ModuleLowerer<'m> {
             dependencies,
             mut items,
             mut externs,
+            convention_externs,
             barriers,
             ..
         } = self;
@@ -660,6 +668,15 @@ impl<'m> ModuleLowerer<'m> {
                 },
             );
         }
+        items.splice(
+            0..0,
+            convention_externs
+                .into_iter()
+                .map(|(abi, decls)| Item::ExternBlock {
+                    abi: abi.foreign_block().into(),
+                    decls,
+                }),
+        );
         if !externs.is_empty() {
             items.insert(
                 0,

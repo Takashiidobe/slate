@@ -159,6 +159,16 @@ member, so Slate must pass that member's type at the boundary
   one on a pointer or grouped declarator goes to the function type beneath.
 - Dropped as clang does: on variadic functions, the other three on x86-64,
   all four on other targets.
+- `ms_abi` and `sysv_abi` resolve as clang's do: `ms_abi` is `cdecl` on
+  Windows and `CallConv::Win64` elsewhere on x86-64 and AArch64; `sysv_abi`
+  is `cdecl` off Windows and `CallConv::SysV64` on x86-64 Windows. Each is
+  ignored on other targets. They select the `AbiSignature` convention
+  (`win64`, `win_arm64` on AArch64, `sysv64`) and, unlike the x86
+  conventions, stay on variadic functions (`fn ms_abi(i32, ...) -> i32`).
+  Slate lowers them to `extern "win64-unwind"` / `"sysv64-unwind"` on
+  x86-64 and rejects what rustc cannot express: variadic definitions,
+  `long double`, and `win64` on AArch64. Slate also rejects the x86
+  conventions instead of lowering them as C.
 - `-mregparm=N` on 32-bit x86 puts `regparm=N` on every non-variadic
   `cdecl` or `stdcall` `AbiSignature` (`x86_cdecl regparm=3(scalar) ->
   scalar`): the first N integer-class registers (`eax`, `edx`, `ecx`) carry
@@ -177,6 +187,10 @@ member, so Slate must pass that member's type at the boundary
 - Fixtures: `clang/{windows,linux}/i686/calling_conventions.c`,
   `clang/linux/x86_64/calling_conventions_ignored.c`,
   `clang/{windows,linux}/x86_64/calling_convention_vectorcall.c`,
+  `clang/linux/{x86_64,aarch64}/ms_abi_convention.c`,
+  `clang/windows/x86_64/sysv_abi_convention.c`,
+  `clang/linux/i686/ms_abi_ignored.c`, slate
+  `tests/fixtures.library/ms_abi_calls`,
   `error/clang/.../calling_convention_*.c`.
 
 ## Targets

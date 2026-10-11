@@ -14,7 +14,7 @@ use crate::ir::{
     TypeDefinition, TypeDefinitionKind, TypeId, Value, ValueKind,
 };
 use crate::target_info::{
-    LongDoubleFormat, StorageLayout, TargetEnvironment, TargetFamily, TargetInfo,
+    LongDoubleFormat, StorageLayout, TargetEnvironment, TargetFamily, TargetInfo, TargetOs,
 };
 use num_bigint::{BigInt, Sign};
 
@@ -1675,15 +1675,26 @@ impl TypeResolver {
         &self,
         attributes: impl IntoIterator<Item = &'a Span<Attribute>>,
     ) -> Option<CallConv> {
-        let x86 = match self.dialect.target().family {
-            TargetFamily::X86 => true,
-            TargetFamily::X86_64 => false,
-            TargetFamily::AArch64 | TargetFamily::Arm32 => return None,
-        };
+        let target = self.dialect.target();
+        let family = target.family;
+        let windows = target.os == TargetOs::Windows;
+        let x86 = family == TargetFamily::X86;
+        let x86_family = family.is_x86();
         attributes
             .into_iter()
             .filter_map(|attribute| match &attribute.value {
                 Attribute::CallingConvention(convention) => match convention {
+                    crate::ast::CallingConvention::MsAbi if windows => Some(CallConv::C),
+                    crate::ast::CallingConvention::MsAbi
+                        if matches!(family, TargetFamily::X86_64 | TargetFamily::AArch64) =>
+                    {
+                        Some(CallConv::Win64)
+                    }
+                    crate::ast::CallingConvention::SysVAbi if !windows => Some(CallConv::C),
+                    crate::ast::CallingConvention::SysVAbi if family == TargetFamily::X86_64 => {
+                        Some(CallConv::SysV64)
+                    }
+                    _ if !x86_family => None,
                     crate::ast::CallingConvention::Cdecl => Some(CallConv::C),
                     crate::ast::CallingConvention::Vectorcall => Some(CallConv::X86Vectorcall),
                     crate::ast::CallingConvention::Stdcall if x86 => Some(CallConv::X86Stdcall),
@@ -3915,13 +3926,15 @@ fn view_convention<'a>(
     parameters: &crate::ir::Parameters,
     attributes: impl IntoIterator<Item = &'a Span<Attribute>>,
 ) -> CallConv {
+    let convention = resolver.calling_convention(attributes).unwrap_or_default();
     if matches!(
         parameters,
         crate::ir::Parameters::Prototype { variadic: true, .. }
-    ) {
+    ) && !convention.admits_variadic()
+    {
         return CallConv::C;
     }
-    resolver.calling_convention(attributes).unwrap_or_default()
+    convention
 }
 
 fn has_function_declarator(declarator: &Declarator) -> bool {

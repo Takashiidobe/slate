@@ -1,4 +1,5 @@
 use super::*;
+use slate_parser::target_info::TargetFamily;
 
 pub(super) fn builtin_library_name(builtin: &str) -> Option<&'static str> {
     Some(match builtin {
@@ -76,13 +77,56 @@ impl Tables<'_> {
     pub(super) fn builtin_name(&self, id: BindingId) -> Option<&str> {
         self.names.get(&id)?.builtin.as_deref()
     }
+
+    pub(super) fn convention_abi(&self, convention: ir::CallConv) -> Option<rust::Abi> {
+        match (convention, self.target.family) {
+            (ir::CallConv::C, _) => Some(rust::Abi::CUnwind),
+            (ir::CallConv::Win64, TargetFamily::X86_64) => Some(rust::Abi::Win64Unwind),
+            (ir::CallConv::SysV64, TargetFamily::X86_64) => Some(rust::Abi::SysV64Unwind),
+            _ => None,
+        }
+    }
+
+    pub(super) fn function_abi(&self, function: &ir::Function) -> Result<rust::Abi> {
+        let convention = function
+            .abi
+            .as_ref()
+            .map_or(ir::CallConv::C, |abi| abi.calling);
+        let unsupported = |detail: String| -> Result<rust::Abi> {
+            Err(Construct::Function {
+                name: function.name.clone(),
+                detail,
+            }
+            .into())
+        };
+        let Some(abi) = self.convention_abi(convention) else {
+            return unsupported(format!("{convention} calling convention"));
+        };
+        if abi == rust::Abi::CUnwind {
+            return Ok(abi);
+        }
+        if self.passes_long_double(function) {
+            return unsupported(format!(
+                "long double under the {convention} calling convention"
+            ));
+        }
+        if function.body.is_some()
+            && matches!(
+                function.parameters,
+                ir::Parameters::Prototype { variadic: true, .. }
+            )
+        {
+            return unsupported(format!("variadic {convention} definition"));
+        }
+        Ok(abi)
+    }
 }
 
 impl FunctionLowerer<'_, '_> {
     pub(super) fn lower_extern(
         &mut self,
         function: &slate_parser::ast::Span<ir::Function>,
-    ) -> Result<rust::ExternDecl> {
+    ) -> Result<(rust::Abi, rust::ExternDecl)> {
         let ir::Parameters::Prototype { fixed, variadic } = &function.parameters else {
             return Err(Construct::Function {
                 name: function.name.clone(),
@@ -90,6 +134,7 @@ impl FunctionLowerer<'_, '_> {
             }
             .into());
         };
+        let abi = self.tables.function_abi(function)?;
         if self.tables.function_has_vector(function) {
             return Err(Construct::Function {
                 name: function.name.clone(),
@@ -105,7 +150,7 @@ impl FunctionLowerer<'_, '_> {
             .map(|name| Attr::LinkName(name.into()))
             .into_iter()
             .collect();
-        Ok(rust::ExternDecl::Fn(rust::ExternFnDecl {
+        let decl = rust::ExternDecl::Fn(rust::ExternFnDecl {
             attrs,
             name: function.name.clone(),
             identity: FunctionIdentity::Unknown,
@@ -127,7 +172,8 @@ impl FunctionLowerer<'_, '_> {
             variadic: *variadic,
             ret,
             safe: false,
-        }))
+        });
+        Ok((abi, decl))
     }
 
     pub(super) fn lower_function(
@@ -142,6 +188,7 @@ impl FunctionLowerer<'_, '_> {
             }
             .into());
         };
+        let abi = self.tables.function_abi(function)?;
         self.target_features = self.tables.enabled_target_features(function)?;
         let ret = self.lower_return(function)?;
         let mut params = fixed
@@ -174,7 +221,7 @@ impl FunctionLowerer<'_, '_> {
                 unsafe_: *variadic,
                 attrs: vec![rust::Attr::Naked],
                 vis: rust::Visibility::Private,
-                abi: Some(rust::Abi::CUnwind),
+                abi: Some(abi),
                 name: self.tables.names[&function.value.id].rust.clone(),
                 params,
                 ret,
@@ -231,7 +278,7 @@ impl FunctionLowerer<'_, '_> {
             unsafe_: *variadic || target_feature.is_some(),
             attrs: target_feature.into_iter().collect(),
             vis: rust::Visibility::Private,
-            abi: variadic.then_some(rust::Abi::CUnwind),
+            abi: (*variadic || abi != rust::Abi::CUnwind).then_some(abi),
             name: self.tables.names[&function.value.id].rust.clone(),
             params,
             ret,
