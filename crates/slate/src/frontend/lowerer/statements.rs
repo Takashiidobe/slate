@@ -128,14 +128,20 @@ impl FunctionLowerer<'_, '_> {
             }
             ir::Statement::Expression(value) => match &value.node.value {
                 ValueKind::Void | ValueKind::VaEnd { .. } => Stmt::Block(rust::Block::default()),
-                ValueKind::VaStart { list } => {
-                    self.lower_assignment(list, clone_va_list(Expr::Var(VA_ARGS.into())))?
-                }
+                ValueKind::VaStart {
+                    list,
+                    convention: ir::VaConvention::Target,
+                } => self.lower_assignment(list, clone_va_list(Expr::Var(VA_ARGS.into())))?,
                 ValueKind::VaCopy {
                     destination,
                     source,
+                    convention,
                 } => {
-                    let source = clone_va_list(self.lower_place(source)?);
+                    let source = self.lower_place(source)?;
+                    let source = match convention {
+                        ir::VaConvention::Target => clone_va_list(source),
+                        ir::VaConvention::Win64 => source,
+                    };
                     self.lower_assignment(destination, source)?
                 }
                 _ => Stmt::Expr(self.lower_value(value)?),

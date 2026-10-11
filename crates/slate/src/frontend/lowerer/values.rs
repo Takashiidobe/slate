@@ -1,4 +1,5 @@
 use super::*;
+use slate_parser::target_info::TargetFamily;
 
 fn odd_width(ty: &ir::Type) -> Option<(u32, bool, Prim)> {
     let ir::Type::Numeric(ir::NumericType::Integer { width, signed, .. }) = *ty else {
@@ -237,7 +238,37 @@ impl FunctionLowerer<'_, '_> {
                         .collect(),
                 )
             }
-            ValueKind::VaArg { list } if self.tables.is_long_double(&value.ty) => {
+            ValueKind::VaArg {
+                list,
+                convention: ir::VaConvention::Win64,
+            } => {
+                if self.tables.target.family != TargetFamily::X86_64
+                    || self.tables.is_long_double(&value.ty)
+                {
+                    return Err(unsupported_value(value));
+                }
+                self.dependencies.win64_va = true;
+                Expr::Unsafe(Box::new(rust::Block {
+                    stmts: Vec::new(),
+                    tail: Some(Box::new(Expr::Call {
+                        func: Box::new(Expr::GenericPath {
+                            path: rust::Path::new(
+                                ["__slate_win64_va", "arg"].map(rust::Ident::from),
+                            ),
+                            type_args: vec![
+                                rust::Type::Custom("_".into()),
+                                self.lower_type(&value.ty)?,
+                            ],
+                        }),
+                        args: vec![Expr::AddrOf {
+                            mutable: true,
+                            expr: Box::new(self.lower_place(list)?),
+                        }],
+                        binding: CallBinding::Generated,
+                    })),
+                }))
+            }
+            ValueKind::VaArg { list, .. } if self.tables.is_long_double(&value.ty) => {
                 self.dependencies.long_double = true;
                 Expr::Unsafe(Box::new(rust::Block {
                     stmts: Vec::new(),
@@ -251,7 +282,7 @@ impl FunctionLowerer<'_, '_> {
                     })),
                 }))
             }
-            ValueKind::VaArg { list } => {
+            ValueKind::VaArg { list, .. } => {
                 let ty = self.lower_type(&value.ty)?;
                 let read_ty = if matches!(ty, rust::Type::FnPtr { .. }) {
                     byte_pointer_type()

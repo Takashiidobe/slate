@@ -106,9 +106,27 @@ for hints and `lowerer/target_features.rs` for CPU feature queries.
 - `__builtin_va_list`
 - `__builtin_va_arg`, `__builtin_va_start`, `__builtin_va_end`, `__builtin_va_copy`
 
+- `__builtin_ms_va_list`, `__builtin_ms_va_start`, `__builtin_ms_va_end`,
+  `__builtin_ms_va_copy` (x86-64 and AArch64 only)
+
 `slate-parser/src/target_info.rs` selects the target's `va_list` layout;
 `sema/expression.rs` emits the variadic IR operations. Slate lowers them in
 `lowerer/values.rs` and `lowerer/statements.rs`.
+
+`__builtin_ms_va_list` is `char *`. Each va operation carries a
+`VaConvention`: `win64` (printed `va_arg<T, win64>`, `va_start<win64>`)
+when the list is a Microsoft one on a target whose native `va_list` is not
+`char *`, `Target` otherwise (so Windows and Darwin lists stay native).
+As in clang's `BuildVAArgExpr`, `va_arg` on any modifiable `char *` lvalue
+is `win64` on such targets. The clang flavor also applies clang's
+`va_start` checks: `__builtin_ms_va_start` only in Win64 functions (any
+function on Windows except `sysv_abi`), the native `va_start` not in a
+Win64 function off Windows nor a `sysv_abi` function on Windows, and
+neither in a function with fixed args. gcc accepts all three.
+Slate lowers `win64` `va_arg` on x86-64 to `__slate_win64_va::arg`
+(8-byte slots; larger or non-power-of-two types by reference), `va_copy`
+to a pointer copy, and `va_end` to nothing. `va_start<win64>` only
+appears in variadic `ms_abi` definitions, which slate rejects.
 
 ## Vector builtin expansion
 

@@ -12,6 +12,12 @@ struct triple {
   long z;
 };
 
+struct tiny {
+  char a;
+  char b;
+  char c;
+};
+
 typedef long(MS_ABI *ms_callback)(long, double, long, double, long);
 
 long MS_ABI ms_mix(int a, double b, long c, float d, long e, double f);
@@ -20,6 +26,8 @@ struct triple MS_ABI ms_scale(struct triple t, long scale);
 long MS_ABI ms_invoke(ms_callback cb, long seed);
 long SYSV_ABI sysv_add(long a, long b);
 long call_driver(long seed);
+long ms_list_sum(int n, __builtin_ms_va_list ap);
 
 long MS_ABI driver_ms(long a, double b, long c, double d, long e);
 long MS_ABI driver_vmix(int n, ...);
+long MS_ABI driver_list_sum(int n, ...);

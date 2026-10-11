@@ -11,10 +11,11 @@ use crate::diagnostics::{DiagnosticContext, Warning};
 use crate::ir::{
     Access, ArrayExtent, ArrayParameter, BindingId, BitFieldUnit, CallConv, Comment, Enumerator,
     Field, Number, NumericType, PointerSpace, RecordKind, RecordLayout, Sibling, Type,
-    TypeDefinition, TypeDefinitionKind, TypeId, Value, ValueKind,
+    TypeDefinition, TypeDefinitionKind, TypeId, VaConvention, Value, ValueKind,
 };
 use crate::target_info::{
     LongDoubleFormat, StorageLayout, TargetEnvironment, TargetFamily, TargetInfo, TargetOs,
+    VaListKind,
 };
 use num_bigint::{BigInt, Sign};
 
@@ -39,6 +40,8 @@ pub(super) struct ParameterShape {
 pub(super) struct FunctionNames {
     pub plain: String,
     pub pretty: String,
+    pub convention: CallConv,
+    pub variadic: bool,
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -195,6 +198,75 @@ impl TypeResolver {
         self.ir_type(va_list) == *ty
     }
 
+    pub(super) fn has_ms_va_list(&self) -> bool {
+        matches!(
+            self.dialect.target().family,
+            TargetFamily::X86_64 | TargetFamily::AArch64
+        )
+    }
+
+    pub(super) fn ms_va_convention(&self) -> VaConvention {
+        match self.dialect.target().va_list_kind() {
+            VaListKind::CharPointer => VaConvention::Target,
+            _ => VaConvention::Win64,
+        }
+    }
+
+    pub(super) fn is_ms_va_list(&self, q: QualType) -> bool {
+        let q = self.ctypes.desugar(q);
+        let CTypeKind::Pointer(pointee, _) = self.ctypes.canonical_kind(q) else {
+            return false;
+        };
+        self.has_ms_va_list()
+            && !q.quals.is_const
+            && self.ctypes.quals(*pointee) == Qualifiers::default()
+            && matches!(self.ctypes.canonical_kind(*pointee), CTypeKind::Char)
+    }
+
+    pub(super) fn va_start_context(&self, microsoft: bool) -> Result<(), ResolveError> {
+        if self.flavor().is_gcc() {
+            return Ok(());
+        }
+        self.va_start_abi(microsoft)?;
+        if self
+            .function_names
+            .as_ref()
+            .is_some_and(|names| !names.variadic)
+        {
+            return Err(ResolveError::Rejected(
+                "'va_start' used in function with fixed args",
+            ));
+        }
+        Ok(())
+    }
+
+    fn va_start_abi(&self, microsoft: bool) -> Result<(), ResolveError> {
+        if !self.has_ms_va_list() {
+            return Ok(());
+        }
+        let windows = self.dialect.target().os == TargetOs::Windows;
+        let convention = self
+            .function_names
+            .as_ref()
+            .map_or(CallConv::C, |names| names.convention);
+        match (microsoft, convention) {
+            (true, CallConv::Win64) => Ok(()),
+            (true, CallConv::SysV64) => Err(ResolveError::Rejected(
+                "'__builtin_ms_va_start' used in System V ABI function",
+            )),
+            (true, _) if !windows => Err(ResolveError::Rejected(
+                "'__builtin_ms_va_start' used in System V ABI function",
+            )),
+            (false, CallConv::Win64) if !windows => Err(ResolveError::Rejected(
+                "'va_start' used in Win64 ABI function",
+            )),
+            (false, CallConv::SysV64) if windows => Err(ResolveError::Rejected(
+                "'va_start' used in System V ABI function",
+            )),
+            _ => Ok(()),
+        }
+    }
+
     pub fn layout(&self, q: QualType) -> Option<Type> {
         (!self.ctypes.is_void(q)).then(|| self.ir_type(q))
     }
@@ -215,6 +287,11 @@ impl TypeResolver {
         FunctionNames {
             plain: name.to_owned(),
             pretty: self.declaration_spelling(function, name),
+            convention: self.ctypes.function_convention(function),
+            variadic: self
+                .ctypes
+                .function_parts(function)
+                .is_some_and(|(_, _, variadic, _)| variadic),
         }
     }
 
@@ -2020,6 +2097,15 @@ impl TypeResolver {
             }),
             TypeSpecifier::TargetBuiltin(name) if name == "__builtin_va_list" => {
                 return Ok(self.ctypes.va_list_type(self.dialect.target()));
+            }
+            TypeSpecifier::TargetBuiltin(name) if name == "__builtin_ms_va_list" => {
+                if !self.has_ms_va_list() {
+                    return Err(ResolveError::Rejected(
+                        "unknown type name '__builtin_ms_va_list'",
+                    ));
+                }
+                let char_type = self.ctypes.qual(CTypeKind::Char);
+                return Ok(self.ctypes.pointer(char_type));
             }
             TypeSpecifier::TargetBuiltin(_) => {
                 return Err(ResolveError::Unimplemented("target builtin type"));

@@ -200,12 +200,13 @@ fn walk(value: &Value, found: &mut Touches) {
         | ValueKind::AddressOf(place)
         | ValueKind::ArrayDecay { place, .. }
         | ValueKind::FunctionDecay { place }
-        | ValueKind::VaArg { list: place }
-        | ValueKind::VaStart { list: place }
-        | ValueKind::VaEnd { list: place } => walk_place(place, false, found),
+        | ValueKind::VaArg { list: place, .. }
+        | ValueKind::VaStart { list: place, .. }
+        | ValueKind::VaEnd { list: place, .. } => walk_place(place, false, found),
         ValueKind::VaCopy {
             destination,
             source,
+            ..
         } => {
             walk_place(destination, true, found);
             walk_place(source, false, found);

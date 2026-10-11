@@ -77,6 +77,7 @@ struct Tables<'m> {
 #[derive(Default)]
 struct Dependencies {
     alloca: bool,
+    win64_va: bool,
     atomic_volatile: bool,
     asm_unwind: bool,
     asm_goto_with_outputs: bool,
@@ -699,6 +700,16 @@ impl<'m> ModuleLowerer<'m> {
                 Item::SupportModule(rust::SupportModule {
                     name: "__slate_atomic128".into(),
                     source: include_str!("support/atomic128.rs").into(),
+                    exports: Vec::new(),
+                }),
+            );
+        }
+        if dependencies.win64_va {
+            items.insert(
+                0,
+                Item::SupportModule(rust::SupportModule {
+                    name: "__slate_win64_va".into(),
+                    source: include_str!("support/win64_va.rs").into(),
                     exports: Vec::new(),
                 }),
             );

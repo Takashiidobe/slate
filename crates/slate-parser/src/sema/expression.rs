@@ -2426,8 +2426,9 @@ impl Lowerer {
                 self.expr(chosen)
             }
             ExprKind::Call { callee, arguments } if va_builtin(callee).is_some() => {
-                let builtin = va_builtin(callee).ok_or(ResolveError::Internal("va builtin"))?;
-                self.va_builtin(e, builtin, arguments)
+                let (builtin, microsoft) =
+                    va_builtin(callee).ok_or(ResolveError::Internal("va builtin"))?;
+                self.va_builtin(e, builtin, microsoft, arguments)
             }
             ExprKind::Call { callee, arguments } => {
                 let (lowered, signature) = self.callee(callee)?;
@@ -2672,13 +2673,22 @@ impl Lowerer {
             }
             ExprKind::VaArg { list, ty } => {
                 let list = self.place(list)?;
-                if !self.types.is_va_list(&list.ty) {
-                    return Err(ResolveError::Internal("va_arg of non-va_list"));
-                }
+                let convention = if self.types.is_va_list(&list.ty) {
+                    VaConvention::Target
+                } else {
+                    VaConvention::Win64
+                };
                 let resolved = self.resolve_type_name(ty)?;
                 let ty = self.types.object_type(resolved, "va_arg of void")?;
                 self.types.storage(ty.clone())?;
-                Ok(self.operand(e, resolved, ValueKind::VaArg { list: list.place }))
+                Ok(self.operand(
+                    e,
+                    resolved,
+                    ValueKind::VaArg {
+                        list: list.place,
+                        convention,
+                    },
+                ))
             }
         }
     }
@@ -2789,43 +2799,51 @@ pub(super) fn constant_p_operand<'e>(callee: &Expr, arguments: &'e [Expr]) -> Op
     }
 }
 
-pub(super) fn va_builtin(callee: &Expr) -> Option<VaBuiltin> {
+pub(super) fn va_builtin(callee: &Expr) -> Option<(VaBuiltin, bool)> {
     let ExprKind::Identifier(name) = &callee.value else {
         return None;
     };
     match name.as_str() {
-        "__builtin_va_start" | "__builtin_c23_va_start" => Some(VaBuiltin::Start),
-        "__builtin_va_end" => Some(VaBuiltin::End),
-        "__builtin_va_copy" => Some(VaBuiltin::Copy),
+        "__builtin_va_start" | "__builtin_c23_va_start" => Some((VaBuiltin::Start, false)),
+        "__builtin_va_end" => Some((VaBuiltin::End, false)),
+        "__builtin_va_copy" => Some((VaBuiltin::Copy, false)),
+        "__builtin_ms_va_start" => Some((VaBuiltin::Start, true)),
+        "__builtin_ms_va_end" => Some((VaBuiltin::End, true)),
+        "__builtin_ms_va_copy" => Some((VaBuiltin::Copy, true)),
         _ => None,
     }
 }
 
 impl Lowerer {
     fn va_list_place(&mut self, argument: &Expr) -> Result<Place, ResolveError> {
-        let place = self.place(argument)?;
-        if !self.types.is_va_list(&place.ty) {
-            return Err(ResolveError::Internal("va builtin on non-va_list"));
-        }
-        Ok(place.place)
+        Ok(self.place(argument)?.place)
     }
 
     fn va_builtin(
         &mut self,
         e: &Expr,
         builtin: VaBuiltin,
+        microsoft: bool,
         arguments: &[Expr],
     ) -> Result<Operand, ResolveError> {
+        let convention = if microsoft {
+            self.types.ms_va_convention()
+        } else {
+            VaConvention::Target
+        };
         let kind = match (builtin, arguments) {
             (VaBuiltin::Start, [list] | [list, _]) => ValueKind::VaStart {
                 list: self.va_list_place(list)?,
+                convention,
             },
             (VaBuiltin::End, [list]) => ValueKind::VaEnd {
                 list: self.va_list_place(list)?,
+                convention,
             },
             (VaBuiltin::Copy, [destination, source]) => ValueKind::VaCopy {
                 destination: self.va_list_place(destination)?,
                 source: self.va_list_place(source)?,
+                convention,
             },
             _ => return Err(ResolveError::Internal("va builtin argument count")),
         };

@@ -1002,7 +1002,7 @@ pub(crate) fn builtin_integer_typedef(name: &str) -> Option<IntegerType> {
 }
 
 pub(crate) fn is_target_builtin_name(name: &str) -> bool {
-    name == "__builtin_va_list"
+    matches!(name, "__builtin_va_list" | "__builtin_ms_va_list")
 }
 
 fn tag_reference(

@@ -15,7 +15,7 @@ use crate::ast::{
 use crate::compiler_args::CompilerFlavor;
 use crate::const_expr::{AssignOp, BinaryOp, PostfixOp, UnaryOp};
 use crate::diagnostics::Warning;
-use crate::ir::{ConversionReason, NumericType, Type, TypeDefinitionKind};
+use crate::ir::{ConversionReason, NumericType, Type, TypeDefinitionKind, VaConvention};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) struct Typed {
@@ -865,7 +865,14 @@ impl TypeResolver {
                 Typed::rvalue(to)
             }
             ExprKind::VaArg { list, ty } => {
-                self.va_list(list, "va_arg of non-va_list")?;
+                let typed = self.typed(list)?;
+                let list_type = self.ir_type(typed.c);
+                let valid = self.is_va_list(&list_type)
+                    || self.ms_va_convention() == VaConvention::Win64
+                        && self.is_ms_va_list(typed.c);
+                if !typed.lvalue || !valid {
+                    return Err(ResolveError::Rejected("va_arg of non-va_list"));
+                }
                 let to = self.type_name(ty)?;
                 let object = self.object_type(to, "va_arg of void")?;
                 self.storage(object)?;
@@ -954,7 +961,12 @@ impl TypeResolver {
             self.choices.insert(e.id, Choice::Operand(chosen.id));
             return self.typed(chosen);
         }
-        if let Some(builtin) = va_builtin(callee) {
+        if let Some((builtin, microsoft)) = va_builtin(callee) {
+            if microsoft && !self.has_ms_va_list() {
+                return Err(ResolveError::Rejected(
+                    "this builtin is only available on x86-64 and aarch64 targets",
+                ));
+            }
             let lists = match (builtin, arguments) {
                 (VaBuiltin::Start, [list] | [list, _]) | (VaBuiltin::End, [list]) => {
                     std::slice::from_ref(list)
@@ -962,8 +974,20 @@ impl TypeResolver {
                 (VaBuiltin::Copy, lists @ [_, _]) => lists,
                 _ => return Err(ResolveError::Rejected("va builtin argument count")),
             };
+            if matches!(builtin, VaBuiltin::Start) {
+                self.va_start_context(microsoft)?;
+            }
             for list in lists {
-                self.va_list(list, "va builtin on non-va_list")?;
+                let typed = self.typed(list)?;
+                let valid = if microsoft {
+                    self.is_ms_va_list(typed.c)
+                } else {
+                    let ty = self.ir_type(typed.c);
+                    self.is_va_list(&ty)
+                };
+                if !typed.lvalue || !valid {
+                    return Err(ResolveError::Rejected("va builtin on non-va_list"));
+                }
             }
             return Ok(Typed::rvalue(self.ctypes.qual(CTypeKind::Void)));
         }
@@ -2084,15 +2108,6 @@ impl TypeResolver {
                 "invalid application of _Countof to a non-array type",
             )),
         }
-    }
-
-    fn va_list(&mut self, list: &Expr, reason: &'static str) -> Result<(), ResolveError> {
-        let typed = self.typed(list)?;
-        let ty = self.ir_type(typed.c);
-        if !typed.lvalue || !self.is_va_list(&ty) {
-            return Err(ResolveError::Rejected(reason));
-        }
-        Ok(())
     }
 
     fn real_floating_pair(

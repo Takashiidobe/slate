@@ -759,21 +759,26 @@ impl Hoister {
                 ordering: self.ordering(ordering, out)?,
             },
             ValueKind::AddressOf(place) => ValueKind::AddressOf(self.place(place, out)?),
-            ValueKind::VaArg { list } => ValueKind::VaArg {
+            ValueKind::VaArg { list, convention } => ValueKind::VaArg {
                 list: self.place(list, out)?,
+                convention,
             },
-            ValueKind::VaStart { list } => ValueKind::VaStart {
+            ValueKind::VaStart { list, convention } => ValueKind::VaStart {
                 list: self.place(list, out)?,
+                convention,
             },
-            ValueKind::VaEnd { list } => ValueKind::VaEnd {
+            ValueKind::VaEnd { list, convention } => ValueKind::VaEnd {
                 list: self.place(list, out)?,
+                convention,
             },
             ValueKind::VaCopy {
                 destination,
                 source,
+                convention,
             } => ValueKind::VaCopy {
                 destination: self.place(destination, out)?,
                 source: self.place(source, out)?,
+                convention,
             },
             ValueKind::ArrayDecay { place, length } => ValueKind::ArrayDecay {
                 place: self.place(place, out)?,

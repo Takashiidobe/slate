@@ -64,6 +64,13 @@ impl fmt::Display for CallConv {
     }
 }
 
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub enum VaConvention {
+    #[default]
+    Target,
+    Win64,
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum AbiChunk {
     Integer(u32),

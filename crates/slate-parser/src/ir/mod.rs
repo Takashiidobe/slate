@@ -8,7 +8,7 @@ mod module_print;
 mod names;
 mod numeric;
 
-pub use abi::{AbiChunk, AbiConvention, AbiPass, AbiSignature, CallConv};
+pub use abi::{AbiChunk, AbiConvention, AbiPass, AbiSignature, CallConv, VaConvention};
 pub use asm::{
     AsmAccess, AsmClobber, AsmConstraint, AsmConstraintAlternative, AsmConstraintLocation,
     AsmConstraintModifier, AsmDialect, AsmDirection, AsmMemory, AsmOperand, AsmOperandClass,
@@ -138,6 +138,7 @@ pub enum ValueKind {
     AddressOf(Place),
     VaArg {
         list: Place,
+        convention: VaConvention,
     },
     StatementExpression(Box<Evaluation>),
     Capture {
@@ -147,13 +148,16 @@ pub enum ValueKind {
     },
     VaStart {
         list: Place,
+        convention: VaConvention,
     },
     VaEnd {
         list: Place,
+        convention: VaConvention,
     },
     VaCopy {
         destination: Place,
         source: Place,
+        convention: VaConvention,
     },
     Convert {
         kind: ConversionKind,
@@ -503,9 +507,13 @@ impl Value {
                 atomic::format_ordering(f, ordering.as_ref(), compact)?;
                 write!(f, ">({})", place.display_mode(compact))
             }
-            ValueKind::VaArg { list } => {
-                write!(f, "va_arg<{}>({})", self.ty, list.display_mode(compact))
-            }
+            ValueKind::VaArg { list, convention } => write!(
+                f,
+                "va_arg<{}{}>({})",
+                self.ty,
+                va_convention_suffix(*convention),
+                list.display_mode(compact)
+            ),
             ValueKind::StatementExpression(evaluation) => write!(
                 f,
                 "statement_expression<{}, statements={}>({})",
@@ -527,14 +535,26 @@ impl Value {
                     .display_metadata(show_spans, metadata)
                     .with_compact(compact)
             ),
-            ValueKind::VaStart { list } => write!(f, "va_start({})", list.display_mode(compact)),
-            ValueKind::VaEnd { list } => write!(f, "va_end({})", list.display_mode(compact)),
+            ValueKind::VaStart { list, convention } => write!(
+                f,
+                "va_start{}({})",
+                va_convention_marker(*convention),
+                list.display_mode(compact)
+            ),
+            ValueKind::VaEnd { list, convention } => write!(
+                f,
+                "va_end{}({})",
+                va_convention_marker(*convention),
+                list.display_mode(compact)
+            ),
             ValueKind::VaCopy {
                 destination,
                 source,
+                convention,
             } => write!(
                 f,
-                "va_copy({}, {})",
+                "va_copy{}({}, {})",
+                va_convention_marker(*convention),
                 destination.display_mode(compact),
                 source.display_mode(compact)
             ),
@@ -910,4 +930,18 @@ fn format_floating(f: &mut fmt::Formatter<'_>, floating: FloatingSemantics) -> f
         },
         exceptions_name(floating.exceptions)
     )
+}
+
+fn va_convention_suffix(convention: VaConvention) -> &'static str {
+    match convention {
+        VaConvention::Target => "",
+        VaConvention::Win64 => ", win64",
+    }
+}
+
+fn va_convention_marker(convention: VaConvention) -> &'static str {
+    match convention {
+        VaConvention::Target => "",
+        VaConvention::Win64 => "<win64>",
+    }
 }
