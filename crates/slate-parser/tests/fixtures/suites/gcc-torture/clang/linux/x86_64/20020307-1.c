@@ -218,7 +218,7 @@ int main() {
 // DEFAULT-NEXT:         if ge<u64>(and<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(read<i64>(%[[VALUE_j_29]])), sub<u64, overflow=wrap>(shl<u64, overflow=wrap, amount_out_of_range=ub>(const<u64>(1), const<i32>(31)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))))), add<u64, overflow=wrap>(shl<u64, overflow=wrap, amount_out_of_range=ub>(const<u64>(1), sub<i32, overflow=ub>(const<i32>(31), const<i32>(1))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(i64) -> void>(%[[VALUE_f3]], widen<i64, reason=arg>(const<i32>(0)));
 // DEFAULT-NEXT:         call<void, signature=fn(i64) -> void>(%[[VALUE_f4]], widen<i64, reason=arg>(const<i32>(0)));
 // DEFAULT-NEXT:         call<void, signature=fn(i64) -> void>(%[[VALUE_f5]], widen<i64, reason=arg>(const<i32>(0)));

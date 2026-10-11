@@ -1,3 +1,4 @@
+// SLATE-FILECHECK-STD CHECK gnu23
 // SLATE-FILECHECK-DEFINES CHECK
 // SLATE-FILECHECK-ARGS --dump-ir-expressions -ftrapping-math
 

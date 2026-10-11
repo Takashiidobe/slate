@@ -54,7 +54,7 @@ int main() {
 // DEFAULT-NEXT:             return shr<i64, amount_out_of_range=ub, fill=sign_extend>(read<i64>(%[[VALUE_x_3]]), const<i32>(16));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ge<i64>(call<i64, signature=fn(i64) -> i64>(%[[VALUE_bar]], read<i64>(%[[VALUE_x]])), widen<i64, reason=usual_arith>(const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);

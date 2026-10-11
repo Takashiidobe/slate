@@ -149,7 +149,7 @@ int main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(7)>(%[[VALUE_count]]), const<i32>(0)))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(7)>(%[[VALUE_extent]]), const<i32>(0)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_rdata:[0-9]+]] rdata: array<i32, 3> [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_adata:[0-9]+]] adata: array<i32, 9> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %[[VALUE_retarray_2:[0-9]+]] retarray: @type[[TYPE0]] [storage=automatic] = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = array_decay<ptr<i32>, length=Some(3)>(%[[VALUE_rdata]]), field1 = const<i32>(265), field2 = aggregate<array<@type[[TYPE_descriptor_dimension]], 7>, zero_fill=true>(index0 = aggregate<@type[[TYPE_descriptor_dimension]], zero_fill=false>(field0 = const<i32>(1), field1 = const<i32>(1), field2 = const<i32>(3))));

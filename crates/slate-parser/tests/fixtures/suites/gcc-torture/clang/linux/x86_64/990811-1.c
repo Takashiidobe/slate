@@ -84,7 +84,7 @@ int main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_s:[0-9]+]] s: @type[[TYPE_s]] [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_sh:[0-9]+]] sh: array<i16, 10> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: array<i8, 10> [storage=automatic];

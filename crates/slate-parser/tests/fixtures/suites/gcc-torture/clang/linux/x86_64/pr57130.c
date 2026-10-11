@@ -61,7 +61,7 @@ int main() {
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_S]]>>(%[[VALUE_r]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_S]]>>(deref(ptr_offset<ptr<@type[[TYPE_S]]>, subtract=false, element=@type[[TYPE_S]], overflow=ub>(array_decay<ptr<@type[[TYPE_S]]>, length=Some(2)>(%[[VALUE_s]]), read<i32>(%[[VALUE3]]))))), const<u64>(16)), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_r_2:[0-9]+]] r: @type[[TYPE_S]] [storage=automatic] = aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = const<i32>(6), field1 = const<i32>(8), field2 = neg<i32, overflow=ub>(const<i32>(8)), field3 = neg<i32, overflow=ub>(const<i32>(5)));
 // DEFAULT-NEXT:         call<void, signature=fn(@type[[TYPE_S]]) -> void, abi=sysv64(native_c) -> void>(%[[VALUE_foo]], copy<@type[[TYPE_S]], reason=arg>(read<@type[[TYPE_S]]>(%[[VALUE_r_2]])));
 // DEFAULT-NEXT:         write<@type[[TYPE_S]]>(%[[VALUE_r_2]], copy<@type[[TYPE_S]], reason=assign>(read<@type[[TYPE_S]]>(compound_literal %[[VALUE5:[0-9]+]] [storage=automatic] = aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(2), field2 = neg<i32, overflow=ub>(const<i32>(1)), field3 = const<i32>(2)))));

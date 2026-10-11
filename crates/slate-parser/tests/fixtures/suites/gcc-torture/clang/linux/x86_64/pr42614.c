@@ -89,7 +89,7 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_malloc:[0-9]+]] @malloc(%[[VALUE0:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_free:[0-9]+]] @free(%[[VALUE1:[0-9]+]] <unnamed>: ptr<void>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_init:[0-9]+]] @init() -> ptr<@type[[TYPE_STable]]> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_init:[0-9]+]] @init(unprototyped) -> ptr<@type[[TYPE_STable]]> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return pointer_cast<ptr<@type[[TYPE_STable]]>, reason=return>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], const<u64>(2)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_expect_func:[0-9]+]] @expect_func(%[[VALUE_a:[0-9]+]] a: i32, %[[VALUE_b:[0-9]+]] b: ptr<u8>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
@@ -124,9 +124,9 @@ int main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abs]] @__builtin_abs(%[[VALUE8:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_index_2:[0-9]+]] index: u8 [storage=automatic] = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:         let %[[VALUE_table_p:[0-9]+]] table_p: ptr<@type[[TYPE_STable]]> [storage=automatic] = call<ptr<@type[[TYPE_STable]]>, signature=fn() -> ptr<@type[[TYPE_STable]]>>(%[[VALUE_init]]);
+// DEFAULT-NEXT:         let %[[VALUE_table_p:[0-9]+]] table_p: ptr<@type[[TYPE_STable]]> [storage=automatic] = call<ptr<@type[[TYPE_STable]]>, signature=fn(unprototyped) -> ptr<@type[[TYPE_STable]]>>(%[[VALUE_init]]);
 // DEFAULT-NEXT:         let %[[VALUE_work:[0-9]+]] work: @type[[TYPE_SEntry]] [storage=automatic];
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE_SEntry]]>, i32) -> void>(%[[VALUE_inlined_wrong]], addr_of<ptr<@type[[TYPE_SEntry]]>>(deref(ptr_offset<ptr<@type[[TYPE_SEntry]]>, subtract=false, element=@type[[TYPE_SEntry]], overflow=ub>(array_decay<ptr<@type[[TYPE_SEntry]]>, length=Some(2)>(field0(deref(read<ptr<@type[[TYPE_STable]]>>(%[[VALUE_table_p]])))), const<i32>(1)))), const<i32>(1));
 // DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<u8>) -> void>(%[[VALUE_expect_func]], const<i32>(1), addr_of<ptr<u8>>(%[[VALUE_index_2]]));

@@ -196,7 +196,7 @@ int main() {
 // DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(8)>(%[[VALUE_r_3]]), read<i32>(%[[VALUE_i_3]]))), pointer_cast<ptr<const void>, reason=arg>(ptr_offset<ptr<const f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<const f80>, length=Some(8)>(%[[VALUE_Zl]]), read<i32>(%[[VALUE_i_3]]))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(10)))), const<i32>(0))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_testf]]);
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_test]]);
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_testl]]);

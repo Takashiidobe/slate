@@ -33,7 +33,7 @@ foo ()
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     extern %[[VALUE_Y:[0-9]+]] Y: i64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i64 [synthetic] = read<i64>(%[[VALUE_Y]]);
 // DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE0]]), widen<i64, reason=usual_arith>(const<i32>(1)));
 // DEFAULT-NEXT:         write<i64>(%[[VALUE_Y]], read<i64>(%[[VALUE1]]));

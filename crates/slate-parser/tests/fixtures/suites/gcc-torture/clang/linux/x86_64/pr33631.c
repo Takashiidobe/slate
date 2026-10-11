@@ -49,7 +49,7 @@ int main() {
 // DEFAULT-NEXT:         field1 m: @type[[TYPE0]];
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_r:[0-9]+]] r: @type[[TYPE1]] [storage=automatic] = aggregate<@type[[TYPE1]], zero_fill=true>(field1 = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = const<i32>(0)));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(field0(%[[VALUE_r]])), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);

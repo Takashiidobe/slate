@@ -63,8 +63,8 @@ int main() {
 // DEFAULT-NEXT:     } [size=8, align=1, offsets=[0, 2, 4]];
 // DEFAULT-NEXT:     global %[[VALUE_node:[0-9]+]] node: @type[[TYPE_node]] [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_node_p:[0-9]+]] node_p: ptr<@type[[TYPE_node]]> [storage=static] = addr_of<ptr<@type[[TYPE_node]]>>(%[[VALUE_node]]) [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort(unprototyped) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_marker:[0-9]+]] marker: @type[[TYPE_node]] [storage=automatic] = aggregate<@type[[TYPE_node]], zero_fill=false>(field0 = copy<@type[[TYPE0]], reason=assign>(read<@type[[TYPE0]]>(compound_literal %[[VALUE0:[0-9]+]] [storage=automatic] = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = truncate<i16, reason=assign, fits=always>(const<i32>(6533))))), field1 = copy<@type[[TYPE0]], reason=assign>(read<@type[[TYPE0]]>(compound_literal %[[VALUE1:[0-9]+]] [storage=automatic] = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = truncate<i16, reason=assign, fits=always>(const<i32>(8195))))), field2 = read<i32>(field2(deref(read<ptr<@type[[TYPE_node]]>>(%[[VALUE_node_p]])))));
 // DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16>(field0(field0(%[[VALUE_marker]])))), const<i32>(6533))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);

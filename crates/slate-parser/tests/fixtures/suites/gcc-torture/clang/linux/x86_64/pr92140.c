@@ -181,7 +181,7 @@ int main() {
 // DEFAULT-NEXT:         return reinterpret<u32, reason=return, fits=unknown>(conditional<i32>(ne<u32>(read<u32>(%[[VALUE_n]]), const<u32>(0)), const<i32>(2), const<i32>(1)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
 // DEFAULT-NEXT:         for %[[VALUE28:[0-9]+]]
 // DEFAULT-NEXT:             init:

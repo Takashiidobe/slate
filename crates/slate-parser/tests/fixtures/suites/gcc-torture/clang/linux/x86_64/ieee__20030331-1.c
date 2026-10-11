@@ -56,7 +56,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_fabs:[0-9]+]] @__builtin_fabs(%[[VALUE1:[0-9]+]] <unnamed>: f64) -> f64 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %[[VALUE_rintf:[0-9]+]] @rintf() -> f32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_rintf:[0-9]+]] @rintf(unprototyped) -> f32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if lt<f64, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(%[[VALUE___builtin_fabs]], float_widen<f64, reason=arg>(read<f32>(%[[VALUE_x]]))), float_widen<f64, reason=usual_arith>(read<f32>(%[[VALUE_TWO23]])))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if gt<f64, exceptions=ignore>(float_widen<f64, reason=usual_arith>(read<f32>(%[[VALUE_x]])), const<f64>(0.0))
@@ -78,7 +78,7 @@ int main(void) {
 // DEFAULT-NEXT:         return read<f32>(%[[VALUE_x]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(float_widen<f64, reason=usual_arith>(call<f32, signature=fn() -> f32>(%[[VALUE_rintf]])), neg<f64>(const<f64>(2.0)))
+// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(float_widen<f64, reason=usual_arith>(call<f32, signature=fn(unprototyped) -> f32>(%[[VALUE_rintf]])), neg<f64>(const<f64>(2.0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }

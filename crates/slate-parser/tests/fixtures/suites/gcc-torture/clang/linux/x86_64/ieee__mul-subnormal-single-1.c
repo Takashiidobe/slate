@@ -133,7 +133,7 @@ int main() {
 // DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(f32) -> u32>(%[[VALUE_f2u]], mul<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(%[[VALUE_x]]), read<f32>(%[[VALUE_y]]))), read<u32>(%[[VALUE_ur]]))
 // DEFAULT-NEXT:             write<i32>(%[[VALUE_ok]], const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: u32 [storage=automatic];
 // DEFAULT-NEXT:         for %[[VALUE1:[0-9]+]]
 // DEFAULT-NEXT:             init:

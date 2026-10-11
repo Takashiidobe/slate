@@ -79,9 +79,9 @@ reset_lists ()
 // DEFAULT-NEXT:         %[[VALUE_COLORED:[0-9]+]] COLORED = const<i32>(11);
 // DEFAULT-NEXT:         %[[VALUE_LAST_NODE_TYPE:[0-9]+]] LAST_NODE_TYPE = const<i32>(12);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     fn %[[VALUE_INITIAL]] @foo() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_FREE]] @bar() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_PRECOLORED]] @baz() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_INITIAL]] @foo(unprototyped) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_FREE]] @bar(unprototyped) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_PRECOLORED]] @baz(unprototyped) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_put_web:[0-9]+]] @put_web(%[[VALUE_type:[0-9]+]] type: @type[[TYPE_node_type]]) -> void [linkage=external] [inline=hint] [definition=inline_only] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         switch %[[VALUE0:[0-9]+]] enum_to_int<u32, reason=promotion>(read<@type[[TYPE_node_type]]>(%[[VALUE_type]]))
 // DEFAULT-NEXT:             {
@@ -89,16 +89,16 @@ reset_lists ()
 // DEFAULT-NEXT:                     case %[[VALUE0]] const<u32>(1):
 // DEFAULT-NEXT:                         case %[[VALUE0]] const<u32>(6):
 // DEFAULT-NEXT:                             case %[[VALUE0]] const<u32>(7):
-// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(%[[VALUE_INITIAL]]);
+// DEFAULT-NEXT:                                 call<void, signature=fn(unprototyped) -> void>(%[[VALUE_INITIAL]]);
 // DEFAULT-NEXT:                 break %[[VALUE0]];
 // DEFAULT-NEXT:                 case %[[VALUE0]] const<u32>(2):
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_FREE]]);
+// DEFAULT-NEXT:                     call<void, signature=fn(unprototyped) -> void>(%[[VALUE_FREE]]);
 // DEFAULT-NEXT:                 break %[[VALUE0]];
 // DEFAULT-NEXT:                 default %[[VALUE0]]:
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_PRECOLORED]]);
+// DEFAULT-NEXT:                     call<void, signature=fn(unprototyped) -> void>(%[[VALUE_PRECOLORED]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_reset_lists:[0-9]+]] @reset_lists() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_reset_lists:[0-9]+]] @reset_lists(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         call<void, signature=fn(@type[[TYPE_node_type]]) -> void>(%[[VALUE_put_web]], int_to_enum<@type[[TYPE_node_type]], reason=arg>(reinterpret<u32, reason=arg, fits=always>(const<i32>(0))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

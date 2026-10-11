@@ -39,7 +39,7 @@ foo ()
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %[[VALUE_bar:[0-9]+]] bar: array<f64, 1> [storage=static] [const] = aggregate<array<f64, 1>, zero_fill=false>(index0 = int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(0))) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_j:[0-9]+]] j: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> f64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(unprototyped) -> f64 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return read<f64>(deref(ptr_offset<ptr<const f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<const f64>, length=Some(1)>(%[[VALUE_bar]]), read<i32>(%[[VALUE_j]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

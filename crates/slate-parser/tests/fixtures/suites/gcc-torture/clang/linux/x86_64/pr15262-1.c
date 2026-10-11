@@ -78,7 +78,7 @@ int main(void) {
 // DEFAULT-NEXT:         field1 i: i32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(3);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_malloc:[0-9]+]] @__builtin_malloc(%[[VALUE0:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
@@ -92,7 +92,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_T356:[0-9]+]] T356: ptr<i32> [storage=automatic];
 // DEFAULT-NEXT:         write<f32>(%[[VALUE_f]], int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(3)));
 // DEFAULT-NEXT:         write<f32>(%[[VALUE_g]], int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(2)));
-// DEFAULT-NEXT:         write<ptr<f32>>(%[[VALUE_p]], conditional<ptr<f32>>(ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_foo]]), const<i32>(0)), addr_of<ptr<f32>>(%[[VALUE_g]]), addr_of<ptr<f32>>(%[[VALUE_f]])));
+// DEFAULT-NEXT:         write<ptr<f32>>(%[[VALUE_p]], conditional<ptr<f32>>(ne<i32>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_foo]]), const<i32>(0)), addr_of<ptr<f32>>(%[[VALUE_g]]), addr_of<ptr<f32>>(%[[VALUE_f]])));
 // DEFAULT-NEXT:         if gt<f64, exceptions=ignore>(float_widen<f64, reason=usual_arith>(read<f32>(deref(read<ptr<f32>>(%[[VALUE_p]])))), const<f64>(0.0))
 // DEFAULT-NEXT:             write<f32>(%[[VALUE_g]], int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_A]]>>(%[[VALUE_locp]], pointer_cast<ptr<@type[[TYPE_A]]>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_malloc]], const<u64>(8))));

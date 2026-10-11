@@ -82,7 +82,7 @@ int main() {
 // DEFAULT-NEXT:         write<@type[[TYPE_s]]>(deref(read<ptr<@type[[TYPE_s]]>>(%[[VALUE_q]])), copy<@type[[TYPE_s]], reason=assign>(call<@type[[TYPE_s]], signature=fn() -> @type[[TYPE_s]], abi=sysv64() -> native_c>(%[[VALUE_rp]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
 // DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:

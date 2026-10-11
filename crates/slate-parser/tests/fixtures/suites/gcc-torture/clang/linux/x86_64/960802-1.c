@@ -61,14 +61,14 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_f3:[0-9]+]] @f3(%[[VALUE_b:[0-9]+]] b: i64) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<i64>(%[[VALUE_val]], read<i64>(%[[VALUE_b]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_f4:[0-9]+]] @f4() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_f4:[0-9]+]] @f4(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_v:[0-9]+]] v: i64 [storage=automatic] = call<i64, signature=fn() -> i64>(%[[VALUE_f1]]);
 // DEFAULT-NEXT:         let %[[VALUE_o:[0-9]+]] o: i64 [storage=automatic] = call<i64, signature=fn() -> i64>(%[[VALUE_f2]]);
 // DEFAULT-NEXT:         write<i64>(%[[VALUE_v]], or<i64>(and<i64>(read<i64>(%[[VALUE_v]]), widen<i64, reason=usual_arith>(const<i32>(16777215))), and<i64>(read<i64>(%[[VALUE_o]]), reinterpret<i64, reason=usual_arith, fits=unknown>(widen<u64, reason=usual_arith>(const<u32>(4278190080))))));
 // DEFAULT-NEXT:         call<void, signature=fn(i64) -> void>(%[[VALUE_f3]], read<i64>(%[[VALUE_v]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_f4]]);
+// DEFAULT-NEXT:         call<void, signature=fn(unprototyped) -> void>(%[[VALUE_f4]]);
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(%[[VALUE_val]]), widen<i64, reason=usual_arith>(const<i32>(1577058610)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));

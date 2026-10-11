@@ -85,7 +85,7 @@ int main() {
 // DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<va_list>) -> void>(%[[VALUE_bar]], read<i32>(%[[VALUE_x_2]]), conditional<ptr<va_list>>(eq<i32>(read<i32>(%[[VALUE_n]]), const<i32>(0)), null<ptr<va_list>>, addr_of<ptr<va_list>>(%[[VALUE_ap_2]])));
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_2]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%[[VALUE_foo]], const<i32>(100), const<i32>(1), const<i32>(0), const<i32>(1), const<i32>(2), const<i32>(3), const<i32>(4), const<i32>(5), const<i32>(6), const<i32>(7), const<i32>(8), const<i32>(9), const<f64>(0.5));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

@@ -61,7 +61,7 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE___ev_convert_s64:[0-9]+]] @__ev_convert_s64(%[[VALUE_a:[0-9]+]] a: vector<i32, 2>) -> i64 [linkage=internal] [inline=hint] [definition=emitted] [abi=sysv64(coerce<f64>) -> scalar] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return vector_bit_cast<i64, reason=explicit>(read<vector<i32, 2>>(%[[VALUE_a]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_endianness_test:[0-9]+]] endianness_test: @type[[TYPE0]] [storage=automatic];
 // DEFAULT-NEXT:         write<i64>(field0(%[[VALUE_endianness_test]]), widen<i64, reason=assign>(const<i32>(1)));
 // DEFAULT-NEXT:         let %[[VALUE_little_endian:[0-9]+]] little_endian: i32 [storage=automatic] = read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(field1(%[[VALUE_endianness_test]])), const<i32>(0))));

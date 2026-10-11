@@ -53,7 +53,7 @@ int main() {
 // DEFAULT-NEXT:         return add<u64, overflow=wrap>(read<u64>(%[[VALUE_a]]), read<u64>(%[[VALUE_b]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(u64, u64, u64) -> u64>(%[[VALUE_foo]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(64))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(7))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(0)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(10))))
 // DEFAULT-NEXT:             write<bool>(%[[VALUE4]], const<bool>(true));

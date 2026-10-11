@@ -38,7 +38,7 @@ void foo() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %[[VALUE_bar:[0-9]+]] bar: i64 [storage=static] [linkage=internal];
 // DEFAULT-NEXT:     extern %[[VALUE_bar_2:[0-9]+]] bar: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }

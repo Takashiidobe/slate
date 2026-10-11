@@ -45,7 +45,7 @@ int main() {
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i64>(read<i64>(deref(read<ptr<i64>>(%[[VALUE_b]]))), widen<i64, reason=usual_arith>(const<i32>(1))), ne<i64>(read<i64>(deref(read<ptr<i64>>(%[[VALUE_c]]))), widen<i64, reason=usual_arith>(const<i32>(2)))), ne<u32>(read<u32>(deref(read<ptr<u32>>(%[[VALUE_d]]))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(3))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_a_2:[0-9]+]] a: u8 [storage=automatic] = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:         let %[[VALUE_b_2:[0-9]+]] b: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(1)));
 // DEFAULT-NEXT:         let %[[VALUE_c_2:[0-9]+]] c: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(2)));

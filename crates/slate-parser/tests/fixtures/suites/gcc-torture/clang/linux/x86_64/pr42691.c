@@ -90,7 +90,7 @@ int main() {
 // DEFAULT-NEXT:             write<f64>(deref(read<ptr<f64>>(%[[VALUE_deletedEntry]])), const<f64>(0.0));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_infinit:[0-9]+]] infinit: @type[[TYPE__D_rep]] [storage=automatic] = aggregate<@type[[TYPE__D_rep]], zero_fill=false>(field0 = aggregate<array<u16, 4>, zero_fill=false>(index0 = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(0))), index1 = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(0))), index2 = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(0))), index3 = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(32752)))));
 // DEFAULT-NEXT:         let %[[VALUE_table_2:[0-9]+]] table: array<f64, 2> [storage=automatic] [align=16] = aggregate<array<f64, 2>, zero_fill=false>(index0 = read<f64>(field1(%[[VALUE_infinit]])), index1 = int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(23)));
 // DEFAULT-NEXT:         let %[[VALUE_key_2:[0-9]+]] key: f64 [storage=automatic] = int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(23));

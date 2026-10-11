@@ -47,14 +47,14 @@ int main() {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %[[VALUE_q:[0-9]+]] q: ptr<i16> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort(unprototyped) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_p:[0-9]+]] p: ptr<i16>) -> i64 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: i64 [storage=automatic] = widen<i64, reason=assign>(read<i16>(deref(read<ptr<i16>>(%[[VALUE_p]]))));
 // DEFAULT-NEXT:         write<ptr<i16>>(%[[VALUE_q]], ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(read<ptr<i16>>(%[[VALUE_p]]), const<i32>(1)));
 // DEFAULT-NEXT:         return read<i64>(%[[VALUE_b]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: i16 [storage=automatic] = truncate<i16, reason=assign, fits=unknown>(const<i32>(65280));
 // DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(ptr<i16>) -> i64>(%[[VALUE_foo]], addr_of<ptr<i16>>(%[[VALUE_a]])), widen<i64, reason=explicit>(truncate<i16, reason=explicit, fits=unknown>(const<i32>(65280))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);

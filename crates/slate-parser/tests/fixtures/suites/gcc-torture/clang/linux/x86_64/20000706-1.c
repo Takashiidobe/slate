@@ -67,7 +67,7 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x_2:[0-9]+]] x: @type[[TYPE_baz]], %[[VALUE_y:[0-9]+]] y: ptr<ptr<i8>>) -> void [linkage=external] [abi=sysv64(native_c, scalar) -> void] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE_baz]]>, i32, i32, i32, i32, i32) -> void>(%[[VALUE_bar]], addr_of<ptr<@type[[TYPE_baz]]>>(%[[VALUE_x_2]]), const<i32>(6), const<i32>(7), const<i32>(8), const<i32>(9), const<i32>(10));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_x_3:[0-9]+]] x: @type[[TYPE_baz]] [storage=automatic];
 // DEFAULT-NEXT:         write<i32>(field0(%[[VALUE_x_3]]), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(field1(%[[VALUE_x_3]]), const<i32>(2));

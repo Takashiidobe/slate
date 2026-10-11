@@ -49,7 +49,7 @@ int main() {
 // DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: array<@type[[TYPE_S]], 2> [storage=static] = aggregate<array<@type[[TYPE_S]], 2>, zero_fill=false>(index0 = aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = neg<i32, overflow=ub>(const<i32>(1)), field1 = reinterpret<u32, reason=assign, fits=always>(const<i32>(0))), index1 = aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = neg<i32, overflow=ub>(const<i32>(1)), field1 = reinterpret<u32, reason=assign, fits=always>(const<i32>(0)))) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: @type[[TYPE_S]] [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_e:[0-9]+]] e: @type[[TYPE_S]] [storage=automatic] = copy<@type[[TYPE_S]], reason=assign>(read<@type[[TYPE_S]]>(deref(ptr_offset<ptr<@type[[TYPE_S]]>, subtract=false, element=@type[[TYPE_S]], overflow=ub>(array_decay<ptr<@type[[TYPE_S]]>, length=Some(2)>(%[[VALUE_c]]), const<i32>(0)))));
 // DEFAULT-NEXT:         write<@type[[TYPE_S]]>(%[[VALUE_d]], copy<@type[[TYPE_S]], reason=assign>(read<@type[[TYPE_S]]>(%[[VALUE_e]])));
 // DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..3, bits=16..17>(%[[VALUE_d]]))), const<i32>(0))

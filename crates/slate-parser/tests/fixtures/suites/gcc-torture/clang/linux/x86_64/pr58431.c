@@ -65,7 +65,7 @@ int main() {
 // DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: volatile i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_i:[0-9]+]] i: i16 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_m:[0-9]+]] m: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i16 [synthetic] = read<i16>(%[[VALUE_i]]);
 // DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i16 [synthetic] = truncate<i16, reason=assign, fits=unknown>(xor<i32>(widen<i32, reason=promotion>(read<i16>(%[[VALUE0]])), const<i32>(1)));

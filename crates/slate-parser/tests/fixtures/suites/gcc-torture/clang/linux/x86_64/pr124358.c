@@ -49,7 +49,7 @@ int main() {
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_d]]), read<i32>(%[[VALUE0]]))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: array<array<i32, 4>, 1> [storage=automatic] [align=16] = aggregate<array<array<i32, 4>, 1>, zero_fill=false>(index0 = aggregate<array<i32, 4>, zero_fill=false>(index0 = const<i32>(11), index1 = const<i32>(12), index2 = const<i32>(13), index3 = const<i32>(14)));
 // DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<array<i32, 4>> [storage=automatic] = array_decay<ptr<array<i32, 4>>, length=Some(1)>(%[[VALUE_a]]);
 // DEFAULT-NEXT:         for %[[VALUE2:[0-9]+]]

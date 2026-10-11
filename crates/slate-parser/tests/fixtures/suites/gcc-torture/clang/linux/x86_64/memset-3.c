@@ -261,7 +261,7 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_memset:[0-9]+]] @memset(%[[VALUE___s:[0-9]+]] __s: ptr<void>, %[[VALUE___c:[0-9]+]] __c: i32, %[[VALUE___n:[0-9]+]] __n: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_reset:[0-9]+]] @reset() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_reset:[0-9]+]] @reset(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
 // DEFAULT-NEXT:         for %[[VALUE1:[0-9]+]]
 // DEFAULT-NEXT:             init:
@@ -329,7 +329,7 @@ int main() {
 // DEFAULT-NEXT:                 if ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(read<ptr<i8>>(%[[VALUE_q]])))), const<i32>(97))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_len_2:[0-9]+]] len: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<i8> [storage=automatic];
 // DEFAULT-NEXT:         for %[[VALUE19:[0-9]+]]
@@ -344,7 +344,7 @@ int main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_reset]]);
+// DEFAULT-NEXT:                     call<void, signature=fn(unprototyped) -> void>(%[[VALUE_reset]]);
 // DEFAULT-NEXT:                     write<ptr<i8>>(%[[VALUE_p]], pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE_memset]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(31)>(field0(%[[VALUE_u]]))), const<i32>(0), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%[[VALUE_len_2]]))))));
 // DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%[[VALUE_p]]), array_decay<ptr<i8>, length=Some(31)>(field0(%[[VALUE_u]])))
 // DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%[[VALUE_abort]]);
@@ -370,7 +370,7 @@ int main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_reset]]);
+// DEFAULT-NEXT:                     call<void, signature=fn(unprototyped) -> void>(%[[VALUE_reset]]);
 // DEFAULT-NEXT:                     write<ptr<i8>>(%[[VALUE_p]], pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE_memset]], pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%[[VALUE_u]])), const<i32>(1))), const<i32>(0), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%[[VALUE_len_2]]))))));
 // DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%[[VALUE_p]]), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%[[VALUE_u]])), const<i32>(1)))
 // DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%[[VALUE_abort]]);
@@ -396,7 +396,7 @@ int main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_reset]]);
+// DEFAULT-NEXT:                     call<void, signature=fn(unprototyped) -> void>(%[[VALUE_reset]]);
 // DEFAULT-NEXT:                     write<ptr<i8>>(%[[VALUE_p]], pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE_memset]], pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%[[VALUE_u]])), const<i32>(2))), const<i32>(0), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%[[VALUE_len_2]]))))));
 // DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%[[VALUE_p]]), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%[[VALUE_u]])), const<i32>(2)))
 // DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%[[VALUE_abort]]);
@@ -422,7 +422,7 @@ int main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_reset]]);
+// DEFAULT-NEXT:                     call<void, signature=fn(unprototyped) -> void>(%[[VALUE_reset]]);
 // DEFAULT-NEXT:                     write<ptr<i8>>(%[[VALUE_p]], pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE_memset]], pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%[[VALUE_u]])), const<i32>(3))), const<i32>(0), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%[[VALUE_len_2]]))))));
 // DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%[[VALUE_p]]), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%[[VALUE_u]])), const<i32>(3)))
 // DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%[[VALUE_abort]]);
@@ -448,7 +448,7 @@ int main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_reset]]);
+// DEFAULT-NEXT:                     call<void, signature=fn(unprototyped) -> void>(%[[VALUE_reset]]);
 // DEFAULT-NEXT:                     write<ptr<i8>>(%[[VALUE_p]], pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE_memset]], pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%[[VALUE_u]])), const<i32>(4))), const<i32>(0), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%[[VALUE_len_2]]))))));
 // DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%[[VALUE_p]]), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%[[VALUE_u]])), const<i32>(4)))
 // DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%[[VALUE_abort]]);
@@ -474,7 +474,7 @@ int main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_reset]]);
+// DEFAULT-NEXT:                     call<void, signature=fn(unprototyped) -> void>(%[[VALUE_reset]]);
 // DEFAULT-NEXT:                     write<ptr<i8>>(%[[VALUE_p]], pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE_memset]], pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%[[VALUE_u]])), const<i32>(5))), const<i32>(0), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%[[VALUE_len_2]]))))));
 // DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%[[VALUE_p]]), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%[[VALUE_u]])), const<i32>(5)))
 // DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%[[VALUE_abort]]);
@@ -500,7 +500,7 @@ int main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_reset]]);
+// DEFAULT-NEXT:                     call<void, signature=fn(unprototyped) -> void>(%[[VALUE_reset]]);
 // DEFAULT-NEXT:                     write<ptr<i8>>(%[[VALUE_p]], pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE_memset]], pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%[[VALUE_u]])), const<i32>(6))), const<i32>(0), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%[[VALUE_len_2]]))))));
 // DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%[[VALUE_p]]), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%[[VALUE_u]])), const<i32>(6)))
 // DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%[[VALUE_abort]]);
@@ -526,7 +526,7 @@ int main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_reset]]);
+// DEFAULT-NEXT:                     call<void, signature=fn(unprototyped) -> void>(%[[VALUE_reset]]);
 // DEFAULT-NEXT:                     write<ptr<i8>>(%[[VALUE_p]], pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE_memset]], pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%[[VALUE_u]])), const<i32>(7))), const<i32>(0), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%[[VALUE_len_2]]))))));
 // DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%[[VALUE_p]]), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%[[VALUE_u]])), const<i32>(7)))
 // DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%[[VALUE_abort]]);

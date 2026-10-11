@@ -52,7 +52,7 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_fn1:[0-9]+]] @fn1(%[[VALUE_p1:[0-9]+]] p1: i32, %[[VALUE_p2:[0-9]+]] p2: i32) -> i16 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(conditional<i32>(ge<i32>(read<i32>(%[[VALUE_p2]]), const<i32>(2)), read<i32>(%[[VALUE_p1]]), from_bool<i32, reason=promotion>(gt<i32>(read<i32>(%[[VALUE_p1]]), read<i32>(%[[VALUE_p2]])))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_e:[0-9]+]] e: ptr<i32> [storage=automatic] = addr_of<ptr<i32>>(%[[VALUE_a]]);
 // DEFAULT-NEXT:         let %[[VALUE_f:[0-9]+]] f: ptr<i32> [storage=automatic] = addr_of<ptr<i32>>(%[[VALUE_a]]);
 // DEFAULT-NEXT:         write<i8>(%[[VALUE_b]], truncate<i8, reason=assign, fits=always>(const<i32>(1)));

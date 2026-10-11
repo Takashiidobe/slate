@@ -69,7 +69,7 @@ int main() {
 // DEFAULT-NEXT:             return int_to_float<f32, reason=return, exact=false, rounding=nearest_even, exceptions=ignore>(read<i32>(deref(read<ptr<i32>>(deref(read<ptr<ptr<i32>>>(%[[VALUE_p_2]]))))));
 // DEFAULT-NEXT:         return read<f32>(%[[VALUE_f]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(float_widen<f64, reason=usual_arith>(call<f32, signature=fn(i32) -> f32>(%[[VALUE_foo]], const<i32>(0))), const<f64>(0.0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);

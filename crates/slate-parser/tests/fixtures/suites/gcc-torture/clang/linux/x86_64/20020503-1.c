@@ -77,7 +77,7 @@ int main() {
 // DEFAULT-NEXT:             write<i8>(deref(read<ptr<i8>>(%[[VALUE6]])), truncate<i8, reason=assign, fits=always>(const<i32>(45)));
 // DEFAULT-NEXT:         return read<ptr<i8>>(%[[VALUE_p]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_buf_2:[0-9]+]] buf: array<i8, 128> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %[[VALUE_p_2:[0-9]+]] p: ptr<i8> [storage=automatic];
 // DEFAULT-NEXT:         write<ptr<i8>>(%[[VALUE_p_2]], call<ptr<i8>, signature=fn(i64, ptr<i8>) -> ptr<i8>>(%[[VALUE_inttostr]], widen<i64, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))), array_decay<ptr<i8>, length=Some(128)>(%[[VALUE_buf_2]])));

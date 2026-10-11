@@ -62,7 +62,7 @@ int main() {
 // DEFAULT-NEXT:         field7 bit7: u32 : 1;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0, 0, 0, 0, 0, 0, 0], bit_offsets=[Some(0), Some(1), Some(2), Some(3), Some(4), Some(5), Some(6), Some(7)], bit_units=[(0, 1)], field_units=[Some(0), Some(0), Some(0), Some(0), Some(0), Some(0), Some(0), Some(0)]];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         let %[[VALUE_sdata:[0-9]+]] sdata: @type[[TYPE0]] [storage=automatic] = aggregate<@type[[TYPE0]], zero_fill=true>(field0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:         while %[[VALUE0:[0-9]+]] {

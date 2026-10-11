@@ -56,7 +56,7 @@ int main() {
 // DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32>(%[[VALUE_a]]), const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_t:[0-9]+]] t: i32 [storage=automatic] = from_bool<i32, reason=assign>(ne<i32>(read<i32>(%[[VALUE_i]]), const<i32>(5)));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_t]], mul<i32, overflow=ub>(read<i32>(%[[VALUE_t]]), const<i32>(5)));
 // DEFAULT-NEXT:         write<i32>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%[[VALUE_f]]), read<i32>(%[[VALUE_t]]));

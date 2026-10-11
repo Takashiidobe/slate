@@ -71,7 +71,7 @@ int main() {
 // DEFAULT-NEXT:         write<i64>(field1(%[[VALUE_s]]), read<i64>(%[[VALUE2]]));
 // DEFAULT-NEXT:         return copy<@type[[TYPE_s]], reason=return>(read<@type[[TYPE_s]]>(%[[VALUE_s]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_s_2:[0-9]+]] s: @type[[TYPE_s]] [storage=automatic] = copy<@type[[TYPE_s]], reason=assign>(call<@type[[TYPE_s]], signature=fn(@type[[TYPE_s]]) -> @type[[TYPE_s]], abi=sysv64(native_c) -> native_c>(%[[VALUE_foo]], copy<@type[[TYPE_s]], reason=arg>(read<@type[[TYPE_s]]>(compound_literal %[[VALUE3:[0-9]+]] [storage=automatic] = aggregate<@type[[TYPE_s]], zero_fill=false>(field0 = truncate<i16, reason=assign, fits=always>(const<i32>(1000)), field1 = const<i64>(2000), field2 = truncate<i16, reason=assign, fits=always>(const<i32>(3000)))))));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i32>(widen<i32, reason=promotion>(read<i16>(field0(%[[VALUE_s_2]]))), const<i32>(1000)), ne<i64>(read<i64>(field1(%[[VALUE_s_2]])), const<i64>(2001))), ne<i32>(widen<i32, reason=promotion>(read<i16>(field2(%[[VALUE_s_2]]))), const<i32>(3000)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);

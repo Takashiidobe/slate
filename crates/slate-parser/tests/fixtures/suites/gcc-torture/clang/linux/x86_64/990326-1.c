@@ -475,176 +475,176 @@ int main() {
 // DEFAULT-NEXT:     global %[[VALUE_y_32:[0-9]+]] y: @type[[TYPE_hy]] [storage=static] = aggregate<@type[[TYPE_hy]], zero_fill=false>(field0 = not<i32>(const<i32>(2)), field1 = const<i32>(64784), field2 = const<i32>(65056)) [linkage=internal];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_a1:[0-9]+]] @a1() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_a1:[0-9]+]] @a1(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(logical_and<bool>(eq<i32>(widen<i32, reason=promotion>(read<i8>(field0(%[[VALUE_x]]))), and<i32>(widen<i32, reason=promotion>(read<i8>(field0(%[[VALUE_y]]))), not<i32>(const<i32>(64)))), eq<i32>(widen<i32, reason=promotion>(read<i8>(field1(%[[VALUE_x]]))), widen<i32, reason=promotion>(read<i8>(field1(%[[VALUE_y]]))))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_a2:[0-9]+]] @a2() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_a2:[0-9]+]] @a2(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(logical_and<bool>(eq<i32>(widen<i32, reason=promotion>(read<i8>(field0(%[[VALUE_x_2]]))), widen<i32, reason=promotion>(read<i8>(field0(%[[VALUE_y_2]])))), eq<i32>(and<i32>(widen<i32, reason=promotion>(read<i8>(field1(%[[VALUE_x_2]]))), not<i32>(const<i32>(64))), widen<i32, reason=promotion>(read<i8>(field1(%[[VALUE_y_2]]))))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_a3:[0-9]+]] @a3() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_a3:[0-9]+]] @a3(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(logical_and<bool>(eq<i32>(and<i32>(widen<i32, reason=promotion>(read<i8>(field0(%[[VALUE_x_3]]))), not<i32>(const<i32>(8))), and<i32>(widen<i32, reason=promotion>(read<i8>(field0(%[[VALUE_y_3]]))), not<i32>(const<i32>(32)))), eq<i32>(and<i32>(widen<i32, reason=promotion>(read<i8>(field1(%[[VALUE_x_3]]))), not<i32>(const<i32>(64))), and<i32>(widen<i32, reason=promotion>(read<i8>(field1(%[[VALUE_y_3]]))), not<i32>(const<i32>(16))))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_b1:[0-9]+]] @b1() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_b1:[0-9]+]] @b1(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(logical_and<bool>(eq<i32>(widen<i32, reason=promotion>(read<i16>(field2(%[[VALUE_x_4]]))), and<i32>(widen<i32, reason=promotion>(read<i16>(field2(%[[VALUE_y_4]]))), not<i32>(const<i32>(64)))), eq<i32>(widen<i32, reason=promotion>(read<i16>(field1(%[[VALUE_x_4]]))), widen<i32, reason=promotion>(read<i16>(field1(%[[VALUE_y_4]]))))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_b2:[0-9]+]] @b2() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_b2:[0-9]+]] @b2(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(logical_and<bool>(eq<i32>(widen<i32, reason=promotion>(read<i16>(field2(%[[VALUE_x_5]]))), widen<i32, reason=promotion>(read<i16>(field2(%[[VALUE_y_5]])))), eq<i32>(and<i32>(widen<i32, reason=promotion>(read<i16>(field1(%[[VALUE_x_5]]))), not<i32>(const<i32>(64))), widen<i32, reason=promotion>(read<i16>(field1(%[[VALUE_y_5]]))))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_b3:[0-9]+]] @b3() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_b3:[0-9]+]] @b3(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(logical_and<bool>(eq<i32>(and<i32>(widen<i32, reason=promotion>(read<i16>(field2(%[[VALUE_x_6]]))), not<i32>(const<i32>(8))), and<i32>(widen<i32, reason=promotion>(read<i16>(field2(%[[VALUE_y_6]]))), not<i32>(const<i32>(32)))), eq<i32>(and<i32>(widen<i32, reason=promotion>(read<i16>(field1(%[[VALUE_x_6]]))), not<i32>(const<i32>(64))), and<i32>(widen<i32, reason=promotion>(read<i16>(field1(%[[VALUE_y_6]]))), not<i32>(const<i32>(16))))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_c1:[0-9]+]] @c1() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_c1:[0-9]+]] @c1(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(logical_and<bool>(eq<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=18..32>(%[[VALUE_x_7]]))), and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=18..32>(%[[VALUE_y_7]]))), not<i32>(const<i32>(64)))), eq<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=4..18>(%[[VALUE_x_7]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=4..18>(%[[VALUE_y_7]]))))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_c2:[0-9]+]] @c2() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_c2:[0-9]+]] @c2(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(logical_and<bool>(eq<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=18..32>(%[[VALUE_x_8]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=18..32>(%[[VALUE_y_8]])))), eq<i32>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=4..18>(%[[VALUE_x_8]]))), not<i32>(const<i32>(64))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=4..18>(%[[VALUE_y_8]]))))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_c3:[0-9]+]] @c3() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_c3:[0-9]+]] @c3(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(logical_and<bool>(eq<i32>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=18..32>(%[[VALUE_x_9]]))), not<i32>(const<i32>(8))), and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=18..32>(%[[VALUE_y_9]]))), not<i32>(const<i32>(32)))), eq<i32>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=4..18>(%[[VALUE_x_9]]))), not<i32>(const<i32>(64))), and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=4..18>(%[[VALUE_y_9]]))), not<i32>(const<i32>(16))))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_d1:[0-9]+]] @d1() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_d1:[0-9]+]] @d1(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(logical_and<bool>(eq<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..14>(%[[VALUE_x_10]]))), and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..14>(%[[VALUE_y_10]]))), not<i32>(const<i32>(64)))), eq<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=14..28>(%[[VALUE_x_10]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=14..28>(%[[VALUE_y_10]]))))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_d2:[0-9]+]] @d2() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_d2:[0-9]+]] @d2(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(logical_and<bool>(eq<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..14>(%[[VALUE_x_11]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..14>(%[[VALUE_y_11]])))), eq<i32>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=14..28>(%[[VALUE_x_11]]))), not<i32>(const<i32>(64))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=14..28>(%[[VALUE_y_11]]))))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_d3:[0-9]+]] @d3() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_d3:[0-9]+]] @d3(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(logical_and<bool>(eq<i32>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..14>(%[[VALUE_x_12]]))), not<i32>(const<i32>(8))), and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..14>(%[[VALUE_y_12]]))), not<i32>(const<i32>(32)))), eq<i32>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=14..28>(%[[VALUE_x_12]]))), not<i32>(const<i32>(64))), and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=14..28>(%[[VALUE_y_12]]))), not<i32>(const<i32>(16))))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_e1:[0-9]+]] @e1() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_e1:[0-9]+]] @e1(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(logical_and<bool>(eq<i32>(read<i32>(bitfield2<unit=0, bytes=0..4, bits=18..32>(%[[VALUE_x_13]])), and<i32>(read<i32>(bitfield2<unit=0, bytes=0..4, bits=18..32>(%[[VALUE_y_13]])), not<i32>(const<i32>(64)))), eq<i32>(read<i32>(bitfield1<unit=0, bytes=0..4, bits=4..18>(%[[VALUE_x_13]])), read<i32>(bitfield1<unit=0, bytes=0..4, bits=4..18>(%[[VALUE_y_13]])))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_e2:[0-9]+]] @e2() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_e2:[0-9]+]] @e2(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(logical_and<bool>(eq<i32>(read<i32>(bitfield2<unit=0, bytes=0..4, bits=18..32>(%[[VALUE_x_14]])), read<i32>(bitfield2<unit=0, bytes=0..4, bits=18..32>(%[[VALUE_y_14]]))), eq<i32>(and<i32>(read<i32>(bitfield1<unit=0, bytes=0..4, bits=4..18>(%[[VALUE_x_14]])), not<i32>(const<i32>(64))), read<i32>(bitfield1<unit=0, bytes=0..4, bits=4..18>(%[[VALUE_y_14]])))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_e3:[0-9]+]] @e3() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_e3:[0-9]+]] @e3(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(logical_and<bool>(eq<i32>(and<i32>(read<i32>(bitfield2<unit=0, bytes=0..4, bits=18..32>(%[[VALUE_x_15]])), not<i32>(const<i32>(8))), and<i32>(read<i32>(bitfield2<unit=0, bytes=0..4, bits=18..32>(%[[VALUE_y_15]])), not<i32>(const<i32>(32)))), eq<i32>(and<i32>(read<i32>(bitfield1<unit=0, bytes=0..4, bits=4..18>(%[[VALUE_x_15]])), not<i32>(const<i32>(64))), and<i32>(read<i32>(bitfield1<unit=0, bytes=0..4, bits=4..18>(%[[VALUE_y_15]])), not<i32>(const<i32>(16))))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_e4:[0-9]+]] @e4() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_e4:[0-9]+]] @e4(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(logical_and<bool>(eq<i32>(read<i32>(bitfield2<unit=0, bytes=0..4, bits=18..32>(%[[VALUE_x_16]])), const<i32>(0)), ne<i32>(and<i32>(read<i32>(bitfield1<unit=0, bytes=0..4, bits=4..18>(%[[VALUE_x_16]])), const<i32>(8192)), const<i32>(0))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(logical_and<bool>(eq<i32>(read<i32>(bitfield0<unit=0, bytes=0..4, bits=0..14>(%[[VALUE_x_17]])), and<i32>(read<i32>(bitfield0<unit=0, bytes=0..4, bits=0..14>(%[[VALUE_y_16]])), not<i32>(const<i32>(64)))), eq<i32>(read<i32>(bitfield1<unit=0, bytes=0..4, bits=14..28>(%[[VALUE_x_17]])), read<i32>(bitfield1<unit=0, bytes=0..4, bits=14..28>(%[[VALUE_y_16]])))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(logical_and<bool>(eq<i32>(read<i32>(bitfield0<unit=0, bytes=0..4, bits=0..14>(%[[VALUE_x_18]])), read<i32>(bitfield0<unit=0, bytes=0..4, bits=0..14>(%[[VALUE_y_17]]))), eq<i32>(and<i32>(read<i32>(bitfield1<unit=0, bytes=0..4, bits=14..28>(%[[VALUE_x_18]])), not<i32>(const<i32>(64))), read<i32>(bitfield1<unit=0, bytes=0..4, bits=14..28>(%[[VALUE_y_17]])))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_f3:[0-9]+]] @f3() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_f3:[0-9]+]] @f3(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(logical_and<bool>(eq<i32>(and<i32>(read<i32>(bitfield0<unit=0, bytes=0..4, bits=0..14>(%[[VALUE_x_19]])), not<i32>(const<i32>(8))), and<i32>(read<i32>(bitfield0<unit=0, bytes=0..4, bits=0..14>(%[[VALUE_y_18]])), not<i32>(const<i32>(32)))), eq<i32>(and<i32>(read<i32>(bitfield1<unit=0, bytes=0..4, bits=14..28>(%[[VALUE_x_19]])), not<i32>(const<i32>(64))), and<i32>(read<i32>(bitfield1<unit=0, bytes=0..4, bits=14..28>(%[[VALUE_y_18]])), not<i32>(const<i32>(16))))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_f4:[0-9]+]] @f4() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_f4:[0-9]+]] @f4(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(logical_and<bool>(eq<i32>(read<i32>(bitfield0<unit=0, bytes=0..4, bits=0..14>(%[[VALUE_x_20]])), const<i32>(0)), ne<i32>(and<i32>(read<i32>(bitfield1<unit=0, bytes=0..4, bits=14..28>(%[[VALUE_x_20]])), const<i32>(8192)), const<i32>(0))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_g1:[0-9]+]] @g1() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_g1:[0-9]+]] @g1(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(logical_and<bool>(eq<i32>(read<i32>(bitfield2<unit=0, bytes=0..4, bits=18..32>(%[[VALUE_x_21]])), and<i32>(read<i32>(bitfield1<unit=0, bytes=0..4, bits=14..28>(%[[VALUE_y_19]])), not<i32>(const<i32>(64)))), eq<i32>(read<i32>(bitfield1<unit=0, bytes=0..4, bits=4..18>(%[[VALUE_x_21]])), read<i32>(bitfield0<unit=0, bytes=0..4, bits=0..14>(%[[VALUE_y_19]])))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_g2:[0-9]+]] @g2() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_g2:[0-9]+]] @g2(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(logical_and<bool>(eq<i32>(read<i32>(bitfield2<unit=0, bytes=0..4, bits=18..32>(%[[VALUE_x_22]])), read<i32>(bitfield1<unit=0, bytes=0..4, bits=14..28>(%[[VALUE_y_20]]))), eq<i32>(and<i32>(read<i32>(bitfield1<unit=0, bytes=0..4, bits=4..18>(%[[VALUE_x_22]])), not<i32>(const<i32>(64))), read<i32>(bitfield0<unit=0, bytes=0..4, bits=0..14>(%[[VALUE_y_20]])))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_g3:[0-9]+]] @g3() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_g3:[0-9]+]] @g3(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(logical_and<bool>(eq<i32>(and<i32>(read<i32>(bitfield2<unit=0, bytes=0..4, bits=18..32>(%[[VALUE_x_23]])), not<i32>(const<i32>(8))), and<i32>(read<i32>(bitfield1<unit=0, bytes=0..4, bits=14..28>(%[[VALUE_y_21]])), not<i32>(const<i32>(32)))), eq<i32>(and<i32>(read<i32>(bitfield1<unit=0, bytes=0..4, bits=4..18>(%[[VALUE_x_23]])), not<i32>(const<i32>(64))), and<i32>(read<i32>(bitfield0<unit=0, bytes=0..4, bits=0..14>(%[[VALUE_y_21]])), not<i32>(const<i32>(16))))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_g4:[0-9]+]] @g4() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_g4:[0-9]+]] @g4(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(logical_and<bool>(eq<i32>(and<i32>(read<i32>(bitfield2<unit=0, bytes=0..4, bits=18..32>(%[[VALUE_x_24]])), const<i32>(240)), and<i32>(read<i32>(bitfield1<unit=0, bytes=0..4, bits=14..28>(%[[VALUE_y_22]])), const<i32>(3840))), eq<i32>(and<i32>(read<i32>(bitfield1<unit=0, bytes=0..4, bits=4..18>(%[[VALUE_x_24]])), const<i32>(240)), and<i32>(read<i32>(bitfield0<unit=0, bytes=0..4, bits=0..14>(%[[VALUE_y_22]])), const<i32>(3840)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_g5:[0-9]+]] @g5() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_g5:[0-9]+]] @g5(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(logical_and<bool>(eq<i32>(and<i32>(read<i32>(bitfield2<unit=0, bytes=0..4, bits=18..32>(%[[VALUE_x_25]])), const<i32>(3840)), and<i32>(read<i32>(bitfield1<unit=0, bytes=0..4, bits=14..28>(%[[VALUE_y_23]])), const<i32>(240))), eq<i32>(and<i32>(read<i32>(bitfield1<unit=0, bytes=0..4, bits=4..18>(%[[VALUE_x_25]])), const<i32>(3840)), and<i32>(read<i32>(bitfield0<unit=0, bytes=0..4, bits=0..14>(%[[VALUE_y_23]])), const<i32>(240)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_g6:[0-9]+]] @g6() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_g6:[0-9]+]] @g6(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(logical_and<bool>(eq<i32>(and<i32>(read<i32>(bitfield2<unit=0, bytes=0..4, bits=18..32>(%[[VALUE_x_26]])), const<i32>(1023)), and<i32>(read<i32>(bitfield1<unit=0, bytes=0..4, bits=14..28>(%[[VALUE_y_24]])), const<i32>(16368))), eq<i32>(and<i32>(read<i32>(bitfield1<unit=0, bytes=0..4, bits=4..18>(%[[VALUE_x_26]])), const<i32>(1023)), and<i32>(read<i32>(bitfield0<unit=0, bytes=0..4, bits=0..14>(%[[VALUE_y_24]])), const<i32>(16368)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_g7:[0-9]+]] @g7() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_g7:[0-9]+]] @g7(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(logical_and<bool>(eq<i32>(and<i32>(read<i32>(bitfield2<unit=0, bytes=0..4, bits=18..32>(%[[VALUE_x_27]])), const<i32>(16368)), and<i32>(read<i32>(bitfield1<unit=0, bytes=0..4, bits=14..28>(%[[VALUE_y_25]])), const<i32>(1023))), eq<i32>(and<i32>(read<i32>(bitfield1<unit=0, bytes=0..4, bits=4..18>(%[[VALUE_x_27]])), const<i32>(16368)), and<i32>(read<i32>(bitfield0<unit=0, bytes=0..4, bits=0..14>(%[[VALUE_y_25]])), const<i32>(1023)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_h1:[0-9]+]] @h1() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_h1:[0-9]+]] @h1(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(logical_and<bool>(eq<i32>(read<i32>(bitfield0<unit=0, bytes=0..4, bits=0..14>(%[[VALUE_x_28]])), and<i32>(read<i32>(bitfield1<unit=0, bytes=0..4, bits=4..18>(%[[VALUE_y_26]])), not<i32>(const<i32>(64)))), eq<i32>(read<i32>(bitfield1<unit=0, bytes=0..4, bits=14..28>(%[[VALUE_x_28]])), read<i32>(bitfield2<unit=0, bytes=0..4, bits=18..32>(%[[VALUE_y_26]])))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_h2:[0-9]+]] @h2() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_h2:[0-9]+]] @h2(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(logical_and<bool>(eq<i32>(read<i32>(bitfield0<unit=0, bytes=0..4, bits=0..14>(%[[VALUE_x_29]])), read<i32>(bitfield1<unit=0, bytes=0..4, bits=4..18>(%[[VALUE_y_27]]))), eq<i32>(and<i32>(read<i32>(bitfield1<unit=0, bytes=0..4, bits=14..28>(%[[VALUE_x_29]])), not<i32>(const<i32>(64))), read<i32>(bitfield2<unit=0, bytes=0..4, bits=18..32>(%[[VALUE_y_27]])))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_h3:[0-9]+]] @h3() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_h3:[0-9]+]] @h3(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(logical_and<bool>(eq<i32>(and<i32>(read<i32>(bitfield0<unit=0, bytes=0..4, bits=0..14>(%[[VALUE_x_30]])), not<i32>(const<i32>(8))), and<i32>(read<i32>(bitfield1<unit=0, bytes=0..4, bits=4..18>(%[[VALUE_y_28]])), not<i32>(const<i32>(32)))), eq<i32>(and<i32>(read<i32>(bitfield1<unit=0, bytes=0..4, bits=14..28>(%[[VALUE_x_30]])), not<i32>(const<i32>(64))), and<i32>(read<i32>(bitfield2<unit=0, bytes=0..4, bits=18..32>(%[[VALUE_y_28]])), not<i32>(const<i32>(16))))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_h4:[0-9]+]] @h4() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_h4:[0-9]+]] @h4(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(logical_and<bool>(eq<i32>(and<i32>(read<i32>(bitfield0<unit=0, bytes=0..4, bits=0..14>(%[[VALUE_x_31]])), const<i32>(240)), and<i32>(read<i32>(bitfield1<unit=0, bytes=0..4, bits=4..18>(%[[VALUE_y_29]])), const<i32>(3840))), eq<i32>(and<i32>(read<i32>(bitfield1<unit=0, bytes=0..4, bits=14..28>(%[[VALUE_x_31]])), const<i32>(240)), and<i32>(read<i32>(bitfield2<unit=0, bytes=0..4, bits=18..32>(%[[VALUE_y_29]])), const<i32>(3840)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_h5:[0-9]+]] @h5() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_h5:[0-9]+]] @h5(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(logical_and<bool>(eq<i32>(and<i32>(read<i32>(bitfield0<unit=0, bytes=0..4, bits=0..14>(%[[VALUE_x_32]])), const<i32>(3840)), and<i32>(read<i32>(bitfield1<unit=0, bytes=0..4, bits=4..18>(%[[VALUE_y_30]])), const<i32>(240))), eq<i32>(and<i32>(read<i32>(bitfield1<unit=0, bytes=0..4, bits=14..28>(%[[VALUE_x_32]])), const<i32>(3840)), and<i32>(read<i32>(bitfield2<unit=0, bytes=0..4, bits=18..32>(%[[VALUE_y_30]])), const<i32>(240)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_h6:[0-9]+]] @h6() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_h6:[0-9]+]] @h6(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(logical_and<bool>(eq<i32>(and<i32>(read<i32>(bitfield0<unit=0, bytes=0..4, bits=0..14>(%[[VALUE_x_33]])), const<i32>(1023)), and<i32>(read<i32>(bitfield1<unit=0, bytes=0..4, bits=4..18>(%[[VALUE_y_31]])), const<i32>(16368))), eq<i32>(and<i32>(read<i32>(bitfield1<unit=0, bytes=0..4, bits=14..28>(%[[VALUE_x_33]])), const<i32>(1023)), and<i32>(read<i32>(bitfield2<unit=0, bytes=0..4, bits=18..32>(%[[VALUE_y_31]])), const<i32>(16368)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_h7:[0-9]+]] @h7() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_h7:[0-9]+]] @h7(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(logical_and<bool>(eq<i32>(and<i32>(read<i32>(bitfield0<unit=0, bytes=0..4, bits=0..14>(%[[VALUE_x_34]])), const<i32>(16368)), and<i32>(read<i32>(bitfield1<unit=0, bytes=0..4, bits=4..18>(%[[VALUE_y_32]])), const<i32>(1023))), eq<i32>(and<i32>(read<i32>(bitfield1<unit=0, bytes=0..4, bits=14..28>(%[[VALUE_x_34]])), const<i32>(16368)), and<i32>(read<i32>(bitfield2<unit=0, bytes=0..4, bits=18..32>(%[[VALUE_y_32]])), const<i32>(1023)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_a1]]), const<i32>(0)))
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_a1]]), const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_a2]]), const<i32>(0)))
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_a2]]), const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_a3]]), const<i32>(0)))
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_a3]]), const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_b1]]), const<i32>(0)))
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_b1]]), const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_b2]]), const<i32>(0)))
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_b2]]), const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_b3]]), const<i32>(0)))
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_b3]]), const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_c1]]), const<i32>(0)))
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_c1]]), const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_c2]]), const<i32>(0)))
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_c2]]), const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_c3]]), const<i32>(0)))
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_c3]]), const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_d1]]), const<i32>(0)))
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_d1]]), const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_d2]]), const<i32>(0)))
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_d2]]), const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_d3]]), const<i32>(0)))
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_d3]]), const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_e1]]), const<i32>(0)))
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_e1]]), const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_e2]]), const<i32>(0)))
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_e2]]), const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_e3]]), const<i32>(0)))
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_e3]]), const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_e4]]), const<i32>(0)))
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_e4]]), const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_f1]]), const<i32>(0)))
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_f1]]), const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_f2]]), const<i32>(0)))
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_f2]]), const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_f3]]), const<i32>(0)))
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_f3]]), const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_f4]]), const<i32>(0)))
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_f4]]), const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_g1]]), const<i32>(0)))
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_g1]]), const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_g2]]), const<i32>(0)))
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_g2]]), const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_g3]]), const<i32>(0)))
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_g3]]), const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_g4]]), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_g4]]), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_g5]]), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_g5]]), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_g6]]), const<i32>(0)))
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_g6]]), const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_g7]]), const<i32>(0)))
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_g7]]), const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_h1]]), const<i32>(0)))
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_h1]]), const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_h2]]), const<i32>(0)))
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_h2]]), const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_h3]]), const<i32>(0)))
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_h3]]), const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_h4]]), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_h4]]), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_h5]]), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_h5]]), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_h6]]), const<i32>(0)))
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_h6]]), const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_h7]]), const<i32>(0)))
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_h7]]), const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }

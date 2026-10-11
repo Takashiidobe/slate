@@ -54,7 +54,7 @@ int main() {
 // DEFAULT-NEXT:     global %[[VALUE_point:[0-9]+]] point: @type[[TYPE_Point]] [storage=static] = aggregate<@type[[TYPE_Point]], zero_fill=false>(field0 = const<i32>(4), field1 = const<i32>(9)) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_values:[0-9]+]] values: array<i32, 4> [storage=static] [align=16] = aggregate<array<i32, 4>, zero_fill=true>(index0 = const<i32>(1), index2 = const<i32>(8)) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_selected:[0-9]+]] selected: i32 [storage=static] = const<i32>(22) [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
@@ -92,7 +92,7 @@ int main() {
 // ENABLED-NEXT:     global %[[VALUE_point:[0-9]+]] point: @type[[TYPE_Point]] [storage=static] = aggregate<@type[[TYPE_Point]], zero_fill=false>(field0 = const<i32>(4), field1 = const<i32>(9)) [linkage=external];
 // ENABLED-NEXT:     global %[[VALUE_values:[0-9]+]] values: array<i32, 4> [storage=static] [align=16] = aggregate<array<i32, 4>, zero_fill=true>(index0 = const<i32>(1), index2 = const<i32>(8)) [linkage=external];
 // ENABLED-NEXT:     global %[[VALUE_selected:[0-9]+]] selected: i32 [storage=static] = const<i32>(11) [linkage=external];
-// ENABLED-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// ENABLED-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // ENABLED-NEXT:         return const<i32>(0);
 // ENABLED-NEXT:     }
 // ENABLED-NEXT: }

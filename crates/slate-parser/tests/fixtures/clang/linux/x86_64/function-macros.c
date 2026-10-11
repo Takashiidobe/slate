@@ -42,7 +42,7 @@ int prescanned() {
 // DEFAULT-NEXT:     global %[[VALUE_stringified:[0-9]+]] stringified: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_joined:[0-9]+]] joined: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_variadic:[0-9]+]] variadic: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_prescanned:[0-9]+]] @prescanned() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_prescanned:[0-9]+]] @prescanned(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(7);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

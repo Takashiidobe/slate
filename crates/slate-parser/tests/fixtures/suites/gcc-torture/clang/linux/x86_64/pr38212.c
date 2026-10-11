@@ -56,7 +56,7 @@ int         main() {
 // DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%[[VALUE_v]]), read<i32>(%[[VALUE_w]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_i_2:[0-9]+]] i: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<i32>, i32) -> i32>(%[[VALUE_foo]], addr_of<ptr<i32>>(%[[VALUE_i_2]]), const<i32>(1)), const<i32>(1))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);

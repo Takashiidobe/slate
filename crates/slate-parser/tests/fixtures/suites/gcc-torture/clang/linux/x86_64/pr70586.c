@@ -66,7 +66,7 @@ int main() {
 // DEFAULT-NEXT:             return truncate<i16, reason=return, fits=unknown>(read<i32>(%[[VALUE_a]]));
 // DEFAULT-NEXT:         return truncate<i16, reason=return, fits=always>(const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<i16, signature=fn() -> i16>(%[[VALUE_bar]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

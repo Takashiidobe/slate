@@ -38,7 +38,7 @@ int main() {
 // DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: i64 [storage=static] = neg<i64, overflow=ub>(const<i64>(1)) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: i64 [storage=static] = const<i64>(0) [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i64 [synthetic] = read<i64>(%[[VALUE_c]]);
 // DEFAULT-NEXT:         write<i64>(%[[VALUE_b]], const<i64>(1));
 // DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i64 [synthetic] = xor<i64>(read<i64>(%[[VALUE0]]), const<i64>(1));

@@ -45,7 +45,7 @@ int main(void) {
 // DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_fn1:[0-9]+]] @fn1() -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_fn1:[0-9]+]] @fn1(unprototyped) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if eq<i32>(or<i32>(read<i32>(%[[VALUE_b]]), from_bool<i32, reason=promotion>(ne<i32>(read<i32>(%[[VALUE_a]]), and<i32>(read<i32>(%[[VALUE_a]]), read<i32>(%[[VALUE_c]]))))), const<i32>(1))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
@@ -54,7 +54,7 @@ int main(void) {
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_a]], const<i32>(5));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_c]], const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_b]], const<i32>(6));
-// DEFAULT-NEXT:         return call<i32, signature=fn() -> i32>(%[[VALUE_fn1]]);
+// DEFAULT-NEXT:         return call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_fn1]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

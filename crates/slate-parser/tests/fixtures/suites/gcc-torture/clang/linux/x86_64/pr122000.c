@@ -41,7 +41,7 @@ int main() {
 // DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: i8 [storage=static] = truncate<i8, reason=assign, fits=always>(const<i32>(1)) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_ll:[0-9]+]] ll: u64 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: u64 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: u64 [synthetic] = update<u64, result=new, atomic=seq_cst>(deref(addr_of<ptr<u64>>(%[[VALUE_ll]])), add<u64, overflow=wrap>(old<u64>, add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(widen<i32, reason=promotion>(read<i8>(%[[VALUE_c]])))), const<u64>(18364758544493064720))));
 // DEFAULT-NEXT:         write<u64>(%[[VALUE_x]], read<u64>(%[[VALUE0]]));

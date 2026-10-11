@@ -58,7 +58,7 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_sister:[0-9]+]] @sister(%[[VALUE_f:[0-9]+]] f: @type[[TYPE_foo]], %[[VALUE_b_2:[0-9]+]] b: i32, %[[VALUE_c_2:[0-9]+]] c: i32) -> void [linkage=external] [abi=sysv64(native_c, scalar, scalar) -> void] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         call<void, signature=fn(i32, i32, i32) -> void>(%[[VALUE_brother]], from_bool<i32, reason=arg>(eq<i32>(read<i32>(field1(%[[VALUE_f]])), read<i32>(%[[VALUE_b_2]]))), read<i32>(%[[VALUE_b_2]]), read<i32>(%[[VALUE_c_2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_f_2:[0-9]+]] f: @type[[TYPE_foo]] [storage=automatic] = aggregate<@type[[TYPE_foo]], zero_fill=false>(field0 = const<i32>(7), field1 = const<i32>(8), field2 = const<i32>(9));
 // DEFAULT-NEXT:         call<void, signature=fn(@type[[TYPE_foo]], i32, i32) -> void, abi=sysv64(native_c, scalar, scalar) -> void>(%[[VALUE_sister]], copy<@type[[TYPE_foo]], reason=arg>(read<@type[[TYPE_foo]]>(%[[VALUE_f_2]])), const<i32>(1), const<i32>(2));
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));

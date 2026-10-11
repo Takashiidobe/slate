@@ -65,7 +65,7 @@ int main() {
 // DEFAULT-NEXT:     global %[[VALUE_archive_le16dec_filename_size:[0-9]+]] archive_le16dec_filename_size: u32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_archive_le16dec_offset:[0-9]+]] archive_le16dec_offset: u32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_archive_le16dec_p:[0-9]+]] archive_le16dec_p: array<i8, 2> [storage=static] = aggregate<array<i8, 2>, zero_fill=false>(index0 = truncate<i8, reason=assign, fits=always>(const<i32>(21)), index1 = truncate<i8, reason=assign, fits=always>(const<i32>(127))) [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_archive_le16dec:[0-9]+]] @archive_le16dec() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_archive_le16dec:[0-9]+]] @archive_le16dec(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_archive_le16dec_filename_size]], reinterpret<u32, reason=assign, fits=unknown>(widen<i32, reason=assign>(reinterpret<i16, reason=explicit, fits=unknown>(truncate<u16, reason=explicit, fits=unknown>(read<u32>(%[[VALUE_archive_le16dec_filename_size]]))))));
 // DEFAULT-NEXT:         let %[[VALUE_flagbits:[0-9]+]] flagbits: u8 [storage=automatic] = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:         let %[[VALUE_flagbyte:[0-9]+]] flagbyte: u8 [storage=automatic];
@@ -93,9 +93,9 @@ int main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_trap:[0-9]+]] @__builtin_trap() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_archive_le16dec_filename_size]], reinterpret<u32, reason=assign, fits=always>(const<i32>(2)));
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_archive_le16dec]]);
+// DEFAULT-NEXT:         call<void, signature=fn(unprototyped) -> void>(%[[VALUE_archive_le16dec]]);
 // DEFAULT-NEXT:         if ne<u32>(read<u32>(%[[VALUE_archive_le16dec_filename_size]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_trap]]);
 // DEFAULT-NEXT:     }

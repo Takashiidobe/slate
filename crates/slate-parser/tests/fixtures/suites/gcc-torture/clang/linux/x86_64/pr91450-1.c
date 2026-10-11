@@ -144,7 +144,7 @@ int main() {
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return read<u64>(%[[VALUE_r_5]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i32, i32) -> u64>(%[[VALUE_foo]], neg<i32, overflow=ub>(const<i32>(4)), const<i32>(2)), neg<u64, overflow=wrap>(const<u64>(8)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i32, i32) -> u64>(%[[VALUE_foo]], const<i32>(2), neg<i32, overflow=ub>(const<i32>(4))), neg<u64, overflow=wrap>(const<u64>(8)))

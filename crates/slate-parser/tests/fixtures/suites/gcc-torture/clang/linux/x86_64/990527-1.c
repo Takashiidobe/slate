@@ -77,7 +77,7 @@ int main() {
 // DEFAULT-NEXT:                     write<i32>(%[[VALUE_j]], const<i32>(9));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_f]], const<i32>(0));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_sum]]), const<i32>(81))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);

@@ -72,7 +72,7 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_memcmp:[0-9]+]] @__builtin_memcmp(%[[VALUE1:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE2:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE3:[0-9]+]] <unnamed>: u64) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<vector<i32, 8>>(%[[VALUE_a]], read<vector<i32, 8>>(compound_literal %[[VALUE4:[0-9]+]] [storage=automatic] = aggregate<vector<i32, 8>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(2), index2 = const<i32>(3), index3 = const<i32>(4), index4 = const<i32>(5), index5 = const<i32>(6), index6 = const<i32>(7), index7 = const<i32>(8))));
 // DEFAULT-NEXT:         write<vector<i32, 8>>(%[[VALUE_b]], read<vector<i32, 8>>(compound_literal %[[VALUE5:[0-9]+]] [storage=automatic] = aggregate<vector<i32, 8>, zero_fill=false>(index0 = const<i32>(64), index1 = const<i32>(128), index2 = const<i32>(64), index3 = const<i32>(128), index4 = const<i32>(64), index5 = const<i32>(128), index6 = const<i32>(64), index7 = const<i32>(128))));
 // DEFAULT-NEXT:         write<vector<i32, 8>>(%[[VALUE_e]], read<vector<i32, 8>>(compound_literal %[[VALUE6:[0-9]+]] [storage=automatic] = aggregate<vector<i32, 8>, zero_fill=false>(index0 = const<i32>(65), index1 = const<i32>(130), index2 = const<i32>(67), index3 = const<i32>(132), index4 = const<i32>(69), index5 = const<i32>(134), index6 = const<i32>(71), index7 = const<i32>(136))));

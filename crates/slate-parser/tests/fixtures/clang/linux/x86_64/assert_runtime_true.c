@@ -41,11 +41,10 @@ int main(int argc, char **argv) {
 // DEFAULT-NEXT:     global %[[VALUE_str_4:[0-9]+]] .str[[VALUE_str_4]]: array<i8, 23> [storage=static] = code_units<array<i8, 23>>([105, 110, 116, 32, 109, 97, 105, 110, 40, 105, 110, 116, 44, 32, 99, 104, 97, 114, 32, 42, 42, 41, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_5:[0-9]+]] .str[[VALUE_str_5]]: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([97, 102, 116, 101, 114, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %[[VALUE___assert_fail:[0-9]+]] @__assert_fail(%[[VALUE___assertion:[0-9]+]] __assertion: ptr<const i8>, %[[VALUE___file:[0-9]+]] __file: ptr<const i8>, %[[VALUE___line:[0-9]+]] __line: u32, %[[VALUE___function:[0-9]+]] __function: ptr<const i8>) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE___assert_single_arg:[0-9]+]] @__assert_single_arg(%[[VALUE0:[0-9]+]] <unnamed>: bool) -> bool [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(%[[VALUE_argc:[0-9]+]] argc: i32, %[[VALUE_argv:[0-9]+]] argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(8)>(%[[VALUE_str]])));
-// DEFAULT-NEXT:         const<u64>(1);
+// DEFAULT-NEXT:         const<u64>(4);
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             if eq<i32>(read<i32>(%[[VALUE_argc]]), const<i32>(1))
 // DEFAULT-NEXT:                 ;

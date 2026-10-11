@@ -47,7 +47,7 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: i32 [storage=static] = const<i32>(1) [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_s:[0-9]+]] s: i64 [storage=automatic];
 // DEFAULT-NEXT:         write<i64>(%[[VALUE_s]], widen<i64, reason=assign>(read<i32>(%[[VALUE_a]])));
 // DEFAULT-NEXT:         if lt<i64>(read<i64>(%[[VALUE_s]]), widen<i64, reason=usual_arith>(const<i32>(0)))

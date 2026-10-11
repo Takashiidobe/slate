@@ -84,7 +84,7 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:         field0 i: i32 : 7;
 // DEFAULT-NEXT:         field1 u: u32 : 7;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0], bit_offsets=[Some(0), Some(7)], bit_units=[(0, 2)], field_units=[Some(0), Some(0)]];
-// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort(unprototyped) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(%[[VALUE_argc:[0-9]+]] argc: i32, %[[VALUE_argv:[0-9]+]] argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_bit:[0-9]+]] bit: @type[[TYPE_x]] [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_u:[0-9]+]] u: u32 [storage=automatic];

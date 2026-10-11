@@ -48,7 +48,7 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_j:[0-9]+]] j: i16) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<i32>(bitfield0<unit=0, bytes=0..4, bits=0..29>(%[[VALUE_f]]), widen<i32, reason=assign>(read<i16>(%[[VALUE_j]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(i16) -> void>(%[[VALUE_foo]], truncate<i16, reason=arg, fits=unknown>(neg<i32, overflow=ub>(const<i32>(55))));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(bitfield0<unit=0, bytes=0..4, bits=0..29>(%[[VALUE_f]])), neg<i32, overflow=ub>(const<i32>(55)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);

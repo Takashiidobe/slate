@@ -60,7 +60,7 @@ int main() {
 // DEFAULT-NEXT:         write<u64>(field1(field1(%[[VALUE_u]])), and<u64>(read<u64>(field0(%[[VALUE_u]])), read<u64>(%[[VALUE_x]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<u64>(field0(%[[VALUE_u]]), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(5))));
 // DEFAULT-NEXT:         call<void, signature=fn(u64) -> void>(%[[VALUE_foo]], neg<u64, overflow=wrap>(const<u64>(1)));
 // DEFAULT-NEXT:         if ne<u64>(read<u64>(field1(field1(%[[VALUE_u]]))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(5))))

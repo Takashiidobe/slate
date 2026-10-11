@@ -76,7 +76,7 @@ int main() {
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_s:[0-9]+]] s: @type[[TYPE_blah]] [storage=automatic] = aggregate<@type[[TYPE_blah]], zero_fill=false>(field0 = const<i32>(1), field1 = const<i32>(2));
 // DEFAULT-NEXT:         call<void, signature=fn(@type[[TYPE_blah]]) -> void, abi=sysv64(native_c) -> void>(%[[VALUE_die]], copy<@type[[TYPE_blah]], reason=arg>(read<@type[[TYPE_blah]]>(%[[VALUE_s]])));
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));

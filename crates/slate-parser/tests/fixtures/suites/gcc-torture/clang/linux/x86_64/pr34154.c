@@ -51,7 +51,7 @@ int         main() {
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_aLL_2:[0-9]+]] aLL: u64 [storage=automatic] = const<u64>(1000000000000000000);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u64) -> i32>(%[[VALUE_foo]], read<u64>(%[[VALUE_aLL_2]])), const<i32>(19))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);

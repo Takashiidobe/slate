@@ -79,7 +79,7 @@ int main() {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_foo]]);
 // DEFAULT-NEXT:         write<ptr<const i8>>(field0(deref(read<ptr<@type[[TYPE_barstruct]]>>(%[[VALUE_barptr]]))), pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(14)>(%[[VALUE_str_2]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<ptr<const i8>>(field0(%[[VALUE_x]]), null<ptr<const i8>>);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_baz]], const<i32>(0));
 // DEFAULT-NEXT:         if not<bool>(ne<ptr<const i8>>(read<ptr<const i8>>(field0(%[[VALUE_x]])), null<ptr<const i8>>))

@@ -420,7 +420,7 @@ int main() {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%[[VALUE___builtin_prefetch]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_p_13]]), call<i32, signature=fn(i32) -> i32>(%[[VALUE_getint]], read<i32>(%[[VALUE_i_7]])))))), const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(eq<i32>(read<i32>(%[[VALUE_getintcnt]]), const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(ptr<i32>) -> i32>(%[[VALUE_assign_arg_ptr]], read<ptr<i32>>(%[[VALUE_ptr]])), const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_assign_glob_ptr]]), const<i32>(0)))

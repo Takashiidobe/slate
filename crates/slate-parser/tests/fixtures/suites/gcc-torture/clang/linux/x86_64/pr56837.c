@@ -59,7 +59,7 @@ int main() {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 write<complex<i32>>(deref(ptr_offset<ptr<complex<i32>>, subtract=false, element=complex<i32>, overflow=ub>(array_decay<ptr<complex<i32>>, length=Some(1024)>(%[[VALUE_a]]), read<i32>(%[[VALUE_i]]))), real_to_complex<complex<i32>, reason=assign>(neg<i32, overflow=ub>(const<i32>(1))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_i_2:[0-9]+]] i: i32 [storage=automatic];
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_foo]]);
 // DEFAULT-NEXT:         for %[[VALUE3:[0-9]+]]

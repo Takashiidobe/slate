@@ -49,7 +49,7 @@ int main() {
 // DEFAULT-NEXT:         return reinterpret<u32, reason=return, fits=always>(const<i32>(1));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: ptr<u32> [synthetic] = ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(1)>(%[[VALUE_x]]), const<i32>(0));
 // DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: u32 [synthetic] = read<u32>(deref(read<ptr<u32>>(%[[VALUE3]])));
 // DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: u32 [synthetic] = or<u32>(read<u32>(%[[VALUE4]]), call<u32, signature=fn() -> u32>(%[[VALUE_foo]]));

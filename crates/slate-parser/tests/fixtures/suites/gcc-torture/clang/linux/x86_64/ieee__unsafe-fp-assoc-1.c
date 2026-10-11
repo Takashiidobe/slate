@@ -75,7 +75,7 @@ int main() {
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
 // DEFAULT-NEXT:     type @type[[TYPE_hexdouble:[0-9]+]] hexdouble = @type[[TYPE0]];
 // DEFAULT-NEXT:     global %[[VALUE_twoTo52:[0-9]+]] twoTo52: f64 [storage=static] [const] = const<f64>(4503599627370496.0) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort(unprototyped) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_expect:[0-9]+]] @__builtin_expect(%[[VALUE0:[0-9]+]] <unnamed>: i64, %[[VALUE1:[0-9]+]] <unnamed>: i64) -> i64 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %[[VALUE_func:[0-9]+]] @func(%[[VALUE_x:[0-9]+]] x: f64) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_argument:[0-9]+]] argument: @type[[TYPE0]] [storage=automatic];
@@ -96,7 +96,7 @@ int main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         return;
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if eq<u64>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4))))
 // DEFAULT-NEXT:             return const<i32>(0);
 // DEFAULT-NEXT:         call<void, signature=fn(f64) -> void>(%[[VALUE_func]], const<f64>(1.0));

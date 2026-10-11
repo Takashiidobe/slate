@@ -41,7 +41,7 @@ int main(void) {
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_flag:[0-9]+]] flag: bool [storage=automatic] = const<bool>(false);
+// DEFAULT-NEXT:         let %[[VALUE_flag:[0-9]+]] flag: bool [storage=automatic] = ne<i32, reason=assign>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         let %[[VALUE_first:[0-9]+]] first: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: bool [synthetic] = update<bool, result=old, atomic=seq_cst>(deref(addr_of<ptr<bool>>(%[[VALUE_flag]])), const<bool>(true));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_first]], from_bool<i32, reason=assign>(read<bool>(%[[VALUE0]])));

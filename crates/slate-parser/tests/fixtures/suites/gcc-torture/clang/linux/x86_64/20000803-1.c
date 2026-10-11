@@ -37,7 +37,7 @@ gl_yank()
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %[[VALUE_gl_cnt:[0-9]+]] gl_cnt: i32 [storage=static] = const<i32>(0) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_gl_buf:[0-9]+]] gl_buf: array<i8, 1024> [storage=static] [align=16] [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_gl_yank:[0-9]+]] @gl_yank() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_gl_yank:[0-9]+]] @gl_yank(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
 // DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:

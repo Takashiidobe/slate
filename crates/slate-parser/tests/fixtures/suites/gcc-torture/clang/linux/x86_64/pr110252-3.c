@@ -43,7 +43,7 @@ int main() {
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort:[0-9]+]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a]], conditional<u32>(lt<u32>(reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)), not<u32>(read<u32>(%[[VALUE_a]]))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)), not<u32>(read<u32>(%[[VALUE_a]]))));
 // DEFAULT-NEXT:         call<void, signature=fn(u32) -> void>(%[[VALUE_sinkandcheck]], reinterpret<u32, reason=arg, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:         return const<i32>(0);

@@ -78,7 +78,7 @@ int main() {
 // DEFAULT-NEXT:         return or<i32>(and<i32>(read<i32, volatile>(%[[VALUE_A_6]]), read<i32, volatile>(%[[VALUE_B_6]])), from_bool<i32, reason=promotion>(eq<i32>(read<i32, volatile>(%[[VALUE_A_6]]), read<i32, volatile>(%[[VALUE_B_6]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 let %[[VALUE_A_7:[0-9]+]] A: i32 [storage=automatic] = const<i32>(0);

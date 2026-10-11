@@ -75,7 +75,7 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_x_2:[0-9]+]] x: i32, %[[VALUE_y_2:[0-9]+]] y: @type[[TYPE_S]]) -> void [linkage=external] [inline=never] [definition=emitted] [abi=sysv64(scalar, native_c) -> void] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         call<void, signature=fn(i32, i32, i32) -> void>(%[[VALUE_foo]], call<i32, signature=fn(ptr<const @type[[TYPE_S]]>) -> i32>(%[[VALUE_baz]], pointer_cast<ptr<const @type[[TYPE_S]]>, reason=arg>(addr_of<ptr<@type[[TYPE_S]]>>(%[[VALUE_y_2]]))), const<i32>(0), read<i32>(%[[VALUE_x_2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_s:[0-9]+]] s: @type[[TYPE_S]] [storage=automatic];
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_v]], const<i32>(3));
 // DEFAULT-NEXT:         write<i32>(field0(%[[VALUE_s]]), sub<i32, overflow=ub>(read<i32>(%[[VALUE_v]]), const<i32>(1)));

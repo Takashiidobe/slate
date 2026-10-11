@@ -51,7 +51,7 @@ int main() {
 // DEFAULT-NEXT:         return and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..3, bits=0..24>(%[[VALUE_d]]))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8, volatile>(%[[VALUE_x]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_d_2:[0-9]+]] d: @type[[TYPE_S]] [storage=automatic] = aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(1193046)));
 // DEFAULT-NEXT:         write<u8, volatile>(%[[VALUE_x]], reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(117))));
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(@type[[TYPE_S]]) -> i32, abi=sysv64(native_c) -> scalar>(%[[VALUE_foo]], copy<@type[[TYPE_S]], reason=arg>(read<@type[[TYPE_S]]>(%[[VALUE_d_2]]))), and<i32>(const<i32>(86), const<i32>(117)))

@@ -38,7 +38,7 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_n:[0-9]+]] n: i32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return not<u32>(reinterpret<u32, reason=explicit, fits=unknown>(not<i32>(read<i32>(%[[VALUE_n]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(i32) -> u32>(%[[VALUE_foo]], const<i32>(0)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);

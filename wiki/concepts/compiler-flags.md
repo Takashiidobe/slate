@@ -55,7 +55,7 @@ each stage is in [configuration-threading](configuration-threading.md).
 | `-ftrivial-auto-var-init=uninitialized\|zero\|pattern` | gcc, clang | recorded as `CodegenOptions::trivial_auto_var_init`; nothing consumes it yet |
 | `-mllvm <arg>` / `-mllvm=<arg>` | clang | consumes its argument, even one starting with `-`, and ignores it |
 | codegen-only (`CODEGEN_ONLY_FLAGS`) | per row | parsed and ignored. Covers alignment, tuning, sibling calls, unrolling, red zone, retpolines and return thunks, stack-protector guard, TLS model, patchable entries, `-fexcess-precision=` (no macro change; x87 excess precision is slate-parser-6x05.38.6), diagnostic colors, LTO and section flags, and gcc's IRA and tree passes. `one_of` values are checked. Free-form values are not (`-falign-*=N`, `-mtune=`, `-fpatchable-function-entry=`, guard symbols, `--warning-suppression-mappings=` files), and `-mfunction-return=` accepts gcc's values for both flavors (clang rejects `thunk`/`thunk-inline`) |
-| `-std=` | gcc/clang | `LanguageStandard` → `StandardFeatures`, `__STDC_VERSION__` |
+| `-std=` | gcc/clang | `LanguageStandard` → `StandardFeatures`, `__STDC_VERSION__`; without it `LanguageStandard::default_for` gives clang gnu17, gcc gnu23, msvc c17 |
 | `-ansi` | gcc/clang | same as `-std=c89`; later of `-ansi`/`-std=` wins |
 | `-O` / `-O0`..`-O3` / `-Os` / `-Oz` / `-Og` | gcc, clang | predefines only; the last one wins. Above `-O0`: undefines `__NO_INLINE__`, defines `__OPTIMIZE__`, and `-Os`/`-Oz` also define `__OPTIMIZE_SIZE__`. `-Ofast` is rejected (fast-math is not emulated); msvc rejects all |
 | `-target` | clang | selects `TargetSpec` ([adding-a-target](adding-a-target.md)) |

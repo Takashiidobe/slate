@@ -34,7 +34,7 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %[[VALUE_minus_1:[0-9]+]] minus_1: i32 [storage=static] = neg<i32, overflow=ub>(const<i32>(1)) [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         const<i32>(0);
 // DEFAULT-NEXT:         if ge<u64>(const<u64>(4294967295), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_minus_1]]))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);

@@ -41,7 +41,7 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> u64 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return reinterpret<u64, reason=return, fits=unknown>(widen<i64, reason=return>(const<i32>(32768)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_nStyle:[0-9]+]] nStyle: u64 [storage=automatic] = call<u64, signature=fn() -> u64>(%[[VALUE_bar]]);
 // DEFAULT-NEXT:         if ne<u64>(and<u64>(read<u64>(%[[VALUE_nStyle]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(32768)))), const<u64>(0))
 // DEFAULT-NEXT:             let %[[VALUE0:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_nStyle]]);

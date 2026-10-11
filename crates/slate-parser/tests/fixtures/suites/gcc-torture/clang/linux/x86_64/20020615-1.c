@@ -146,7 +146,7 @@ int main() {
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_hints]], const<i32>(0));
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_hints]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE7:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const @type[[TYPE_font_hints_s]]>, ptr<const @type[[TYPE_gs_fixed_point_s]]>, ptr<const @type[[TYPE_gs_fixed_point_s]]>) -> i32>(%[[VALUE_line_hints]], pointer_cast<ptr<const @type[[TYPE_font_hints_s]]>, reason=arg>(array_decay<ptr<@type[[TYPE_font_hints_s]]>, length=Some(3)>(%[[VALUE_fh]])), pointer_cast<ptr<const @type[[TYPE_gs_fixed_point_s]]>, reason=arg>(array_decay<ptr<@type[[TYPE_gs_fixed_point_s]]>, length=Some(4)>(%[[VALUE_gsf]])), pointer_cast<ptr<const @type[[TYPE_gs_fixed_point_s]]>, reason=arg>(ptr_offset<ptr<@type[[TYPE_gs_fixed_point_s]]>, subtract=false, element=@type[[TYPE_gs_fixed_point_s]], overflow=ub>(array_decay<ptr<@type[[TYPE_gs_fixed_point_s]]>, length=Some(4)>(%[[VALUE_gsf]]), const<i32>(1)))), const<i32>(1))
 // DEFAULT-NEXT:             write<bool>(%[[VALUE7]], const<bool>(true));

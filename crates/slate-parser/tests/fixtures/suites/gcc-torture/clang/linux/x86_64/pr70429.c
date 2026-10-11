@@ -42,7 +42,7 @@ int main() {
 // DEFAULT-NEXT:         return shr<i32, amount_out_of_range=ub, fill=sign_extend>(truncate<i32, reason=explicit, fits=unknown>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(const<i64>(1513049092259536159), read<i32>(%[[VALUE_a]]))), const<i32>(4));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<u64>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4)))), ne<u64>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))))), ne<i32>(const<i32>(8), const<i32>(8)))
 // DEFAULT-NEXT:             return const<i32>(0);
 // DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: bool [synthetic];

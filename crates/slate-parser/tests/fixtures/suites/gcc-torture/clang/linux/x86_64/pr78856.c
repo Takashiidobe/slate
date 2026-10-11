@@ -54,7 +54,7 @@ int main() {
 // DEFAULT-NEXT:     global %[[VALUE_e:[0-9]+]] e: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_f:[0-9]+]] f: array<i32, 3> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         while %[[VALUE1:[0-9]+]] ne<i32>(read<i32>(%[[VALUE_d]]), const<i32>(0))
 // DEFAULT-NEXT:             while %[[VALUE2:[0-9]+]] ne<i32>(const<i32>(1), const<i32>(0))
 // DEFAULT-NEXT:                 ;

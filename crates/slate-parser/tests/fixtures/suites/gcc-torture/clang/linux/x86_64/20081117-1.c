@@ -56,7 +56,7 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_s_2:[0-9]+]] s: @type[[TYPE_s]], %[[VALUE_i:[0-9]+]] i: u32) -> u32 [linkage=external] [inline=never] [definition=emitted] [abi=sysv64(native_c, scalar) -> scalar] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return from_bool<u32, reason=return>(eq<u64>(read<u64>(bitfield1<unit=0, bytes=0..8, bits=16..48>(%[[VALUE_s_2]])), widen<u64, reason=usual_arith>(read<u32>(%[[VALUE_i]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if not<bool>(ne<u32>(call<u32, signature=fn(@type[[TYPE_s]], u32) -> u32, abi=sysv64(native_c, scalar) -> scalar>(%[[VALUE_f]], copy<@type[[TYPE_s]], reason=arg>(read<@type[[TYPE_s]]>(%[[VALUE_s]])), const<u32>(2271560481)), const<u32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);

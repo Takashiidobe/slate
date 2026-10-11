@@ -75,7 +75,7 @@ int main() {
 // DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: @type[[TYPE_S0]] [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_fn1:[0-9]+]] @fn1() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_fn1:[0-9]+]] @fn1(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_b]], const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_d]], const<i32>(1));
 // DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
@@ -93,8 +93,8 @@ int main() {
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_fn1]]);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn(unprototyped) -> void>(%[[VALUE_fn1]]);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(bitfield7<unit=0, bytes=20..28, bits=32..34>(%[[VALUE_c]])), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);

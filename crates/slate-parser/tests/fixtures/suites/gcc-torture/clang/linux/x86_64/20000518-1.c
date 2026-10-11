@@ -44,13 +44,13 @@ void dotest()
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_callit1:[0-9]+]] @callit1(%[[VALUE0:[0-9]+]] <unnamed>: ptr<void>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_test:[0-9]+]] @test() -> void [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_test:[0-9]+]] @test(unprototyped) -> void [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_callit1]], label_addr<ptr<void>>(%[[VALUE_l1:[0-9]+]]));
 // DEFAULT-NEXT:         label %[[VALUE_l1]] l1:
 // DEFAULT-NEXT:             ;
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_dotest:[0-9]+]] @dotest() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_test]]);
+// DEFAULT-NEXT:     fn %[[VALUE_dotest:[0-9]+]] @dotest(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(unprototyped) -> void>(%[[VALUE_test]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

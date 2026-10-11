@@ -54,7 +54,7 @@ int main() {
 // DEFAULT-NEXT:         return sub<i64, overflow=ub>(reinterpret<i64, reason=explicit, fits=unknown>(widen<u64, reason=explicit>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_p]]), read<u32>(%[[VALUE_a]])))), reinterpret<i64, reason=explicit, fits=unknown>(widen<u64, reason=explicit>(read<u32>(%[[VALUE_p]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_p]], reinterpret<u32, reason=explicit, fits=unknown>(neg<i32, overflow=ub>(const<i32>(2))));
 // DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(u32) -> i64>(%[[VALUE_test]], reinterpret<u32, reason=arg, fits=always>(const<i32>(0))), widen<i64, reason=usual_arith>(const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);

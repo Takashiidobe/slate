@@ -83,7 +83,7 @@ int main() {
 // DEFAULT-NEXT:         write<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(pointer_cast<ptr<u32>, reason=explicit>(array_decay<ptr<i8>, length=Some(32)>(%[[VALUE_s]])), const<i32>(2))), call<u32, signature=fn(u32) -> u32>(%[[VALUE___builtin_bswap32]], read<u32>(%[[VALUE_x]])));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i8>) -> void>(%[[VALUE_bar]], array_decay<ptr<i8>, length=Some(32)>(%[[VALUE_s]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(u32) -> void>(%[[VALUE_foo]], reinterpret<u32, reason=arg, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

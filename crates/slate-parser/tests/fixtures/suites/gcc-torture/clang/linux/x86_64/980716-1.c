@@ -83,7 +83,7 @@ int main() {
 // DEFAULT-NEXT:                     va_end(%[[VALUE_ap]]);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%[[VALUE_stub]], const<i32>(1), array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str]]), array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str_2]]), array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str_3]]), null<ptr<i8>>);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }

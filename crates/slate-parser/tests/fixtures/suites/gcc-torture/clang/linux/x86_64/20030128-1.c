@@ -41,7 +41,7 @@ int main() {
 // DEFAULT-NEXT:     global %[[VALUE_y:[0-9]+]] y: volatile i16 [storage=static] = truncate<i16, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(5))) [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: u8 [synthetic] = read<u8>(%[[VALUE_x]]);
 // DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: u8 [synthetic] = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(div<i32, by_zero=ub, min_by_neg_one=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE1]]))), widen<i32, reason=promotion>(read<i16, volatile>(%[[VALUE_y]])))));
 // DEFAULT-NEXT:         write<u8>(%[[VALUE_x]], read<u8>(%[[VALUE2]]));

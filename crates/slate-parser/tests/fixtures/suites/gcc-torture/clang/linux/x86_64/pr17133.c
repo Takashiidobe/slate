@@ -53,7 +53,7 @@ int main() {
 // DEFAULT-NEXT:     global %[[VALUE_bar:[0-9]+]] bar: ptr<void> [storage=static] = null<ptr<void>> [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_baz:[0-9]+]] baz: u32 [storage=static] = reinterpret<u32, reason=assign, fits=always>(const<i32>(100)) [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_pure_alloc:[0-9]+]] @pure_alloc() -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_pure_alloc:[0-9]+]] @pure_alloc(unprototyped) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_res:[0-9]+]] res: ptr<void> [storage=automatic];
 // DEFAULT-NEXT:         while %[[VALUE0:[0-9]+]] ne<i32>(const<i32>(1), const<i32>(0))
 // DEFAULT-NEXT:             {
@@ -66,8 +66,8 @@ int main() {
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_foo]], const<i32>(0));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn() -> ptr<void>>(%[[VALUE_pure_alloc]]);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(unprototyped) -> ptr<void>>(%[[VALUE_pure_alloc]]);
 // DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32>(%[[VALUE_foo]]), const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);

@@ -65,7 +65,7 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_huge_val:[0-9]+]] @__builtin_huge_val() -> f64 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(read<f64>(%[[VALUE_pinf]]), div<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE_pone]]), read<f64>(%[[VALUE_zero]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(read<f64>(%[[VALUE_ninf]]), div<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE_none]]), read<f64>(%[[VALUE_zero]])))

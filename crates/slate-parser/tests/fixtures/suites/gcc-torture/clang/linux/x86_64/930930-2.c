@@ -62,18 +62,18 @@ int main(void) {
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 0]];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_test_endianness:[0-9]+]] @test_endianness() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_test_endianness:[0-9]+]] @test_endianness(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_dw:[0-9]+]] dw: @type[[TYPE_doubleword]] [storage=automatic];
 // DEFAULT-NEXT:         write<f64>(field0(%[[VALUE_dw]]), int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(10)));
 // DEFAULT-NEXT:         return conditional<i32>(ne<u64>(read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(2)>(field1(%[[VALUE_dw]])), const<i32>(0)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0)))), const<i32>(1), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_test_endianness_vol:[0-9]+]] @test_endianness_vol() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_test_endianness_vol:[0-9]+]] @test_endianness_vol(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_dw_2:[0-9]+]] dw: @type[[TYPE_doubleword_2]] [storage=automatic];
 // DEFAULT-NEXT:         write<f64, volatile>(field0(%[[VALUE_dw_2]]), int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(10)));
 // DEFAULT-NEXT:         return conditional<i32>(ne<i64>(read<i64, volatile>(deref(ptr_offset<ptr<volatile i64>, subtract=false, element=i64, overflow=ub>(array_decay<ptr<volatile i64>, length=Some(2)>(field1(%[[VALUE_dw_2]])), const<i32>(0)))), widen<i64, reason=usual_arith>(const<i32>(0))), const<i32>(1), const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_test_endianness]]), call<i32, signature=fn() -> i32>(%[[VALUE_test_endianness_vol]]))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_test_endianness]]), call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_test_endianness_vol]]))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }

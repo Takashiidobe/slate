@@ -58,7 +58,7 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_x:[0-9]+]] x: @type[[TYPE_baz]], %[[VALUE_b_2:[0-9]+]] b: i32, %[[VALUE_c_2:[0-9]+]] c: i32) -> void [linkage=external] [abi=sysv64(native_c, scalar, scalar) -> void] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         call<void, signature=fn(i32, i32, i32) -> void>(%[[VALUE_foo]], read<i32>(field1(%[[VALUE_x]])), read<i32>(%[[VALUE_b_2]]), read<i32>(%[[VALUE_c_2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_x_2:[0-9]+]] x: @type[[TYPE_baz]] [storage=automatic] = aggregate<@type[[TYPE_baz]], zero_fill=false>(field0 = const<i32>(3), field1 = const<i32>(4), field2 = const<i32>(5));
 // DEFAULT-NEXT:         call<void, signature=fn(@type[[TYPE_baz]], i32, i32) -> void, abi=sysv64(native_c, scalar, scalar) -> void>(%[[VALUE_bar]], copy<@type[[TYPE_baz]], reason=arg>(read<@type[[TYPE_baz]]>(%[[VALUE_x_2]])), const<i32>(1), const<i32>(2));
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));

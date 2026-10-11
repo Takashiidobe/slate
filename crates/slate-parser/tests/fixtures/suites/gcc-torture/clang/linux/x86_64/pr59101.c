@@ -40,7 +40,7 @@ int main() {
 // DEFAULT-NEXT:         return or<i32>(from_bool<i32, reason=promotion>(gt<i64>(and<i64>(widen<i64, reason=usual_arith>(not<i32>(read<i32>(%[[VALUE_a]]))), const<i64>(4102790424)), widen<i64, reason=usual_arith>(const<i32>(0)))), const<i32>(6));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], const<i32>(0)), const<i32>(7))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);

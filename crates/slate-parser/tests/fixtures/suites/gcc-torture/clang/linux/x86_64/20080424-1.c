@@ -83,7 +83,7 @@ int main() {
 // DEFAULT-NEXT:                     call<void, signature=fn(ptr<array<i32, 3>>, ptr<array<i32, 3>>) -> void>(%[[VALUE_bar]], array_decay<ptr<array<i32, 3>>, length=Some(3)>(deref(ptr_offset<ptr<array<array<i32, 3>, 3>>, subtract=false, element=array<array<i32, 3>, 3>, overflow=ub>(read<ptr<array<array<i32, 3>, 3>>>(%[[VALUE_x_2]]), read<i32>(%[[VALUE_k]])))), array_decay<ptr<array<i32, 3>>, length=Some(3)>(deref(ptr_offset<ptr<array<array<i32, 3>, 3>>, subtract=false, element=array<array<i32, 3>, 3>, overflow=ub>(read<ptr<array<array<i32, 3>, 3>>>(%[[VALUE_x_2]]), sub<i32, overflow=ub>(read<i32>(%[[VALUE_k]]), const<i32>(8))))));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<array<array<i32, 3>, 3>>) -> void>(%[[VALUE_foo]], array_decay<ptr<array<array<i32, 3>, 3>>, length=Some(48)>(%[[VALUE_g]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

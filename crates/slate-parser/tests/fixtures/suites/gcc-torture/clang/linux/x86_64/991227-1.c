@@ -41,7 +41,7 @@ int   main() {
 // DEFAULT-NEXT:     fn %[[VALUE_doit:[0-9]+]] @doit(%[[VALUE_flag:[0-9]+]] flag: i32) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(conditional<ptr<i8>>(ne<i32>(read<i32>(%[[VALUE_flag]]), const<i32>(0)), array_decay<ptr<i8>, length=Some(8)>(%[[VALUE_str]]), array_decay<ptr<i8>, length=Some(8)>(%[[VALUE_str_2]])), const<i32>(1));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_result:[0-9]+]] result: ptr<i8> [storage=automatic] = call<ptr<i8>, signature=fn(i32) -> ptr<i8>>(%[[VALUE_doit]], const<i32>(0));
 // DEFAULT-NEXT:         if logical_and<bool>(eq<i32>(widen<i32, reason=promotion>(read<i8>(deref(read<ptr<i8>>(%[[VALUE_result]])))), const<i32>(114)), eq<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_result]]), const<i32>(1))))), const<i32>(105)))
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));

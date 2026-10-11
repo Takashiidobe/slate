@@ -97,7 +97,7 @@ int main() {
 // DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE_memcpy]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<f64>>(%[[VALUE_d_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i64>>(%[[VALUE_t_2]])), const<u64>(8));
 // DEFAULT-NEXT:         return read<f64>(%[[VALUE_d_2]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_u:[0-9]+]] u: @type[[TYPE0]] [storage=automatic];
 // DEFAULT-NEXT:         if logical_or<bool>(ne<u64>(const<u64>(8), const<u64>(8)), ne<i32>(neg<i32, overflow=ub>(const<i32>(1021)), neg<i32, overflow=ub>(const<i32>(1021))))
 // DEFAULT-NEXT:             return const<i32>(0);

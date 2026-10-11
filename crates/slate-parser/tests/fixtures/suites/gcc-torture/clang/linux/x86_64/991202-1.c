@@ -41,7 +41,7 @@ int main() {
 // DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_y:[0-9]+]] y: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_x]], const<i32>(2));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_y]], read<i32>(%[[VALUE_x]]));
 // DEFAULT-NEXT:         do %[[VALUE1:[0-9]+]]

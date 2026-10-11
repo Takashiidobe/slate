@@ -39,7 +39,7 @@ pad_home1 ()
 // DEFAULT-NEXT:     global %[[VALUE_letters:[0-9]+]] letters: array<i8, 27> [storage=static] [align=16] = code_units<array<i8, 27>>([65, 98, 67, 100, 101, 102, 103, 104, 105, 74, 107, 108, 109, 78, 111, 112, 81, 114, 83, 116, 117, 86, 119, 88, 121, 90, 0]) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_letter:[0-9]+]] letter: i8 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_letter_number:[0-9]+]] letter_number: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_pad_home1:[0-9]+]] @pad_home1() -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_pad_home1:[0-9]+]] @pad_home1(unprototyped) -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic] = conditional<i32>(ne<i8>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(27)>(%[[VALUE_letters]]), add<i32, overflow=ub>(read<i32>(%[[VALUE_letter_number]]), const<i32>(1))))), const<i8>(0)), add<i32, overflow=ub>(read<i32>(%[[VALUE_letter_number]]), const<i32>(1)), const<i32>(0));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_letter_number]], read<i32>(%[[VALUE0]]));
 // DEFAULT-NEXT:         write<i8>(%[[VALUE_letter]], read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(27)>(%[[VALUE_letters]]), read<i32>(%[[VALUE0]])))));

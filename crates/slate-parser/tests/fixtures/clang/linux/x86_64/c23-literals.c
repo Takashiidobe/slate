@@ -12,6 +12,7 @@ int utf32_string __attribute__((slate_literal(U"text")));
 int wide_string __attribute__((slate_literal(L"text")));
 int unicode_name __attribute__((slate_literal(\u03B1name)));
 
+// SLATE-FILECHECK-STD DEFAULT gnu23
 // SLATE-FILECHECK-DEFINES DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT

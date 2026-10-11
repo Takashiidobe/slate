@@ -545,7 +545,7 @@ int main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         return read<u64>(%[[VALUE_x_2]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_i_3:[0-9]+]] i: i32 [storage=automatic];
 // DEFAULT-NEXT:         for %[[VALUE2:[0-9]+]]
 // DEFAULT-NEXT:             init:

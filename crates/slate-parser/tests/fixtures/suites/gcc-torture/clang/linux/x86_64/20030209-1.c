@@ -43,7 +43,7 @@ int    main() {
 // DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: array<array<f64, 100>, 100> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_i]], const<i32>(99));
 // DEFAULT-NEXT:         write<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(100)>(deref(ptr_offset<ptr<array<f64, 100>>, subtract=false, element=array<f64, 100>, overflow=ub>(array_decay<ptr<array<f64, 100>>, length=Some(100)>(%[[VALUE_x]]), read<i32>(%[[VALUE_i]])))), const<i32>(0))), int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(42)));

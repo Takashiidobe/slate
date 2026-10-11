@@ -57,7 +57,7 @@ int main(void) { gg(3, 2); }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %[[VALUE_f:[0-9]+]] f: i64 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_g:[0-9]+]] g: ptr<i8> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_o:[0-9]+]] @o() -> i8 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_o:[0-9]+]] @o(unprototyped) -> i8 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_l:[0-9]+]] l: i8 [storage=automatic];
 // DEFAULT-NEXT:         while %[[VALUE0:[0-9]+]] ne<i64>(read<i64>(%[[VALUE_f]]), const<i64>(0))
 // DEFAULT-NEXT:             ;
@@ -72,7 +72,7 @@ int main(void) { gg(3, 2); }
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i8, signature=fn() -> i8>(%[[VALUE_o]]);
+// DEFAULT-NEXT:                 call<i8, signature=fn(unprototyped) -> i8>(%[[VALUE_o]]);
 // DEFAULT-NEXT:                 write<i16>(%[[VALUE_d]], reinterpret<i16, reason=assign, fits=unknown>(read<u16>(%[[VALUE_a]])));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         return reinterpret<u16, reason=return, fits=unknown>(read<i16>(%[[VALUE_d]]));

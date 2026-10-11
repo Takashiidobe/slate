@@ -74,7 +74,7 @@ int main() {
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_y]], call<i32, signature=fn(i32, ptr<void>) -> i32>(%[[VALUE_bar]], read<i32>(%[[VALUE_y]]), pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(65536)>(%[[VALUE_buf]]))));
 // DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%[[VALUE_x_2]]), read<i32>(%[[VALUE_y]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], const<i32>(100)), const<i32>(102))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));

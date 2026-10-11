@@ -60,7 +60,7 @@ int main() {
 // DEFAULT-NEXT:         return conditional<f64>(gt<f64, exceptions=ignore>(read<f64>(%[[VALUE_omww]]), const<f64>(0.0)), read<f64>(%[[VALUE_omww]]), const<f64>(0.0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_y_2:[0-9]+]] y: f64 [storage=automatic] = const<f64>(42.0);
 // DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(call<f64, signature=fn(ptr<f64>) -> f64>(%[[VALUE_foo]], addr_of<ptr<f64>>(%[[VALUE_y_2]])), const<f64>(1.0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);

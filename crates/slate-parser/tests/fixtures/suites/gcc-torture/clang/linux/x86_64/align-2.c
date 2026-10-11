@@ -217,7 +217,7 @@ int main() {
 // DEFAULT-NEXT:     global %[[VALUE_s_f_ld:[0-9]+]] s_f_ld: @type[[TYPE_d_ldouble]] [storage=static] = aggregate<@type[[TYPE_d_ldouble]], zero_fill=false>(field0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(32.0)), field1 = float_widen<f80, reason=assign>(const<f64>(33.0))) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_s_d_ld:[0-9]+]] s_d_ld: @type[[TYPE_e_ldouble]] [storage=static] = aggregate<@type[[TYPE_e_ldouble]], zero_fill=false>(field0 = const<f64>(34.0), field1 = float_widen<f80, reason=assign>(const<f64>(35.0))) [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i8>(field0(%[[VALUE_s_c_s]]))), const<i32>(97))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16>(field1(%[[VALUE_s_c_s]]))), const<i32>(13))

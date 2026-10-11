@@ -79,7 +79,7 @@ int main() {
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(logical_or<bool>(eq<i64>(read<i64>(%[[VALUE_v_2]]), widen<i64, reason=usual_arith>(const<i32>(0))), eq<i64>(read<i64>(%[[VALUE_v_2]]), shl<i64, overflow=ub, amount_out_of_range=ub, negative_left=ub>(widen<i64, reason=explicit>(neg<i32, overflow=ub>(const<i32>(1))), const<i32>(31)))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i128) -> i32>(%[[VALUE_foo]], widen<i128, reason=arg>(const<i32>(0))), const<i32>(1))
 // DEFAULT-NEXT:             write<bool>(%[[VALUE0]], const<bool>(true));

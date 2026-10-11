@@ -147,7 +147,7 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_strncpy:[0-9]+]] @strncpy(%[[VALUE7:[0-9]+]] <unnamed>: ptr<i8>, %[[VALUE8:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE9:[0-9]+]] <unnamed>: u64) -> ptr<i8> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_memset:[0-9]+]] @memset(%[[VALUE10:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE11:[0-9]+]] <unnamed>: i32, %[[VALUE12:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_memcmp:[0-9]+]] @memcmp(%[[VALUE13:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE14:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE15:[0-9]+]] <unnamed>: u64) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_foo:[0-9]+]] foo: ptr<const i8> [storage=automatic] [const] = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(12)>(%[[VALUE_str_2]]));
 // DEFAULT-NEXT:         let %[[VALUE_dst:[0-9]+]] dst: array<i8, 64> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_bar]]))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))))

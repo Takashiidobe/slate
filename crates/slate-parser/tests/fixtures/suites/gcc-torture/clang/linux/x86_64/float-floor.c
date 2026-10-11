@@ -49,8 +49,8 @@ int main() {
 // DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: f64 [storage=static] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(const<f64>(1024.0), div<f64, rounding=nearest_even, exceptions=ignore, contract=on>(const<f64>(1.0), const<f64>(32768.0))) [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_floor:[0-9]+]] @floor(%[[VALUE0:[0-9]+]] <unnamed>: f64) -> f64 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %[[VALUE_floorf:[0-9]+]] @floorf(%[[VALUE1:[0-9]+]] <unnamed>: f32) -> f32 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort(unprototyped) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_df:[0-9]+]] df: f64 [storage=automatic] = call<f64, signature=fn(f64) -> f64>(%[[VALUE_floor]], read<f64>(%[[VALUE_d]]));
 // DEFAULT-NEXT:         let %[[VALUE_f1:[0-9]+]] f1: f32 [storage=automatic] = float_narrow<f32, reason=explicit, rounding=nearest_even, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(%[[VALUE_floor]], read<f64>(%[[VALUE_d]])));
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f64>(%[[VALUE_df]])), const<i32>(1023)), ne<i32>(float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f32>(%[[VALUE_f1]])), const<i32>(1023)))

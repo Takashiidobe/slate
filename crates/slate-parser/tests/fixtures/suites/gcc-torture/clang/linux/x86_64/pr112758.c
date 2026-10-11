@@ -39,7 +39,7 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: i32 [storage=static] = sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(2147483647)), const<i32>(1)) [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if eq<u64>(widen<u64, reason=usual_arith>(sub<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(neg<i32, overflow=ub>(const<i32>(2147483647))), const<u32>(1))), const<u64>(2147483648))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE_b:[0-9]+]] b: u64 [storage=automatic] = const<u64>(18446463698244468735);

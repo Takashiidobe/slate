@@ -62,7 +62,7 @@ int main() {
 // DEFAULT-NEXT:         return read<i32>(deref(read<ptr<i32>>(%[[VALUE_t]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_f:[0-9]+]] f: @type[[TYPE_f]] [storage=automatic];
 // DEFAULT-NEXT:         write<i32>(field0(%[[VALUE_f]]), const<i32>(1));
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32, ptr<@type[[TYPE_f]]>, ptr<i32>) -> i32>(%[[VALUE_g]], const<i32>(5), const<i32>(0), addr_of<ptr<@type[[TYPE_f]]>>(%[[VALUE_f]]), addr_of<ptr<i32>>(field0(%[[VALUE_f]]))), const<i32>(0))

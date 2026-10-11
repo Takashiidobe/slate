@@ -71,7 +71,7 @@ int main() {
 // DEFAULT-NEXT:             return copy<@type[[TYPE_S]], reason=return>(read<@type[[TYPE_S]]>(%[[VALUE_f]]));
 // DEFAULT-NEXT:         return copy<@type[[TYPE_S]], reason=return>(read<@type[[TYPE_S]]>(%[[VALUE_g]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<@type[[TYPE_S]]>(%[[VALUE_h]], copy<@type[[TYPE_S]], reason=assign>(call<@type[[TYPE_S]], signature=fn() -> @type[[TYPE_S]], abi=sysv64() -> native_c>(%[[VALUE_bar]])));
 // DEFAULT-NEXT:         write<i32>(field1(%[[VALUE_f]]), const<i32>(1));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(field1(%[[VALUE_h]])), const<i32>(0))

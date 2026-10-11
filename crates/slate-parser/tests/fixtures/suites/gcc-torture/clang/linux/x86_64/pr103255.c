@@ -67,7 +67,7 @@ int main() {
 // DEFAULT-NEXT:         field2 c: u32;
 // DEFAULT-NEXT:     } [size=12, align=4, offsets=[0, 4, 8]];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_h:[0-9]+]] h: ptr<@type[[TYPE_H]]> [storage=automatic] = null<ptr<@type[[TYPE_H]]>>;
 // DEFAULT-NEXT:         let %[[VALUE_o:[0-9]+]] o: u64 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_t:[0-9]+]] t: volatile i32 [storage=automatic] = const<i32>(1);

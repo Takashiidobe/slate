@@ -59,7 +59,7 @@ int main() {
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_j]], truncate<i32, reason=assign, fits=unknown>(read<i64>(%[[VALUE0]])));
 // DEFAULT-NEXT:         return conditional<i32>(eq<i32>(read<i32>(%[[VALUE_h]]), const<i32>(0)), read<i32>(%[[VALUE_j]]), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_h_2:[0-9]+]] h: i32 [storage=automatic] = read<i32>(%[[VALUE_a]]);
 // DEFAULT-NEXT:         for %[[VALUE1:[0-9]+]]
 // DEFAULT-NEXT:             init:

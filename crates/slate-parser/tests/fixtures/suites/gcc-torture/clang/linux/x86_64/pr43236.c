@@ -60,7 +60,7 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_memset:[0-9]+]] @memset(%[[VALUE_s:[0-9]+]] s: ptr<void>, %[[VALUE_c:[0-9]+]] c: i32, %[[VALUE_n:[0-9]+]] n: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_memcmp:[0-9]+]] @memcmp(%[[VALUE_s1:[0-9]+]] s1: ptr<const void>, %[[VALUE_s2:[0-9]+]] s2: ptr<const void>, %[[VALUE_n_2:[0-9]+]] n: u64) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_A:[0-9]+]] A: array<i8, 30> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %[[VALUE_B:[0-9]+]] B: array<i8, 30> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %[[VALUE_C:[0-9]+]] C: array<i8, 30> [storage=automatic] [align=16];

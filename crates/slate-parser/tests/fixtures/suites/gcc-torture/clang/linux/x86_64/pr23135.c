@@ -178,7 +178,7 @@ int main() {
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(%[[VALUE_a1]]), read<i32>(%[[VALUE_b1]])), ne<i32>(read<i32>(%[[VALUE_a2]]), read<i32>(%[[VALUE_b2]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_big_2:[0-9]+]] big: @type[[TYPE0]] [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_k0:[0-9]+]] k0: vector<i32, 2> [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_k1:[0-9]+]] k1: vector<i32, 2> [storage=automatic];

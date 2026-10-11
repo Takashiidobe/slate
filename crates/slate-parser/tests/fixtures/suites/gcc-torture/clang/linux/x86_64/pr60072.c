@@ -39,7 +39,7 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_p:[0-9]+]] p: ptr<i32>) -> ptr<i32> [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return read<ptr<i32>>(%[[VALUE_p]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<i32>(deref(call<ptr<i32>, signature=fn(ptr<i32>) -> ptr<i32>>(%[[VALUE_foo]], addr_of<ptr<i32>>(%[[VALUE_c]]))), const<i32>(2));
 // DEFAULT-NEXT:         return sub<i32, overflow=ub>(read<i32>(%[[VALUE_c]]), const<i32>(2));
 // DEFAULT-NEXT:     }

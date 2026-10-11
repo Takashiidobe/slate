@@ -88,7 +88,7 @@ int main() {
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE__1:[0-9]+]] _1: array<@type[[TYPE_st]], 2> [storage=automatic] = aggregate<array<@type[[TYPE_st]], 2>, zero_fill=false>(index0 = aggregate<@type[[TYPE_st]], zero_fill=false>(field0 = const<i32>(2)), index1 = aggregate<@type[[TYPE_st]], zero_fill=false>(field0 = const<i32>(1)));
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<@type[[TYPE_st]]>, i32) -> i32>(%[[VALUE_foo]], array_decay<ptr<@type[[TYPE_st]]>, length=Some(2)>(%[[VALUE__1]]), const<i32>(2)), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);

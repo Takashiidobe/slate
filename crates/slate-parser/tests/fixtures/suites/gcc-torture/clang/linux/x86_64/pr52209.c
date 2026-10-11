@@ -45,7 +45,7 @@ int main() {
 // DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: @type[[TYPE_S0]] [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_b]], xor<i32>(neg<i32, overflow=ub>(const<i32>(1)), read<i32>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%[[VALUE_c]]))));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_b]]), neg<i32, overflow=ub>(const<i32>(1)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);

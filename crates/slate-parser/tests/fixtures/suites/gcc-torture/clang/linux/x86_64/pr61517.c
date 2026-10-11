@@ -46,7 +46,7 @@ int main() {
 // DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: ptr<i32> [storage=static] = addr_of<ptr<i32>>(%[[VALUE_a]]) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: u16 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_e:[0-9]+]] e: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=unknown>(read<i32>(%[[VALUE_a]]));
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%[[VALUE_c]])), const<i32>(1));
 // DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32>(%[[VALUE_b]]), const<i32>(0)))

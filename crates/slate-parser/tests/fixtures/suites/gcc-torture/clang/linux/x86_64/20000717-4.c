@@ -51,12 +51,12 @@ int main() { return 0; }
 // DEFAULT-NEXT:         field0 field: array<i32, 6>;
 // DEFAULT-NEXT:     } [size=24, align=4, offsets=[0]];
 // DEFAULT-NEXT:     global %[[VALUE_s:[0-9]+]] s: @type[[TYPE0]] [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_x:[0-9]+]] @x() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_x:[0-9]+]] @x(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_toggle:[0-9]+]] toggle: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         let %[[VALUE_r:[0-9]+]] r: i32 [storage=automatic] = read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(6)>(field0(deref(ptr_offset<ptr<@type[[TYPE_slot]]>, subtract=false, element=@type[[TYPE_slot]], overflow=ub>(array_decay<ptr<@type[[TYPE_slot]]>, length=Some(4)>(field1(%[[VALUE_s]])), const<i32>(0))))), from_bool<i32, reason=promotion>(not<bool>(ne<i32>(read<i32>(%[[VALUE_toggle]]), const<i32>(0)))))));
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_r]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

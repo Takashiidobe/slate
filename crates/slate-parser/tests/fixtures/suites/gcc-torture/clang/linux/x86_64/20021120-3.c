@@ -63,7 +63,7 @@ int main() {
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_z]], add<u32, overflow=wrap>(read<u32>(%[[VALUE_x]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))));
 // DEFAULT-NEXT:         return div<u32, by_zero=ub>(read<u32>(%[[VALUE_z]]), add<u32, overflow=wrap>(read<u32>(%[[VALUE_y]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_c_2:[0-9]+]] c: array<i8, 16> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(ptr<i8>, u32, u32) -> u32>(%[[VALUE_foo]], array_decay<ptr<i8>, length=Some(16)>(%[[VALUE_c_2]]), not<u32>(const<u32>(1)), reinterpret<u32, reason=arg, fits=always>(const<i32>(4))), div<u32, by_zero=ub>(not<u32>(const<u32>(0)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(5))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);

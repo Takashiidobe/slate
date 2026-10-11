@@ -65,7 +65,7 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort(unprototyped) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_abs:[0-9]+]] @abs(%[[VALUE___x:[0-9]+]] __x: i32) -> i32 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_w:[0-9]+]] w: ptr<u8>, %[[VALUE_i:[0-9]+]] i: i32, %[[VALUE_x:[0-9]+]] x: ptr<u8>, %[[VALUE_j:[0-9]+]] j: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_tot:[0-9]+]] tot: i32 [storage=automatic] = const<i32>(0);

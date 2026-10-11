@@ -56,7 +56,7 @@ int         main() {
 // DEFAULT-NEXT:         return read<ptr<@type[[TYPE_X]]>>(%[[VALUE_p]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_p_2:[0-9]+]] p: ptr<@type[[TYPE_X]]> [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_q:[0-9]+]] q: ptr<@type[[TYPE_X]]> [storage=automatic];
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_X]]>>(%[[VALUE_p_2]], call<ptr<@type[[TYPE_X]]>, signature=fn() -> ptr<@type[[TYPE_X]]>>(%[[VALUE_my_alloc]]));

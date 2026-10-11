@@ -42,7 +42,7 @@ int main(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_min:[0-9]+]] @min() -> i64 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_min:[0-9]+]] @min(unprototyped) -> i64 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return sub<i64, overflow=ub>(neg<i64, overflow=ub>(const<i64>(9223372036854775807)), widen<i64, reason=usual_arith>(const<i32>(1)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_j:[0-9]+]] j: i64) -> void [linkage=external] [fallthrough=ret_void] {
@@ -50,7 +50,7 @@ int main(void) {
 // DEFAULT-NEXT:         if gt<i64>(read<i64>(%[[VALUE_j]]), widen<i64, reason=usual_arith>(const<i32>(10)))
 // DEFAULT-NEXT:             write<bool>(%[[VALUE0]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%[[VALUE0]], lt<i64>(read<i64>(%[[VALUE_j]]), call<i64, signature=fn() -> i64>(%[[VALUE_min]])));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE0]], lt<i64>(read<i64>(%[[VALUE_j]]), call<i64, signature=fn(unprototyped) -> i64>(%[[VALUE_min]])));
 // DEFAULT-NEXT:         if read<bool>(%[[VALUE0]])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }

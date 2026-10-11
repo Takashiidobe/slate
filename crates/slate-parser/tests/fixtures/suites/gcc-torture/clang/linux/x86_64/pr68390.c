@@ -50,7 +50,7 @@ int main() {
 // DEFAULT-NEXT:         return call<f64, signature=fn(i32, ...) -> f64>(read<ptr<fn(i32, ...) -> f64>>(%[[VALUE_indirect]]), read<i32>(%[[VALUE_v]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_d1:[0-9]+]] d1: f64 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_d2:[0-9]+]] d2: f64 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic] = const<i32>(2);

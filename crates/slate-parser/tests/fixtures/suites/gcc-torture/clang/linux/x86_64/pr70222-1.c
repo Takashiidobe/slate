@@ -53,7 +53,7 @@ int main() {
 // DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: u32 [storage=static] = reinterpret<u32, reason=assign, fits=always>(const<i32>(2)) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: i32 [storage=static] = const<i32>(0) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: i32 [storage=static] = const<i32>(0) [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_e:[0-9]+]] e: i32 [storage=automatic] = from_bool<i32, reason=assign>(gt<i32>(from_bool<i32, reason=promotion>(lt<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(neg<i32, overflow=ub>(from_bool<i32, reason=promotion>(ge<i32>(read<i32>(%[[VALUE_c]]), read<i32>(%[[VALUE_c]]))))), read<u32>(%[[VALUE_b]]))), reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=unknown>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(neg<u64, overflow=wrap>(const<u64>(1)), mul<i32, overflow=ub>(div<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%[[VALUE_a]]), read<i32>(%[[VALUE_a]])), const<i32>(15)))))));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_d]], neg<i32, overflow=ub>(read<i32>(%[[VALUE_e]])));
 // DEFAULT-NEXT:     }
@@ -62,8 +62,8 @@ int main() {
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_x]]), neg<i32, overflow=ub>(const<i32>(1)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_foo]]);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn(unprototyped) -> void>(%[[VALUE_foo]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_bar]], read<i32>(%[[VALUE_d]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

@@ -77,7 +77,7 @@ int main() {
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%[[VALUE_p]])), const<i32>(1));
 // DEFAULT-NEXT:         return read<i32>(deref(read<ptr<i32>>(%[[VALUE_q_2]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_j:[0-9]+]] j: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<i32>) -> i32>(%[[VALUE_foo]], addr_of<ptr<i32>>(%[[VALUE_i]])), const<i32>(2))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);

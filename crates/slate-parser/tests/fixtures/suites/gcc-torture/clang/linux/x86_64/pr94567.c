@@ -55,7 +55,7 @@ int main() {
 // DEFAULT-NEXT:         return conditional<i32>(logical_and<bool>(ne<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0)), ne<i32>(read<i32>(%[[VALUE_j]]), const<i32>(0))), const<i32>(0), add<i32, overflow=ub>(read<i32>(%[[VALUE_i]]), read<i32>(%[[VALUE_j]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:             condition: ne<i32>(read<i32, volatile>(%[[VALUE_a]]), const<i32>(0))

@@ -226,7 +226,7 @@ int main() {
 // DEFAULT-NEXT:         return reinterpret<u32, reason=return, fits=unknown>(or<i32>(or<i32>(or<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_c3_4]]))), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_c2_4]]))), const<i32>(8))), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_c1_4]]))), const<i32>(16))), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_c0_4]]))), const<i32>(24))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_bfin:[0-9]+]] bfin: @type[[TYPE_bf_or_uint32]] [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_out:[0-9]+]] out: u32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_cin:[0-9]+]] cin: array<i8, 4> [storage=automatic] = aggregate<array<i8, 4>, zero_fill=false>(index0 = truncate<i8, reason=assign, fits=unknown>(const<i32>(131)), index1 = truncate<i8, reason=assign, fits=unknown>(const<i32>(133)), index2 = truncate<i8, reason=assign, fits=unknown>(const<i32>(135)), index3 = truncate<i8, reason=assign, fits=unknown>(const<i32>(137)));

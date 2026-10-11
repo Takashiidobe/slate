@@ -1098,7 +1098,7 @@ int main() {
 // DEFAULT-NEXT:             call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE___builtin_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(26)>(%[[VALUE_str_239]])), const<i32>(196), array_decay<ptr<i8>, length=Some(28)>(%[[VALUE_str_240]]));
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_test_array_ref_2_3]]);
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_test_array_off_2_3]]);
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_test_array_ref_2_2_5]]);

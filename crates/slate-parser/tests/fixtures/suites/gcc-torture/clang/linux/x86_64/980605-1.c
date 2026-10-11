@@ -139,7 +139,7 @@ int main(void) {
 // DEFAULT-NEXT:         write<u16>(%[[VALUE_s]], float_to_int<u16, reason=assign, out_of_range=ub, exceptions=ignore>(read<f64>(%[[VALUE_x_3]])));
 // DEFAULT-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(%[[VALUE_a]]), read<i32>(%[[VALUE_b]])), read<i32>(%[[VALUE_c]])), read<i32>(%[[VALUE_d]])), read<i32>(%[[VALUE_e]])), read<i32>(%[[VALUE_f]])), read<i32>(%[[VALUE_g]])), read<i32>(%[[VALUE_h]])), read<i32>(%[[VALUE_i]])), read<i32>(%[[VALUE_j]])), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_s]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_f_2:[0-9]+]] @f() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_f_2:[0-9]+]] @f(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_ar:[0-9]+]] ar: array<i8, 100000> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %[[VALUE_a_2:[0-9]+]] a: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_b_2:[0-9]+]] b: i32 [storage=automatic];
@@ -168,7 +168,7 @@ int main(void) {
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_f_2]]);
+// DEFAULT-NEXT:         call<void, signature=fn(unprototyped) -> void>(%[[VALUE_f_2]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

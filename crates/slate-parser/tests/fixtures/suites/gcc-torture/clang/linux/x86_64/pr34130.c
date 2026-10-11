@@ -37,7 +37,7 @@ int         main() {
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_i:[0-9]+]] i: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return mul<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(2)), call<i32, signature=fn(i32) -> i32>(%[[VALUE___builtin_abs]], sub<i32, overflow=ub>(read<i32>(%[[VALUE_i]]), const<i32>(2))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], const<i32>(1)), neg<i32, overflow=ub>(const<i32>(2)))
 // DEFAULT-NEXT:             write<bool>(%[[VALUE1]], const<bool>(true));

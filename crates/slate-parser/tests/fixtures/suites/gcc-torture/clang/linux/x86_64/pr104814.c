@@ -58,7 +58,7 @@ int main() {
 // DEFAULT-NEXT:         return conditional<u64>(eq<i64>(read<i64>(%[[VALUE_j]]), widen<i64, reason=usual_arith>(const<i32>(0))), read<u64>(%[[VALUE_h]]), div<u64, by_zero=ub>(read<u64>(%[[VALUE_h]]), reinterpret<u64, reason=usual_arith, fits=unknown>(read<i64>(%[[VALUE_j]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_k:[0-9]+]] k: i64 [storage=automatic] = read<i64>(%[[VALUE_f]]);
 // DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:

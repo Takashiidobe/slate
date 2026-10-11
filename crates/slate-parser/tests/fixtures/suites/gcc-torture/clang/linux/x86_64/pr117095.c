@@ -80,7 +80,7 @@ int main() {
 // DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(sub<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%[[VALUE_n_3]])), widen<i32, reason=promotion>(read<i16>(%[[VALUE_a]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_q:[0-9]+]] q: ptr<i8> [storage=automatic] = addr_of<ptr<i8>>(%[[VALUE_l]]);
 // DEFAULT-NEXT:         let %[[VALUE_s:[0-9]+]] s: ptr<ptr<i32>> [storage=automatic] = addr_of<ptr<ptr<i32>>>(%[[VALUE_i]]);
 // DEFAULT-NEXT:         write<ptr<i32>>(deref(read<ptr<ptr<i32>>>(%[[VALUE_s]])), addr_of<ptr<i32>>(%[[VALUE_z]]));

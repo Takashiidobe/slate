@@ -44,7 +44,7 @@ int main() {
 // DEFAULT-NEXT:         return rem<u64, by_zero=ub>(const<u64>(4897637220), read<u64>(%[[VALUE_s]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<i32>(mul<i32, overflow=ub>(const<i32>(4), const<i32>(8)), const<i32>(32))
 // DEFAULT-NEXT:             return const<i32>(0);
 // DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i32) -> u64>(%[[VALUE_foo]], const<i32>(31)), const<u64>(4897637220))

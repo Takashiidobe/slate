@@ -42,7 +42,7 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: i32 [storage=static] = const<i32>(6) [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         while %[[VALUE0:[0-9]+]] ne<i32>(const<i32>(1), const<i32>(0))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE_b:[0-9]+]] b: i32 [storage=automatic] = conditional<i32>(logical_and<bool>(lt<i32>(read<i32>(%[[VALUE_a]]), const<i32>(0)), lt<i32>(const<i32>(0), sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(2147483647)), read<i32>(%[[VALUE_a]])))), const<i32>(0), read<i32>(%[[VALUE_a]]));

@@ -86,8 +86,8 @@ unsigned int crashIt()
 // DEFAULT-NEXT:     global %[[VALUE_pb:[0-9]+]] pb: ptr<@type[[TYPE_s1]]> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_len:[0-9]+]] len: u16 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_hdb_2:[0-9]+]] hdb: ptr<const @type[[TYPE_s1]]> [const]) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> ptr<u8> [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_crashIt:[0-9]+]] @crashIt() -> u32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(unprototyped) -> ptr<u8> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_crashIt:[0-9]+]] @crashIt(unprototyped) -> u32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<u8> [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_nsn:[0-9]+]] nsn: u32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_cnt:[0-9]+]] cnt: u16 [storage=automatic];
@@ -101,7 +101,7 @@ unsigned int crashIt()
 // DEFAULT-NEXT:             if ge<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(field0(deref(read<ptr<@type[[TYPE_s1]]>>(%[[VALUE_pb]])))))), const<i32>(8))
 // DEFAULT-NEXT:                 write<ptr<u8>>(%[[VALUE1]], read<ptr<u8>>(field1(deref(read<ptr<@type[[TYPE_s1]]>>(%[[VALUE_pb]])))));
 // DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<ptr<u8>>(%[[VALUE1]], call<ptr<u8>, signature=fn() -> ptr<u8>>(%[[VALUE_foo]]));
+// DEFAULT-NEXT:                 write<ptr<u8>>(%[[VALUE1]], call<ptr<u8>, signature=fn(unprototyped) -> ptr<u8>>(%[[VALUE_foo]]));
 // DEFAULT-NEXT:             let %[[VALUE2:[0-9]+]]: ptr<u8> [synthetic] = read<ptr<u8>>(%[[VALUE1]]);
 // DEFAULT-NEXT:             write<ptr<u8>>(%[[VALUE_p]], read<ptr<u8>>(%[[VALUE2]]));
 // DEFAULT-NEXT:             write<bool>(%[[VALUE0]], eq<ptr<u8>>(read<ptr<u8>>(%[[VALUE2]]), null<ptr<u8>>));

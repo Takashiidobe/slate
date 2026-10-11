@@ -48,7 +48,7 @@ int main() {
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(ge<i32>(widen<i32, reason=promotion>(call<i8, signature=fn(i32, i32) -> i8>(%[[VALUE_foo]], from_bool<i32, reason=arg>(ge<i32>(widen<i32, reason=promotion>(read<i8>(%[[VALUE_v]])), const<i32>(0))), sub<i32, overflow=ub>(const<i32>(8), const<i32>(1)))), const<i32>(1)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:         if gt<u64>(const<u64>(4), const<u64>(1))
 // DEFAULT-NEXT:             write<bool>(%[[VALUE0]], ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_bar]]), const<i32>(0)));

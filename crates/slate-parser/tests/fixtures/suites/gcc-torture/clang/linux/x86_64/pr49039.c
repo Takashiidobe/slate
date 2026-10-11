@@ -65,7 +65,7 @@ int main() {
 // DEFAULT-NEXT:             let %[[VALUE3:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE2]]), const<i32>(1));
 // DEFAULT-NEXT:             write<i32>(%[[VALUE_cnt]], read<i32>(%[[VALUE3]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(u32, u32) -> void>(%[[VALUE_foo]], neg<u32, overflow=wrap>(const<u32>(2)), reinterpret<u32, reason=arg, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_cnt]]), const<i32>(2))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);

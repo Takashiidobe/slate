@@ -56,7 +56,7 @@ int main() {
 // DEFAULT-NEXT:         return copy<@type[[TYPE_S]], reason=return>(read<@type[[TYPE_S]]>(%[[VALUE_ret]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: @type[[TYPE_S]] [storage=automatic] = copy<@type[[TYPE_S]], reason=assign>(call<@type[[TYPE_S]], signature=fn(u64) -> @type[[TYPE_S]], abi=sysv64(scalar) -> native_c>(%[[VALUE_foo]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1)))));
 // DEFAULT-NEXT:         if logical_or<bool>(ne<u32>(read<u32>(field0(%[[VALUE_a]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0))), ne<u64>(read<u64>(field1(%[[VALUE_a]])), const<u64>(122222222222)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);

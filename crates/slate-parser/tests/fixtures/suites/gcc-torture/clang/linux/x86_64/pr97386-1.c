@@ -43,7 +43,7 @@ int main() {
 // DEFAULT-NEXT:         return truncate<u8, reason=return, fits=unknown>(call<u16, signature=fn(u16) -> u16>(%[[VALUE___builtin_bswap16]], truncate<u16, reason=arg, fits=unknown>(or<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(const<u64>(52428), read<u32>(%[[VALUE_c]])), shr<u64, amount_out_of_range=ub, fill=zero_extend>(const<u64>(52428), and<u32>(neg<u32, overflow=wrap>(read<u32>(%[[VALUE_c]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(63))))))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: u8 [storage=automatic] = call<u8, signature=fn(u32) -> u8>(%[[VALUE_foo]], reinterpret<u32, reason=arg, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:         if logical_and<bool>(logical_and<bool>(eq<i32>(const<i32>(8), const<i32>(8)), eq<i32>(const<i32>(2), const<i32>(2))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_x]]))), const<i32>(204)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);

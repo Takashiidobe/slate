@@ -50,7 +50,7 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_h:[0-9]+]] @h(%[[VALUE_a_3:[0-9]+]] a: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return div<u32, by_zero=ub>(read<u32>(%[[VALUE_a_3]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(8)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_f]], reinterpret<u32, reason=arg, fits=always>(const<i32>(65536))), call<u32, signature=fn(u32) -> u32>(%[[VALUE_h]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_g]], reinterpret<u32, reason=arg, fits=always>(const<i32>(65536)))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));

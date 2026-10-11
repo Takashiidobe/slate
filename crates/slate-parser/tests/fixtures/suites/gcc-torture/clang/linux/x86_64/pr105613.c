@@ -50,7 +50,7 @@ int main() {
 // DEFAULT-NEXT:         write<vector<u128, 1>>(deref(read<ptr<vector<u128, 1>>>(%[[VALUE_r]])), vector_bit_cast<vector<u128, 1>, reason=assign>(ne<vector<u128, 1>, result=vector<i128, 1>>(read<vector<u128, 1>>(%[[VALUE_v]]), vector_splat<vector<u128, 1>, reason=usual_arith>(reinterpret<u128, reason=usual_arith, fits=unknown>(widen<i128, reason=usual_arith>(const<i32>(0)))))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_r_2:[0-9]+]] r: vector<u128, 1> [storage=automatic];
 // DEFAULT-NEXT:         call<void, signature=fn(vector<u128, 1>, ptr<vector<u128, 1>>) -> void, abi=sysv64(direct, scalar) -> void>(%[[VALUE_foo]], read<vector<u128, 1>>(compound_literal %[[VALUE0:[0-9]+]] [storage=automatic] = aggregate<vector<u128, 1>, zero_fill=false>(index0 = reinterpret<u128, reason=assign, fits=unknown>(widen<i128, reason=assign>(const<i32>(5))))), addr_of<ptr<vector<u128, 1>>>(%[[VALUE_r_2]]));
 // DEFAULT-NEXT:         if ne<u128>(read<u128>(lane(%[[VALUE_r_2]], const<i32>(0))), not<u128>(reinterpret<u128, reason=explicit, fits=unknown>(widen<i128, reason=explicit>(const<i32>(0)))))

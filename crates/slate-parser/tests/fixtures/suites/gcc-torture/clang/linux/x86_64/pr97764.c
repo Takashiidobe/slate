@@ -47,7 +47,7 @@ int main() {
 // DEFAULT-NEXT:         field2 d: i32 : 1;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0, 3], bit_offsets=[Some(0), Some(3), Some(31)], bit_units=[(0, 4)], field_units=[Some(0), Some(0), Some(0)]];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_e:[0-9]+]] e: @type[[TYPE_S]] [storage=automatic] = aggregate<@type[[TYPE_S]], zero_fill=true>();
 // DEFAULT-NEXT:         write<i32>(bitfield1<unit=0, bytes=0..4, bits=3..31>(%[[VALUE_e]]), neg<i32, overflow=ub>(const<i32>(1)));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(bitfield2<unit=0, bytes=0..4, bits=31..32>(%[[VALUE_e]])), const<i32>(0))

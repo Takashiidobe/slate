@@ -64,7 +64,7 @@ int main() {
 // DEFAULT-NEXT:     global %[[VALUE_m:[0-9]+]] m: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_n:[0-9]+]] n: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_h:[0-9]+]] h: i8 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_fn1:[0-9]+]] @fn1() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_fn1:[0-9]+]] @fn1(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:             condition: ne<i32>(read<i32>(%[[VALUE_k]]), const<i32>(0))
@@ -97,7 +97,7 @@ int main() {
 // DEFAULT-NEXT:                 write<i8>(%[[VALUE_h]], truncate<i8, reason=assign, fits=unknown>(add<i32, overflow=ub>(read<i32>(%[[VALUE_a]]), const<i32>(1))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_j:[0-9]+]] j: i8 [storage=automatic];
 // DEFAULT-NEXT:         for %[[VALUE9:[0-9]+]]
 // DEFAULT-NEXT:             init:
@@ -110,7 +110,7 @@ int main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_fn1]]);
+// DEFAULT-NEXT:                     call<void, signature=fn(unprototyped) -> void>(%[[VALUE_fn1]]);
 // DEFAULT-NEXT:                     if ne<i8>(read<i8>(%[[VALUE_h]]), const<i8>(0))
 // DEFAULT-NEXT:                         write<i8>(%[[VALUE_j]], read<i8>(%[[VALUE_h]]));
 // DEFAULT-NEXT:                     if gt<i32>(widen<i32, reason=promotion>(read<i8>(%[[VALUE_j]])), read<i32>(%[[VALUE_c]]))

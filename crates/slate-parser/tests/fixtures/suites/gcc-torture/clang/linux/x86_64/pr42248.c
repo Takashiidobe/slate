@@ -59,7 +59,7 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_init:[0-9]+]] @init(%[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE0]]>, %[[VALUE_y_2:[0-9]+]] y: complex<f64>) -> void [linkage=external] [abi=sysv64(scalar, native_c) -> void] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<complex<f64>>(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_p]]))), read<complex<f64>>(%[[VALUE_y_2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE0]]>, complex<f64>) -> void, abi=sysv64(scalar, native_c) -> void>(%[[VALUE_init]], addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_g1s]]), real_to_complex<complex<f64>, reason=explicit>(int_to_float<f64, reason=explicit, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1))));
 // DEFAULT-NEXT:         call<void, signature=fn(@type[[TYPE0]], complex<f64>) -> void, abi=sysv64(native_c, native_c) -> void>(%[[VALUE_check]], copy<@type[[TYPE0]], reason=arg>(read<@type[[TYPE0]]>(%[[VALUE_g1s]])), real_to_complex<complex<f64>, reason=explicit>(int_to_float<f64, reason=explicit, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1))));
 // DEFAULT-NEXT:         return const<i32>(0);

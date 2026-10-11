@@ -67,7 +67,7 @@ int         main() {
 // DEFAULT-NEXT:                 write<u32>(deref(pointer_cast<ptr<u32>, reason=explicit>(ptr_offset<ptr<void>, subtract=false, element=void, overflow=ub>(pointer_cast<ptr<void>, reason=explicit>(array_decay<ptr<u32>, length=Some(624)>(%[[VALUE_c]])), mul<u64, overflow=wrap>(widen<u64, reason=explicit>(read<u32>(%[[VALUE_i]])), const<u64>(4))))), mul<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2)), read<u32>(deref(pointer_cast<ptr<u32>, reason=explicit>(ptr_offset<ptr<void>, subtract=false, element=void, overflow=ub>(pointer_cast<ptr<void>, reason=explicit>(array_decay<ptr<u32>, length=Some(624)>(%[[VALUE_c]])), mul<u64, overflow=wrap>(add<u64, overflow=wrap>(widen<u64, reason=explicit>(read<u32>(%[[VALUE_i]])), div<u64, by_zero=ub>(neg<u64, overflow=wrap>(const<u64>(4)), const<u64>(4))), const<u64>(4))))))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_i_2:[0-9]+]] i: u32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_j:[0-9]+]] j: u32 [storage=automatic];
 // DEFAULT-NEXT:         for %[[VALUE3:[0-9]+]]

@@ -88,7 +88,7 @@ int main() {
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_storemax]], read<i32>(%[[VALUE_depth_2]]));
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(ne<i32>(read<i32>(%[[VALUE_depth_2]]), const<i32>(0)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<fn(i32) -> i32>) -> i32>(%[[VALUE_CallFunction]], function_decay<ptr<fn(i32) -> i32>>(%[[VALUE_callback]]));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_max]]), const<i32>(10))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);

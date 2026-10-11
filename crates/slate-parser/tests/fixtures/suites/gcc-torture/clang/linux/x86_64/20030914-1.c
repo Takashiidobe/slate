@@ -77,7 +77,7 @@ int main() {
 // DEFAULT-NEXT:                 write<f80>(%[[VALUE_pc]], read<f80>(%[[VALUE5]]));
 // DEFAULT-NEXT:         return read<f80>(%[[VALUE_pc]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: @type[[TYPE_s]] [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_i_2:[0-9]+]] i: i32 [storage=automatic];
 // DEFAULT-NEXT:         for %[[VALUE6:[0-9]+]]

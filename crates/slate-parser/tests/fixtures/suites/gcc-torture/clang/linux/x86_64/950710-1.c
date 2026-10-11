@@ -81,11 +81,11 @@ int main(void) {
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g() -> @type[[TYPE_pair]] [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g(unprototyped) -> @type[[TYPE_pair]] [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: @type[[TYPE_pair]] [storage=automatic];
 // DEFAULT-NEXT:         return copy<@type[[TYPE_pair]], reason=return>(read<@type[[TYPE_pair]]>(%[[VALUE_p]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(unprototyped) -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
 // DEFAULT-NEXT:         for %[[VALUE1:[0-9]+]]
 // DEFAULT-NEXT:             init:
@@ -127,7 +127,7 @@ int main(void) {
 // DEFAULT-NEXT:                                             }
 // DEFAULT-NEXT:                                             body:
 // DEFAULT-NEXT:                                                 {
-// DEFAULT-NEXT:                                                     let %[[VALUE_e:[0-9]+]] e: @type[[TYPE_pair]] [storage=automatic] = copy<@type[[TYPE_pair]], reason=assign>(call<@type[[TYPE_pair]], signature=fn() -> @type[[TYPE_pair]], abi=sysv64() -> native_c>(%[[VALUE_g]]));
+// DEFAULT-NEXT:                                                     let %[[VALUE_e:[0-9]+]] e: @type[[TYPE_pair]] [storage=automatic] = copy<@type[[TYPE_pair]], reason=assign>(call<@type[[TYPE_pair]], signature=fn(unprototyped) -> @type[[TYPE_pair]], abi=sysv64() -> native_c>(%[[VALUE_g]]));
 // DEFAULT-NEXT:                                                 }
 // DEFAULT-NEXT:                                     }
 // DEFAULT-NEXT:                                 else
@@ -141,7 +141,7 @@ int main(void) {
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_f]]);
+// DEFAULT-NEXT:         call<void, signature=fn(unprototyped) -> void>(%[[VALUE_f]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

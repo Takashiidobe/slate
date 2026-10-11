@@ -46,7 +46,7 @@ int main() {
 // DEFAULT-NEXT:         field1 j: array<i32, 4>;
 // DEFAULT-NEXT:     } [size=16, align=4, offsets=[0, 0]];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_t:[0-9]+]] t: @type[[TYPE_U]] [storage=automatic] = aggregate<@type[[TYPE_U]], zero_fill=false>();
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
 // DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]

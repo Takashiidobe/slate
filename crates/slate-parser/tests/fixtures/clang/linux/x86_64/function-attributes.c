@@ -37,7 +37,7 @@ __attribute__((noinline)) int definition() __attribute__((pure)) {
 // DEFAULT-NEXT:     extern %[[VALUE_weak_data:[0-9]+]] weak_data: i32 [storage=static] [linkage=external] [weak] [section=".data"] [used];
 // DEFAULT-NEXT:     fn %[[VALUE_declared:[0-9]+]] @declared(%[[VALUE_p:[0-9]+]] p: ptr<i32>) -> i32 [linkage=external] [inline=never];
 // DEFAULT-NEXT:     fn %[[VALUE_parameterized:[0-9]+]] @parameterized(%[[VALUE_p_2:[0-9]+]] p: i32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_definition:[0-9]+]] @definition() -> i32 [linkage=external] [inline=never] [definition=emitted] [memory=read] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_definition:[0-9]+]] @definition(unprototyped) -> i32 [linkage=external] [inline=never] [definition=emitted] [memory=read] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

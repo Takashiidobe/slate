@@ -36,7 +36,7 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %[[VALUE_enabled:[0-9]+]] enabled: bool [storage=static] = const<bool>(true) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_enabled:[0-9]+]] enabled: bool [storage=static] = ne<i32, reason=assign>(const<i32>(1), const<i32>(0)) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_disabled:[0-9]+]] disabled: bool [storage=static] [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];

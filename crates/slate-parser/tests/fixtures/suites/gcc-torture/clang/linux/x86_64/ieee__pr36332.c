@@ -40,7 +40,7 @@ int main() {
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(eq<f80, exceptions=ignore>(read<f80>(%[[VALUE_ld]]), call<f80, signature=fn() -> f80>(%[[VALUE___builtin_infl]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(f80) -> i32>(%[[VALUE_foo]], const<f80>(1.18973149535723176502E+4932)), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);

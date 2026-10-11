@@ -77,7 +77,7 @@ int main() {
 // DEFAULT-NEXT:                 return pointer_cast<ptr<const i8>, reason=return>(array_decay<ptr<i8>, length=Some(50)>(%[[VALUE_str_3]]));
 // DEFAULT-NEXT:         return null<ptr<const i8>>;
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<ptr<const i8>, signature=fn(ptr<void>, ptr<void>, ptr<i8>) -> ptr<const i8>>(%[[VALUE_server_type]], null<ptr<void>>, null<ptr<void>>, array_decay<ptr<i8>, length=Some(11)>(%[[VALUE_str_4]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

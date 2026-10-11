@@ -82,7 +82,7 @@ int main() {
 // DEFAULT-NEXT:                 write<i32>(deref(read<ptr<i32>>(%[[VALUE12]])), read<i32>(%[[VALUE_s5]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: array<i32, 10> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>, i32, i32, i32, i16, i32, i32, i32, i32, i32) -> void>(%[[VALUE_foo]], array_decay<ptr<i32>, length=Some(10)>(%[[VALUE_x]]), const<i32>(0), const<i32>(0), const<i32>(0), truncate<i16, reason=arg, fits=always>(const<i32>(2)), const<i32>(100), const<i32>(200), const<i32>(300), const<i32>(400), const<i32>(500));

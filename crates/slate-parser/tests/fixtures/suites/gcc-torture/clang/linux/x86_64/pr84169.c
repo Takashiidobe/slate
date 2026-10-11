@@ -53,7 +53,7 @@ int main() {
 // DEFAULT-NEXT:         return add<u128, overflow=wrap>(read<u128>(%[[VALUE_b]]), read<u128>(%[[VALUE_h]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: u128 [storage=automatic] = call<u128, signature=fn(u128, u128, u128, u128, u128, u128) -> u128>(%[[VALUE_foo]], reinterpret<u128, reason=arg, fits=unknown>(widen<i128, reason=arg>(const<i32>(0))), reinterpret<u128, reason=arg, fits=unknown>(widen<i128, reason=arg>(const<i32>(0))), reinterpret<u128, reason=arg, fits=unknown>(widen<i128, reason=arg>(const<i32>(0))), reinterpret<u128, reason=arg, fits=unknown>(widen<i128, reason=arg>(const<i32>(0))), reinterpret<u128, reason=arg, fits=unknown>(widen<i128, reason=arg>(const<i32>(0))), reinterpret<u128, reason=arg, fits=unknown>(widen<i128, reason=arg>(const<i32>(4))));
 // DEFAULT-NEXT:         if ne<u128>(read<u128>(%[[VALUE_x]]), reinterpret<u128, reason=usual_arith, fits=unknown>(widen<i128, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(64)))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);

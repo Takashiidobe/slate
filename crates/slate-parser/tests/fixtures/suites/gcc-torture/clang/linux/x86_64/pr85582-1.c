@@ -49,7 +49,7 @@ L2:
 // DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: i32 [storage=static] = const<i32>(2) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_e:[0-9]+]] e: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: i64 [storage=static] = widen<i64, reason=assign>(const<i32>(1)) [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_g:[0-9]+]] g: i32 [storage=automatic] = const<i32>(6);
 // DEFAULT-NEXT:         label %[[VALUE_L1:[0-9]+]] L1:
 // DEFAULT-NEXT:             write<i32>(%[[VALUE_e]], read<i32>(%[[VALUE_d]]));

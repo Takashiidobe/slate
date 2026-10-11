@@ -327,7 +327,7 @@ int main() {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 call<void, signature=fn(i32) -> void>(%[[VALUE_catchme]], reinterpret<i32, reason=arg, fits=unknown>(read<u32>(%[[VALUE_regno]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_elem:[0-9]+]] elem: @type[[TYPE_bitmap_element_def]] [storage=automatic] = aggregate<@type[[TYPE_bitmap_element_def]], zero_fill=false>(field0 = null<ptr<@type[[TYPE_bitmap_element_def]]>>, field1 = null<ptr<@type[[TYPE_bitmap_element_def]]>>, field2 = reinterpret<u32, reason=assign, fits=always>(const<i32>(0)), field3 = aggregate<array<u64, 2>, zero_fill=false>(index0 = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(1))), index1 = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(1)))));
 // DEFAULT-NEXT:         let %[[VALUE_live_throughout:[0-9]+]] live_throughout: @type[[TYPE_bitmap_head_def]] [storage=automatic] = aggregate<@type[[TYPE_bitmap_head_def]], zero_fill=false>(field0 = addr_of<ptr<@type[[TYPE_bitmap_element_def]]>>(%[[VALUE_elem]]), field1 = addr_of<ptr<@type[[TYPE_bitmap_element_def]]>>(%[[VALUE_elem]]), field2 = reinterpret<u32, reason=assign, fits=always>(const<i32>(0)), field3 = null<ptr<@type[[TYPE_bitmap_obstack]]>>);
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE_bitmap_head_def]]>) -> void>(%[[VALUE_foobar]], addr_of<ptr<@type[[TYPE_bitmap_head_def]]>>(%[[VALUE_live_throughout]]));

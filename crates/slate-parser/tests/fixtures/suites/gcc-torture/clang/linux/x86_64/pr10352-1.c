@@ -44,7 +44,7 @@ int  main() {
 // DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: ptr<i32> [storage=static] = pointer_cast<ptr<i32>, reason=explicit>(addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_b]])) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:         if ne<ptr<i32>>(read<ptr<i32>>(%[[VALUE_c]]), null<ptr<i32>>)
 // DEFAULT-NEXT:             let %[[VALUE1:[0-9]+]]: i32 [synthetic] = xor<i32>(from_bool<i32, reason=promotion>(lt<i32>(read<i32>(%[[VALUE_d]]), const<i32>(0))), const<i32>(3));

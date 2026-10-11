@@ -40,7 +40,7 @@ int main() {
 // DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: volatile i32 [storage=static] = const<i32>(0) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: volatile i32 [storage=static] = const<i32>(1) [linkage=internal];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic] = read<i32, volatile>(%[[VALUE_a]]);
 // DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE0]]), const<i32>(1));
 // DEFAULT-NEXT:         write<i32, volatile>(%[[VALUE_a]], read<i32>(%[[VALUE1]]));

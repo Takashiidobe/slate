@@ -872,7 +872,7 @@ int main() {
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_14]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_u:[0-9]+]] u: @type[[TYPE_Y]] [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_v:[0-9]+]] v: @type[[TYPE_Y]] [storage=automatic];
 // DEFAULT-NEXT:         write<i64>(field0(field1(%[[VALUE_u]])), reinterpret<i64, reason=assign, fits=always>(const<u64>(6148914691236517205)));

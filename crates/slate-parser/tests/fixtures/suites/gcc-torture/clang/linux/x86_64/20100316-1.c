@@ -58,7 +58,7 @@ int main() {
 // DEFAULT-NEXT:         return reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=4..6, bits=0..10>(deref(read<ptr<@type[[TYPE_Foo]]>>(%[[VALUE_q]])))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<i32>(field0(%[[VALUE_f]]), neg<i32, overflow=ub>(const<i32>(1)));
 // DEFAULT-NEXT:         write<u32>(bitfield1<unit=0, bytes=4..6, bits=0..10>(%[[VALUE_f]]), reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:         write<u32>(bitfield2<unit=0, bytes=4..6, bits=10..13>(%[[VALUE_f]]), reinterpret<u32, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1))));

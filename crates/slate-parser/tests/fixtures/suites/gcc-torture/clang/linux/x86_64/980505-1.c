@@ -45,7 +45,7 @@ static int f(int x) { return x; }
 // DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_x:[0-9]+]] x: i32) -> i32 [linkage=internal] [memory=none] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_x]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_f1:[0-9]+]] f1: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_f2:[0-9]+]] f2: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_x_2:[0-9]+]] x: i32 [storage=automatic];

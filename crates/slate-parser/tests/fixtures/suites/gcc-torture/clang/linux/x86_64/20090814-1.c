@@ -49,7 +49,7 @@ int         main() {
 // DEFAULT-NEXT:         return call<i32, signature=fn(ptr<i32>) -> i32>(%[[VALUE_bar]], addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(deref(read<ptr<array<i32, 2>>>(%[[VALUE_a_3]]))), read<i32>(%[[VALUE_i]])))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(%[[VALUE_a]]), const<i32>(0))), neg<i32, overflow=ub>(const<i32>(1)));
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(%[[VALUE_a]]), const<i32>(1))), const<i32>(42));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_i]], const<i32>(1));

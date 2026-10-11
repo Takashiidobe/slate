@@ -277,7 +277,7 @@ int main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         return copy<@type[[TYPE_cpp_num]], reason=return>(read<@type[[TYPE_cpp_num]]>(%[[VALUE_num_5]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_res:[0-9]+]] res: @type[[TYPE_cpp_num]] [storage=automatic] = copy<@type[[TYPE_cpp_num]], reason=assign>(call<@type[[TYPE_cpp_num]], signature=fn(@type[[TYPE_cpp_num]], u32, u32) -> @type[[TYPE_cpp_num]], abi=sysv64(native_c, scalar, scalar) -> native_c>(%[[VALUE_num_lshift]], copy<@type[[TYPE_cpp_num]], reason=arg>(read<@type[[TYPE_cpp_num]]>(%[[VALUE_num]])), reinterpret<u32, reason=arg, fits=always>(const<i32>(64)), read<u32>(%[[VALUE_n]])));
 // DEFAULT-NEXT:         if ne<u32>(read<u32>(field1(%[[VALUE_res]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(196608)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);

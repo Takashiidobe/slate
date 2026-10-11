@@ -56,7 +56,7 @@ int main() {
 // DEFAULT-NEXT:         let %[[VALUE_result2:[0-9]+]] result2: f64 [storage=automatic] = div<f64, rounding=nearest_even, exceptions=ignore, contract=on>(mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE_x_2]]), const<f64>(100.0)), read<f64>(%[[VALUE_y_2]]));
 // DEFAULT-NEXT:         call<void, signature=fn(f64, f64) -> void>(%[[VALUE_fpEq]], read<f64>(%[[VALUE_result1]]), read<f64>(%[[VALUE_result2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(f64, f64) -> void>(%[[VALUE_fpTest]], const<f64>(35.7), const<f64>(45.0));
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }

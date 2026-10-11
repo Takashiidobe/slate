@@ -37,7 +37,7 @@ int         main() {
 // DEFAULT-NEXT:         return div<i32, by_zero=ub, min_by_neg_one=ub>(reinterpret<i32, reason=explicit, fits=unknown>(mul<u32, overflow=wrap>(reinterpret<u32, reason=explicit, fits=unknown>(add<i32, overflow=ub>(read<i32>(%[[VALUE_i]]), const<i32>(1))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(4)))), const<i32>(4));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], const<i32>(1073741823)), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);

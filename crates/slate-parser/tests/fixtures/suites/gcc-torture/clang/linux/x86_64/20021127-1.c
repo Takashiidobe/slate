@@ -41,7 +41,7 @@ long long llabs(long long b) { abort(); }
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_abort:[0-9]+]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_abort]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(i64) -> i64>(%[[VALUE_llabs]], read<i64>(%[[VALUE_a]])), widen<i64, reason=usual_arith>(const<i32>(1)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);

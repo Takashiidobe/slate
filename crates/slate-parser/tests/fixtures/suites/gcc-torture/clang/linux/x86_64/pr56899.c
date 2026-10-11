@@ -83,7 +83,7 @@ int main() {
 // DEFAULT-NEXT:         if ne<u32>(read<u32>(%[[VALUE_x_4]]), neg<u32, overflow=wrap>(const<u32>(1932735285)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_f1]], const<i32>(10));
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_f2]], neg<i32, overflow=ub>(const<i32>(10)));
 // DEFAULT-NEXT:         call<void, signature=fn(u32) -> void>(%[[VALUE_f3]], reinterpret<u32, reason=arg, fits=always>(const<i32>(10)));

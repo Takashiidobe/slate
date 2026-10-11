@@ -80,7 +80,7 @@ int main() {
 // DEFAULT-NEXT:                 write<i32>(deref(read<ptr<i32>>(%[[VALUE10]])), read<i32>(%[[VALUE_j]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_BM_tab_2:[0-9]+]] BM_tab: array<i32, 256> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE_memset]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i32>, length=Some(256)>(%[[VALUE_BM_tab_2]])), const<i32>(0), const<u64>(1024));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>, i32) -> void>(%[[VALUE_foo]], array_decay<ptr<i32>, length=Some(256)>(%[[VALUE_BM_tab_2]]), const<i32>(6));

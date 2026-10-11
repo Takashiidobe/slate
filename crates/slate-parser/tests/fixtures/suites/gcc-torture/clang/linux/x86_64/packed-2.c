@@ -42,7 +42,7 @@ int main() {
 // DEFAULT-NEXT:     } [size=10, align=2, offsets=[0, 2]];
 // DEFAULT-NEXT:     type @type[[TYPE_s_2:[0-9]+]] s = @type[[TYPE_s]];
 // DEFAULT-NEXT:     global %[[VALUE_t:[0-9]+]] t: @type[[TYPE_s]] [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<u64>(field1(%[[VALUE_t]]), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

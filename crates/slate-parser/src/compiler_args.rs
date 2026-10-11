@@ -60,7 +60,7 @@ impl std::fmt::Display for CompilerFlavor {
     }
 }
 
-#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum LanguageStandard {
     C89,
     C94,
@@ -72,13 +72,20 @@ pub enum LanguageStandard {
     C17,
     Gnu17,
     C23,
-    #[default]
     Gnu23,
     C2y,
     Gnu2y,
 }
 
 impl LanguageStandard {
+    pub const fn default_for(flavor: CompilerFlavor) -> Self {
+        match flavor {
+            CompilerFlavor::Gcc => Self::Gnu23,
+            CompilerFlavor::Clang => Self::Gnu17,
+            CompilerFlavor::Msvc => Self::C17,
+        }
+    }
+
     pub fn is_gnu(self) -> bool {
         matches!(
             self,
@@ -141,7 +148,7 @@ impl FromStr for LanguageStandard {
     }
 }
 
-#[derive(Debug, Default, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct CompilerArgs {
     pub options: CompilerOptions,
     pub defines: Vec<String>,
@@ -979,7 +986,9 @@ impl CompilerArgParser {
             options,
             defines: raw.defines,
             preprocessor_inputs: raw.preprocessor_inputs,
-            standard: raw.standard.unwrap_or_default(),
+            standard: raw
+                .standard
+                .unwrap_or(LanguageStandard::default_for(flavor)),
             include: raw.include,
             iquote: raw.iquote,
             isystem: raw.isystem,

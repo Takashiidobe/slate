@@ -103,7 +103,7 @@ int main() {
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_tree_node]]>>(deref(read<ptr<ptr<@type[[TYPE_tree_node]]>>>(%[[VALUE_q]])), addr_of<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_global]]));
 // DEFAULT-NEXT:         return read<ptr<@type[[TYPE_tree_node]]>>(deref(ptr_offset<ptr<ptr<@type[[TYPE_tree_node]]>>, subtract=false, element=ptr<@type[[TYPE_tree_node]]>, overflow=ub>(array_decay<ptr<ptr<@type[[TYPE_tree_node]]>>, length=Some(1)>(field2(field1(deref(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_p]]))))), read<i32>(%[[VALUE_i]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_p_2:[0-9]+]] p: ptr<@type[[TYPE_tree_node]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE_tree_node]]>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], const<u64>(96)));
 // DEFAULT-NEXT:         if ne<ptr<@type[[TYPE_tree_node]]>>(call<ptr<@type[[TYPE_tree_node]]>, signature=fn(ptr<@type[[TYPE_tree_node]]>, i32) -> ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_foo]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_p_2]]), const<i32>(1)), addr_of<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_global]]))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);

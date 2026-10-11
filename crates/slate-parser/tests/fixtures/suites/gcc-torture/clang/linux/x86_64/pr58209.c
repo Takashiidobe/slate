@@ -65,7 +65,7 @@ int main() {
 // DEFAULT-NEXT:             return array_decay<ptr<i64>, length=Some(1024)>(%[[VALUE_buf]]);
 // DEFAULT-NEXT:         return ptr_offset<ptr<i64>, subtract=false, element=i64, overflow=ub>(call<ptr<i64>, signature=fn(i64) -> ptr<i64>>(%[[VALUE_foo]], sub<i64, overflow=ub>(read<i64>(%[[VALUE_n_2]]), widen<i64, reason=usual_arith>(const<i32>(1)))), const<i32>(1));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
 // DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:

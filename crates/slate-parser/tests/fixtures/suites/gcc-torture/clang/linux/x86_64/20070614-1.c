@@ -75,7 +75,7 @@ int main() {
 // DEFAULT-NEXT:                 call<void, signature=fn(complex<f64>, ptr<i32>) -> void, abi=sysv64(native_c, scalar) -> void>(%[[VALUE_foo]], call<complex<f64>, signature=fn(complex<f64>) -> complex<f64>, abi=sysv64(native_c) -> native_c>(%[[VALUE_bar]], complex_convert<complex<f64>, reason=arg>(mul<complex<f32>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(aggregate<complex<f32>, zero_fill=false>(index0 = const<f32>(0.0), index1 = const<f32>(1.0)), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(read<i32>(%[[VALUE_i]]))))), addr_of<ptr<i32>>(%[[VALUE_a]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%[[VALUE_baz]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

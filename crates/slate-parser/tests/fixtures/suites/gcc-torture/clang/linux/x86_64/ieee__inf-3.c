@@ -164,7 +164,7 @@ int main() {
 // DEFAULT-NEXT:         if lt<f80, exceptions=ignore>(read<f80>(%[[VALUE_f_3]]), neg<f80>(call<f80, signature=fn() -> f80>(%[[VALUE___builtin_huge_vall]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(f64, f64) -> void>(%[[VALUE_test]], const<f64>(34.0), call<f64, signature=fn() -> f64>(%[[VALUE___builtin_huge_val]]));
 // DEFAULT-NEXT:         call<void, signature=fn(f32, f32) -> void>(%[[VALUE_testf]], const<f32>(34.0), call<f32, signature=fn() -> f32>(%[[VALUE___builtin_huge_valf]]));
 // DEFAULT-NEXT:         call<void, signature=fn(f80, f80) -> void>(%[[VALUE_testl]], const<f80>(34), call<f80, signature=fn() -> f80>(%[[VALUE___builtin_huge_vall]]));

@@ -51,7 +51,7 @@ int main() {
 // DEFAULT-NEXT:         return add<u64, overflow=wrap>(widen<u64, reason=usual_arith>(read<u32>(%[[VALUE_x]])), read<u64>(%[[VALUE_z]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(u32, u64, u64) -> u64>(%[[VALUE_foo]], const<u32>(1145324612), const<u64>(1229782938247303441), const<u64>(2459565876494606882)), const<u64>(2459565876780951142))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);

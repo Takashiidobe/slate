@@ -101,24 +101,24 @@ int main(void) {
 // DEFAULT-NEXT:     global %[[VALUE_count:[0-9]+]] count: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_a1:[0-9]+]] @a1() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_a1:[0-9]+]] @a1(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_count]]);
 // DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE1]]), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_count]], read<i32>(%[[VALUE2]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_b:[0-9]+]] @b(%[[VALUE_data:[0-9]+]] data: u8) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if ne<i32>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_data]]))), const<i32>(128)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_a1]]);
+// DEFAULT-NEXT:             call<void, signature=fn(unprototyped) -> void>(%[[VALUE_a1]]);
 // DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: u8 [synthetic] = read<u8>(%[[VALUE_data]]);
 // DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: u8 [synthetic] = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE3]]))), const<i32>(1))));
 // DEFAULT-NEXT:         write<u8>(%[[VALUE_data]], read<u8>(%[[VALUE4]]));
 // DEFAULT-NEXT:         if ne<i32>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_data]]))), const<i32>(128)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_a1]]);
+// DEFAULT-NEXT:             call<void, signature=fn(unprototyped) -> void>(%[[VALUE_a1]]);
 // DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: u8 [synthetic] = read<u8>(%[[VALUE_data]]);
 // DEFAULT-NEXT:         let %[[VALUE6:[0-9]+]]: u8 [synthetic] = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE5]]))), const<i32>(1))));
 // DEFAULT-NEXT:         write<u8>(%[[VALUE_data]], read<u8>(%[[VALUE6]]));
 // DEFAULT-NEXT:         if ne<i32>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_data]]))), const<i32>(128)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_a1]]);
+// DEFAULT-NEXT:             call<void, signature=fn(unprototyped) -> void>(%[[VALUE_a1]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_count]], const<i32>(0));

@@ -84,7 +84,7 @@ void bar(void) {}
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_f]], read<i32>(%[[VALUE_i]]));
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_bar]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_g]], read<i32>(%[[VALUE_i]]));

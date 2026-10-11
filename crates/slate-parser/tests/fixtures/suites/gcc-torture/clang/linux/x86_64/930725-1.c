@@ -47,13 +47,13 @@ int main(void) {
 // DEFAULT-NEXT:     global %[[VALUE_str_3:[0-9]+]] .str[[VALUE_str_3]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([97, 98, 99, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g() -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g(unprototyped) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return array_decay<ptr<i8>, length=Some(1)>(%[[VALUE_str]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(unprototyped) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: ptr<i8> [synthetic];
 // DEFAULT-NEXT:         if eq<i32>(read<i32>(%[[VALUE_v]]), const<i32>(0))
-// DEFAULT-NEXT:             write<ptr<i8>>(%[[VALUE1]], call<ptr<i8>, signature=fn() -> ptr<i8>>(%[[VALUE_g]]));
+// DEFAULT-NEXT:             write<ptr<i8>>(%[[VALUE1]], call<ptr<i8>, signature=fn(unprototyped) -> ptr<i8>>(%[[VALUE_g]]));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<ptr<i8>>(%[[VALUE1]], array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_2]]));
 // DEFAULT-NEXT:         return read<ptr<i8>>(%[[VALUE1]]);
@@ -61,7 +61,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_strcmp:[0-9]+]] @__builtin_strcmp(%[[VALUE2:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE3:[0-9]+]] <unnamed>: ptr<const i8>) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_v]], const<i32>(1));
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(%[[VALUE___builtin_strcmp]], pointer_cast<ptr<const i8>, reason=arg>(call<ptr<i8>, signature=fn() -> ptr<i8>>(%[[VALUE_f]])), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_3]]))), const<i32>(0)))
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(%[[VALUE___builtin_strcmp]], pointer_cast<ptr<const i8>, reason=arg>(call<ptr<i8>, signature=fn(unprototyped) -> ptr<i8>>(%[[VALUE_f]])), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_3]]))), const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }

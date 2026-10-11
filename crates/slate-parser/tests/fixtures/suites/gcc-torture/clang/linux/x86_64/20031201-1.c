@@ -177,7 +177,7 @@ void f0(void) {
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(%[[VALUE2]]), const<i32>(0)), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..16>(field0(deref(read<ptr<@type[[TYPE2]]>>(%[[VALUE_iop_2]])))))), const<i32>(32))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..16>(field1(deref(read<ptr<@type[[TYPE2]]>>(%[[VALUE_iop_2]])))))), const<i32>(32)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_io0:[0-9]+]] io0: @type[[TYPE2]] [storage=automatic];
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<void>) -> i32>(%[[VALUE_f1]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE2]]>>(%[[VALUE_io0]])));
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_abort]]);

@@ -58,7 +58,7 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_copysignf:[0-9]+]] @__builtin_copysignf(%[[VALUE3:[0-9]+]] <unnamed>: f32, %[[VALUE4:[0-9]+]] <unnamed>: f32) -> f32 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_x_2:[0-9]+]] x: array<f32, 32> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<f32>, f32) -> void>(%[[VALUE_foo]], array_decay<ptr<f32>, length=Some(32)>(%[[VALUE_x_2]]), neg<f32>(const<f32>(0.0)));
 // DEFAULT-NEXT:         if ne<f32, exceptions=ignore>(call<f32, signature=fn(f32, f32) -> f32>(%[[VALUE___builtin_copysignf]], float_narrow<f32, reason=arg, rounding=nearest_even, exceptions=ignore>(const<f64>(1.0)), read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(32)>(%[[VALUE_x_2]]), const<i32>(3))))), neg<f32>(const<f32>(1.0)))

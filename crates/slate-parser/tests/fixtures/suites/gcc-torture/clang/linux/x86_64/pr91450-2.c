@@ -137,7 +137,7 @@ int main() {
 // DEFAULT-NEXT:         if ne<u64>(read<u64>(%[[VALUE_r_5]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(i32, i32) -> void>(%[[VALUE_foo]], neg<i32, overflow=ub>(const<i32>(4)), const<i32>(0));
 // DEFAULT-NEXT:         call<void, signature=fn(i32, i32) -> void>(%[[VALUE_foo]], const<i32>(0), neg<i32, overflow=ub>(const<i32>(4)));
 // DEFAULT-NEXT:         call<void, signature=fn(i32, i32) -> void>(%[[VALUE_foo]], const<i32>(0), const<i32>(0));

@@ -50,7 +50,7 @@ void func(int x, int y) {
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_x_2:[0-9]+]] x: i32 [storage=automatic] = const<i32>(7);
 // DEFAULT-NEXT:         call<void, signature=fn(i32, i32) -> void>(%[[VALUE_func]], from_bool<i32, reason=arg>(not<bool>(ne<i32>(read<i32>(%[[VALUE_x_2]]), const<i32>(0)))), from_bool<i32, reason=arg>(not<bool>(ne<i32>(const<i32>(7), const<i32>(0)))));
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));

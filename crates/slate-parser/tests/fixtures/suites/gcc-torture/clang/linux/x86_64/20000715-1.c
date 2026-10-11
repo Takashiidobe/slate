@@ -269,7 +269,7 @@ int main() {
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_y]]), const<i32>(3))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_test1]]);
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_test2]]);
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_test3]]);

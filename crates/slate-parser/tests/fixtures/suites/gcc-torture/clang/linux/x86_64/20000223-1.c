@@ -98,7 +98,7 @@ int main() {
 // DEFAULT-NEXT:         field10 d: f64;
 // DEFAULT-NEXT:         field11 ld: f80;
 // DEFAULT-NEXT:         field12 dp: ptr<void>;
-// DEFAULT-NEXT:         field13 fp: ptr<fn() -> void>;
+// DEFAULT-NEXT:         field13 fp: ptr<fn(unprototyped) -> void>;
 // DEFAULT-NEXT:     } [size=96, align=16, offsets=[0, 2, 4, 8, 12, 16, 24, 32, 40, 48, 56, 64, 80, 88]];
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([118, 111, 105, 100, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([99, 104, 97, 114, 0]) [linkage=internal];
@@ -123,7 +123,7 @@ int main() {
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, i32) -> void>(%[[VALUE_check]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%[[VALUE_str]])), reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=always>(const<u64>(1))));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, i32) -> void>(%[[VALUE_check]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%[[VALUE_str_2]])), reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=always>(const<u64>(1))));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, i32) -> void>(%[[VALUE_check]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%[[VALUE_str_3]])), reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=always>(const<u64>(2))));

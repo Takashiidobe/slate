@@ -69,7 +69,7 @@ int main(void) {
 // DEFAULT-NEXT:     global %[[VALUE_r:[0-9]+]] r: ptr<u64> [storage=static] = array_decay<ptr<u64>, length=Some(32)>(%[[VALUE_b]]) [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_alpha_ep_extbl_i_eq_0:[0-9]+]] @alpha_ep_extbl_i_eq_0() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_alpha_ep_extbl_i_eq_0:[0-9]+]] @alpha_ep_extbl_i_eq_0(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_rb:[0-9]+]] rb: u32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_ra:[0-9]+]] ra: u32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_rc:[0-9]+]] rc: u32 [storage=automatic];
@@ -88,7 +88,7 @@ int main(void) {
 // DEFAULT-NEXT:                 write<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(32)>(%[[VALUE_b]]), const<i32>(17))), const<u64>(3160194));
 // DEFAULT-NEXT:                 write<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(32)>(%[[VALUE_b]]), const<i32>(2))), const<u64>(6003104017374052362));
 // DEFAULT-NEXT:                 write<u64>(%[[VALUE_pars]], widen<u64, reason=assign>(const<u32>(2281701442)));
-// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE_alpha_ep_extbl_i_eq_0]]);
+// DEFAULT-NEXT:                 call<void, signature=fn(unprototyped) -> void>(%[[VALUE_alpha_ep_extbl_i_eq_0]]);
 // DEFAULT-NEXT:                 if ne<u64>(read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(32)>(%[[VALUE_b]]), const<i32>(2)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(77))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }

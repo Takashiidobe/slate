@@ -59,7 +59,7 @@ int main() {
 // DEFAULT-NEXT:         if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(%[[VALUE_one]]), const<f64>(1.0)), ne<f64, exceptions=ignore>(read<f64>(%[[VALUE_value]]), const<f64>(2.0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(f64, ...) -> void>(%[[VALUE_fdouble]], const<f64>(1.0), const<f64>(2.0));
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }

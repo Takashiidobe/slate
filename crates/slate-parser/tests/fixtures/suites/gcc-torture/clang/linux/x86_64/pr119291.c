@@ -61,7 +61,7 @@ lab:
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_a]], const<i32>(42));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_e:[0-9]+]] e: i32 [storage=automatic] = const<i32>(1);
 // DEFAULT-NEXT:         label %[[VALUE_lab:[0-9]+]] lab:
 // DEFAULT-NEXT:             if lt<i32>(read<i32>(%[[VALUE_a]]), const<i32>(2))

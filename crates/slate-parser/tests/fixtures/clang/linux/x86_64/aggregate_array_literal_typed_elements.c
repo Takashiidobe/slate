@@ -92,7 +92,7 @@ int main(void) {
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_total]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_count_true_flags:[0-9]+]] @count_true_flags() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE_values:[0-9]+]] values: array<bool, 2> [storage=automatic] = aggregate<array<bool, 2>, zero_fill=false>(index0 = const<bool>(true), index1 = const<bool>(false));
+// DEFAULT-NEXT:         let %[[VALUE_values:[0-9]+]] values: array<bool, 2> [storage=automatic] = aggregate<array<bool, 2>, zero_fill=false>(index0 = ne<i32, reason=assign>(const<i32>(1), const<i32>(0)), index1 = ne<i32, reason=assign>(const<i32>(0), const<i32>(0)));
 // DEFAULT-NEXT:         let %[[VALUE_total_2:[0-9]+]] total: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         for %[[VALUE5:[0-9]+]]
 // DEFAULT-NEXT:             init:

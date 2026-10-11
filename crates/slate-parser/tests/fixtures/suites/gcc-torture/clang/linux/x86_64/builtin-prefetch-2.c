@@ -183,22 +183,22 @@ int main() {
 // DEFAULT-NEXT:     global %[[VALUE_ix:[0-9]+]] ix: i32 [storage=static] [linkage=internal];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_prefetch:[0-9]+]] @__builtin_prefetch(%[[VALUE1:[0-9]+]] <unnamed>: ptr<const void>, ...) -> void [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %[[VALUE_simple_global:[0-9]+]] @simple_global() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_simple_global:[0-9]+]] @simple_global(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%[[VALUE___builtin_prefetch]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i32>, length=Some(100)>(%[[VALUE_glob_int_arr]])), const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%[[VALUE___builtin_prefetch]], pointer_cast<ptr<const void>, reason=arg>(read<ptr<i32>>(%[[VALUE_glob_ptr_int]])), const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%[[VALUE___builtin_prefetch]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i32>>(%[[VALUE_glob_int]])), const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_simple_file:[0-9]+]] @simple_file() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_simple_file:[0-9]+]] @simple_file(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%[[VALUE___builtin_prefetch]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i32>, length=Some(100)>(%[[VALUE_stat_int_arr]])), const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%[[VALUE___builtin_prefetch]], pointer_cast<ptr<const void>, reason=arg>(read<ptr<i32>>(%[[VALUE_stat_ptr_int]])), const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%[[VALUE___builtin_prefetch]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i32>>(%[[VALUE_stat_int]])), const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_simple_static_local:[0-9]+]] @simple_static_local() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_simple_static_local:[0-9]+]] @simple_static_local(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%[[VALUE___builtin_prefetch]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i32>, length=Some(100)>(%[[VALUE_gx]])), const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%[[VALUE___builtin_prefetch]], pointer_cast<ptr<const void>, reason=arg>(read<ptr<i32>>(%[[VALUE_hx]])), const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%[[VALUE___builtin_prefetch]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i32>>(%[[VALUE_ix]])), const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_simple_local:[0-9]+]] @simple_local() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_simple_local:[0-9]+]] @simple_local(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_gx_2:[0-9]+]] gx: array<i32, 100> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %[[VALUE_hx_2:[0-9]+]] hx: ptr<i32> [storage=automatic] = array_decay<ptr<i32>, length=Some(100)>(%[[VALUE_gx_2]]);
 // DEFAULT-NEXT:         let %[[VALUE_ix_2:[0-9]+]] ix: i32 [storage=automatic];
@@ -256,11 +256,11 @@ int main() {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%[[VALUE___builtin_prefetch]], pointer_cast<ptr<const void>, reason=arg>(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_pb]]), const<i32>(5))), const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%[[VALUE___builtin_prefetch]], pointer_cast<ptr<const void>, reason=arg>(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_pb]]), read<i32>(%[[VALUE_j]]))), const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_simple_global]]);
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_simple_file]]);
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_simple_static_local]]);
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_simple_local]]);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn(unprototyped) -> void>(%[[VALUE_simple_global]]);
+// DEFAULT-NEXT:         call<void, signature=fn(unprototyped) -> void>(%[[VALUE_simple_file]]);
+// DEFAULT-NEXT:         call<void, signature=fn(unprototyped) -> void>(%[[VALUE_simple_static_local]]);
+// DEFAULT-NEXT:         call<void, signature=fn(unprototyped) -> void>(%[[VALUE_simple_local]]);
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>, ptr<i32>, i32) -> void>(%[[VALUE_simple_arg]], array_decay<ptr<i32>, length=Some(100)>(%[[VALUE_glob_int_arr]]), read<ptr<i32>>(%[[VALUE_glob_ptr_int]]), read<i32>(%[[VALUE_glob_int]]));
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_S]]>>(field4(%[[VALUE_str]]), addr_of<ptr<@type[[TYPE_S]]>>(%[[VALUE_str]]));
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_expr_global]]);

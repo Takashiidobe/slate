@@ -41,16 +41,16 @@ void foo ()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_baz:[0-9]+]] @baz() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(unprototyped) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_baz:[0-9]+]] @baz(unprototyped) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: i32 [storage=automatic];
 // DEFAULT-NEXT:         do %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: i32 [synthetic] = call<i32, signature=fn() -> i32>(%[[VALUE_bar]]);
+// DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: i32 [synthetic] = call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_bar]]);
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_x]], read<i32>(%[[VALUE1]]));
 // DEFAULT-NEXT:                 if eq<i32>(read<i32>(%[[VALUE1]]), const<i32>(1))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_baz]]);
+// DEFAULT-NEXT:                     call<void, signature=fn(unprototyped) -> void>(%[[VALUE_baz]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while eq<i32>(read<i32>(%[[VALUE_x]]), const<i32>(1));
 // DEFAULT-NEXT:     }

@@ -104,7 +104,7 @@ int main() {
 // DEFAULT-NEXT:         if ne<ptr<i32>>(read<ptr<i32>>(%[[VALUE_y_3]]), null<ptr<i32>>)
 // DEFAULT-NEXT:             write<i32>(field1(deref(read<ptr<@type[[TYPE_A]]>>(deref(ptr_offset<ptr<ptr<@type[[TYPE_A]]>>, subtract=false, element=ptr<@type[[TYPE_A]]>, overflow=ub>(read<ptr<ptr<@type[[TYPE_A]]>>>(field0(deref(array_decay<ptr<@type[[TYPE_B]]>, length=Some(1)>(%[[VALUE_d]])))), read<i32>(field1(deref(array_decay<ptr<@type[[TYPE_B]]>, length=Some(1)>(%[[VALUE_d]]))))))))), read<i32>(deref(read<ptr<i32>>(%[[VALUE_y_3]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<i32>(field1(deref(array_decay<ptr<@type[[TYPE_B]]>, length=Some(1)>(%[[VALUE_d]]))), const<i32>(0));
 // DEFAULT-NEXT:         write<ptr<ptr<@type[[TYPE_A]]>>>(field0(deref(array_decay<ptr<@type[[TYPE_B]]>, length=Some(1)>(%[[VALUE_d]]))), addr_of<ptr<ptr<@type[[TYPE_A]]>>>(%[[VALUE_a]]));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, ptr<i32>) -> void>(%[[VALUE_test]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%[[VALUE_str_3]])), null<ptr<i32>>);

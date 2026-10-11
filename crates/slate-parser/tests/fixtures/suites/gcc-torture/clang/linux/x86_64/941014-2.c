@@ -69,7 +69,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE___status:[0-9]+]] __status: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_a1:[0-9]+]] @a1(%[[VALUE_offset:[0-9]+]] offset: u64) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> ptr<volatile @type[[TYPE0]]> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(unprototyped) -> ptr<volatile @type[[TYPE0]]> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_foo_p:[0-9]+]] foo_p: ptr<volatile @type[[TYPE0]]> [storage=automatic] = pointer_cast<ptr<volatile @type[[TYPE0]]>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], const<u64>(4)));
 // DEFAULT-NEXT:         call<void, signature=fn(u64) -> void>(%[[VALUE_a1]], sub<u64, overflow=wrap>(ptr_to_int<u64, reason=explicit>(read<ptr<volatile @type[[TYPE0]]>>(%[[VALUE_foo_p]])), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(30)))));
 // DEFAULT-NEXT:         if ne<i32>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16, volatile>(field0(deref(read<ptr<volatile @type[[TYPE0]]>>(%[[VALUE_foo_p]])))))), const<i32>(61440)), const<i32>(0))
@@ -81,7 +81,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_foo_p_2:[0-9]+]] foo_p: ptr<volatile @type[[TYPE0]]> [storage=automatic];
-// DEFAULT-NEXT:         write<ptr<volatile @type[[TYPE0]]>>(%[[VALUE_foo_p_2]], call<ptr<volatile @type[[TYPE0]]>, signature=fn() -> ptr<volatile @type[[TYPE0]]>>(%[[VALUE_f]]));
+// DEFAULT-NEXT:         write<ptr<volatile @type[[TYPE0]]>>(%[[VALUE_foo_p_2]], call<ptr<volatile @type[[TYPE0]]>, signature=fn(unprototyped) -> ptr<volatile @type[[TYPE0]]>>(%[[VALUE_f]]));
 // DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16, volatile>(field1(deref(read<ptr<volatile @type[[TYPE0]]>>(%[[VALUE_foo_p_2]])))))), const<i32>(256))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));

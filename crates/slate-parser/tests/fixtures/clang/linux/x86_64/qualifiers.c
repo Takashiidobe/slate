@@ -41,7 +41,7 @@ static inline int helper() {
 // DEFAULT-NEXT:     global %[[VALUE_atomic_value:[0-9]+]] atomic_value: atomic i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_pointer:[0-9]+]] pointer: ptr<i32> [storage=static] [const] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_qualified_pointer:[0-9]+]] qualified_pointer: ptr<const i32> [storage=static] [restrict] [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_helper:[0-9]+]] @helper() -> i32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_helper:[0-9]+]] @helper(unprototyped) -> i32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(1);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

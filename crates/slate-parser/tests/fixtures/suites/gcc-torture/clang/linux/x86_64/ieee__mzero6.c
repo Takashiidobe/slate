@@ -60,7 +60,7 @@ int main() {
 // DEFAULT-NEXT:             return add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE_d]]), call<f64, signature=fn(f64, i32) -> f64>(%[[VALUE_func]], read<f64>(%[[VALUE_d]]), sub<i32, overflow=ub>(read<i32>(%[[VALUE_n]]), const<i32>(1))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_copysign:[0-9]+]] @__builtin_copysign(%[[VALUE1:[0-9]+]] <unnamed>: f64, %[[VALUE2:[0-9]+]] <unnamed>: f64) -> f64 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(call<f64, signature=fn(f64, f64) -> f64>(%[[VALUE___builtin_copysign]], const<f64>(1.0), call<f64, signature=fn(f64, i32) -> f64>(%[[VALUE_func]], div<f64, rounding=nearest_even, exceptions=ignore, contract=on>(const<f64>(0.0), neg<f64>(const<f64>(5.0))), const<i32>(10))), neg<f64>(const<f64>(1.0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));

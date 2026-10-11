@@ -66,7 +66,7 @@ int main() {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i64>) -> void>(%[[VALUE_bar]], addr_of<ptr<i64>>(deref(ptr_offset<ptr<i64>, subtract=false, element=i64, overflow=ub>(read<ptr<i64>>(%[[VALUE_x_2]]), add<i64, overflow=ub>(mul<i64, overflow=ub>(read<i64>(%[[VALUE_z]]), widen<i64, reason=usual_arith>(const<i32>(5))), read<i64>(%[[VALUE_y]]))))));
 // DEFAULT-NEXT:         write<i64>(deref(ptr_offset<ptr<i64>, subtract=false, element=i64, overflow=ub>(read<ptr<i64>>(%[[VALUE_x_2]]), add<i64, overflow=ub>(mul<i64, overflow=ub>(read<i64>(%[[VALUE_z]]), widen<i64, reason=usual_arith>(const<i32>(5))), mul<i64, overflow=ub>(read<i64>(%[[VALUE_y]]), widen<i64, reason=usual_arith>(const<i32>(5)))))), add<i64, overflow=ub>(read<i64>(%[[VALUE_b]]), read<i64>(%[[VALUE_c]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i64>, i64, i64) -> void>(%[[VALUE_foo]], array_decay<ptr<i64>, length=Some(144)>(%[[VALUE_v]]), widen<i64, reason=arg>(const<i32>(24)), widen<i64, reason=arg>(const<i32>(1)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

@@ -69,7 +69,7 @@ unsigned bug(unsigned short value, unsigned short *buffer,
 // DEFAULT-NEXT:                 write<u16>(%[[VALUE_value]], read<u16>(%[[VALUE5]]));
 // DEFAULT-NEXT:         return widen<u32, reason=return>(read<u16>(%[[VALUE_value]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u16, ptr<u16>, ptr<u16>) -> u32>(%[[VALUE_bug]], reinterpret<u16, reason=arg, fits=unknown>(truncate<i16, reason=arg, fits=always>(const<i32>(512))), array_decay<ptr<u16>, length=Some(5)>(%[[VALUE_buf]]), ptr_offset<ptr<u16>, subtract=false, element=u16, overflow=ub>(array_decay<ptr<u16>, length=Some(5)>(%[[VALUE_buf]]), const<i32>(3))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(491)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));

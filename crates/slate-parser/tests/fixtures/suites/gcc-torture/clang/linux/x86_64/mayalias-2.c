@@ -45,15 +45,15 @@ int main() {
 // DEFAULT-NEXT:         field0 x: i16;
 // DEFAULT-NEXT:     } [size=2, align=2, offsets=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_test:[0-9]+]] test = @type[[TYPE0]];
-// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: i32 [storage=automatic] = const<i32>(10);
 // DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE0]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE0]]>, reason=explicit>(addr_of<ptr<i32>>(%[[VALUE_a]]));
 // DEFAULT-NEXT:         write<i16>(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_p]]))), truncate<i16, reason=assign, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_a]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if eq<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_f]]), const<i32>(10))
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         if eq<i32>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_f]]), const<i32>(10))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

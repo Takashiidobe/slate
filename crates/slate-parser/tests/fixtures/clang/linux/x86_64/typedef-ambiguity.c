@@ -41,7 +41,7 @@ int call_main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %[[VALUE_B:[0-9]+]] B: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_A:[0-9]+]] @A(%[[VALUE_value:[0-9]+]] value: i32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_call_main:[0-9]+]] @call_main() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_call_main:[0-9]+]] @call_main(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         call<i32, signature=fn(i32) -> i32>(%[[VALUE_A]], read<i32>(%[[VALUE_B]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
@@ -72,7 +72,7 @@ int call_main() {
 // CAST-NEXT:     }
 // CAST-NEXT:     type @type[[TYPE_A:[0-9]+]] A = i32;
 // CAST-NEXT:     global %[[VALUE_B:[0-9]+]] B: i32 [storage=static] [linkage=external];
-// CAST-NEXT:     fn %[[VALUE_cast_main:[0-9]+]] @cast_main() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// CAST-NEXT:     fn %[[VALUE_cast_main:[0-9]+]] @cast_main(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // CAST-NEXT:         read<i32>(%[[VALUE_B]]);
 // CAST-NEXT:         return const<i32>(0);
 // CAST-NEXT:     }

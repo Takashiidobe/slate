@@ -57,7 +57,7 @@ int main() {
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_strlen:[0-9]+]] @__builtin_strlen(%[[VALUE8:[0-9]+]] <unnamed>: ptr<const i8>) -> u64 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_arg:[0-9]+]] arg: ptr<i8> [storage=automatic] = array_decay<ptr<i8>, length=Some(10)>(%[[VALUE_str_2]]);
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i8>, u64) -> void>(%[[VALUE_test]], read<ptr<i8>>(%[[VALUE_arg]]), call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE___builtin_strlen]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_arg]]))));
 // DEFAULT-NEXT:         return const<i32>(0);

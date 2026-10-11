@@ -103,7 +103,7 @@ __attribute__((noinline)) int foo(S *ptr) {
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_c]], read<i32>(%[[VALUE6]]));
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_c]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_a_2:[0-9]+]] a: @type[[TYPE0]] [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_r:[0-9]+]] r: i32 [storage=automatic];
 // DEFAULT-NEXT:         write<i32>(field0(%[[VALUE_a_2]]), const<i32>(65536));

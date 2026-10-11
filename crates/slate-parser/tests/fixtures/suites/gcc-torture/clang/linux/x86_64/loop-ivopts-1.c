@@ -94,7 +94,7 @@ void foo(float *x) {
 // DEFAULT-NEXT:         write<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(read<ptr<f32>>(%[[VALUE_x]]), const<i32>(2))), read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(4)>(%[[VALUE_tmp]]), const<i32>(2)))));
 // DEFAULT-NEXT:         write<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(read<ptr<f32>>(%[[VALUE_x]]), const<i32>(3))), read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(4)>(%[[VALUE_tmp]]), const<i32>(3)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_x_2:[0-9]+]] x: array<f32, 4> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<f32>) -> void>(%[[VALUE_foo]], array_decay<ptr<f32>, length=Some(4)>(%[[VALUE_x_2]]));
 // DEFAULT-NEXT:         return const<i32>(0);

@@ -46,7 +46,7 @@ int main() {
 // DEFAULT-NEXT:     global %[[VALUE_values:[0-9]+]] values: array<i32, 7> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_flags:[0-9]+]] flags: array<i32, 1> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_selected:[0-9]+]] selected: array<i32, 5> [storage=static] [align=16] [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -89,7 +89,7 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_f8:[0-9]+]] @f8(%[[VALUE_x_8:[0-9]+]] x: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return conditional<i32>(gt<i32>(read<i32>(%[[VALUE_x_8]]), const<i32>(0)), read<i32>(%[[VALUE_x_8]]), not<i32>(read<i32>(%[[VALUE_x_8]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_f1]], const<i32>(5)), const<i32>(5))
 // DEFAULT-NEXT:             write<bool>(%[[VALUE0]], const<bool>(true));

@@ -822,7 +822,7 @@ funcs(funcs1)
 // DEFAULT-NEXT:         return ne<i32, reason=return>(xor<i32>(from_bool<i32, reason=promotion>(read<bool, volatile>(%[[VALUE_x_144]])), from_bool<i32, reason=promotion>(read<bool, volatile>(%[[VALUE_y_144]]))), const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 let %[[VALUE_x_145:[0-9]+]] x: i32 [storage=automatic] = neg<i32, overflow=ub>(const<i32>(10));

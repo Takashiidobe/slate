@@ -231,7 +231,7 @@ int main() {
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         return read<ptr<@type[[TYPE_PgHdr]]>>(%[[VALUE_p]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_a_2:[0-9]+]] a: array<@type[[TYPE_PgHdr]], 5> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %[[VALUE_p_2:[0-9]+]] p: ptr<@type[[TYPE_PgHdr]]> [storage=automatic];
 // DEFAULT-NEXT:         write<u32>(field0(field1(deref(ptr_offset<ptr<@type[[TYPE_PgHdr]]>, subtract=false, element=@type[[TYPE_PgHdr]], overflow=ub>(array_decay<ptr<@type[[TYPE_PgHdr]]>, length=Some(5)>(%[[VALUE_a_2]]), const<i32>(0))))), reinterpret<u32, reason=assign, fits=always>(const<i32>(5)));

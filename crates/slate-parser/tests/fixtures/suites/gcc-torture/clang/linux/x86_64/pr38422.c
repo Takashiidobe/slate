@@ -52,7 +52,7 @@ int main() {
 // DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = mul<i32, overflow=ub>(read<i32>(%[[VALUE0]]), const<i32>(2));
 // DEFAULT-NEXT:         write<i32>(bitfield0<unit=0, bytes=0..4, bits=0..30>(%[[VALUE_s]]), read<i32>(%[[VALUE1]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<i32>(bitfield0<unit=0, bytes=0..4, bits=0..30>(%[[VALUE_s]]), const<i32>(24));
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_foo]]);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(bitfield0<unit=0, bytes=0..4, bits=0..30>(%[[VALUE_s]])), const<i32>(48))

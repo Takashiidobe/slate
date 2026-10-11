@@ -74,7 +74,7 @@ int main() {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<ptr<@type[[TYPE_foo]]>>) -> void>(%[[VALUE_bar]], read<ptr<ptr<@type[[TYPE_foo]]>>>(%[[VALUE_upper]]));
 // DEFAULT-NEXT:         return read<ptr<@type[[TYPE_foo]]>>(deref(read<ptr<ptr<@type[[TYPE_foo]]>>>(%[[VALUE_upper]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if eq<ptr<@type[[TYPE_foo]]>>(call<ptr<@type[[TYPE_foo]]>, signature=fn(i32) -> ptr<@type[[TYPE_foo]]>>(%[[VALUE_foo]], const<i32>(1)), null<ptr<@type[[TYPE_foo]]>>)
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);

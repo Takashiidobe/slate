@@ -35,7 +35,7 @@ void foo()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: u32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_j:[0-9]+]] j: u32 [storage=automatic];
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_j]], shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE_i]]), const<i32>(240)));

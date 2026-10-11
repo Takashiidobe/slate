@@ -113,7 +113,7 @@ int main() {
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_3]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(i32, i64, ...) -> void>(%[[VALUE_f1]], const<i32>(1), widen<i64, reason=arg>(const<i32>(2)), const<i32>(3), const<i32>(4));
 // DEFAULT-NEXT:         call<void, signature=fn(i32, i32, i32, i64, ...) -> void>(%[[VALUE_f2]], const<i32>(5), const<i32>(6), const<i32>(7), widen<i64, reason=arg>(const<i32>(8)), const<i32>(9), const<i32>(10));
 // DEFAULT-NEXT:         return const<i32>(0);

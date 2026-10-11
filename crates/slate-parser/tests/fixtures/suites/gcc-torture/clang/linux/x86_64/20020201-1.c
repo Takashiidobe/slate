@@ -87,7 +87,7 @@ int main() {
 // DEFAULT-NEXT:     global %[[VALUE_Lx:[0-9]+]] Lx: u64 [storage=static] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(35))) [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_cy:[0-9]+]] cy: u8 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_sy:[0-9]+]] sy: u16 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_iy:[0-9]+]] iy: u32 [storage=automatic];

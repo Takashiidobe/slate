@@ -182,7 +182,7 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_double_max2:[0-9]+]] @double_max2(%[[VALUE_a_8:[0-9]+]] a: f64, %[[VALUE_b_8:[0-9]+]] b: f64) -> f64 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return conditional<f64>(ge<f64, exceptions=ignore>(read<f64>(%[[VALUE_a_8]]), read<f64>(%[[VALUE_b_8]])), read<f64>(%[[VALUE_a_8]]), read<f64>(%[[VALUE_b_8]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<f32, exceptions=ignore>(call<f32, signature=fn(f32, f32) -> f32>(%[[VALUE_float_min1]], const<f32>(0.0), neg<f32>(const<f32>(1.0))), neg<f32>(const<f32>(1.0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         if ne<f32, exceptions=ignore>(call<f32, signature=fn(f32, f32) -> f32>(%[[VALUE_float_min1]], neg<f32>(const<f32>(1.0)), const<f32>(0.0)), neg<f32>(const<f32>(1.0)))

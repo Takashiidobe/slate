@@ -75,7 +75,7 @@ int main() {
 // DEFAULT-NEXT:         return widen<u64, reason=return>(sub<u32, overflow=wrap>(read<u32>(%[[VALUE_a_4]]), read<u32>(%[[VALUE_i_4]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(u64, u64) -> u64>(%[[VALUE_f1]], const<u64>(16), neg<u64, overflow=wrap>(const<u64>(18))), neg<u64, overflow=wrap>(const<u64>(2)))
 // DEFAULT-NEXT:             write<bool>(%[[VALUE0]], const<bool>(true));

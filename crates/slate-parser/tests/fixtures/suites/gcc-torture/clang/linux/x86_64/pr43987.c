@@ -52,7 +52,7 @@ int         main() {
 // DEFAULT-NEXT:         write<ptr<void>>(deref(ptr_offset<ptr<ptr<void>>, subtract=false, element=ptr<void>, overflow=ub>(read<ptr<ptr<void>>>(field1(deref(pointer_cast<ptr<@type[[TYPE_globals]]>, reason=explicit>(addr_of<ptr<array<i8, 2048>>>(%[[VALUE_B]]))))), const<i32>(0))), pointer_cast<ptr<void>, reason=assign>(read<ptr<ptr<void>>>(%[[VALUE_file]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: ptr<void> [storage=automatic];
 // DEFAULT-NEXT:         write<ptr<ptr<void>>>(field1(deref(pointer_cast<ptr<@type[[TYPE_globals]]>, reason=explicit>(addr_of<ptr<array<i8, 2048>>>(%[[VALUE_B]])))), addr_of<ptr<ptr<void>>>(%[[VALUE_x]]));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<ptr<void>>) -> void>(%[[VALUE_add_input_file]], pointer_cast<ptr<ptr<void>>, reason=arg>(int_to_ptr<ptr<void>, reason=explicit>(neg<i32, overflow=ub>(const<i32>(1)))));

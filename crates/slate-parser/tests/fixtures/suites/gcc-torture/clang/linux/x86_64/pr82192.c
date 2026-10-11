@@ -54,7 +54,7 @@ int main() {
 // DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..2, bits=0..13>(%[[VALUE_b]]), shr<u32, amount_out_of_range=ub, fill=zero_extend>(truncate<u32, reason=explicit, fits=unknown>(read<u64>(%[[VALUE_a]])), sub<u64, overflow=wrap>(or<u64>(reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(7227976781724269559)), and<u64>(read<u64>(%[[VALUE_a]]), widen<u64, reason=usual_arith>(not<u32>(const<u32>(3739384568))))), reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(7227976781724531672)))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2147483647))), const<u64>(2147483647))
 // DEFAULT-NEXT:             return const<i32>(0);
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_foo]]);

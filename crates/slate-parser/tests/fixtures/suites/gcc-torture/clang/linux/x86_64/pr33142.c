@@ -49,7 +49,7 @@ int main() {
 // DEFAULT-NEXT:                 return from_bool<i32, reason=return>(le<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_abs]], truncate<i32, reason=arg, fits=unknown>(read<i64>(%[[VALUE_dx]]))), call<i32, signature=fn(i32) -> i32>(%[[VALUE_abs]], truncate<i32, reason=arg, fits=unknown>(read<i64>(%[[VALUE_dy]])))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_dy_2:[0-9]+]] dy: volatile i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(63));
 // DEFAULT-NEXT:         let %[[VALUE_dx_2:[0-9]+]] dx: volatile i64 [storage=automatic] = widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(77)));
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i64, i64) -> i32>(%[[VALUE_lisp_atan2]], read<i64, volatile>(%[[VALUE_dy_2]]), read<i64, volatile>(%[[VALUE_dx_2]])), const<i32>(0))

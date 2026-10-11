@@ -56,7 +56,7 @@ int main() { return 0; }
 // DEFAULT-NEXT:         return sub<u64, overflow=wrap>(widen<u64, reason=usual_arith>(read<u32>(%[[VALUE_x]])), read<u64>(%[[VALUE_u]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_x_2:[0-9]+]] x: u64 [storage=automatic] = call<u64, signature=fn(u64) -> u64>(%[[VALUE_foo]], const<u64>(9162596898));
 // DEFAULT-NEXT:         if ne<u64>(read<u64>(%[[VALUE_x_2]]), const<u64>(18446744064546954718))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);

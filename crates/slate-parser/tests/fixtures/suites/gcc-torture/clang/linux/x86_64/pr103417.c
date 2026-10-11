@@ -44,7 +44,7 @@ int main() {
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 1], bit_offsets=[Some(0), Some(8)], bit_units=[(0, 4)], field_units=[Some(0), Some(0)]];
 // DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: @type[[TYPE0]] [storage=static] = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(1)) [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if logical_and<bool>(ne<i32>(read<i32>(bitfield1<unit=0, bytes=0..4, bits=8..32>(%[[VALUE_c]])), const<i32>(0)), not<bool>(ne<i32>(read<i32>(bitfield1<unit=0, bytes=0..4, bits=8..32>(%[[VALUE_c]])), const<i32>(0))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);

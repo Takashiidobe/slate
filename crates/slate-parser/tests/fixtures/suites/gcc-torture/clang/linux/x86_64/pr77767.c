@@ -50,7 +50,7 @@ int main() {
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(%[[VALUE_a]]), const<i32>(2)), ne<i32>(read<i32>(%[[VALUE_c]]), const<i32>(2)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_e:[0-9]+]] e: array<i32, 10> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<i32>, i32, ptr<i32>) -> void>(%[[VALUE_foo]], const<i32>(1), array_decay<ptr<i32>, length=Some(10)>(%[[VALUE_e]]), const<i32>(1), array_decay<ptr<i32>, length=Some(10)>(%[[VALUE_e]]));
 // DEFAULT-NEXT:         return const<i32>(0);

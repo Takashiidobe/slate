@@ -75,7 +75,7 @@ int main() {
 // DEFAULT-NEXT:         let %[[VALUE_buf:[0-9]+]] buf: array<u8, 1> [storage=automatic];
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<u8>) -> void>(%[[VALUE_set_one]], array_decay<ptr<u8>, length=Some(1)>(%[[VALUE_buf]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         for %[[VALUE3:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 let %[[VALUE_i_2:[0-9]+]] i: i32 [storage=automatic] = const<i32>(0);

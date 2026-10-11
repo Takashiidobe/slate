@@ -120,7 +120,7 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_nltu:[0-9]+]] @nltu(%[[VALUE_a_10:[0-9]+]] a: u32, %[[VALUE_b_10:[0-9]+]] b: u32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return neg<i32, overflow=ub>(from_bool<i32, reason=promotion>(lt<u32>(read<u32>(%[[VALUE_a_10]]), read<u32>(%[[VALUE_b_10]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32) -> i32>(%[[VALUE_nge]], sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(2147483647)), const<i32>(1)), const<i32>(2147483647)), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32) -> i32>(%[[VALUE_nge]], const<i32>(2147483647), sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(2147483647)), const<i32>(1))), neg<i32, overflow=ub>(const<i32>(1)))

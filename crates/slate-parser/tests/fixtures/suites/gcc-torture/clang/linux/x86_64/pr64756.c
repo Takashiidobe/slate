@@ -88,7 +88,7 @@ int main() {
 // DEFAULT-NEXT:                             write<ptr<i32>, volatile>(deref(read<ptr<volatile ptr<i32>>>(%[[VALUE_e]])), null<ptr<i32>>);
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>) -> void>(%[[VALUE_fn1]], addr_of<ptr<i32>>(%[[VALUE_a]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

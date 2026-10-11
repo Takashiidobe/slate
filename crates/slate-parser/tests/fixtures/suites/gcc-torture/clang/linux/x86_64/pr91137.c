@@ -64,7 +64,7 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_g:[0-9]+]] g: ptr<i64>, %[[VALUE_p2:[0-9]+]] p2: i32) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<i64>(deref(read<ptr<i64>>(%[[VALUE_g]])), widen<i64, reason=assign>(read<i32>(%[[VALUE_p2]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_fn2:[0-9]+]] @fn2() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_fn2:[0-9]+]] @fn2(unprototyped) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 let %[[VALUE_j:[0-9]+]] j: i32 [storage=automatic] = const<i32>(0);
@@ -119,7 +119,7 @@ int main() {
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_b]], reinterpret<u32, reason=assign, fits=always>(const<i32>(5)));
 // DEFAULT-NEXT:         for %[[VALUE12:[0-9]+]]
 // DEFAULT-NEXT:             init:
@@ -133,7 +133,7 @@ int main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(70)>(%[[VALUE_c]]), read<i32>(%[[VALUE_j_2]]))), const<i32>(2075593088));
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_fn2]]);
+// DEFAULT-NEXT:         call<void, signature=fn(unprototyped) -> void>(%[[VALUE_fn2]]);
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i64>, i32) -> void>(%[[VALUE_f]], addr_of<ptr<i64>>(%[[VALUE_a]]), read<i32>(%[[VALUE_e]]));
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(%[[VALUE_a]]), const<i64>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);

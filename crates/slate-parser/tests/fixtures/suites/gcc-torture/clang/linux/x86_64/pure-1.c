@@ -116,21 +116,21 @@ void link_error7() {}
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %[[VALUE_i:[0-9]+]] i: i32 [storage=static] = const<i32>(2) [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_link_error0:[0-9]+]] @link_error0() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_link_error0:[0-9]+]] @link_error0(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_link_error1:[0-9]+]] @link_error1() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_link_error1:[0-9]+]] @link_error1(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_link_error2:[0-9]+]] @link_error2() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_link_error2:[0-9]+]] @link_error2(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_link_error3:[0-9]+]] @link_error3() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_link_error3:[0-9]+]] @link_error3(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_link_error4:[0-9]+]] @link_error4() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_link_error4:[0-9]+]] @link_error4(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_link_error5:[0-9]+]] @link_error5() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_link_error5:[0-9]+]] @link_error5(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_link_error6:[0-9]+]] @link_error6() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_link_error6:[0-9]+]] @link_error6(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_link_error7:[0-9]+]] @link_error7() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_link_error7:[0-9]+]] @link_error7(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_func0:[0-9]+]] @func0(%[[VALUE_a:[0-9]+]] a: i32) -> i32 [linkage=external] [memory=read] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return sub<i32, overflow=ub>(read<i32>(%[[VALUE_a]]), read<i32>(%[[VALUE_i]]));
@@ -156,7 +156,7 @@ void link_error7() {}
 // DEFAULT-NEXT:     fn %[[VALUE_func7:[0-9]+]] @func7(%[[VALUE_a_8:[0-9]+]] a: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%[[VALUE_a_8]]), call<i32, signature=fn(i32) -> i32>(%[[VALUE_func3]], read<i32>(%[[VALUE_a_8]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_i_2:[0-9]+]] i: array<i32, 10> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %[[VALUE_r:[0-9]+]] r: i32 [storage=automatic];
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(10)>(%[[VALUE_i_2]]), const<i32>(0))), const<i32>(0));

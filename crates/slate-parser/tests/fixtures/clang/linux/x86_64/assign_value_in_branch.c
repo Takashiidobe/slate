@@ -56,7 +56,7 @@ int main() {
 // DEFAULT-NEXT:             write<u64>(%[[VALUE0]], read<u64>(%[[VALUE6]]));
 // DEFAULT-NEXT:         return read<u64>(%[[VALUE0]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(10)));
 // DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: u64 [storage=automatic] = call<u64, signature=fn(ptr<u64>, i32) -> u64>(%[[VALUE_bump]], addr_of<ptr<u64>>(%[[VALUE_x]]), const<i32>(1));
 // DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: u64 [storage=automatic] = call<u64, signature=fn(ptr<u64>, i32) -> u64>(%[[VALUE_bump]], addr_of<ptr<u64>>(%[[VALUE_x]]), const<i32>(0));

@@ -46,7 +46,7 @@ void f()
 // DEFAULT-NEXT:         if logical_and<bool>(ne<i16>(read<i16>(%[[VALUE_xe]]), const<i16>(0)), lt<i32>(widen<i32, reason=promotion>(read<i16>(%[[VALUE_xs]])), widen<i32, reason=promotion>(read<i16>(%[[VALUE_xe]]))))
 // DEFAULT-NEXT:             ;
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_xe_2:[0-9]+]] xe: i16 [storage=automatic];
 // DEFAULT-NEXT:         call<void, signature=fn(i16, i16) -> void>(%[[VALUE_bar]], truncate<i16, reason=arg, fits=always>(const<i32>(0)), read<i16>(%[[VALUE_xe_2]]));
 // DEFAULT-NEXT:     }

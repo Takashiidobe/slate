@@ -69,7 +69,7 @@ int main() {
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ge<i32>(read<i32>(%[[VALUE_x_3]]), const<i32>(0)), lt<i64>(read<i64>(%[[VALUE_u_3]]), widen<i64, reason=usual_arith>(const<i32>(0)))), ge<i32>(read<i32>(%[[VALUE_y_3]]), const<i32>(0))), lt<i64>(read<i64>(%[[VALUE_v_3]]), widen<i64, reason=usual_arith>(const<i32>(0)))), ge<i32>(read<i32>(%[[VALUE_z_3]]), const<i32>(0))), ge<i32>(read<i32>(%[[VALUE_w_3]]), const<i32>(0))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
 // DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:

@@ -54,7 +54,7 @@ int main() {
 // DEFAULT-NEXT:         write<u64>(deref(read<ptr<u64>>(%[[VALUE_r]])), add<u64, overflow=wrap>(read<u64>(%[[VALUE_x]]), read<u64>(%[[VALUE_a]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_x_2:[0-9]+]] x: u64 [storage=automatic];
 // DEFAULT-NEXT:         call<void, signature=fn(u64, u64, u64, ptr<u64>) -> void>(%[[VALUE_foo]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3000))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(0))), addr_of<ptr<u64>>(%[[VALUE_x_2]]));
 // DEFAULT-NEXT:         if ne<u64>(read<u64>(%[[VALUE_x_2]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2))))

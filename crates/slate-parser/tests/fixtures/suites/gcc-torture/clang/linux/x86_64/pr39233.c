@@ -45,7 +45,7 @@ int main() {
 // DEFAULT-NEXT:         if logical_or<bool>(lt<i64>(read<i64>(%[[VALUE_l]]), widen<i64, reason=usual_arith>(const<i32>(0))), gt<i64>(read<i64>(%[[VALUE_l]]), widen<i64, reason=usual_arith>(const<i32>(6))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i16 [storage=automatic];
 // DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:

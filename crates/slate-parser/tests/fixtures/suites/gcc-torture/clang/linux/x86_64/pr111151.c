@@ -45,7 +45,7 @@ int main() {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: u32 [storage=automatic] = div<u32, by_zero=ub>(add<u32, overflow=wrap>(const<u32>(1), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2147483647))), const<u32>(2));
 // DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: u32 [storage=automatic] = const<u32>(1);
 // DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: u32 [storage=automatic] = mul<u32, overflow=wrap>(conditional<u32>(gt<u32>(mul<u32, overflow=wrap>(read<u32>(%[[VALUE_a]]), const<u32>(2)), mul<u32, overflow=wrap>(read<u32>(%[[VALUE_b]]), const<u32>(2))), mul<u32, overflow=wrap>(read<u32>(%[[VALUE_a]]), const<u32>(2)), mul<u32, overflow=wrap>(read<u32>(%[[VALUE_b]]), const<u32>(2))), const<u32>(2));

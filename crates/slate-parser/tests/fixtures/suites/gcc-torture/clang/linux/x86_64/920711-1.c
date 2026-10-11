@@ -45,7 +45,7 @@ int main() {
 // DEFAULT-NEXT:         write<i64>(%[[VALUE_a]], read<i64>(%[[VALUE2]]));
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(gt<i64>(read<i64>(%[[VALUE2]]), widen<i64, reason=usual_arith>(const<i32>(0))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if eq<i32>(call<i32, signature=fn(i64) -> i32>(%[[VALUE_f]], const<i64>(2147483648)), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));

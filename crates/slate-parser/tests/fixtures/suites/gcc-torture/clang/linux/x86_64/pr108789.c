@@ -65,7 +65,7 @@ int main() {
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(overflow_mul<bool>(read<u32>(deref(read<ptr<const u32>>(%[[VALUE_a_2]]))), read<u32>(deref(read<ptr<const u32>>(%[[VALUE_b_2]]))), deref(read<ptr<u32>>(%[[VALUE_r_2]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: u32 [storage=automatic];
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_x]], div<u32, by_zero=ub>(add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2147483647)), const<u32>(1)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2))));
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<u32>, ptr<const u32>, ptr<const u32>) -> i32>(%[[VALUE_add]], addr_of<ptr<u32>>(%[[VALUE_x]]), pointer_cast<ptr<const u32>, reason=arg>(addr_of<ptr<u32>>(%[[VALUE_x]])), pointer_cast<ptr<const u32>, reason=arg>(addr_of<ptr<u32>>(%[[VALUE_x]]))), const<i32>(0))

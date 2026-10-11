@@ -131,7 +131,7 @@ int main() {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%[[VALUE___builtin_prefetch]], pointer_cast<ptr<const void>, reason=arg>(read<ptr<const i32>>(%[[VALUE_p_4]])), const<i32>(1));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%[[VALUE___builtin_prefetch]], pointer_cast<ptr<const void>, reason=arg>(read<ptr<const i32>>(%[[VALUE_p_4]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const i32>) -> void>(%[[VALUE_good_const]], pointer_cast<ptr<const i32>, reason=arg>(array_decay<ptr<i32>, length=Some(10)>(%[[VALUE_arr]])));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const i32>) -> void>(%[[VALUE_good_enum]], pointer_cast<ptr<const i32>, reason=arg>(array_decay<ptr<i32>, length=Some(10)>(%[[VALUE_arr]])));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const i32>) -> void>(%[[VALUE_good_expr]], pointer_cast<ptr<const i32>, reason=arg>(array_decay<ptr<i32>, length=Some(10)>(%[[VALUE_arr]])));

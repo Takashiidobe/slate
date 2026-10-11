@@ -86,14 +86,14 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_get_id:[0-9]+]] @get_id(%[[VALUE_c:[0-9]+]] c: i8) -> u16 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(field0(field1(%[[VALUE_curval]]))), const<i32>(0))), read<i8>(%[[VALUE_c]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_get_tok:[0-9]+]] @get_tok() -> u16 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_get_tok:[0-9]+]] @get_tok(unprototyped) -> u16 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_c_2:[0-9]+]] c: i8 [storage=automatic] = truncate<i8, reason=assign, fits=always>(const<i32>(99));
 // DEFAULT-NEXT:         write<ptr<i8>>(field0(field1(%[[VALUE_curval]])), array_decay<ptr<i8>, length=Some(33)>(deref(ptr_offset<ptr<array<i8, 33>>, subtract=false, element=array<i8, 33>, overflow=ub>(array_decay<ptr<array<i8, 33>>, length=Some(2)>(%[[VALUE_id_space]]), widen<i32, reason=promotion>(read<i16>(%[[VALUE_idc]]))))));
 // DEFAULT-NEXT:         write<i16>(field0(%[[VALUE_curval]]), truncate<i16, reason=assign, fits=unknown>(or<i32>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(read<i32>(%[[VALUE_cur_line]]), const<i32>(10)), read<i32>(%[[VALUE_char_pos]]))));
 // DEFAULT-NEXT:         return call<u16, signature=fn(i8) -> u16>(%[[VALUE_get_id]], read<i8>(%[[VALUE_c_2]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<u16, signature=fn() -> u16>(%[[VALUE_get_tok]]);
+// DEFAULT-NEXT:         call<u16, signature=fn(unprototyped) -> u16>(%[[VALUE_get_tok]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

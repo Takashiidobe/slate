@@ -66,12 +66,12 @@ int main() {
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         return null<ptr<void>>;
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_j:[0-9]+]] @j() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_j:[0-9]+]] @j(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         call<ptr<void>, signature=fn(i32) -> ptr<void>>(%[[VALUE_i]], const<i32>(1));
 // DEFAULT-NEXT:         write<ptr<i32>>(deref(read<ptr<ptr<i32>>>(%[[VALUE_c]])), pointer_cast<ptr<i32>, reason=assign>(call<ptr<void>, signature=fn(i32) -> ptr<void>>(%[[VALUE_i]], read<i32>(%[[VALUE_d]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_j]]);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn(unprototyped) -> void>(%[[VALUE_j]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

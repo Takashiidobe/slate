@@ -86,7 +86,7 @@ int main() {
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(field0(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_x]])))), const<i32>(0)), ne<i32>(read<i32>(field1(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_x]])))), const<i32>(5))), ne<i32>(read<i32>(field2(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_x]])))), const<i32>(0))), ne<i32>(read<i32>(field3(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_x]])))), const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: @type[[TYPE_B]] [storage=automatic] = aggregate<@type[[TYPE_B]], zero_fill=true>(field0 = aggregate<@type[[TYPE_A]], zero_fill=true>(field1 = const<i32>(5)));
 // DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: @type[[TYPE_C]] [storage=automatic] = aggregate<@type[[TYPE_C]], zero_fill=true>(field0 = aggregate<@type[[TYPE_A]], zero_fill=true>(field1 = const<i32>(5)));
 // DEFAULT-NEXT:         let %[[VALUE_d:[0-9]+]] d: @type[[TYPE_D]] [storage=automatic] = aggregate<@type[[TYPE_D]], zero_fill=false>(field0 = aggregate<@type[[TYPE_A]], zero_fill=true>(field1 = const<i32>(5)));

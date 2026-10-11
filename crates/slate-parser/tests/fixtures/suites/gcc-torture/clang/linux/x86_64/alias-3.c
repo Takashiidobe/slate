@@ -45,7 +45,7 @@ int                                   main() {
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_b]], read<i32>(%[[VALUE1]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_a]], const<i32>(0));
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_inc]]);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_a]]), const<i32>(1))

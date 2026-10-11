@@ -887,7 +887,7 @@ int main() {
 // DEFAULT-NEXT:         return const<f64>(1.0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_d:[0-9]+]] d: f64 [storage=automatic] = call<f64, signature=fn(f64) -> f64>(%[[VALUE_foo]], const<f64>(78.4));
 // DEFAULT-NEXT:         if logical_or<bool>(lt<f64, exceptions=ignore>(read<f64>(%[[VALUE_d]]), const<f64>(0.38)), gt<f64, exceptions=ignore>(read<f64>(%[[VALUE_d]]), const<f64>(0.42)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);

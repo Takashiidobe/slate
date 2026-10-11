@@ -102,7 +102,7 @@ int main() {
 // DEFAULT-NEXT:         write<ptr<i8>>(deref(ptr_offset<ptr<ptr<i8>>, subtract=false, element=ptr<i8>, overflow=ub>(array_decay<ptr<ptr<i8>>, length=Some(256)>(%[[VALUE_arglist]]), read<i32>(%[[VALUE_numargs]]))), null<ptr<i8>>);
 // DEFAULT-NEXT:         return array_decay<ptr<ptr<i8>>, length=Some(256)>(%[[VALUE_arglist]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_args:[0-9]+]] args: ptr<ptr<i8>> [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_input_2:[0-9]+]] input: array<i8, 256> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];

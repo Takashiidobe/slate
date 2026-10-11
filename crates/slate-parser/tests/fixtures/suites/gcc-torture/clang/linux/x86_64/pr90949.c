@@ -84,7 +84,7 @@ int main() {
 // DEFAULT-NEXT:                 call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_my_free]], pointer_cast<ptr<void>, reason=arg>(read<ptr<@type[[TYPE_Node]]>>(%[[VALUE_module]])));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_node:[0-9]+]] node: ptr<@type[[TYPE_Node]]> [storage=automatic] = call<ptr<@type[[TYPE_Node]]>, signature=fn(i32) -> ptr<@type[[TYPE_Node]]>>(%[[VALUE_my_malloc]], reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=always>(const<u64>(8))));
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_Node]]>>(field0(deref(read<ptr<@type[[TYPE_Node]]>>(%[[VALUE_node]]))), null<ptr<@type[[TYPE_Node]]>>);
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE_Node]]>, i32) -> void>(%[[VALUE_walk]], read<ptr<@type[[TYPE_Node]]>>(%[[VALUE_node]]), const<i32>(1));

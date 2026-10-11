@@ -53,7 +53,7 @@ int main() {
 // DEFAULT-NEXT:         if ne<u32>(read<u32>(%[[VALUE_x]]), neg<u32, overflow=wrap>(const<u32>(1)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<i32>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%[[VALUE_s]]), from_bool<i32, reason=assign>(gt<i32>(and<i32>(read<i32>(%[[VALUE_v]]), const<i32>(1)), const<i32>(0))));
 // DEFAULT-NEXT:         call<void, signature=fn(u32) -> void>(%[[VALUE_foo]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%[[VALUE_s]]))));
 // DEFAULT-NEXT:         return const<i32>(0);

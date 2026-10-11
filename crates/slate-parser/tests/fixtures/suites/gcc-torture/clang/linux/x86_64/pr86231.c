@@ -56,7 +56,7 @@ int main() {
 // DEFAULT-NEXT:         return conditional<i32>(eq<ptr<void>>(read<ptr<void>>(%[[VALUE_p]]), int_to_ptr<ptr<void>, reason=explicit>(const<i32>(1))), const<i32>(0), const<i32>(1));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<void>, i32) -> i32>(%[[VALUE_foo]], null<ptr<void>>, const<i32>(0)), const<i32>(0))
 // DEFAULT-NEXT:             write<bool>(%[[VALUE0]], const<bool>(true));

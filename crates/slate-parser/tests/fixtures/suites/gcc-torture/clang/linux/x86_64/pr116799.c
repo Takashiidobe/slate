@@ -92,7 +92,7 @@ int main() {
 // DEFAULT-NEXT:         write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_v]]), read<i32>(%[[VALUE_i]]))), truncate<i8, reason=assign, fits=always>(const<i32>(98)));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, ptr<const i8>, i32) -> void>(%[[VALUE_foo]], read<ptr<const i8>>(%[[VALUE_x_2]]), read<ptr<const i8>>(%[[VALUE_y_2]]), read<i32>(%[[VALUE_z_2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_v_2:[0-9]+]] v: array<i8, 2> [storage=automatic] = aggregate<array<i8, 2>, zero_fill=true>(index0 = truncate<i8, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:         write<ptr<const i8>>(%[[VALUE_l]], pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str]])));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, ptr<i8>) -> void>(%[[VALUE_bar]], read<ptr<const i8>>(%[[VALUE_l]]), array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_v_2]]));

@@ -40,7 +40,7 @@ int main(void) {
 // DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 76, 97, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_3:[0-9]+]] .str[[VALUE_str_3]]: array<i8, 8> [storage=static] = code_units<array<i8, 8>>([37, 100, 32, 37, 76, 97, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_sscanf:[0-9]+]] @sscanf(%[[VALUE___s:[0-9]+]] __s: ptr<const i8> [restrict], %[[VALUE___format_2:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [asm_name="__isoc23_sscanf"];
+// DEFAULT-NEXT:     fn %[[VALUE_sscanf:[0-9]+]] @sscanf(%[[VALUE___s:[0-9]+]] __s: ptr<const i8> [restrict], %[[VALUE___format_2:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [asm_name="__isoc99_sscanf"];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_parsed:[0-9]+]] parsed: f80 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_matched:[0-9]+]] matched: i32 [storage=automatic] = call<i32, signature=fn(ptr<const i8>, ptr<const i8>, ...) -> i32>(%[[VALUE_sscanf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(24)>(%[[VALUE_str]])), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_2]])), addr_of<ptr<f80>>(%[[VALUE_parsed]]));

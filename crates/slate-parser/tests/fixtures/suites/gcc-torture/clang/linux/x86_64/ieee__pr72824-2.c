@@ -61,7 +61,7 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_copysignf:[0-9]+]] @__builtin_copysignf(%[[VALUE3:[0-9]+]] <unnamed>: f32, %[[VALUE4:[0-9]+]] <unnamed>: f32) -> f32 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_x_2:[0-9]+]] x: array<vector<f32, 4>, 32> [storage=automatic];
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<vector<f32, 4>>, vector<f32, 4>) -> void, abi=sysv64(scalar, direct) -> void>(%[[VALUE_foo]], array_decay<ptr<vector<f32, 4>>, length=Some(32)>(%[[VALUE_x_2]]), read<vector<f32, 4>>(compound_literal %[[VALUE5:[0-9]+]] [storage=automatic] = aggregate<vector<f32, 4>, zero_fill=false>(index0 = const<f32>(0.0), index1 = neg<f32>(const<f32>(0.0)), index2 = const<f32>(0.0), index3 = neg<f32>(const<f32>(0.0)))));
 // DEFAULT-NEXT:         if ne<f32, exceptions=ignore>(call<f32, signature=fn(f32, f32) -> f32>(%[[VALUE___builtin_copysignf]], float_narrow<f32, reason=arg, rounding=nearest_even, exceptions=ignore>(const<f64>(1.0)), read<f32>(lane(deref(ptr_offset<ptr<vector<f32, 4>>, subtract=false, element=vector<f32, 4>, overflow=ub>(array_decay<ptr<vector<f32, 4>>, length=Some(32)>(%[[VALUE_x_2]]), const<i32>(3))), const<i32>(1)))), neg<f32>(const<f32>(1.0)))

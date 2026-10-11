@@ -1873,7 +1873,7 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_neg:[0-9]+]] @neg(%[[VALUE_x_12:[0-9]+]] x: u64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return neg<u64, overflow=wrap>(read<u64>(%[[VALUE_x_12]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<u64>(%[[VALUE_gull]], reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(100))));
 // DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i32, u64) -> u64>(%[[VALUE_t1]], const<i32>(3), not<u64>(const<u64>(0))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(sub<i32, overflow=ub>(mul<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(2048)), const<i32>(3)), const<i32>(1)))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);

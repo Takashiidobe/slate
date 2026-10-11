@@ -110,7 +110,7 @@ int main() {
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         return read<ptr<@type[[TYPE_lock_chain1]]>>(%[[VALUE_chain_2]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<ptr<@type[[TYPE_lock_chain]]>, signature=fn(ptr<@type[[TYPE_lock_chain]]>) -> ptr<@type[[TYPE_lock_chain]]>>(%[[VALUE_foo]], array_decay<ptr<@type[[TYPE_lock_chain]]>, length=Some(101)>(%[[VALUE_test]]));
 // DEFAULT-NEXT:         call<ptr<@type[[TYPE_lock_chain1]]>, signature=fn(ptr<@type[[TYPE_lock_chain1]]>) -> ptr<@type[[TYPE_lock_chain1]]>>(%[[VALUE_bar]], array_decay<ptr<@type[[TYPE_lock_chain1]]>, length=Some(101)>(%[[VALUE_test1]]));
 // DEFAULT-NEXT:         return const<i32>(0);

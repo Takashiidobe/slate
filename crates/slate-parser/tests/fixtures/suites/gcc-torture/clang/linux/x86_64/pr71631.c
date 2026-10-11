@@ -68,7 +68,7 @@ int main() {
 // DEFAULT-NEXT:             write<i8, volatile>(%[[VALUE_v]], read<i8>(deref(read<ptr<const i8>>(%[[VALUE_s]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_d:[0-9]+]] d: volatile i32 [storage=automatic] = const<i32>(1);
 // DEFAULT-NEXT:         let %[[VALUE_e:[0-9]+]] e: volatile i32 [storage=automatic] = const<i32>(1);
 // DEFAULT-NEXT:         let %[[VALUE_f:[0-9]+]] f: i32 [storage=automatic] = div<i32, by_zero=ub, min_by_neg_one=ub>(const<i32>(1), read<i32>(%[[VALUE_a]]));

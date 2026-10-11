@@ -51,7 +51,7 @@ int main() {
 // DEFAULT-NEXT:         write<u16>(deref(read<ptr<u16>>(%[[VALUE1]])), read<u16>(%[[VALUE3]]));
 // DEFAULT-NEXT:         return from_bool<u16, reason=return>(ge<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(deref(read<ptr<u16>>(%[[VALUE_a]]))))), const<i32>(8)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: u16 [storage=automatic] = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:         let %[[VALUE_y:[0-9]+]] y: u16 [storage=automatic] = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(10)));
 // DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u16, signature=fn(ptr<u16>, ptr<u16>) -> u16>(%[[VALUE_showbug]], addr_of<ptr<u16>>(%[[VALUE_x]]), addr_of<ptr<u16>>(%[[VALUE_y]])))), const<i32>(0))

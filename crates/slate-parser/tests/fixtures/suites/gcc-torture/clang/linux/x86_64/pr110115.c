@@ -84,7 +84,7 @@ int main() {
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic] = call<i32, signature=fn(ptr<i8>, i32) -> i32>(%[[VALUE_foo]], array_decay<ptr<i8>, length=Some(20)>(%[[VALUE_h]]), read<i32>(%[[VALUE_f_2]]));
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_i]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_baz:[0-9]+]] @baz() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_baz:[0-9]+]] @baz(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         switch %[[VALUE3:[0-9]+]] read<i32>(%[[VALUE_a]])
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 case %[[VALUE3]] const<i32>(102):
@@ -93,7 +93,7 @@ int main() {
 // DEFAULT-NEXT:                     return not<i32>(const<i32>(0));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE_k:[0-9]+]] k: array<ptr<i8>, 3> [storage=automatic] [align=16];
 // DEFAULT-NEXT:             let %[[VALUE_d_2:[0-9]+]] d: i32 [storage=automatic];
@@ -108,7 +108,7 @@ int main() {
 // DEFAULT-NEXT:                     yield void;
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:                 body:
-// DEFAULT-NEXT:                     write<ptr<i8>>(deref(ptr_offset<ptr<ptr<i8>>, subtract=false, element=ptr<i8>, overflow=ub>(array_decay<ptr<ptr<i8>>, length=Some(3)>(%[[VALUE_k]]), add<i32, overflow=ub>(call<i32, signature=fn() -> i32>(%[[VALUE_baz]]), const<i32>(1)))), addr_of<ptr<i8>>(%[[VALUE_b]]));
+// DEFAULT-NEXT:                     write<ptr<i8>>(deref(ptr_offset<ptr<ptr<i8>>, subtract=false, element=ptr<i8>, overflow=ub>(array_decay<ptr<ptr<i8>>, length=Some(3)>(%[[VALUE_k]]), add<i32, overflow=ub>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_baz]]), const<i32>(1)))), addr_of<ptr<i8>>(%[[VALUE_b]]));
 // DEFAULT-NEXT:             write<i8>(deref(read<ptr<i8>>(deref(ptr_offset<ptr<ptr<i8>>, subtract=false, element=ptr<i8>, overflow=ub>(array_decay<ptr<ptr<i8>>, length=Some(3)>(%[[VALUE_k]]), const<i32>(0))))), truncate<i8, reason=assign, fits=unknown>(neg<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(deref(read<ptr<i8>>(deref(ptr_offset<ptr<ptr<i8>>, subtract=false, element=ptr<i8>, overflow=ub>(array_decay<ptr<ptr<i8>>, length=Some(3)>(%[[VALUE_k]]), const<i32>(0))))))))));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }

@@ -52,8 +52,10 @@ target/test-cache/release/slate-parser <parse|ir|pp> <source.c> [options]
 | `parse` | AST, after semantic checks.                   |
 | `ir`    | Typed IR, after semantic checks and lowering. |
 
-The defaults are `--flavor=clang`, `-std=gnu23`, and
-`-target=x86_64-unknown-linux-gnu`.
+The defaults are `--flavor=clang` and `-target=x86_64-unknown-linux-gnu`.
+The default standard follows the flavor: gnu17 for clang, gnu23 for gcc,
+and c17 for msvc (cl.exe's mode without `/std:`, which also leaves
+`__STDC_VERSION__` undefined).
 
 ### Flags
 

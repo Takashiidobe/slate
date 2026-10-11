@@ -46,7 +46,7 @@ int main() {
 // DEFAULT-NEXT:         return or<u32>(shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%[[VALUE_b]]), const<i32>(24)), shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE_b]]), const<i32>(8)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:         if logical_and<bool>(logical_and<bool>(eq<i32>(const<i32>(8), const<i32>(8)), eq<i32>(const<i32>(4), const<i32>(4))), eq<i32>(const<i32>(8), const<i32>(8)))
 // DEFAULT-NEXT:             write<bool>(%[[VALUE0]], ne<u32>(call<u32, signature=fn(i32) -> u32>(%[[VALUE_foo]], const<i32>(1)), const<u32>(2566914457)));

@@ -46,7 +46,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> complex<f64> [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(unprototyped) -> complex<f64> [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: array<i32, 40> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: complex<f64> [storage=automatic];
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(40)>(%[[VALUE_a]]), const<i32>(9))), const<i32>(0));
@@ -55,7 +55,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_c_2:[0-9]+]] c: complex<f64> [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: complex<f64> [synthetic] = call<complex<f64>, signature=fn() -> complex<f64>, abi=sysv64() -> native_c>(%[[VALUE_f]]);
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: complex<f64> [synthetic] = call<complex<f64>, signature=fn(unprototyped) -> complex<f64>, abi=sysv64() -> native_c>(%[[VALUE_f]]);
 // DEFAULT-NEXT:         write<complex<f64>>(%[[VALUE_c_2]], read<complex<f64>>(%[[VALUE1]]));
 // DEFAULT-NEXT:         if ne<complex<f64>, exceptions=ignore>(read<complex<f64>>(%[[VALUE1]]), real_to_complex<complex<f64>, reason=usual_arith>(const<f64>(0.0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);

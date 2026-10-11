@@ -61,13 +61,13 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_a:[0-9]+]] @a() -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return call<ptr<i32>, signature=fn() -> ptr<i32>>(%[[VALUE_alloc]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_b:[0-9]+]] @b() -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_b:[0-9]+]] @b(unprototyped) -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if ne<i32>(const<i32>(1), const<i32>(0))
 // DEFAULT-NEXT:             return call<ptr<i32>, signature=fn() -> ptr<i32>>(%[[VALUE_a]]);
 // DEFAULT-NEXT:         return call<ptr<i32>, signature=fn() -> ptr<i32>>(%[[VALUE_alloc]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_c:[0-9]+]] @c() -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<ptr<i32>, signature=fn() -> ptr<i32>>(%[[VALUE_b]]);
+// DEFAULT-NEXT:         return call<ptr<i32>, signature=fn(unprototyped) -> ptr<i32>>(%[[VALUE_b]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: ptr<i32> [storage=automatic] = null<ptr<i32>>;

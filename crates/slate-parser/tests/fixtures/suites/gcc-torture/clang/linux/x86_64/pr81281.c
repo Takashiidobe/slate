@@ -72,7 +72,7 @@ int main() {
 // DEFAULT-NEXT:         if ne<i32>(sub<i32, overflow=ub>(read<i32>(%[[VALUE_c_2]]), read<i32>(%[[VALUE_d_2]])), sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(2147483647)), const<i32>(1)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(u32, u32, u32) -> void>(%[[VALUE_foo]], neg<u32, overflow=wrap>(const<u32>(1)), add<u32, overflow=wrap>(const<u32>(1), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2147483647))), const<u32>(1));
 // DEFAULT-NEXT:         call<void, signature=fn(u32, u32) -> void>(%[[VALUE_bar]], neg<u32, overflow=wrap>(const<u32>(1)), add<u32, overflow=wrap>(const<u32>(1), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2147483647))));
 // DEFAULT-NEXT:         return const<i32>(0);

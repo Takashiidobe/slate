@@ -125,7 +125,7 @@ int main() {
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_4]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(i32, i32, i32, i32, i32, i32, i32, f80, ...) -> void>(%[[VALUE_test1]], const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<f80>(0), const<i32>(1234));
 // DEFAULT-NEXT:         call<void, signature=fn(i32, i32, i32, i32, i32, i32, i32, f80, i32, f80, i32, f80, i32, f80, ...) -> void>(%[[VALUE_test2]], const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<f80>(0), const<i32>(0), const<f80>(0), const<i32>(0), const<f80>(0), const<i32>(0), const<f80>(0), const<i32>(1234));
 // DEFAULT-NEXT:         call<void, signature=fn(f64, f64, f64, f64, f64, f64, f64, f80, ...) -> void>(%[[VALUE_test3]], const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f80>(0), const<f64>(1234.0));

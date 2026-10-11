@@ -58,7 +58,7 @@ int foo(void *a, void *b, unsigned int c) {
 // DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE_memcpy]], read<ptr<void>>(%[[VALUE_a]]), pointer_cast<ptr<const void>, reason=arg>(read<ptr<void>>(%[[VALUE_b]])), widen<u64, reason=arg>(read<u32>(%[[VALUE_c]])));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<void>, ptr<void>, u32) -> i32>(%[[VALUE_foo]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i32>, length=Some(10)>(%[[VALUE_dst]])), pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i32>, length=Some(10)>(%[[VALUE_src]])), reinterpret<u32, reason=arg, fits=always>(const<i32>(10))), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));

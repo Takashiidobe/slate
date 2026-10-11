@@ -54,7 +54,7 @@ int main() {
 // DEFAULT-NEXT:         return const<i32>(2);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32, i32, i32) -> i32>(%[[VALUE_foo]], add<i32, overflow=ub>(read<i32>(%[[VALUE_a]]), const<i32>(21)), add<i32, overflow=ub>(read<i32>(%[[VALUE_a]]), const<i32>(6)), add<i32, overflow=ub>(read<i32>(%[[VALUE_a]]), const<i32>(34)), add<i32, overflow=ub>(read<i32>(%[[VALUE_a]]), const<i32>(26))), neg<i32, overflow=ub>(const<i32>(22)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:     }

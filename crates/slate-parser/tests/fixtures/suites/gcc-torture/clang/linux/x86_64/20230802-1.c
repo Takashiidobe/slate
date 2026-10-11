@@ -104,7 +104,7 @@ int main() {
 // DEFAULT-NEXT:         return xor<i64>(widen<i64, reason=usual_arith>(read<i32, volatile>(%[[VALUE_y_6]])), reinterpret<i64, reason=explicit, fits=unknown>(widen<u64, reason=explicit>(read<u32, volatile>(%[[VALUE_x_6]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 let %[[VALUE_t:[0-9]+]] t: i32 [storage=automatic] = neg<i32, overflow=ub>(const<i32>(1));

@@ -57,7 +57,7 @@ int main() {
 // DEFAULT-NEXT:         write<u128>(deref(read<ptr<u128>>(%[[VALUE0]])), read<u128>(%[[VALUE2]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: u128 [storage=automatic] = shl<u128, overflow=wrap, amount_out_of_range=ub>(reinterpret<u128, reason=explicit, fits=unknown>(widen<i128, reason=explicit>(const<i32>(1))), add<i32, overflow=ub>(div<i32, by_zero=ub, min_by_neg_one=ub>(mul<i32, overflow=ub>(const<i32>(16), const<i32>(8)), const<i32>(2)), const<i32>(1)));
 // DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: u128 [storage=automatic] = read<u128>(%[[VALUE_a]]);
 // DEFAULT-NEXT:         let %[[VALUE_n:[0-9]+]] n: u128 [storage=automatic];

@@ -63,7 +63,7 @@ int main(void) {
 // DEFAULT-NEXT:     global %[[VALUE_n:[0-9]+]] n: u32 [storage=static] = reinterpret<u32, reason=assign, fits=always>(const<i32>(30)) [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_x:[0-9]+]] @x() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_x:[0-9]+]] @x(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_h:[0-9]+]] h: u32 [storage=automatic];
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_h]], from_bool<u32, reason=assign>(le<u32>(read<u32>(%[[VALUE_n]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(30)))));
 // DEFAULT-NEXT:         if ne<u32>(read<u32>(%[[VALUE_h]]), const<u32>(0))
@@ -76,7 +76,7 @@ int main(void) {
 // DEFAULT-NEXT:             write<i32>(%[[VALUE_k]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_x]]);
+// DEFAULT-NEXT:         call<void, signature=fn(unprototyped) -> void>(%[[VALUE_x]]);
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(%[[VALUE_p]]), const<i32>(1)), ne<i32>(read<i32>(%[[VALUE_k]]), const<i32>(1)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));

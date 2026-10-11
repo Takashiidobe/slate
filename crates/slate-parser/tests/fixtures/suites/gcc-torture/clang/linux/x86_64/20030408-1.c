@@ -102,7 +102,7 @@ int main() {
 // DEFAULT-NEXT:     } [size=10, align=1, offsets=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_memcpy:[0-9]+]] @__builtin_memcpy(%[[VALUE0:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE1:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE2:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_test1:[0-9]+]] @test1() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_test1:[0-9]+]] @test1(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_X:[0-9]+]] X: array<i8, 8> [storage=automatic] [const] = aggregate<array<i8, 8>, zero_fill=false>(index0 = truncate<i8, reason=assign, fits=always>(const<i32>(65)), index1 = truncate<i8, reason=assign, fits=always>(const<i32>(66)), index2 = truncate<i8, reason=assign, fits=always>(const<i32>(67)), index3 = truncate<i8, reason=assign, fits=always>(const<i32>(68)), index4 = truncate<i8, reason=assign, fits=always>(const<i32>(69)), index5 = truncate<i8, reason=assign, fits=always>(const<i32>(70)), index6 = truncate<i8, reason=assign, fits=always>(const<i32>(71)), index7 = truncate<i8, reason=assign, fits=always>(const<i32>(72)));
 // DEFAULT-NEXT:         let %[[VALUE_buffer:[0-9]+]] buffer: array<i8, 8> [storage=automatic];
 // DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memcpy]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(8)>(%[[VALUE_buffer]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const i8>, length=Some(8)>(%[[VALUE_X]])), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(8))));
@@ -110,7 +110,7 @@ int main() {
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_test2:[0-9]+]] @test2() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_test2:[0-9]+]] @test2(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_X_2:[0-9]+]] X: array<i8, 10> [storage=automatic] [const] = aggregate<array<i8, 10>, zero_fill=true>(index0 = truncate<i8, reason=assign, fits=always>(const<i32>(65)), index1 = truncate<i8, reason=assign, fits=always>(const<i32>(66)), index2 = truncate<i8, reason=assign, fits=always>(const<i32>(67)), index3 = truncate<i8, reason=assign, fits=always>(const<i32>(68)), index4 = truncate<i8, reason=assign, fits=always>(const<i32>(69)));
 // DEFAULT-NEXT:         let %[[VALUE_buffer_2:[0-9]+]] buffer: array<i8, 10> [storage=automatic];
 // DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memcpy]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%[[VALUE_buffer_2]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const i8>, length=Some(10)>(%[[VALUE_X_2]])), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(10))));
@@ -118,7 +118,7 @@ int main() {
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_test3:[0-9]+]] @test3() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_test3:[0-9]+]] @test3(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_X_3:[0-9]+]] X: @type[[TYPE_foo]] [storage=automatic] [const] = aggregate<@type[[TYPE_foo]], zero_fill=true>(field0 = truncate<i8, reason=assign, fits=always>(const<i32>(65)), field2 = truncate<i8, reason=assign, fits=always>(const<i32>(67)), field4 = truncate<i8, reason=assign, fits=always>(const<i32>(69)), field6 = truncate<i8, reason=assign, fits=always>(const<i32>(71)), field8 = truncate<i8, reason=assign, fits=always>(const<i32>(73)));
 // DEFAULT-NEXT:         let %[[VALUE_buffer_3:[0-9]+]] buffer: array<i8, 10> [storage=automatic];
 // DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memcpy]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%[[VALUE_buffer_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<const @type[[TYPE_foo]]>>(%[[VALUE_X_3]])), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(10))));
@@ -126,7 +126,7 @@ int main() {
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_test4:[0-9]+]] @test4() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_test4:[0-9]+]] @test4(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_X_4:[0-9]+]] X: @type[[TYPE_foo]] [storage=automatic] [const] = aggregate<@type[[TYPE_foo]], zero_fill=true>(field1 = truncate<i8, reason=assign, fits=always>(const<i32>(66)), field3 = truncate<i8, reason=assign, fits=always>(const<i32>(68)), field5 = truncate<i8, reason=assign, fits=always>(const<i32>(70)), field7 = truncate<i8, reason=assign, fits=always>(const<i32>(72)), field9 = truncate<i8, reason=assign, fits=always>(const<i32>(74)));
 // DEFAULT-NEXT:         let %[[VALUE_buffer_4:[0-9]+]] buffer: array<i8, 10> [storage=automatic];
 // DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memcpy]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%[[VALUE_buffer_4]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<const @type[[TYPE_foo]]>>(%[[VALUE_X_4]])), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(10))));
@@ -134,11 +134,11 @@ int main() {
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%[[VALUE_test1]]);
-// DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%[[VALUE_test2]]);
-// DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%[[VALUE_test3]]);
-// DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%[[VALUE_test4]]);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_test1]]);
+// DEFAULT-NEXT:         call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_test2]]);
+// DEFAULT-NEXT:         call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_test3]]);
+// DEFAULT-NEXT:         call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_test4]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

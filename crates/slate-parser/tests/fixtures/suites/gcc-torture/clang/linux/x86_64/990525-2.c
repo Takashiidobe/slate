@@ -67,7 +67,7 @@ int main() {
 // DEFAULT-NEXT:     type @type[[TYPE_Test1:[0-9]+]] Test1 = @type[[TYPE0]];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_func2:[0-9]+]] @func2() -> @type[[TYPE0]] [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_func2:[0-9]+]] @func2(unprototyped) -> @type[[TYPE0]] [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_tmp:[0-9]+]] tmp: @type[[TYPE0]] [storage=automatic];
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(field0(%[[VALUE_tmp]])), const<i32>(0))), const<i32>(10));
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(field0(%[[VALUE_tmp]])), const<i32>(1))), const<i32>(20));
@@ -75,9 +75,9 @@ int main() {
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(field0(%[[VALUE_tmp]])), const<i32>(3))), const<i32>(40));
 // DEFAULT-NEXT:         return copy<@type[[TYPE0]], reason=return>(read<@type[[TYPE0]]>(%[[VALUE_tmp]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_func1:[0-9]+]] @func1() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_func1:[0-9]+]] @func1(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_test:[0-9]+]] test: @type[[TYPE0]] [storage=automatic];
-// DEFAULT-NEXT:         write<@type[[TYPE0]]>(%[[VALUE_test]], copy<@type[[TYPE0]], reason=assign>(call<@type[[TYPE0]], signature=fn() -> @type[[TYPE0]], abi=sysv64() -> native_c>(%[[VALUE_func2]])));
+// DEFAULT-NEXT:         write<@type[[TYPE0]]>(%[[VALUE_test]], copy<@type[[TYPE0]], reason=assign>(call<@type[[TYPE0]], signature=fn(unprototyped) -> @type[[TYPE0]], abi=sysv64() -> native_c>(%[[VALUE_func2]])));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(field0(%[[VALUE_test]])), const<i32>(0)))), const<i32>(10))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(field0(%[[VALUE_test]])), const<i32>(1)))), const<i32>(20))
@@ -87,8 +87,8 @@ int main() {
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(field0(%[[VALUE_test]])), const<i32>(3)))), const<i32>(40))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%[[VALUE_func1]]);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_func1]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

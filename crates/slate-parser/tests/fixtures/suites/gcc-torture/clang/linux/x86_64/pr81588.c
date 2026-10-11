@@ -80,7 +80,7 @@ int main() {
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_x_3:[0-9]+]] x: volatile u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(10));
 // DEFAULT-NEXT:         let %[[VALUE_y_2:[0-9]+]] y: volatile i64 [storage=automatic] = widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(10000)));
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u32, i64) -> i32>(%[[VALUE_foo]], read<u32, volatile>(%[[VALUE_x_3]]), read<i64, volatile>(%[[VALUE_y_2]])), const<i32>(0))

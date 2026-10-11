@@ -69,7 +69,7 @@ int main() {
 // DEFAULT-NEXT:         return truncate<u8, reason=return, fits=unknown>(complex_to_real<u32, reason=return>(add<complex<u32>, complex=true, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_v_2]])))), read<complex<u32>>(%[[VALUE_t_2]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: u8 [storage=automatic] = call<u8, signature=fn(complex<u32>) -> u8, abi=sysv64(native_c) -> scalar>(%[[VALUE_foo]], real_to_complex<complex<u32>, reason=arg>(reinterpret<u32, reason=arg, fits=always>(const<i32>(7))));
 // DEFAULT-NEXT:         if ne<u8>(read<u8>(%[[VALUE_x]]), const<u8>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);

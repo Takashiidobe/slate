@@ -50,7 +50,7 @@ int main() {
 // DEFAULT-NEXT:         write<vector<i8, 64>>(deref(read<ptr<vector<i8, 64>>>(%[[VALUE_p]])), read<vector<i8, 64>>(%[[VALUE_v]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_v_2:[0-9]+]] v: vector<i8, 64> [storage=automatic] = read<vector<i8, 64>>(compound_literal %[[VALUE0:[0-9]+]] [storage=automatic] = aggregate<vector<i8, 64>, zero_fill=true>());
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<vector<i8, 64>>) -> void>(%[[VALUE_foo]], addr_of<ptr<vector<i8, 64>>>(%[[VALUE_v_2]]));
 // DEFAULT-NEXT:         for %[[VALUE1:[0-9]+]]

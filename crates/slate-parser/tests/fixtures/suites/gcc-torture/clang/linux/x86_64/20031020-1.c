@@ -50,7 +50,7 @@ int main() {
 // DEFAULT-NEXT:         if ge<i64>(read<i64>(%[[VALUE_x]]), widen<i64, reason=usual_arith>(const<i32>(1024)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(i64) -> void>(%[[VALUE_foo]], sub<i64, overflow=ub>(neg<i64, overflow=ub>(const<i64>(9223372036854775807)), const<i64>(1)));
 // DEFAULT-NEXT:         call<void, signature=fn(i64) -> void>(%[[VALUE_foo]], add<i64, overflow=ub>(sub<i64, overflow=ub>(neg<i64, overflow=ub>(const<i64>(9223372036854775807)), const<i64>(1)), widen<i64, reason=usual_arith>(const<i32>(10000))));
 // DEFAULT-NEXT:         return const<i32>(0);

@@ -66,7 +66,7 @@ int main() {
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_2]]);
 // DEFAULT-NEXT:         return call<i32, signature=fn(i32, va_list) -> i32>(%[[VALUE_bar]], read<i32>(%[[VALUE_a_2]]), read<va_list>(%[[VALUE_ap_2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, ...) -> i32>(%[[VALUE_foo]], const<i32>(1), const<i32>(2), const<i32>(3)), const<i32>(3))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);

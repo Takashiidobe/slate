@@ -53,7 +53,7 @@ lbl_2582:
 // DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(conditional<i32>(logical_or<bool>(ge<i32>(read<i32>(%[[VALUE_p2]]), const<i32>(2)), ne<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(const<i32>(5), read<i32>(%[[VALUE_p2]])), const<i32>(0))), read<i32>(%[[VALUE_p1]]), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(read<i32>(%[[VALUE_p1]]), read<i32>(%[[VALUE_p2]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_result:[0-9]+]] result: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         label %[[VALUE_lbl_2582:[0-9]+]] lbl_2582:
 // DEFAULT-NEXT:             if ne<i32>(read<i32>(%[[VALUE_g]]), const<i32>(0))

@@ -55,14 +55,14 @@ int         main() {
 // DEFAULT-NEXT:         write<ptr<i32>>(field0(%[[VALUE_x_2]]), read<ptr<i32>>(%[[VALUE_p]]));
 // DEFAULT-NEXT:         return copy<@type[[TYPE_X]], reason=return>(read<@type[[TYPE_X]]>(%[[VALUE_x_2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(unprototyped) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(field0(%[[VALUE_x]]))), const<i32>(1));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         write<@type[[TYPE_X]]>(%[[VALUE_x]], copy<@type[[TYPE_X]], reason=assign>(call<@type[[TYPE_X]], signature=fn(ptr<i32>) -> @type[[TYPE_X]], abi=sysv64(scalar) -> native_c>(%[[VALUE_foo]], addr_of<ptr<i32>>(%[[VALUE_i]]))));
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_bar]]);
+// DEFAULT-NEXT:         call<void, signature=fn(unprototyped) -> void>(%[[VALUE_bar]]);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_i]]), const<i32>(1))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);

@@ -92,7 +92,7 @@ int main() {
 // DEFAULT-NEXT:         write<u32>(field2(deref(read<ptr<@type[[TYPE_baz]]>>(%[[VALUE_p_2]]))), read<u32>(%[[VALUE_c_2]]));
 // DEFAULT-NEXT:         write<u32>(field3(deref(read<ptr<@type[[TYPE_baz]]>>(%[[VALUE_p_2]]))), read<u32>(%[[VALUE_d_2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_p_3:[0-9]+]] p: @type[[TYPE_baz]] [storage=automatic];
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE_baz]]>, u32, u32) -> void>(%[[VALUE_foo]], addr_of<ptr<@type[[TYPE_baz]]>>(%[[VALUE_p_3]]), reinterpret<u32, reason=arg, fits=always>(const<i32>(71)), reinterpret<u32, reason=arg, fits=always>(const<i32>(18)));
 // DEFAULT-NEXT:         if logical_or<bool>(ne<u32>(read<u32>(field2(%[[VALUE_p_3]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(71))), ne<u32>(read<u32>(field3(%[[VALUE_p_3]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(18))))

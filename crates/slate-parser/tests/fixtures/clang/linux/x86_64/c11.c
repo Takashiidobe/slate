@@ -475,14 +475,14 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_aligned_alloc:[0-9]+]] @aligned_alloc(%[[VALUE___alignment:[0-9]+]] __alignment: u64, %[[VALUE___size:[0-9]+]] __size: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_at_quick_exit:[0-9]+]] @at_quick_exit(%[[VALUE___func:[0-9]+]] __func: ptr<fn() -> void>) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_quick_exit:[0-9]+]] @quick_exit(%[[VALUE___status:[0-9]+]] __status: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_call_once:[0-9]+]] @call_once(%[[VALUE___flag:[0-9]+]] __flag: ptr<@type[[TYPE2]]>, %[[VALUE___func_2:[0-9]+]] __func: ptr<fn() -> void>) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_timespec_get:[0-9]+]] @timespec_get(%[[VALUE___ts:[0-9]+]] __ts: ptr<@type[[TYPE_timespec]]>, %[[VALUE___base:[0-9]+]] __base: i32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_thrd_create:[0-9]+]] @thrd_create(%[[VALUE___thr:[0-9]+]] __thr: ptr<u64>, %[[VALUE___func_3:[0-9]+]] __func: ptr<fn(ptr<void>) -> i32>, %[[VALUE___arg:[0-9]+]] __arg: ptr<void>) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_thrd_create:[0-9]+]] @thrd_create(%[[VALUE___thr:[0-9]+]] __thr: ptr<u64>, %[[VALUE___func_2:[0-9]+]] __func: ptr<fn(ptr<void>) -> i32>, %[[VALUE___arg:[0-9]+]] __arg: ptr<void>) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_thrd_join:[0-9]+]] @thrd_join(%[[VALUE___thr_2:[0-9]+]] __thr: u64, %[[VALUE___res:[0-9]+]] __res: ptr<i32>) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_mtx_init:[0-9]+]] @mtx_init(%[[VALUE___mutex:[0-9]+]] __mutex: ptr<@type[[TYPE5]]>, %[[VALUE___type:[0-9]+]] __type: i32) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_mtx_lock:[0-9]+]] @mtx_lock(%[[VALUE___mutex_2:[0-9]+]] __mutex: ptr<@type[[TYPE5]]>) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_mtx_unlock:[0-9]+]] @mtx_unlock(%[[VALUE___mutex_3:[0-9]+]] __mutex: ptr<@type[[TYPE5]]>) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_mtx_destroy:[0-9]+]] @mtx_destroy(%[[VALUE___mutex_4:[0-9]+]] __mutex: ptr<@type[[TYPE5]]>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_call_once:[0-9]+]] @call_once(%[[VALUE___flag:[0-9]+]] __flag: ptr<@type[[TYPE2]]>, %[[VALUE___func_3:[0-9]+]] __func: ptr<fn() -> void>) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_cnd_init:[0-9]+]] @cnd_init(%[[VALUE___cond:[0-9]+]] __cond: ptr<@type[[TYPE6]]>) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_cnd_destroy:[0-9]+]] @cnd_destroy(%[[VALUE___COND:[0-9]+]] __COND: ptr<@type[[TYPE6]]>) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_tss_create:[0-9]+]] @tss_create(%[[VALUE___tss_id:[0-9]+]] __tss_id: ptr<u32>, %[[VALUE___destructor:[0-9]+]] __destructor: ptr<fn(ptr<void>) -> void>) -> i32 [linkage=external];

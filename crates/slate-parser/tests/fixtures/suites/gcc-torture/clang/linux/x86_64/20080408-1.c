@@ -36,7 +36,7 @@ int         main() {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_ssi:[0-9]+]] ssi: i16 [storage=automatic] = truncate<i16, reason=assign, fits=always>(const<i32>(126));
 // DEFAULT-NEXT:         let %[[VALUE_usi:[0-9]+]] usi: u16 [storage=automatic] = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(const<i32>(65280)));
 // DEFAULT-NEXT:         let %[[VALUE_fail:[0-9]+]] fail: i32 [storage=automatic] = from_bool<i32, reason=assign>(not<bool>(lt<i32>(widen<i32, reason=promotion>(read<i16>(%[[VALUE_ssi]])), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_usi]]))))));

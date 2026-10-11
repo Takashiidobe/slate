@@ -40,7 +40,7 @@ int main() {
 // DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: i8 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<i8>(%[[VALUE_c]], truncate<i8, reason=assign, fits=unknown>(read<i16>(%[[VALUE_a]])));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_b]], or<i32>(widen<i32, reason=promotion>(read<i16>(%[[VALUE_a]])), widen<i32, reason=promotion>(read<i8>(%[[VALUE_c]]))));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_b]]), neg<i32, overflow=ub>(const<i32>(1)))

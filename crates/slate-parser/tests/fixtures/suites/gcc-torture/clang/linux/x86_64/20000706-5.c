@@ -68,7 +68,7 @@ int main() {
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_baz]]>>(%[[VALUE_c]], addr_of<ptr<@type[[TYPE_baz]]>>(%[[VALUE_a]]));
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_bar]], read<i32>(%[[VALUE_b_2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_a_2:[0-9]+]] a: @type[[TYPE_baz]] [storage=automatic];
 // DEFAULT-NEXT:         write<i32>(field0(%[[VALUE_a_2]]), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(field1(%[[VALUE_a_2]]), const<i32>(2));

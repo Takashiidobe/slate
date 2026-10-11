@@ -49,7 +49,7 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_p1:[0-9]+]] p1: i32, %[[VALUE_p2:[0-9]+]] p2: i16) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return div<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%[[VALUE_p1]]), widen<i32, reason=promotion>(read<i16>(%[[VALUE_p2]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_e:[0-9]+]] e: i8 [storage=automatic];
 // DEFAULT-NEXT:         const<i32>(0);
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_d]], call<i32, signature=fn(i32, i16) -> i32>(%[[VALUE_foo]], from_bool<i32, reason=arg>(eq<i32>(read<i32>(%[[VALUE_a]]), const<i32>(0))), truncate<i16, reason=arg, fits=unknown>(const<i32>(35536))));

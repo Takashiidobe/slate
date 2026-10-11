@@ -71,7 +71,7 @@ int main() {
 // DEFAULT-NEXT:         if ge<i32>(read<i32>(field1(%[[VALUE_a]])), sub<i32, overflow=ub>(read<i32>(%[[VALUE_b]]), const<i32>(1)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<f32>(field0(%[[VALUE_a]]), const<f32>(1.0));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_b]], const<i32>(3384));
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_foo]]);

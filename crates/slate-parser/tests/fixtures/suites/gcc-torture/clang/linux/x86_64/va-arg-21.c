@@ -102,7 +102,7 @@ int main() {
 // DEFAULT-NEXT:         if eq<ptr<va_list>>(read<ptr<va_list>>(deref(read<ptr<ptr<va_list>>>(%[[VALUE_ap_ptr]]))), null<ptr<va_list>>)
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, ...) -> void>(%[[VALUE_doit]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str]])), array_decay<ptr<i8>, length=Some(13)>(%[[VALUE_str_2]]));
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }

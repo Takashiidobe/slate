@@ -132,7 +132,7 @@ int main() {
 // DEFAULT-NEXT:         write<u64>(deref(read<ptr<u64>>(%[[VALUE12]])), read<u64>(%[[VALUE14]]));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<array<u64, 2>>) -> void>(%[[VALUE_merge_overlapping_regs]], addr_of<ptr<array<u64, 2>>>(%[[VALUE_this_unavailable]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_du1:[0-9]+]] du1: @type[[TYPE_du_chain]] [storage=automatic] = aggregate<@type[[TYPE_du_chain]], zero_fill=false>(field0 = null<ptr<@type[[TYPE_du_chain]]>>, field1 = const<i32>(0));
 // DEFAULT-NEXT:         let %[[VALUE_du0:[0-9]+]] du0: @type[[TYPE_du_chain]] [storage=automatic] = aggregate<@type[[TYPE_du_chain]], zero_fill=false>(field0 = addr_of<ptr<@type[[TYPE_du_chain]]>>(%[[VALUE_du1]]), field1 = const<i32>(1));
 // DEFAULT-NEXT:         write<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(2)>(deref(ptr_offset<ptr<array<u64, 2>>, subtract=false, element=array<u64, 2>, overflow=ub>(array_decay<ptr<array<u64, 2>>, length=Some(2)>(%[[VALUE_reg_class_contents]]), const<i32>(0)))), const<i32>(0))), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(1)))));

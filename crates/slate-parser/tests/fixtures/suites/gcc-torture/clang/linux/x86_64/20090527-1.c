@@ -88,7 +88,7 @@ int main() {
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_f:[0-9]+]] f: @type[[TYPE2]] [storage=automatic];
 // DEFAULT-NEXT:         write<@type[[TYPE1]]>(field1(%[[VALUE_f]]), int_to_enum<@type[[TYPE1]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(1))));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE2]]>) -> void>(%[[VALUE_new_unit]], addr_of<ptr<@type[[TYPE2]]>>(%[[VALUE_f]]));

@@ -43,7 +43,7 @@ int main() {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_x1:[0-9]+]] x1: volatile i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         let %[[VALUE_x2:[0-9]+]] x2: volatile i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
 // DEFAULT-NEXT:         let %[[VALUE_x3:[0-9]+]] x3: volatile i32 [storage=automatic] = const<i32>(0);

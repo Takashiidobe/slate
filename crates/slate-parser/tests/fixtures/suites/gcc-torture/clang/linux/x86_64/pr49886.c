@@ -105,7 +105,7 @@ void bar_2(int *interp, Pcc_cell *c) {
 // DEFAULT-NEXT:     type @type[[TYPE_Pcc_cell_2:[0-9]+]] Pcc_cell = @type[[TYPE_Pcc_cell]];
 // DEFAULT-NEXT:     global %[[VALUE_gi:[0-9]+]] gi: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_cond:[0-9]+]] cond: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort(unprototyped) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_never_ever:[0-9]+]] @never_ever(%[[VALUE_interp:[0-9]+]] interp: i32, %[[VALUE_pmc:[0-9]+]] pmc: ptr<@type[[TYPE_PMC]]>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
@@ -137,7 +137,7 @@ void bar_2(int *interp, Pcc_cell *c) {
 // DEFAULT-NEXT:     fn %[[VALUE_getnull:[0-9]+]] @getnull() -> ptr<@type[[TYPE_Pcc_cell]]> [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return null<ptr<@type[[TYPE_Pcc_cell]]>>;
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_cond]], const<i32>(1));
 // DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]

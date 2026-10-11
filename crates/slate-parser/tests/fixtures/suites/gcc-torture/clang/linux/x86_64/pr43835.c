@@ -71,7 +71,7 @@ int main() {
 // DEFAULT-NEXT:         field2 type: i64;
 // DEFAULT-NEXT:     } [size=24, align=8, offsets=[0, 8, 16]];
 // DEFAULT-NEXT:     type @type[[TYPE_Pcc_cell_2:[0-9]+]] Pcc_cell = @type[[TYPE_Pcc_cell]];
-// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort(unprototyped) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_Parrot_gc_mark_PMC_alive_fun:[0-9]+]] @Parrot_gc_mark_PMC_alive_fun(%[[VALUE_interp:[0-9]+]] interp: ptr<i32>, %[[VALUE_pmc:[0-9]+]] pmc: ptr<@type[[TYPE_PMC]]>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
@@ -82,7 +82,7 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_interp_3:[0-9]+]] interp: ptr<i32>, %[[VALUE_c_2:[0-9]+]] c: ptr<@type[[TYPE_Pcc_cell]]>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>, ptr<@type[[TYPE_Pcc_cell]]>) -> void>(%[[VALUE_mark_cell]], read<ptr<i32>>(%[[VALUE_interp_3]]), read<ptr<@type[[TYPE_Pcc_cell]]>>(%[[VALUE_c_2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_c_3:[0-9]+]] c: @type[[TYPE_Pcc_cell]] [storage=automatic];
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_PMC]]>>(field0(%[[VALUE_c_3]]), null<ptr<@type[[TYPE_PMC]]>>);

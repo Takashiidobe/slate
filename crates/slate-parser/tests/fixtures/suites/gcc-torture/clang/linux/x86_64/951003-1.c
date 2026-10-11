@@ -53,7 +53,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_i:[0-9]+]] i: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(12);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
@@ -72,7 +72,7 @@ int main(void) {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<i32>(%[[VALUE_s]], call<i32, signature=fn(i32) -> i32>(%[[VALUE_f]], read<i32>(%[[VALUE_i_2]])));
-// DEFAULT-NEXT:                     if eq<i32>(read<i32>(%[[VALUE_i_2]]), call<i32, signature=fn() -> i32>(%[[VALUE_g]]))
+// DEFAULT-NEXT:                     if eq<i32>(read<i32>(%[[VALUE_i_2]]), call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_g]]))
 // DEFAULT-NEXT:                         write<i32>(%[[VALUE_s]], const<i32>(42));
 // DEFAULT-NEXT:                     if logical_or<bool>(eq<i32>(read<i32>(%[[VALUE_i_2]]), const<i32>(0)), eq<i32>(read<i32>(%[[VALUE_s]]), const<i32>(12)))
 // DEFAULT-NEXT:                         ;

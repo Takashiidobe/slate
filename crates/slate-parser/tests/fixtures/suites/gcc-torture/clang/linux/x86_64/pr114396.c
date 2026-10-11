@@ -257,7 +257,7 @@ int main() {
 // DEFAULT-NEXT:         return read<u16>(%[[VALUE_a_9]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_uexp:[0-9]+]] uexp: u16 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_ures:[0-9]+]] ures: u16 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_exp:[0-9]+]] exp: i16 [storage=automatic];

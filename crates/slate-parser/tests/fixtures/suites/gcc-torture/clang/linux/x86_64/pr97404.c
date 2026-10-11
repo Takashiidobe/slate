@@ -72,7 +72,7 @@ int main() {
 // DEFAULT-NEXT:         write<i64>(deref(read<ptr<i64>>(%[[VALUE_f]])), widen<i64, reason=assign>(read<i16>(%[[VALUE_e]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_m]]);
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(%[[VALUE_c]]), widen<i64, reason=usual_arith>(const<i32>(4)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);

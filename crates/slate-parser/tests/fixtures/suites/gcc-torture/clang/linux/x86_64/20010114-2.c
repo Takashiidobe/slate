@@ -34,6 +34,6 @@ struct { int x; bool y; } foo = { 0, false };
 // DEFAULT-NEXT:         field0 x: i32;
 // DEFAULT-NEXT:         field1 y: bool;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     global %[[VALUE_foo:[0-9]+]] foo: @type[[TYPE0]] [storage=static] = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = const<i32>(0), field1 = const<bool>(false)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_foo:[0-9]+]] foo: @type[[TYPE0]] [storage=static] = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = const<i32>(0), field1 = ne<i32, reason=assign>(const<i32>(0), const<i32>(0))) [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -54,7 +54,7 @@ int main() {
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             return add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE_d]]), call<f64, signature=fn(ptr<const f64>) -> f64>(%[[VALUE_func]], ptr_offset<ptr<const f64>, subtract=false, element=f64, overflow=ub>(read<ptr<const f64>>(%[[VALUE_array]]), const<i32>(1))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_values:[0-9]+]] values: array<f64, 4> [storage=automatic] [align=16] = aggregate<array<f64, 4>, zero_fill=false>(index0 = const<f64>(1e-101), index1 = const<f64>(1.0), index2 = neg<f64>(const<f64>(1.0)), index3 = const<f64>(0.0));
 // DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(call<f64, signature=fn(ptr<const f64>) -> f64>(%[[VALUE_func]], pointer_cast<ptr<const f64>, reason=arg>(array_decay<ptr<f64>, length=Some(4)>(%[[VALUE_values]]))), const<f64>(1e-101))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);

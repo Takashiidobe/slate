@@ -251,7 +251,7 @@ int main() {
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_DUPFFstruct]]>>(deref(read<ptr<ptr<@type[[TYPE_DUPFFstruct]]>>>(%[[VALUE_gcofac]])), read<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_ug]]));
 // DEFAULT-NEXT:         return read<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_u]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_f_4:[0-9]+]] f: ptr<@type[[TYPE_DUPFFstruct]]> [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_g_3:[0-9]+]] g: ptr<@type[[TYPE_DUPFFstruct]]> [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_cf:[0-9]+]] cf: ptr<@type[[TYPE_DUPFFstruct]]> [storage=automatic];

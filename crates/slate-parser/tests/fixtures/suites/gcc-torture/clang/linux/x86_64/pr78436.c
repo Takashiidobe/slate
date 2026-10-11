@@ -48,13 +48,13 @@ int main() {
 // DEFAULT-NEXT:         field1 b: i8 : 8;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 3], bit_offsets=[Some(0), Some(24)], bit_units=[(0, 4)], field_units=[Some(0), Some(0)]];
 // DEFAULT-NEXT:     global %[[VALUE_s:[0-9]+]] s: @type[[TYPE_S]] [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(unprototyped) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<i8>(bitfield1<unit=0, bytes=0..4, bits=24..32>(%[[VALUE_s]]), truncate<i8, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:         write<i64>(bitfield0<unit=0, bytes=0..4, bits=0..24>(%[[VALUE_s]]), neg<i64, overflow=ub>(const<i64>(1193165)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_foo]]);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn(unprototyped) -> void>(%[[VALUE_foo]]);
 // DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i8>(bitfield1<unit=0, bytes=0..4, bits=24..32>(%[[VALUE_s]]))), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);

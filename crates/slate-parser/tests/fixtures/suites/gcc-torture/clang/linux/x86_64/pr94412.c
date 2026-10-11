@@ -51,7 +51,7 @@ int main() {
 // DEFAULT-NEXT:         write<vector<u32, 2>>(deref(read<ptr<vector<u32, 2>>>(%[[VALUE_w_2]])), div<vector<u32, 2>, elementwise=true, by_zero=ub>(vector_splat<vector<u32, 2>, reason=usual_arith>(reinterpret<u32, reason=usual_arith, fits=unknown>(neg<i32, overflow=ub>(const<i32>(18)))), neg<vector<u32, 2>, elementwise=true, overflow=wrap>(read<vector<u32, 2>>(deref(read<ptr<vector<u32, 2>>>(%[[VALUE_v_2]]))))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: vector<u32, 2> [storage=automatic] = read<vector<u32, 2>>(compound_literal %[[VALUE0:[0-9]+]] [storage=automatic] = aggregate<vector<u32, 2>, zero_fill=false>(index0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(1)), index1 = reinterpret<u32, reason=assign, fits=always>(const<i32>(0))));
 // DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: vector<u32, 2> [storage=automatic] = read<vector<u32, 2>>(compound_literal %[[VALUE1:[0-9]+]] [storage=automatic] = aggregate<vector<u32, 2>, zero_fill=false>(index0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(3)), index1 = reinterpret<u32, reason=assign, fits=always>(const<i32>(2147483647))));
 // DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: vector<u32, 2> [storage=automatic];

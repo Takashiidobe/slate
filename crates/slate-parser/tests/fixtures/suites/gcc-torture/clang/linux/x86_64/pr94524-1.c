@@ -48,7 +48,7 @@ int main() {
 // DEFAULT-NEXT:         return read<vector<i8, 16>>(%[[VALUE_c]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: vector<i8, 16> [storage=automatic] = call<vector<i8, 16>, signature=fn(vector<i8, 16>) -> vector<i8, 16>, abi=sysv64(direct) -> direct>(%[[VALUE_foo]], read<vector<i8, 16>>(compound_literal %[[VALUE2:[0-9]+]] [storage=automatic] = aggregate<vector<i8, 16>, zero_fill=true>(index0 = truncate<i8, reason=assign, fits=always>(const<i32>(31)))));
 // DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i8>(lane(%[[VALUE_x]], const<i32>(0)))), const<i32>(12))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);

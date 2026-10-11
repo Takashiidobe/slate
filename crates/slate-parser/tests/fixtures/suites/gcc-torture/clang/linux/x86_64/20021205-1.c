@@ -40,11 +40,11 @@ int xyzzy()
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_x_2:[0-9]+]] x = @type[[TYPE_x]];
 // DEFAULT-NEXT:     fn %[[VALUE_baz:[0-9]+]] @baz(%[[VALUE0:[0-9]+]] <unnamed>: ptr<i8>) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> ptr<ptr<@type[[TYPE_x]]>> [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(unprototyped) -> ptr<ptr<@type[[TYPE_x]]>> [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return pointer_cast<ptr<ptr<@type[[TYPE_x]]>>, reason=explicit>(call<ptr<void>, signature=fn(ptr<i8>) -> ptr<void>>(%[[VALUE_baz]], null<ptr<i8>>));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_xyzzy:[0-9]+]] @xyzzy() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<i8>) -> ptr<void>>(%[[VALUE_baz]], call<ptr<i8>, signature=fn(i32) -> ptr<i8>>(read<ptr<fn(i32) -> ptr<i8>>>(field0(deref(read<ptr<@type[[TYPE_x]]>>(deref(call<ptr<ptr<@type[[TYPE_x]]>>, signature=fn() -> ptr<ptr<@type[[TYPE_x]]>>>(%[[VALUE_foo]])))))), const<i32>(0)));
+// DEFAULT-NEXT:     fn %[[VALUE_xyzzy:[0-9]+]] @xyzzy(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<i8>) -> ptr<void>>(%[[VALUE_baz]], call<ptr<i8>, signature=fn(i32) -> ptr<i8>>(read<ptr<fn(i32) -> ptr<i8>>>(field0(deref(read<ptr<@type[[TYPE_x]]>>(deref(call<ptr<ptr<@type[[TYPE_x]]>>, signature=fn(unprototyped) -> ptr<ptr<@type[[TYPE_x]]>>>(%[[VALUE_foo]])))))), const<i32>(0)));
 // DEFAULT-NEXT:         return const<i32>(3);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

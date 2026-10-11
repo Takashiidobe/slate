@@ -56,7 +56,7 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_B]]>) -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<i32>(field0(deref(pointer_cast<ptr<@type[[TYPE_A]]>, reason=explicit>(read<ptr<@type[[TYPE_B]]>>(%[[VALUE_p]])))), const<i32>(1));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: @type[[TYPE_A]] [storage=automatic];
 // DEFAULT-NEXT:         write<i32>(field0(%[[VALUE_a]]), const<i32>(0));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE_B]]>) -> void>(%[[VALUE_foo]], pointer_cast<ptr<@type[[TYPE_B]]>, reason=explicit>(addr_of<ptr<@type[[TYPE_A]]>>(%[[VALUE_a]])));

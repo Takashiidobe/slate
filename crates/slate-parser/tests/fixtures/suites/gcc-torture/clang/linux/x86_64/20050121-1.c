@@ -79,7 +79,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_ldouble_t:[0-9]+]] ldouble_t = f80;
 // DEFAULT-NEXT:     type @type[[TYPE_llong:[0-9]+]] llong = i64;
-// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort(unprototyped) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_foo_float:[0-9]+]] @foo_float(%[[VALUE_x:[0-9]+]] x: i32) -> complex<f32> [linkage=external] [memory=read] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_r:[0-9]+]] r: complex<f32> [storage=automatic];
 // DEFAULT-NEXT:         write<f32>(real(%[[VALUE_r]]), int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(add<i32, overflow=ub>(read<i32>(%[[VALUE_x]]), const<i32>(1))));

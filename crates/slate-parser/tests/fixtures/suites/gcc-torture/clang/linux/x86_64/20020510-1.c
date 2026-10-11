@@ -137,7 +137,7 @@ int main() {
 // DEFAULT-NEXT:             if ne<i32>(read<i32>(%[[VALUE_ok_4]]), const<i32>(0))
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(u8, i32) -> void>(%[[VALUE_testc]], reinterpret<u8, reason=arg, fits=unknown>(truncate<i8, reason=arg, fits=always>(const<i32>(0))), const<i32>(0));
 // DEFAULT-NEXT:         call<void, signature=fn(u8, i32) -> void>(%[[VALUE_testc]], reinterpret<u8, reason=arg, fits=unknown>(truncate<i8, reason=arg, fits=always>(const<i32>(1))), const<i32>(1));
 // DEFAULT-NEXT:         call<void, signature=fn(u8, i32) -> void>(%[[VALUE_testc]], reinterpret<u8, reason=arg, fits=unknown>(truncate<i8, reason=arg, fits=always>(const<i32>(127))), const<i32>(1));

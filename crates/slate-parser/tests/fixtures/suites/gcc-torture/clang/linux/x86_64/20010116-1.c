@@ -81,7 +81,7 @@ int main() {
 // DEFAULT-NEXT:                 call<void, signature=fn(i32) -> void>(%[[VALUE_ok]], read<i32>(%[[VALUE_i_2]]));
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_DataList:[0-9]+]] DataList: array<@type[[TYPE0]], 4> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE0]]>, ptr<@type[[TYPE0]]>) -> void>(%[[VALUE_find]], ptr_offset<ptr<@type[[TYPE0]]>, subtract=false, element=@type[[TYPE0]], overflow=ub>(array_decay<ptr<@type[[TYPE0]]>, length=Some(4)>(%[[VALUE_DataList]]), const<i32>(0)), ptr_offset<ptr<@type[[TYPE0]]>, subtract=false, element=@type[[TYPE0]], overflow=ub>(array_decay<ptr<@type[[TYPE0]]>, length=Some(4)>(%[[VALUE_DataList]]), const<i32>(4)));
 // DEFAULT-NEXT:     }

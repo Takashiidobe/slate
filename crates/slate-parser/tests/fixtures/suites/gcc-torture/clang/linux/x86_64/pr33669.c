@@ -76,7 +76,7 @@ int main() {
 // DEFAULT-NEXT:             write<u32>(field1(deref(read<ptr<@type[[TYPE_foo_t]]>>(%[[VALUE_pxp]]))), read<u32>(field0(deref(read<ptr<@type[[TYPE_foo_t]]>>(%[[VALUE_pxp]])))));
 // DEFAULT-NEXT:         return read<i64>(%[[VALUE_blkoffset]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: @type[[TYPE_foo_t]] [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_xx:[0-9]+]] xx: i64 [storage=automatic];
 // DEFAULT-NEXT:         write<u32>(field0(%[[VALUE_x]]), reinterpret<u32, reason=assign, fits=always>(const<i32>(8192)));

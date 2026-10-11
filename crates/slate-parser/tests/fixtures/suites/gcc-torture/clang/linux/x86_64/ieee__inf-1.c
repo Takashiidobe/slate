@@ -67,7 +67,7 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_huge_valf:[0-9]+]] @__builtin_huge_valf() -> f32 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_huge_val:[0-9]+]] @__builtin_huge_val() -> f64 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_huge_vall:[0-9]+]] @__builtin_huge_vall() -> f80 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_fi:[0-9]+]] fi: f32 [storage=automatic] = call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]]);
 // DEFAULT-NEXT:         let %[[VALUE_di:[0-9]+]] di: f64 [storage=automatic] = call<f64, signature=fn() -> f64>(%[[VALUE___builtin_inf]]);
 // DEFAULT-NEXT:         let %[[VALUE_li:[0-9]+]] li: f80 [storage=automatic] = call<f80, signature=fn() -> f80>(%[[VALUE___builtin_infl]]);

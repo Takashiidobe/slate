@@ -43,7 +43,7 @@ int main() {
 // DEFAULT-NEXT:         if gt<i32>(read<i32>(%[[VALUE_i]]), add<i32, overflow=ub>(const<i32>(4), mul<i32, overflow=ub>(const<i32>(3), const<i32>(16))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_buflen:[0-9]+]] buflen: u32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_i_2:[0-9]+]] i: u32 [storage=automatic];
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_buflen]], reinterpret<u32, reason=assign, fits=unknown>(add<i32, overflow=ub>(const<i32>(4), mul<i32, overflow=ub>(const<i32>(3), const<i32>(16)))));

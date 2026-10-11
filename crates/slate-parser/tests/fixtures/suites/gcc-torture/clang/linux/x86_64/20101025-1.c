@@ -67,7 +67,7 @@ int main() {
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_f2]], call<i32, signature=fn(ptr<i32>) -> i32>(%[[VALUE_f1]], addr_of<ptr<i32>>(%[[VALUE_g_7]])));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%[[VALUE_f3]]);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_g_3]]), const<i32>(1))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);

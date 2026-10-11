@@ -105,7 +105,7 @@ int main() {
 // DEFAULT-NEXT:         if read<bool>(%[[VALUE10]])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(f64, f64) -> void>(%[[VALUE_expectd]], call<f64, signature=fn(f64) -> f64>(%[[VALUE_sin]], const<f64>(0.0)), const<f64>(0.0));
 // DEFAULT-NEXT:         call<void, signature=fn(f64, f64) -> void>(%[[VALUE_expectd]], call<f64, signature=fn(f64) -> f64>(%[[VALUE_tan]], const<f64>(0.0)), const<f64>(0.0));
 // DEFAULT-NEXT:         call<void, signature=fn(f64, f64) -> void>(%[[VALUE_expectd]], call<f64, signature=fn(f64) -> f64>(%[[VALUE_atan]], const<f64>(0.0)), const<f64>(0.0));

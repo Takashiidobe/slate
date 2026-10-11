@@ -57,7 +57,7 @@ int main() {
 // DEFAULT-NEXT:     global %[[VALUE_f:[0-9]+]] f: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_g:[0-9]+]] g: i8 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: volatile i32 [storage=static] = const<i32>(1) [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if eq<i32>(read<i32, volatile>(%[[VALUE_c]]), const<i32>(0))
 // DEFAULT-NEXT:             return neg<i32, overflow=ub>(const<i32>(1));
 // DEFAULT-NEXT:         return const<i32>(1);
@@ -90,8 +90,8 @@ int main() {
 // DEFAULT-NEXT:         let %[[VALUE_n:[0-9]+]] n: i8 [storage=automatic] = truncate<i8, reason=assign, fits=always>(const<i32>(0));
 // DEFAULT-NEXT:         call<void, signature=fn(i32, i32, ptr<i8>, ptr<i8>) -> void>(%[[VALUE_bar]], truncate<i32, reason=arg, fits=unknown>(read<i64>(%[[VALUE_h_2]])), const<i32>(4), addr_of<ptr<i8>>(%[[VALUE_n]]), addr_of<ptr<i8>>(%[[VALUE_g]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         write<i32>(%[[VALUE_f]], call<i32, signature=fn() -> i32>(%[[VALUE_foo]]));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_f]], call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_foo]]));
 // DEFAULT-NEXT:         call<void, signature=fn(i64) -> void>(%[[VALUE_baz]], widen<i64, reason=arg>(sub<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u8, reason=explicit, fits=unknown>(truncate<i8, reason=explicit, fits=unknown>(read<i32>(%[[VALUE_f]]))))), const<i32>(4))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

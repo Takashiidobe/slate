@@ -157,7 +157,7 @@ int main() {
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_failed]], read<i32>(%[[VALUE2]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if logical_or<bool>(ne<u64>(const<u64>(4), const<u64>(4)), ne<u64>(const<u64>(8), const<u64>(8)))
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:         call<void, signature=fn(u64, u32) -> void>(%[[VALUE_c]], const<u64>(3931642474694443008), const<u32>(0));

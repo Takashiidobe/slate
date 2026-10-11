@@ -67,7 +67,7 @@ int main() {
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(%[[VALUE_g]]), const<i32>(1)), ne<i32>(read<i32>(%[[VALUE_h]]), const<i32>(2)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_t:[0-9]+]] t: @type[[TYPE_two]] [storage=automatic] = aggregate<@type[[TYPE_two]], zero_fill=false>(field0 = widen<i64, reason=assign>(const<i32>(0)), field1 = widen<i64, reason=assign>(const<i32>(0)));
 // DEFAULT-NEXT:         call<void, signature=fn(i32, i32, i32, i32, i32, @type[[TYPE_two]], i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c, scalar, scalar) -> void>(%[[VALUE_foo]], const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type[[TYPE_two]], reason=arg>(read<@type[[TYPE_two]]>(%[[VALUE_t]])), const<i32>(1), const<i32>(2));
 // DEFAULT-NEXT:         return const<i32>(0);

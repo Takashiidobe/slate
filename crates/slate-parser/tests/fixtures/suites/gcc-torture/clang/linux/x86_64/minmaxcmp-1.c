@@ -157,7 +157,7 @@ funcs(funcs1)
 // DEFAULT-NEXT:         return eq<i32>(read<i32, volatile>(%[[VALUE_x_24]]), read<i32>(%[[VALUE_a_24]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 let %[[VALUE_x_25:[0-9]+]] x: i32 [storage=automatic] = neg<i32, overflow=ub>(const<i32>(10));

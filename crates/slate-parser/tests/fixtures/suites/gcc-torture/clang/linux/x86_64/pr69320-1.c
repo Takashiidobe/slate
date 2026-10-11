@@ -52,7 +52,7 @@ int         main() {
 // DEFAULT-NEXT:     global %[[VALUE_e:[0-9]+]] e: ptr<i32> [storage=static] = addr_of<ptr<i32>>(%[[VALUE_d]]) [linkage=internal];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE___status:[0-9]+]] __status: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_g:[0-9]+]] g: i32 [storage=automatic] = truncate<i32, reason=assign, fits=unknown>(neg<i64, overflow=ub>(const<i64>(1)));
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%[[VALUE_e]])), read<i32>(%[[VALUE_g]]));
 // DEFAULT-NEXT:         write<i8>(%[[VALUE_c]], truncate<i8, reason=assign, fits=always>(const<i32>(4)));

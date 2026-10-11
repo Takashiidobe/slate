@@ -57,7 +57,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_self:[0-9]+]] @self(%[[VALUE_p:[0-9]+]] p: ptr<void>) -> ptr<void> [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return read<ptr<void>>(%[[VALUE_p]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_s:[0-9]+]] s: @type[[TYPE0]] [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_sp:[0-9]+]] sp: ptr<@type[[TYPE0]]> [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_ip:[0-9]+]] ip: ptr<i32> [storage=automatic] = addr_of<ptr<i32>>(field0(%[[VALUE_s]]));
@@ -67,7 +67,7 @@ int main(void) {
 // DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_sp]])))), const<i32>(1));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_f]]), const<i32>(1))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_f]]), const<i32>(1))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));

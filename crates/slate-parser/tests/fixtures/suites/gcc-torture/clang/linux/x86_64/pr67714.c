@@ -49,7 +49,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: u32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_fn1:[0-9]+]] @fn1() -> i8 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_fn1:[0-9]+]] @fn1(unprototyped) -> i8 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_d:[0-9]+]] d: i8 [storage=automatic];
 // DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
@@ -79,7 +79,7 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 write<u32>(%[[VALUE_b]], reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:         let %[[VALUE_e:[0-9]+]] e: i8 [storage=automatic] = call<i8, signature=fn() -> i8>(%[[VALUE_fn1]]);
+// DEFAULT-NEXT:         let %[[VALUE_e:[0-9]+]] e: i8 [storage=automatic] = call<i8, signature=fn(unprototyped) -> i8>(%[[VALUE_fn1]]);
 // DEFAULT-NEXT:         let %[[VALUE_f:[0-9]+]] f: i8 [storage=automatic] = reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(xor<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(widen<i32, reason=promotion>(read<i8>(%[[VALUE_e]]))), read<u32>(%[[VALUE_b]]))));
 // DEFAULT-NEXT:         let %[[VALUE_g:[0-9]+]] g: volatile i32 [storage=automatic] = widen<i32, reason=explicit>(read<i8>(%[[VALUE_f]]));
 // DEFAULT-NEXT:         if ne<i32>(read<i32, volatile>(%[[VALUE_g]]), neg<i32, overflow=ub>(const<i32>(15)))

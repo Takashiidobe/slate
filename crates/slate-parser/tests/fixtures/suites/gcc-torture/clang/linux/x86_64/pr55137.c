@@ -51,7 +51,7 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_baz:[0-9]+]] @baz(%[[VALUE_x_3:[0-9]+]] x: u32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_x_3]]), const<u32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u32) -> i32>(%[[VALUE_foo]], reinterpret<u32, reason=arg, fits=always>(const<i32>(2147483647))), from_bool<i32, reason=promotion>(lt<i32>(call<i32, signature=fn(u32) -> i32>(%[[VALUE_bar]], reinterpret<u32, reason=arg, fits=always>(const<i32>(2147483647))), const<i32>(2147483647))))
 // DEFAULT-NEXT:             write<bool>(%[[VALUE0]], const<bool>(true));

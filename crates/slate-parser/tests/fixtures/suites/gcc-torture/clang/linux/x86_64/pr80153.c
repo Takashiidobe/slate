@@ -87,7 +87,7 @@ int main(void) {
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_l]], reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE___builtin_strlen:[0-9]+]], read<ptr<const i8>>(%[[VALUE_buf]])))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_strlen]] @__builtin_strlen(%[[VALUE0:[0-9]+]] <unnamed>: ptr<const i8>) -> u64 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE__fgetc:[0-9]+]] @_fgetc() -> i8 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE__fgetc:[0-9]+]] @_fgetc(unprototyped) -> i8 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_val_2:[0-9]+]] val: i8 [storage=automatic] = read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%[[VALUE_buf]]), read<i32>(%[[VALUE_i]]))));
 // DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
 // DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE1]]), const<i32>(1));
@@ -113,7 +113,7 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     write<i32>(%[[VALUE_c_2]], widen<i32, reason=assign>(call<i8, signature=fn() -> i8>(%[[VALUE__fgetc]])));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_c_2]], widen<i32, reason=assign>(call<i8, signature=fn(unprototyped) -> i8>(%[[VALUE__fgetc]])));
 // DEFAULT-NEXT:                     call<void, signature=fn(i32, i32, i32) -> void>(%[[VALUE_check]], read<i32>(%[[VALUE_c_2]]), widen<i32, reason=arg>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%[[VALUE_string]]), read<i32>(%[[VALUE_i_2]]))))), from_bool<i32, reason=arg>(eq<i32>(read<i32>(%[[VALUE_c_2]]), widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%[[VALUE_string]]), read<i32>(%[[VALUE_i_2]]))))))));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         return const<i32>(0);

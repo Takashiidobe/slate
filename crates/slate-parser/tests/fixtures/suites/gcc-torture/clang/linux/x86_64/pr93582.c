@@ -53,7 +53,7 @@ int main() {
 // DEFAULT-NEXT:         write<i16>(%[[VALUE_a]], read<i16>(%[[VALUE1]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_c]], const<i32>(27));
 // DEFAULT-NEXT:         write<i16>(%[[VALUE_a]], truncate<i16, reason=assign, fits=always>(const<i32>(14)));
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_foo]]);

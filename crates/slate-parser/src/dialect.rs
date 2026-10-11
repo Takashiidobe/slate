@@ -39,7 +39,7 @@ impl Dialect {
     pub fn for_flavor(flavor: CompilerFlavor, target: TargetInfo) -> Self {
         Self::new(
             flavor,
-            LanguageStandard::default(),
+            LanguageStandard::default_for(flavor),
             target,
             CompilerOptions::for_flavor(flavor),
         )

@@ -57,7 +57,7 @@ int main() {
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_val]], read<u32>(%[[VALUE2]]));
 // DEFAULT-NEXT:         return add<u32, overflow=wrap>(read<u32>(%[[VALUE_zero]]), shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE_val]]), const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32, u32) -> u32>(%[[VALUE_test]], reinterpret<u32, reason=arg, fits=always>(const<i32>(1)), reinterpret<u32, reason=arg, fits=always>(const<i32>(0))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32, u32) -> u32>(%[[VALUE_test]], reinterpret<u32, reason=arg, fits=always>(const<i32>(1)), reinterpret<u32, reason=arg, fits=always>(const<i32>(1))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)))

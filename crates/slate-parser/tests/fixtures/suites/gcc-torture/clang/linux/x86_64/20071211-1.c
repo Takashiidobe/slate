@@ -52,8 +52,8 @@ int main() {
 // DEFAULT-NEXT:         field1 f2: u32 : 24;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 5], bit_offsets=[Some(0), Some(40)], bit_units=[(0, 8)], field_units=[Some(0), Some(0)]];
 // DEFAULT-NEXT:     global %[[VALUE_sv:[0-9]+]] sv: @type[[TYPE_s]] [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort(unprototyped) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_f2:[0-9]+]] f2: i32 [storage=automatic];
 // DEFAULT-NEXT:         write<u32>(bitfield1<unit=0, bytes=0..8, bits=40..64>(%[[VALUE_sv]]), reinterpret<u32, reason=assign, fits=unknown>(sub<i32, overflow=ub>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(1), const<i32>(24)), const<i32>(1))));
 // DEFAULT-NEXT:         asm volatile "" [dialect=att] [options=nostack] {

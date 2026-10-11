@@ -58,7 +58,7 @@ int main() {
 // DEFAULT-NEXT:         label %[[VALUE_zero]] zero:
 // DEFAULT-NEXT:             return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%[[VALUE_str]])), call<i32, signature=fn(i32) -> i32>(%[[VALUE_classify]], neg<i32, overflow=ub>(const<i32>(5))), call<i32, signature=fn(i32) -> i32>(%[[VALUE_classify]], const<i32>(0)), call<i32, signature=fn(i32) -> i32>(%[[VALUE_classify]], const<i32>(42)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

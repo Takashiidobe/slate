@@ -70,7 +70,7 @@ int main() {
 // DEFAULT-NEXT:         write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(5)>(field0(%[[VALUE_u]])), const<i32>(3))), truncate<i8, reason=assign, fits=always>(const<i32>(4)));
 // DEFAULT-NEXT:         return read<i32>(field1(%[[VALUE_u]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: i32 [storage=automatic] = call<i32, signature=fn() -> i32>(%[[VALUE_ref]]);
 // DEFAULT-NEXT:         if logical_and<bool>(ne<i32>(read<i32>(%[[VALUE_b]]), const<i32>(16909060)), ne<i32>(read<i32>(%[[VALUE_b]]), const<i32>(67305985)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);

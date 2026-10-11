@@ -205,7 +205,7 @@ int main() {
 // DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_testf]]);
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_test]]);
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_testl]]);

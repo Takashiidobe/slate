@@ -46,13 +46,13 @@ int main(void) {
 // DEFAULT-NEXT:     global %[[VALUE_val:[0-9]+]] val: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_ptr:[0-9]+]] ptr: ptr<i32> [storage=static] = addr_of<ptr<i32>>(%[[VALUE_val]]) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_ptr2:[0-9]+]] ptr2: ptr<f32> [storage=static] = pointer_cast<ptr<f32>, reason=explicit>(addr_of<ptr<i32>>(%[[VALUE_val]])) [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_typepun:[0-9]+]] @typepun() -> void [linkage=internal] [inline=always] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_typepun:[0-9]+]] @typepun(unprototyped) -> void [linkage=internal] [inline=always] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<f32>(deref(read<ptr<f32>>(%[[VALUE_ptr2]])), int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(0)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%[[VALUE_ptr]])), const<i32>(1));
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_typepun]]);
+// DEFAULT-NEXT:         call<void, signature=fn(unprototyped) -> void>(%[[VALUE_typepun]]);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(deref(read<ptr<i32>>(%[[VALUE_ptr]]))), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:     }

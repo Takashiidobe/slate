@@ -151,12 +151,12 @@ int main(void) {
 // DEFAULT-NEXT:     global %[[VALUE_seed:[0-9]+]] seed: u64 [storage=static] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(47114711))) [linkage=internal];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_simple_rand:[0-9]+]] @simple_rand() -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_simple_rand:[0-9]+]] @simple_rand(unprototyped) -> i64 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_this:[0-9]+]] this: u64 [storage=automatic] = add<u64, overflow=wrap>(mul<u64, overflow=wrap>(read<u64>(%[[VALUE_seed]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1103515245)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(12345))));
 // DEFAULT-NEXT:         write<u64>(%[[VALUE_seed]], read<u64>(%[[VALUE_this]]));
 // DEFAULT-NEXT:         return reinterpret<i64, reason=return, fits=unknown>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_this]]), const<i32>(8)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_random_bitstring:[0-9]+]] @random_bitstring() -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_random_bitstring:[0-9]+]] @random_bitstring(unprototyped) -> u64 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: u64 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_n_bits:[0-9]+]] n_bits: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_ran:[0-9]+]] ran: i64 [storage=automatic];
@@ -168,7 +168,7 @@ int main(void) {
 // DEFAULT-NEXT:             increment: omitted
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     write<i64>(%[[VALUE_ran]], call<i64, signature=fn() -> i64>(%[[VALUE_simple_rand]]));
+// DEFAULT-NEXT:                     write<i64>(%[[VALUE_ran]], call<i64, signature=fn(unprototyped) -> i64>(%[[VALUE_simple_rand]]));
 // DEFAULT-NEXT:                     write<i32>(%[[VALUE_n_bits]], truncate<i32, reason=assign, fits=unknown>(rem<i64, by_zero=ub, min_by_neg_one=ub>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(read<i64>(%[[VALUE_ran]]), const<i32>(1)), widen<i64, reason=usual_arith>(const<i32>(16)))));
 // DEFAULT-NEXT:                     let %[[VALUE2:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_tot_bits]]);
 // DEFAULT-NEXT:                     let %[[VALUE3:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE2]]), read<i32>(%[[VALUE_n_bits]]));
@@ -205,8 +205,8 @@ int main(void) {
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     let %[[VALUE_x_2:[0-9]+]] x: u64 [storage=automatic];
 // DEFAULT-NEXT:                     let %[[VALUE_y:[0-9]+]] y: u64 [storage=automatic];
-// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], call<u64, signature=fn() -> u64>(%[[VALUE_random_bitstring]]));
-// DEFAULT-NEXT:                     write<u64>(%[[VALUE_y]], call<u64, signature=fn() -> u64>(%[[VALUE_random_bitstring]]));
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], call<u64, signature=fn(unprototyped) -> u64>(%[[VALUE_random_bitstring]]));
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_y]], call<u64, signature=fn(unprototyped) -> u64>(%[[VALUE_random_bitstring]]));
 // DEFAULT-NEXT:                     if eq<u64>(const<u64>(4), const<u64>(8))
 // DEFAULT-NEXT:                         goto %[[VALUE_save_time:[0-9]+]];
 // DEFAULT-NEXT:                     {

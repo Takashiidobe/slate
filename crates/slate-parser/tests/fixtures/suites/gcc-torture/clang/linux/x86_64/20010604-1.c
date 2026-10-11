@@ -45,12 +45,12 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_a:[0-9]+]] a: i32, %[[VALUE_b:[0-9]+]] b: i32, %[[VALUE_c:[0-9]+]] c: i32, %[[VALUE_d:[0-9]+]] d: bool, %[[VALUE_e:[0-9]+]] e: bool, %[[VALUE_f_2:[0-9]+]] f: bool, %[[VALUE_g:[0-9]+]] g: i8) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(widen<i32, reason=promotion>(read<i8>(%[[VALUE_g]])), const<i32>(1)), ne<i32>(from_bool<i32, reason=promotion>(read<bool>(%[[VALUE_d]])), from_bool<i32, reason=promotion>(const<bool>(true)))), ne<i32>(from_bool<i32, reason=promotion>(read<bool>(%[[VALUE_e]])), from_bool<i32, reason=promotion>(const<bool>(true)))), ne<i32>(from_bool<i32, reason=promotion>(read<bool>(%[[VALUE_f_2]])), from_bool<i32, reason=promotion>(const<bool>(true))))
+// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(widen<i32, reason=promotion>(read<i8>(%[[VALUE_g]])), const<i32>(1)), ne<i32>(from_bool<i32, reason=promotion>(read<bool>(%[[VALUE_d]])), const<i32>(1))), ne<i32>(from_bool<i32, reason=promotion>(read<bool>(%[[VALUE_e]])), const<i32>(1))), ne<i32>(from_bool<i32, reason=promotion>(read<bool>(%[[VALUE_f_2]])), const<i32>(1)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(%[[VALUE_a]]), read<i32>(%[[VALUE_b]])), read<i32>(%[[VALUE_c]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32, i32, bool, bool, bool, i8) -> i32>(%[[VALUE_f]], const<i32>(1), const<i32>(2), neg<i32, overflow=ub>(const<i32>(3)), const<bool>(true), const<bool>(true), const<bool>(true), truncate<i8, reason=arg, fits=always>(const<i32>(1))), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32, i32, bool, bool, bool, i8) -> i32>(%[[VALUE_f]], const<i32>(1), const<i32>(2), neg<i32, overflow=ub>(const<i32>(3)), ne<i32, reason=arg>(const<i32>(1), const<i32>(0)), ne<i32, reason=arg>(const<i32>(1), const<i32>(0)), ne<i32, reason=arg>(const<i32>(1), const<i32>(0)), truncate<i8, reason=arg, fits=always>(const<i32>(1))), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }

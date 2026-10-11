@@ -63,7 +63,7 @@ L:
 // DEFAULT-NEXT:         return truncate<i8, reason=return, fits=unknown>(conditional<i32>(lt<i32>(widen<i32, reason=promotion>(read<i8>(%[[VALUE_i]])), const<i32>(0)), widen<i32, reason=promotion>(read<i8>(%[[VALUE_i]])), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(widen<i32, reason=promotion>(read<i8>(%[[VALUE_i]])), read<i32>(%[[VALUE_j]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_k:[0-9]+]] k: i8 [storage=automatic] = truncate<i8, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(83)));
 // DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32>(%[[VALUE_d]]), const<i32>(0)))
 // DEFAULT-NEXT:             goto %[[VALUE_L:[0-9]+]];

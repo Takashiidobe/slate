@@ -36,7 +36,7 @@ int main() {
 // DEFAULT-NEXT:     global %[[VALUE_handler:[0-9]+]] handler: ptr<fn(i8, ptr<i32>) -> i32> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_factory:[0-9]+]] @factory() -> ptr<i32> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_callback:[0-9]+]] @callback(%[[VALUE_value:[0-9]+]] value: i32, ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

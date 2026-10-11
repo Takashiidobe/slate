@@ -120,7 +120,7 @@ int main() {
 // DEFAULT-NEXT:             write<u64>(%[[VALUE_addr_2]], reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(1)))));
 // DEFAULT-NEXT:         return read<u64>(%[[VALUE_addr_2]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_result:[0-9]+]] result: u64 [storage=automatic] = call<u64, signature=fn(ptr<i8>) -> u64>(%[[VALUE_root_nfs_parse_addr]], array_decay<ptr<i8>, length=Some(19)>(%[[VALUE_addr]]));
 // DEFAULT-NEXT:         if ne<u64>(read<u64>(%[[VALUE_result]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(168496141))))
 // DEFAULT-NEXT:             {

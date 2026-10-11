@@ -77,7 +77,7 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_f4:[0-9]+]] @f4(%[[VALUE_x_4:[0-9]+]] x: i32) -> i64 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return shl<i64, overflow=ub, amount_out_of_range=ub, negative_left=ub>(widen<i64, reason=explicit>(read<i32>(%[[VALUE_x_4]])), const<i32>(4));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i32) -> u64>(%[[VALUE_f1]], reinterpret<i32, reason=arg, fits=unknown>(const<u32>(4026531840))), const<u64>(18446744069414584320))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(u32) -> i64>(%[[VALUE_f2]], const<u32>(4026531840)), const<i64>(64424509440))

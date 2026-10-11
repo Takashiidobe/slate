@@ -55,7 +55,7 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_memset:[0-9]+]] @__builtin_memset(%[[VALUE3:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE4:[0-9]+]] <unnamed>: i32, %[[VALUE5:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE___builtin_memset]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(64)>(%[[VALUE_a]])), const<i32>(97), const<u64>(64));
 // DEFAULT-NEXT:         let %[[VALUE6:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:         if ne<i32>(xor<i32>(from_bool<i32, reason=promotion>(lt<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_foo]]), const<i32>(0))), from_bool<i32, reason=promotion>(gt<i32>(const<i32>(97), const<i32>(98)))), const<i32>(0))

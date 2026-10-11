@@ -55,7 +55,7 @@ int main() {
 // DEFAULT-NEXT:         write<u16>(deref(read<ptr<u16>>(%[[VALUE_ret]])), read<u16>(%[[VALUE_uc]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: u16 [storage=automatic];
 // DEFAULT-NEXT:         call<void, signature=fn(vector<u16, 16>, ptr<u16>) -> void, abi=sysv64(byval<align=32>, scalar) -> void>(%[[VALUE_foo]], read<vector<u16, 16>>(compound_literal %[[VALUE1:[0-9]+]] [storage=automatic] = aggregate<vector<u16, 16>, zero_fill=true>(index0 = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(0))), index1 = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(15))))), addr_of<ptr<u16>>(%[[VALUE_x]]));
 // DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_x]]))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=unknown>(not<i32>(const<i32>(0)))))))

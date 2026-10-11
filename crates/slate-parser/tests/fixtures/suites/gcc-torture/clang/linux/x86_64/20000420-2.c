@@ -40,11 +40,11 @@ foo ()
 // DEFAULT-NEXT:         field1 b: i32;
 // DEFAULT-NEXT:         field2 c: i32;
 // DEFAULT-NEXT:     } [size=12, align=4, offsets=[0, 4, 8]];
-// DEFAULT-NEXT:     fn %[[VALUE_a:[0-9]+]] @a() -> @type[[TYPE_x]] [linkage=external] [abi=sysv64() -> native_c];
+// DEFAULT-NEXT:     fn %[[VALUE_a:[0-9]+]] @a(unprototyped) -> @type[[TYPE_x]] [linkage=external] [abi=sysv64() -> native_c];
 // DEFAULT-NEXT:     fn %[[VALUE_b:[0-9]+]] @b(%[[VALUE0:[0-9]+]] <unnamed>: @type[[TYPE_x]]) -> void [linkage=external] [abi=sysv64(native_c) -> void];
-// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<@type[[TYPE_x]], signature=fn() -> @type[[TYPE_x]], abi=sysv64() -> native_c>(%[[VALUE_a]]);
-// DEFAULT-NEXT:         call<void, signature=fn(@type[[TYPE_x]]) -> void, abi=sysv64(native_c) -> void>(%[[VALUE_b]], copy<@type[[TYPE_x]], reason=arg>(call<@type[[TYPE_x]], signature=fn() -> @type[[TYPE_x]], abi=sysv64() -> native_c>(%[[VALUE_a]])));
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<@type[[TYPE_x]], signature=fn(unprototyped) -> @type[[TYPE_x]], abi=sysv64() -> native_c>(%[[VALUE_a]]);
+// DEFAULT-NEXT:         call<void, signature=fn(@type[[TYPE_x]]) -> void, abi=sysv64(native_c) -> void>(%[[VALUE_b]], copy<@type[[TYPE_x]], reason=arg>(call<@type[[TYPE_x]], signature=fn(unprototyped) -> @type[[TYPE_x]], abi=sysv64() -> native_c>(%[[VALUE_a]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

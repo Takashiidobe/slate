@@ -51,14 +51,14 @@ int main() {
 // DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_e:[0-9]+]] e: i16 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_c]], reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(rem<u64, by_zero=ub>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_a]]))), mul<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))))))));
 // DEFAULT-NEXT:         if ne<i32>(and<i32>(read<i32>(%[[VALUE_b]]), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(1), read<i32>(%[[VALUE_c]]))), const<i32>(0))
 // DEFAULT-NEXT:             return neg<i32, overflow=ub>(const<i32>(1));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:             condition: ne<i32>(widen<i32, reason=promotion>(read<i16>(%[[VALUE_e]])), const<i32>(1))
@@ -70,7 +70,7 @@ int main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     let %[[VALUE_g:[0-9]+]] g: i32 [storage=automatic] = call<i32, signature=fn() -> i32>(%[[VALUE_foo]]);
+// DEFAULT-NEXT:                     let %[[VALUE_g:[0-9]+]] g: i32 [storage=automatic] = call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_foo]]);
 // DEFAULT-NEXT:                     if ne<i32>(add<i32, overflow=ub>(sub<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(%[[VALUE_g]]), read<i32>(%[[VALUE_d]])), const<i32>(9)), read<i32>(%[[VALUE_d]])), const<i32>(0))
 // DEFAULT-NEXT:                         continue %[[VALUE0]];
 // DEFAULT-NEXT:                     for %[[VALUE3:[0-9]+]]

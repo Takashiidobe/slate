@@ -168,7 +168,7 @@ int main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_malloc:[0-9]+]] @__builtin_malloc(%[[VALUE7:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_VEC_deferred_access_gc]]>>(%[[VALUE_deferred_access_stack]], pointer_cast<ptr<@type[[TYPE_VEC_deferred_access_gc]]>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_malloc]], add<u64, overflow=wrap>(const<u64>(24), mul<u64, overflow=wrap>(const<u64>(16), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))))))));
 // DEFAULT-NEXT:         write<u32>(field0(field0(deref(read<ptr<@type[[TYPE_VEC_deferred_access_gc]]>>(%[[VALUE_deferred_access_stack]])))), reinterpret<u32, reason=assign, fits=always>(const<i32>(2)));
 // DEFAULT-NEXT:         write<i32>(field1(deref(ptr_offset<ptr<@type[[TYPE_deferred_access]]>, subtract=false, element=@type[[TYPE_deferred_access]], overflow=ub>(array_decay<ptr<@type[[TYPE_deferred_access]]>, length=Some(1)>(field1(field0(deref(read<ptr<@type[[TYPE_VEC_deferred_access_gc]]>>(%[[VALUE_deferred_access_stack]]))))), const<i32>(0)))), const<i32>(1));

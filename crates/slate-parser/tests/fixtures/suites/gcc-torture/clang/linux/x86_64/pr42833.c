@@ -338,7 +338,7 @@ int main() {
 // DEFAULT-NEXT:         return read<u32>(%[[VALUE_res]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_r:[0-9]+]] r: u32 [storage=automatic] = call<u32, signature=fn(u32, u32) -> u32>(%[[VALUE_helper_neon_rshl_s8]], reinterpret<u32, reason=arg, fits=always>(const<i32>(84215045)), reinterpret<u32, reason=arg, fits=always>(const<i32>(16843009)));
 // DEFAULT-NEXT:         if ne<u32>(read<u32>(%[[VALUE_r]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(168430090)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);

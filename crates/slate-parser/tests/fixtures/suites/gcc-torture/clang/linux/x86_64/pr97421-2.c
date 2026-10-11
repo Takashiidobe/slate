@@ -49,7 +49,7 @@ int        main() {
 // DEFAULT-NEXT:     global %[[VALUE_e:[0-9]+]] e: ptr<ptr<i32>> [storage=static] = addr_of<ptr<ptr<i32>>>(%[[VALUE_d]]) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_f:[0-9]+]] f: ptr<ptr<ptr<i32>>> [storage=static] = addr_of<ptr<ptr<ptr<i32>>>>(%[[VALUE_e]]) [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_h:[0-9]+]] h: i32 [storage=automatic];
 // DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:

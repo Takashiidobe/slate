@@ -329,7 +329,7 @@ are run under matching conditions:
 - clang runs with `-nostdinc` over slate's own compiler headers and sysroot,
   so both preprocess the same headers.
 - Without a `-std` in the compile command, both get `-std=gnu17`, which is
-  clang's default. Slate defaults to gnu23 (slate-parser-6x05.6).
+  clang's default and slate's clang-flavor default.
 - Pragmas that clang consumes (`once`, `push_macro`, `pop_macro`, `region`,
   `GCC system_header`/`poison`, `clang deprecated`/`final`/`diagnostic`) are
   skipped on both sides.

@@ -29,10 +29,10 @@ int proto_definition(void) { return 0; }
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_unproto:[0-9]+]] @unproto() -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_unproto:[0-9]+]] @unproto(unprototyped) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_proto:[0-9]+]] @proto() -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_variadic:[0-9]+]] @variadic(%[[VALUE_n:[0-9]+]] n: i32, ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_unproto_definition:[0-9]+]] @unproto_definition() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_unproto_definition:[0-9]+]] @unproto_definition(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_proto_definition:[0-9]+]] @proto_definition() -> i32 [linkage=external] [fallthrough=ub_if_used] {

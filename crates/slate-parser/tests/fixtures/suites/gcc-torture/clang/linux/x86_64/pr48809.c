@@ -263,7 +263,7 @@ int main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_y]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i8) -> i32>(%[[VALUE_foo]], truncate<i8, reason=arg, fits=always>(const<i32>(98))), const<i32>(18))
 // DEFAULT-NEXT:             write<bool>(%[[VALUE1]], const<bool>(true));

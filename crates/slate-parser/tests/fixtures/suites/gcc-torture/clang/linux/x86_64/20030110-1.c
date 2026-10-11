@@ -65,7 +65,7 @@ void foo()
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     extern %[[VALUE_bpp:[0-9]+]] bpp: i8 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_inb:[0-9]+]] @inb(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if eq<i32>(widen<i32, reason=promotion>(read<i8>(%[[VALUE_bpp]])), const<i32>(32))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if lt<i32>(const<i32>(2), const<i32>(8))

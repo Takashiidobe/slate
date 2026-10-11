@@ -54,7 +54,7 @@ die:
 // DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: i16 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_e:[0-9]+]] e: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(2));
 // DEFAULT-NEXT:         let %[[VALUE_timeout:[0-9]+]] timeout: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(0));
 // DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]

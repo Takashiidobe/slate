@@ -47,7 +47,7 @@ int main() {
 // DEFAULT-NEXT:         let %[[VALUE_val:[0-9]+]] val: f64 [storage=automatic] = div<f64, rounding=nearest_even, exceptions=ignore, contract=on>(sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE_ri]]), read<f64>(%[[VALUE_le]])), mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE_ri]]), add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE_le]]), const<f64>(1.0))));
 // DEFAULT-NEXT:         return read<f64>(%[[VALUE_val]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_retval:[0-9]+]] retval: f64 [storage=automatic];
 // DEFAULT-NEXT:         write<f64>(%[[VALUE_retval]], call<f64, signature=fn(f64, f64) -> f64>(%[[VALUE_test]], const<f64>(1.0), const<f64>(2.0)));
 // DEFAULT-NEXT:         if logical_or<bool>(lt<f64, exceptions=ignore>(read<f64>(%[[VALUE_retval]]), const<f64>(0.24)), gt<f64, exceptions=ignore>(read<f64>(%[[VALUE_retval]]), const<f64>(0.26)))

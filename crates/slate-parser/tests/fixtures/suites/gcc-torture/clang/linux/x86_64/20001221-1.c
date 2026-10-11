@@ -104,7 +104,7 @@ foo ()
 // DEFAULT-NEXT:         field1 __usi: u16;
 // DEFAULT-NEXT:         field2 __uc: u8;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0, 0]];
-// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(unprototyped) -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_maplength:[0-9]+]] maplength: i64 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_type:[0-9]+]] type: i32 [storage=automatic];
 // DEFAULT-NEXT:         {

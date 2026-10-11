@@ -38,7 +38,7 @@ void test ()
 // DEFAULT-NEXT:     type @type[[TYPE_value:[0-9]+]] value = u64;
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_v:[0-9]+]] v: ptr<u64>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_test:[0-9]+]] @test() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_test:[0-9]+]] @test(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_v_2:[0-9]+]] v: u64 [storage=automatic];
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<u64>) -> void>(%[[VALUE_foo]], addr_of<ptr<u64>>(%[[VALUE_v_2]]));
 // DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_v_2]]);

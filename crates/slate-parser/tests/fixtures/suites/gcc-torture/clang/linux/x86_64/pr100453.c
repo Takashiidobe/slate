@@ -63,7 +63,7 @@ int main() {
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_e]], read<i32>(bitfield0<unit=0, bytes=0..1, bits=0..4>(%[[VALUE_h]])));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_c]], read<i32>(bitfield0<unit=0, bytes=0..1, bits=0..4>(%[[VALUE_h]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(@type[[TYPE_a]]) -> void, abi=sysv64(native_c) -> void>(%[[VALUE_g]], copy<@type[[TYPE_a]], reason=arg>(read<@type[[TYPE_a]]>(%[[VALUE_f]])));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

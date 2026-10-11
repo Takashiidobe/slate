@@ -84,9 +84,9 @@ int main(void) {
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 19> [storage=static] = code_units<array<i8, 19>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %[[VALUE_thrd_busy]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_at_quick_exit:[0-9]+]] @at_quick_exit(%[[VALUE___func:[0-9]+]] __func: ptr<fn() -> void>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_call_once:[0-9]+]] @call_once(%[[VALUE___flag:[0-9]+]] __flag: ptr<@type[[TYPE0]]>, %[[VALUE___func_2:[0-9]+]] __func: ptr<fn() -> void>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_thrd_create:[0-9]+]] @thrd_create(%[[VALUE___thr:[0-9]+]] __thr: ptr<u64>, %[[VALUE___func_3:[0-9]+]] __func: ptr<fn(ptr<void>) -> i32>, %[[VALUE___arg:[0-9]+]] __arg: ptr<void>) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_thrd_create:[0-9]+]] @thrd_create(%[[VALUE___thr:[0-9]+]] __thr: ptr<u64>, %[[VALUE___func_2:[0-9]+]] __func: ptr<fn(ptr<void>) -> i32>, %[[VALUE___arg:[0-9]+]] __arg: ptr<void>) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_thrd_join:[0-9]+]] @thrd_join(%[[VALUE___thr_2:[0-9]+]] __thr: u64, %[[VALUE___res:[0-9]+]] __res: ptr<i32>) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_call_once:[0-9]+]] @call_once(%[[VALUE___flag:[0-9]+]] __flag: ptr<@type[[TYPE0]]>, %[[VALUE___func_3:[0-9]+]] __func: ptr<fn() -> void>) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_tss_create:[0-9]+]] @tss_create(%[[VALUE___tss_id:[0-9]+]] __tss_id: ptr<u32>, %[[VALUE___destructor:[0-9]+]] __destructor: ptr<fn(ptr<void>) -> void>) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_tss_delete:[0-9]+]] @tss_delete(%[[VALUE___tss_id_2:[0-9]+]] __tss_id: u32) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_thread_worker:[0-9]+]] @thread_worker(%[[VALUE_argument:[0-9]+]] argument: ptr<void>) -> i32 [linkage=internal] [fallthrough=ub_if_used] {

@@ -79,7 +79,7 @@ int main() {
 // DEFAULT-NEXT:         write<ptr<const i8>>(deref(ptr_offset<ptr<ptr<const i8>>, subtract=false, element=ptr<const i8>, overflow=ub>(read<ptr<ptr<const i8>>>(%[[VALUE_x]]), const<i32>(6))), pointer_cast<ptr<const i8>, reason=assign>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(6)>(%[[VALUE_str_7]]), mul<i32, overflow=ub>(sub<i32, overflow=ub>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_y]]), const<i32>(6)))), const<i32>(458752)), const<i32>(2)))));
 // DEFAULT-NEXT:         write<ptr<const i8>>(deref(ptr_offset<ptr<ptr<const i8>>, subtract=false, element=ptr<const i8>, overflow=ub>(read<ptr<ptr<const i8>>>(%[[VALUE_x]]), const<i32>(7))), pointer_cast<ptr<const i8>, reason=assign>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(6)>(%[[VALUE_str_8]]), mul<i32, overflow=ub>(sub<i32, overflow=ub>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_y]]), const<i32>(7)))), const<i32>(524288)), const<i32>(2)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_x_2:[0-9]+]] x: array<ptr<const i8>, 8> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %[[VALUE_y_2:[0-9]+]] y: array<i32, 8> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];

@@ -64,14 +64,14 @@ int main(void) {
 // DEFAULT-NEXT:     } [size=200, align=8, offsets=[0, 64, 72]];
 // DEFAULT-NEXT:     type @type[[TYPE_jmp_buf:[0-9]+]] jmp_buf = array<@type[[TYPE___jmp_buf_tag]], 1>;
 // DEFAULT-NEXT:     global %[[VALUE_buf:[0-9]+]] buf: array<@type[[TYPE___jmp_buf_tag]], 1> [storage=static] [align=16] [linkage=internal];
-// DEFAULT-NEXT:     global %[[VALUE_stop:[0-9]+]] stop: bool [storage=static] = const<bool>(false) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_stop:[0-9]+]] stop: bool [storage=static] = ne<i32, reason=assign>(const<i32>(0), const<i32>(0)) [linkage=internal];
 // DEFAULT-NEXT:     fn %[[VALUE__setjmp:[0-9]+]] @_setjmp(%[[VALUE___env:[0-9]+]] __env: ptr<@type[[TYPE___jmp_buf_tag]]> [array=1]) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_longjmp:[0-9]+]] @longjmp(%[[VALUE___env_2:[0-9]+]] __env: ptr<@type[[TYPE___jmp_buf_tag]]> [array=1], %[[VALUE___val:[0-9]+]] __val: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_call_func:[0-9]+]] @call_func(%[[VALUE_func:[0-9]+]] func: ptr<fn() -> void>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(read<ptr<fn() -> void>>(%[[VALUE_func]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_func_2:[0-9]+]] @func() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<bool>(%[[VALUE_stop]], const<bool>(true));
+// DEFAULT-NEXT:         write<bool>(%[[VALUE_stop]], ne<i32, reason=assign>(const<i32>(1), const<i32>(0)));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE___jmp_buf_tag]]>, i32) -> void>(%[[VALUE_longjmp]], array_decay<ptr<@type[[TYPE___jmp_buf_tag]]>, length=Some(1)>(%[[VALUE_buf]]), const<i32>(1));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

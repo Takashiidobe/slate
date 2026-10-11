@@ -70,7 +70,7 @@ int main() { foo("_"); }
 // DEFAULT-NEXT:         if logical_or<bool>(eq<i32>(widen<i32, reason=promotion>(read<i8>(%[[VALUE_a]])), const<i32>(48)), eq<i32>(widen<i32, reason=promotion>(read<i8>(%[[VALUE_a]])), const<i32>(43)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>) -> void>(%[[VALUE_foo]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

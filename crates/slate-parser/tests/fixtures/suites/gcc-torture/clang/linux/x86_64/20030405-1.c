@@ -59,7 +59,7 @@ bar(void)
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([109, 105, 110, 103, 111, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] str: ptr<const i8> [storage=static] [const] = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(6)>(%[[VALUE_str]])) [linkage=internal];
 // DEFAULT-NEXT:     fn %[[VALUE_strlength:[0-9]+]] @strlength(%[[VALUE0:[0-9]+]] <unnamed>: ptr<const i8> [const]) -> u64 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> i8 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(unprototyped) -> i8 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: u64 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: ptr<i8> [storage=automatic];
@@ -67,7 +67,7 @@ bar(void)
 // DEFAULT-NEXT:         while %[[VALUE1:[0-9]+]] lt<u64>(read<u64>(%[[VALUE_c]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(10))))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if gt<u64>(read<u64>(%[[VALUE_c]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(5))))
-// DEFAULT-NEXT:                     write<i8>(deref(read<ptr<i8>>(%[[VALUE_x]])), call<i8, signature=fn() -> i8>(%[[VALUE_foo]]));
+// DEFAULT-NEXT:                     write<i8>(deref(read<ptr<i8>>(%[[VALUE_x]])), call<i8, signature=fn(unprototyped) -> i8>(%[[VALUE_foo]]));
 // DEFAULT-NEXT:                 if lt<i32>(widen<i32, reason=promotion>(read<i8>(deref(read<ptr<i8>>(%[[VALUE_x]])))), const<i32>(97))
 // DEFAULT-NEXT:                     break %[[VALUE1]];
 // DEFAULT-NEXT:             }

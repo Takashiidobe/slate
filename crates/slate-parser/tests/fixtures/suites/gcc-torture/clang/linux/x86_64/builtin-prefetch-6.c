@@ -117,7 +117,7 @@ int main() {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 call<void, signature=fn(ptr<const void>, ...) -> void>(%[[VALUE___builtin_prefetch]], pointer_cast<ptr<const void>, reason=arg>(read<ptr<i32>>(deref(ptr_offset<ptr<ptr<i32>>, subtract=false, element=ptr<i32>, overflow=ub>(array_decay<ptr<ptr<i32>>, length=Some(65)>(%[[VALUE_bad_addr]]), read<i32>(%[[VALUE_i_3]]))))), const<i32>(1), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_init_addrs]]);
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_prefetch_for_read]]);
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_prefetch_for_write]]);

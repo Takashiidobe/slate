@@ -58,7 +58,7 @@ int main() {
 // DEFAULT-NEXT:             write<ptr<@type[[TYPE_s]]>>(%[[VALUE_s]], read<ptr<@type[[TYPE_s]]>>(field0(deref(read<ptr<@type[[TYPE_s]]>>(%[[VALUE_s]])))));
 // DEFAULT-NEXT:         return read<ptr<@type[[TYPE_s]]>>(%[[VALUE_s]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_s1:[0-9]+]] s1: @type[[TYPE_s]] [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_s2:[0-9]+]] s2: @type[[TYPE_s]] [storage=automatic];
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_s]]>>(field0(%[[VALUE_s1]]), addr_of<ptr<@type[[TYPE_s]]>>(%[[VALUE_s2]]));

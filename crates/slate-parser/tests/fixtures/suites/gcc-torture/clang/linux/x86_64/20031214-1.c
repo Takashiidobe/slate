@@ -59,7 +59,7 @@ int main() {
 // DEFAULT-NEXT:     global %[[VALUE_k:[0-9]+]] k: i32 [storage=static] = const<i32>(0) [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_b:[0-9]+]] @b(%[[VALUE_j:[0-9]+]] j: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_j_2:[0-9]+]] j: i32 [storage=automatic];
 // DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:

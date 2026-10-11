@@ -41,7 +41,7 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: i64) -> i16 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(read<i64>(%[[VALUE_x]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: i64 [storage=automatic] = const<i64>(272170);
 // DEFAULT-NEXT:         if eq<i64>(widen<i64, reason=usual_arith>(widen<i32, reason=promotion>(call<i16, signature=fn(i64) -> i16>(%[[VALUE_foo]], read<i64>(%[[VALUE_a]])))), read<i64>(%[[VALUE_a]]))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);

@@ -44,7 +44,7 @@ int main() {
 // DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: i16 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_f:[0-9]+]] f: i16 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<i16>(%[[VALUE_f]], truncate<i16, reason=assign, fits=unknown>(read<i32>(%[[VALUE_e]])));
 // DEFAULT-NEXT:         let %[[VALUE_g:[0-9]+]] g: i32 [storage=automatic] = conditional<i32>(lt<i32>(widen<i32, reason=promotion>(read<i16>(%[[VALUE_b]])), const<i32>(0)), const<i32>(0), add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%[[VALUE_f]])), widen<i32, reason=promotion>(read<i16>(%[[VALUE_b]]))));
 // DEFAULT-NEXT:         if lt<i32>(and<i32>(read<i32>(%[[VALUE_g]]), neg<i32, overflow=ub>(const<i32>(4))), const<i32>(0))

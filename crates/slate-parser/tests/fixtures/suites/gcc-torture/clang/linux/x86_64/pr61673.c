@@ -86,7 +86,7 @@ int main() {
 // DEFAULT-NEXT:         if eq<i32>(from_bool<i32, reason=promotion>(logical_and<bool>(ge<i32>(read<i32>(%[[VALUE_c_2]]), const<i32>(0)), le<i32>(read<i32>(%[[VALUE_c_2]]), const<i32>(127)))), const<i32>(0))
 // DEFAULT-NEXT:             write<i8>(%[[VALUE_e]], read<i8>(%[[VALUE_d_2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_c_3:[0-9]+]] c: array<i8, 2> [storage=automatic] [const] = aggregate<array<i8, 2>, zero_fill=false>(index0 = truncate<i8, reason=assign, fits=always>(const<i32>(84)), index1 = truncate<i8, reason=assign, fits=unknown>(const<i32>(135)));
 // DEFAULT-NEXT:         write<i8>(%[[VALUE_e]], truncate<i8, reason=assign, fits=always>(const<i32>(33)));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>) -> void>(%[[VALUE_foo]], array_decay<ptr<const i8>, length=Some(2)>(%[[VALUE_c_3]]));

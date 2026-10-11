@@ -47,7 +47,7 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_not_fabs:[0-9]+]] @not_fabs(%[[VALUE_x:[0-9]+]] x: f64) -> f64 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return conditional<f64>(ge<f64, exceptions=ignore>(read<f64>(%[[VALUE_x]]), const<f64>(0.0)), read<f64>(%[[VALUE_x]]), neg<f64>(read<f64>(%[[VALUE_x]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_x_2:[0-9]+]] x: f64 [storage=automatic] = neg<f64>(const<f64>(0.0));
 // DEFAULT-NEXT:         let %[[VALUE_y:[0-9]+]] y: f64 [storage=automatic];
 // DEFAULT-NEXT:         write<f64>(%[[VALUE_y]], call<f64, signature=fn(f64) -> f64>(%[[VALUE_not_fabs]], read<f64>(%[[VALUE_x_2]])));

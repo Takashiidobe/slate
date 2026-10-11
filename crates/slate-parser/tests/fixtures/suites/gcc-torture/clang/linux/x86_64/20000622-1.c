@@ -58,7 +58,7 @@ int main() {
 // DEFAULT-NEXT:         write<i64>(%[[VALUE_d]], ptr_to_int<i64, reason=explicit>(read<ptr<void>>(%[[VALUE_c_2]])));
 // DEFAULT-NEXT:         call<i64, signature=fn(i64, i64, i64) -> i64>(%[[VALUE_foo]], read<i64>(%[[VALUE_d]]), call<i64, signature=fn(i64, i64) -> i64>(%[[VALUE_bar]], read<i64>(%[[VALUE_a_3]]), widen<i64, reason=arg>(const<i32>(1))), read<i64>(%[[VALUE_b_3]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(i64, i64, ptr<void>) -> void>(%[[VALUE_baz]], widen<i64, reason=arg>(const<i32>(10)), widen<i64, reason=arg>(const<i32>(11)), int_to_ptr<ptr<void>, reason=explicit>(const<i32>(12)));
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }

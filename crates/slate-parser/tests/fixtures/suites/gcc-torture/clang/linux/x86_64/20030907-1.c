@@ -57,7 +57,7 @@ struct gdt gdt_table[2]=
 // DEFAULT-NEXT:         field5 f: u32;
 // DEFAULT-NEXT:     } [size=24, align=4, offsets=[0, 4, 8, 12, 16, 20]];
 // DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_gdt_table:[0-9]+]] gdt_table: array<@type[[TYPE_gdt]], 2> [storage=automatic] [align=16] = aggregate<array<@type[[TYPE_gdt]], 2>, zero_fill=true>(index0 = aggregate<@type[[TYPE_gdt]], zero_fill=true>(field0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(0)), field1 = and<u32>(shl<u32, overflow=wrap, amount_out_of_range=ub>(ptr_to_int<u32, reason=explicit>(addr_of<ptr<i32>>(%[[VALUE_x]])), const<i32>(24)), reinterpret<u32, reason=usual_arith, fits=unknown>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(neg<i32, overflow=ub>(const<i32>(1)), const<i32>(8))))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

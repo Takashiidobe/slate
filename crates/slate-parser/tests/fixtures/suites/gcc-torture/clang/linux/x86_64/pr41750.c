@@ -121,7 +121,7 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_elf64_ia64_check_relocs:[0-9]+]] @elf64_ia64_check_relocs(%[[VALUE_abfd_4:[0-9]+]] abfd: ptr<i32>, %[[VALUE_info_3:[0-9]+]] info: ptr<@type[[TYPE_foo_link_info]]>) -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return call<ptr<i32>, signature=fn(ptr<i32>, ptr<@type[[TYPE_foo_link_info]]>, ptr<@type[[TYPE_foo_link_hash_table]]>) -> ptr<i32>>(%[[VALUE_get_got]], read<ptr<i32>>(%[[VALUE_abfd_4]]), read<ptr<@type[[TYPE_foo_link_info]]>>(%[[VALUE_info_3]]), read<ptr<@type[[TYPE_foo_link_hash_table]]>>(field0(deref(read<ptr<@type[[TYPE_foo_link_info]]>>(%[[VALUE_info_3]])))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_foo_link_hash_table]]>>(field0(%[[VALUE_link_info]]), addr_of<ptr<@type[[TYPE_foo_link_hash_table]]>>(%[[VALUE_hash]]));
 // DEFAULT-NEXT:         if ne<ptr<i32>>(call<ptr<i32>, signature=fn(ptr<i32>, ptr<@type[[TYPE_foo_link_info]]>) -> ptr<i32>>(%[[VALUE_elf64_ia64_check_relocs]], addr_of<ptr<i32>>(%[[VALUE_abfd]]), addr_of<ptr<@type[[TYPE_foo_link_info]]>>(%[[VALUE_link_info]])), addr_of<ptr<i32>>(%[[VALUE_abfd]]))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);

@@ -69,7 +69,7 @@ int main() {
 // DEFAULT-NEXT:         write<f64>(field0(deref(read<ptr<@type[[TYPE_s1]]>>(%[[VALUE_a]]))), const<f64>(1.0));
 // DEFAULT-NEXT:         return add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(field0(deref(read<ptr<@type[[TYPE_s2]]>>(%[[VALUE_b]])))), const<f64>(1.0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_a_2:[0-9]+]] a: @type[[TYPE_u]] [storage=automatic];
 // DEFAULT-NEXT:         write<f64>(field0(field0(%[[VALUE_a_2]])), const<f64>(0.0));
 // DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(call<f64, signature=fn(ptr<@type[[TYPE_s1]]>, ptr<@type[[TYPE_s2]]>) -> f64>(%[[VALUE_f]], addr_of<ptr<@type[[TYPE_s1]]>>(field0(%[[VALUE_a_2]])), addr_of<ptr<@type[[TYPE_s2]]>>(field1(%[[VALUE_a_2]]))), const<f64>(2.0))

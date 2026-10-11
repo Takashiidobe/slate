@@ -179,7 +179,7 @@ int main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_n:[0-9]+]] n: ptr<void> [storage=automatic] = null<ptr<void>>;
 // DEFAULT-NEXT:         write<ptr<ptr<void>>>(%[[VALUE_bar]], addr_of<ptr<ptr<void>>>(%[[VALUE_n]]));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<void>, i64, i32) -> i32>(%[[VALUE_foo]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<ptr<void>>>(%[[VALUE_n]])), widen<i64, reason=arg>(const<i32>(1)), const<i32>(51217));

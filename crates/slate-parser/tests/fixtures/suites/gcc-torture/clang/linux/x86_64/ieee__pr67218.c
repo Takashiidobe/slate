@@ -41,7 +41,7 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: u32) -> f64 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return float_widen<f64, reason=explicit>(int_to_float<f32, reason=explicit, exact=false, rounding=nearest_even, exceptions=ignore>(or<u32>(read<u32>(%[[VALUE_x]]), const<u32>(4294901760))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(call<f64, signature=fn(u32) -> f64>(%[[VALUE_foo]], reinterpret<u32, reason=arg, fits=always>(const<i32>(1))), const<f64>(4294901760.0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);

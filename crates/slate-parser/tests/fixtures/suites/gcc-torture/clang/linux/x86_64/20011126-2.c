@@ -87,7 +87,7 @@ int main() {
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_out_2:[0-9]+]] out: array<i8, 4> [storage=automatic];
 // DEFAULT-NEXT:         call<ptr<const i8>, signature=fn(ptr<const i8>, ptr<i8>) -> ptr<const i8>>(%[[VALUE_test]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str]])), array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_out_2]]));
 // DEFAULT-NEXT:         return const<i32>(0);

@@ -66,7 +66,7 @@ int main(void) {
 // DEFAULT-NEXT:     type @type[[TYPE_A:[0-9]+]] A = struct {
 // DEFAULT-NEXT:         field0 i: i32;
 // DEFAULT-NEXT:         field1 a: array<i8, 1>;
-// DEFAULT-NEXT:         field2 p: ptr<fn() -> void>;
+// DEFAULT-NEXT:         field2 p: ptr<fn(unprototyped) -> void>;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 4, 8]];
 // DEFAULT-NEXT:     type @type[[TYPE_B:[0-9]+]] B = struct {
 // DEFAULT-NEXT:         field0 a: array<i8, 12>;
