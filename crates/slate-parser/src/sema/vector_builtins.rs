@@ -45,6 +45,27 @@ impl Lowerer {
                 intrinsic(reduction_intrinsic(reduction, element), arguments)
             }
             Expansion::Intrinsic(name) => intrinsic(name, arguments),
+            Expansion::Ms {
+                intrinsic,
+                ordering,
+            } => {
+                let parameters = self
+                    .types
+                    .ctypes
+                    .function_parts(signature)
+                    .map(|(_, params, _, _)| params.to_vec())
+                    .unwrap_or_default();
+                let operands = parameters
+                    .into_iter()
+                    .zip(arguments)
+                    .map(|(c, value)| Operand { c, value })
+                    .collect();
+                let value = self.ms_intrinsic(e, intrinsic, ordering, operands)?;
+                return Ok(Ok(Operand {
+                    c: returned,
+                    value: value.value,
+                }));
+            }
             Expansion::Popcount => intrinsic("llvm.ctpop", arguments),
             Expansion::Fma => intrinsic("llvm.fma", arguments),
             Expansion::Max | Expansion::Min => {
@@ -240,7 +261,11 @@ impl Lowerer {
         Ok(self.captured(e, captures, reduced.value))
     }
 
-    fn bind_once(&mut self, operand: Operand, captures: &mut Vec<(BindingId, Value)>) -> Place {
+    pub(super) fn bind_once(
+        &mut self,
+        operand: Operand,
+        captures: &mut Vec<(BindingId, Value)>,
+    ) -> Place {
         let id = self.fresh();
         self.types.entities.declare(id, operand.c, false);
         let place = Place {

@@ -132,9 +132,30 @@ See [vector types](type-families.md#vector) for supported shapes.
 - `__scoped_atomic_*`
 - `__sync_*`
 
+- MS `_Interlocked*`: `And`, `Or`, `Xor`, `ExchangeAdd`, `ExchangeSub`,
+  `Increment`, `Decrement`, `Exchange[Pointer]`,
+  `CompareExchange[Pointer]`, with their 8/16/64 widths and `_acq`, `_rel`,
+  `_nf` orderings
+- MS `_bittest`, `_bittestandset`, `_bittestandreset`,
+  `_bittestandcomplement` (and `64`), `_interlockedbittestandset` and
+  `_interlockedbittestandreset` (and `64`, `_acq`, `_rel`, `_nf`)
+
 Lowered by `slate-parser/src/sema/atomic.rs` into reads, writes, updates,
 compare-exchanges, and fences; Rust lowering is in `slate/src/frontend/lowerer/atomics.rs`.
 Supported operations and ordering rules: [atomic builtins](atomics.md#atomic-builtins).
+
+The MS intrinsics are `Expansion::Ms` (`sema/builtins.rs`): their arguments
+convert through the registry prototype (`msint32_t` is `long` where long is
+32 bits, else `int`), then `Lowerer::ms_intrinsic` builds the IR. Plain
+forms are `seq_cst`, `_acq`/`_rel`/`_nf` are acquire/release/relaxed, and a
+release compare-exchange fails relaxed. `Increment`/`Decrement` return the
+new value, the rest the old one. `_InterlockedCompareExchange(dest, exchange,
+comparand)` is a `form=old` compare-exchange expecting `comparand`. A bit test
+addresses the byte at `base + (offset >> 3)` (arithmetic shift) and bit
+`offset & 7`, as clang does; the plain forms are nonatomic `read`/`update`,
+the interlocked ones an atomic `update` of that byte. Not lowered yet:
+`_InterlockedCompareExchange128` and the aarch64-only `_acq`/`_rel`/`_nf`
+forms of the arithmetic intrinsics, which are not in the registry.
 
 ## Library and target intrinsic calls
 

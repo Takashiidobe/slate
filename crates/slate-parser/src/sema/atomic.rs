@@ -1,3 +1,4 @@
+use super::builtins::{BitTest, MsIntrinsic, MsOrdering};
 use super::ctype::convert::CastKind;
 use super::ctype::{CTypeKind, QualType};
 use super::expression::Lowerer;
@@ -920,6 +921,237 @@ impl Lowerer {
             )),
             _ => Err(ResolveError::Internal("atomic builtin argument count")),
         }
+    }
+
+    pub(super) fn ms_intrinsic(
+        &mut self,
+        e: &Expr,
+        intrinsic: MsIntrinsic,
+        ordering: MsOrdering,
+        operands: Vec<Operand>,
+    ) -> Result<Operand, ResolveError> {
+        let mut operands = operands.into_iter();
+        let pointer = operands
+            .next()
+            .ok_or(ResolveError::Internal("ms intrinsic argument count"))?;
+        let rest: Vec<Operand> = operands.collect();
+        let order = match ordering {
+            MsOrdering::Plain => None,
+            MsOrdering::Relaxed => Some(MemoryOrder::Relaxed),
+            MsOrdering::Acquire => Some(MemoryOrder::Acquire),
+            MsOrdering::Release => Some(MemoryOrder::Release),
+            MsOrdering::SeqCst => Some(MemoryOrder::SeqCst),
+        };
+        if let (MsIntrinsic::BitTest(test), [offset]) = (intrinsic, rest.as_slice()) {
+            return self.bit_test(e, test, order, pointer, offset.clone());
+        }
+        let order = order.ok_or(ResolveError::Internal("nonatomic interlocked intrinsic"))?;
+        let place = self.deref(pointer)?;
+        match (intrinsic, rest.as_slice()) {
+            (MsIntrinsic::Fetch(op), [operand]) => {
+                let old = self.operand(e, place.c, ValueKind::OldValue);
+                let computation =
+                    self.wrapping_arith(e, place.c, op, old.value, operand.value.clone());
+                Ok(self.atomic_update(e, place, computation, true, order.into()))
+            }
+            (MsIntrinsic::Increment | MsIntrinsic::Decrement, []) => {
+                let op = if intrinsic == MsIntrinsic::Increment {
+                    ArithOp::Add
+                } else {
+                    ArithOp::Sub
+                };
+                let old = self.operand(e, place.c, ValueKind::OldValue);
+                let one = self.flag_constant(e, place.c, 1);
+                let computation = self.wrapping_arith(e, place.c, op, old.value, one.value);
+                Ok(self.atomic_update(e, place, computation, false, order.into()))
+            }
+            (MsIntrinsic::Exchange, [desired]) => {
+                Ok(self.atomic_update(e, place, desired.clone(), true, order.into()))
+            }
+            (MsIntrinsic::CompareExchange, [exchange, comparand]) => {
+                let failure = match order {
+                    MemoryOrder::Release => MemoryOrder::Relaxed,
+                    ref order => order.clone(),
+                };
+                Ok(self.exchange_node(
+                    e,
+                    place,
+                    [comparand.clone(), exchange.clone()],
+                    [order, failure],
+                    Exchange {
+                        weak: Weakness::Strong,
+                        form: CompareExchangeForm::Old,
+                        scope: SyncScope::System,
+                    },
+                ))
+            }
+            _ => Err(ResolveError::Internal("ms intrinsic argument count")),
+        }
+    }
+
+    fn wrapping_arith(
+        &mut self,
+        e: &Expr,
+        c: QualType,
+        op: ArithOp,
+        left: Value,
+        right: Value,
+    ) -> Operand {
+        let semantics = match op {
+            ArithOp::Add | ArithOp::Sub => ArithSema::Integer {
+                overflow: Overflow::Wrap,
+            },
+            _ => ArithSema::Exact,
+        };
+        self.operand(
+            e,
+            c,
+            ValueKind::Arith {
+                op,
+                left: Box::new(left),
+                right: Box::new(right),
+                semantics,
+            },
+        )
+    }
+
+    fn bit_test(
+        &mut self,
+        e: &Expr,
+        test: BitTest,
+        order: Option<MemoryOrder>,
+        base: Operand,
+        offset: Operand,
+    ) -> Result<Operand, ResolveError> {
+        let mut captures = Vec::new();
+        let offset_c = offset.c;
+        let offset = self.bind_once(offset, &mut captures);
+        let read_offset = |this: &mut Self| {
+            this.operand(
+                e,
+                offset_c,
+                ValueKind::Read {
+                    place: offset.clone(),
+                    ordering: None,
+                },
+            )
+        };
+        let byte = self.types.ctypes.qual(CTypeKind::UChar);
+        let pointee = self
+            .types
+            .ctypes
+            .pointee(base.c)
+            .ok_or(ResolveError::Internal("bit test base is not a pointer"))?;
+        let quals = self.types.ctypes.quals(pointee);
+        let byte_pointer = self.types.ctypes.pointer(byte.with(quals));
+        let base = self.apply_conversion(
+            CastKind::Pointer,
+            base,
+            byte_pointer,
+            ConversionReason::Explicit,
+        )?;
+        let shifted = read_offset(self);
+        let three = self.flag_constant(e, offset_c, 3);
+        let index = self.operand(
+            e,
+            offset_c,
+            ValueKind::Arith {
+                op: ArithOp::Shr,
+                left: Box::new(shifted.value),
+                right: Box::new(three.value),
+                semantics: ArithSema::ShiftRight {
+                    fill: ShiftFill::SignExtend,
+                    amount_out_of_range: UbPolicy::Undefined,
+                },
+            },
+        );
+        let address = self.operand(
+            e,
+            byte_pointer,
+            ValueKind::PointerOffset {
+                pointer: Box::new(base.value),
+                amount: Box::new(index.value),
+                subtract: false,
+                element: Type::integer(8, false),
+                overflow: Overflow::Wrap,
+            },
+        );
+        let place = self.deref(address)?;
+        let bit = |this: &mut Self| -> Result<Operand, ResolveError> {
+            let low = read_offset(this);
+            let low =
+                this.apply_conversion(CastKind::Arithmetic, low, byte, ConversionReason::Explicit)?;
+            let seven = this.flag_constant(e, byte, 7);
+            Ok(this.wrapping_arith(e, byte, ArithOp::And, low.value, seven.value))
+        };
+        let old = if test == BitTest::Test {
+            self.atomic_read(e, place, None)
+        } else {
+            let one = self.flag_constant(e, byte, 1);
+            let position = bit(self)?;
+            let mut mask = self.operand(
+                e,
+                byte,
+                ValueKind::Arith {
+                    op: ArithOp::Shl,
+                    left: Box::new(one.value),
+                    right: Box::new(position.value),
+                    semantics: ArithSema::ShiftLeft {
+                        overflow: Overflow::Wrap,
+                        amount_out_of_range: UbPolicy::Undefined,
+                        negative_left: None,
+                    },
+                },
+            );
+            let op = match test {
+                BitTest::Set => ArithOp::Or,
+                BitTest::Reset => ArithOp::And,
+                _ => ArithOp::Xor,
+            };
+            if test == BitTest::Reset {
+                mask = self.operand(
+                    e,
+                    byte,
+                    ValueKind::Unary {
+                        op: UnaryArithOp::Not,
+                        operand: Box::new(mask.value),
+                        semantics: ArithSema::Exact,
+                    },
+                );
+            }
+            let current = self.operand(e, byte, ValueKind::OldValue);
+            let computation = self.wrapping_arith(e, byte, op, current.value, mask.value);
+            self.operand(
+                e,
+                byte,
+                ValueKind::Update {
+                    place: place.place,
+                    computation: Box::new(computation.value),
+                    postfix: true,
+                    ordering: order.map(Into::into),
+                },
+            )
+        };
+        let position = bit(self)?;
+        let bit_value = self.operand(
+            e,
+            byte,
+            ValueKind::Arith {
+                op: ArithOp::Shr,
+                left: Box::new(old.value),
+                right: Box::new(position.value),
+                semantics: ArithSema::ShiftRight {
+                    fill: ShiftFill::ZeroExtend,
+                    amount_out_of_range: UbPolicy::Undefined,
+                },
+            },
+        );
+        let one = self.flag_constant(e, byte, 1);
+        let result = self.wrapping_arith(e, byte, ArithOp::And, bit_value.value, one.value);
+        Ok(Operand {
+            c: byte,
+            value: self.captured(e, captures, result.value),
+        })
     }
 
     // mirrors clang's constant evaluator; undecidable queries fall back to libatomic

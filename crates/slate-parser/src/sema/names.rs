@@ -216,7 +216,7 @@ impl Resolver {
                 } else {
                     let entry = self.bind_ordinary(name, kind, linked, declarator)?;
                     if kind == BindingKind::Typedef
-                        && self.flavor.is_clang()
+                        && !self.flavor.is_gcc()
                         && self.ordinary.len() == 1
                         && BUILTIN_TYPEDEFS.contains(&name)
                     {

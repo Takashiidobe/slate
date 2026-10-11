@@ -294,6 +294,10 @@ pub(super) enum Expansion {
     TernaryLogic,
     FloatReduce(ArithOp),
     Intrinsic(&'static str),
+    Ms {
+        intrinsic: MsIntrinsic,
+        ordering: MsOrdering,
+    },
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -348,8 +352,78 @@ pub(super) fn expansion(builtin: &ClangBuiltin) -> Option<Expansion> {
         "reduce_fadd_ps512" | "reduce_fadd_pd512" => Expansion::FloatReduce(ArithOp::Add),
         "reduce_fmul_ps512" | "reduce_fmul_pd512" => Expansion::FloatReduce(ArithOp::Mul),
         "__rdtsc" => Expansion::Intrinsic("llvm.x86.rdtsc"),
-        _ => return None,
+        record => return ms_expansion(record),
     })
+}
+
+fn ms_expansion(record: &str) -> Option<Expansion> {
+    let record = record.trim_start_matches('_');
+    let (record, ordering) = match record.rsplit_once('_') {
+        Some((record, "acq")) => (record, MsOrdering::Acquire),
+        Some((record, "rel")) => (record, MsOrdering::Release),
+        Some((record, "nf")) => (record, MsOrdering::Relaxed),
+        _ => (record, MsOrdering::SeqCst),
+    };
+    let record = record.strip_suffix("64").unwrap_or(record);
+    let intrinsic = match record {
+        "InterlockedAnd" => MsIntrinsic::Fetch(ArithOp::And),
+        "InterlockedOr" => MsIntrinsic::Fetch(ArithOp::Or),
+        "InterlockedXor" => MsIntrinsic::Fetch(ArithOp::Xor),
+        "InterlockedExchangeAdd" => MsIntrinsic::Fetch(ArithOp::Add),
+        "InterlockedExchangeSub" => MsIntrinsic::Fetch(ArithOp::Sub),
+        "InterlockedIncrement" => MsIntrinsic::Increment,
+        "InterlockedDecrement" => MsIntrinsic::Decrement,
+        "InterlockedExchange" | "InterlockedExchangePointer" => MsIntrinsic::Exchange,
+        "InterlockedCompareExchange" | "InterlockedCompareExchangePointer" => {
+            MsIntrinsic::CompareExchange
+        }
+        "InterlockedBittestAndSet" => MsIntrinsic::BitTest(BitTest::Set),
+        "InterlockedBittestAndReset" => MsIntrinsic::BitTest(BitTest::Reset),
+        "Bittest" | "BittestAndSet" | "BittestAndReset" | "BittestAndComplement" => {
+            let test = match record {
+                "Bittest" => BitTest::Test,
+                "BittestAndSet" => BitTest::Set,
+                "BittestAndReset" => BitTest::Reset,
+                _ => BitTest::Complement,
+            };
+            return Some(Expansion::Ms {
+                intrinsic: MsIntrinsic::BitTest(test),
+                ordering: MsOrdering::Plain,
+            });
+        }
+        _ => return None,
+    };
+    Some(Expansion::Ms {
+        intrinsic,
+        ordering,
+    })
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(super) enum MsIntrinsic {
+    Fetch(ArithOp),
+    Increment,
+    Decrement,
+    Exchange,
+    CompareExchange,
+    BitTest(BitTest),
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(super) enum BitTest {
+    Test,
+    Set,
+    Reset,
+    Complement,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(super) enum MsOrdering {
+    Plain,
+    Relaxed,
+    Acquire,
+    Release,
+    SeqCst,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -851,13 +925,13 @@ impl TypeResolver {
                 signed: target.wchar_signed,
             },
             BuiltinType::VaList => return Some(self.ctypes.va_list_type(target)),
-            BuiltinType::Opaque("msuint32_t") => CTypeKind::Int {
+            BuiltinType::Opaque(name @ ("msuint32_t" | "msint32_t")) => CTypeKind::Int {
                 rank: if super::ctype::rank_width(IntRank::Long, target) == 32 {
                     IntRank::Long
                 } else {
                     IntRank::Int
                 },
-                signed: false,
+                signed: *name == "msint32_t",
             },
             BuiltinType::Opaque(name) => {
                 return self.alias(*self.builtin_typedefs.get(*name)?);
