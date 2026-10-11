@@ -131,6 +131,7 @@ fn translate_fixture_project(
         database
     };
     let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
+        .env("SLATE_SYSROOTS", slate_parser::sysroot::root())
         .arg("translate-project")
         .args(translate_args)
         .arg("--compile-commands")
@@ -420,6 +421,7 @@ fn translation_uses_builtin_frontend() {
         let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
             .args(&args)
             .env("PATH", "")
+            .env("SLATE_SYSROOTS", slate_parser::sysroot::root())
             .env("SLATE_RUSTFMT", &rustfmt)
             .env("SLATE_TARGET", "invalid-default-target")
             .env_remove("SLATE_CLANG_ARGS")
@@ -432,4 +434,37 @@ fn translation_uses_builtin_frontend() {
             String::from_utf8_lossy(&output.stderr)
         );
     }
+}
+
+#[test]
+fn translation_uses_native_headers_without_sysroot() {
+    let work =
+        Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-generated/native-headers");
+    let empty = work.join("empty-data");
+    std::fs::create_dir_all(&empty).expect("create native header test directory");
+    let source = work.join("hello.c");
+    std::fs::write(
+        &source,
+        "#include <stdio.h>\n#include <stdlib.h>\nint main(void) { printf(\"%d\\n\", abs(-3)); return 0; }\n",
+    )
+    .expect("write native header source");
+    let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
+        .arg("translate")
+        .arg(&source)
+        .env_remove("SLATE_SYSROOTS")
+        .env_remove("SLATE_COMPILER_HEADERS")
+        .env_remove("SLATE_TARGET")
+        .env_remove("SLATE_CLANG_ARGS")
+        .env("XDG_DATA_HOME", &empty)
+        .env("HOME", &empty)
+        .env("LOCALAPPDATA", &empty)
+        .env("APPDATA", &empty)
+        .output()
+        .expect("run Slate with native headers");
+    assert!(
+        output.status.success(),
+        "translate failed without an installed sysroot:\n{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(String::from_utf8_lossy(&output.stdout).contains("fn printf"));
 }

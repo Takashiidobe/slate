@@ -46,7 +46,7 @@ archive, and compares it with an all-native build.
 
 | Var              | Default                              | Role                                                          |
 | ---------------- | ------------------------------------ | ------------------------------------------------------------- |
-| `SLATE_SYSROOTS` | `~/.local/share/slate/sysroots`      | slate-parser reads target headers from `<dir>/<triple>`       |
+| `SLATE_SYSROOTS` | `~/.local/share/slate/sysroots`      | slate-parser reads target headers from `<dir>/<triple>`; when set, host targets skip native `clang` headers. Test harnesses always set it |
 | `SLATE_CARGO`    | `cargo`                              | compiles the generated Rust                                   |
 | `SLATE_RUSTFMT`  | `rustfmt`                            | fallback formatter when syn rejects generated Rust |
 

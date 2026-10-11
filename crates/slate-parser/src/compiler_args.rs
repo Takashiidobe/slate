@@ -11,11 +11,11 @@ use crate::target::isa::{IsaRequest, TargetIsa};
 use crate::target::x86_isa::X86Feature;
 use crate::target_info::{LongDoubleFormat, TargetEnvironment, TargetFamily, TargetInfo, TargetOs};
 use crate::target_registry::{ArchMode, arch_variant};
-use crate::{compiler_headers, sysroot};
+use crate::{compiler_headers, native_headers, sysroot};
 use std::path::{Path, PathBuf};
 use std::str::FromStr;
 
-#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum CompilerFlavor {
     Gcc,
     #[default]
@@ -160,28 +160,47 @@ pub struct CompilerArgs {
 }
 
 impl CompilerArgs {
-    pub fn search_paths(&self) -> SearchPaths {
-        let root = self
-            .isysroot
-            .as_ref()
-            .or(self.sysroot.as_ref())
-            .map_or_else(|| sysroot::path(&self.target.triple), PathBuf::from);
+    pub fn search_paths(&self) -> Result<SearchPaths, CompilerArgError> {
+        let explicit_root = self.isysroot.as_ref().or(self.sysroot.as_ref());
+        let root = explicit_root.map_or_else(|| sysroot::path(&self.target.triple), PathBuf::from);
         let include_dir = |path: &str| match path.strip_prefix('=') {
             Some(relative) => root.join(relative.trim_start_matches('/')),
             None => PathBuf::from(path),
         };
         let mut system: Vec<PathBuf> = self.isystem.iter().map(|path| include_dir(path)).collect();
         if !self.nostdinc {
-            system.extend(compiler_headers::include_paths(&self.target, self.flavor));
-        }
-        if !self.nostdlibinc && !self.nostdinc {
-            system.extend(sysroot::include_paths_at(&root, &self.target, self.flavor));
+            system.extend(self.standard_system_paths(explicit_root.is_some(), &root)?);
         }
         system.extend(self.idirafter.iter().map(|path| include_dir(path)));
-        SearchPaths {
+        Ok(SearchPaths {
             quote: self.iquote.iter().map(|path| include_dir(path)).collect(),
             user: self.include.iter().map(|path| include_dir(path)).collect(),
             system,
+        })
+    }
+
+    fn standard_system_paths(
+        &self,
+        explicit_root: bool,
+        root: &Path,
+    ) -> Result<Vec<PathBuf>, CompilerArgError> {
+        let installed = || {
+            let mut paths = compiler_headers::include_paths(&self.target, self.flavor);
+            if !self.nostdlibinc {
+                paths.extend(sysroot::include_paths_at(root, &self.target, self.flavor));
+            }
+            paths
+        };
+        if explicit_root || sysroot::pinned() || !native_headers::is_host(&self.target) {
+            return Ok(installed());
+        }
+        match native_headers::discover(&self.target, self.flavor) {
+            Ok(native) => Ok(native.system_paths(!self.nostdlibinc)),
+            Err(_) if root.is_dir() => Ok(installed()),
+            Err(error) => Err(CompilerArgError::SystemHeaders {
+                triple: self.target.triple.clone(),
+                reason: Box::new(error),
+            }),
         }
     }
 
@@ -220,6 +239,13 @@ pub enum CompilerArgError {
     Target(#[from] crate::target_info::TargetError),
     #[error(transparent)]
     Rule(#[from] crate::rules::RuleError),
+    #[error(
+        "no system headers for {triple}: {reason}; install a toolchain or run `slate sysroot install {triple}`"
+    )]
+    SystemHeaders {
+        triple: String,
+        reason: Box<crate::native_headers::NativeHeaderError>,
+    },
 }
 
 impl miette::Diagnostic for CompilerArgError {}
@@ -1005,7 +1031,9 @@ fn apply_warning_flag(name: &str, diagnostics: &mut DiagnosticOptions) {
 fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerArgError> {
     let mut parsed = ParsedCompilerArgs {
         flavor: CompilerFlavor::Clang,
-        target: "x86_64-unknown-linux-gnu".into(),
+        target: crate::target_registry::host()
+            .map_or("x86_64-unknown-linux-gnu", |spec| spec.triple)
+            .into(),
         ..ParsedCompilerArgs::default()
     };
     let mut index = 0;

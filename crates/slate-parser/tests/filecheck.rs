@@ -475,7 +475,8 @@ fn run_fixture(
     command
         .env_remove("FORCE_COLOR")
         .env_remove("CLICOLOR_FORCE")
-        .env("NO_COLOR", "1");
+        .env("NO_COLOR", "1")
+        .env("SLATE_SYSROOTS", slate_parser::sysroot::root());
     for define in defines {
         command.arg(format!("-D{}", define.trim_start_matches("-D")));
     }
@@ -622,6 +623,7 @@ fn run_expected_failure_fixture(
         .env_remove("FORCE_COLOR")
         .env_remove("CLICOLOR_FORCE")
         .env("NO_COLOR", "1")
+        .env("SLATE_SYSROOTS", slate_parser::sysroot::root())
         .output()
         .expect("run slate-parser failing fixture");
     assert!(

@@ -93,6 +93,10 @@ pub fn lookup(triple: &str) -> Result<&'static TargetSpec, TargetError> {
         .ok_or_else(|| TargetError::UnsupportedTriple(triple.into()))
 }
 
+pub fn host() -> Option<&'static TargetSpec> {
+    lookup(env!("SLATE_BUILD_TARGET")).ok()
+}
+
 fn gnu_short_triple(triple: &str) -> Option<String> {
     let (arch, rest) = triple.split_once('-')?;
     rest.starts_with("linux-")

@@ -4,14 +4,21 @@ use crate::target_registry::SysrootLayout;
 use directories::ProjectDirs;
 use std::path::{Path, PathBuf};
 
-pub fn path(target: &str) -> PathBuf {
-    let root = std::env::var_os("SLATE_SYSROOTS")
+pub fn root() -> PathBuf {
+    std::env::var_os("SLATE_SYSROOTS")
         .map(PathBuf::from)
         .or_else(|| {
             ProjectDirs::from("", "", "Slate").map(|dirs| dirs.data_local_dir().join("sysroots"))
         })
-        .unwrap_or_default();
-    root.join(target)
+        .unwrap_or_default()
+}
+
+pub fn pinned() -> bool {
+    std::env::var_os("SLATE_SYSROOTS").is_some()
+}
+
+pub fn path(target: &str) -> PathBuf {
+    root().join(target)
 }
 
 pub fn include_paths(target: &TargetInfo, flavor: CompilerFlavor) -> Vec<PathBuf> {

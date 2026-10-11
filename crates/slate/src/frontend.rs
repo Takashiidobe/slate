@@ -248,7 +248,7 @@ fn parse_module_from_args(
     args: CompilerArgs,
     diagnostics: &mut Vec<serde_json::Value>,
 ) -> Result<(Module, Files, Vec<DirectiveDiagnostic>), Error> {
-    let search = args.search_paths();
+    let search = args.search_paths()?;
     let dialect = Dialect::new(args.flavor, args.standard, args.target, args.options);
     let mut parser =
         Parser::new(search, dialect).with_preprocessor_inputs(args.preprocessor_inputs);

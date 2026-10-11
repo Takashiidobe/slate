@@ -19,7 +19,8 @@
 
 ## Configuration
 
-- Default triple: `SLATE_TARGET`, then `SLATE_BUILD_TARGET`.
+- Default triple: `SLATE_TARGET`, then `SLATE_BUILD_TARGET`. The `slate-parser` binary defaults to its own build target when the registry supports it, otherwise `x86_64-unknown-linux-gnu`.
+- System headers for the host target come from the native compiler (`slate_parser::native_headers`) before installed sysroots, unless `SLATE_SYSROOTS` is set; [slate-sysroots](../../crates/slate-sysroots/README.md#native-headers) lists the order. Test harnesses set `SLATE_SYSROOTS` so fixtures never see host headers.
 - `target::parse_args`: default triple, inherited `SLATE_CLANG_ARGS`, explicit arguments.
 - Explicit `--target` wins over the default; `Dialect` applies layout overrides.
 - No Clang or `getconf` calls to query target facts.

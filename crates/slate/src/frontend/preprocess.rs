@@ -853,7 +853,9 @@ pub fn record_file(
 ) -> Result<Preprocessing, PreprocessError> {
     let args = crate::target::parse_args(compiler_args)
         .map_err(|source| PreprocessError::Arguments { source })?;
-    let search = args.search_paths();
+    let search = args
+        .search_paths()
+        .map_err(|source| PreprocessError::Arguments { source })?;
     let dialect =
         slate_parser::dialect::Dialect::new(args.flavor, args.standard, args.target, args.options);
     let pp = parser_preprocessor(&search, &dialect, &args.preprocessor_inputs)?;
@@ -867,7 +869,9 @@ pub fn record_translation_unit(
 ) -> Result<Preprocessing, PreprocessError> {
     let args = crate::target::parse_args(compiler_args)
         .map_err(|source| PreprocessError::Arguments { source })?;
-    let search = args.search_paths();
+    let search = args
+        .search_paths()
+        .map_err(|source| PreprocessError::Arguments { source })?;
     let dialect =
         slate_parser::dialect::Dialect::new(args.flavor, args.standard, args.target, args.options);
     let mut parser = parser_preprocessor(&search, &dialect, &args.preprocessor_inputs)?;

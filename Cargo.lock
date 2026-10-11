@@ -1693,6 +1693,7 @@ dependencies = [
  "clang-ast",
  "custom_debug",
  "directories",
+ "find-msvc-tools",
  "foldhash",
  "js-sys",
  "libc",

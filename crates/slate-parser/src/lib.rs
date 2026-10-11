@@ -10,6 +10,7 @@ pub mod error;
 pub mod files;
 pub mod ir;
 pub mod lexer;
+pub mod native_headers;
 pub mod parser;
 pub mod pp;
 pub mod reachability;

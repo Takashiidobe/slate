@@ -11,6 +11,7 @@ slate sysroot install <Darwin target> [--sdk <path>]
 slate sysroot <install|path|doctor> compiler-headers <clang|apple-clang>
 slate sysroot <install|path|doctor> compiler-headers gcc [x86|aarch64|arm]
 slate sysroot <install|path|doctor> compiler-headers msvc [MSVC target]
+slate sysroot <path|doctor> native [clang|gcc|msvc]
 ```
 
 From a source checkout, run commands from the workspace root using
@@ -27,8 +28,10 @@ or Windows SDK headers for `x86_64-pc-windows-msvc`.
 for the C input. Clang, Apple Clang, and GCC bundles are installed separately
 from target sysroots. MSVC headers already live in the Windows sysroot.
 
-Install the target sysroot and the appropriate compiler headers, then run
-`doctor` for each. These commands acquire headers; they do not install a
+For the host target, Slate uses the native toolchain's headers first and
+needs no installed sysroot (see [native headers](#native-headers)).
+For other targets, install the target sysroot and the appropriate compiler
+headers, then run `doctor` for each. These commands acquire headers; they do not install a
 compiler executable. FreeBSD and Android sysroots contain headers only and
 cannot supply link libraries or startup files.
 
@@ -70,6 +73,31 @@ Clang can use the Windows SDK and CRT together with its own resource headers.
 Use `apple-clang` for input built with Apple's compiler and `msvc` for input
 built with MSVC. Compiler-header availability alone does not establish
 compiler compatibility with an operating system or ABI.
+
+## Native headers
+
+When the target is the host Slate was built for, Slate asks the native
+toolchain for its include directories:
+
+| Flavor          | Query                                                                           |
+| --------------- | ------------------------------------------------------------------------------- |
+| Clang (default) | `clang --target=<host> -E -v` and `-print-resource-dir`                         |
+| GCC             | `gcc -E -v` and `-print-file-name=include`                                      |
+| MSVC            | `INCLUDE` from a developer prompt, otherwise Visual Studio via `find-msvc-tools` |
+
+Headers come from the first source that applies:
+
+1. `-nostdinc`, `-isystem`, `--sysroot`, and `-isysroot` keep their usual
+   meaning.
+2. If `SLATE_SYSROOTS` is set or the target is not the host, use the
+   installed sysroot and compiler headers. Host headers are never used.
+3. Otherwise use the native toolchain's headers.
+4. If the native query fails, use the installed sysroot. If none is
+   installed, report an error naming the compiler that failed.
+
+`path native` prints the discovered include directories. `doctor native`
+labels each one as compiler or system headers and checks that `stdio.h` is
+found.
 
 ## Supported targets
 

@@ -56,9 +56,13 @@ cargo +nightly build --release
 
 ## Setup
 
-Before translating C code, install a sysroot for your target. This is required
-to fetch the C standard library and platform headers that Slate uses to parse
-your code. Run the command for your target:
+When you translate for the machine you are on, Slate asks the native `clang`
+for its system include directories, so no setup is needed beyond having
+`clang` on `PATH`. Check what it finds with `slate sysroot doctor native`.
+
+To translate for another target, or to pin headers for reproducible output,
+install a sysroot. Setting `SLATE_SYSROOTS` makes Slate use installed sysroots
+only, even for the host. Run the command for your target:
 
 | Target                        | Command                                          |
 | ----------------------------- | ------------------------------------------------ |

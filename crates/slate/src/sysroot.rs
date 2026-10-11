@@ -1,3 +1,6 @@
+use slate_parser::compiler_args::CompilerFlavor;
+use slate_parser::native_headers;
+use slate_parser::target_info::TargetInfo;
 use slate_sysroots::{CompilerHeaders, GccFamily, Paths, Target};
 use std::path::Path;
 use std::process::ExitCode;
@@ -8,7 +11,7 @@ pub fn run(args: impl IntoIterator<Item = String>) -> std::io::Result<ExitCode> 
     let command = args.next();
     let subject = args.next();
     let usage = format!(
-        "usage: {program} <install|remove|path|doctor> <Rust target triple>\n       {program} install <Darwin target> [--sdk <path>]\n       {program} <install|path|doctor> compiler-headers <clang|apple-clang>\n       {program} <install|path|doctor> compiler-headers gcc [x86|aarch64|arm]\n       {program} <install|path|doctor> compiler-headers msvc [MSVC target triple]"
+        "usage: {program} <install|remove|path|doctor> <Rust target triple>\n       {program} install <Darwin target> [--sdk <path>]\n       {program} <install|path|doctor> compiler-headers <clang|apple-clang>\n       {program} <install|path|doctor> compiler-headers gcc [x86|aarch64|arm]\n       {program} <install|path|doctor> compiler-headers msvc [MSVC target triple]\n       {program} <path|doctor> native [clang|gcc|msvc]"
     );
     if matches!(command.as_deref(), Some("-h" | "--help")) {
         println!("{usage}");
@@ -90,6 +93,9 @@ pub fn run(args: impl IntoIterator<Item = String>) -> std::io::Result<ExitCode> 
             ExitCode::FAILURE
         });
     }
+    if subject.as_deref() == Some("native") {
+        return native(command.as_deref(), args.next(), args.next().is_some());
+    }
     let target = subject.ok_or_else(|| {
         std::io::Error::new(
             std::io::ErrorKind::InvalidInput,
@@ -150,6 +156,57 @@ pub fn run(args: impl IntoIterator<Item = String>) -> std::io::Result<ExitCode> 
         }
     }
     Ok(ExitCode::SUCCESS)
+}
+
+fn native(command: Option<&str>, flavor: Option<String>, extra: bool) -> std::io::Result<ExitCode> {
+    let invalid = |message: String| std::io::Error::new(std::io::ErrorKind::InvalidInput, message);
+    if extra || !matches!(command, Some("path" | "doctor")) {
+        return Err(invalid(
+            "native supports `path` and `doctor` with an optional clang, gcc, or msvc".into(),
+        ));
+    }
+    let flavor = flavor
+        .as_deref()
+        .unwrap_or("clang")
+        .parse::<CompilerFlavor>()
+        .map_err(invalid)?;
+    let host = slate_parser::target_registry::host()
+        .ok_or_else(|| invalid("Slate does not support this host as a target".into()))?;
+    let target = TargetInfo::for_triple(host.triple).map_err(|error| invalid(error.to_string()))?;
+    let headers = native_headers::discover(&target, flavor).map_err(std::io::Error::other)?;
+    if command == Some("path") {
+        for path in &headers.include {
+            println!("{}", path.display());
+        }
+        return Ok(ExitCode::SUCCESS);
+    }
+    println!("✓ compiler: {} for {}", headers.compiler, target.triple);
+    let mut healthy = true;
+    for path in &headers.include {
+        let present = path.is_dir();
+        let mark = if present { '✓' } else { '✗' };
+        let label = if headers.is_compiler_path(path) {
+            "compiler headers"
+        } else {
+            "system headers"
+        };
+        println!("{mark} {label}: {}", path.display());
+        healthy &= present;
+    }
+    let stdio = headers
+        .include
+        .iter()
+        .map(|path| path.join("stdio.h"))
+        .find(|path| path.is_file());
+    match &stdio {
+        Some(path) => println!("✓ stdio.h: {}", path.display()),
+        None => println!("✗ stdio.h: not found"),
+    }
+    Ok(if healthy && stdio.is_some() {
+        ExitCode::SUCCESS
+    } else {
+        ExitCode::FAILURE
+    })
 }
 
 pub fn main_result(args: impl IntoIterator<Item = String>) -> ExitCode {

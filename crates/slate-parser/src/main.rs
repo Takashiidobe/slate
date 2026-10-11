@@ -121,7 +121,7 @@ fn run() -> miette::Result<()> {
         ));
     }
     fs::metadata(Path::new(&path)).map_err(|error| miette::miette!(error))?;
-    let search = compiler_args.search_paths();
+    let search = compiler_args.search_paths().map_err(miette::Report::new)?;
     let dialect = Dialect::new(
         compiler_args.flavor,
         compiler_args.standard,

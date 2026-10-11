@@ -366,6 +366,7 @@ fn run_translate_project(
     flags: &[&str],
 ) -> Result<(), String> {
     let o = Command::new(env!("CARGO_BIN_EXE_slate"))
+        .env("SLATE_SYSROOTS", slate_parser::sysroot::root())
         .arg("translate-project")
         .args(flags)
         .arg("--compile-commands")
@@ -1095,6 +1096,7 @@ pub fn fixture_dg_additional_options(path: &Path) -> Vec<String> {
 
 pub fn translate_slate(c_src: &Path, rs_out: &Path, extra_args: &[String]) -> Result<(), String> {
     let o = Command::new(env!("CARGO_BIN_EXE_slate"))
+        .env("SLATE_SYSROOTS", slate_parser::sysroot::root())
         .args(["translate", "-std=c23"])
         .args(extra_args)
         .arg(c_src)
