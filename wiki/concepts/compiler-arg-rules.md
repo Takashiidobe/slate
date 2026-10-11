@@ -25,6 +25,10 @@ rule pipeline. Flag effects are in [compiler-flags](compiler-flags.md).
 - Value options take `=value` or a separate argument. `-m` options use the
   same definitions; no one-off parsers. Downstream sees typed values, never
   spellings.
+- `--compiler=<path>` (all flavors) is Slate-only, like `--flavor`: the
+  compiler whose include directories native header discovery queries for a
+  host target. `translate-project` passes each compile database entry's
+  `argv[0]`. It changes nothing else.
 - `-target` / `--target` (and `=` forms): the triple must be registered in
   `src/target_registry.rs` and have predefines for `--flavor`; checked at
   parse time (`TargetInfo::for_triple_and_flavor`). See

@@ -173,7 +173,7 @@ fn native(command: Option<&str>, flavor: Option<String>, extra: bool) -> std::io
     let host = slate_parser::target_registry::host()
         .ok_or_else(|| invalid("Slate does not support this host as a target".into()))?;
     let target = TargetInfo::for_triple(host.triple).map_err(|error| invalid(error.to_string()))?;
-    let headers = native_headers::discover(&target, flavor).map_err(std::io::Error::other)?;
+    let headers = native_headers::discover(&target, flavor, None).map_err(std::io::Error::other)?;
     if command == Some("path") {
         for path in &headers.include {
             println!("{}", path.display());

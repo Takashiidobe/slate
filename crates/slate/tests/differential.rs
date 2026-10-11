@@ -468,3 +468,64 @@ fn translation_uses_native_headers_without_sysroot() {
     );
     assert!(String::from_utf8_lossy(&output.stdout).contains("fn printf"));
 }
+
+#[cfg(unix)]
+#[test]
+fn translate_project_uses_compile_database_compiler_headers() {
+    use std::os::unix::fs::PermissionsExt;
+    let work =
+        Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-generated/compiler-headers");
+    let headers = work.join("wrapper-include");
+    let source_dir = work.join("src");
+    std::fs::create_dir_all(&headers).expect("create wrapper include directory");
+    std::fs::create_dir_all(&source_dir).expect("create source directory");
+    std::fs::write(
+        headers.join("slate_wrapper_marker.h"),
+        "#define SLATE_WRAPPER_MARKER 42\n",
+    )
+    .expect("write marker header");
+    let compiler = work.join("wrapper-cc");
+    std::fs::write(
+        &compiler,
+        format!(
+            "#!/bin/sh\nexec clang -isystem '{}' \"$@\"\n",
+            headers.display()
+        ),
+    )
+    .expect("write wrapper compiler");
+    std::fs::set_permissions(&compiler, std::fs::Permissions::from_mode(0o755))
+        .expect("make wrapper compiler executable");
+    let source = source_dir.join("main.c");
+    std::fs::write(
+        &source,
+        "#include <stdio.h>\n#include <slate_wrapper_marker.h>\nint main(void) { printf(\"%d\\n\", SLATE_WRAPPER_MARKER); return 0; }\n",
+    )
+    .expect("write source");
+    let database = work.join("compile_commands.json");
+    std::fs::write(
+        &database,
+        serde_json::to_vec(&serde_json::json!([{
+            "directory": source_dir,
+            "file": source,
+            "arguments": [compiler, "-c", source],
+        }]))
+        .expect("encode compile commands"),
+    )
+    .expect("write compile commands");
+    let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
+        .arg("translate-project")
+        .arg("--compile-commands")
+        .arg(&database)
+        .arg(&source_dir)
+        .arg(work.join("out"))
+        .env_remove("SLATE_SYSROOTS")
+        .env_remove("SLATE_TARGET")
+        .env_remove("SLATE_CLANG_ARGS")
+        .output()
+        .expect("run Slate with a compile database compiler");
+    assert!(
+        output.status.success(),
+        "translate-project did not use the compile database compiler's headers:\n{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+}

@@ -91,7 +91,12 @@ Headers come from the first source that applies:
    meaning.
 2. If `SLATE_SYSROOTS` is set or the target is not the host, use the
    installed sysroot and compiler headers. Host headers are never used.
-3. Otherwise use the native toolchain's headers.
+3. Otherwise use the native toolchain's headers. `translate-project` queries
+   the compiler named first in each `compile_commands.json` entry (passed to
+   slate-parser as `--compiler=<path>`), so `/usr/bin/clang-18` or a wrapper
+   script reports its own include directories. If that compiler cannot
+   answer the flavor's query, Slate uses `clang` or `gcc` from `PATH` instead.
+   MSVC ignores `--compiler`.
 4. If the native query fails, use the installed sysroot. If none is
    installed, report an error naming the compiler that failed.
 

@@ -47,17 +47,19 @@ pub fn is_host(target: &TargetInfo) -> bool {
 pub fn discover(
     target: &TargetInfo,
     flavor: CompilerFlavor,
+    compiler: Option<&str>,
 ) -> Result<NativeHeaders, NativeHeaderError> {
-    type Cache = Mutex<HashMap<(String, CompilerFlavor), Result<NativeHeaders, NativeHeaderError>>>;
+    type Key = (String, CompilerFlavor, Option<String>);
+    type Cache = Mutex<HashMap<Key, Result<NativeHeaders, NativeHeaderError>>>;
     static CACHE: OnceLock<Cache> = OnceLock::new();
-    let key = (target.triple.clone(), flavor);
+    let key = (target.triple.clone(), flavor, compiler.map(str::to_string));
     let cache = CACHE.get_or_init(Default::default);
     if let Some(cached) = cache.lock().ok().and_then(|cache| cache.get(&key).cloned()) {
         return cached;
     }
     let discovered = match flavor {
-        CompilerFlavor::Clang => clang(&target.triple),
-        CompilerFlavor::Gcc => gcc(),
+        CompilerFlavor::Clang => clang(compiler.unwrap_or("clang"), &target.triple),
+        CompilerFlavor::Gcc => gcc(compiler.unwrap_or("gcc")),
         CompilerFlavor::Msvc => msvc(&target.triple),
     };
     if let Ok(mut cache) = cache.lock() {
@@ -66,22 +68,22 @@ pub fn discover(
     discovered
 }
 
-fn clang(triple: &str) -> Result<NativeHeaders, NativeHeaderError> {
+fn clang(compiler: &str, triple: &str) -> Result<NativeHeaders, NativeHeaderError> {
     let target = format!("--target={triple}");
-    let root = stdout_line("clang", &[&target, "-print-resource-dir"])?;
+    let root = stdout_line(compiler, &[&target, "-print-resource-dir"])?;
     Ok(NativeHeaders {
-        compiler: "clang".into(),
+        compiler: compiler.into(),
         compiler_root: Some(PathBuf::from(root)),
-        include: search_list("clang", &[&target])?,
+        include: search_list(compiler, &[&target])?,
     })
 }
 
-fn gcc() -> Result<NativeHeaders, NativeHeaderError> {
-    let include = stdout_line("gcc", &["-print-file-name=include"])?;
+fn gcc(compiler: &str) -> Result<NativeHeaders, NativeHeaderError> {
+    let include = stdout_line(compiler, &["-print-file-name=include"])?;
     Ok(NativeHeaders {
-        compiler: "gcc".into(),
+        compiler: compiler.into(),
         compiler_root: Path::new(&include).parent().map(Path::to_path_buf),
-        include: search_list("gcc", &[])?,
+        include: search_list(compiler, &[])?,
     })
 }
 

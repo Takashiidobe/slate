@@ -251,7 +251,16 @@ fn command_arguments(
 ) -> Vec<String> {
     let compiler = &words[0];
     let flavor = options.flavor.unwrap_or_else(|| compiler_flavor(compiler));
-    let mut args = vec![format!("--flavor={flavor}")];
+    let executable = match Path::new(compiler) {
+        path if path.is_relative() && path.components().count() > 1 => {
+            absolute_path(directory, path).display().to_string()
+        }
+        _ => compiler.clone(),
+    };
+    let mut args = vec![
+        format!("--flavor={flavor}"),
+        format!("--compiler={executable}"),
+    ];
     args.extend(compiler_target(compiler).map(|target| format!("--target={target}")));
     args.extend(
         words[1..]

@@ -156,6 +156,7 @@ pub struct CompilerArgs {
     pub nostdlibinc: bool,
     pub nostdinc: bool,
     pub flavor: CompilerFlavor,
+    pub compiler: Option<String>,
     pub target: TargetInfo,
 }
 
@@ -194,7 +195,13 @@ impl CompilerArgs {
         if explicit_root || sysroot::pinned() || !native_headers::is_host(&self.target) {
             return Ok(installed());
         }
-        match native_headers::discover(&self.target, self.flavor) {
+        let explicit = self.compiler.as_deref().and_then(|compiler| {
+            native_headers::discover(&self.target, self.flavor, Some(compiler)).ok()
+        });
+        match explicit.map_or_else(
+            || native_headers::discover(&self.target, self.flavor, None),
+            Ok,
+        ) {
             Ok(native) => Ok(native.system_paths(!self.nostdlibinc)),
             Err(_) if root.is_dir() => Ok(installed()),
             Err(error) => Err(CompilerArgError::SystemHeaders {
@@ -264,6 +271,7 @@ struct ParsedCompilerArgs {
     nostdlibinc: bool,
     nostdinc: bool,
     flavor: CompilerFlavor,
+    compiler: Option<String>,
     target: String,
     arch_mode: Option<ArchMode>,
     regparm: Option<u8>,
@@ -350,6 +358,7 @@ enum Opt {
     Nostdlibinc,
     Nostdinc,
     Flavor,
+    Compiler,
     Target,
     ArchMode,
     RegParm,
@@ -439,6 +448,7 @@ impl std::fmt::Display for Opt {
             Self::Nostdlibinc => "nostdlibinc",
             Self::Nostdinc => "nostdinc",
             Self::Flavor => "flavor",
+            Self::Compiler => "compiler",
             Self::Target => "target",
             Self::ArchMode => "m16|m32|m64|mx32",
             Self::RegParm => "mregparm",
@@ -524,6 +534,7 @@ impl Opt {
             | Self::Nostdlibinc
             | Self::Nostdinc
             | Self::Flavor
+            | Self::Compiler
             | Self::Target
             | Self::Warning
             | Self::Pedantic
@@ -978,6 +989,7 @@ impl CompilerArgParser {
             nostdlibinc: raw.nostdlibinc,
             nostdinc: raw.nostdinc,
             flavor,
+            compiler: raw.compiler,
             target,
         })
     }
@@ -1280,6 +1292,9 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                 argument,
                 "compiler flavor",
             )?;
+        } else if let Some(value) = option_value(argument, "compiler") {
+            parsed.saw(Opt::Compiler, argument);
+            parsed.compiler = Some(next_value(arguments, &mut index, argument, value)?);
         } else if let Some(value) = option_value(argument, "target") {
             parsed.saw(Opt::Target, argument);
             parsed.target = next_value(arguments, &mut index, argument, value)?;
