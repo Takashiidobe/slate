@@ -1035,6 +1035,7 @@ pub enum Attribute {
     AllocAlign(Expr),
     Cleanup(Expr),
     CountedBy(String),
+    BoundedBy(String),
     ReturnsNonNull,
     WarnUnusedResult,
     Sentinel(Option<i64>),

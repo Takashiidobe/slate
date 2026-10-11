@@ -428,6 +428,13 @@ fn parse_attribute_value(
         "counted_by" => Ok(single_ident()
             .map(Attribute::CountedBy)
             .unwrap_or_else(|| invalid_attribute(name, arguments))),
+        "counted_by_or_null" | "sized_by" | "sized_by_or_null"
+            if context.dialect().flavor().is_clang() =>
+        {
+            Ok(single_ident()
+                .map(Attribute::BoundedBy)
+                .unwrap_or_else(|| invalid_attribute(name, arguments)))
+        }
         "weak" if arguments.is_empty() => Ok(Attribute::Weak),
         "used" if arguments.is_empty() => Ok(Attribute::Used),
         "retain" if arguments.is_empty() => Ok(Attribute::Retain),

@@ -95,6 +95,7 @@ pub struct TypeResolver {
     pub(super) constants: HashMap<BindingId, Operand>,
     pub(super) record_fields: HashMap<TypeId, Vec<QualType>>,
     pub(super) field_counters: HashMap<TypeId, Vec<Option<String>>>,
+    pending_counters: HashMap<TypeId, Vec<(String, crate::ast::Loc)>>,
     field_alignments: HashMap<TypeId, Vec<u64>>,
     pub(super) pragmas: super::pragmas::Pragmas,
     pub(super) diagnostics: Vec<super::SemaError>,
@@ -164,6 +165,7 @@ impl TypeResolver {
             constants: HashMap::new(),
             record_fields: HashMap::new(),
             field_counters: HashMap::new(),
+            pending_counters: HashMap::new(),
             field_alignments: HashMap::new(),
             pragmas: super::pragmas::Pragmas::default(),
             diagnostics: Vec::new(),
@@ -2307,6 +2309,50 @@ impl TypeResolver {
             .any(|(tag, defined)| defined == id && self.tag_failures.contains_key(tag))
     }
 
+    fn collect_member_names(&self, record: QualType, names: &mut HashSet<String>) {
+        let CTypeKind::Record { id, .. } = self.ctypes.canonical_kind(record) else {
+            return;
+        };
+        let (
+            TypeDefinitionKind::Record {
+                fields: Some(fields),
+                ..
+            },
+            Some(types),
+        ) = (
+            &self.definitions[id.0 as usize].kind,
+            self.record_fields.get(id),
+        )
+        else {
+            return;
+        };
+        for (field, member) in fields.iter().zip(types) {
+            match &field.name {
+                Some(name) => {
+                    names.insert(name.clone());
+                }
+                None => self.collect_member_names(*member, names),
+            }
+        }
+    }
+
+    fn is_anonymous_member(&self, id: TagId) -> bool {
+        self.tags.iter().any(|tag| {
+            let TagBody::Record(items) = &tag.body else {
+                return false;
+            };
+            items.iter().any(|item| {
+                matches!(
+                    &item.value,
+                    FieldItemKind::Field(declaration)
+                        if declaration.declarators.is_empty()
+                            && declaration.specifiers.ty
+                                == TypeSpecifier::Tag(TagSpecifier::Definition(id))
+                )
+            })
+        })
+    }
+
     fn define_tag(&mut self, tag: &TagDefinition) -> Result<TypeId, ResolveError> {
         if let Some(error) = self.tag_failures.get(&tag.id) {
             return Err(error.clone());
@@ -2344,6 +2390,8 @@ impl TypeResolver {
                 let mut fields = Vec::new();
                 let mut field_types = Vec::new();
                 let mut counters = Vec::new();
+                let mut members = HashSet::new();
+                let mut unresolved = Vec::new();
                 let mut requests = Vec::new();
                 let mut item_starts = Vec::with_capacity(items.len() + 1);
                 for item in items {
@@ -2388,6 +2436,17 @@ impl TypeResolver {
                         }));
                         field_types.push(resolved);
                         counters.push(None);
+                        self.collect_member_names(resolved, &mut members);
+                        if let CTypeKind::Record { id: member, .. } =
+                            self.ctypes.canonical_kind(resolved)
+                            && let Some(pending) = self.pending_counters.remove(member)
+                        {
+                            unresolved.extend(
+                                pending
+                                    .into_iter()
+                                    .filter(|(name, _)| !members.contains(name)),
+                            );
+                        }
                         requests.push(field_request(
                             self,
                             &declaration.specifiers.attributes,
@@ -2431,15 +2490,28 @@ impl TypeResolver {
                             bit_width,
                         }));
                         field_types.push(resolved);
-                        counters.push(
-                            declaration
-                                .specifiers
-                                .attributes_with(&declarator.declarator, &declarator.attributes)
-                                .find_map(|attribute| match &attribute.value {
-                                    Attribute::CountedBy(counter) => Some(counter.clone()),
-                                    _ => None,
-                                }),
-                        );
+                        let attributes = declaration
+                            .specifiers
+                            .attributes_with(&declarator.declarator, &declarator.attributes);
+                        counters.push(attributes.clone().find_map(
+                            |attribute| match &attribute.value {
+                                Attribute::CountedBy(counter) => Some(counter.clone()),
+                                _ => None,
+                            },
+                        ));
+                        unresolved.extend(attributes.filter_map(
+                            |attribute| match &attribute.value {
+                                Attribute::CountedBy(counter) | Attribute::BoundedBy(counter)
+                                    if !members.contains(counter) =>
+                                {
+                                    Some((counter.clone(), attribute.expansion))
+                                }
+                                _ => None,
+                            },
+                        ));
+                        if let Some(name) = declarator.declarator.name() {
+                            members.insert(name.to_owned());
+                        }
                         let field = declarator
                             .attributes
                             .iter()
@@ -2451,6 +2523,20 @@ impl TypeResolver {
                             &field,
                         )?);
                     }
+                }
+                if self.flavor().is_gcc() || self.dialect.options().late_parsed_attributes {
+                    unresolved.retain(|(name, _)| !members.contains(name));
+                }
+                if let Some((name, loc)) = unresolved.first() {
+                    if tag.name.is_some() || !self.is_anonymous_member(tag.id) {
+                        return Err(super::names::ResolveError::Unresolved {
+                            namespace: "member",
+                            name: name.clone(),
+                            loc: *loc,
+                        }
+                        .into());
+                    }
+                    self.pending_counters.insert(id, unresolved);
                 }
                 item_starts.push(fields.len());
                 let siblings = items

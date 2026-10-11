@@ -245,7 +245,8 @@ Fixtures: `sema/ir_attribute_applicability.c`,
 | `TypeResolver::resolve_type_name` | `aligned` in a type name's specifiers (gcc only; clang and msvc warn and ignore) | an anonymous aligned `Typedef` ([types](ir/types.md#alignment)) |
 | `types::field_request` | `packed`, `aligned` on field and its declaration | record layout |
 | `names::Resolver::bind_function` | `overloadable` (clang) on a function declaration or definition | a fresh binding per overload and `NameResolution::overload_sets`; calls pick one, and the function prints `[overloadable]` ([ir/declarations](ir/declarations.md#overloadable-functions)) |
-| `TypeResolver::field_counters` (`define_tag`) | `counted_by(member)` on a field | `__builtin_counted_by_ref` result ([builtins](ir/builtins.md#compile-time-queries-and-types)); the counter name is not checked at the definition |
+| `TypeResolver::field_counters` (`define_tag`) | `counted_by(member)` on a field | `__builtin_counted_by_ref` result ([builtins](ir/builtins.md#compile-time-queries-and-types)) |
+| counter check (`define_tag`) | `counted_by`, plus clang's `counted_by_or_null`, `sized_by`, `sized_by_or_null` (`Attribute::BoundedBy`) | rejects a counter that is not a member of the record, reached through anonymous members in either direction; later members count only under gcc or clang's `-fexperimental-late-parse-attributes`. An anonymous record defers its unresolved counters to the record that embeds it |
 | record layout (`define_tag`) | `packed`, `ms_struct`, `gcc_struct`, `aligned` on the tag, plus `#pragma pack` / `ms_struct` | offsets and alignment |
 | entity request | `common`, `nocommon` | `[common]` |
 | `TypeResolver::resolve_declarator` | declarator-position `vector_size`, `ext_vector_type`, `mode` | the declarator's type |

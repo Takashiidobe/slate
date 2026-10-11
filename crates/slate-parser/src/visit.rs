@@ -543,6 +543,7 @@ pub fn walk_attribute<V: Visitor + ?Sized>(
         | Attribute::WeakImport
         | Attribute::TlsModel(_)
         | Attribute::CountedBy(_)
+        | Attribute::BoundedBy(_)
         | Attribute::MsStruct
         | Attribute::CallingConvention(_)
         | Attribute::NoMips16
