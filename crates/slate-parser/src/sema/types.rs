@@ -1687,6 +1687,14 @@ impl TypeResolver {
             self.aliases.insert(binding, alias);
             return Ok(id);
         }
+        if let Some(previous) = self.alias(binding)
+            && let CTypeKind::Typedef { underlying, .. } = *self.ctypes.kind(previous.ty)
+            && !self.typedef_redefinition_allowed(underlying, resolved)
+        {
+            return Err(ResolveError::Rejected(
+                "typedef redefinition with different types",
+            ));
+        }
         let previous = self
             .alias(binding)
             .and_then(|previous| self.ctypes.typedef_alignment(previous));
@@ -1702,6 +1710,12 @@ impl TypeResolver {
         self.aliases.insert(binding, alias);
         self.alias_definitions.insert(node, (id, alias));
         Ok(id)
+    }
+
+    fn typedef_redefinition_allowed(&self, previous: QualType, redefined: QualType) -> bool {
+        self.ctypes.compatible(previous, redefined)
+            || self.flavor().is_msvc()
+                && same_layout(&self.ir_type(previous), &self.ir_type(redefined))
     }
 
     pub(super) fn declare_provisional_alias(

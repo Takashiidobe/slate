@@ -72,6 +72,11 @@ reject; where one only warns (always MSVC), accept with
   initializer is counted (`Checker::previously_sized`): `T a[64]; T a[] =
   {x, y};` has 64 elements, zero-filled (CPython's `pyexpat.c`).
 - Tag redefinitions: `TypeResolver::define_tag`.
+- File-scope typedef redefinition: `define_alias` rejects "typedef
+  redefinition with different types" unless the types are compatible. The
+  msvc flavor also accepts a same-layout difference (`unsigned int` vs `int`,
+  cl.exe's C4142 warning, not emitted). Block-scope redefinition is still
+  rejected as a duplicate name (slate-parser-q1z8).
 - Fixtures: `ir_redeclaration_conflicts.c`, `ir_redeclaration_compatible.c`,
   `array_redeclaration_composite_extent.c`,
   `x86_64-pc-windows-msvc/ir_redeclaration_layout.c`.
