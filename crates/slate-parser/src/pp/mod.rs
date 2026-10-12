@@ -1777,10 +1777,20 @@ fn expand_has_checks(tokens: &[Span<Token>], dialect: &Dialect) -> Vec<Span<Toke
     };
     let has_warning = |option: &str| has_checks::has_warning(option) as i64;
     let is_identifier = |name: &str| has_checks::is_identifier(name, standard, microsoft) as i64;
+    let triple = dialect.target().triple.as_str();
     let mut expanded = Vec::with_capacity(tokens.len());
     let mut index = 0;
     while index < tokens.len() {
+        let target_check = match tokens.value_at(index) {
+            Some(Token::Ident(name)) if flavor.is_clang() => {
+                has_checks::TargetCheck::from_macro(name)
+            }
+            _ => None,
+        };
+        let is_target =
+            |name: &str| target_check.is_some_and(|check| check.matches(triple, name)) as i64;
         let check: Option<&dyn Fn(&str) -> i64> = match tokens.value_at(index) {
+            _ if target_check.is_some() => Some(&is_target),
             Some(Token::Ident(name)) if name == "__has_attribute" => Some(&has_attribute),
             Some(Token::Ident(name)) if name == "__has_c_attribute" => Some(&has_c_attribute),
             Some(Token::Ident(name)) if name == "__has_cpp_attribute" && flavor.is_gcc() => {
@@ -1855,6 +1865,12 @@ fn is_defined_operator(name: &str, flavor: CompilerFlavor) -> bool {
                         | "__has_declspec_attribute"
                         | "__has_warning"
                         | "__is_identifier"
+                        | "__is_target_arch"
+                        | "__is_target_vendor"
+                        | "__is_target_os"
+                        | "__is_target_environment"
+                        | "__is_target_variant_os"
+                        | "__is_target_variant_environment"
                 ),
                 _ => name == "__has_cpp_attribute",
             }

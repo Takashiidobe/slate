@@ -288,6 +288,13 @@ token plus an interned `HideSet`; file tokens start empty.
   `has_checks/clang.rs` (generated, [generated-sources](generated-sources.md)):
   clang's warning groups, and its keywords sorted by the C modes that
   reserve them (`asm` gnu only, `typeof` gnu or C23, `restrict` C99+).
+- clang only: `__is_target_arch/vendor/os/environment` answer from the
+  target triple with clang's `PPMacroExpansion.cpp` rules (case-insensitive;
+  `arm` matches `thumb`, `armv7` matches `thumbv7` but `armv6` does not;
+  `unknown` environment matches only a triple without one; unrecognised
+  names are 0). `__is_target_variant_os/environment` are always 0 because
+  slate has no Darwin target variant. `__has_builtin` reports all six
+  (`has_checks/target.rs`, fixtures `clang/*/*/is_target.c`).
 - `__has_feature` / `__has_extension` answer per flavor and standard,
   probed against gcc and clang in every C mode. The C11 names (`c_alignas`,
   `c_alignof`, `c_atomic`, `c_generic_selections`, `c_static_assert`,

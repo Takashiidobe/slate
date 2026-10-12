@@ -418,7 +418,9 @@ impl Preprocessor<'_> {
                     Some(false)
                 }
                 Token::Ident(name)
-                    if name == "__is_identifier" && self.dialect.flavor().is_clang() =>
+                    if self.dialect.flavor().is_clang()
+                        && (name == "__is_identifier"
+                            || super::has_checks::TargetCheck::from_macro(name).is_some()) =>
                 {
                     Some(false)
                 }

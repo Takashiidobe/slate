@@ -1,6 +1,9 @@
 use crate::compiler_args::{CompilerFlavor, LanguageStandard};
 
 mod clang;
+mod target;
+
+pub(super) use target::TargetCheck;
 
 #[derive(Debug, Clone, Copy)]
 enum KeywordModes {
@@ -47,6 +50,7 @@ fn normalize(name: &str) -> &str {
 
 pub(super) fn has_builtin(name: &str, flavor: CompilerFlavor) -> bool {
     KNOWN_BUILTINS.binary_search(&name).is_ok()
+        || (flavor.is_clang() && TargetCheck::from_macro(name).is_some())
         || (flavor.is_gcc() && GCC_ONLY_BUILTINS.binary_search(&name).is_ok())
 }
 
