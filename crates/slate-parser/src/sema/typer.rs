@@ -3,7 +3,7 @@ use super::builtins::{CustomBuiltin, DerivedSignature};
 use super::ctype::convert::{CastKind, Conversion, ConversionContext};
 use super::ctype::{CTypeKind, Extent, FloatKind, QualType, Qualifiers};
 use super::expression::{
-    SourceLocationBuiltin, VaBuiltin, choose_expr_operands, constant_p_operand,
+    SourceLocationBuiltin, VaBuiltin, cf_string_units, choose_expr_operands, constant_p_operand,
     source_location_builtin, va_builtin,
 };
 use super::numeric::ResolveError;
@@ -1366,6 +1366,21 @@ impl TypeResolver {
                 }
                 self.builtin_return_type(builtin)
                     .ok_or(ResolveError::Internal("SEH builtin return type"))?
+            }
+            CustomBuiltin::CfString => {
+                let [argument] = arguments else {
+                    return Err(ResolveError::Rejected(
+                        "too many or too few arguments to function call",
+                    ));
+                };
+                if cf_string_units(argument).is_none() {
+                    return Err(ResolveError::Rejected(
+                        "CFString literal is not a string constant",
+                    ));
+                }
+                self.operand_type(argument)?;
+                self.builtin_return_type(builtin)
+                    .ok_or(ResolveError::Internal("CFString builtin return type"))?
             }
             CustomBuiltin::Noop => {
                 for argument in arguments {

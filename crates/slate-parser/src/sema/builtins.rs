@@ -245,6 +245,7 @@ pub(super) enum CustomBuiltin {
     FloatClassify,
     Shuffle,
     CountedByRef,
+    CfString,
     Seh(SehIntrinsic),
     Noop,
 }
@@ -275,6 +276,7 @@ pub(super) fn custom_builtin(builtin: &ClangBuiltin) -> Option<CustomBuiltin> {
         "BuiltinAddressof" => CustomBuiltin::AddressOf,
         "BuiltinClassifyType" => CustomBuiltin::ClassifyType,
         "CountedByRef" => CustomBuiltin::CountedByRef,
+        "BuiltinCFStringMakeConstantString" => CustomBuiltin::CfString,
         "ExceptionCode" => CustomBuiltin::Seh(SehIntrinsic::ExceptionCode),
         "ExceptionInfo" => CustomBuiltin::Seh(SehIntrinsic::ExceptionInfo),
         "AbnormalTermination" => CustomBuiltin::Seh(SehIntrinsic::AbnormalTermination),
@@ -938,6 +940,9 @@ impl TypeResolver {
                 },
                 signed: *name == "msint32_t",
             },
+            BuiltinType::Opaque("constant_CFString") => {
+                return self.alias(*self.builtin_typedefs.get("__NSConstantString")?);
+            }
             BuiltinType::Opaque(name) => {
                 return self.alias(*self.builtin_typedefs.get(*name)?);
             }

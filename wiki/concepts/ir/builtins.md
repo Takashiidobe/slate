@@ -7,6 +7,7 @@
 - [Integer arithmetic and bits](#integer-arithmetic-and-bits)
 - [Floating point](#floating-point)
 - [Control flow and hints](#control-flow-and-hints)
+- [CoreFoundation constant strings](#corefoundation-constant-strings)
 - [Variadic arguments](#variadic-arguments)
 - [Vector builtin expansion](#vector-builtin-expansion)
 - [Atomic operations](#atomic-operations)
@@ -100,6 +101,18 @@ infinities in `lowerer/values.rs`. `flt_rounds` calls the C helper in
 
 Parser: `sema/expression.rs::function_like_builtin`. Slate: `lowerer/values.rs`
 for hints and `lowerer/target_features.rs` for CPU feature queries.
+
+## CoreFoundation constant strings
+
+The clang flavor predeclares `struct __NSConstantString_tag { const int *isa;
+int flags; const char *str; long length; }` and `typedef ... __NSConstantString`
+from `<built-in>` (`Preprocessor::predeclared_typedefs`, all targets).
+`__builtin___CFStringMakeConstantString("lit")` (`CustomBuiltin::CfString`,
+`Lowerer::cf_string`) needs a plain ASCII string literal and lowers to
+`addr_of` of a fresh internal global `{ __CFConstantStringClassReference, 1992,
+"lit", length }`; the extern `int[]` class reference is created on first use.
+The registry's `constant_CFString` resolves to `__NSConstantString`. Only the
+default (objc) runtime ABI is modelled, not `-fcf-runtime-abi=swift`.
 
 ## Variadic arguments
 

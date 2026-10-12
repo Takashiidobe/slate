@@ -1244,7 +1244,13 @@ fn overloadable<'a>(mut attributes: impl Iterator<Item = &'a Span<Attribute>>) -
     attributes.any(|attribute| attribute.value == Attribute::Overloadable)
 }
 
-const BUILTIN_TYPEDEFS: &[&str] = &["FILE", "jmp_buf", "sigjmp_buf", "ucontext_t"];
+const BUILTIN_TYPEDEFS: &[&str] = &[
+    "FILE",
+    "jmp_buf",
+    "sigjmp_buf",
+    "ucontext_t",
+    "__NSConstantString",
+];
 
 fn passes_object_size(declarator: &Declarator) -> bool {
     declarator.function_parameters().is_some_and(|parameters| {

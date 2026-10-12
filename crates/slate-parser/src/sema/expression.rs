@@ -479,11 +479,153 @@ impl Lowerer {
                 let c = self.result(e)?;
                 Ok(self.operand(e, c, ValueKind::Seh(intrinsic)))
             }
+            CustomBuiltin::CfString => self.cf_string(e, arguments),
             CustomBuiltin::Noop => {
                 let c = self.result(e)?;
                 Ok(self.operand(e, c, ValueKind::Constant(Number::Integer(0u32.into()))))
             }
         }
+    }
+
+    fn cf_string(&mut self, e: &Expr, arguments: &[Expr]) -> Result<Operand, ResolveError> {
+        let [argument] = arguments else {
+            return Err(ResolveError::Internal("CFString builtin arity"));
+        };
+        let length = cf_string_units(argument)
+            .ok_or(ResolveError::Internal("CFString literal"))?
+            .len();
+        let string = self.place(argument)?;
+        let string = self.read(argument, string)?;
+        let c = self.result(e)?;
+        let record = self
+            .types
+            .ctypes
+            .pointee(c)
+            .ok_or(ResolveError::Internal("CFString result is not a pointer"))?;
+        let record_ty = self.types.ir_type(record);
+        let int = self.types.ctypes.int();
+        let int_ty = self.types.ir_type(int);
+        let long = self.types.ctypes.qual(CTypeKind::Int {
+            rank: super::ctype::IntRank::Long,
+            signed: true,
+        });
+        let long_ty = self.types.ir_type(long);
+        let class_pointer = self
+            .types
+            .ctypes
+            .pointer(int.with(super::ctype::Qualifiers {
+                is_const: true,
+                ..super::ctype::Qualifiers::NONE
+            }));
+        let class_pointer_ty = self.types.ir_type(class_pointer);
+        let class_id = self.cf_class_reference(e);
+        let class = self.value(
+            e,
+            class_pointer_ty,
+            ValueKind::ArrayDecay {
+                place: Place {
+                    ty: Type::Array {
+                        element: Box::new(int_ty.clone()),
+                        length: None,
+                    },
+                    kind: PlaceKind::Binding(class_id),
+                    access: Access::default(),
+                },
+                length: None,
+            },
+        );
+        let flags = self.value(
+            e,
+            int_ty,
+            ValueKind::Constant(Number::SignedInteger(1992.into())),
+        );
+        let length = self.value(
+            e,
+            long_ty,
+            ValueKind::Constant(Number::SignedInteger(length.into())),
+        );
+        let members = [class, flags, string.value, length]
+            .into_iter()
+            .enumerate()
+            .map(|(index, value)| AggregateMember {
+                target: AggregateTarget::Field(index),
+                value,
+            })
+            .collect();
+        let initializer = self.value(
+            e,
+            record_ty.clone(),
+            ValueKind::Aggregate {
+                members,
+                zero_fill: false,
+            },
+        );
+        let id = self.fresh();
+        self.module.globals.push(e.derive(Global {
+            variable: Variable {
+                id,
+                name: format!("_unnamed_cfstring_{}", id.0),
+                ty: record_ty.clone(),
+                storage: StorageDuration::Static,
+                restrict: false,
+                is_const: false,
+                access: Access::default(),
+                constexpr: false,
+                alignment: None,
+                cleanup: None,
+                register: None,
+                initializer: Some(initializer),
+            },
+            linkage: Linkage::Internal,
+            symbol: SymbolAttributes::default(),
+            definition: true,
+            common: false,
+        }));
+        let place = Place {
+            ty: record_ty,
+            kind: PlaceKind::Binding(id),
+            access: Access::default(),
+        };
+        Ok(self.operand(e, c, ValueKind::AddressOf(place)))
+    }
+
+    fn cf_class_reference(&mut self, e: &Expr) -> BindingId {
+        const NAME: &str = "__CFConstantStringClassReference";
+        if let Some(global) = self
+            .module
+            .globals
+            .iter()
+            .find(|global| global.value.variable.name == NAME)
+        {
+            return global.value.variable.id;
+        }
+        let int = self.types.ctypes.int();
+        let element = self.types.ir_type(int);
+        let id = self.fresh();
+        self.module.globals.push(e.derive(Global {
+            variable: Variable {
+                id,
+                name: NAME.into(),
+                ty: Type::Array {
+                    element: Box::new(element),
+                    length: None,
+                },
+                storage: StorageDuration::Static,
+                restrict: false,
+                is_const: false,
+                access: Access::default(),
+                constexpr: false,
+                alignment: None,
+                cleanup: None,
+                register: None,
+                initializer: None,
+            },
+            linkage: Linkage::External,
+            symbol: SymbolAttributes::default(),
+            definition: false,
+            common: false,
+        }));
+        id
     }
 
     fn source_location(
@@ -2741,6 +2883,17 @@ pub(super) enum VaBuiltin {
     Start,
     End,
     Copy,
+}
+
+pub(super) fn cf_string_units(argument: &Expr) -> Option<Vec<u32>> {
+    let ExprKind::StringLiteral(literal) = &argument.value else {
+        return None;
+    };
+    if literal.encoding != crate::const_expr::Encoding::Plain {
+        return None;
+    }
+    let units = literal.execution_units(8);
+    units.iter().all(|unit| *unit < 128).then_some(units)
 }
 
 pub(super) fn specially_lowered(callee: &Expr, arguments: &[Expr]) -> bool {

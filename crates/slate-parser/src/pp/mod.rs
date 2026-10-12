@@ -612,9 +612,27 @@ impl<'a> Preprocessor<'a> {
     }
 
     pub fn predeclared_typedefs(&mut self) -> Result<Vec<PPNode>, PPError> {
-        if !self.dialect.features().microsoft_compatibility {
+        let mut source = String::new();
+        if self.dialect.flavor() == CompilerFlavor::Clang {
+            source.push_str(
+                "struct __NSConstantString_tag { const int *isa; int flags; const char *str; long length; };\n\
+                 typedef struct __NSConstantString_tag __NSConstantString;\n",
+            );
+        }
+        if self.dialect.features().microsoft_compatibility {
+            source.push_str(&self.size_type_declaration());
+        }
+        if source.is_empty() {
             return Ok(Vec::new());
         }
+        let file = self
+            .files
+            .intern(PathBuf::from("<built-in>"), HeaderKind::System);
+        self.parse_source(&source, file)
+            .map_err(|failure| self.render_error(failure))
+    }
+
+    fn size_type_declaration(&self) -> String {
         let target = self.dialect.target();
         let size_type = if target.pointer_width == target.int_width {
             "unsigned int"
@@ -623,11 +641,7 @@ impl<'a> Preprocessor<'a> {
         } else {
             "unsigned long long"
         };
-        let file = self
-            .files
-            .intern(PathBuf::from("<built-in>"), HeaderKind::System);
-        self.parse_source(&format!("typedef {size_type} size_t;\n"), file)
-            .map_err(|failure| self.render_error(failure))
+        format!("typedef {size_type} size_t;\n")
     }
 
     fn seed_builtin_names(&mut self, flavor: CompilerFlavor) {
