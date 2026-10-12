@@ -41,14 +41,46 @@ fn word(token: &Token) -> Option<&str> {
     }
 }
 
+fn decorator_end(tokens: &[Span<Token>], position: usize) -> Option<usize> {
+    if tokens[position].value != Token::LBrace || position == 0 {
+        return None;
+    }
+    let previous = &tokens[position - 1].value;
+    if matches!(
+        previous,
+        Token::Newline | Token::LBrace | Token::RBrace | Token::Semi
+    ) || is_ms_asm_keyword(Some(previous))
+    {
+        return None;
+    }
+    let mut end = position;
+    while tokens.get(end).map(|token| &token.value) == Some(&Token::LBrace) {
+        let close = tokens[end..]
+            .iter()
+            .position(|token| matches!(token.value, Token::RBrace | Token::Newline))?;
+        if tokens[end + close].value != Token::RBrace {
+            return None;
+        }
+        end += close + 1;
+    }
+    Some(end)
+}
+
 fn instruction_end(tokens: &[Span<Token>], start: usize) -> usize {
-    tokens[start..]
-        .iter()
-        .position(|token| {
-            matches!(token.value, Token::Newline | Token::LBrace | Token::RBrace)
-                || is_ms_asm_keyword(Some(&token.value))
-        })
-        .map_or(tokens.len(), |offset| start + offset)
+    let mut position = start;
+    while let Some(token) = tokens.get(position) {
+        if let Some(end) = decorator_end(tokens, position) {
+            position = end;
+            continue;
+        }
+        if matches!(token.value, Token::Newline | Token::LBrace | Token::RBrace)
+            || is_ms_asm_keyword(Some(&token.value))
+        {
+            break;
+        }
+        position += 1;
+    }
+    position
 }
 
 impl Parser {
@@ -124,6 +156,16 @@ impl Parser {
                 }
                 marked.push(token.clone().with_value(Token::Newline));
                 line = token_line;
+            }
+            if let Some(end) = decorator_end(tokens, position)
+                && self.token_line(&tokens[position - 1]) == token_line
+            {
+                for token in &tokens[position..end] {
+                    positions.push(marked.len());
+                    marked.push(token.clone());
+                }
+                position = end;
+                continue;
             }
             match token.value {
                 Token::Semi => {
@@ -327,10 +369,40 @@ impl<'p, 'a> OperandParser<'p, 'a> {
         } else {
             self.additive()?
         };
+        let operand = self.decorated(operand)?;
         if self.pos != self.tokens.len() {
             return Err(self.error("unexpected token in `__asm` operand"));
         }
         Ok(*operand)
+    }
+
+    fn decorated(&mut self, operand: Operand) -> Result<Operand, ParseError> {
+        let mut decorators = Vec::new();
+        while self.peek() == Some(&Token::LBrace) {
+            let Some(length) = self.tokens[self.pos..]
+                .iter()
+                .position(|token| token.value == Token::RBrace)
+            else {
+                return Err(self.error("expected `}` in `__asm` operand"));
+            };
+            decorators.push(
+                self.tokens[self.pos..=self.pos + length]
+                    .iter()
+                    .map(|token| token.value.to_string())
+                    .collect(),
+            );
+            self.pos += length + 1;
+        }
+        if decorators.is_empty() {
+            return Ok(operand);
+        }
+        Ok(self.node(
+            MsAsmExpr::Decorated {
+                operand,
+                decorators,
+            },
+            0,
+        ))
     }
 
     fn error(&self, message: &str) -> ParseError {

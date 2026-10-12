@@ -139,7 +139,16 @@ impl Lowerer {
                 lowered.text("\n");
             }
             let mut operands = Vec::with_capacity(instruction.operands.len());
+            let mut decorators = Vec::with_capacity(instruction.operands.len());
             for operand in &instruction.operands {
+                let (operand, decorator) = match &operand.value {
+                    MsAsmExpr::Decorated {
+                        operand,
+                        decorators,
+                    } => (&**operand, decorators.concat()),
+                    _ => (operand, String::new()),
+                };
+                decorators.push(decorator);
                 operands.push(match &operand.value {
                     MsAsmExpr::SegmentRegister(segment) => MsAsmOperand::Segment(*segment),
                     MsAsmExpr::St(index) => MsAsmOperand::St(*index),
@@ -181,7 +190,7 @@ impl Lowerer {
             if effects.x87 {
                 clobbers.extend(X87_STACK);
             }
-            for (index, operand) in operands.into_iter().enumerate() {
+            for (index, (operand, decorator)) in operands.into_iter().zip(decorators).enumerate() {
                 let access = if index == 0 {
                     effects.first
                 } else {
@@ -194,6 +203,9 @@ impl Lowerer {
                 }
                 lowered.text(if index == 0 { " " } else { ", " });
                 self.ms_asm_operand(operand, sized, access, &mut lowered, &mut labels)?;
+                if !decorator.is_empty() {
+                    lowered.text(&decorator);
+                }
             }
         }
         for operand in &mut lowered.operands {
@@ -442,6 +454,7 @@ impl Lowerer {
                     "segment or x87 register inside an `__asm` expression",
                 ));
             }
+            MsAsmExpr::Decorated { operand, .. } => self.ms_asm_value(operand)?,
             MsAsmExpr::Number(number) => Value::constant(*number as i64),
             MsAsmExpr::Name(name) => self.ms_asm_name(expr, name)?,
             MsAsmExpr::Member { base, field } => {
@@ -884,6 +897,10 @@ fn render(expr: &MsAsmExpr) -> String {
             format!("{} {symbol} {right}", side(&lhs.value))
         }
         MsAsmExpr::Negate(operand) => format!("-{}", render(&operand.value)),
+        MsAsmExpr::Decorated {
+            operand,
+            decorators,
+        } => format!("{}{}", render(&operand.value), decorators.concat()),
         MsAsmExpr::Ptr { size, operand } => {
             format!("{} ptr {}", size_keyword(*size), render(&operand.value))
         }

@@ -517,6 +517,7 @@ MsAsmExpr = "Register(" Register ")"
           | Ptr { size: MsAsmSize, operand: span<MsAsmExpr> }
           | Segment { segment: MsAsmSegment, operand: span<MsAsmExpr> }
           | Operator { operator: MsAsmOperator, operand: span<MsAsmExpr> }
+          | Decorated { operand: span<MsAsmExpr>, decorators: vec<string> }
           | "TypeKeyword(" MsAsmTypeKeyword ")" ;       (* only as the operand of TYPE, msvc flavor *)
 MsAsmTypeKeyword = "Char" | "Short" | "Int" | "Long" | "Int64" | "Float" | "Double"
                  | "Signed" | "Unsigned" ;

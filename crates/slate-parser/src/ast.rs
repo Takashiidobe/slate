@@ -886,6 +886,10 @@ pub enum MsAsmExpr {
         operand: Box<Span<MsAsmExpr>>,
     },
     TypeKeyword(crate::lexer::Keyword),
+    Decorated {
+        operand: Box<Span<MsAsmExpr>>,
+        decorators: Vec<String>,
+    },
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

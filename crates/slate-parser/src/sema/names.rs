@@ -1160,6 +1160,7 @@ impl Resolver {
             | MsAsmExpr::Negate(operand)
             | MsAsmExpr::Ptr { operand, .. }
             | MsAsmExpr::Segment { operand, .. }
+            | MsAsmExpr::Decorated { operand, .. }
             | MsAsmExpr::Operator { operand, .. } => self.ms_asm_expr(operand),
         }
     }

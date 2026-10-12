@@ -100,7 +100,7 @@ MsAsmExpr = Register | Number(u64) | Name(String)
           | Binary(op, e, e) | Neg(e)
           | Ptr(size, e) | Segment(reg, e)
           | Operator(Type | Length | Size | Offset | Short, e)
-          | St(n)
+          | St(n) | Decorated(e, ["{k1}", "{z}", "{1to4}"])
 ```
 
 - `Parser::mark_ms_asm_lines` rewrites the token stream once, before brace

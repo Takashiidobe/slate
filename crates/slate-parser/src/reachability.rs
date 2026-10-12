@@ -536,6 +536,7 @@ impl<'a> Reachability<'a> {
             | MsAsmExpr::Negate(operand)
             | MsAsmExpr::Ptr { operand, .. }
             | MsAsmExpr::Segment { operand, .. }
+            | MsAsmExpr::Decorated { operand, .. }
             | MsAsmExpr::Operator { operand, .. } => self.mark_ms_asm_expr(operand),
         }
     }
