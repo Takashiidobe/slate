@@ -356,15 +356,20 @@ def main():
     parser.add_argument("--clang-tblgen", type=Path, required=True)
     parser.add_argument("--llvm-project", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--table", action="append", metavar="NAME=SOURCE.td")
+    parser.add_argument("--prototype-prefix", default="PROTOTYPE")
     args = parser.parse_args()
     clang = args.llvm_project / "clang"
+    selected = (
+        [tuple(table.split("=", 1)) for table in args.table] if args.table else TABLES
+    )
     tables = [
-        (table, table_records(args.clang_tblgen, clang, source)) for table, source in TABLES
+        (table, table_records(args.clang_tblgen, clang, source)) for table, source in selected
     ]
     prototypes = {}
     spellings = {item[2] for _, records in tables for item in records if item[2]}
     for spelling in sorted(spellings):
-        prototypes[spelling] = f"PROTOTYPE_{len(prototypes):04}"
+        prototypes[spelling] = f"{args.prototype_prefix}_{len(prototypes):04}"
     lines = []
     for spelling, name in prototypes.items():
         try:

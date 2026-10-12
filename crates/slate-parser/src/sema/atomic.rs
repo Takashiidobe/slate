@@ -1,6 +1,6 @@
 use super::builtins::{BitTest, MsIntrinsic, MsOrdering};
 use super::ctype::convert::CastKind;
-use super::ctype::{CTypeKind, QualType};
+use super::ctype::{CTypeKind, IntRank, QualType};
 use super::expression::Lowerer;
 use super::numeric::ResolveError;
 use super::operand::{Lvalue, Operand};
@@ -946,6 +946,9 @@ impl Lowerer {
             return self.bit_test(e, test, order, pointer, offset.clone());
         }
         let order = order.ok_or(ResolveError::Internal("nonatomic interlocked intrinsic"))?;
+        if intrinsic == MsIntrinsic::CompareExchange128 {
+            return self.compare_exchange_128(e, order, pointer, rest);
+        }
         let place = self.deref(pointer)?;
         match (intrinsic, rest.as_slice()) {
             (MsIntrinsic::Fetch(op), [operand]) => {
@@ -953,6 +956,12 @@ impl Lowerer {
                 let computation =
                     self.wrapping_arith(e, place.c, op, old.value, operand.value.clone());
                 Ok(self.atomic_update(e, place, computation, true, order.into()))
+            }
+            (MsIntrinsic::Add, [operand]) => {
+                let old = self.operand(e, place.c, ValueKind::OldValue);
+                let computation =
+                    self.wrapping_arith(e, place.c, ArithOp::Add, old.value, operand.value.clone());
+                Ok(self.atomic_update(e, place, computation, false, order.into()))
             }
             (MsIntrinsic::Increment | MsIntrinsic::Decrement, []) => {
                 let op = if intrinsic == MsIntrinsic::Increment {
@@ -987,6 +996,100 @@ impl Lowerer {
             }
             _ => Err(ResolveError::Internal("ms intrinsic argument count")),
         }
+    }
+
+    fn compare_exchange_128(
+        &mut self,
+        e: &Expr,
+        order: MemoryOrder,
+        destination: Operand,
+        rest: Vec<Operand>,
+    ) -> Result<Operand, ResolveError> {
+        let [high, low, comparand] = <[Operand; 3]>::try_from(rest)
+            .map_err(|_| ResolveError::Internal("ms intrinsic argument count"))?;
+        let wide = self.types.ctypes.qual(CTypeKind::Int {
+            rank: IntRank::Int128,
+            signed: false,
+        });
+        let half = self.types.ctypes.qual(CTypeKind::Int {
+            rank: IntRank::LongLong,
+            signed: false,
+        });
+        let quals = self
+            .types
+            .ctypes
+            .pointee(destination.c)
+            .map(|pointee| self.types.ctypes.quals(pointee))
+            .ok_or(ResolveError::Internal("compare exchange destination"))?;
+        let wide_pointer = self.types.ctypes.pointer(wide.with(quals));
+        let destination = self.apply_conversion(
+            CastKind::Pointer,
+            destination,
+            wide_pointer,
+            ConversionReason::Explicit,
+        )?;
+        let place = self.deref(destination)?;
+        let comparand_pointer = self.types.ctypes.pointer(wide);
+        let comparand = self.apply_conversion(
+            CastKind::Pointer,
+            comparand,
+            comparand_pointer,
+            ConversionReason::Explicit,
+        )?;
+        let widen = |this: &mut Self, half_value: Operand| -> Result<Operand, ResolveError> {
+            let unsigned = this.apply_conversion(
+                CastKind::Arithmetic,
+                half_value,
+                half,
+                ConversionReason::Explicit,
+            )?;
+            this.apply_conversion(
+                CastKind::Arithmetic,
+                unsigned,
+                wide,
+                ConversionReason::Explicit,
+            )
+        };
+        let high = widen(self, high)?;
+        let low = widen(self, low)?;
+        let sixty_four = self.flag_constant(e, wide, 64);
+        let shifted = self.operand(
+            e,
+            wide,
+            ValueKind::Arith {
+                op: ArithOp::Shl,
+                left: Box::new(high.value),
+                right: Box::new(sixty_four.value),
+                semantics: ArithSema::ShiftLeft {
+                    overflow: Overflow::Wrap,
+                    amount_out_of_range: UbPolicy::Undefined,
+                    negative_left: None,
+                },
+            },
+        );
+        let desired = self.wrapping_arith(e, wide, ArithOp::Or, shifted.value, low.value);
+        let failure = match order {
+            MemoryOrder::Release => MemoryOrder::Relaxed,
+            ref order => order.clone(),
+        };
+        let success = self.exchange_node(
+            e,
+            place,
+            [comparand, desired],
+            [order, failure],
+            Exchange {
+                weak: Weakness::Strong,
+                form: CompareExchangeForm::WriteBack,
+                scope: SyncScope::System,
+            },
+        );
+        let byte = self.types.ctypes.qual(CTypeKind::UChar);
+        self.apply_conversion(
+            CastKind::Arithmetic,
+            success,
+            byte,
+            ConversionReason::Explicit,
+        )
     }
 
     fn wrapping_arith(

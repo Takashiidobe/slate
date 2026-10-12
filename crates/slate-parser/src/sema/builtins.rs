@@ -95,6 +95,7 @@ pub(super) enum BuiltinAttribute {
     RequireDeclaration,
     RequiredVectorWidth,
     ReturnsTwice,
+    RuntimeLibraryFunction,
     ScanfFormat,
     UnevaluatedArguments,
     VPrintfFormat,
@@ -364,8 +365,9 @@ fn ms_expansion(record: &str) -> Option<Expansion> {
         Some((record, "nf")) => (record, MsOrdering::Relaxed),
         _ => (record, MsOrdering::SeqCst),
     };
-    let record = record.strip_suffix("64").unwrap_or(record);
-    let intrinsic = match record {
+    let intrinsic = match record.trim_end_matches(|c: char| c.is_ascii_digit()) {
+        _ if record == "InterlockedCompareExchange128" => MsIntrinsic::CompareExchange128,
+        "InterlockedAdd" => MsIntrinsic::Add,
         "InterlockedAnd" => MsIntrinsic::Fetch(ArithOp::And),
         "InterlockedOr" => MsIntrinsic::Fetch(ArithOp::Or),
         "InterlockedXor" => MsIntrinsic::Fetch(ArithOp::Xor),
@@ -380,7 +382,7 @@ fn ms_expansion(record: &str) -> Option<Expansion> {
         "InterlockedBittestAndSet" => MsIntrinsic::BitTest(BitTest::Set),
         "InterlockedBittestAndReset" => MsIntrinsic::BitTest(BitTest::Reset),
         "Bittest" | "BittestAndSet" | "BittestAndReset" | "BittestAndComplement" => {
-            let test = match record {
+            let test = match record.trim_end_matches(|c: char| c.is_ascii_digit()) {
                 "Bittest" => BitTest::Test,
                 "BittestAndSet" => BitTest::Set,
                 "BittestAndReset" => BitTest::Reset,
@@ -402,10 +404,12 @@ fn ms_expansion(record: &str) -> Option<Expansion> {
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(super) enum MsIntrinsic {
     Fetch(ArithOp),
+    Add,
     Increment,
     Decrement,
     Exchange,
     CompareExchange,
+    CompareExchange128,
     BitTest(BitTest),
 }
 
@@ -518,7 +522,8 @@ fn target_builtin(name: &str, family: TargetFamily) -> Option<&'static ClangBuil
         TargetFamily::X86 => registered_builtin(CLANG_X86_BUILTINS, name),
         TargetFamily::X86_64 => registered_builtin(CLANG_X86_BUILTINS, name)
             .or_else(|| registered_builtin(CLANG_X86_64_BUILTINS, name)),
-        TargetFamily::AArch64 | TargetFamily::Arm32 => None,
+        TargetFamily::AArch64 => registered_builtin(CLANG_AARCH64_BUILTINS, name),
+        TargetFamily::Arm32 => None,
     }
 }
 
@@ -956,6 +961,7 @@ fn fixed_rank(bits: u32, target: &TargetInfo) -> Option<IntRank> {
 }
 
 include!("clang_builtins.rs");
+include!("clang_aarch64_builtins.rs");
 
 const FOLDABLE_BUILTINS: &[&str] = &[
     "__addressof",
