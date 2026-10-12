@@ -479,11 +479,14 @@ impl TypeResolver {
                 operand,
             } => {
                 let pointer = self.operand_type(operand)?;
-                Typed::lvalue(
-                    self.ctypes
-                        .pointee(pointer)
-                        .ok_or(ResolveError::Rejected("indirection of a non-pointer"))?,
-                )
+                let pointee = self
+                    .ctypes
+                    .pointee(pointer)
+                    .ok_or(ResolveError::Rejected("indirection of a non-pointer"))?;
+                if self.flavor().is_msvc() && self.ctypes.is_void(pointee) {
+                    return Err(ResolveError::Rejected("indirection of a void pointer"));
+                }
+                Typed::lvalue(pointee)
             }
             ExprKind::Unary {
                 op: UnaryOp::AddrOf,

@@ -61,6 +61,9 @@ _Atomic`. Tags print by definition name.
   a void `f`, and the kernel's `__is_constexpr` conditional are 1 in the
   checker, lowering, and constant evaluator, all through
   `TypeResolver::sizeof_storage` (`ir_sizeof_void_expression.c`).
+  The msvc flavor differs: `sizeof(void)` is 0 (cl.exe C4034, warning not
+  emitted) and dereferencing a `void *` is rejected (C2100), see
+  `ms_sizeof_void.c` and `error/msvc/.../void_dereference*.c`.
 - Never give `TargetInfo::storage_of(Type::Void)` a size: object, field,
   parameter, and `va_arg` paths must keep failing.
 

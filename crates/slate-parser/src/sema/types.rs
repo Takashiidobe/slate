@@ -3113,7 +3113,7 @@ impl TypeResolver {
     ) -> Result<StorageLayout, ResolveError> {
         if matches!(ty, Type::Void) {
             return Ok(StorageLayout {
-                size_bytes: 1,
+                size_bytes: u64::from(!self.dialect.flavor().is_msvc()),
                 alignment_bytes: 1,
             });
         }
