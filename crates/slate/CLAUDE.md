@@ -83,6 +83,11 @@ starts passing, `fixtures_unsupported_tests_still_fail` fails and prints the
 `git mv` that promotes it. Corpus suites work the same way with their own
 `*.unsupported` directories.
 
+`tests/fixtures/i686/` is a separate bucket (`i686_differential`): fixtures
+translate with `-target=i686-unknown-linux-gnu`, the C side builds with
+`clang --target=i686-linux-gnu -m32`, and both binaries run natively with no
+emulator. Other `arm`/`aarch64` fixture directories are not collected.
+
 Isolate one fixture while developing:
 
 ```bash

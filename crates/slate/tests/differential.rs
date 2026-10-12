@@ -49,6 +49,14 @@ fn fixtures(root: &Path) -> Vec<Fixture> {
     fixtures
 }
 
+fn i686_fixtures() -> Vec<Fixture> {
+    let selected = std::env::var("SLATE_DIFF_FIXTURE").ok();
+    let mut fixtures = Vec::new();
+    collect_fixtures(&fixtures_dir(), Path::new("i686"), &selected, &mut fixtures);
+    fixtures.sort_by(|a, b| a.name.cmp(&b.name));
+    fixtures
+}
+
 fn run_cases(group: &str, fixtures: &[Fixture]) -> Vec<(String, Result<(), String>)> {
     run_cases_with_mode(group, fixtures, false)
 }
@@ -57,6 +65,15 @@ fn run_cases_with_mode(
     group: &str,
     fixtures: &[Fixture],
     project: bool,
+) -> Vec<(String, Result<(), String>)> {
+    run_cases_for_target(group, fixtures, project, None)
+}
+
+fn run_cases_for_target(
+    group: &str,
+    fixtures: &[Fixture],
+    project: bool,
+    cross: Option<&support::CrossTarget>,
 ) -> Vec<(String, Result<(), String>)> {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("target/difftest-generated")
@@ -68,6 +85,9 @@ fn run_cases_with_mode(
         let dg_options = support::fixture_dg_options(&f.path);
         let mut extra_args = dg_options.clone();
         extra_args.extend(support::fixture_dg_additional_options(&f.path));
+        if let Some(cross) = cross {
+            extra_args.push(format!("-target={}", cross.rust_triple));
+        }
         let result = if project {
             let crate_dir = tmp.join(&f.name);
             translate_fixture_project(std::slice::from_ref(&f.path), &crate_dir, extra_args, &[])
@@ -98,7 +118,12 @@ fn run_cases_with_mode(
             Err(e) => results.push((f.name.clone(), Err(e))),
         }
     }
-    results.extend(support::compare_batch(&cases, &tmp));
+    results.extend(support::compare_batch_with_jobs_for_target(
+        &cases,
+        &tmp,
+        support::test_jobs(),
+        cross,
+    ));
     results.sort_by(|a, b| a.0.cmp(&b.0));
     results
 }
@@ -200,6 +225,17 @@ fn generated_differential() {
             failures.join("\n\n")
         );
     }
+}
+
+#[test]
+fn i686_differential() {
+    let fixtures = i686_fixtures();
+    let cross = support::CrossTarget::i686_linux();
+    let failures: Vec<_> = run_cases_for_target("i686", &fixtures, false, Some(&cross))
+        .into_iter()
+        .filter_map(|(name, result)| result.err().map(|error| format!("[{name}] {error}")))
+        .collect();
+    assert!(failures.is_empty(), "{}", failures.join("\n\n"));
 }
 
 #[test]

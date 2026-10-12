@@ -24,8 +24,26 @@ pub struct CrossTarget {
     pub cargo_linker_env: String,
     pub linker: String,
     pub cargo_env: Vec<(String, String)>,
-    pub qemu: String,
+    pub qemu: Option<String>,
     pub qemu_args: Vec<String>,
+}
+
+impl CrossTarget {
+    pub fn i686_linux() -> Self {
+        Self {
+            rust_triple: "i686-unknown-linux-gnu",
+            cc: "clang".into(),
+            cc_extra_args: vec!["--target=i686-linux-gnu".into(), "-m32".into()],
+            cargo_linker_env: "CARGO_TARGET_I686_UNKNOWN_LINUX_GNU_LINKER".into(),
+            linker: "clang".into(),
+            cargo_env: vec![(
+                "CARGO_TARGET_I686_UNKNOWN_LINUX_GNU_RUSTFLAGS".into(),
+                "-C link-arg=--target=i686-linux-gnu".into(),
+            )],
+            qemu: None,
+            qemu_args: Vec::new(),
+        }
+    }
 }
 
 pub fn cc() -> String {
@@ -894,6 +912,11 @@ pub fn write_if_changed(path: impl AsRef<Path>, contents: &[u8]) -> std::io::Res
     Ok(true)
 }
 
+fn emulator(cross: Option<&CrossTarget>) -> Option<(&String, &[String])> {
+    let cross = cross?;
+    Some((cross.qemu.as_ref()?, &cross.qemu_args))
+}
+
 pub fn run_with_config(bin: &Path, config: &RunConfig, cwd: &Path) -> Result<Run, String> {
     run_with_config_for_target(bin, config, cwd, None)
 }
@@ -907,14 +930,14 @@ pub fn run_with_config_for_target(
     let mut cmd = if let Some(seconds) = config.timeout_seconds {
         let mut cmd = Command::new("timeout");
         cmd.args(["--kill-after=1", &format!("{seconds}s")]);
-        if let Some(cross) = cross {
-            cmd.arg(&cross.qemu).args(&cross.qemu_args);
+        if let Some((qemu, qemu_args)) = emulator(cross) {
+            cmd.arg(qemu).args(qemu_args);
         }
         cmd.arg(bin);
         cmd
-    } else if let Some(cross) = cross {
-        let mut cmd = Command::new(&cross.qemu);
-        cmd.args(&cross.qemu_args).arg(bin);
+    } else if let Some((qemu, qemu_args)) = emulator(cross) {
+        let mut cmd = Command::new(qemu);
+        cmd.args(qemu_args).arg(bin);
         cmd
     } else {
         Command::new(bin)
