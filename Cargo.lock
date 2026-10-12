@@ -1658,7 +1658,7 @@ checksum = "0c790de23124f9ab44544d7ac05d60440adc586479ce501c1d6d7da3cd8c9cf5"
 
 [[package]]
 name = "slate-c2rust"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "clap",
  "libc",
@@ -1688,7 +1688,7 @@ dependencies = [
 
 [[package]]
 name = "slate-parser"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "clang-ast",
  "custom_debug",
@@ -1709,7 +1709,7 @@ dependencies = [
 
 [[package]]
 name = "slate-sysroots"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "ar",

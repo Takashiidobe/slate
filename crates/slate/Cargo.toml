@@ -1,6 +1,6 @@
 [package]
 name = "slate-c2rust"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2024"
 default-run = "slate"
 description = "A C to Rust transpiler with a built-in C frontend"
@@ -9,7 +9,14 @@ repository.workspace = true
 readme = "../../README.md"
 keywords = ["c", "rust", "transpiler", "compiler"]
 categories = ["compilers", "command-line-utilities"]
-include = ["/src", "/build.rs", "/LICENSE-*", "/vendor/aligned", "/vendor/bitint", "/vendor/num-complex"]
+include = [
+  "/src",
+  "/build.rs",
+  "/LICENSE-*",
+  "/vendor/aligned",
+  "/vendor/bitint",
+  "/vendor/num-complex",
+]
 
 [package.metadata.binstall]
 pkg-url = "{ repo }/releases/download/v{ version }/{ name }-{ target }-v{ version }.tar.gz"
