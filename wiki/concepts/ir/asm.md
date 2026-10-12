@@ -227,6 +227,8 @@ or `None` in a naked function. `template` is rebuilt from the AST.
   `bx` operands and clobbers are not lowered there. A `Memory` operand
   becomes `in(reg)` of the object's address (`addr_of_mut!` unless the access
   is `Read`), and `Address` prints `<size> ptr [{N}+base+index*scale+disp]`.
+  A `LocalLabel` becomes a numeric local label (`N:`, `Nf`/`Nb` by position;
+  numbers avoid all-0/1 digits); one defined outside its block is a barrier.
   Register clobbers of an unconstrained asm are early (`out`), so no address
   input can land in a register the block writes.
 - Each C object is one `Memory { place, access }` operand however often it

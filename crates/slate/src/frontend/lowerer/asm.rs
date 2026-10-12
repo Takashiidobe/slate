@@ -463,6 +463,51 @@ fn unique_labels(pieces: &[ir::AsmPiece]) -> Result<Cow<'_, [ir::AsmPiece]>> {
     Ok(Cow::Owned(result))
 }
 
+fn numeric_local_labels(pieces: &[ir::AsmPiece]) -> Result<Cow<'_, [ir::AsmPiece]>> {
+    if !pieces
+        .iter()
+        .any(|piece| matches!(piece, ir::AsmPiece::LocalLabel(_)))
+    {
+        return Ok(Cow::Borrowed(pieces));
+    }
+    let defined_here = |index: usize| {
+        matches!(
+            pieces.get(index + 1),
+            Some(ir::AsmPiece::Text(text)) if text.starts_with(':')
+        )
+    };
+    let mut numbers = (2u64..).filter(|number| number.to_string().contains(|c| c > '1'));
+    let mut definitions = HashMap::new();
+    for (index, piece) in pieces.iter().enumerate() {
+        if let ir::AsmPiece::LocalLabel(name) = piece
+            && defined_here(index)
+        {
+            let number = numbers.next().unwrap_or_default();
+            if definitions.insert(name.as_str(), (number, index)).is_some() {
+                return Err(unsupported_asm(format!("label {name} defined twice")));
+            }
+        }
+    }
+    let mut result = Vec::new();
+    for (index, piece) in pieces.iter().enumerate() {
+        let ir::AsmPiece::LocalLabel(name) = piece else {
+            result.push(piece.clone());
+            continue;
+        };
+        let (number, defined_at) = *definitions
+            .get(name.as_str())
+            .ok_or_else(|| unsupported_asm(format!("label {name} defined outside the block")))?;
+        result.push(ir::AsmPiece::Text(
+            match (index == defined_at, index < defined_at) {
+                (true, _) => number.to_string(),
+                (_, true) => format!("{number}f"),
+                _ => format!("{number}b"),
+            },
+        ));
+    }
+    Ok(Cow::Owned(result))
+}
+
 fn asm_template(
     asm: &ir::InlineAsm,
     slots: &[Slot],
@@ -476,7 +521,8 @@ fn asm_template(
     let mut template = String::new();
     let mut used = vec![false; asm.operands.len()];
     let mut used_labels = vec![false; labels.len()];
-    for piece in unique_labels(&asm.pieces)?.iter() {
+    let pieces = numeric_local_labels(&asm.pieces)?;
+    for piece in unique_labels(&pieces)?.iter() {
         if !matches!(piece, ir::AsmPiece::Text(_)) {
             names.statement_start = false;
         }
