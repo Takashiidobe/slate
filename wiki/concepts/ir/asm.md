@@ -224,7 +224,11 @@ or `None` in a naked function. `template` is rebuilt from the AST.
   to sym, `Memory` to mem, `In` to a general register, the implicit-return
   `Out` keeps its explicit register) and `alternative` is `Some(0)` whenever
   there are operands. Slate lowers these on i686 (`tests/fixtures/i686/`);
-  `bx` operands and clobbers are not lowered there.
+  `bx` operands and clobbers are not lowered there. A `Memory` operand
+  becomes `in(reg)` of the object's address (`addr_of_mut!` unless the access
+  is `Read`), and `Address` prints `<size> ptr [{N}+base+index*scale+disp]`.
+  Register clobbers of an unconstrained asm are early (`out`), so no address
+  input can land in a register the block writes.
 - Each C object is one `Memory { place, access }` operand however often it
   appears; the asm receives its address, and `AsmAccess::{Read, Write,
   ReadWrite}` joins every reference (`src/sema/ms_asm_effects.rs`).

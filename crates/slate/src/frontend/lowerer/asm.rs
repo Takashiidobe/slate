@@ -610,6 +610,33 @@ fn asm_template(
                 used_labels[*index] = true;
                 template.push_str(&format!("{{{slot}}}"));
             }
+            ir::AsmPiece::Address {
+                operand,
+                displacement,
+                base,
+                index,
+                size,
+            } => {
+                let slot = match slots.get(*operand) {
+                    Some(Slot::Positional(slot)) => *slot,
+                    _ => return Err(unsupported_asm(format!("address operand {operand}"))),
+                };
+                used[*operand] = true;
+                if let Some(size) = size {
+                    template.push_str(&format!("{size} ptr "));
+                }
+                template.push_str(&format!("[{{{slot}}}"));
+                if let Some(base) = base {
+                    template.push_str(&format!("+{base}"));
+                }
+                if let Some((index, scale)) = index {
+                    template.push_str(&format!("+{index}*{scale}"));
+                }
+                if *displacement != 0 {
+                    template.push_str(&format!("{displacement:+}"));
+                }
+                template.push(']');
+            }
             piece => return Err(unsupported_asm(format!("template piece {piece}"))),
         }
     }
@@ -1301,6 +1328,10 @@ impl FunctionLowerer<'_, '_> {
             )));
         }
         let x86_32 = self.tables.target.family == TargetFamily::X86;
+        let unconstrained = asm
+            .operands
+            .iter()
+            .any(|operand| operand.constraint.alternatives.is_empty());
         let mut options = asm_options(asm)?;
         let mut operands = Vec::new();
         let mut explicit = Vec::new();
@@ -1450,6 +1481,9 @@ impl FunctionLowerer<'_, '_> {
                 Some(ir::AsmOperandClass::Memory) => {
                     let address = match &operand.kind {
                         ir::AsmOperandKind::InPlace(place) => self.asm_address(place, false)?,
+                        ir::AsmOperandKind::Memory { place, access } => {
+                            self.asm_address(place, *access != ir::AsmAccess::Read)?
+                        }
                         ir::AsmOperandKind::Out { place, .. }
                         | ir::AsmOperandKind::InOut {
                             place, input: None, ..
@@ -1714,7 +1748,7 @@ impl FunctionLowerer<'_, '_> {
                 }
                 explicit.push(rust::AsmOperand::Out {
                     reg: rust::AsmReg::Explicit(canonical.into()),
-                    late: true,
+                    late: !unconstrained,
                     value: Expr::Var("_".into()),
                 });
             }
