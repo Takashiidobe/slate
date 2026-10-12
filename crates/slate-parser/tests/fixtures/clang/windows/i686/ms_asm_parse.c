@@ -69,7 +69,7 @@ int syntax(int x, struct pair p) {
 // DEFAULT-NEXT:     global %[[VALUE_table:[0-9]+]] table: array<i32, 4> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_callee:[0-9]+]] @callee() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_syntax:[0-9]+]] @syntax(%[[VALUE_x:[0-9]+]] x: i32, %[[VALUE_p:[0-9]+]] p: @type[[TYPE_pair]]) -> i32 [linkage=external] [abi=x86_win32(scalar, native_c) -> scalar] [fallthrough=ret(reinterpret<i32, reason=return, fits=unknown>(read<u32>(%[[VALUE0:[0-9]+]])))] {
-// DEFAULT-NEXT:         let %[[VALUE0]]: u32 [synthetic];
+// DEFAULT-NEXT:         let %[[VALUE0]]: u32 [synthetic] = const<u32>(0);
 // DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: i32 [storage=automatic];

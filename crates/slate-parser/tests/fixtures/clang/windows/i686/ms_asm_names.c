@@ -96,7 +96,7 @@ int names(int param, struct outer *pointer) {
 // DEFAULT-NEXT:     fn %[[VALUE_header_function:[0-9]+]] @header_function() -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_callee:[0-9]+]] @callee(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_names:[0-9]+]] @names(%[[VALUE_param:[0-9]+]] param: i32, %[[VALUE_pointer:[0-9]+]] pointer: ptr<@type[[TYPE_outer]]>) -> i32 [linkage=external] [fallthrough=ret(reinterpret<i32, reason=return, fits=unknown>(read<u32>(%[[VALUE1:[0-9]+]])))] {
-// DEFAULT-NEXT:         let %[[VALUE1]]: u32 [synthetic];
+// DEFAULT-NEXT:         let %[[VALUE1]]: u32 [synthetic] = const<u32>(0);
 // DEFAULT-NEXT:         let %[[VALUE_local:[0-9]+]] local: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_local_array:[0-9]+]] local_array: array<i32, 3> [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_s:[0-9]+]] s: @type[[TYPE_outer]] [storage=automatic];

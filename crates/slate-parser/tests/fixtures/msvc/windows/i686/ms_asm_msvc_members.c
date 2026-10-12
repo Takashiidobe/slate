@@ -193,7 +193,7 @@ int size_keyword(void) { __asm mov eax, SIZE int }
 // DEFAULT-NEXT:     global %[[VALUE_global:[0-9]+]] global: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_pointer:[0-9]+]] pointer: ptr<i32> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_members:[0-9]+]] @members() -> i32 [linkage=external] [fallthrough=ret(reinterpret<i32, reason=return, fits=unknown>(read<u32>(%[[VALUE0:[0-9]+]])))] {
-// DEFAULT-NEXT:         let %[[VALUE0]]: u32 [synthetic];
+// DEFAULT-NEXT:         let %[[VALUE0]]: u32 [synthetic] = const<u32>(0);
 // DEFAULT-NEXT:         let %[[VALUE_local:[0-9]+]] local: i32 [storage=automatic];
 // DEFAULT-NEXT:         asm volatile "mov eax, [ebx].last\nmov eax, [ebx + 4].last\nmovzx eax, [ebx].tail\nmovzx eax, [ebx].half\nmov [ebx].last, 1\nmov eax, global.last\nmov eax, pointer.last\nmovzx eax, local.tail\nmov eax, [ebx].inner\nmov eax, [ebx].w0.last" [dialect=intel] {
 // DEFAULT-NEXT:             template: "mov eax, [ebx + 8]\nmov eax, [ebx + 12]\nmovzx eax, byte ptr [ebx + 6]\nmovzx eax, word ptr [ebx + 4]\nmov dword ptr [ebx + 8], 1\nmov eax, " addr(%1 + 8) "\nmov eax, " addr(%2 + 8) "\nmovzx eax, " addr<byte>(%3 + 6) "\nmov eax, [ebx + 12]\nmov eax, [ebx + 8]";
@@ -205,7 +205,7 @@ int size_keyword(void) { __asm mov eax, SIZE int }
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_local]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_keywords:[0-9]+]] @keywords() -> i32 [linkage=external] [fallthrough=ret(reinterpret<i32, reason=return, fits=unknown>(read<u32>(%[[VALUE1:[0-9]+]])))] {
-// DEFAULT-NEXT:         let %[[VALUE1]]: u32 [synthetic];
+// DEFAULT-NEXT:         let %[[VALUE1]]: u32 [synthetic] = const<u32>(0);
 // DEFAULT-NEXT:         asm volatile "mov eax, type char\nmov eax, type short\nmov eax, type int\nmov eax, type long\nmov eax, type __int64\nmov eax, type float\nmov eax, type double\nmov eax, type signed\nmov eax, type unsigned" [dialect=intel] {
 // DEFAULT-NEXT:             template: "mov eax, 1\nmov eax, 2\nmov eax, 4\nmov eax, 4\nmov eax, 8\nmov eax, 4\nmov eax, 8\nmov eax, 1\nmov eax, 1";
 // DEFAULT-NEXT:             out 0 "{eax}" [{ax}] width 32 place<u32>(%[[VALUE1]]);

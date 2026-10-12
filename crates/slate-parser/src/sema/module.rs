@@ -567,9 +567,6 @@ fn lower_item(
                 &declaration.derive(()),
                 return_type.as_ref(),
                 &mut body,
-                name == "main"
-                    && return_type == Some(lower.context.int_type())
-                    && features.main_implicit_return_zero,
             )?;
             let fallthrough = if let Some(value) = asm_return {
                 Fallthrough::Return(Box::new(value))

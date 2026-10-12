@@ -272,6 +272,27 @@ impl FunctionLowerer<'_, '_> {
         {
             statements.push(Stmt::Return(Some(zeroed())));
         }
+        if let Some(ir::Fallthrough::Return(value)) = &function.fallthrough
+            && !matches!(
+                statements
+                    .iter()
+                    .rev()
+                    .find(|statement| !matches!(statement, Stmt::Comment(_))),
+                Some(Stmt::Return(_))
+            )
+        {
+            let returned = Stmt::Return(Some(self.lower_value(value)?));
+            statements.push(if control_flow::needs_dispatch(body) {
+                Stmt::Unsafe {
+                    body: rust::Block {
+                        stmts: vec![returned],
+                        tail: None,
+                    },
+                }
+            } else {
+                returned
+            });
+        }
         let target_feature = self.tables.target_feature_attr(function)?;
         Ok(Item::Fn(FnDef {
             comments: self.claim_comments(function.id),

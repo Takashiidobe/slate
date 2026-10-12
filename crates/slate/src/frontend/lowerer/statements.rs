@@ -59,7 +59,7 @@ impl FunctionLowerer<'_, '_> {
                 ..
             } => Stmt::Let {
                 name: binding_name(*id, &self.tables.bindings),
-                mutable: initializer.is_none(),
+                mutable: true,
                 ty: Some(self.lower_type(ty)?),
                 init: initializer
                     .as_ref()

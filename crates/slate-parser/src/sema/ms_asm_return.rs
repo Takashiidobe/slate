@@ -75,7 +75,6 @@ impl Lowerer {
         anchor: &Span<()>,
         returned: Option<&Type>,
         body: &mut Vec<Span<Statement>>,
-        main_returns_zero: bool,
     ) -> Result<Option<Value>, ResolveError> {
         let registers = std::mem::take(&mut self.ms_asm_return);
         let Some(low) = registers.first() else {
@@ -88,13 +87,11 @@ impl Lowerer {
             anchor.derive(Statement::Temporary {
                 id: *id,
                 ty: Type::integer(32, false),
-                initializer: main_returns_zero.then(|| {
-                    self.value(
-                        anchor,
-                        Type::integer(32, false),
-                        ValueKind::Constant(Number::Integer(0u32.into())),
-                    )
-                }),
+                initializer: Some(self.value(
+                    anchor,
+                    Type::integer(32, false),
+                    ValueKind::Constant(Number::Integer(0u32.into())),
+                )),
                 unsequenced: false,
             })
         });

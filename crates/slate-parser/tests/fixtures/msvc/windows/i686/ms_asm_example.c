@@ -464,7 +464,7 @@ void asm_increment_pointer(int *ptr)
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_round_x87:[0-9]+]] @round_x87(%[[VALUE_value:[0-9]+]] value: f64) -> i32 [linkage=external] [fallthrough=ret(reinterpret<i32, reason=return, fits=unknown>(read<u32>(%[[VALUE0:[0-9]+]])))] {
-// DEFAULT-NEXT:         let %[[VALUE0]]: u32 [synthetic];
+// DEFAULT-NEXT:         let %[[VALUE0]]: u32 [synthetic] = const<u32>(0);
 // DEFAULT-NEXT:         let %[[VALUE_result:[0-9]+]] result: i32 [storage=automatic];
 // DEFAULT-NEXT:         asm volatile "fld value\nfistp result" [dialect=intel] {
 // DEFAULT-NEXT:             template: "fld " addr<qword>(%1) "\nfistp " addr<dword>(%2);
@@ -476,7 +476,7 @@ void asm_increment_pointer(int *ptr)
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_result]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_have_cpuid:[0-9]+]] @have_cpuid() -> i32 [linkage=external] [fallthrough=ret(reinterpret<i32, reason=return, fits=unknown>(read<u32>(%[[VALUE1:[0-9]+]])))] {
-// DEFAULT-NEXT:         let %[[VALUE1]]: u32 [synthetic];
+// DEFAULT-NEXT:         let %[[VALUE1]]: u32 [synthetic] = const<u32>(0);
 // DEFAULT-NEXT:         let %[[VALUE_result_2:[0-9]+]] result: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         asm volatile "pushfd\npop eax\nmov ecx, eax\nxor eax, 2097152\npush eax\npopfd\npushfd\npop eax\nxor eax, ecx\njz done\nmov result, 1\ndone:" [dialect=intel] {
 // DEFAULT-NEXT:             template: "pushfd\npop eax\nmov ecx, eax\nxor eax, 2097152\npush eax\npopfd\npushfd\npop eax\nxor eax, ecx\njz " label(done) "\nmov " addr<dword>(%1) ", 1\n" entry_label(%4, done) ":";
@@ -487,7 +487,7 @@ void asm_increment_pointer(int *ptr)
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_result_2]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_asm_round_x87:[0-9]+]] @asm_round_x87(%[[VALUE_value_2:[0-9]+]] value: f64) -> i32 [linkage=external] [fallthrough=ret(reinterpret<i32, reason=return, fits=unknown>(read<u32>(%[[VALUE2:[0-9]+]])))] {
-// DEFAULT-NEXT:         let %[[VALUE2]]: u32 [synthetic];
+// DEFAULT-NEXT:         let %[[VALUE2]]: u32 [synthetic] = const<u32>(0);
 // DEFAULT-NEXT:         let %[[VALUE_result_3:[0-9]+]] result: i32 [storage=automatic];
 // DEFAULT-NEXT:         asm volatile "fld value\nfistp result" [dialect=intel] {
 // DEFAULT-NEXT:             template: "fld " addr<qword>(%1) "\nfistp " addr<dword>(%2);
@@ -499,7 +499,7 @@ void asm_increment_pointer(int *ptr)
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_result_3]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_asm_local_and_label:[0-9]+]] @asm_local_and_label(%[[VALUE_value_3:[0-9]+]] value: i32) -> i32 [linkage=external] [fallthrough=ret(reinterpret<i32, reason=return, fits=unknown>(read<u32>(%[[VALUE3:[0-9]+]])))] {
-// DEFAULT-NEXT:         let %[[VALUE3]]: u32 [synthetic];
+// DEFAULT-NEXT:         let %[[VALUE3]]: u32 [synthetic] = const<u32>(0);
 // DEFAULT-NEXT:         let %[[VALUE_result_4:[0-9]+]] result: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         asm volatile "mov eax, value\ntest eax, eax\njz zero_case\nadd eax, 10\nmov result, eax\njmp done\nzero_case:\nmov result, 4660\ndone:" [dialect=intel] {
 // DEFAULT-NEXT:             template: "mov eax, " addr(%1) "\ntest eax, eax\njz " label(zero_case) "\nadd eax, 10\nmov " addr(%2) ", eax\njmp " label(done) "\n" entry_label(%10, zero_case) ":\nmov " addr<dword>(%2) ", 4660\n" entry_label(%11, done) ":";
@@ -593,7 +593,7 @@ void asm_increment_pointer(int *ptr)
 // DEFAULT-NEXT:         return read<f64>(%[[VALUE_result_6]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_asm_register_widths:[0-9]+]] @asm_register_widths(%[[VALUE_value_9:[0-9]+]] value: u32) -> u32 [linkage=external] [fallthrough=ret(read<u32>(%[[VALUE4:[0-9]+]]))] {
-// DEFAULT-NEXT:         let %[[VALUE4]]: u32 [synthetic];
+// DEFAULT-NEXT:         let %[[VALUE4]]: u32 [synthetic] = const<u32>(0);
 // DEFAULT-NEXT:         let %[[VALUE_result_7:[0-9]+]] result: u32 [storage=automatic];
 // DEFAULT-NEXT:         asm volatile "mov eax, value\nxor ah, ah\nadd al, 127\nmovzx ecx, ax\nxor ecx, 4660\nmov result, ecx" [dialect=intel] {
 // DEFAULT-NEXT:             template: "mov eax, " addr(%1) "\nxor ah, ah\nadd al, 127\nmovzx ecx, ax\nxor ecx, 4660\nmov " addr(%2) ", ecx";
@@ -605,7 +605,7 @@ void asm_increment_pointer(int *ptr)
 // DEFAULT-NEXT:         return read<u32>(%[[VALUE_result_7]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_asm_load_pointer:[0-9]+]] @asm_load_pointer(%[[VALUE_ptr:[0-9]+]] ptr: ptr<const i32>) -> i32 [linkage=external] [fallthrough=ret(reinterpret<i32, reason=return, fits=unknown>(read<u32>(%[[VALUE5:[0-9]+]])))] {
-// DEFAULT-NEXT:         let %[[VALUE5]]: u32 [synthetic];
+// DEFAULT-NEXT:         let %[[VALUE5]]: u32 [synthetic] = const<u32>(0);
 // DEFAULT-NEXT:         let %[[VALUE_result_8:[0-9]+]] result: i32 [storage=automatic];
 // DEFAULT-NEXT:         asm volatile "mov ecx, ptr\nmov eax, dword ptr [ecx]\nmov result, eax" [dialect=intel] {
 // DEFAULT-NEXT:             template: "mov ecx, " addr(%1) "\nmov eax, dword ptr [ecx]\nmov " addr(%2) ", eax";

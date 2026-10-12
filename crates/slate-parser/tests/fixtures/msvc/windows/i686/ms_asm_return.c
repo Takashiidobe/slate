@@ -36,8 +36,8 @@
 // DEFAULT-NEXT:         field1 y: i32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
 // DEFAULT-NEXT:     fn %[[VALUE_Int64ShllMod32:[0-9]+]] @Int64ShllMod32(%[[VALUE_Value:[0-9]+]] Value: u64, %[[VALUE_ShiftCount:[0-9]+]] ShiftCount: u32) -> u64 [linkage=external] [fallthrough=ret(or<u64>(widen<u64, reason=return>(read<u32>(%[[VALUE0:[0-9]+]])), shl<u64, overflow=wrap, amount_out_of_range=ub>(widen<u64, reason=return>(read<u32>(%[[VALUE1:[0-9]+]])), const<u32>(32))))] {
-// DEFAULT-NEXT:         let %[[VALUE0]]: u32 [synthetic];
-// DEFAULT-NEXT:         let %[[VALUE1]]: u32 [synthetic];
+// DEFAULT-NEXT:         let %[[VALUE0]]: u32 [synthetic] = const<u32>(0);
+// DEFAULT-NEXT:         let %[[VALUE1]]: u32 [synthetic] = const<u32>(0);
 // DEFAULT-NEXT:         asm volatile "mov ecx, ShiftCount\nmov eax, dword ptr [Value]\nmov edx, dword ptr [Value + 4]\nshld edx, eax, cl\nshl eax, cl" [dialect=intel] {
 // DEFAULT-NEXT:             template: "mov ecx, " addr(%2) "\nmov eax, " addr<dword>(%3) "\nmov edx, " addr<dword>(%3 + 4) "\nshld edx, eax, cl\nshl eax, cl";
 // DEFAULT-NEXT:             out 0 "{eax}" [{ax}] width 32 place<u32>(%[[VALUE0]]);
@@ -48,8 +48,8 @@
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_Int64ShraMod32:[0-9]+]] @Int64ShraMod32(%[[VALUE_Value_2:[0-9]+]] Value: i64, %[[VALUE_ShiftCount_2:[0-9]+]] ShiftCount: u32) -> i64 [linkage=external] [fallthrough=ret(reinterpret<i64, reason=return, fits=unknown>(or<u64>(widen<u64, reason=return>(read<u32>(%[[VALUE2:[0-9]+]])), shl<u64, overflow=wrap, amount_out_of_range=ub>(widen<u64, reason=return>(read<u32>(%[[VALUE3:[0-9]+]])), const<u32>(32)))))] {
-// DEFAULT-NEXT:         let %[[VALUE2]]: u32 [synthetic];
-// DEFAULT-NEXT:         let %[[VALUE3]]: u32 [synthetic];
+// DEFAULT-NEXT:         let %[[VALUE2]]: u32 [synthetic] = const<u32>(0);
+// DEFAULT-NEXT:         let %[[VALUE3]]: u32 [synthetic] = const<u32>(0);
 // DEFAULT-NEXT:         asm volatile "mov ecx, ShiftCount\nmov eax, dword ptr [Value]\nmov edx, dword ptr [Value + 4]\nshrd eax, edx, cl\nsar edx, cl" [dialect=intel] {
 // DEFAULT-NEXT:             template: "mov ecx, " addr(%2) "\nmov eax, " addr<dword>(%3) "\nmov edx, " addr<dword>(%3 + 4) "\nshrd eax, edx, cl\nsar edx, cl";
 // DEFAULT-NEXT:             out 0 "{eax}" [{ax}] width 32 place<u32>(%[[VALUE2]]);
@@ -60,8 +60,8 @@
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_Int64ShrlMod32:[0-9]+]] @Int64ShrlMod32(%[[VALUE_Value_3:[0-9]+]] Value: u64, %[[VALUE_ShiftCount_3:[0-9]+]] ShiftCount: u32) -> u64 [linkage=external] [fallthrough=ret(or<u64>(widen<u64, reason=return>(read<u32>(%[[VALUE4:[0-9]+]])), shl<u64, overflow=wrap, amount_out_of_range=ub>(widen<u64, reason=return>(read<u32>(%[[VALUE5:[0-9]+]])), const<u32>(32))))] {
-// DEFAULT-NEXT:         let %[[VALUE4]]: u32 [synthetic];
-// DEFAULT-NEXT:         let %[[VALUE5]]: u32 [synthetic];
+// DEFAULT-NEXT:         let %[[VALUE4]]: u32 [synthetic] = const<u32>(0);
+// DEFAULT-NEXT:         let %[[VALUE5]]: u32 [synthetic] = const<u32>(0);
 // DEFAULT-NEXT:         asm volatile "mov ecx, ShiftCount\nmov eax, dword ptr [Value]\nmov edx, dword ptr [Value + 4]\nshrd eax, edx, cl\nshr edx, cl" [dialect=intel] {
 // DEFAULT-NEXT:             template: "mov ecx, " addr(%2) "\nmov eax, " addr<dword>(%3) "\nmov edx, " addr<dword>(%3 + 4) "\nshrd eax, edx, cl\nshr edx, cl";
 // DEFAULT-NEXT:             out 0 "{eax}" [{ax}] width 32 place<u32>(%[[VALUE4]]);
@@ -72,7 +72,7 @@
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_word:[0-9]+]] @word(%[[VALUE_input:[0-9]+]] input: i32) -> i32 [linkage=external] [fallthrough=ret(reinterpret<i32, reason=return, fits=unknown>(read<u32>(%[[VALUE6:[0-9]+]])))] {
-// DEFAULT-NEXT:         let %[[VALUE6]]: u32 [synthetic];
+// DEFAULT-NEXT:         let %[[VALUE6]]: u32 [synthetic] = const<u32>(0);
 // DEFAULT-NEXT:         asm volatile "mov eax, input" [dialect=intel] {
 // DEFAULT-NEXT:             template: "mov eax, " addr(%1);
 // DEFAULT-NEXT:             out 0 "{eax}" [{ax}] width 32 place<u32>(%[[VALUE6]]);
@@ -80,43 +80,43 @@
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_byte:[0-9]+]] @byte() -> u8 [linkage=external] [fallthrough=ret(truncate<u8, reason=return, fits=unknown>(read<u32>(%[[VALUE7:[0-9]+]])))] {
-// DEFAULT-NEXT:         let %[[VALUE7]]: u32 [synthetic];
+// DEFAULT-NEXT:         let %[[VALUE7]]: u32 [synthetic] = const<u32>(0);
 // DEFAULT-NEXT:         asm volatile "mov al, 255" [dialect=intel] {
 // DEFAULT-NEXT:             template: "mov al, 255";
 // DEFAULT-NEXT:             out 0 "{eax}" [{ax}] width 32 place<u32>(%[[VALUE7]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_half:[0-9]+]] @half() -> i16 [linkage=external] [fallthrough=ret(reinterpret<i16, reason=return, fits=unknown>(truncate<u16, reason=return, fits=unknown>(read<u32>(%[[VALUE8:[0-9]+]]))))] {
-// DEFAULT-NEXT:         let %[[VALUE8]]: u32 [synthetic];
+// DEFAULT-NEXT:         let %[[VALUE8]]: u32 [synthetic] = const<u32>(0);
 // DEFAULT-NEXT:         asm volatile "mov ax, 32768" [dialect=intel] {
 // DEFAULT-NEXT:             template: "mov ax, 32768";
 // DEFAULT-NEXT:             out 0 "{eax}" [{ax}] width 32 place<u32>(%[[VALUE8]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_boolean:[0-9]+]] @boolean() -> bool [linkage=external] [fallthrough=ret(ne<u1, reason=return>(truncate<u1, reason=return, fits=unknown>(read<u32>(%[[VALUE9:[0-9]+]])), const<u1>(0)))] {
-// DEFAULT-NEXT:         let %[[VALUE9]]: u32 [synthetic];
+// DEFAULT-NEXT:         let %[[VALUE9]]: u32 [synthetic] = const<u32>(0);
 // DEFAULT-NEXT:         asm volatile "mov eax, 2" [dialect=intel] {
 // DEFAULT-NEXT:             template: "mov eax, 2";
 // DEFAULT-NEXT:             out 0 "{eax}" [{ax}] width 32 place<u32>(%[[VALUE9]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_pointer:[0-9]+]] @pointer() -> ptr<void> [linkage=external] [fallthrough=ret(int_to_ptr<ptr<void>, reason=return>(read<u32>(%[[VALUE10:[0-9]+]])))] {
-// DEFAULT-NEXT:         let %[[VALUE10]]: u32 [synthetic];
+// DEFAULT-NEXT:         let %[[VALUE10]]: u32 [synthetic] = const<u32>(0);
 // DEFAULT-NEXT:         asm volatile "mov eax, 4096" [dialect=intel] {
 // DEFAULT-NEXT:             template: "mov eax, 4096";
 // DEFAULT-NEXT:             out 0 "{eax}" [{ax}] width 32 place<u32>(%[[VALUE10]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_enumeration:[0-9]+]] @enumeration() -> @type[[TYPE_Result]] [linkage=external] [fallthrough=ret(int_to_enum<@type[[TYPE_Result]], reason=return>(read<u32>(%[[VALUE11:[0-9]+]])))] {
-// DEFAULT-NEXT:         let %[[VALUE11]]: u32 [synthetic];
+// DEFAULT-NEXT:         let %[[VALUE11]]: u32 [synthetic] = const<u32>(0);
 // DEFAULT-NEXT:         asm volatile "mov eax, 1" [dialect=intel] {
 // DEFAULT-NEXT:             template: "mov eax, 1";
 // DEFAULT-NEXT:             out 0 "{eax}" [{ax}] width 32 place<u32>(%[[VALUE11]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_bits:[0-9]+]] @bits() -> u33b [linkage=external] [fallthrough=ret(truncate<u33b, reason=return, fits=unknown>(or<u64>(widen<u64, reason=return>(read<u32>(%[[VALUE12:[0-9]+]])), shl<u64, overflow=wrap, amount_out_of_range=ub>(widen<u64, reason=return>(read<u32>(%[[VALUE13:[0-9]+]])), const<u32>(32)))))] {
-// DEFAULT-NEXT:         let %[[VALUE12]]: u32 [synthetic];
-// DEFAULT-NEXT:         let %[[VALUE13]]: u32 [synthetic];
+// DEFAULT-NEXT:         let %[[VALUE12]]: u32 [synthetic] = const<u32>(0);
+// DEFAULT-NEXT:         let %[[VALUE13]]: u32 [synthetic] = const<u32>(0);
 // DEFAULT-NEXT:         asm volatile "mov eax, 1" [dialect=intel] {
 // DEFAULT-NEXT:             template: "mov eax, 1";
 // DEFAULT-NEXT:             out 0 "{eax}" [{ax}] width 32 place<u32>(%[[VALUE12]]);
@@ -124,7 +124,7 @@
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_branches:[0-9]+]] @branches(%[[VALUE_condition:[0-9]+]] condition: i32) -> i32 [linkage=external] [fallthrough=ret(reinterpret<i32, reason=return, fits=unknown>(read<u32>(%[[VALUE14:[0-9]+]])))] {
-// DEFAULT-NEXT:         let %[[VALUE14]]: u32 [synthetic];
+// DEFAULT-NEXT:         let %[[VALUE14]]: u32 [synthetic] = const<u32>(0);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_condition]]), const<i32>(0))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 asm volatile "mov eax, 1" [dialect=intel] {
@@ -141,7 +141,7 @@
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_multiple:[0-9]+]] @multiple() -> i32 [linkage=external] [fallthrough=ret(reinterpret<i32, reason=return, fits=unknown>(read<u32>(%[[VALUE15:[0-9]+]])))] {
-// DEFAULT-NEXT:         let %[[VALUE15]]: u32 [synthetic];
+// DEFAULT-NEXT:         let %[[VALUE15]]: u32 [synthetic] = const<u32>(0);
 // DEFAULT-NEXT:         asm volatile "mov eax, 3" [dialect=intel] {
 // DEFAULT-NEXT:             template: "mov eax, 3";
 // DEFAULT-NEXT:             out 0 "{eax}" [{ax}] width 32 place<u32>(%[[VALUE15]]);
@@ -152,8 +152,8 @@
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_high_only:[0-9]+]] @high_only() -> i64 [linkage=external] [fallthrough=ret(reinterpret<i64, reason=return, fits=unknown>(or<u64>(widen<u64, reason=return>(read<u32>(%[[VALUE16:[0-9]+]])), shl<u64, overflow=wrap, amount_out_of_range=ub>(widen<u64, reason=return>(read<u32>(%[[VALUE17:[0-9]+]])), const<u32>(32)))))] {
-// DEFAULT-NEXT:         let %[[VALUE16]]: u32 [synthetic];
-// DEFAULT-NEXT:         let %[[VALUE17]]: u32 [synthetic];
+// DEFAULT-NEXT:         let %[[VALUE16]]: u32 [synthetic] = const<u32>(0);
+// DEFAULT-NEXT:         let %[[VALUE17]]: u32 [synthetic] = const<u32>(0);
 // DEFAULT-NEXT:         asm volatile "mov edx, 4" [dialect=intel] {
 // DEFAULT-NEXT:             template: "mov edx, 4";
 // DEFAULT-NEXT:             lateout 0 "{eax}" [{ax}] width 32 place<u32>(%[[VALUE16]]);
@@ -161,8 +161,8 @@
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_low_only:[0-9]+]] @low_only() -> i64 [linkage=external] [fallthrough=ret(reinterpret<i64, reason=return, fits=unknown>(or<u64>(widen<u64, reason=return>(read<u32>(%[[VALUE18:[0-9]+]])), shl<u64, overflow=wrap, amount_out_of_range=ub>(widen<u64, reason=return>(read<u32>(%[[VALUE19:[0-9]+]])), const<u32>(32)))))] {
-// DEFAULT-NEXT:         let %[[VALUE18]]: u32 [synthetic];
-// DEFAULT-NEXT:         let %[[VALUE19]]: u32 [synthetic];
+// DEFAULT-NEXT:         let %[[VALUE18]]: u32 [synthetic] = const<u32>(0);
+// DEFAULT-NEXT:         let %[[VALUE19]]: u32 [synthetic] = const<u32>(0);
 // DEFAULT-NEXT:         asm volatile "mov eax, 5" [dialect=intel] {
 // DEFAULT-NEXT:             template: "mov eax, 5";
 // DEFAULT-NEXT:             out 0 "{eax}" [{ax}] width 32 place<u32>(%[[VALUE18]]);
@@ -170,7 +170,7 @@
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_explicit_return:[0-9]+]] @explicit_return() -> i32 [linkage=external] [fallthrough=ret(reinterpret<i32, reason=return, fits=unknown>(read<u32>(%[[VALUE20:[0-9]+]])))] {
-// DEFAULT-NEXT:         let %[[VALUE20]]: u32 [synthetic];
+// DEFAULT-NEXT:         let %[[VALUE20]]: u32 [synthetic] = const<u32>(0);
 // DEFAULT-NEXT:         asm volatile "mov eax, 6" [dialect=intel] {
 // DEFAULT-NEXT:             template: "mov eax, 6";
 // DEFAULT-NEXT:             out 0 "{eax}" [{ax}] width 32 place<u32>(%[[VALUE20]]);
@@ -178,7 +178,7 @@
 // DEFAULT-NEXT:         return const<i32>(7);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_partial_return:[0-9]+]] @partial_return(%[[VALUE_condition_2:[0-9]+]] condition: i32) -> i32 [linkage=external] [fallthrough=ret(reinterpret<i32, reason=return, fits=unknown>(read<u32>(%[[VALUE21:[0-9]+]])))] {
-// DEFAULT-NEXT:         let %[[VALUE21]]: u32 [synthetic];
+// DEFAULT-NEXT:         let %[[VALUE21]]: u32 [synthetic] = const<u32>(0);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_condition_2]]), const<i32>(0))
 // DEFAULT-NEXT:             return const<i32>(8);
 // DEFAULT-NEXT:         asm volatile "mov eax, 9" [dialect=intel] {
@@ -216,7 +216,7 @@
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_never:[0-9]+]] @never() -> i32 [linkage=external] [noreturn] [fallthrough=ub] {
-// DEFAULT-NEXT:         let %[[VALUE22:[0-9]+]]: u32 [synthetic];
+// DEFAULT-NEXT:         let %[[VALUE22:[0-9]+]]: u32 [synthetic] = const<u32>(0);
 // DEFAULT-NEXT:         asm volatile "int 3" [dialect=intel] {
 // DEFAULT-NEXT:             template: "int 3";
 // DEFAULT-NEXT:             lateout 0 "{eax}" [{ax}] width 32 place<u32>(%[[VALUE22]]);

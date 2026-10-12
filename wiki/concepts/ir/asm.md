@@ -232,6 +232,8 @@ or `None` in a naked function. `template` is rebuilt from the AST.
   An `EntryLabel` is a label definition too, and a C `goto` to it enters through
   an extra dispatch node: the same `asm!` with `jmp Nf` prepended, so the
   block runs from the label (two copies of the template, one per entry).
+  Slate appends `return <Fallthrough::Return value>` to the function when its
+  last statement is not already a `return` (inside `unsafe` under dispatch).
   Register clobbers of an unconstrained asm are early (`out`), so no address
   input can land in a register the block writes.
 - Each C object is one `Memory { place, access }` operand however often it
@@ -255,8 +257,8 @@ or `None` in a naked function. `template` is rebuilt from the AST.
   clobber list. `Fallthrough::Return(Value)` (printed
   `fallthrough=ret(value)`) combines `u64(eax) | (u64(edx) << 32)` at the
   function end and converts it; narrow results truncate, `_Bool` takes the
-  low bit. Explicit returns bypass it. C99 `main` zero-initializes its
-  capture. Naked functions have none; noreturn keeps `ub`. Float, aggregate,
+  low bit. Explicit returns bypass it. The capture locals are always zero-initialized,
+  so a path that skips the asm still returns a defined value. Naked functions have none; noreturn keeps `ub`. Float, aggregate,
   wider, and x86-64 implicit returns are not lowered.
 - Fixtures: `sema/i686-pc-windows-msvc/ms_asm_*.c`.
 
