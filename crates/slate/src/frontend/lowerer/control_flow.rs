@@ -10,7 +10,13 @@ enum Node<'a> {
     Branch(&'a ir::Value, usize, usize),
     Switch(&'a ir::Value, Vec<Case<'a>>, usize),
     Indirect(&'a ir::Value, Vec<(BindingId, usize)>),
-    AsmGoto(&'a Statement, &'a ir::InlineAsm, usize, Vec<usize>),
+    AsmGoto(
+        &'a Statement,
+        &'a ir::InlineAsm,
+        usize,
+        Vec<usize>,
+        Option<BindingId>,
+    ),
 }
 
 impl Node<'_> {
@@ -20,7 +26,7 @@ impl Node<'_> {
             Self::Jump(next) | Self::Statement(_, Some(next)) | Self::Value(_, next) => {
                 vec![*next]
             }
-            Self::AsmGoto(_, _, next, labels) => std::iter::once(*next)
+            Self::AsmGoto(_, _, next, labels, _) => std::iter::once(*next)
                 .chain(labels.iter().copied())
                 .collect(),
             Self::Branch(_, yes, no) => vec![*yes, *no],
@@ -54,7 +60,7 @@ impl Node<'_> {
                     *entry = targets[*entry];
                 }
             }
-            Self::AsmGoto(_, _, next, labels) => {
+            Self::AsmGoto(_, _, next, labels, _) => {
                 *next = targets[*next];
                 for label in labels {
                     *label = targets[*label];
@@ -80,6 +86,13 @@ struct Graph<'a> {
     defaults: HashMap<BindingId, usize>,
     locals: Vec<(BindingId, &'a ir::Type, Option<u64>)>,
     targets: Vec<BindingId>,
+}
+
+fn entry_labels(asm: &ir::InlineAsm) -> impl Iterator<Item = BindingId> + '_ {
+    asm.pieces.iter().filter_map(|piece| match piece {
+        ir::AsmPiece::EntryLabel { binding, .. } => Some(*binding),
+        _ => None,
+    })
 }
 
 pub(super) fn label_code(id: BindingId) -> usize {
@@ -418,9 +431,23 @@ impl<'a> Graph<'a> {
                     .push((variable.id, &variable.ty, variable.alignment));
                 self.push(Node::Statement(statement, Some(next)))
             }
-            ir::Statement::Asm(asm) if !asm.labels.is_empty() => {
-                let labels = asm.labels.iter().map(|id| self.label(*id)).collect();
-                self.push(Node::AsmGoto(statement, asm, next, labels))
+            ir::Statement::Asm(asm)
+                if !asm.labels.is_empty() || entry_labels(asm).next().is_some() =>
+            {
+                let labels: Vec<_> = asm.labels.iter().map(|id| self.label(*id)).collect();
+                let main = self.push(Node::AsmGoto(statement, asm, next, labels.clone(), None));
+                for binding in entry_labels(asm) {
+                    let entry = self.push(Node::AsmGoto(
+                        statement,
+                        asm,
+                        next,
+                        labels.clone(),
+                        Some(binding),
+                    ));
+                    let label = self.label(binding);
+                    self.nodes[label] = Node::Jump(entry);
+                }
+                main
             }
             ir::Statement::Return(_) => self.push(Node::Statement(statement, None)),
             _ => self.push(Node::Statement(statement, Some(next))),
@@ -649,9 +676,9 @@ impl FunctionLowerer<'_, '_> {
                             arms,
                         }]
                     }
-                    Node::AsmGoto(statement, asm, next, labels) => {
+                    Node::AsmGoto(statement, asm, next, labels, entry) => {
                         let mut body = jump(next);
-                        body.insert(1, self.lower_asm(statement, asm, &labels)?);
+                        body.insert(1, self.lower_asm(statement, asm, &labels, entry)?);
                         body
                     }
                 });

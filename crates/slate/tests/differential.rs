@@ -102,6 +102,8 @@ fn run_cases_for_target(
         result.map(|()| {
             let mut config = support::RunConfig::default();
             config.c_args.extend(dg_options);
+            config.expected_stdout =
+                Some(f.path.with_extension("expected")).filter(|path| path.is_file());
             support::Case {
                 name: f.name.clone(),
                 c_src: f.path.clone(),

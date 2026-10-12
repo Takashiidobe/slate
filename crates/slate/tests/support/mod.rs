@@ -448,6 +448,7 @@ pub struct RunConfig {
     pub compare_stderr: bool,
     pub timeout_seconds: Option<u64>,
     pub c_args: Vec<String>,
+    pub expected_stdout: Option<PathBuf>,
     pub extra_files: Vec<PathBuf>,
     pub extra_files_dir: PathBuf,
 }
@@ -461,6 +462,7 @@ impl Default for RunConfig {
             compare_stderr: false,
             timeout_seconds: None,
             c_args: Vec::new(),
+            expected_stdout: None,
             extra_files: Vec::new(),
             extra_files_dir: PathBuf::from("src/functional"),
         }
@@ -523,7 +525,9 @@ pub fn compare_batch_with_jobs_for_target(
                 Err(error) => return Err(format!("Rust batch build failed:\n{error}")),
             };
             let c_bin = work_dir.join(format!("{}_c", bn));
-            compile_c_with_args_for_target(&case.c_src, &c_bin, &case.config.c_args, cross)?;
+            if case.config.expected_stdout.is_none() {
+                compile_c_with_args_for_target(&case.c_src, &c_bin, &case.config.c_args, cross)?;
+            }
             let run_dir = work_dir.join("runs").join(&bn);
             if run_dir.exists() {
                 std::fs::remove_dir_all(&run_dir)
@@ -541,8 +545,17 @@ pub fn compare_batch_with_jobs_for_target(
                 std::fs::copy(extra, dest_dir.join(name))
                     .map_err(|e| format!("stage {}: {e}", extra.display()))?;
             }
+            let expected = match &case.config.expected_stdout {
+                Some(path) => Run {
+                    stdout: std::fs::read(path)
+                        .map_err(|e| format!("read {}: {e}", path.display()))?,
+                    stderr: Vec::new(),
+                    exit: Some(0),
+                },
+                None => run_with_config_for_target(&c_bin, &case.config, &run_dir, cross)?,
+            };
             compare_runs(
-                &run_with_config_for_target(&c_bin, &case.config, &run_dir, cross)?,
+                &expected,
                 &run_with_config_for_target(&rs_bin, &case.config, &run_dir, cross)?,
                 case.config.compare_stderr,
             )
@@ -1043,6 +1056,7 @@ fn is_semantic_dg_flag(flag: &str) -> bool {
             | "-pthread"
             | "-fms-extensions"
             | "-fasm-blocks"
+            | "--flavor=msvc"
     ) || flag.starts_with("-std=")
         || flag.starts_with("-finput-charset=")
 }

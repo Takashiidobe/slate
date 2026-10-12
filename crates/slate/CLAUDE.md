@@ -86,7 +86,10 @@ starts passing, `fixtures_unsupported_tests_still_fail` fails and prints the
 `tests/fixtures/i686/` is a separate bucket (`i686_differential`): fixtures
 translate with `-target=i686-unknown-linux-gnu`, the C side builds with
 `clang --target=i686-linux-gnu -m32`, and both binaries run natively with no
-emulator. Other `arm`/`aarch64` fixture directories are not collected.
+emulator. A fixture with a sibling `<name>.expected` is not built with
+clang: the Rust output is compared to that file instead (for MSVC-only code,
+recorded with `MSVC_ARCH=x86 crates/slate-parser/tools/cl.exe` under wine, link
+with `/link legacy_stdio_definitions.lib`). Other `arm`/`aarch64` fixture directories are not collected.
 
 Isolate one fixture while developing:
 

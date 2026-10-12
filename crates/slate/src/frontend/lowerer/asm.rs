@@ -463,36 +463,58 @@ fn unique_labels(pieces: &[ir::AsmPiece]) -> Result<Cow<'_, [ir::AsmPiece]>> {
     Ok(Cow::Owned(result))
 }
 
-fn numeric_local_labels(pieces: &[ir::AsmPiece]) -> Result<Cow<'_, [ir::AsmPiece]>> {
-    if !pieces
-        .iter()
-        .any(|piece| matches!(piece, ir::AsmPiece::LocalLabel(_)))
-    {
+fn numeric_local_labels(
+    pieces: &[ir::AsmPiece],
+    entry: Option<BindingId>,
+) -> Result<Cow<'_, [ir::AsmPiece]>> {
+    if !pieces.iter().any(|piece| {
+        matches!(
+            piece,
+            ir::AsmPiece::LocalLabel(_) | ir::AsmPiece::EntryLabel { .. }
+        )
+    }) {
         return Ok(Cow::Borrowed(pieces));
     }
-    let defined_here = |index: usize| {
-        matches!(
-            pieces.get(index + 1),
-            Some(ir::AsmPiece::Text(text)) if text.starts_with(':')
-        )
+    let definition = |index: usize| match &pieces[index] {
+        ir::AsmPiece::EntryLabel { name, .. } => Some(name),
+        ir::AsmPiece::LocalLabel(name)
+            if matches!(
+                pieces.get(index + 1),
+                Some(ir::AsmPiece::Text(text)) if text.starts_with(':')
+            ) =>
+        {
+            Some(name)
+        }
+        _ => None,
     };
     let mut numbers = (2u64..).filter(|number| number.to_string().contains(|c| c > '1'));
     let mut definitions = HashMap::new();
+    let mut entry_number = None;
     for (index, piece) in pieces.iter().enumerate() {
-        if let ir::AsmPiece::LocalLabel(name) = piece
-            && defined_here(index)
+        let Some(name) = definition(index) else {
+            continue;
+        };
+        let number = numbers.next().unwrap_or_default();
+        if definitions.insert(name.as_str(), (number, index)).is_some() {
+            return Err(unsupported_asm(format!("label {name} defined twice")));
+        }
+        if let ir::AsmPiece::EntryLabel { binding, .. } = piece
+            && entry == Some(*binding)
         {
-            let number = numbers.next().unwrap_or_default();
-            if definitions.insert(name.as_str(), (number, index)).is_some() {
-                return Err(unsupported_asm(format!("label {name} defined twice")));
-            }
+            entry_number = Some(number);
         }
     }
     let mut result = Vec::new();
+    if let Some(number) = entry_number {
+        result.push(ir::AsmPiece::Text(format!("jmp {number}f\n")));
+    }
     for (index, piece) in pieces.iter().enumerate() {
-        let ir::AsmPiece::LocalLabel(name) = piece else {
-            result.push(piece.clone());
-            continue;
+        let name = match piece {
+            ir::AsmPiece::LocalLabel(name) | ir::AsmPiece::EntryLabel { name, .. } => name,
+            piece => {
+                result.push(piece.clone());
+                continue;
+            }
         };
         let (number, defined_at) = *definitions
             .get(name.as_str())
@@ -512,6 +534,7 @@ fn asm_template(
     asm: &ir::InlineAsm,
     slots: &[Slot],
     labels: &[usize],
+    entry: Option<BindingId>,
     names: &mut AsmNames,
 ) -> Result<String> {
     names.statement_start = true;
@@ -521,7 +544,7 @@ fn asm_template(
     let mut template = String::new();
     let mut used = vec![false; asm.operands.len()];
     let mut used_labels = vec![false; labels.len()];
-    let pieces = numeric_local_labels(&asm.pieces)?;
+    let pieces = numeric_local_labels(&asm.pieces, entry)?;
     for piece in unique_labels(&pieces)?.iter() {
         if !matches!(piece, ir::AsmPiece::Text(_)) {
             names.statement_start = false;
@@ -1129,7 +1152,7 @@ impl FunctionLowerer<'_, '_> {
         }
         let mut names = AsmNames::new(&self.tables.asm_names, operands.len());
         for (asm, slots) in asms.iter().zip(&asm_slots) {
-            templates.push(asm_template(asm, slots, &[], &mut names)?);
+            templates.push(asm_template(asm, slots, &[], None, &mut names)?);
         }
         for id in names.used {
             operands.push(rust::AsmOperand::Sym(self.asm_symbol(&ir::AsmSymbol {
@@ -1360,6 +1383,7 @@ impl FunctionLowerer<'_, '_> {
         statement: &Span<ir::Statement>,
         asm: &ir::InlineAsm,
         labels: &[usize],
+        entry: Option<BindingId>,
     ) -> Result<Stmt> {
         if !self.tables.target.family.is_x86() {
             return Err(unsupported_asm("target needs assembly lowering"));
@@ -1810,7 +1834,7 @@ impl FunctionLowerer<'_, '_> {
             })
             .collect();
         let mut names = AsmNames::new(&self.tables.asm_names, operands.len());
-        let mut template = asm_template(asm, &slots, &label_slots, &mut names)?;
+        let mut template = asm_template(asm, &slots, &label_slots, entry, &mut names)?;
         for id in names.used {
             operands.push(rust::AsmOperand::Sym(self.asm_symbol(&ir::AsmSymbol {
                 binding: id,
