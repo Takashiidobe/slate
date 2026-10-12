@@ -63,6 +63,13 @@ form was.
 - `_exception_code`, `_exception_info`, `_abnormal_termination` and their
   `__` spellings lower to `ValueKind::Seh(SehIntrinsic)`, effect-free reads
   of the active exception (`u32`, `ptr<void>`, `i32`), not calls.
+- Checker (`sema/assertion.rs`, `sema/seh_scopes.rs`): `goto` into a
+  `__try` body, `__except` block or `__finally` block is rejected with
+  clang's "cannot jump from this goto statement to its label" (each of the
+  three is its own protected scope; `seh_scopes::label_scopes` records each
+  label's scope path per function). Leaving the innermost `__finally` by
+  `return`, `break`/`continue` (named or not), `__leave` or `goto` warns
+  `-Wjump-seh-finally`.
 - Slate has no Rust lowering; a function with SEH is a lowering barrier.
 - Fixtures: `clang/windows/x86_64/ir_seh.c`,
   `error/clang/windows/x86_64/seh_misuse.c`, `suites/clang-test/*/windows/*/CodeGen__exceptions-seh*.c`.

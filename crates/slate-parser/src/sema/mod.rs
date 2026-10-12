@@ -20,6 +20,7 @@ pub mod names;
 pub mod numeric;
 mod operand;
 pub mod pragmas;
+mod seh_scopes;
 mod sequencing;
 mod type_of;
 mod typer;

@@ -27,10 +27,11 @@ pub enum Warning {
     BuiltinMacroRedefined,
     Deprecated,
     Traditional,
+    JumpSehFinally,
 }
 
 impl Warning {
-    pub const ALL: [Self; 23] = [
+    pub const ALL: [Self; 24] = [
         Self::LongLong,
         Self::C99Compat,
         Self::ImplicitlyUnsignedLiteral,
@@ -54,6 +55,7 @@ impl Warning {
         Self::BuiltinMacroRedefined,
         Self::Deprecated,
         Self::Traditional,
+        Self::JumpSehFinally,
     ];
 
     pub fn name(self) -> &'static str {
@@ -83,6 +85,7 @@ impl Warning {
             Self::BuiltinMacroRedefined => "builtin-macro-redefined",
             Self::Deprecated => "deprecated",
             Self::Traditional => "traditional",
+            Self::JumpSehFinally => "jump-seh-finally",
         }
     }
 

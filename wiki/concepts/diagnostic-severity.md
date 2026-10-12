@@ -73,6 +73,7 @@ severity(w) =
 | `pointer-integer-compare` | on | no | pointer compared with a non-null-constant integer |
 | `compare-distinct-pointer-types` | on | no | pointers without composite pointee, neither `void` |
 | `conflicting-types` | on | no | redeclaration conflict only MSVC accepts ([table](ir/declarations.md#redeclaration-conflicts)) |
+| `jump-seh-finally` | on | no | `return`, `break`, `continue`, `__leave` or `goto` whose target lies outside the innermost enclosing `__finally` (clang; same in the msvc flavor) |
 | `parameter-alignment` | on | no | alignment attribute on a parameter |
 | `ignored-attributes` | on | no | attribute outside clang's subject list |
 | `unknown-attributes` | on | no | spelling the flavor doesn't register for the target (gcc `-Wattributes`, cl C5030) |

@@ -20,6 +20,7 @@ use super::initializer::{ElementError, InitializerSource};
 use super::module::{applies, function_symbol, linkage as declared_linkage, symbol_attributes};
 use super::numeric::{Context, ResolveError};
 use super::pragmas::{FloatingPragmas, FloatingRegion, PragmaPlacement};
+use super::seh_scopes::{SehScope, label_scopes};
 use super::typer::{Choice, Slot};
 use super::types::TypeResolver;
 use super::validate::{SemaError, error};
@@ -112,6 +113,17 @@ struct StatementContext {
     named_targets: Vec<NamedTarget>,
     seh_try_bodies: usize,
     seh_except: Option<SehExceptScope>,
+    seh_scopes: Vec<SehScope>,
+    label_scopes: HashMap<String, Vec<SehScope>>,
+    finally: Option<FinallyEntry>,
+}
+
+#[derive(Clone, Copy)]
+struct FinallyEntry {
+    loops: usize,
+    breakables: usize,
+    named_targets: usize,
+    seh_try_bodies: usize,
 }
 
 #[derive(Clone, Copy, PartialEq)]
@@ -305,6 +317,7 @@ impl Checker<'_> {
             &mut self.context,
             StatementContext {
                 returns,
+                label_scopes: label_scopes(&function.body),
                 ..StatementContext::default()
             },
         );
@@ -1046,12 +1059,32 @@ impl Checker<'_> {
             StmtKind::Continue if self.context.loops == 0 => {
                 self.reject(stmt, "continue outside loop")
             }
+            StmtKind::Break => {
+                let breakables = self.context.breakables;
+                self.finally_exit(stmt, |entry| entry.breakables == breakables)
+            }
+            StmtKind::Continue => {
+                let loops = self.context.loops;
+                self.finally_exit(stmt, |entry| entry.loops == loops)
+            }
+            StmtKind::Goto(label) => self.seh_goto(stmt, label),
             StmtKind::SehLeave if self.context.seh_try_bodies == 0 => {
                 self.reject(stmt, "'__leave' statement not in __try block")
             }
+            StmtKind::SehLeave => {
+                let try_bodies = self.context.seh_try_bodies;
+                self.finally_exit(stmt, |entry| entry.seh_try_bodies == try_bodies)
+            }
             StmtKind::SehTry { body, handler } => {
+                let scope = |handler, finally| SehScope {
+                    node: stmt.id,
+                    handler,
+                    finally,
+                };
                 self.context.seh_try_bodies += 1;
+                self.context.seh_scopes.push(scope(false, false));
                 self.statement(body);
+                self.context.seh_scopes.pop();
                 self.context.seh_try_bodies -= 1;
                 match handler {
                     SehHandler::Except { filter, body } => {
@@ -1063,10 +1096,24 @@ impl Checker<'_> {
                             self.reject(filter, "filter expression has non-integral type");
                         }
                         self.context.seh_except = Some(SehExceptScope::Block);
+                        self.context.seh_scopes.push(scope(true, false));
                         self.statement(body);
+                        self.context.seh_scopes.pop();
                         self.context.seh_except = enclosing;
                     }
-                    SehHandler::Finally(body) => self.statement(body),
+                    SehHandler::Finally(body) => {
+                        let entry = FinallyEntry {
+                            loops: self.context.loops,
+                            breakables: self.context.breakables,
+                            named_targets: self.context.named_targets.len(),
+                            seh_try_bodies: self.context.seh_try_bodies,
+                        };
+                        let enclosing = self.context.finally.replace(entry);
+                        self.context.seh_scopes.push(scope(true, true));
+                        self.statement(body);
+                        self.context.seh_scopes.pop();
+                        self.context.finally = enclosing;
+                    }
                 }
             }
             StmtKind::Attribute(attributes)
@@ -1106,6 +1153,7 @@ impl Checker<'_> {
             StmtKind::NamedBreak(label) => self.named_jump(stmt, label, false),
             StmtKind::NamedContinue(label) => self.named_jump(stmt, label, true),
             StmtKind::Return(expr) => {
+                self.finally_exit(stmt, |_| true);
                 self.expression(expr);
                 match self.context.returns {
                     Returns::Value(to) => self.convert(expr, to, ConversionContext::Return),
@@ -1120,6 +1168,7 @@ impl Checker<'_> {
                 }
             }
             StmtKind::ReturnVoid => {
+                self.finally_exit(stmt, |_| true);
                 let accepted = match self.types.flavor() {
                     CompilerFlavor::Msvc => true,
                     CompilerFlavor::Gcc => self.types.features().valueless_return_in_nonvoid,
@@ -1139,6 +1188,40 @@ impl Checker<'_> {
             }
             StmtKind::Expr(expr) => self.expression(expr),
             _ => {}
+        }
+    }
+
+    fn finally_exit(&mut self, stmt: &Stmt, leaves: impl Fn(FinallyEntry) -> bool) {
+        if self.context.finally.is_some_and(leaves) {
+            self.jump_out_of_finally(stmt);
+        }
+    }
+
+    fn jump_out_of_finally(&mut self, stmt: &Stmt) {
+        self.types.warn(
+            Warning::JumpSehFinally,
+            "jump out of __finally block has undefined behavior",
+            stmt,
+        );
+    }
+
+    fn seh_goto(&mut self, stmt: &Stmt, label: &Span<String>) {
+        let Some(target) = self.context.label_scopes.get(&label.value) else {
+            return;
+        };
+        let current = &self.context.seh_scopes;
+        let common = current
+            .iter()
+            .zip(target)
+            .take_while(|(a, b)| a == b)
+            .count();
+        let leaves_finally = current[common..].iter().any(|scope| scope.finally);
+        let enters_scope = common < target.len();
+        if leaves_finally {
+            self.jump_out_of_finally(stmt);
+        }
+        if enters_scope {
+            self.reject(stmt, "cannot jump from this goto statement to its label");
         }
     }
 
@@ -1164,15 +1247,18 @@ impl Checker<'_> {
     }
 
     fn named_jump(&mut self, stmt: &Stmt, label: &Span<String>, is_continue: bool) {
-        let target = self
+        let position = self
             .context
             .named_targets
             .iter()
-            .rev()
-            .find(|target| target.labels.contains(&label.value));
+            .rposition(|target| target.labels.contains(&label.value));
+        let target = position.map(|position| &self.context.named_targets[position]);
         let message = match target {
             Some(target) if !is_continue || target.is_loop => {
                 self.types.named_jumps.insert(stmt.id, target.statement);
+                if let Some(position) = position {
+                    self.finally_exit(stmt, |entry| position < entry.named_targets);
+                }
                 return;
             }
             Some(_) => format!(
