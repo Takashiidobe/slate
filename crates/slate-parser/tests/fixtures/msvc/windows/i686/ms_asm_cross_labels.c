@@ -53,7 +53,7 @@ int mixed_labels(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_asm_to_c:[0-9]+]] @asm_to_c(%[[VALUE_value:[0-9]+]] value: i32) -> i32 [linkage=external] [fallthrough=ret(reinterpret<i32, reason=return, fits=unknown>(read<u32>(%[[VALUE0:[0-9]+]])))] {
 // DEFAULT-NEXT:         let %[[VALUE0]]: u32 [synthetic];
-// DEFAULT-NEXT:         asm volatile goto "mov eax, value\njmp done" [dialect=intel] [alternative=none] {
+// DEFAULT-NEXT:         asm volatile goto "mov eax, value\njmp done" [dialect=intel] {
 // DEFAULT-NEXT:             template: "mov eax, " addr(%1) "\njmp " %l0;
 // DEFAULT-NEXT:             out 0 "{eax}" [{ax}] width 32 place<u32>(%[[VALUE0]]);
 // DEFAULT-NEXT:             in 1 [value] mem<read> place<i32>(%[[VALUE_value]]);
@@ -66,7 +66,7 @@ int mixed_labels(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_c_to_asm:[0-9]+]] @c_to_asm(%[[VALUE_value_2:[0-9]+]] value: i32) -> i32 [linkage=external] [fallthrough=ret(reinterpret<i32, reason=return, fits=unknown>(read<u32>(%[[VALUE1:[0-9]+]])))] {
 // DEFAULT-NEXT:         let %[[VALUE1]]: u32 [synthetic];
 // DEFAULT-NEXT:         goto %[[VALUE2:[0-9]+]];
-// DEFAULT-NEXT:         asm volatile "mov eax, 1\ninside:\nmov eax, value" [dialect=intel] [alternative=none] {
+// DEFAULT-NEXT:         asm volatile "mov eax, 1\ninside:\nmov eax, value" [dialect=intel] {
 // DEFAULT-NEXT:             template: "mov eax, 1\n" entry_label(%4, inside) ":\nmov eax, " addr(%1);
 // DEFAULT-NEXT:             out 0 "{eax}" [{ax}] width 32 place<u32>(%[[VALUE1]]);
 // DEFAULT-NEXT:             in 1 [value] mem<read> place<i32>(%[[VALUE_value_2]]);
@@ -75,7 +75,7 @@ int mixed_labels(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_mixed_labels:[0-9]+]] @mixed_labels() -> i32 [linkage=external] [fallthrough=ret(reinterpret<i32, reason=return, fits=unknown>(read<u32>(%[[VALUE3:[0-9]+]])))] {
 // DEFAULT-NEXT:         let %[[VALUE3]]: u32 [synthetic];
-// DEFAULT-NEXT:         asm volatile "jmp inner\ninner:\nnop" [dialect=intel] [alternative=none] {
+// DEFAULT-NEXT:         asm volatile "jmp inner\ninner:\nnop" [dialect=intel] {
 // DEFAULT-NEXT:             template: "jmp " label(inner) "\n" entry_label(%7, inner) ":\nnop";
 // DEFAULT-NEXT:             lateout 0 "{eax}" [{ax}] width 32 place<u32>(%[[VALUE3]]);
 // DEFAULT-NEXT:         }

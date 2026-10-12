@@ -61,7 +61,7 @@ ULONGLONG shift_left(ULONGLONG value, DWORD count) {
 // IR-NEXT:     fn %[[VALUE_Int64ShllMod32:[0-9]+]] @Int64ShllMod32(%[[VALUE_Value:[0-9]+]] Value: u64, %[[VALUE_ShiftCount:[0-9]+]] ShiftCount: u32) -> u64 [linkage=external] [inline=hint] [definition=emitted] [abi=x86_win32 stdcall(scalar, scalar) -> scalar] [fallthrough=ret(or<u64>(widen<u64, reason=return>(read<u32>(%[[VALUE0:[0-9]+]])), shl<u64, overflow=wrap, amount_out_of_range=ub>(widen<u64, reason=return>(read<u32>(%[[VALUE1:[0-9]+]])), const<u32>(32))))] {
 // IR-NEXT:         let %[[VALUE0]]: u32 [synthetic];
 // IR-NEXT:         let %[[VALUE1]]: u32 [synthetic];
-// IR-NEXT:         asm volatile "mov ecx, ShiftCount\nmov eax, dword ptr [Value]\nmov edx, dword ptr [Value + 4]\nshld edx, eax, cl\nshl eax, cl" [dialect=intel] [alternative=none] {
+// IR-NEXT:         asm volatile "mov ecx, ShiftCount\nmov eax, dword ptr [Value]\nmov edx, dword ptr [Value + 4]\nshld edx, eax, cl\nshl eax, cl" [dialect=intel] {
 // IR-NEXT:             template: "mov ecx, " addr(%2) "\nmov eax, " addr<dword>(%3) "\nmov edx, " addr<dword>(%3 + 4) "\nshld edx, eax, cl\nshl eax, cl";
 // IR-NEXT:             out 0 "{eax}" [{ax}] width 32 place<u32>(%[[VALUE0]]);
 // IR-NEXT:             out 1 "{edx}" [{dx}] width 32 place<u32>(%[[VALUE1]]);

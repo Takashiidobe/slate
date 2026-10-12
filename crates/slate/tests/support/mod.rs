@@ -1041,6 +1041,8 @@ fn is_semantic_dg_flag(flag: &str) -> bool {
             | "-mno-mmx"
             | "-fsignaling-nans"
             | "-pthread"
+            | "-fms-extensions"
+            | "-fasm-blocks"
     ) || flag.starts_with("-std=")
         || flag.starts_with("-finput-charset=")
 }

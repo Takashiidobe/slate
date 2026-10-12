@@ -220,6 +220,11 @@ armv7 variants.
 Intel dialect, options `memory = Any` and nothing else (it may `push`/`pop`),
 or `None` in a naked function. `template` is rebuilt from the AST.
 
+- Operands carry no constraint; `selected` is derived from the kind (`Symbol`
+  to sym, `Memory` to mem, `In` to a general register, the implicit-return
+  `Out` keeps its explicit register) and `alternative` is `Some(0)` whenever
+  there are operands. Slate lowers these on i686 (`tests/fixtures/i686/`);
+  `bx` operands and clobbers are not lowered there.
 - Each C object is one `Memory { place, access }` operand however often it
   appears; the asm receives its address, and `AsmAccess::{Read, Write,
   ReadWrite}` joins every reference (`src/sema/ms_asm_effects.rs`).

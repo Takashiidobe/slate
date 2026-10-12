@@ -1020,7 +1020,7 @@ impl FunctionLowerer<'_, '_> {
         asms: &[&ir::InlineAsm],
         kind: rust::AsmKind,
     ) -> Result<rust::InlineAsm> {
-        if self.tables.target.family != TargetFamily::X86_64 {
+        if !self.tables.target.family.is_x86() {
             return Err(unsupported_asm("target needs assembly lowering"));
         }
         let mut templates = Vec::new();
@@ -1288,7 +1288,7 @@ impl FunctionLowerer<'_, '_> {
         asm: &ir::InlineAsm,
         labels: &[usize],
     ) -> Result<Stmt> {
-        if self.tables.target.family != TargetFamily::X86_64 {
+        if !self.tables.target.family.is_x86() {
             return Err(unsupported_asm("target needs assembly lowering"));
         }
         if asm.labels.len() != labels.len() {
@@ -1300,6 +1300,7 @@ impl FunctionLowerer<'_, '_> {
                 asm.rejected
             )));
         }
+        let x86_32 = self.tables.target.family == TargetFamily::X86;
         let mut options = asm_options(asm)?;
         let mut operands = Vec::new();
         let mut explicit = Vec::new();
@@ -1482,6 +1483,7 @@ impl FunctionLowerer<'_, '_> {
                 )) if bare.contains(&index) => {
                     let candidates: &[&'static str] = match class {
                         ir::AsmRegisterClass::RegAbcd => &["ax", "cx", "dx"],
+                        _ if x86_32 => &["ax", "cx", "dx", "si", "di"],
                         _ => &[
                             "ax", "cx", "dx", "si", "di", "r8", "r9", "r10", "r11", "r12", "r13",
                             "r14", "r15",
@@ -1527,6 +1529,9 @@ impl FunctionLowerer<'_, '_> {
                             return Err(unsupported_asm(format!(
                                 "reserved register operand {canonical}"
                             )));
+                        }
+                        "bx" if x86_32 => {
+                            return Err(unsupported_asm("ebx operand"));
                         }
                         "bx" if saved_rbx.is_some() => {
                             return Err(unsupported_asm("second rbx operand"));
@@ -1692,6 +1697,9 @@ impl FunctionLowerer<'_, '_> {
                 }
                 if !clobbered.insert(canonical) {
                     continue;
+                }
+                if canonical == "bx" && x86_32 {
+                    return Err(unsupported_asm("ebx clobber"));
                 }
                 if canonical == "bx" {
                     if saved_rbx.is_none() {

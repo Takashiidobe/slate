@@ -7,9 +7,9 @@ use crate::ast::{
     self, MsAsmBinaryOp, MsAsmExpr, MsAsmOperator, MsAsmSegment, MsAsmSize, Register, Span,
 };
 use crate::ir::{
-    AsmAccess, AsmClobber, AsmConstraint, AsmDialect, AsmMemory, AsmOperand, AsmOperandKind,
-    AsmOptions, AsmPiece, AsmSymbol, BindingId, BindingKind, InlineAsm, PlaceKind, Type,
-    TypeDefinitionKind, ValueKind,
+    AsmAccess, AsmClobber, AsmConstraint, AsmDialect, AsmMemory, AsmOperand, AsmOperandClass,
+    AsmOperandKind, AsmOptions, AsmPiece, AsmRegisterClass, AsmSymbol, BindingId, BindingKind,
+    InlineAsm, PlaceKind, Type, TypeDefinitionKind, ValueKind,
 };
 use crate::lexer::Keyword;
 use crate::target::x86::decode_register;
@@ -64,6 +64,11 @@ impl Lowered {
     }
 
     fn operand(&mut self, name: Option<String>, kind: AsmOperandKind) -> usize {
+        let selected = match &kind {
+            AsmOperandKind::Symbol(_) => Some(AsmOperandClass::Symbol),
+            AsmOperandKind::Memory { .. } => Some(AsmOperandClass::Memory),
+            _ => Some(AsmOperandClass::Register(AsmRegisterClass::Reg)),
+        };
         self.operands.push(AsmOperand {
             name,
             constraint: AsmConstraint {
@@ -71,7 +76,7 @@ impl Lowered {
             },
             kind,
             width: None,
-            selected: None,
+            selected,
         });
         self.operands.len() - 1
     }
@@ -222,6 +227,7 @@ impl Lowerer {
             preserves_flags: false,
             may_unwind: false,
         });
+        let alternative = (!lowered.operands.is_empty()).then_some(0);
         Ok(InlineAsm {
             template: template(asm),
             volatile: true,
@@ -235,7 +241,7 @@ impl Lowerer {
                 .map(|name| AsmClobber::Register(register(&decode_register(name))))
                 .collect(),
             labels,
-            alternative: None,
+            alternative,
             rejected: Vec::new(),
             options,
         })

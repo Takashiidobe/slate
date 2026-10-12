@@ -80,7 +80,7 @@ void __declspec(naked) naked(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> i32 [linkage=external] [fallthrough=ret(reinterpret<i32, reason=return, fits=unknown>(read<u32>(%[[VALUE2:[0-9]+]])))] {
 // DEFAULT-NEXT:         let %[[VALUE2]]: u32 [synthetic];
 // DEFAULT-NEXT:         let %[[VALUE_r:[0-9]+]] r: ptr<fn(i32) -> i32> [storage=automatic] = call<ptr<fn(i32) -> i32>, signature=fn() -> ptr<fn(i32) -> i32>>(%[[VALUE_gptr]]);
-// DEFAULT-NEXT:         asm volatile "call k\ncall r\ncall kimport\ncall kptr" [dialect=intel] [alternative=none] {
+// DEFAULT-NEXT:         asm volatile "call k\ncall r\ncall kimport\ncall kptr" [dialect=intel] {
 // DEFAULT-NEXT:             template: "call " %1 "\ncall " addr<dword>(%2) "\ncall " %3 "\ncall " addr<dword>(%4);
 // DEFAULT-NEXT:             out 0 "{eax}" [{ax}] width 32 place<u32>(%[[VALUE2]]);
 // DEFAULT-NEXT:             in 1 sym<offset=0>(%[[VALUE_k]]);
@@ -92,7 +92,7 @@ void __declspec(naked) naked(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> i32 [linkage=external] [fallthrough=ret(reinterpret<i32, reason=return, fits=unknown>(read<u32>(%[[VALUE3:[0-9]+]])))] {
 // DEFAULT-NEXT:         let %[[VALUE3]]: u32 [synthetic];
-// DEFAULT-NEXT:         asm volatile "jmp k\nja k\nJAE k\nLOOP k\nloope k\nloopne k" [dialect=intel] [alternative=none] {
+// DEFAULT-NEXT:         asm volatile "jmp k\nja k\nJAE k\nLOOP k\nloope k\nloopne k" [dialect=intel] {
 // DEFAULT-NEXT:             template: "jmp " %1 "\nja " %1 "\nJAE " %1 "\nLOOP " %1 "\nloope " %1 "\nloopne " %1;
 // DEFAULT-NEXT:             lateout 0 "{eax}" [{ax}] width 32 place<u32>(%[[VALUE3]]);
 // DEFAULT-NEXT:             in 1 sym<offset=0>(%[[VALUE_k]]);
@@ -102,7 +102,7 @@ void __declspec(naked) naked(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_baz:[0-9]+]] @baz() -> i32 [linkage=external] [fallthrough=ret(reinterpret<i32, reason=return, fits=unknown>(read<u32>(%[[VALUE4:[0-9]+]])))] {
 // DEFAULT-NEXT:         let %[[VALUE4]]: u32 [synthetic];
-// DEFAULT-NEXT:         asm volatile "mov eax, k\nmov eax, kptr" [dialect=intel] [alternative=none] {
+// DEFAULT-NEXT:         asm volatile "mov eax, k\nmov eax, kptr" [dialect=intel] {
 // DEFAULT-NEXT:             template: "mov eax, " %1 "\nmov eax, " addr(%2);
 // DEFAULT-NEXT:             out 0 "{eax}" [{ax}] width 32 place<u32>(%[[VALUE4]]);
 // DEFAULT-NEXT:             in 1 sym<offset=0>(%[[VALUE_k]]);

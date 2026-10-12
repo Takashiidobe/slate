@@ -66,7 +66,7 @@ ULONGLONG shift(ULONGLONG value, DWORD count) {
 // DEFAULT-NEXT:     fn %[[VALUE_Int64ShllMod32:[0-9]+]] @Int64ShllMod32(%[[VALUE_Value:[0-9]+]] Value: u64, %[[VALUE_ShiftCount:[0-9]+]] ShiftCount: u32) -> u64 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ret(or<u64>(widen<u64, reason=return>(read<u32>(%[[VALUE0:[0-9]+]])), shl<u64, overflow=wrap, amount_out_of_range=ub>(widen<u64, reason=return>(read<u32>(%[[VALUE1:[0-9]+]])), const<u32>(32))))] {
 // DEFAULT-NEXT:         let %[[VALUE0]]: u32 [synthetic];
 // DEFAULT-NEXT:         let %[[VALUE1]]: u32 [synthetic];
-// DEFAULT-NEXT:         asm volatile "mov ecx, ShiftCount\nmov eax, dword ptr [Value]\nmov edx, dword ptr [Value + 4]\nshld edx, eax, cl\nshl eax, cl" [dialect=intel] [alternative=none] {
+// DEFAULT-NEXT:         asm volatile "mov ecx, ShiftCount\nmov eax, dword ptr [Value]\nmov edx, dword ptr [Value + 4]\nshld edx, eax, cl\nshl eax, cl" [dialect=intel] {
 // DEFAULT-NEXT:             template: "mov ecx, " addr(%2) "\nmov eax, " addr<dword>(%3) "\nmov edx, " addr<dword>(%3 + 4) "\nshld edx, eax, cl\nshl eax, cl";
 // DEFAULT-NEXT:             out 0 "{eax}" [{ax}] width 32 place<u32>(%[[VALUE0]]);
 // DEFAULT-NEXT:             out 1 "{edx}" [{dx}] width 32 place<u32>(%[[VALUE1]]);
@@ -78,7 +78,7 @@ ULONGLONG shift(ULONGLONG value, DWORD count) {
 // DEFAULT-NEXT:     fn %[[VALUE_Int64ShraMod32:[0-9]+]] @Int64ShraMod32(%[[VALUE_Value_2:[0-9]+]] Value: i64, %[[VALUE_ShiftCount_2:[0-9]+]] ShiftCount: u32) -> i64 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ret(reinterpret<i64, reason=return, fits=unknown>(or<u64>(widen<u64, reason=return>(read<u32>(%[[VALUE2:[0-9]+]])), shl<u64, overflow=wrap, amount_out_of_range=ub>(widen<u64, reason=return>(read<u32>(%[[VALUE3:[0-9]+]])), const<u32>(32)))))] {
 // DEFAULT-NEXT:         let %[[VALUE2]]: u32 [synthetic];
 // DEFAULT-NEXT:         let %[[VALUE3]]: u32 [synthetic];
-// DEFAULT-NEXT:         asm volatile "mov ecx, ShiftCount\nmov eax, dword ptr [Value]\nmov edx, dword ptr [Value + 4]\nshrd eax, edx, cl\nsar edx, cl" [dialect=intel] [alternative=none] {
+// DEFAULT-NEXT:         asm volatile "mov ecx, ShiftCount\nmov eax, dword ptr [Value]\nmov edx, dword ptr [Value + 4]\nshrd eax, edx, cl\nsar edx, cl" [dialect=intel] {
 // DEFAULT-NEXT:             template: "mov ecx, " addr(%2) "\nmov eax, " addr<dword>(%3) "\nmov edx, " addr<dword>(%3 + 4) "\nshrd eax, edx, cl\nsar edx, cl";
 // DEFAULT-NEXT:             out 0 "{eax}" [{ax}] width 32 place<u32>(%[[VALUE2]]);
 // DEFAULT-NEXT:             out 1 "{edx}" [{dx}] width 32 place<u32>(%[[VALUE3]]);
