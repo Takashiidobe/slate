@@ -280,6 +280,37 @@ const fn windows_msvc(
 
 pub const TARGETS: &[TargetSpec] = &[
     TargetSpec {
+        triple: "x86_64-unknown-linux-musl",
+        layout: TargetInfo::default,
+        profile: TargetProfile {
+            predefines: &[Predefines {
+                flavors: CLANG,
+                name: "<clang-x86_64-linux-musl-predefines>",
+                source: include_str!("predefines/clang-23.1.1_x86_64_linux_musl.h"),
+                defaults: "",
+                gnu_namespace: LINUX_GNU_NAMESPACE,
+            }],
+            sysroot: SysrootLayout::Unix { multiarch: None },
+            gcc_headers: None,
+            ..X86_64_LINUX_GNU_PROFILE
+        },
+    },
+    TargetSpec {
+        triple: "aarch64-unknown-linux-musl",
+        layout: TargetInfo::aarch64_linux,
+        profile: clang_unix(
+            &[Predefines {
+                flavors: CLANG,
+                name: "<clang-aarch64-linux-musl-predefines>",
+                source: include_str!("predefines/clang-23.1.1_aarch64_linux_musl.h"),
+                defaults: "",
+                gnu_namespace: LINUX_GNU_NAMESPACE,
+            }],
+            VaListKind::AArch64Aapcs,
+            AbiConvention::Aapcs64,
+        ),
+    },
+    TargetSpec {
         triple: "x86_64-unknown-linux-gnu",
         layout: TargetInfo::default,
         profile: X86_64_LINUX_GNU_PROFILE,

@@ -1,5 +1,11 @@
 # Adding a target
 
+<!-- toc -->
+- [TargetSpec fields](#targetspec-fields)
+- [Steps](#steps)
+- [Linux musl](#linux-musl)
+<!-- /toc -->
+
 Every supported triple is one `TargetSpec` in `src/target_registry.rs`.
 Nothing else matches on the triple string.
 
@@ -34,3 +40,11 @@ Nothing else matches on the triple string.
    new directory and regenerate it.
 4. Update `tools/corpus_sweep.py`'s `sysroot_include_paths` if the sysroot
    layout differs.
+
+## Linux musl
+
+- `x86_64-unknown-linux-musl` and `aarch64-unknown-linux-musl` support Clang.
+- Clang target predefines are captured separately from GNU/Linux.
+- Layout and calling conventions match the corresponding Linux SysV/AAPCS
+  profiles. Musl uses its own sysroot and does not add synthetic Slate macros.
+- Musl has no Debian cross-triplet include subdirectory.

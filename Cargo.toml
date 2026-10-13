@@ -34,8 +34,8 @@ serde = "1"
 serde_json = "1"
 sha2 = "0.11"
 shlex = "2"
-slate-parser = { version = "0.2.0", path = "crates/slate-parser" }
-slate-sysroots = { version = "0.2.0", path = "crates/slate-sysroots" }
+slate-parser = { version = "0.3.0", path = "crates/slate-parser" }
+slate-sysroots = { version = "0.3.0", path = "crates/slate-sysroots" }
 syn = { version = "3", default-features = false }
 tar = "0.4"
 tempfile = "3"
