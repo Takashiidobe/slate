@@ -5,6 +5,9 @@ use crate::ast::{
 use std::fmt::Debug;
 use std::io::{self, Write};
 
+mod sexpr;
+pub use sexpr::SExprRenderer;
+
 pub struct Renderer<W> {
     out: W,
     show_comments: bool,

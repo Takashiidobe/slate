@@ -4,6 +4,7 @@
 - [Notation](#notation)
 - [Lexical](#lexical)
 - [Dump](#dump)
+- [S-expressions](#s-expressions)
 - [Spans](#spans)
 - [Declarations](#declarations)
 - [Specifiers](#specifiers)
@@ -72,6 +73,20 @@ decl_line = "decl[" int "]" [ " #" int ] ": " span<DeclKind> ;
 - Without `--show-comments`, `Comment` items are removed from declarations,
   function bodies, records and enums, and parameter `comments` are cleared,
   before printing.
+
+## S-expressions
+
+`render::SExprRenderer` exposes the AST as nested lists. Each Rust debug variant
+or struct becomes a list headed by its name; fields become `(field value)`
+lists, vectors use `[...]`, and maps use `{(key value) ...}`. Unit variants are
+single-item lists. Scalar values keep their Rust debug spelling. For example,
+`Binary { op: Add, left: ..., right: ... }` becomes
+`(Binary (op (Add)) (left ...) (right ...))`.
+
+The translation unit prints source declarations and tags before dialect
+metadata. Top-level nodes originating in system headers are omitted and counted in
+`(system-header-nodes-omitted N)` so included headers do not obscure the input
+program.
 
 ## Spans
 
