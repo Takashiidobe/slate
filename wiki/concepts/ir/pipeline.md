@@ -160,8 +160,11 @@ Macro expansion chains are not in the IR yet (only atomic builtins record
   and a cast to `_Bool` read. The kernel's
   `case (unsigned long) SEND_SIG_NOINFO:` needs it
   (`ir_pointer_cast_constants.c` on x86_64 and i686). Pointer arithmetic,
-  pointer comparisons and `!p` written in the expression are `Unimplemented`
-  (slate-parser-6x05.43).
+  pointer difference, comparisons, `!p`, `&&`/`||` on pointers and
+  `&((T *)0)->m` (members, indices, `*p`) fold in the checker
+  (`TypeResolver::constant_pointer_binary`, `constant_place`), which has the
+  layout `sema/fold.rs` lacks. They leave an `int_to_ptr` of a constant or a
+  plain integer constant in the IR (`ir_pointer_arithmetic_constants.c`).
 - Layout constants fold through `TypeResolver::constant_integer`, which is
   target-aware and sees predefines, enumerators, and `constexpr` objects.
   The token-level folder in `const_expr.rs` is for the preprocessor only.

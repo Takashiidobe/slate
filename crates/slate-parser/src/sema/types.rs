@@ -940,9 +940,7 @@ impl TypeResolver {
                 let left = self.constant_value_with_context(context, left)?;
                 let right = self.constant_value_with_context(context, right)?;
                 if self.ctypes.is_pointer(left.c) || self.ctypes.is_pointer(right.c) {
-                    return Err(ResolveError::Unimplemented(
-                        "pointer operand in an integer constant expression",
-                    ));
+                    return self.constant_pointer_binary(e, *op, left, right);
                 }
                 let c = self.typed(e)?.c;
                 let (left, right) = if matches!(
@@ -965,13 +963,23 @@ impl TypeResolver {
                     c,
                 });
             }
+            ExprKind::Unary {
+                op: crate::const_expr::UnaryOp::AddrOf,
+                operand,
+            } => {
+                let (address, _) = self.constant_place(context, operand)?;
+                let c = self.typed(e)?.c;
+                return self.constant_pointer(e, c, address);
+            }
             ExprKind::Unary { op, operand } => {
                 use crate::const_expr::UnaryOp;
                 let operand = self.constant_value_with_context(context, operand)?;
                 if self.ctypes.is_pointer(operand.c) {
-                    return Err(ResolveError::Unimplemented(
-                        "pointer operand in an integer constant expression",
-                    ));
+                    if *op != UnaryOp::Not {
+                        return Err(ResolveError::Rejected("nonconstant unary expression"));
+                    }
+                    let null = self.pointer_address(&operand)?.sign() == Sign::NoSign;
+                    return Ok(self.constant_truth(e, null));
                 }
                 match op {
                     UnaryOp::Plus | UnaryOp::Minus | UnaryOp::BitNot => {
@@ -1059,6 +1067,209 @@ impl TypeResolver {
             operand.value.ty = Type::Bool;
         }
         Ok(operand)
+    }
+
+    fn pointer_address(&self, operand: &Operand) -> Result<BigInt, ResolveError> {
+        super::fold::pointer_address(&operand.value, self.fold_target()).ok_or(
+            ResolveError::Rejected("nonconstant pointer in an integer constant expression"),
+        )
+    }
+
+    fn pointee_size(&self, pointer: QualType) -> Result<BigInt, ResolveError> {
+        let pointee = self.ctypes.pointee(pointer).ok_or(ResolveError::Internal(
+            "pointer arithmetic on a non-pointer",
+        ))?;
+        if self.ctypes.is_void(pointee) || self.ctypes.is_function(pointee) {
+            return Ok(BigInt::from(1u8));
+        }
+        Ok(self.storage(self.ir_type(pointee))?.size_bytes.into())
+    }
+
+    fn constant_truth(&mut self, e: &crate::ast::Expr, truth: bool) -> Operand {
+        let int = self.ctypes.int();
+        self.operand(
+            e,
+            int,
+            ValueKind::Constant(Number::SignedInteger(u8::from(truth).into())),
+        )
+    }
+
+    fn constant_pointer(
+        &mut self,
+        e: &crate::ast::Expr,
+        c: QualType,
+        address: BigInt,
+    ) -> Result<Operand, ResolveError> {
+        let modulus = BigInt::from(1u8) << self.fold_target().pointer_width;
+        let address = ((address % &modulus) + &modulus) % &modulus;
+        let size = self.ctypes.size_type(self.dialect.target());
+        let integer = self.operand(e, size, ValueKind::Constant(Number::SignedInteger(address)));
+        Ok(Operand {
+            value: super::numeric::conversion(
+                integer.value,
+                self.ir_type(c),
+                crate::ir::ConversionKind::IntToPtr,
+                crate::ir::ConversionReason::Explicit,
+                crate::ir::ConversionSema::Exact,
+            ),
+            c,
+        })
+    }
+
+    fn constant_pointer_binary(
+        &mut self,
+        e: &crate::ast::Expr,
+        op: crate::const_expr::BinaryOp,
+        left: Operand,
+        right: Operand,
+    ) -> Result<Operand, ResolveError> {
+        use crate::const_expr::BinaryOp;
+        let target = self.fold_target();
+        let (left_pointer, right_pointer) = (
+            self.ctypes.is_pointer(left.c),
+            self.ctypes.is_pointer(right.c),
+        );
+        let truth = |this: &Self, operand: &Operand, pointer: bool| -> Result<bool, ResolveError> {
+            let value = if pointer {
+                this.pointer_address(operand)?
+            } else {
+                super::fold::integer_constant(&operand.value, target).ok_or(
+                    ResolveError::Rejected("nonconstant operand in an integer constant expression"),
+                )?
+            };
+            Ok(value.sign() != Sign::NoSign)
+        };
+        match op {
+            BinaryOp::And | BinaryOp::Or => {
+                let left = truth(self, &left, left_pointer)?;
+                let right = truth(self, &right, right_pointer)?;
+                Ok(self.constant_truth(
+                    e,
+                    if op == BinaryOp::And {
+                        left && right
+                    } else {
+                        left || right
+                    },
+                ))
+            }
+            BinaryOp::Add | BinaryOp::Sub if left_pointer != right_pointer => {
+                if right_pointer && op == BinaryOp::Sub {
+                    return Err(ResolveError::Rejected("integer minus pointer"));
+                }
+                let (pointer, integer) = if left_pointer {
+                    (left, right)
+                } else {
+                    (right, left)
+                };
+                let base = self.pointer_address(&pointer)?;
+                let count = super::fold::integer_constant(&integer.value, target).ok_or(
+                    ResolveError::Rejected("nonconstant offset in an integer constant expression"),
+                )?;
+                let delta = count * self.pointee_size(pointer.c)?;
+                let address = if op == BinaryOp::Sub {
+                    base - delta
+                } else {
+                    base + delta
+                };
+                self.constant_pointer(e, pointer.c, address)
+            }
+            BinaryOp::Sub => {
+                let c = self.typed(e)?.c;
+                let size = self.pointee_size(left.c)?;
+                let difference = self.pointer_address(&left)? - self.pointer_address(&right)?;
+                let bits = target.pointer_width;
+                let modulus = BigInt::from(1u8) << bits;
+                let half = BigInt::from(1u8) << (bits - 1);
+                let difference = ((difference % &modulus) + &modulus) % &modulus;
+                let difference = if difference >= half {
+                    difference - modulus
+                } else {
+                    difference
+                };
+                let ty = self.ir_type(c);
+                Ok(self.operand(
+                    e,
+                    c,
+                    ValueKind::Constant(super::fold::integer_number(&ty, difference / size)),
+                ))
+            }
+            BinaryOp::Less
+            | BinaryOp::LessEqual
+            | BinaryOp::Greater
+            | BinaryOp::GreaterEqual
+            | BinaryOp::Equal
+            | BinaryOp::NotEqual => {
+                let (left, right) = (self.pointer_address(&left)?, self.pointer_address(&right)?);
+                let result = match op {
+                    BinaryOp::Less => left < right,
+                    BinaryOp::LessEqual => left <= right,
+                    BinaryOp::Greater => left > right,
+                    BinaryOp::GreaterEqual => left >= right,
+                    BinaryOp::Equal => left == right,
+                    _ => left != right,
+                };
+                Ok(self.constant_truth(e, result))
+            }
+            _ => Err(ResolveError::Rejected(
+                "pointer operand in an integer constant expression",
+            )),
+        }
+    }
+
+    fn constant_place(
+        &mut self,
+        context: &super::numeric::Context,
+        e: &crate::ast::Expr,
+    ) -> Result<(BigInt, Type), ResolveError> {
+        use crate::ast::ExprKind;
+        use crate::const_expr::UnaryOp;
+        match &e.value {
+            ExprKind::Paren(inner) => self.constant_place(context, inner),
+            ExprKind::Unary {
+                op: UnaryOp::Deref,
+                operand,
+            } => self.constant_pointee(context, operand),
+            ExprKind::Member { base, field, arrow } => {
+                let (address, record) = if *arrow {
+                    self.constant_pointee(context, base)?
+                } else {
+                    self.constant_place(context, base)?
+                };
+                let (ty, offset) = self.offsetof_field(record, &field.value)?;
+                Ok((address + offset, ty))
+            }
+            ExprKind::Index { base, index } => {
+                let base_type = self.expression_type(base)?;
+                let (address, element) = if self.ctypes.is_pointer(base_type) {
+                    self.constant_pointee(context, base)?
+                } else {
+                    let (address, array) = self.constant_place(context, base)?;
+                    let Type::Array { element, .. } = array else {
+                        return Err(ResolveError::Rejected("address of a nonconstant object"));
+                    };
+                    (address, *element)
+                };
+                let index = self.constant_value_with_context(context, index)?;
+                let index = super::fold::integer_constant(&index.value, self.fold_target())
+                    .ok_or(ResolveError::Rejected("nonconstant index"))?;
+                let size = BigInt::from(self.storage(element.clone())?.size_bytes);
+                Ok((address + index * size, element))
+            }
+            _ => Err(ResolveError::Rejected("address of a nonconstant object")),
+        }
+    }
+
+    fn constant_pointee(
+        &mut self,
+        context: &super::numeric::Context,
+        pointer: &crate::ast::Expr,
+    ) -> Result<(BigInt, Type), ResolveError> {
+        let pointer = self.constant_value_with_context(context, pointer)?;
+        let pointee = self
+            .ctypes
+            .pointee(pointer.c)
+            .ok_or(ResolveError::Rejected("address of a nonconstant object"))?;
+        Ok((self.pointer_address(&pointer)?, self.ir_type(pointee)))
     }
 
     fn constant_pointer_cast(

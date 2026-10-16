@@ -32,6 +32,10 @@ pub(super) fn integer_constant(value: &Value, target: Target) -> Option<BigInt> 
     evaluate(value, MAX_DEPTH, Env::constant(target, None))
 }
 
+pub(super) fn pointer_address(value: &Value, target: Target) -> Option<BigInt> {
+    address(value, MAX_DEPTH, Env::constant(target, None))
+}
+
 pub(super) fn integer_with_objects(
     value: &Value,
     target: Target,
