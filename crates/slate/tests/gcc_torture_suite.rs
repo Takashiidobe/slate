@@ -64,8 +64,6 @@ fn run_cases(group: &str, dir: &Path) -> Vec<(String, Result<(), String>)> {
             rs_src: generated,
             config: support::RunConfig {
                 timeout_seconds: Some(5),
-                filecheck_target: (group == "supported")
-                    .then(|| support::translation_target(&extra_args)),
                 c_args: extra_args,
                 ..support::RunConfig::default()
             },

@@ -22,8 +22,28 @@ subtract:
   goto dispatch;
 }
 
+// @check-fn-begin
 int main(void) {
   const unsigned char code[] = {0, 1, 2, 1};
   printf("%d\n", interpret(code, 4));
   return 0;
 }
+// @check-fn-end
+
+// SLATE-FILECHECK-BEGIN
+// CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
+// CHECK-NEXT:     let mut code: [u8; 4] = [
+// CHECK-NEXT:         ((0 as i32) as i8) as u8,
+// CHECK-NEXT:         ((1 as i32) as i8) as u8,
+// CHECK-NEXT:         ((2 as i32) as i8) as u8,
+// CHECK-NEXT:         ((1 as i32) as i8) as u8,
+// CHECK-NEXT:     ];
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         printf(
+// CHECK-NEXT:             c"%d\n".as_ptr() as *const i8,
+// CHECK-NEXT:             interpret(code.as_ptr() as *const u8, 4 as i32),
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
+// CHECK-NEXT:     0 as i32
+// CHECK: {{^}}}
+// SLATE-FILECHECK-END

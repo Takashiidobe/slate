@@ -29,6 +29,7 @@ second:
   return acc;
 }
 
+// @check-fn-begin
 int main(void) {
   inner_t inr;
   inr.pad = 0;
@@ -42,3 +43,32 @@ int main(void) {
   printf("%d %d\n", compute(&s, 0), compute(&s, 1));
   return 0;
 }
+// @check-fn-end
+
+// SLATE-FILECHECK-BEGIN
+// CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
+// CHECK-NEXT:     let mut inr: [[SLATERECORD_0:__SlateRecord[0-9]+]] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     inr.pad = 0 as i32;
+// CHECK-NEXT:     inr.x = 3 as i32;
+// CHECK-NEXT:     inr.y = 4 as i32;
+// CHECK-NEXT:     let mut ou: [[SLATERECORD_1:__SlateRecord[0-9]+]] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     ou.lead = 0 as i32;
+// CHECK-NEXT:     ou.r#in = inr;
+// CHECK-NEXT:     let mut s: [[SLATERECORD_2:__SlateRecord[0-9]+]] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     s.dict = std::ptr::addr_of_mut!(ou);
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         printf(
+// CHECK-NEXT:             c"%d %d\n".as_ptr() as *const i8,
+// CHECK-NEXT:             compute(
+// CHECK-NEXT:                 unsafe { &(*(std::ptr::addr_of_mut!(s) as *const [[SLATERECORD_2]])) },
+// CHECK-NEXT:                 0 as i32,
+// CHECK-NEXT:             ),
+// CHECK-NEXT:             compute(
+// CHECK-NEXT:                 unsafe { &(*(std::ptr::addr_of_mut!(s) as *const [[SLATERECORD_2]])) },
+// CHECK-NEXT:                 1 as i32,
+// CHECK-NEXT:             ),
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
+// CHECK-NEXT:     0 as i32
+// CHECK: {{^}}}
+// SLATE-FILECHECK-END

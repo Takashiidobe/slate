@@ -5,6 +5,7 @@ static int noisy(int x) {
   return x;
 }
 
+// @check-fn-begin
 int main(void) {
   int dead = 1 + 2;
   int kept = noisy(5);
@@ -12,3 +13,13 @@ int main(void) {
   printf("%d\n", kept);
   return 0;
 }
+// @check-fn-end
+
+// SLATE-FILECHECK-BEGIN
+// CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
+// CHECK-NEXT:     let mut kept: i32 = noisy(5 as i32);
+// CHECK-NEXT:     noisy(9 as i32);
+// CHECK-NEXT:     unsafe { printf(c"%d\n".as_ptr() as *const i8, kept) };
+// CHECK-NEXT:     0 as i32
+// CHECK: {{^}}}
+// SLATE-FILECHECK-END

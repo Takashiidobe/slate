@@ -2,7 +2,22 @@
 
 char *bom_original = "Hi";
 
+// @check-fn-begin
 int main(void) {
   printf("%c %s\n", *bom_original, bom_original);
   return 0;
 }
+// @check-fn-end
+
+// SLATE-FILECHECK-BEGIN
+// CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         printf(
+// CHECK-NEXT:             c"%c %s\n".as_ptr() as *const i8,
+// CHECK-NEXT:             (unsafe { *unsafe { bom_original } }) as i32,
+// CHECK-NEXT:             unsafe { bom_original },
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
+// CHECK-NEXT:     0 as i32
+// CHECK: {{^}}}
+// SLATE-FILECHECK-END

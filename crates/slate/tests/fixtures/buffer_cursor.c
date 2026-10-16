@@ -4,6 +4,7 @@ struct cursor {
   int *ptr;
 };
 
+// @check-fn-begin
 int main(void) {
   int values[4];
   for (int i = 0; i < 4; i++) {
@@ -16,3 +17,32 @@ int main(void) {
   printf("%d %ld\n", *c.ptr + *d.ptr, d.ptr - c.ptr);
   return 0;
 }
+// @check-fn-end
+
+// SLATE-FILECHECK-BEGIN
+// CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
+// CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 4]> = __SlateAlign16([0 as i32; 4]);
+// CHECK-NEXT:     let mut i: i32 = 0 as i32;
+// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: while i < (4 as i32) {
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             *unsafe { (values.0.as_mut_ptr() as *mut i32).offset(i as isize) } = i
+// CHECK-NEXT:                 + unsafe { getchar() };
+// CHECK-NEXT:         }
+// CHECK-NEXT:         let mut [[V_0:__v[0-9]+]]: i32 = i;
+// CHECK-NEXT:         let mut [[V_1:__v[0-9]+]]: i32 = [[V_0]] + (1 as i32);
+// CHECK-NEXT:         i = [[V_1]];
+// CHECK-NEXT:     }
+// CHECK-NEXT:     let mut c: cursor = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     c.ptr = unsafe { (values.0.as_mut_ptr() as *mut i32).offset((1 as i32) as isize) };
+// CHECK-NEXT:     let mut d: cursor = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     d.ptr = unsafe { (values.0.as_mut_ptr() as *mut i32).offset((3 as i32) as isize) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         printf(
+// CHECK-NEXT:             c"%d %ld\n".as_ptr() as *const i8,
+// CHECK-NEXT:             (unsafe { *c.ptr }) + unsafe { *d.ptr },
+// CHECK-NEXT:             (unsafe { d.ptr.offset_from(c.ptr as *mut i32) }) as i64,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
+// CHECK-NEXT:     0 as i32
+// CHECK: {{^}}}
+// SLATE-FILECHECK-END

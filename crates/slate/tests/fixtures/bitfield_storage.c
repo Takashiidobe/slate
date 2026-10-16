@@ -6,8 +6,28 @@ union U {
   unsigned raw;
 };
 
+// @check-fn-begin
 int main(void) {
   union U value     = {0};
   value.bits.second = 1;
   return value.bits.second != 1;
 }
+// @check-fn-end
+
+// SLATE-FILECHECK-BEGIN
+// CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
+// CHECK-NEXT:     let mut value: U = {
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: U = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         [[T_0]].bits = {
+// CHECK-NEXT:             let mut [[T_1:__t[0-9]+]]: [[SLATERECORD_0:__SlateRecord[0-9]+]] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:             [[T_1]].__slate_bits_0.__set_first((0 as i32) as u32);
+// CHECK-NEXT:             [[T_1]]
+// CHECK-NEXT:         };
+// CHECK-NEXT:         [[T_0]]
+// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         value.bits.__slate_bits_0.__set_second((1 as i32) as u32);
+// CHECK-NEXT:     }
+// CHECK-NEXT:     (((unsafe { value.bits.__slate_bits_0.__get_second() }) as i32) != (1 as i32)) as i32
+// CHECK: {{^}}}
+// SLATE-FILECHECK-END

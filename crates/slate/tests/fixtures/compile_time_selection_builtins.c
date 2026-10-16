@@ -3,6 +3,7 @@
 #define TYPE_NAME(x)                                                           \
   _Generic((x), int: "int", double: "double", default: "other")
 
+// @check-fn-begin
 int main(void) {
   int a = 3, b = 4;
   int chosen_true  = __builtin_choose_expr(1, a, b);
@@ -20,3 +21,29 @@ int main(void) {
          i_name, d_name);
   return 0;
 }
+// @check-fn-end
+
+// SLATE-FILECHECK-BEGIN
+// CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
+// CHECK-NEXT:     let mut a: i32 = 3 as i32;
+// CHECK-NEXT:     let mut b: i32 = 4 as i32;
+// CHECK-NEXT:     let mut chosen_true: i32 = a;
+// CHECK-NEXT:     let mut chosen_false: i32 = b;
+// CHECK-NEXT:     let mut same_type: i32 = 1 as i32;
+// CHECK-NEXT:     let mut diff_type: i32 = 0 as i32;
+// CHECK-NEXT:     let mut i_name: *const i8 = c"int".as_ptr() as *const i8;
+// CHECK-NEXT:     let mut d_name: *const i8 = c"double".as_ptr() as *const i8;
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         printf(
+// CHECK-NEXT:             c"%d %d %d %d %s %s\n".as_ptr() as *const i8,
+// CHECK-NEXT:             chosen_true,
+// CHECK-NEXT:             chosen_false,
+// CHECK-NEXT:             same_type,
+// CHECK-NEXT:             diff_type,
+// CHECK-NEXT:             i_name,
+// CHECK-NEXT:             d_name,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
+// CHECK-NEXT:     0 as i32
+// CHECK: {{^}}}
+// SLATE-FILECHECK-END

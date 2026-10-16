@@ -4,11 +4,13 @@
 typedef float float32x4_t __attribute__((vector_size(16)));
 
 __attribute__((target("neon")))
+// @check-fn-begin
 static float32x4_t add_via_w(float32x4_t lhs, float32x4_t rhs) {
   float32x4_t result;
   __asm__ volatile("vadd.f32 %q1, %q0, %q1" : "=w"(result) : "0"(lhs), "w"(rhs));
   return result;
 }
+// @check-fn-end
 
 int main(void) {
   float32x4_t result = add_via_w((float32x4_t){1.0f, 2.0f, 3.0f, 4.0f},

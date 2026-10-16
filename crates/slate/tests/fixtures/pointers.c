@@ -1,11 +1,13 @@
 #include <stdio.h>
 
+// @check-fn-begin
 static int bump_through_pointer(int value) {
   int  local = value;
   int *ptr   = &local;
   *ptr       = *ptr + 3;
   return local;
 }
+// @check-fn-end
 
 static int add_into_pointer(int *slot, int amount) {
   *slot = *slot + amount;
@@ -30,3 +32,13 @@ int main(void) {
   printf("%d\n", pick_with_pointer_arithmetic(2));
   return 0;
 }
+
+// SLATE-FILECHECK-BEGIN
+// CHECK-LABEL: {{^}}fn bump_through_pointer(mut local: i32) -> i32 {
+// CHECK-NEXT:     let mut ptr: *mut i32 = std::ptr::addr_of_mut!(local);
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         *ptr = (unsafe { *ptr }) + (3 as i32);
+// CHECK-NEXT:     }
+// CHECK-NEXT:     local
+// CHECK: {{^}}}
+// SLATE-FILECHECK-END

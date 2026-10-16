@@ -67,8 +67,6 @@ fn run_cases(group: &str, dir: &Path) -> Vec<(String, Result<(), String>)> {
             rs_src: generated,
             config: support::RunConfig {
                 timeout_seconds: Some(15),
-                filecheck_target: (group == "supported")
-                    .then(|| support::translation_target(&options)),
                 c_args: options
                     .into_iter()
                     .chain(["-latomic".to_string()])

@@ -1,5 +1,6 @@
 #include <stdio.h>
 
+// @check-fn-begin
 static int atomic_increment(int *counter) {
   int old, status;
   __asm__ volatile("1: ldxr %w0, %1\n"
@@ -9,6 +10,7 @@ static int atomic_increment(int *counter) {
                     : "=&r"(old), "+Q"(*counter), "+Q"(*counter), "=&r"(status));
   return old;
 }
+// @check-fn-end
 
 int main(void) {
   int counter = 41;

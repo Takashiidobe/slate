@@ -1,12 +1,15 @@
 static int bump(int value) { return value + 1; }
 
+// @check-fn-begin
 static int maybe_apply(int (*op)(int), int value) {
   if (op) {
     return op(value);
   }
   return value;
 }
+// @check-fn-end
 
+// @check-fn-begin
 int main(void) {
   int (*op)(int) = 0;
   int total      = maybe_apply(op, 4);
@@ -19,3 +22,28 @@ int main(void) {
   }
   return total == 10 ? 0 : 1;
 }
+// @check-fn-end
+
+// SLATE-FILECHECK-BEGIN
+// CHECK-LABEL: {{^}}fn maybe_apply(
+// CHECK-NEXT:     mut op: Option<unsafe extern "C-unwind" fn(i32) -> i32>,
+// CHECK-NEXT:     mut value: i32,
+// CHECK-NEXT: ) -> i32 {
+// CHECK-NEXT:     if op != None {
+// CHECK-NEXT:         return unsafe { op.unwrap()(value) };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     value
+// CHECK: {{^}}}
+// CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
+// CHECK-NEXT:     let mut op: Option<unsafe extern "C-unwind" fn(i32) -> i32> = None;
+// CHECK-NEXT:     let mut total: i32 = maybe_apply(op, 4 as i32);
+// CHECK-NEXT:     op = Some(bump);
+// CHECK-NEXT:     if op != None {
+// CHECK-NEXT:         total += maybe_apply(op, 5 as i32);
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if op == None {
+// CHECK-NEXT:         return 2 as i32;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if total == (10 as i32) { 0 as i32 } else { 1 as i32 }
+// CHECK: {{^}}}
+// SLATE-FILECHECK-END

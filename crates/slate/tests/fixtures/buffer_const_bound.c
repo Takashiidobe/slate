@@ -32,6 +32,7 @@ static int mix(int *p) {
   return t;
 }
 
+// @check-fn-begin
 int main(void) {
   int arr[4] = {10, 20, 30, 40};
   int r      = sum_fixed(arr);
@@ -52,3 +53,56 @@ int main(void) {
   printf("%d %d %d %d %d\n", r, a[0], a[2], r2, r3);
   return 0;
 }
+// @check-fn-end
+
+// SLATE-FILECHECK-BEGIN
+// CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
+// CHECK-NEXT:     let mut arr: __SlateAlign16<[i32; 4]> = __SlateAlign16([
+// CHECK-NEXT:         10 as i32,
+// CHECK-NEXT:         20 as i32,
+// CHECK-NEXT:         30 as i32,
+// CHECK-NEXT:         40 as i32,
+// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let mut r: i32 = sum_fixed(arr.0.as_mut_ptr() as *mut i32);
+// CHECK-NEXT:     let mut a: [i32; 3] = [1 as i32, 2 as i32, 3 as i32];
+// CHECK-NEXT:     scale_fixed(a.as_mut_ptr() as *mut i32);
+// CHECK-NEXT:     let mut m: *mut i32 = (unsafe {
+// CHECK-NEXT:         malloc((((3 as i32) as i64) as u64).wrapping_mul(4 as u64))
+// CHECK-NEXT:     }) as *mut i32;
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         *unsafe { m.offset((0 as i32) as isize) } = 5 as i32;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         *unsafe { m.offset((1 as i32) as isize) } = 6 as i32;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         *unsafe { m.offset((2 as i32) as isize) } = 7 as i32;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     let mut r2: i32 = sum3(m);
+// CHECK-NEXT:     unsafe { free(m as *mut ()) };
+// CHECK-NEXT:     let mut big: __SlateAlign16<[i32; 6]> = __SlateAlign16([
+// CHECK-NEXT:         1 as i32,
+// CHECK-NEXT:         2 as i32,
+// CHECK-NEXT:         3 as i32,
+// CHECK-NEXT:         4 as i32,
+// CHECK-NEXT:         5 as i32,
+// CHECK-NEXT:         6 as i32,
+// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let mut r3: i32 = mix(big.0.as_mut_ptr() as *mut i32);
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         printf(
+// CHECK-NEXT:             c"%d %d %d %d %d\n".as_ptr() as *const i8,
+// CHECK-NEXT:             r,
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 *unsafe { (a.as_mut_ptr() as *mut i32).offset((0 as i32) as isize) }
+// CHECK-NEXT:             },
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 *unsafe { (a.as_mut_ptr() as *mut i32).offset((2 as i32) as isize) }
+// CHECK-NEXT:             },
+// CHECK-NEXT:             r2,
+// CHECK-NEXT:             r3,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
+// CHECK-NEXT:     0 as i32
+// CHECK: {{^}}}
+// SLATE-FILECHECK-END

@@ -4,9 +4,11 @@ struct Row {
   int cells[2];
 };
 
+// @check-fn-begin
 static void set_cell(struct Row *row) {
   row->cells[1] = 9;
 }
+// @check-fn-end
 
 static int *mutable_identity(const int *value) { return (int *)value; }
 
@@ -18,3 +20,14 @@ int main(void) {
   printf("%d %d\n", row.cells[1], value);
   return 0;
 }
+
+// SLATE-FILECHECK-BEGIN
+// CHECK-LABEL: {{^}}fn set_cell(mut row: &mut Row) {
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         *unsafe {
+// CHECK-NEXT:             unsafe { (*(row as *mut Row)).cells.as_mut_ptr() as *mut i32 }
+// CHECK-NEXT:                 .offset((1 as i32) as isize)
+// CHECK-NEXT:         } = 9 as i32;
+// CHECK-NEXT:     }
+// CHECK: {{^}}}
+// SLATE-FILECHECK-END

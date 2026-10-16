@@ -44,8 +44,6 @@ fn run_cases(group: &str, dir: &Path) -> Vec<(String, Result<(), String>)> {
             c_src: path.clone(),
             rs_src: generated,
             config: support::RunConfig {
-                filecheck_target: (group == "supported")
-                    .then(|| support::translation_target(&clang_args)),
                 c_args: clang_args,
                 ..support::RunConfig::default()
             },

@@ -163,6 +163,7 @@ fn enqueue_children(arena: &Arena, id: NodeId, worklist: &mut BTreeSet<u32>) {
 fn run_worklist(arena: &mut FunctionOptimizer, registry: &RuleRegistry) {
     let mut worklist: BTreeSet<u32> = arena.live_ids().iter().map(|id| id.index()).collect();
     let mut edits = 0usize;
+    let trace = std::env::var_os("SLATE_RULE_TRACE").is_some();
 
     while let Some(&index) = worklist.iter().next() {
         worklist.remove(&index);
@@ -192,6 +193,9 @@ fn run_worklist(arena: &mut FunctionOptimizer, registry: &RuleRegistry) {
                 rule.name()
             );
             if applied {
+                if trace {
+                    eprintln!("slate-rule {}", rule.name());
+                }
                 edits += 1;
                 assert!(
                     edits <= EDIT_BUDGET,

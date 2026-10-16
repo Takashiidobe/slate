@@ -1,5 +1,6 @@
 #include <stdio.h>
 
+// @check-fn-begin
 int classify(int c) {
   switch (c) {
   case 48:
@@ -29,9 +30,33 @@ int classify(int c) {
     return 0;
   }
 }
+// @check-fn-end
 
 int main(void) {
   printf("%d %d %d %d %d %d %d\n", classify('5'), classify('b'), classify(100),
          classify(200), classify(-2), classify(7), classify(9));
   return 0;
 }
+
+// SLATE-FILECHECK-BEGIN
+// CHECK-LABEL: {{^}}fn classify(mut c: i32) -> i32 {
+// CHECK-NEXT:     match c {
+// CHECK-NEXT:         48..=57 => {
+// CHECK-NEXT:             return 1 as i32;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         97..=99 => {
+// CHECK-NEXT:             return 2 as i32;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         100 | 200 => {
+// CHECK-NEXT:             return 3 as i32;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         -3..=-1 | 7 => {
+// CHECK-NEXT:             return 4 as i32;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         _ => {
+// CHECK-NEXT:             return 0 as i32;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe { std::mem::zeroed() }
+// CHECK: {{^}}}
+// SLATE-FILECHECK-END

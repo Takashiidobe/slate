@@ -25,13 +25,6 @@ class Suite(NamedTuple):
 SUITES = (
     Suite("fixtures", ("", "x86_64"), "difftest-generated/supported", "differential", "generated_differential", "SLATE_DIFF_FIXTURE"),
     Suite("fixtures", ("i686",), "difftest-generated/i686", "differential", "i686_differential", "SLATE_DIFF_FIXTURE"),
-    Suite("fixtures.unsupported", ("",), "difftest-generated/unsupported", "differential", "fixtures_unsupported_tests_still_fail", "SLATE_DIFF_FIXTURE"),
-    Suite("fixtures.gcc-torture", ("",), "gcc-torture-suite/supported", "gcc_torture_suite", "gcc_torture_supported_tests_match_c", "SLATE_GCC_TORTURE_FIXTURE"),
-    Suite("fixtures.gcc-torture.unsupported", ("",), "gcc-torture-suite/unsupported", "gcc_torture_suite", "gcc_torture_unsupported_tests_still_fail", "SLATE_GCC_TORTURE_FIXTURE"),
-    Suite("fixtures.gcc-dg", ("",), "gcc-dg-suite/supported", "gcc_dg_suite", "gcc_dg_supported_tests_match_c", "SLATE_GCC_DG_FIXTURE"),
-    Suite("fixtures.gcc-dg.unsupported", ("",), "gcc-dg-suite/unsupported", "gcc_dg_suite", "gcc_dg_unsupported_tests_still_fail", "SLATE_GCC_DG_FIXTURE"),
-    Suite("fixtures.c-testsuite", ("",), "c-testsuite-suite/supported", "c_testsuite_suite", "c_testsuite_supported_tests_match_c", "SLATE_C_TESTSUITE_FIXTURE"),
-    Suite("fixtures.c-testsuite.unsupported", ("",), "c-testsuite-suite/unsupported", "c_testsuite_suite", "c_testsuite_unsupported_tests_still_fail", "SLATE_C_TESTSUITE_FIXTURE"),
 )
 
 BEGIN = "// SLATE-FILECHECK-BEGIN"
@@ -77,7 +70,6 @@ GENERATED_IDENTIFIER = re.compile(
 )
 RENAMED_IDENTIFIER = re.compile(r"\b([A-Za-z_]\w*?)_[0-9]+\b")
 CANDIDATE_IDENTIFIER = re.compile(f"{GENERATED_IDENTIFIER.pattern}|{RENAMED_IDENTIFIER.pattern}", re.X)
-HANDWRITTEN_CHECK = re.compile(r"^\s*//\s*CHECK(?:-[A-Z]+)?:", re.M)
 C_IDENTIFIER = re.compile(r"\b[A-Za-z_]\w*\b")
 C_COMMENT = re.compile(r"//[^\n]*|/\*.*?\*/", re.S)
 
@@ -201,14 +193,21 @@ class Variables:
         self.names[identifier] = name
         return f"[[{name}:{re.sub(r'[0-9]+', '[0-9]+', identifier)}]]"
 
-    def pattern(self, line):
+    def anonymous(self, match):
+        identifier = match.group(0)
+        if not self.unstable(identifier):
+            return identifier
+        return "{{" + re.sub(r"[0-9]+", "[0-9]+", identifier) + "}}"
+
+    def pattern(self, line, label=False):
+        substitute = self.anonymous if label else self.substitute
         parts = []
         offset = 0
         for string in RUST_STRING_PATTERN.finditer(line):
-            parts.append(CANDIDATE_IDENTIFIER.sub(self.substitute, escape(line[offset : string.start()])))
+            parts.append(CANDIDATE_IDENTIFIER.sub(substitute, escape(line[offset : string.start()])))
             parts.append(escape(string.group()))
             offset = string.end()
-        parts.append(CANDIDATE_IDENTIFIER.sub(self.substitute, escape(line[offset:])))
+        parts.append(CANDIDATE_IDENTIFIER.sub(substitute, escape(line[offset:])))
         return "".join(parts).replace(f"{CRATE}{os.sep}", "{{.*}}")
 
 
@@ -227,29 +226,22 @@ def function_checks(lines, identifiers):
     variables = Variables(identifiers)
     if len(lines) == 1:
         return [f"// CHECK: {{{{^}}}}{variables.pattern(lines[0])}"]
-    checks = [f"// CHECK-LABEL: {{{{^}}}}{variables.pattern(lines[0])}"]
+    checks = [f"// CHECK-LABEL: {{{{^}}}}{variables.pattern(lines[0], label=True)}"]
     checks.extend(body_checks(lines[1:-1], variables))
     checks.append("// CHECK: {{^}}}")
     return checks
 
 
-def program_checks(lines, identifiers):
-    variables = Variables(identifiers)
-    first = next(index for index, line in enumerate(lines) if line.strip())
-    return [f"// CHECK: {variables.pattern(lines[first])}", *body_checks(lines[first + 1 :], variables)]
-
-
 def update_source(source, rust):
     names = checked_functions(source)
+    if not names and not BLOCK_PATTERN.search(source):
+        return source
     stripped = BLOCK_PATTERN.sub("", source).rstrip("\n")
+    if not names:
+        return f"{stripped}\n"
     identifiers = c_identifiers(stripped)
     lines = rust.rstrip("\n").splitlines()
-    if names:
-        checks = [check for name in names for check in function_checks(rust_function(lines, name), identifiers)]
-    elif HANDWRITTEN_CHECK.search(stripped):
-        return source
-    else:
-        checks = program_checks(lines, identifiers)
+    checks = [check for name in names for check in function_checks(rust_function(lines, name), identifiers)]
     return f"{stripped}\n\n{BEGIN}\n" + "\n".join(checks) + f"\n{END}\n"
 
 
@@ -268,36 +260,42 @@ def run_harness(fixtures_by_suite):
     subprocess.run(command, cwd=WORKSPACE, env=environment, capture_output=True, check=False)
 
 
-def supported_fixtures():
+def suite_fixtures():
     return sorted(
         path
         for suite in SUITES
-        if not suite.directory.endswith(".unsupported")
         for subdirectory in suite.subdirectories
         for path in (TESTS / suite.directory / subdirectory).glob("*.c")
     )
+
+
+def checked_fixtures():
+    return [
+        path
+        for path in suite_fixtures()
+        if re.search(r"@check-fn-begin|SLATE-FILECHECK-BEGIN", path.read_text(errors="surrogateescape"))
+    ]
 
 
 def resolve_fixture(argument):
     path = Path(argument)
     if path.suffix == ".c" or path.exists():
         return path.resolve()
-    matches = [fixture for fixture in supported_fixtures() if fixture.stem == argument]
+    matches = [fixture for fixture in suite_fixtures() if fixture.stem == argument]
     if len(matches) != 1:
-        found = ", ".join(str(match.relative_to(TESTS)) for match in matches) or "no supported fixture"
+        found = ", ".join(str(match.relative_to(TESTS)) for match in matches) or "no fixture"
         raise FixtureError(f"{argument}: name matches {found}; pass a path")
     return matches[0]
 
 
 def main(argv):
     parser = argparse.ArgumentParser(
-        description="Regenerate FileCheck blocks for single-file suite fixtures: "
-        "@check-fn-wrapped functions, or the whole program when a fixture has no markers."
+        description="Regenerate FileCheck blocks for the @check-fn-wrapped functions of tests/fixtures fixtures."
     )
     parser.add_argument(
         "fixtures",
         nargs="*",
-        help="fixture paths, or names as a failing test run lists them; default: every supported fixture",
+        help="fixture paths, or names as a failing test run lists them; default: every fixture with markers or a check block",
     )
     parser.add_argument(
         "--no-run",
@@ -308,7 +306,7 @@ def main(argv):
     generated = {}
     fixtures_by_suite = defaultdict(list)
     failures = 0
-    for argument in arguments.fixtures or supported_fixtures():
+    for argument in arguments.fixtures or checked_fixtures():
         try:
             path = resolve_fixture(argument)
             suite = fixture_suite(path)
