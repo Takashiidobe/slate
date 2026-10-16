@@ -285,3 +285,412 @@ int main() {
 
   return 0;
 }
+
+// SLATE-FILECHECK-BEGIN
+// CHECK: #![allow(non_camel_case_types)]
+// CHECK-NEXT: #![no_main]
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn abort();
+// CHECK-NEXT: }
+// CHECK-NEXT: fn test1(mut x: i32) -> i32 {
+// CHECK-NEXT:     (x / (10 as i32) == (2 as i32)) as i32
+// CHECK-NEXT: }
+// CHECK-NEXT: fn test1u(mut x: u32) -> i32 {
+// CHECK-NEXT:     (x / (10 as u32) == ((2 as i32) as u32)) as i32
+// CHECK-NEXT: }
+// CHECK-NEXT: fn test2(mut x: i32) -> i32 {
+// CHECK-NEXT:     (x / (10 as i32) == (0 as i32)) as i32
+// CHECK-NEXT: }
+// CHECK-NEXT: fn test2u(mut x: u32) -> i32 {
+// CHECK-NEXT:     (x / (10 as u32) == ((0 as i32) as u32)) as i32
+// CHECK-NEXT: }
+// CHECK-NEXT: fn test3(mut x: i32) -> i32 {
+// CHECK-NEXT:     (x / (10 as i32) != (2 as i32)) as i32
+// CHECK-NEXT: }
+// CHECK-NEXT: fn test3u(mut x: u32) -> i32 {
+// CHECK-NEXT:     (x / (10 as u32) != ((2 as i32) as u32)) as i32
+// CHECK-NEXT: }
+// CHECK-NEXT: fn test4(mut x: i32) -> i32 {
+// CHECK-NEXT:     (x / (10 as i32) != (0 as i32)) as i32
+// CHECK-NEXT: }
+// CHECK-NEXT: fn test4u(mut x: u32) -> i32 {
+// CHECK-NEXT:     (x / (10 as u32) != ((0 as i32) as u32)) as i32
+// CHECK-NEXT: }
+// CHECK-NEXT: fn test5(mut x: i32) -> i32 {
+// CHECK-NEXT:     (x / (10 as i32) < (2 as i32)) as i32
+// CHECK-NEXT: }
+// CHECK-NEXT: fn test5u(mut x: u32) -> i32 {
+// CHECK-NEXT:     (x / (10 as u32) < ((2 as i32) as u32)) as i32
+// CHECK-NEXT: }
+// CHECK-NEXT: fn test6(mut x: i32) -> i32 {
+// CHECK-NEXT:     (x / (10 as i32) < (0 as i32)) as i32
+// CHECK-NEXT: }
+// CHECK-NEXT: fn test7(mut x: i32) -> i32 {
+// CHECK-NEXT:     (x / (10 as i32) <= (2 as i32)) as i32
+// CHECK-NEXT: }
+// CHECK-NEXT: fn test7u(mut x: u32) -> i32 {
+// CHECK-NEXT:     (x / (10 as u32) <= ((2 as i32) as u32)) as i32
+// CHECK-NEXT: }
+// CHECK-NEXT: fn test8(mut x: i32) -> i32 {
+// CHECK-NEXT:     (x / (10 as i32) <= (0 as i32)) as i32
+// CHECK-NEXT: }
+// CHECK-NEXT: fn test8u(mut x: u32) -> i32 {
+// CHECK-NEXT:     (x / (10 as u32) <= ((0 as i32) as u32)) as i32
+// CHECK-NEXT: }
+// CHECK-NEXT: fn test9(mut x: i32) -> i32 {
+// CHECK-NEXT:     (x / (10 as i32) > (2 as i32)) as i32
+// CHECK-NEXT: }
+// CHECK-NEXT: fn test9u(mut x: u32) -> i32 {
+// CHECK-NEXT:     (x / (10 as u32) > ((2 as i32) as u32)) as i32
+// CHECK-NEXT: }
+// CHECK-NEXT: fn test10(mut x: i32) -> i32 {
+// CHECK-NEXT:     (x / (10 as i32) > (0 as i32)) as i32
+// CHECK-NEXT: }
+// CHECK-NEXT: fn test10u(mut x: u32) -> i32 {
+// CHECK-NEXT:     (x / (10 as u32) > ((0 as i32) as u32)) as i32
+// CHECK-NEXT: }
+// CHECK-NEXT: fn test11(mut x: i32) -> i32 {
+// CHECK-NEXT:     (x / (10 as i32) >= (2 as i32)) as i32
+// CHECK-NEXT: }
+// CHECK-NEXT: fn test11u(mut x: u32) -> i32 {
+// CHECK-NEXT:     (x / (10 as u32) >= ((2 as i32) as u32)) as i32
+// CHECK-NEXT: }
+// CHECK-NEXT: fn test12(mut x: i32) -> i32 {
+// CHECK-NEXT:     (x / (10 as i32) >= (0 as i32)) as i32
+// CHECK-NEXT: }
+// CHECK-NEXT: fn __slate_main() -> i32 {
+// CHECK-NEXT:     if test1(19 as i32) != (0 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test1(20 as i32) != (1 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test1(29 as i32) != (1 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test1(30 as i32) != (0 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test1u((19 as i32) as u32) != (0 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test1u((20 as i32) as u32) != (1 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test1u((29 as i32) as u32) != (1 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test1u((30 as i32) as u32) != (0 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test2(0 as i32) != (1 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test2(9 as i32) != (1 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test2(10 as i32) != (0 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test2(-(1 as i32)) != (1 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test2(-(9 as i32)) != (1 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test2(-(10 as i32)) != (0 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test2u((0 as i32) as u32) != (1 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test2u((9 as i32) as u32) != (1 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test2u((10 as i32) as u32) != (0 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test2u(-(1 as i32) as u32) != (0 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test2u(-(9 as i32) as u32) != (0 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test2u(-(10 as i32) as u32) != (0 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test3(19 as i32) != (1 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test3(20 as i32) != (0 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test3(29 as i32) != (0 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test3(30 as i32) != (1 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test3u((19 as i32) as u32) != (1 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test3u((20 as i32) as u32) != (0 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test3u((29 as i32) as u32) != (0 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test3u((30 as i32) as u32) != (1 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test4(0 as i32) != (0 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test4(9 as i32) != (0 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test4(10 as i32) != (1 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test4(-(1 as i32)) != (0 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test4(-(9 as i32)) != (0 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test4(-(10 as i32)) != (1 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test4u((0 as i32) as u32) != (0 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test4u((9 as i32) as u32) != (0 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test4u((10 as i32) as u32) != (1 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test4u(-(1 as i32) as u32) != (1 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test4u(-(9 as i32) as u32) != (1 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test4u(-(10 as i32) as u32) != (1 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test5(19 as i32) != (1 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test5(20 as i32) != (0 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test5(29 as i32) != (0 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test5(30 as i32) != (0 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test5u((19 as i32) as u32) != (1 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test5u((20 as i32) as u32) != (0 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test5u((29 as i32) as u32) != (0 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test5u((30 as i32) as u32) != (0 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test6(0 as i32) != (0 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test6(9 as i32) != (0 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test6(10 as i32) != (0 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test6(-(1 as i32)) != (0 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test6(-(9 as i32)) != (0 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test6(-(10 as i32)) != (1 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test7(19 as i32) != (1 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test7(20 as i32) != (1 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test7(29 as i32) != (1 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test7(30 as i32) != (0 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test7u((19 as i32) as u32) != (1 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test7u((20 as i32) as u32) != (1 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test7u((29 as i32) as u32) != (1 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test7u((30 as i32) as u32) != (0 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test8(0 as i32) != (1 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test8(9 as i32) != (1 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test8(10 as i32) != (0 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test8(-(1 as i32)) != (1 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test8(-(9 as i32)) != (1 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test8(-(10 as i32)) != (1 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test8u((0 as i32) as u32) != (1 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test8u((9 as i32) as u32) != (1 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test8u((10 as i32) as u32) != (0 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test8u(-(1 as i32) as u32) != (0 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test8u(-(9 as i32) as u32) != (0 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test8u(-(10 as i32) as u32) != (0 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test9(19 as i32) != (0 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test9(20 as i32) != (0 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test9(29 as i32) != (0 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test9(30 as i32) != (1 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test9u((19 as i32) as u32) != (0 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test9u((20 as i32) as u32) != (0 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test9u((29 as i32) as u32) != (0 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test9u((30 as i32) as u32) != (1 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test10(0 as i32) != (0 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test10(9 as i32) != (0 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test10(10 as i32) != (1 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test10(-(1 as i32)) != (0 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test10(-(9 as i32)) != (0 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test10(-(10 as i32)) != (0 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test10u((0 as i32) as u32) != (0 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test10u((9 as i32) as u32) != (0 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test10u((10 as i32) as u32) != (1 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test10u(-(1 as i32) as u32) != (1 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test10u(-(9 as i32) as u32) != (1 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test10u(-(10 as i32) as u32) != (1 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test11(19 as i32) != (0 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test11(20 as i32) != (1 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test11(29 as i32) != (1 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test11(30 as i32) != (1 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test11u((19 as i32) as u32) != (0 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test11u((20 as i32) as u32) != (1 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test11u((29 as i32) as u32) != (1 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test11u((30 as i32) as u32) != (1 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test12(0 as i32) != (1 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test12(9 as i32) != (1 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test12(10 as i32) != (1 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test12(-(1 as i32)) != (1 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test12(-(9 as i32)) != (1 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if test12(-(10 as i32)) != (0 as i32) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     0 as i32
+// CHECK-NEXT: }
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: unsafe extern "C-unwind" fn main(
+// CHECK-NEXT:     argc: i32,
+// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT: ) -> i32 {
+// CHECK-NEXT:     unsafe { __slate_main() }
+// CHECK-NEXT: }
+// SLATE-FILECHECK-END

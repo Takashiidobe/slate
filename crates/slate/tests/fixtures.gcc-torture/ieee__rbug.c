@@ -51,3 +51,59 @@ int main(void) {
 
   exit(0);
 }
+
+// SLATE-FILECHECK-BEGIN
+// CHECK: #![allow(non_camel_case_types)]
+// CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
+// CHECK-NEXT: //! { dg-do run }
+// CHECK-NEXT: //!
+// CHECK-NEXT: //! # AVR doubles are floats
+// CHECK-NEXT: //! { dg-skip-if "AVR doubles are floats" { avr-*-* } }
+// CHECK-NEXT: //! { dg-skip-if "AVR doubles are floats" { d10v-*-* } { "*" } { "*-mdouble64*" }
+// CHECK-NEXT: //! }
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn abort();
+// CHECK-NEXT:     fn exit([[V_0:__v[0-9]+]]: i32);
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: fn d(mut k: u64) -> f64 {
+// CHECK-NEXT:     let mut x: f64 = k as f64;
+// CHECK-NEXT:     x
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: fn s(mut k: u64) -> f32 {
+// CHECK-NEXT:     let mut x: f32 = k as f32;
+// CHECK-NEXT:     x
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: fn __slate_main() -> i32 {
+// CHECK-NEXT:     let mut k: u64 = 0 as u64;
+// CHECK-NEXT:     let mut x: f64 = 0 as f64;
+// CHECK-NEXT:     if (8 as u64) >= (((8 as i32) as i64) as u64) {
+// CHECK-NEXT:         k = 9697299402072392705 as u64;
+// CHECK-NEXT:         x = d(k);
+// CHECK-NEXT:         k = x as u64;
+// CHECK-NEXT:         if k != (9697299402072393728 as u64) {
+// CHECK-NEXT:             unsafe { abort() };
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     k = 9382212434405621761 as u64;
+// CHECK-NEXT:     x = s(k) as f64;
+// CHECK-NEXT:     k = x as u64;
+// CHECK-NEXT:     if k != (9382212984161435648 as u64) {
+// CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe { exit(0 as i32) };
+// CHECK-NEXT:     0
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: unsafe extern "C-unwind" fn main(
+// CHECK-NEXT:     argc: i32,
+// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT: ) -> i32 {
+// CHECK-NEXT:     unsafe { __slate_main() }
+// CHECK-NEXT: }
+// SLATE-FILECHECK-END

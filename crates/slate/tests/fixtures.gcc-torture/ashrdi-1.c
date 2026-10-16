@@ -351,3 +351,463 @@ int main() {
 
   exit(0);
 }
+
+// SLATE-FILECHECK-BEGIN
+// CHECK: #![allow(non_camel_case_types)]
+// CHECK-NEXT: #![no_main]
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn abort();
+// CHECK-NEXT:     fn exit([[V_0:__v[0-9]+]]: i32);
+// CHECK-NEXT: }
+// CHECK-NEXT: #[repr(C, align(16))]
+// CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: static mut zext: __SlateAlign16<[i64; 64]> = __SlateAlign16([
+// CHECK-NEXT:     8526495107234113920 as i64,
+// CHECK-NEXT:     4263247553617056960 as i64,
+// CHECK-NEXT:     2131623776808528480 as i64,
+// CHECK-NEXT:     1065811888404264240 as i64,
+// CHECK-NEXT:     532905944202132120 as i64,
+// CHECK-NEXT:     266452972101066060 as i64,
+// CHECK-NEXT:     133226486050533030 as i64,
+// CHECK-NEXT:     66613243025266515 as i64,
+// CHECK-NEXT:     33306621512633257 as i64,
+// CHECK-NEXT:     16653310756316628 as i64,
+// CHECK-NEXT:     8326655378158314 as i64,
+// CHECK-NEXT:     4163327689079157 as i64,
+// CHECK-NEXT:     2081663844539578 as i64,
+// CHECK-NEXT:     1040831922269789 as i64,
+// CHECK-NEXT:     520415961134894 as i64,
+// CHECK-NEXT:     260207980567447 as i64,
+// CHECK-NEXT:     130103990283723 as i64,
+// CHECK-NEXT:     65051995141861 as i64,
+// CHECK-NEXT:     32525997570930 as i64,
+// CHECK-NEXT:     16262998785465 as i64,
+// CHECK-NEXT:     8131499392732 as i64,
+// CHECK-NEXT:     4065749696366 as i64,
+// CHECK-NEXT:     2032874848183 as i64,
+// CHECK-NEXT:     1016437424091 as i64,
+// CHECK-NEXT:     508218712045 as i64,
+// CHECK-NEXT:     254109356022 as i64,
+// CHECK-NEXT:     127054678011 as i64,
+// CHECK-NEXT:     63527339005 as i64,
+// CHECK-NEXT:     31763669502 as i64,
+// CHECK-NEXT:     15881834751 as i64,
+// CHECK-NEXT:     7940917375 as i64,
+// CHECK-NEXT:     3970458687 as i64,
+// CHECK-NEXT:     1985229343 as i64,
+// CHECK-NEXT:     992614671 as i64,
+// CHECK-NEXT:     496307335 as i64,
+// CHECK-NEXT:     248153667 as i64,
+// CHECK-NEXT:     124076833 as i64,
+// CHECK-NEXT:     62038416 as i64,
+// CHECK-NEXT:     31019208 as i64,
+// CHECK-NEXT:     15509604 as i64,
+// CHECK-NEXT:     7754802 as i64,
+// CHECK-NEXT:     3877401 as i64,
+// CHECK-NEXT:     1938700 as i64,
+// CHECK-NEXT:     969350 as i64,
+// CHECK-NEXT:     484675 as i64,
+// CHECK-NEXT:     242337 as i64,
+// CHECK-NEXT:     121168 as i64,
+// CHECK-NEXT:     60584 as i64,
+// CHECK-NEXT:     30292 as i64,
+// CHECK-NEXT:     15146 as i64,
+// CHECK-NEXT:     7573 as i64,
+// CHECK-NEXT:     3786 as i64,
+// CHECK-NEXT:     1893 as i64,
+// CHECK-NEXT:     946 as i64,
+// CHECK-NEXT:     473 as i64,
+// CHECK-NEXT:     236 as i64,
+// CHECK-NEXT:     118 as i64,
+// CHECK-NEXT:     59 as i64,
+// CHECK-NEXT:     29 as i64,
+// CHECK-NEXT:     14 as i64,
+// CHECK-NEXT:     7 as i64,
+// CHECK-NEXT:     3 as i64,
+// CHECK-NEXT:     1 as i64,
+// CHECK-NEXT:     0 as i64,
+// CHECK-NEXT: ]);
+// CHECK-NEXT: static mut sext: __SlateAlign16<[i64; 64]> = __SlateAlign16([
+// CHECK-NEXT:     (10294308042309906960 as u64) as i64,
+// CHECK-NEXT:     (14370526058009729288 as u64) as i64,
+// CHECK-NEXT:     (16408635065859640452 as u64) as i64,
+// CHECK-NEXT:     (17427689569784596034 as u64) as i64,
+// CHECK-NEXT:     (17937216821747073825 as u64) as i64,
+// CHECK-NEXT:     (18191980447728312720 as u64) as i64,
+// CHECK-NEXT:     (18319362260718932168 as u64) as i64,
+// CHECK-NEXT:     (18383053167214241892 as u64) as i64,
+// CHECK-NEXT:     (18414898620461896754 as u64) as i64,
+// CHECK-NEXT:     (18430821347085724185 as u64) as i64,
+// CHECK-NEXT:     (18438782710397637900 as u64) as i64,
+// CHECK-NEXT:     (18442763392053594758 as u64) as i64,
+// CHECK-NEXT:     (18444753732881573187 as u64) as i64,
+// CHECK-NEXT:     (18445748903295562401 as u64) as i64,
+// CHECK-NEXT:     (18446246488502557008 as u64) as i64,
+// CHECK-NEXT:     (18446495281106054312 as u64) as i64,
+// CHECK-NEXT:     (18446619677407802964 as u64) as i64,
+// CHECK-NEXT:     (18446681875558677290 as u64) as i64,
+// CHECK-NEXT:     (18446712974634114453 as u64) as i64,
+// CHECK-NEXT:     (18446728524171833034 as u64) as i64,
+// CHECK-NEXT:     (18446736298940692325 as u64) as i64,
+// CHECK-NEXT:     (18446740186325121970 as u64) as i64,
+// CHECK-NEXT:     (18446742130017336793 as u64) as i64,
+// CHECK-NEXT:     (18446743101863444204 as u64) as i64,
+// CHECK-NEXT:     (18446743587786497910 as u64) as i64,
+// CHECK-NEXT:     (18446743830748024763 as u64) as i64,
+// CHECK-NEXT:     (18446743952228788189 as u64) as i64,
+// CHECK-NEXT:     (18446744012969169902 as u64) as i64,
+// CHECK-NEXT:     (18446744043339360759 as u64) as i64,
+// CHECK-NEXT:     (18446744058524456187 as u64) as i64,
+// CHECK-NEXT:     (18446744066117003901 as u64) as i64,
+// CHECK-NEXT:     (18446744069913277758 as u64) as i64,
+// CHECK-NEXT:     (18446744071811414687 as u64) as i64,
+// CHECK-NEXT:     (18446744072760483151 as u64) as i64,
+// CHECK-NEXT:     (18446744073235017383 as u64) as i64,
+// CHECK-NEXT:     (18446744073472284499 as u64) as i64,
+// CHECK-NEXT:     (18446744073590918057 as u64) as i64,
+// CHECK-NEXT:     (18446744073650234836 as u64) as i64,
+// CHECK-NEXT:     (18446744073679893226 as u64) as i64,
+// CHECK-NEXT:     (18446744073694722421 as u64) as i64,
+// CHECK-NEXT:     (18446744073702137018 as u64) as i64,
+// CHECK-NEXT:     (18446744073705844317 as u64) as i64,
+// CHECK-NEXT:     (18446744073707697966 as u64) as i64,
+// CHECK-NEXT:     (18446744073708624791 as u64) as i64,
+// CHECK-NEXT:     (18446744073709088203 as u64) as i64,
+// CHECK-NEXT:     (18446744073709319909 as u64) as i64,
+// CHECK-NEXT:     (18446744073709435762 as u64) as i64,
+// CHECK-NEXT:     (18446744073709493689 as u64) as i64,
+// CHECK-NEXT:     (18446744073709522652 as u64) as i64,
+// CHECK-NEXT:     (18446744073709537134 as u64) as i64,
+// CHECK-NEXT:     (18446744073709544375 as u64) as i64,
+// CHECK-NEXT:     (18446744073709547995 as u64) as i64,
+// CHECK-NEXT:     (18446744073709549805 as u64) as i64,
+// CHECK-NEXT:     (18446744073709550710 as u64) as i64,
+// CHECK-NEXT:     (18446744073709551163 as u64) as i64,
+// CHECK-NEXT:     (18446744073709551389 as u64) as i64,
+// CHECK-NEXT:     (18446744073709551502 as u64) as i64,
+// CHECK-NEXT:     (18446744073709551559 as u64) as i64,
+// CHECK-NEXT:     (18446744073709551587 as u64) as i64,
+// CHECK-NEXT:     (18446744073709551601 as u64) as i64,
+// CHECK-NEXT:     (18446744073709551608 as u64) as i64,
+// CHECK-NEXT:     (18446744073709551612 as u64) as i64,
+// CHECK-NEXT:     (18446744073709551614 as u64) as i64,
+// CHECK-NEXT:     (18446744073709551615 as u64) as i64,
+// CHECK-NEXT: ]);
+// CHECK-NEXT: fn variable_shift(mut x: i64, mut i: i32) -> i64 {
+// CHECK-NEXT:     x >> i
+// CHECK-NEXT: }
+// CHECK-NEXT: fn constant_shift(mut x: i64, mut i: i32) -> i64 {
+// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: {
+// CHECK-NEXT:         match i {
+// CHECK-NEXT:             0 => {
+// CHECK-NEXT:                 x >>= 0 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             1 => {
+// CHECK-NEXT:                 x >>= 1 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             2 => {
+// CHECK-NEXT:                 x >>= 2 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             3 => {
+// CHECK-NEXT:                 x >>= 3 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             4 => {
+// CHECK-NEXT:                 x >>= 4 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             5 => {
+// CHECK-NEXT:                 x >>= 5 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             6 => {
+// CHECK-NEXT:                 x >>= 6 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             7 => {
+// CHECK-NEXT:                 x >>= 7 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             8 => {
+// CHECK-NEXT:                 x >>= 8 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             9 => {
+// CHECK-NEXT:                 x >>= 9 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             10 => {
+// CHECK-NEXT:                 x >>= 10 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             11 => {
+// CHECK-NEXT:                 x >>= 11 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             12 => {
+// CHECK-NEXT:                 x >>= 12 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             13 => {
+// CHECK-NEXT:                 x >>= 13 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             14 => {
+// CHECK-NEXT:                 x >>= 14 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             15 => {
+// CHECK-NEXT:                 x >>= 15 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             16 => {
+// CHECK-NEXT:                 x >>= 16 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             17 => {
+// CHECK-NEXT:                 x >>= 17 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             18 => {
+// CHECK-NEXT:                 x >>= 18 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             19 => {
+// CHECK-NEXT:                 x >>= 19 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             20 => {
+// CHECK-NEXT:                 x >>= 20 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             21 => {
+// CHECK-NEXT:                 x >>= 21 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             22 => {
+// CHECK-NEXT:                 x >>= 22 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             23 => {
+// CHECK-NEXT:                 x >>= 23 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             24 => {
+// CHECK-NEXT:                 x >>= 24 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             25 => {
+// CHECK-NEXT:                 x >>= 25 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             26 => {
+// CHECK-NEXT:                 x >>= 26 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             27 => {
+// CHECK-NEXT:                 x >>= 27 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             28 => {
+// CHECK-NEXT:                 x >>= 28 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             29 => {
+// CHECK-NEXT:                 x >>= 29 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             30 => {
+// CHECK-NEXT:                 x >>= 30 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             31 => {
+// CHECK-NEXT:                 x >>= 31 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             32 => {
+// CHECK-NEXT:                 x >>= 32 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             33 => {
+// CHECK-NEXT:                 x >>= 33 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             34 => {
+// CHECK-NEXT:                 x >>= 34 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             35 => {
+// CHECK-NEXT:                 x >>= 35 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             36 => {
+// CHECK-NEXT:                 x >>= 36 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             37 => {
+// CHECK-NEXT:                 x >>= 37 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             38 => {
+// CHECK-NEXT:                 x >>= 38 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             39 => {
+// CHECK-NEXT:                 x >>= 39 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             40 => {
+// CHECK-NEXT:                 x >>= 40 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             41 => {
+// CHECK-NEXT:                 x >>= 41 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             42 => {
+// CHECK-NEXT:                 x >>= 42 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             43 => {
+// CHECK-NEXT:                 x >>= 43 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             44 => {
+// CHECK-NEXT:                 x >>= 44 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             45 => {
+// CHECK-NEXT:                 x >>= 45 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             46 => {
+// CHECK-NEXT:                 x >>= 46 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             47 => {
+// CHECK-NEXT:                 x >>= 47 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             48 => {
+// CHECK-NEXT:                 x >>= 48 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             49 => {
+// CHECK-NEXT:                 x >>= 49 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             50 => {
+// CHECK-NEXT:                 x >>= 50 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             51 => {
+// CHECK-NEXT:                 x >>= 51 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             52 => {
+// CHECK-NEXT:                 x >>= 52 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             53 => {
+// CHECK-NEXT:                 x >>= 53 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             54 => {
+// CHECK-NEXT:                 x >>= 54 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             55 => {
+// CHECK-NEXT:                 x >>= 55 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             56 => {
+// CHECK-NEXT:                 x >>= 56 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             57 => {
+// CHECK-NEXT:                 x >>= 57 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             58 => {
+// CHECK-NEXT:                 x >>= 58 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             59 => {
+// CHECK-NEXT:                 x >>= 59 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             60 => {
+// CHECK-NEXT:                 x >>= 60 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             61 => {
+// CHECK-NEXT:                 x >>= 61 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             62 => {
+// CHECK-NEXT:                 x >>= 62 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             63 => {
+// CHECK-NEXT:                 x >>= 63 as i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             _ => {
+// CHECK-NEXT:                 unsafe { abort() };
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     x
+// CHECK-NEXT: }
+// CHECK-NEXT: fn __slate_main() -> i32 {
+// CHECK-NEXT:     let mut i: i32 = 0 as i32;
+// CHECK-NEXT:     '[[SLATE_BREAK_1:__slate_break_[0-9]+]]: while i < (64 as i32) {
+// CHECK-NEXT:         let mut y: i64 = variable_shift(
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 *unsafe {
+// CHECK-NEXT:                     unsafe { std::ptr::addr_of!(zext.0) as *const i64 }
+// CHECK-NEXT:                         .offset((0 as i32) as isize)
+// CHECK-NEXT:                 }
+// CHECK-NEXT:             },
+// CHECK-NEXT:             i,
+// CHECK-NEXT:         );
+// CHECK-NEXT:         if y
+// CHECK-NEXT:             != unsafe {
+// CHECK-NEXT:                 *unsafe {
+// CHECK-NEXT:                     unsafe { std::ptr::addr_of!(zext.0) as *const i64 }
+// CHECK-NEXT:                         .offset(i as isize)
+// CHECK-NEXT:                 }
+// CHECK-NEXT:             }
+// CHECK-NEXT:         {
+// CHECK-NEXT:             unsafe { abort() };
+// CHECK-NEXT:         }
+// CHECK-NEXT:         let mut [[V_1:__v[0-9]+]]: i32 = i;
+// CHECK-NEXT:         let mut [[V_2:__v[0-9]+]]: i32 = [[V_1]] + (1 as i32);
+// CHECK-NEXT:         i = [[V_2]];
+// CHECK-NEXT:     }
+// CHECK-NEXT:     i = 0 as i32;
+// CHECK-NEXT:     '[[SLATE_BREAK_2:__slate_break_[0-9]+]]: while i < (64 as i32) {
+// CHECK-NEXT:         let mut y: i64 = variable_shift(
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 *unsafe {
+// CHECK-NEXT:                     unsafe { std::ptr::addr_of!(sext.0) as *const i64 }
+// CHECK-NEXT:                         .offset((0 as i32) as isize)
+// CHECK-NEXT:                 }
+// CHECK-NEXT:             },
+// CHECK-NEXT:             i,
+// CHECK-NEXT:         );
+// CHECK-NEXT:         if y
+// CHECK-NEXT:             != unsafe {
+// CHECK-NEXT:                 *unsafe {
+// CHECK-NEXT:                     unsafe { std::ptr::addr_of!(sext.0) as *const i64 }
+// CHECK-NEXT:                         .offset(i as isize)
+// CHECK-NEXT:                 }
+// CHECK-NEXT:             }
+// CHECK-NEXT:         {
+// CHECK-NEXT:             unsafe { abort() };
+// CHECK-NEXT:         }
+// CHECK-NEXT:         let mut [[V_3:__v[0-9]+]]: i32 = i;
+// CHECK-NEXT:         let mut [[V_4:__v[0-9]+]]: i32 = [[V_3]] + (1 as i32);
+// CHECK-NEXT:         i = [[V_4]];
+// CHECK-NEXT:     }
+// CHECK-NEXT:     i = 0 as i32;
+// CHECK-NEXT:     '[[SLATE_BREAK_3:__slate_break_[0-9]+]]: while i < (64 as i32) {
+// CHECK-NEXT:         let mut y: i64 = constant_shift(
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 *unsafe {
+// CHECK-NEXT:                     unsafe { std::ptr::addr_of!(zext.0) as *const i64 }
+// CHECK-NEXT:                         .offset((0 as i32) as isize)
+// CHECK-NEXT:                 }
+// CHECK-NEXT:             },
+// CHECK-NEXT:             i,
+// CHECK-NEXT:         );
+// CHECK-NEXT:         if y
+// CHECK-NEXT:             != unsafe {
+// CHECK-NEXT:                 *unsafe {
+// CHECK-NEXT:                     unsafe { std::ptr::addr_of!(zext.0) as *const i64 }
+// CHECK-NEXT:                         .offset(i as isize)
+// CHECK-NEXT:                 }
+// CHECK-NEXT:             }
+// CHECK-NEXT:         {
+// CHECK-NEXT:             unsafe { abort() };
+// CHECK-NEXT:         }
+// CHECK-NEXT:         let mut [[V_5:__v[0-9]+]]: i32 = i;
+// CHECK-NEXT:         let mut [[V_6:__v[0-9]+]]: i32 = [[V_5]] + (1 as i32);
+// CHECK-NEXT:         i = [[V_6]];
+// CHECK-NEXT:     }
+// CHECK-NEXT:     i = 0 as i32;
+// CHECK-NEXT:     '[[SLATE_BREAK_4:__slate_break_[0-9]+]]: while i < (64 as i32) {
+// CHECK-NEXT:         let mut y: i64 = constant_shift(
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 *unsafe {
+// CHECK-NEXT:                     unsafe { std::ptr::addr_of!(sext.0) as *const i64 }
+// CHECK-NEXT:                         .offset((0 as i32) as isize)
+// CHECK-NEXT:                 }
+// CHECK-NEXT:             },
+// CHECK-NEXT:             i,
+// CHECK-NEXT:         );
+// CHECK-NEXT:         if y
+// CHECK-NEXT:             != unsafe {
+// CHECK-NEXT:                 *unsafe {
+// CHECK-NEXT:                     unsafe { std::ptr::addr_of!(sext.0) as *const i64 }
+// CHECK-NEXT:                         .offset(i as isize)
+// CHECK-NEXT:                 }
+// CHECK-NEXT:             }
+// CHECK-NEXT:         {
+// CHECK-NEXT:             unsafe { abort() };
+// CHECK-NEXT:         }
+// CHECK-NEXT:         let mut [[V_7:__v[0-9]+]]: i32 = i;
+// CHECK-NEXT:         let mut [[V_8:__v[0-9]+]]: i32 = [[V_7]] + (1 as i32);
+// CHECK-NEXT:         i = [[V_8]];
+// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe { exit(0 as i32) };
+// CHECK-NEXT:     0
+// CHECK-NEXT: }
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: unsafe extern "C-unwind" fn main(
+// CHECK-NEXT:     argc: i32,
+// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT: ) -> i32 {
+// CHECK-NEXT:     unsafe { __slate_main() }
+// CHECK-NEXT: }
+// SLATE-FILECHECK-END

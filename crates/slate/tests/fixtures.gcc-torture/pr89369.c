@@ -62,3 +62,327 @@ int main() {
 #else
 int main() { return 0; }
 #endif
+
+// SLATE-FILECHECK-BEGIN
+// CHECK: #![allow(non_camel_case_types)]
+// CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
+// CHECK-NEXT: //! PR target/89369
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     #[link_name = "abort"]
+// CHECK-NEXT:     fn __builtin_abort();
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[repr(C)]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct S {
+// CHECK-NEXT:     u: [u32; 4],
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[repr(C, align(16))]
+// CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
+// CHECK-NEXT: fn foo(mut out: &mut S, mut r#in: *const S, mut shift: i32) {
+// CHECK-NEXT:     let mut th: u64 = ((unsafe {
+// CHECK-NEXT:         *unsafe { unsafe { (*r#in).u.as_ptr() as *const u32 }.offset((3 as i32) as isize) }
+// CHECK-NEXT:     }) as u64)
+// CHECK-NEXT:         << (32 as i32)
+// CHECK-NEXT:         | ((unsafe {
+// CHECK-NEXT:             *unsafe { unsafe { (*r#in).u.as_ptr() as *const u32 }.offset((2 as i32) as isize) }
+// CHECK-NEXT:         }) as u64);
+// CHECK-NEXT:     let mut tl: u64 = ((unsafe {
+// CHECK-NEXT:         *unsafe { unsafe { (*r#in).u.as_ptr() as *const u32 }.offset((1 as i32) as isize) }
+// CHECK-NEXT:     }) as u64)
+// CHECK-NEXT:         << (32 as i32)
+// CHECK-NEXT:         | ((unsafe {
+// CHECK-NEXT:             *unsafe { unsafe { (*r#in).u.as_ptr() as *const u32 }.offset((0 as i32) as isize) }
+// CHECK-NEXT:         }) as u64);
+// CHECK-NEXT:     let mut oh: u64 = th >> shift * (8 as i32);
+// CHECK-NEXT:     let mut ol: u64 = tl >> shift * (8 as i32);
+// CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: u64 = ol;
+// CHECK-NEXT:     let mut [[V_1:__v[0-9]+]]: u64 = [[V_0]] | th << (64 as i32) - shift * (8 as i32);
+// CHECK-NEXT:     ol = [[V_1]];
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         *unsafe {
+// CHECK-NEXT:             unsafe { (*(out as *mut S)).u.as_mut_ptr() as *mut u32 }.offset((1 as i32) as isize)
+// CHECK-NEXT:         } = (ol >> (32 as i32)) as u32;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         *unsafe {
+// CHECK-NEXT:             unsafe { (*(out as *mut S)).u.as_mut_ptr() as *mut u32 }.offset((0 as i32) as isize)
+// CHECK-NEXT:         } = ol as u32;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         *unsafe {
+// CHECK-NEXT:             unsafe { (*(out as *mut S)).u.as_mut_ptr() as *mut u32 }.offset((3 as i32) as isize)
+// CHECK-NEXT:         } = (oh >> (32 as i32)) as u32;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         *unsafe {
+// CHECK-NEXT:             unsafe { (*(out as *mut S)).u.as_mut_ptr() as *mut u32 }.offset((2 as i32) as isize)
+// CHECK-NEXT:         } = oh as u32;
+// CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: fn bar(mut out: &mut S, mut r#in: *const S, mut shift: i32) {
+// CHECK-NEXT:     let mut th: u64 = ((unsafe {
+// CHECK-NEXT:         *unsafe { unsafe { (*r#in).u.as_ptr() as *const u32 }.offset((3 as i32) as isize) }
+// CHECK-NEXT:     }) as u64)
+// CHECK-NEXT:         << (32 as i32)
+// CHECK-NEXT:         | ((unsafe {
+// CHECK-NEXT:             *unsafe { unsafe { (*r#in).u.as_ptr() as *const u32 }.offset((2 as i32) as isize) }
+// CHECK-NEXT:         }) as u64);
+// CHECK-NEXT:     let mut tl: u64 = ((unsafe {
+// CHECK-NEXT:         *unsafe { unsafe { (*r#in).u.as_ptr() as *const u32 }.offset((1 as i32) as isize) }
+// CHECK-NEXT:     }) as u64)
+// CHECK-NEXT:         << (32 as i32)
+// CHECK-NEXT:         | ((unsafe {
+// CHECK-NEXT:             *unsafe { unsafe { (*r#in).u.as_ptr() as *const u32 }.offset((0 as i32) as isize) }
+// CHECK-NEXT:         }) as u64);
+// CHECK-NEXT:     let mut oh: u64 = th << shift * (8 as i32);
+// CHECK-NEXT:     let mut ol: u64 = tl << shift * (8 as i32);
+// CHECK-NEXT:     let mut [[V_2:__v[0-9]+]]: u64 = oh;
+// CHECK-NEXT:     let mut [[V_3:__v[0-9]+]]: u64 = [[V_2]] | tl >> (64 as i32) - shift * (8 as i32);
+// CHECK-NEXT:     oh = [[V_3]];
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         *unsafe {
+// CHECK-NEXT:             unsafe { (*(out as *mut S)).u.as_mut_ptr() as *mut u32 }.offset((1 as i32) as isize)
+// CHECK-NEXT:         } = (ol >> (32 as i32)) as u32;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         *unsafe {
+// CHECK-NEXT:             unsafe { (*(out as *mut S)).u.as_mut_ptr() as *mut u32 }.offset((0 as i32) as isize)
+// CHECK-NEXT:         } = ol as u32;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         *unsafe {
+// CHECK-NEXT:             unsafe { (*(out as *mut S)).u.as_mut_ptr() as *mut u32 }.offset((3 as i32) as isize)
+// CHECK-NEXT:         } = (oh >> (32 as i32)) as u32;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         *unsafe {
+// CHECK-NEXT:             unsafe { (*(out as *mut S)).u.as_mut_ptr() as *mut u32 }.offset((2 as i32) as isize)
+// CHECK-NEXT:         } = oh as u32;
+// CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: fn baz(mut r: *mut S, mut a: *mut S, mut b: *mut S, mut c: *mut S, mut d: *mut S) {
+// CHECK-NEXT:     let mut x: S = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut y: S = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     bar(
+// CHECK-NEXT:         unsafe { &mut (*std::ptr::addr_of_mut!(x)) },
+// CHECK-NEXT:         a as *const S,
+// CHECK-NEXT:         1 as i32,
+// CHECK-NEXT:     );
+// CHECK-NEXT:     foo(
+// CHECK-NEXT:         unsafe { &mut (*std::ptr::addr_of_mut!(y)) },
+// CHECK-NEXT:         c as *const S,
+// CHECK-NEXT:         1 as i32,
+// CHECK-NEXT:     );
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         *unsafe { unsafe { (*r).u.as_mut_ptr() as *mut u32 }.offset((0 as i32) as isize) } = (unsafe {
+// CHECK-NEXT:             *unsafe { unsafe { (*a).u.as_mut_ptr() as *mut u32 }.offset((0 as i32) as isize) }
+// CHECK-NEXT:         }) ^ unsafe {
+// CHECK-NEXT:             *unsafe { (x.u.as_mut_ptr() as *mut u32).offset((0 as i32) as isize) }
+// CHECK-NEXT:         } ^ (unsafe {
+// CHECK-NEXT:             *unsafe { unsafe { (*b).u.as_mut_ptr() as *mut u32 }.offset((0 as i32) as isize) }
+// CHECK-NEXT:         })
+// CHECK-NEXT:             >> (11 as i32)
+// CHECK-NEXT:             & (3758096367 as u32)
+// CHECK-NEXT:             ^ unsafe { *unsafe { (y.u.as_mut_ptr() as *mut u32).offset((0 as i32) as isize) } }
+// CHECK-NEXT:             ^ (unsafe {
+// CHECK-NEXT:                 *unsafe { unsafe { (*d).u.as_mut_ptr() as *mut u32 }.offset((0 as i32) as isize) }
+// CHECK-NEXT:             }) << (18 as i32);
+// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         *unsafe { unsafe { (*r).u.as_mut_ptr() as *mut u32 }.offset((1 as i32) as isize) } = (unsafe {
+// CHECK-NEXT:             *unsafe { unsafe { (*a).u.as_mut_ptr() as *mut u32 }.offset((1 as i32) as isize) }
+// CHECK-NEXT:         }) ^ unsafe {
+// CHECK-NEXT:             *unsafe { (x.u.as_mut_ptr() as *mut u32).offset((1 as i32) as isize) }
+// CHECK-NEXT:         } ^ (unsafe {
+// CHECK-NEXT:             *unsafe { unsafe { (*b).u.as_mut_ptr() as *mut u32 }.offset((1 as i32) as isize) }
+// CHECK-NEXT:         })
+// CHECK-NEXT:             >> (11 as i32)
+// CHECK-NEXT:             & (3724462975 as u32)
+// CHECK-NEXT:             ^ unsafe { *unsafe { (y.u.as_mut_ptr() as *mut u32).offset((1 as i32) as isize) } }
+// CHECK-NEXT:             ^ (unsafe {
+// CHECK-NEXT:                 *unsafe { unsafe { (*d).u.as_mut_ptr() as *mut u32 }.offset((1 as i32) as isize) }
+// CHECK-NEXT:             }) << (18 as i32);
+// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         *unsafe { unsafe { (*r).u.as_mut_ptr() as *mut u32 }.offset((2 as i32) as isize) } = (unsafe {
+// CHECK-NEXT:             *unsafe { unsafe { (*a).u.as_mut_ptr() as *mut u32 }.offset((2 as i32) as isize) }
+// CHECK-NEXT:         }) ^ unsafe {
+// CHECK-NEXT:             *unsafe { (x.u.as_mut_ptr() as *mut u32).offset((2 as i32) as isize) }
+// CHECK-NEXT:         } ^ (unsafe {
+// CHECK-NEXT:             *unsafe { unsafe { (*b).u.as_mut_ptr() as *mut u32 }.offset((2 as i32) as isize) }
+// CHECK-NEXT:         })
+// CHECK-NEXT:             >> (11 as i32)
+// CHECK-NEXT:             & (3220897791 as u32)
+// CHECK-NEXT:             ^ unsafe { *unsafe { (y.u.as_mut_ptr() as *mut u32).offset((2 as i32) as isize) } }
+// CHECK-NEXT:             ^ (unsafe {
+// CHECK-NEXT:                 *unsafe { unsafe { (*d).u.as_mut_ptr() as *mut u32 }.offset((2 as i32) as isize) }
+// CHECK-NEXT:             }) << (18 as i32);
+// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         *unsafe { unsafe { (*r).u.as_mut_ptr() as *mut u32 }.offset((3 as i32) as isize) } = (unsafe {
+// CHECK-NEXT:             *unsafe { unsafe { (*a).u.as_mut_ptr() as *mut u32 }.offset((3 as i32) as isize) }
+// CHECK-NEXT:         }) ^ unsafe {
+// CHECK-NEXT:             *unsafe { (x.u.as_mut_ptr() as *mut u32).offset((3 as i32) as isize) }
+// CHECK-NEXT:         } ^ (unsafe {
+// CHECK-NEXT:             *unsafe { unsafe { (*b).u.as_mut_ptr() as *mut u32 }.offset((3 as i32) as isize) }
+// CHECK-NEXT:         })
+// CHECK-NEXT:             >> (11 as i32)
+// CHECK-NEXT:             & (3221225462 as u32)
+// CHECK-NEXT:             ^ unsafe { *unsafe { (y.u.as_mut_ptr() as *mut u32).offset((3 as i32) as isize) } }
+// CHECK-NEXT:             ^ (unsafe {
+// CHECK-NEXT:                 *unsafe { unsafe { (*d).u.as_mut_ptr() as *mut u32 }.offset((3 as i32) as isize) }
+// CHECK-NEXT:             }) << (18 as i32);
+// CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: fn __slate_main() -> i32 {
+// CHECK-NEXT:     let mut a: __SlateAlign16<[S; 6]> = __SlateAlign16([
+// CHECK-NEXT:         S {
+// CHECK-NEXT:             u: [
+// CHECK-NEXT:                 (1235 as i32) as u32,
+// CHECK-NEXT:                 3159640283 as u32,
+// CHECK-NEXT:                 4062961311 as u32,
+// CHECK-NEXT:                 3954462607 as u32,
+// CHECK-NEXT:             ],
+// CHECK-NEXT:         },
+// CHECK-NEXT:         S {
+// CHECK-NEXT:             u: [
+// CHECK-NEXT:                 (61024153 as i32) as u32,
+// CHECK-NEXT:                 (1623097926 as i32) as u32,
+// CHECK-NEXT:                 2731697901 as u32,
+// CHECK-NEXT:                 (2057405750 as i32) as u32,
+// CHECK-NEXT:             ],
+// CHECK-NEXT:         },
+// CHECK-NEXT:         S {
+// CHECK-NEXT:             u: [
+// CHECK-NEXT:                 (363037976 as i32) as u32,
+// CHECK-NEXT:                 3479526625 as u32,
+// CHECK-NEXT:                 4091582868 as u32,
+// CHECK-NEXT:                 (1357867518 as i32) as u32,
+// CHECK-NEXT:             ],
+// CHECK-NEXT:         },
+// CHECK-NEXT:         S {
+// CHECK-NEXT:             u: [
+// CHECK-NEXT:                 2284276487 as u32,
+// CHECK-NEXT:                 3888728166 as u32,
+// CHECK-NEXT:                 3236601671 as u32,
+// CHECK-NEXT:                 3064478787 as u32,
+// CHECK-NEXT:             ],
+// CHECK-NEXT:         },
+// CHECK-NEXT:         S {
+// CHECK-NEXT:             u: [
+// CHECK-NEXT:                 3440181298 as u32,
+// CHECK-NEXT:                 (1564997079 as i32) as u32,
+// CHECK-NEXT:                 (1510669302 as i32) as u32,
+// CHECK-NEXT:                 2930277156 as u32,
+// CHECK-NEXT:             ],
+// CHECK-NEXT:         },
+// CHECK-NEXT:         S {
+// CHECK-NEXT:             u: [
+// CHECK-NEXT:                 (0 as i32) as u32,
+// CHECK-NEXT:                 (0 as i32) as u32,
+// CHECK-NEXT:                 (0 as i32) as u32,
+// CHECK-NEXT:                 (0 as i32) as u32,
+// CHECK-NEXT:             ],
+// CHECK-NEXT:         },
+// CHECK-NEXT:     ]);
+// CHECK-NEXT:     baz(
+// CHECK-NEXT:         unsafe { (a.0.as_mut_ptr() as *mut S).offset((5 as i32) as isize) },
+// CHECK-NEXT:         unsafe { (a.0.as_mut_ptr() as *mut S).offset((0 as i32) as isize) },
+// CHECK-NEXT:         unsafe { (a.0.as_mut_ptr() as *mut S).offset((1 as i32) as isize) },
+// CHECK-NEXT:         unsafe { (a.0.as_mut_ptr() as *mut S).offset((2 as i32) as isize) },
+// CHECK-NEXT:         unsafe { (a.0.as_mut_ptr() as *mut S).offset((3 as i32) as isize) },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     if (unsafe {
+// CHECK-NEXT:         *unsafe {
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 (*unsafe { (a.0.as_mut_ptr() as *mut S).offset((4 as i32) as isize) })
+// CHECK-NEXT:                     .u
+// CHECK-NEXT:                     .as_mut_ptr() as *mut u32
+// CHECK-NEXT:             }
+// CHECK-NEXT:             .offset((0 as i32) as isize)
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }) != unsafe {
+// CHECK-NEXT:         *unsafe {
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 (*unsafe { (a.0.as_mut_ptr() as *mut S).offset((5 as i32) as isize) })
+// CHECK-NEXT:                     .u
+// CHECK-NEXT:                     .as_mut_ptr() as *mut u32
+// CHECK-NEXT:             }
+// CHECK-NEXT:             .offset((0 as i32) as isize)
+// CHECK-NEXT:         }
+// CHECK-NEXT:     } || (unsafe {
+// CHECK-NEXT:         *unsafe {
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 (*unsafe { (a.0.as_mut_ptr() as *mut S).offset((4 as i32) as isize) })
+// CHECK-NEXT:                     .u
+// CHECK-NEXT:                     .as_mut_ptr() as *mut u32
+// CHECK-NEXT:             }
+// CHECK-NEXT:             .offset((1 as i32) as isize)
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }) != unsafe {
+// CHECK-NEXT:         *unsafe {
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 (*unsafe { (a.0.as_mut_ptr() as *mut S).offset((5 as i32) as isize) })
+// CHECK-NEXT:                     .u
+// CHECK-NEXT:                     .as_mut_ptr() as *mut u32
+// CHECK-NEXT:             }
+// CHECK-NEXT:             .offset((1 as i32) as isize)
+// CHECK-NEXT:         }
+// CHECK-NEXT:     } || (unsafe {
+// CHECK-NEXT:         *unsafe {
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 (*unsafe { (a.0.as_mut_ptr() as *mut S).offset((4 as i32) as isize) })
+// CHECK-NEXT:                     .u
+// CHECK-NEXT:                     .as_mut_ptr() as *mut u32
+// CHECK-NEXT:             }
+// CHECK-NEXT:             .offset((2 as i32) as isize)
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }) != unsafe {
+// CHECK-NEXT:         *unsafe {
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 (*unsafe { (a.0.as_mut_ptr() as *mut S).offset((5 as i32) as isize) })
+// CHECK-NEXT:                     .u
+// CHECK-NEXT:                     .as_mut_ptr() as *mut u32
+// CHECK-NEXT:             }
+// CHECK-NEXT:             .offset((2 as i32) as isize)
+// CHECK-NEXT:         }
+// CHECK-NEXT:     } || (unsafe {
+// CHECK-NEXT:         *unsafe {
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 (*unsafe { (a.0.as_mut_ptr() as *mut S).offset((4 as i32) as isize) })
+// CHECK-NEXT:                     .u
+// CHECK-NEXT:                     .as_mut_ptr() as *mut u32
+// CHECK-NEXT:             }
+// CHECK-NEXT:             .offset((3 as i32) as isize)
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }) != unsafe {
+// CHECK-NEXT:         *unsafe {
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 (*unsafe { (a.0.as_mut_ptr() as *mut S).offset((5 as i32) as isize) })
+// CHECK-NEXT:                     .u
+// CHECK-NEXT:                     .as_mut_ptr() as *mut u32
+// CHECK-NEXT:             }
+// CHECK-NEXT:             .offset((3 as i32) as isize)
+// CHECK-NEXT:         }
+// CHECK-NEXT:     } {
+// CHECK-NEXT:         unsafe { __builtin_abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     0 as i32
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: unsafe extern "C-unwind" fn main(
+// CHECK-NEXT:     argc: i32,
+// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT: ) -> i32 {
+// CHECK-NEXT:     unsafe { __slate_main() }
+// CHECK-NEXT: }
+// SLATE-FILECHECK-END
