@@ -1,6 +1,7 @@
 # Comment placement
 
 <!-- toc -->
+
 - [Problem](#problem)
 - [Ownership model](#ownership-model)
 - [Taxonomy](#taxonomy)
@@ -28,15 +29,15 @@ at a later source offset (`lowerer/comments.rs::module_comments`). Lowering
 reorders items (hoisted types, exported functions before `static` ones), and an
 origin lookup can miss, so comments drift. Observed in sqlite `backup.rs`:
 
-| C source | Rust placement |
-| --- | --- |
-| File header | before `findBtree`, near the end of the file |
-| Leading comment on `struct sqlite3_backup` | before `findBtree`; struct is ~2000 lines earlier |
-| Trailing field comments | a loose pile before `findBtree` |
-| Parameter comments on `sqlite3_backup_init` | before `isFatalError` |
-| `sqlite3_backup *p; /* Value to return */` | above the `let` (trailing became leading) |
-| `#endif /* SQLITE_OMIT_VACUUM */` | above `sqlite3BackupRestart` |
-| Comment on a local hoisted to a `__slate_slot` | on the next unrelated statement |
+| C source                                       | Rust placement                                    |
+| ---------------------------------------------- | ------------------------------------------------- |
+| File header                                    | before `findBtree`, near the end of the file      |
+| Leading comment on `struct sqlite3_backup`     | before `findBtree`; struct is ~2000 lines earlier |
+| Trailing field comments                        | a loose pile before `findBtree`                   |
+| Parameter comments on `sqlite3_backup_init`    | before `isFatalError`                             |
+| `sqlite3_backup *p; /* Value to return */`     | above the `let` (trailing became leading)         |
+| `#endif /* SQLITE_OMIT_VACUUM */`              | above `sqlite3BackupRestart`                      |
+| Comment on a local hoisted to a `__slate_slot` | on the next unrelated statement                   |
 
 Text is also rendered raw: `// /*`, `// **`.
 
@@ -58,27 +59,27 @@ offset search.
 
 ### Owned
 
-| Kind | Shape | Owners | Rust |
-| --- | --- | --- | --- |
-| Leading | group directly above the node, no blank line | function, prototype, record, enum, typedef, global, field, enumerator, statement | above the node |
-| Trailing | same line, after the node's last token; includes multi-line continuations at the same column | field, enumerator, parameter, global, local, statement, `#define` | statement/local: trailing `//` on the same line; others: see [doc rules](#doc-vs-regular-comments) |
-| Inner trailing | last comment in a block before `}`, no following statement | block | at the end of the Rust block |
-| Interior | inside an expression, condition, or argument list | enclosing statement | hoisted to the statement as leading (rustfmt cannot hold them in place) |
+| Kind           | Shape                                                                                        | Owners                                                                           | Rust                                                                                               |
+| -------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| Leading        | group directly above the node, no blank line                                                 | function, prototype, record, enum, typedef, global, field, enumerator, statement | above the node                                                                                     |
+| Trailing       | same line, after the node's last token; includes multi-line continuations at the same column | field, enumerator, parameter, global, local, statement, `#define`                | statement/local: trailing `//` on the same line; others: see [doc rules](#doc-vs-regular-comments) |
+| Inner trailing | last comment in a block before `}`, no following statement                                   | block                                                                            | at the end of the Rust block                                                                       |
+| Interior       | inside an expression, condition, or argument list                                            | enclosing statement                                                              | hoisted to the statement as leading (rustfmt cannot hold them in place)                            |
 
 ### Detached
 
-| Kind | Shape | Rust |
-| --- | --- | --- |
-| File prologue | first group in the file, before any code or `#include` | `//!` at the top of the module |
-| Section, file scope | blank lines on both sides | `//` above the next emitted item from the same file, separated by a blank line; if that item is erased (prototype, typedef, include region), walk forward; fall back to the previous item; never the end of the module |
-| Section, block scope | blank lines on both sides inside a body | `Stmt::Comment` sibling, kept in order |
+| Kind                 | Shape                                                  | Rust                                                                                                                                                                                                                   |
+| -------------------- | ------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| File prologue        | first group in the file, before any code or `#include` | `//!` at the top of the module                                                                                                                                                                                         |
+| Section, file scope  | blank lines on both sides                              | `//` above the next emitted item from the same file, separated by a blank line; if that item is erased (prototype, typedef, include region), walk forward; fall back to the previous item; never the end of the module |
+| Section, block scope | blank lines on both sides inside a body                | `Stmt::Comment` sibling, kept in order                                                                                                                                                                                 |
 
 ### Dropped
 
-| Kind | Examples |
-| --- | --- |
-| Preprocessor labels | `#endif /* X */`, `#else /* X */`, `#if 0` bodies |
-| Tool annotations | `/* FALLTHROUGH */`, `/* NOTREACHED */`, `/* ARGSUSED */`, `/* NO_TEST */`, `NOLINT`, `/* OPTIMIZATION-IF-TRUE */` (fixed list) |
+| Kind                | Examples                                                                                                                        |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| Preprocessor labels | `#endif /* X */`, `#else /* X */`, `#if 0` bodies                                                                               |
+| Tool annotations    | `/* FALLTHROUGH */`, `/* NOTREACHED */`, `/* ARGSUSED */`, `/* NO_TEST */`, `NOLINT`, `/* OPTIMIZATION-IF-TRUE */` (fixed list) |
 
 Requirement tags such as `EVIDENCE-OF:` and `IMP:` are content and stay.
 
@@ -97,14 +98,14 @@ synthesized slot `let`.
 Default to `//`. A comment becomes a doc comment only when its position or
 marker makes that certain.
 
-| Source | Rust |
-| --- | --- |
-| Explicit marker: `/** */`, `/*! */`, `///`, `//!`, `/**< */`, `///<` | doc, always |
-| Leading comment on a function, record, enum, typedef, global, field, enumerator | `///` (positional promotion) |
-| Trailing comment on a field, enumerator, global, `#define`→`const` | moved above as `///` (Rust has no trailing doc form) |
-| Parameter comments | folded into the function doc as a `# Arguments` list (``* `pDestDb` - Database to write to``); Rust rejects docs on parameters |
-| File prologue | `//!` |
-| Section comments, every in-body comment, commented-out code | `//` |
+| Source                                                                          | Rust                                                                                                                           |
+| ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| Explicit marker: `/** */`, `/*! */`, `///`, `//!`, `/**< */`, `///<`            | doc, always                                                                                                                    |
+| Leading comment on a function, record, enum, typedef, global, field, enumerator | `///` (positional promotion)                                                                                                   |
+| Trailing comment on a field, enumerator, global, `#define`→`const`              | moved above as `///` (Rust has no trailing doc form)                                                                           |
+| Parameter comments                                                              | folded into the function doc as a `# Arguments` list (``* `pDestDb` - Database to write to``); Rust rejects docs on parameters |
+| File prologue                                                                   | `//!`                                                                                                                          |
+| Section comments, every in-body comment, commented-out code                     | `//`                                                                                                                           |
 
 Positional promotion is the default for `translate-project` and single-file
 `translate` (it must not churn FileCheck fixtures, which render the parser IR,
@@ -114,7 +115,7 @@ or a `//!` after an item is a hard error; the ownership model rules both out.
 
 ### Text normalization
 
-Strip `/*`, `*/`, `**` and ` * ` gutters, dedent, drop separator-only lines
+Strip `/*`, `*/`, `**` and `*` gutters, dedent, drop separator-only lines
 (`*****`), keep interior blank lines (`///` / `//`). Text is not fenced or
 escaped for Markdown. Tool annotations (`FALLTHROUGH`, `NOTREACHED`, `ARGSUSED`,
 `NOLINT*`, and similar) are dropped.

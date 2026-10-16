@@ -1,6 +1,7 @@
 # IR types, enums, and record layout
 
 <!-- toc -->
+
 - [Shown type vs C type](#shown-type-vs-c-type)
 - [Scalar formats](#scalar-formats)
   - [Integer type limits](#integer-type-limits)
@@ -13,7 +14,7 @@
   - [`#pragma pack` and `ms_struct`](#pragma-pack-and-ms_struct)
   - [Microsoft record layout](#microsoft-record-layout)
 - [Deduced and derived declarator
-  types](#deduced-and-derived-declarator-types)
+types](#deduced-and-derived-declarator-types)
 <!-- /toc -->
 
 Part of the [IR spec](../ir-spec.md). Complex, imaginary, vector, and
@@ -26,21 +27,21 @@ fixed-point types are in [type families](type-families.md); pointers in
 The shown type is concrete and target-resolved; the C type is metadata
 ([pipeline](pipeline.md#c-type-metadata)).
 
-| C | Shown | Metadata |
-| --- | --- | --- |
-| `int` | `i32` | `c=int` |
-| `long` (LP64 / LLP64) | `i64` / `i32` | `c=long` |
-| `char` / `signed char` / `unsigned char` | `i8`/`u8` per target, `i8`, `u8` | `c=char` etc. |
-| `_Bool` | `bool` | `c=_Bool` |
-| `size_t` | `u64` | `c=size_t`, `c_canon=unsigned long` |
-| `float` / `double` | `f32` / `f64` | |
-| `long double` (x86) | `f80` | |
-| `__float128` | `f128` | |
-| `_Decimal32/64/128` | `d32` / `d64` / `d128` | |
-| `_Decimal64x` | `d128` | distinct C type with decimal128 format; loses ties to `_Decimal128` in arithmetic |
-| `_BitInt(128)` | `i128b` | `c=_BitInt(128)` |
-| `const char *` | `ptr<const i8>` | `c=const char *` |
-| `enum E` / `struct S` | `@typeN` | layout in the module |
+| C                                        | Shown                            | Metadata                                                                          |
+| ---------------------------------------- | -------------------------------- | --------------------------------------------------------------------------------- |
+| `int`                                    | `i32`                            | `c=int`                                                                           |
+| `long` (LP64 / LLP64)                    | `i64` / `i32`                    | `c=long`                                                                          |
+| `char` / `signed char` / `unsigned char` | `i8`/`u8` per target, `i8`, `u8` | `c=char` etc.                                                                     |
+| `_Bool`                                  | `bool`                           | `c=_Bool`                                                                         |
+| `size_t`                                 | `u64`                            | `c=size_t`, `c_canon=unsigned long`                                               |
+| `float` / `double`                       | `f32` / `f64`                    |                                                                                   |
+| `long double` (x86)                      | `f80`                            |                                                                                   |
+| `__float128`                             | `f128`                           |                                                                                   |
+| `_Decimal32/64/128`                      | `d32` / `d64` / `d128`           |                                                                                   |
+| `_Decimal64x`                            | `d128`                           | distinct C type with decimal128 format; loses ties to `_Decimal128` in arithmetic |
+| `_BitInt(128)`                           | `i128b`                          | `c=_BitInt(128)`                                                                  |
+| `const char *`                           | `ptr<const i8>`                  | `c=const char *`                                                                  |
+| `enum E` / `struct S`                    | `@typeN`                         | layout in the module                                                              |
 
 - The whole typedef chain is kept (`uint32_t` → `__uint32_t` →
   `unsigned int`): it is the strongest idiomization signal.
@@ -201,7 +202,7 @@ The shown type is concrete and target-resolved; the C type is metadata
 - `packed`, `aligned`, and `_Alignas` apply, including local field
   alignment.
 - An aligned typedef stays structural (`typedef int A
-  __attribute__((aligned(16)))` is still `i32`). Its alignment lives on the
+__attribute__((aligned(16)))` is still `i32`). Its alignment lives on the
   sema `Typedef` C type and reaches the IR only where alignment is already
   recorded: field placement, `align_of` constants, and `[align=N]` on
   globals and locals. Unlike a declaration-site request it replaces natural
@@ -210,7 +211,7 @@ The shown type is concrete and target-resolved; the C type is metadata
   whose element size isn't a multiple of it is rejected. Access alignment
   through pointers isn't modeled (loads and stores carry none).
 - `aligned` in a type name's specifiers (`_Alignof(__attribute__((aligned(16)))
-  char)`, casts, `sizeof`, `typeof`, `_Generic`, compound literals) is
+char)`, casts, `sizeof`, `typeof`, `_Generic`, compound literals) is
   flavor-dependent. gcc makes the whole type name an anonymous aligned
   typedef (`TypeResolver::resolve_type_name`), pointer and array
   declarators included: `_Alignof(__attribute__((aligned(16))) char *)` is
@@ -229,7 +230,7 @@ The shown type is concrete and target-resolved; the C type is metadata
 ### `#pragma pack` and `ms_struct`
 
 - `#pragma pack(N)` caps field alignment: `min(max(natural_or_packed,
-  aligned_attr), N)`. It caps a field's `aligned`, not the record's, so
+aligned_attr), N)`. It caps a field's `aligned`, not the record's, so
   `pack(1)` plus a record `aligned(16)` is a 16-aligned record of packed
   fields. A pack that isn't a small power of two is diagnosed and ignored
   (the previous value stays). While any pack is active, bit-fields stop

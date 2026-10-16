@@ -1,6 +1,7 @@
 # Architecture and principles
 
 <!-- toc -->
+
 - [Pipeline](#pipeline)
 - [Checker first, lowering trusts](#checker-first-lowering-trusts)
 - [What goes in the IR](#what-goes-in-the-ir)
@@ -33,8 +34,8 @@ argv → Dialect → preprocess → parse → sema: names → check → lower �
   which marks a gap in the checker, never a user diagnostic.
 - Lowering reads what the checker recorded for a node (result type,
   operand conversions, initializer layout) and derives no C types or
-  conversions of its own. Shared *emitters* (IR builders) are fine. Shared
-  *typing* functions called from both passes are not: the helper is
+  conversions of its own. Shared _emitters_ (IR builders) are fine. Shared
+  _typing_ functions called from both passes are not: the helper is
   shared, but each pass's code that picks which helper applies drifts
   (the enum `?:` bug, slate-parser-ygrj).
 - Invariant (since slate-parser-ygrj): lowering reads facts and derives no
@@ -85,14 +86,14 @@ records work still to do, not accepted behavior.
 
 ## Oracles and inputs
 
-| Input | Source |
-| --- | --- |
-| clang | 22.1.8, native |
-| gcc | 16.2, native |
-| MSVC | `tools/cl.exe` ([msvc-oracle](msvc-oracle.md)), 19.51.36257 (VS 2026) for x86, x64 and ARM64 (`MSVC_ARCH=x86\|arm64`). Arm32 predefines come from 19.44.35228, the last toolset that targets Arm32. They are frozen, and no local compiler exists to recheck them |
-| Predefined macros | `src/predefines/*.h`, captured by hand with each oracle's `-dM -E`. Macros that vary with arch, ISA, or version are removed from the snapshots and defined by `Preprocessor::configure` |
-| Real-world C | `~/c-corpus` ([c-corpus](c-corpus.md)): per-flavor compile databases from `tools/c_corpus_setup.py` |
-| Sysroots and compiler headers | `crates/slate-sysroots` library (`cargo run -p slate-c2rust -- sysroot install <triple>` or `sysroot install compiler-headers <flavor>`), found through `SLATE_SYSROOTS`. Fix broken or missing headers (for example missing intrinsics headers) there, not here |
+| Input                         | Source                                                                                                                                                                                                                                                            |
+| ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| clang                         | 22.1.8, native                                                                                                                                                                                                                                                    |
+| gcc                           | 16.2, native                                                                                                                                                                                                                                                      |
+| MSVC                          | `tools/cl.exe` ([msvc-oracle](msvc-oracle.md)), 19.51.36257 (VS 2026) for x86, x64 and ARM64 (`MSVC_ARCH=x86\|arm64`). Arm32 predefines come from 19.44.35228, the last toolset that targets Arm32. They are frozen, and no local compiler exists to recheck them |
+| Predefined macros             | `src/predefines/*.h`, captured by hand with each oracle's `-dM -E`. Macros that vary with arch, ISA, or version are removed from the snapshots and defined by `Preprocessor::configure`                                                                           |
+| Real-world C                  | `~/c-corpus` ([c-corpus](c-corpus.md)): per-flavor compile databases from `tools/c_corpus_setup.py`                                                                                                                                                               |
+| Sysroots and compiler headers | `crates/slate-sysroots` library (`cargo run -p slate-c2rust -- sysroot install <triple>` or `sysroot install compiler-headers <flavor>`), found through `SLATE_SYSROOTS`. Fix broken or missing headers (for example missing intrinsics headers) there, not here  |
 
 Differences between versions of the same compiler are out of scope.
 

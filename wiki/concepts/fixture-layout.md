@@ -1,6 +1,7 @@
 # Fixture layout
 
 <!-- toc -->
+
 - [Path](#path)
 - [Ids in generated expectations](#ids-in-generated-expectations)
 - [Matcher](#matcher)
@@ -16,15 +17,15 @@ identically and fail on a path that doesn't fit.
 tests/fixtures/[error/ | suites/<name>/]<flavor>/[<os>/[<arch> | <triple>]]/<fixture>.c
 ```
 
-| Segment | Values |
-| --- | --- |
-| `<flavor>` | `gcc`, `clang`, `msvc`. Required. |
-| `<os>` | `linux`, `windows`, `darwin`, `android`, `freebsd`. Default `windows` for msvc, else `linux`. |
-| `<arch>` | Mapped to the OS's usual triple by `CANONICAL_TRIPLES` (`windows/i686` = `i686-pc-windows-msvc`). Default `x86_64`. |
-| `<triple>` | Full triple when the table can't express it (`linux/armv7-unknown-linux-gnueabihf/`). |
-| `error/` | Every configuration errors. Mixed fixtures stay in the main tree. |
+| Segment          | Values                                                                                                                                                                                                                                                                                                                                           |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `<flavor>`       | `gcc`, `clang`, `msvc`. Required.                                                                                                                                                                                                                                                                                                                |
+| `<os>`           | `linux`, `windows`, `darwin`, `android`, `freebsd`. Default `windows` for msvc, else `linux`.                                                                                                                                                                                                                                                    |
+| `<arch>`         | Mapped to the OS's usual triple by `CANONICAL_TRIPLES` (`windows/i686` = `i686-pc-windows-msvc`). Default `x86_64`.                                                                                                                                                                                                                              |
+| `<triple>`       | Full triple when the table can't express it (`linux/armv7-unknown-linux-gnueabihf/`).                                                                                                                                                                                                                                                            |
+| `error/`         | Every configuration errors. Mixed fixtures stay in the main tree.                                                                                                                                                                                                                                                                                |
 | `suites/<name>/` | Imported suites (`gcc-dg`, `gcc-torture`, `clang-test`), written by sweep tools with `--migrate`. gcc-torture and gcc-dg run under both `gcc/` and `clang/` (gcc-dg under `clang/` only where clang accepts it, with the test's `-std`). A test in one flavor only is either rejected by the other oracle or has a gap under `slate-parser-cxg`. |
-| `inputs/` | Headers and sysroots reached via directives (`SLATE-FILECHECK-ISYSTEM`, `-I`, `--sysroot`, `-include`). Headers included relative to a fixture sit beside it, copied per directory. |
+| `inputs/`        | Headers and sysroots reached via directives (`SLATE-FILECHECK-ISYSTEM`, `-I`, `--sysroot`, `-include`). Headers included relative to a fixture sit beside it, copied per directory.                                                                                                                                                              |
 
 - `SLATE-FILECHECK-PREFIX-ARGS <prefix> --parse-only` skips semantic analysis
   for AST grammar coverage. It requires `SLATE-FILECHECK-AST`; IR modes reject

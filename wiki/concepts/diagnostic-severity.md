@@ -1,6 +1,7 @@
 # Diagnostic severity
 
 <!-- toc -->
+
 - [Severity resolution](#severity-resolution)
 - [Warnings](#warnings)
 - [Preprocessor warnings](#preprocessor-warnings)
@@ -57,30 +58,30 @@ severity(w) =
 
 ## Warnings
 
-| Warning | Default | Pedantic | Raised when |
-| --- | --- | --- | --- |
-| `long-long` | off | yes | written `long long`, or literal rank `LongLong`, while `long_long_type` is not `Standard` |
-| `c99-compat` | on in c89 | no | signed-only decimal literal lands on the C89-only `(Long, unsigned)` candidate |
-| `implicitly-unsigned-literal` | on | no | signed-only decimal literal lands on an unsigned candidate at the widest rank, or (gcc) gcc's widest literal type |
-| `integer-literal-too-large` | on | no | literal wider than `long long`, truncated (clang rejects, gcc warns unnamed) |
-| `bit-int-extension` | off | yes | written `_BitInt` while `bit_int_type` is not `Standard` |
-| `c23-extensions` | on | yes | unnamed parameter in a definition while `unnamed_definition_parameters` is not `Standard` |
-| `pointer-sign` | on | yes | implicit pointer conversion whose integer pointees differ only in sign |
-| `incompatible-pointer-types-discards-qualifiers` | on | yes | same conversions dropping pointee `const`/`volatile`, or differing qualifiers below the first level |
-| `incompatible-pointer-types` | error; warning for msvc and gcc c89 | no | implicit pointer conversion without composite pointee, or dropping `_Atomic` |
-| `pointer-type-mismatch` | on | no | clang: `?:` pointers to incompatible types, result `void *` |
-| `int-conversion` | error; warning for msvc and gcc c89 | no | implicit integer↔pointer conversion |
-| `pointer-integer-compare` | on | no | pointer compared with a non-null-constant integer |
-| `compare-distinct-pointer-types` | on | no | pointers without composite pointee, neither `void` |
-| `conflicting-types` | on | no | redeclaration conflict only MSVC accepts ([table](ir/declarations.md#redeclaration-conflicts)) |
-| `jump-seh-finally` | on | no | `return`, `break`, `continue`, `__leave` or `goto` whose target lies outside the innermost enclosing `__finally` (clang; same in the msvc flavor) |
-| `parameter-alignment` | on | no | alignment attribute on a parameter |
-| `ignored-attributes` | on | no | attribute outside clang's subject list |
-| `unknown-attributes` | on | no | spelling the flavor doesn't register for the target (gcc `-Wattributes`, cl C5030) |
-| `macro-redefined` | on | yes | `#define` of a macro with a different definition (gcc: unnamed, always on; cl C4005), or a gcc always-warn name (below) |
-| `builtin-macro-redefined` | on | yes (not gcc `#undef`) | `#define`/`#undef` of a builtin (below; cl C4117, define ignored) |
-| `deprecated` | on | yes | gcc `#assert`, `#unassert`, and each `#pred(answer)` test in `#if` |
-| `traditional` | off | no | gcc only, `pp/traditional.rs`: a directive whose `#` is indented when K&R has it unindented (`#define #undef #include #if #ifdef #ifndef #else #endif #line`) or unindented when it is not (`#assert #error #pragma #warning #ident #import ...`); every `#elif`; a function-like macro name without `(`; a `U` suffix on an integer literal; a unary `+` in an evaluated part of `#if`; `\x`, `\a`, `\u`, `\U` in a string or character literal |
+| Warning                                          | Default                             | Pedantic               | Raised when                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| ------------------------------------------------ | ----------------------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `long-long`                                      | off                                 | yes                    | written `long long`, or literal rank `LongLong`, while `long_long_type` is not `Standard`                                                                                                                                                                                                                                                                                                                                                        |
+| `c99-compat`                                     | on in c89                           | no                     | signed-only decimal literal lands on the C89-only `(Long, unsigned)` candidate                                                                                                                                                                                                                                                                                                                                                                   |
+| `implicitly-unsigned-literal`                    | on                                  | no                     | signed-only decimal literal lands on an unsigned candidate at the widest rank, or (gcc) gcc's widest literal type                                                                                                                                                                                                                                                                                                                                |
+| `integer-literal-too-large`                      | on                                  | no                     | literal wider than `long long`, truncated (clang rejects, gcc warns unnamed)                                                                                                                                                                                                                                                                                                                                                                     |
+| `bit-int-extension`                              | off                                 | yes                    | written `_BitInt` while `bit_int_type` is not `Standard`                                                                                                                                                                                                                                                                                                                                                                                         |
+| `c23-extensions`                                 | on                                  | yes                    | unnamed parameter in a definition while `unnamed_definition_parameters` is not `Standard`                                                                                                                                                                                                                                                                                                                                                        |
+| `pointer-sign`                                   | on                                  | yes                    | implicit pointer conversion whose integer pointees differ only in sign                                                                                                                                                                                                                                                                                                                                                                           |
+| `incompatible-pointer-types-discards-qualifiers` | on                                  | yes                    | same conversions dropping pointee `const`/`volatile`, or differing qualifiers below the first level                                                                                                                                                                                                                                                                                                                                              |
+| `incompatible-pointer-types`                     | error; warning for msvc and gcc c89 | no                     | implicit pointer conversion without composite pointee, or dropping `_Atomic`                                                                                                                                                                                                                                                                                                                                                                     |
+| `pointer-type-mismatch`                          | on                                  | no                     | clang: `?:` pointers to incompatible types, result `void *`                                                                                                                                                                                                                                                                                                                                                                                      |
+| `int-conversion`                                 | error; warning for msvc and gcc c89 | no                     | implicit integer↔pointer conversion                                                                                                                                                                                                                                                                                                                                                                                                              |
+| `pointer-integer-compare`                        | on                                  | no                     | pointer compared with a non-null-constant integer                                                                                                                                                                                                                                                                                                                                                                                                |
+| `compare-distinct-pointer-types`                 | on                                  | no                     | pointers without composite pointee, neither `void`                                                                                                                                                                                                                                                                                                                                                                                               |
+| `conflicting-types`                              | on                                  | no                     | redeclaration conflict only MSVC accepts ([table](ir/declarations.md#redeclaration-conflicts))                                                                                                                                                                                                                                                                                                                                                   |
+| `jump-seh-finally`                               | on                                  | no                     | `return`, `break`, `continue`, `__leave` or `goto` whose target lies outside the innermost enclosing `__finally` (clang; same in the msvc flavor)                                                                                                                                                                                                                                                                                                |
+| `parameter-alignment`                            | on                                  | no                     | alignment attribute on a parameter                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `ignored-attributes`                             | on                                  | no                     | attribute outside clang's subject list                                                                                                                                                                                                                                                                                                                                                                                                           |
+| `unknown-attributes`                             | on                                  | no                     | spelling the flavor doesn't register for the target (gcc `-Wattributes`, cl C5030)                                                                                                                                                                                                                                                                                                                                                               |
+| `macro-redefined`                                | on                                  | yes                    | `#define` of a macro with a different definition (gcc: unnamed, always on; cl C4005), or a gcc always-warn name (below)                                                                                                                                                                                                                                                                                                                          |
+| `builtin-macro-redefined`                        | on                                  | yes (not gcc `#undef`) | `#define`/`#undef` of a builtin (below; cl C4117, define ignored)                                                                                                                                                                                                                                                                                                                                                                                |
+| `deprecated`                                     | on                                  | yes                    | gcc `#assert`, `#unassert`, and each `#pred(answer)` test in `#if`                                                                                                                                                                                                                                                                                                                                                                               |
+| `traditional`                                    | off                                 | no                     | gcc only, `pp/traditional.rs`: a directive whose `#` is indented when K&R has it unindented (`#define #undef #include #if #ifdef #ifndef #else #endif #line`) or unindented when it is not (`#assert #error #pragma #warning #ident #import ...`); every `#elif`; a function-like macro name without `(`; a `U` suffix on an integer literal; a unary `+` in an evaluated part of `#if`; `\x`, `\a`, `\u`, `\U` in a string or character literal |
 
 - `c99-compat` is not pedantic: clang keeps it a warning under
   `-pedantic-errors`.
@@ -99,12 +100,12 @@ raised for a directive in a system header, which also keeps slate's own
 predefine files quiet. Redefinition rules (`redefinition_warning`,
 `pp/define.rs`), verified against gcc 16.2.1, clang 22.1.8 and cl 19.51:
 
-| | gcc | clang | msvc |
-| --- | --- | --- | --- |
-| different definition (tokens, whitespace presence, parameter names, shape) | `'X' redefined` | `'X' macro redefined` | C4005; renaming parameters is not a difference |
-| `__TIME__ __DATE__ __FILE__ __FILE_NAME__ __BASE_FILE__ __TIMESTAMP__` | builtin, even when identical | builtin | C4117 for its reserved builtins, `#define`/`#undef` ignored |
-| other builtins (`__LINE__`, `__COUNTER__`, `__INCLUDE_LEVEL__`, `__has_*`) | `macro-redefined`, even when identical, `#undef` included | builtin | — |
-| `__STDC_*` (gcc: any defined one but `__STDC_FORMAT/LIMIT/CONSTANT_MACROS`) | `macro-redefined`, even when identical, `#undef` included | builtin when predefined | — |
+|                                                                             | gcc                                                       | clang                   | msvc                                                        |
+| --------------------------------------------------------------------------- | --------------------------------------------------------- | ----------------------- | ----------------------------------------------------------- |
+| different definition (tokens, whitespace presence, parameter names, shape)  | `'X' redefined`                                           | `'X' macro redefined`   | C4005; renaming parameters is not a difference              |
+| `__TIME__ __DATE__ __FILE__ __FILE_NAME__ __BASE_FILE__ __TIMESTAMP__`      | builtin, even when identical                              | builtin                 | C4117 for its reserved builtins, `#define`/`#undef` ignored |
+| other builtins (`__LINE__`, `__COUNTER__`, `__INCLUDE_LEVEL__`, `__has_*`)  | `macro-redefined`, even when identical, `#undef` included | builtin                 | —                                                           |
+| `__STDC_*` (gcc: any defined one but `__STDC_FORMAT/LIMIT/CONSTANT_MACROS`) | `macro-redefined`, even when identical, `#undef` included | builtin when predefined | —                                                           |
 
 - gcc's `#undef` warnings are plain warnings: `-pedantic-errors` leaves
   them warnings (`DiagnosticContext::severity_as` with `pedantic = false`).
@@ -123,10 +124,10 @@ predefine files quiet. Redefinition rules (`redefinition_warning`,
 
 ## Conversion warnings
 
-| | clang 22.1.8 | gcc 16.2.1 | MSVC 19.51 |
-| --- | --- | --- | --- |
-| `int-conversion` | error, every `-std` | error; warning in c89/gnu89 | warning C4047 |
-| `incompatible-pointer-types` | error, every `-std` | same c89/gnu89 demotion | warning C4133 |
+|                              | clang 22.1.8        | gcc 16.2.1                  | MSVC 19.51    |
+| ---------------------------- | ------------------- | --------------------------- | ------------- |
+| `int-conversion`             | error, every `-std` | error; warning in c89/gnu89 | warning C4047 |
+| `incompatible-pointer-types` | error, every `-std` | same c89/gnu89 demotion     | warning C4133 |
 
 - gcc's demotion uses `stdc_version().is_none()`, like `c99-compat`.
 - Dropping `_Atomic` from a pointee errors under clang and gcc (MSVC has no
@@ -150,10 +151,10 @@ predefine files quiet. Redefinition rules (`redefinition_warning`,
 
 ## Parameter alignment
 
-| Written on a parameter | clang | gcc | MSVC |
-| --- | --- | --- | --- |
-| `_Alignas(N) int p` | error | error | accepted; `__alignof(p)` = N raised to natural |
-| `int p __attribute__((aligned(N)))` | accepted; `_Alignof(p)` = N | error | not parsed |
+| Written on a parameter              | clang                       | gcc   | MSVC                                           |
+| ----------------------------------- | --------------------------- | ----- | ---------------------------------------------- |
+| `_Alignas(N) int p`                 | error                       | error | accepted; `__alignof(p)` = N raised to natural |
+| `int p __attribute__((aligned(N)))` | accepted; `_Alignof(p)` = N | error | not parsed                                     |
 
 No rejecting majority, and every compiler that parses a spelling applies
 it. The request goes on the parameter entity; `_Alignof` reads it via

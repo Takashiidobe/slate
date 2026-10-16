@@ -1,6 +1,7 @@
 # Complex, imaginary, vector, and fixed-point
 
 <!-- toc -->
+
 - [Complex](#complex)
 - [Imaginary (C23 Annex G)](#imaginary-c23-annex-g)
 - [Vector](#vector)
@@ -33,7 +34,7 @@ Their ABI passing is in [calls and ABI](calls-abi.md).
 - `__real__`/`__imag__` accept a real operand, as gcc does: `__imag__ x` is
   zero of the promoted type.
 - `{re, im}` initializes as `aggregate<complex<T>>(index0 = re, index1 =
-  im)`; `{x}` and a bare scalar stay `real_to_complex`. Brace elision into
+im)`; `{x}` and a bare scalar stay `real_to_complex`. Brace elision into
   the pair is not modeled. `__builtin_complex(re, im)` gives the same
   aggregate.
 - Fixture: `ir_complex.c`.
@@ -53,11 +54,11 @@ text with no oracle.
 - Binary operators apply only the common real type; each operand keeps its
   domain. Results with a complex result carry `complex=true`:
 
-  | Operator | real/imag | imag/imag | any complex |
-  | --- | --- | --- | --- |
-  | `*` `/` | imaginary | real | complex |
-  | `+` `-` | complex | imaginary | complex |
-  | `==` `!=` | bool | bool | bool |
+  | Operator  | real/imag | imag/imag | any complex |
+  | --------- | --------- | --------- | ----------- |
+  | `*` `/`   | imaginary | real      | complex     |
+  | `+` `-`   | complex   | imaginary | complex     |
+  | `==` `!=` | bool      | bool      | bool        |
 
 - Relational operators, `%`, bitwise, shifts, and `~` reject imaginary;
   unary `-` is exact. `?:` gives imaginary for two imaginary operands and

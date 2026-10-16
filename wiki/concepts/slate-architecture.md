@@ -1,6 +1,7 @@
 # Slate architecture
 
 <!-- toc -->
+
 - [Pipeline](#pipeline)
 - [Ownership](#ownership)
 - [Commands](#commands)
@@ -15,15 +16,15 @@ C + target headers -> slate-parser -> ir::Module
   -> frontend::lowerer -> rust_ast::Program -> Rust source
 ```
 
-| Stage | Entry point | Responsibility |
-| --- | --- | --- |
-| Arguments and target | `crates/slate/src/target.rs` | Parser arguments, target default, layout options |
-| Preprocess, parse, sema | `crates/slate-parser` via `src/frontend.rs` | C semantics and typed IR |
-| Rust lowering | `src/frontend/lowerer.rs` and its modules | Translate typed values, places, statements and declarations |
-| Directives | `src/frontend/{preprocess,directive_translate}.rs` | Record directives and merge supported whole-item configuration branches |
-| C runtime bridges | `src/frontend/{c_shim,long_double}.rs`, `src/frontend/shims/` | ABI bridges for values Rust cannot pass directly |
-| Backend | `src/backend/{rust_ast,codegen,engine,interproc}` | Rust AST, emission, analyses and rewrites |
-| Project orchestration | `src/main.rs`, `src/compile_commands.rs` | Parse translation units, export symbols, write a Cargo crate |
+| Stage                   | Entry point                                                   | Responsibility                                                          |
+| ----------------------- | ------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| Arguments and target    | `crates/slate/src/target.rs`                                  | Parser arguments, target default, layout options                        |
+| Preprocess, parse, sema | `crates/slate-parser` via `src/frontend.rs`                   | C semantics and typed IR                                                |
+| Rust lowering           | `src/frontend/lowerer.rs` and its modules                     | Translate typed values, places, statements and declarations             |
+| Directives              | `src/frontend/{preprocess,directive_translate}.rs`            | Record directives and merge supported whole-item configuration branches |
+| C runtime bridges       | `src/frontend/{c_shim,long_double}.rs`, `src/frontend/shims/` | ABI bridges for values Rust cannot pass directly                        |
+| Backend                 | `src/backend/{rust_ast,codegen,engine,interproc}`             | Rust AST, emission, analyses and rewrites                               |
+| Project orchestration   | `src/main.rs`, `src/compile_commands.rs`                      | Parse translation units, export symbols, write a Cargo crate            |
 
 Slate source paths in the table are relative to `crates/slate` unless prefixed
 with `crates/`.
@@ -39,12 +40,12 @@ with `crates/`.
 
 ## Commands
 
-| Command | Output |
-| --- | --- |
-| `emit-slate-ir` | Printed typed parser IR |
-| `lowering-barriers` | All lowering barriers, without emitting Rust |
-| `translate` | Rust after the backend pipeline; supported directive branches may become cfg items |
-| `record-cfg` | Recorded directive activity, branches and diagnostics as JSON |
+| Command             | Output                                                                                                                                                                                                                                                                                           |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `emit-slate-ir`     | Printed typed parser IR                                                                                                                                                                                                                                                                          |
+| `lowering-barriers` | All lowering barriers, without emitting Rust                                                                                                                                                                                                                                                     |
+| `translate`         | Rust after the backend pipeline; supported directive branches may become cfg items                                                                                                                                                                                                               |
+| `record-cfg`        | Recorded directive activity, branches and diagnostics as JSON                                                                                                                                                                                                                                    |
 | `translate-project` | Cargo crate with translation units as modules and optional C shims: a binary when one unit defines `main`, otherwise a library with `--crate-type` rlib/staticlib/cdylib. Each command parses as the compiler it names unless `--flavor` overrides ([compiler-arg-rules](compiler-arg-rules.md)) |
 
 ## Projects and targets

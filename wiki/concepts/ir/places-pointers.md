@@ -1,6 +1,7 @@
 # Places, pointers, and qualified access
 
 <!-- toc -->
+
 - [Places and values](#places-and-values)
   - [Members and bit-fields](#members-and-bit-fields)
 - [Pointer arithmetic](#pointer-arithmetic)
@@ -28,20 +29,20 @@ Forming a place never reads it.
   addressable.
 - Reusing a place evaluates a side-effecting base or index once.
 
-| C | IR (types and policies elided) |
-| --- | --- |
-| `a[i]` on an array | `read(deref(ptr_offset(array_decay(a), i)))` |
-| `*p = v` | `write(deref(p), v)` |
-| `p[i]`, `*(p + i)` | `read(deref(ptr_offset(p, i)))` |
-| `p - q` | `ptr_diff<i64, element=T, ...>(p, q)` |
-| `p < q` | `lt<ptr<T>>(p, q)` |
-| `&x` | `addr_of(x)` |
-| `arr` as pointer | `array_decay<ptr<T>, length=Some(N)>(arr)` |
-| `f` as value | `function_decay<ptr<fn(..)>>(f)` |
-| `0`, `NULL`, `(void *)0` | `null<ptr<T>>` |
-| `if (p)`, `(_Bool)p` | `ne(p, null)` |
+| C                         | IR (types and policies elided)                 |
+| ------------------------- | ---------------------------------------------- |
+| `a[i]` on an array        | `read(deref(ptr_offset(array_decay(a), i)))`   |
+| `*p = v`                  | `write(deref(p), v)`                           |
+| `p[i]`, `*(p + i)`        | `read(deref(ptr_offset(p, i)))`                |
+| `p - q`                   | `ptr_diff<i64, element=T, ...>(p, q)`          |
+| `p < q`                   | `lt<ptr<T>>(p, q)`                             |
+| `&x`                      | `addr_of(x)`                                   |
+| `arr` as pointer          | `array_decay<ptr<T>, length=Some(N)>(arr)`     |
+| `f` as value              | `function_decay<ptr<fn(..)>>(f)`               |
+| `0`, `NULL`, `(void *)0`  | `null<ptr<T>>`                                 |
+| `if (p)`, `(_Bool)p`      | `ne(p, null)`                                  |
 | `(uintptr_t)p` / `(T *)n` | `ptr_to_int<u64>(p)` / `int_to_ptr<ptr<T>>(n)` |
-| `T *` → `U *` | `pointer_cast<ptr<U>>(p)` |
+| `T *` → `U *`             | `pointer_cast<ptr<U>>(p)`                      |
 
 ### Members and bit-fields
 
@@ -52,7 +53,7 @@ Forming a place never reads it.
 - Anonymous members keep their own field index; a promoted member name
   expands during lowering into the chain through them.
 - A bit-field place carries its slice: `bitfield1<unit=0, bytes=0..2,
-  bits=3..8>(..)` is field 1 in storage unit 0 (record bytes 0-2), bits 3-8
+bits=3..8>(..)` is field 1 in storage unit 0 (record bytes 0-2), bits 3-8
   from the unit's least significant bit. The place type is the declared
   field type (it gives the read its signedness).
 - A bit-field rvalue promotes by declared width, not storage type:
@@ -92,15 +93,15 @@ Every implicit conversion between object pointers is a `pointer_cast` plus
 at most a warning, never an error: MSVC only warns where clang and gcc
 reject. `classify_conversion` picks the first matching row:
 
-| Pointees | Warning |
-| --- | --- |
-| compatible, target drops no qualifier | none |
-| either is `void` | none |
-| compatible, target drops `_Atomic` | `incompatible-pointer-types` |
+| Pointees                                    | Warning                                          |
+| ------------------------------------------- | ------------------------------------------------ |
+| compatible, target drops no qualifier       | none                                             |
+| either is `void`                            | none                                             |
+| compatible, target drops `_Atomic`          | `incompatible-pointer-types`                     |
 | compatible, target drops `const`/`volatile` | `incompatible-pointer-types-discards-qualifiers` |
-| integers differing only in signedness | `pointer-sign` |
-| compatible apart from nested qualifiers | `incompatible-pointer-types-discards-qualifiers` |
-| anything else | `incompatible-pointer-types` |
+| integers differing only in signedness       | `pointer-sign`                                   |
+| compatible apart from nested qualifiers     | `incompatible-pointer-types-discards-qualifiers` |
+| anything else                               | `incompatible-pointer-types`                     |
 
 - Plain `char` is distinct from `signed char` and `unsigned char`;
   signedness is compared at every level (`unsigned **` → `int **` warns
@@ -133,11 +134,11 @@ reject. `classify_conversion` picks the first matching row:
 `__ptr32`, `__ptr64`, `__sptr`, `__uptr` give a pointer a non-default
 representation: `Type::Pointer.space`, printed `ptr<T, space>`.
 
-| Space | clang addrspace | Width | Widened to 64 bits |
-| --- | --- | --- | --- |
-| `ptr32_sptr` | 270 | 32 | sign-extended |
-| `ptr32_uptr` | 271 | 32 | zero-extended |
-| `ptr64` | 272 | 64 | n/a |
+| Space        | clang addrspace | Width | Widened to 64 bits |
+| ------------ | --------------- | ----- | ------------------ |
+| `ptr32_sptr` | 270             | 32    | sign-extended      |
+| `ptr32_uptr` | 271             | 32    | zero-extended      |
+| `ptr64`      | 272             | 64    | n/a                |
 
 - 64-bit targets: `__ptr32` is `ptr32_uptr` with `__uptr`, else
   `ptr32_sptr`; `__ptr64` is the plain pointer. 32-bit targets: `__ptr64`

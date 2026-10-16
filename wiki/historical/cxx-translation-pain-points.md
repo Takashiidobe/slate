@@ -3,6 +3,7 @@
 > Historical record. See the [archive index](index.md) for scope and source revision.
 
 <!-- toc -->
+
 - [Templates: CIR only ever shows the monomorphized
   side](#templates-cir-only-ever-shows-the-monomorphized-side)
 - [The AST join needs a second key for
@@ -14,7 +15,7 @@
   - [The autoref trick only works as a per-call-site macro, never inside
     a generic
     function](#the-autoref-trick-only-works-as-a-per-call-site-macro-never-inside-a-generic-function)
-  - [Disjunctive *gating* is solvable via `#[marker]`; correction to an
+  - [Disjunctive _gating_ is solvable via `#[marker]`; correction to an
     earlier claim
     here](#disjunctive-gating-is-solvable-via-marker-correction-to-an-earlier-claim-here)
   - [Disjunctive dispatch with real overlap and a priority tie-break:
@@ -29,7 +30,7 @@
 - [Static initialization order (SIOF) is a genuinely new pass
   category](#static-initialization-order-siof-is-a-genuinely-new-pass-category)
 - [Standard library surface is a scale problem, not a design
-  problem](#standard-library-surface-is-a-scale-problem-not-a-design-problem)
+problem](#standard-library-surface-is-a-scale-problem-not-a-design-problem)
 <!-- /toc -->
 
 > Exploratory scoping, not implemented. CIR's C++ support is uneven: some

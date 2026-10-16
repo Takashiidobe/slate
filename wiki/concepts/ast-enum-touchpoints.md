@@ -1,6 +1,7 @@
 # AST Enum Touchpoints
 
 <!-- toc -->
+
 - [Adding a `Decl` variant](#adding-a-decl-variant)
 - [Adding a `Stmt` variant](#adding-a-stmt-variant)
 - [Adding an `ExprKind` variant](#adding-an-exprkind-variant)
@@ -67,7 +68,7 @@ Shape notes:
   and an optional explicit test expression. Walk the declaration before
   the expression and bodies; selection scope owns the declaration.
 - `Attribute` is a standalone attribute statement; `Attributed
-  { attributes, body }` wraps a statement without adding a scope.
+{ attributes, body }` wraps a statement without adding a scope.
 - `MsAsm` holds no `Expr`; C names are `MsAsmExpr::Name` strings. Name
   resolution (`sema/names.rs`, also collects asm labels), reachability, and
   `sema/ms_asm.rs` walk `MsAsmExpr`; a new `MsAsmExpr` variant needs all

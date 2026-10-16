@@ -3,6 +3,7 @@
 > Historical record. See the [archive index](index.md) for scope and source revision.
 
 <!-- toc -->
+
 - [Design](#design)
 - [The `slate-intrinsic-gen` sibling
   crate](#the-slate-intrinsic-gen-sibling-crate)
@@ -10,7 +11,7 @@
   masks)](#legacy-vs-canonical-naming-divergence-avx512-masks)
 - [`target_feature` propagation](#target_feature-propagation)
 - [Cross-execution gap for
-  ARM/RISC-V](#cross-execution-gap-for-armrisc-v)
+ARM/RISC-V](#cross-execution-gap-for-armrisc-v)
 <!-- /toc -->
 
 CIR represents `<immintrin.h>`/`<arm_neon.h>`/`__builtin_ia32_*` calls as

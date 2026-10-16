@@ -1,6 +1,7 @@
 # Inline asm parsing
 
 <!-- toc -->
+
 - [Recognition](#recognition)
 - [GNU asm: parser](#gnu-asm-parser)
 - [GNU asm: sema](#gnu-asm-sema)
@@ -17,11 +18,11 @@ lowering of the IR is tracked under epic `slate-3f8g.4.17`.
 
 ## Recognition
 
-| Form | gcc | clang | msvc |
-| --- | --- | --- | --- |
-| `asm`/`__asm`/`__asm__`, qualifiers, `(` | GNU asm | GNU asm | accepted, but cl.exe rejects it (`slate-parser-asmmsv`) |
-| `__asm`/`_asm` not followed by `(` or a qualifier | never | MS block on x86/x86_64 with `microsoft_extensions` | MS block, i686 only (x64 is C4235) |
-| `asm {` | no | not modeled | not a keyword |
+| Form                                              | gcc     | clang                                              | msvc                                                    |
+| ------------------------------------------------- | ------- | -------------------------------------------------- | ------------------------------------------------------- |
+| `asm`/`__asm`/`__asm__`, qualifiers, `(`          | GNU asm | GNU asm                                            | accepted, but cl.exe rejects it (`slate-parser-asmmsv`) |
+| `__asm`/`_asm` not followed by `(` or a qualifier | never   | MS block on x86/x86_64 with `microsoft_extensions` | MS block, i686 only (x64 is C4235)                      |
+| `asm {`                                           | no      | not modeled                                        | not a keyword                                           |
 
 - Plain clang, not only clang-cl, accepts MS blocks: `-fms-extensions` or
   `-fasm-blocks` on any x86 target. The parser gates on
@@ -51,12 +52,12 @@ wide and unicode literals are rejected.
   `-`; `{reg}` is a hard register, digits or `[name]` a match, anything else
   a letter string resolved in sema.
 
-| Check | gcc | clang |
-| --- | --- | --- |
-| `{reg}` hard-register constraint | accepted (gcc 15) | invalid constraint |
-| input matching different outputs across alternatives | accepted; ties only when every alternative matches | rejected; any matching alternative ties |
-| `-` (PIC) modifier | file scope only | file scope only |
-| two inputs tied to one output, a tie to a `+` output or past the outputs, `=`/`+`/`&` on an input, output without `=`/`+` | rejected | rejected |
+| Check                                                                                                                     | gcc                                                | clang                                   |
+| ------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- | --------------------------------------- |
+| `{reg}` hard-register constraint                                                                                          | accepted (gcc 15)                                  | invalid constraint                      |
+| input matching different outputs across alternatives                                                                      | accepted; ties only when every alternative matches | rejected; any matching alternative ties |
+| `-` (PIC) modifier                                                                                                        | file scope only                                    | file scope only                         |
+| two inputs tied to one output, a tie to a `+` output or past the outputs, `=`/`+`/`&` on an input, output without `=`/`+` | rejected                                           | rejected                                |
 
 ## GNU asm: sema
 
@@ -64,13 +65,13 @@ wide and unicode literals are rejected.
 for the whole asm, folds ties, and computes Rust options; the rules are in
 [ir/asm](ir/asm.md#alternative-selection). Flavor splits:
 
-| Rule | gcc | clang |
-| --- | --- | --- |
-| memory-only operand naming a register variable | error | accepted |
-| bit-field or vector lane under a memory-capable constraint | spills | rejects (not followed) |
-| thread-local as a symbol operand | prints the symbol | not a link-time address |
-| const tentative definition in an immediate | folds as zero | unfolded |
-| `memory` option of volatile extended asm without memory operands | `nomem` | `Any` |
+| Rule                                                             | gcc               | clang                   |
+| ---------------------------------------------------------------- | ----------------- | ----------------------- |
+| memory-only operand naming a register variable                   | error             | accepted                |
+| bit-field or vector lane under a memory-capable constraint       | spills            | rejects (not followed)  |
+| thread-local as a symbol operand                                 | prints the symbol | not a link-time address |
+| const tentative definition in an immediate                       | folds as zero     | unfolded                |
+| `memory` option of volatile extended asm without memory operands | `nomem`           | `Any`                   |
 
 ### x86_64 clang coverage
 
@@ -79,7 +80,7 @@ Audited 2026-10-03 against clang 23.1.1 `-O0 -c`, one probe per feature.
 - Resolved: `r q Q R a b c d S D`, `x` (widened to ymm/zmm by width), `v`,
   `k`, `Yz`, `m o g rm imr`, `i n I J K L M N O e Z`, ties, `%`, hints
   `?!*#`. Modifiers `b h w k q x t g` become register views; `a c n P p V H
-  A` are kept for lowering. Clobbers decode to canonical registers plus
+A` are kept for lowering. Clobbers decode to canonical registers plus
   `cc`, `memory`, `unwind`.
 - Misresolved: every `=@cc<cond>` flag output parses as letters, and
   `@ccg`/`@ccge` select `reg` (`slate-parser-asmcc`).

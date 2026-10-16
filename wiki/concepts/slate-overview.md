@@ -1,6 +1,7 @@
 # Slate overview
 
 <!-- toc -->
+
 - [Pipeline](#pipeline)
 - [Use](#use)
 - [Coverage and failures](#coverage-and-failures)
@@ -40,12 +41,12 @@ cargo run --release -p slate-c2rust -- translate-project \
 
 ## Coverage and failures
 
-| Evidence | Meaning |
-| --- | --- |
-| Supported fixture passes differential execution | C and generated Rust agree on stdout and exit status |
-| Unsupported fixture fails | A tracked gap remains; triage identifies the first barrier |
-| Parser emits IR | C parsing and semantic lowering succeeded; Rust translation is not yet established |
-| Raw lowering profile passes | Baseline translation is covered; backend rewrites need their own exercising fixtures |
+| Evidence                                        | Meaning                                                                              |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------ |
+| Supported fixture passes differential execution | C and generated Rust agree on stdout and exit status                                 |
+| Unsupported fixture fails                       | A tracked gap remains; triage identifies the first barrier                           |
+| Parser emits IR                                 | C parsing and semantic lowering succeeded; Rust translation is not yet established   |
+| Raw lowering profile passes                     | Baseline translation is covered; backend rewrites need their own exercising fixtures |
 
 ```bash
 cargo nextest r --release --profile slate

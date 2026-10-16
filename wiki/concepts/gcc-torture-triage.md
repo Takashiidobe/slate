@@ -1,6 +1,7 @@
 # GCC torture triage
 
 <!-- toc -->
+
 - [Buckets](#buckets)
 - [Inspect one case](#inspect-one-case)
 - [Promote and validate](#promote-and-validate)
@@ -8,11 +9,11 @@
 
 ## Buckets
 
-| Directory under `crates/slate/tests` | Contract |
-| --- | --- |
-| `fixtures.gcc-torture` | Must pass C/Rust differential execution |
-| `fixtures.gcc-torture.unsupported` | Must still fail; passing cases must be promoted |
-| `fixtures.gcc-torture.ignored` | Deliberately excluded cases |
+| Directory under `crates/slate/tests` | Contract                                        |
+| ------------------------------------ | ----------------------------------------------- |
+| `fixtures.gcc-torture`               | Must pass C/Rust differential execution         |
+| `fixtures.gcc-torture.unsupported`   | Must still fail; passing cases must be promoted |
+| `fixtures.gcc-torture.ignored`       | Deliberately excluded cases                     |
 
 Corpus admission uses native `clang` on PATH. Read the corpus README for
 filtering rules; [differential fixtures](differential-fixtures.md) defines the
@@ -31,13 +32,13 @@ cargo run --release -p slate-c2rust -- emit-slate-ir <fixture.c>
 cargo run --release -p slate-c2rust -- translate <fixture.c>
 ```
 
-| Failure | Investigate |
-| --- | --- |
-| Parse/sema | slate-parser, using the fixture's compiler flags |
-| Unsupported lowering | Reported IR construct in `frontend/lowerer/` |
-| Invalid IR | Broken parser/lowerer invariant; never reclassify as a barrier |
-| rustc | Emitted Rust types, declarations or ABI |
-| Runtime mismatch | C semantics, target layout, evaluation order or runtime bridges |
+| Failure              | Investigate                                                     |
+| -------------------- | --------------------------------------------------------------- |
+| Parse/sema           | slate-parser, using the fixture's compiler flags                |
+| Unsupported lowering | Reported IR construct in `frontend/lowerer/`                    |
+| Invalid IR           | Broken parser/lowerer invariant; never reclassify as a barrier  |
+| rustc                | Emitted Rust types, declarations or ABI                         |
+| Runtime mismatch     | C semantics, target layout, evaluation order or runtime bridges |
 
 ## Promote and validate
 

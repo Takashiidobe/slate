@@ -1,6 +1,7 @@
 # IR Spec
 
 <!-- toc -->
+
 - [Rules](#rules)
 - [Subpages](#subpages)
 - [Worked example](#worked-example)
@@ -31,21 +32,21 @@ translation to Rust, not optimization.
 
 ## Subpages
 
-| Page | Covers |
-| --- | --- |
-| [pipeline](ir/pipeline.md) | placement in sema, failure kinds, node ids and metadata, dump commands, required constant folding, scopes, reachability pruning |
-| [types](ir/types.md) | shown vs C types, scalar formats, integer literals, `_BitInt`, tags, enums, record layout (pack, `ms_struct`, Microsoft), `typeof`/`auto` |
-| [type families](ir/type-families.md) | complex, imaginary, vector, fixed-point |
-| [operations](ir/operations.md) | arithmetic and comparison policies, floating settings and pragmas, conversions, `?:` |
-| [places and pointers](ir/places-pointers.md) | places, members, bit-fields, pointer arithmetic and conversions, `nullptr_t`, MS mixed-size pointers, qualified access |
-| [atomics](ir/atomics.md) | `_Atomic` layout and ABI per flavor, atomic builtins |
-| [control flow](ir/control-flow.md) | structured control flow, function ends, side-effect hoisting, unsequenced order, `_Generic`, pragmas |
-| [declarations](ir/declarations.md) | linkage, redeclaration conflicts, symbol and object attributes, alignment, inline and noreturn |
-| [initialization](ir/initialization.md) | aggregate initializers, strings, compound literals, flexible arrays, VLAs |
-| [calls and ABI](ir/calls-abi.md) | call signatures, `AbiSignature`, `native_c` divergences, vector ABI, calling conventions, targets |
-| [builtins](ir/builtins.md) | builtin registry, implicit declarations, custom lowering, `va_list`, source-location builtins |
-| [asm](ir/asm.md) | GNU and MSVC inline asm, operand selection, Rust options, naked and file-scope asm |
-| [open design](ir/open-design.md) | agreed but unimplemented shapes and open questions |
+| Page                                         | Covers                                                                                                                                    |
+| -------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| [pipeline](ir/pipeline.md)                   | placement in sema, failure kinds, node ids and metadata, dump commands, required constant folding, scopes, reachability pruning           |
+| [types](ir/types.md)                         | shown vs C types, scalar formats, integer literals, `_BitInt`, tags, enums, record layout (pack, `ms_struct`, Microsoft), `typeof`/`auto` |
+| [type families](ir/type-families.md)         | complex, imaginary, vector, fixed-point                                                                                                   |
+| [operations](ir/operations.md)               | arithmetic and comparison policies, floating settings and pragmas, conversions, `?:`                                                      |
+| [places and pointers](ir/places-pointers.md) | places, members, bit-fields, pointer arithmetic and conversions, `nullptr_t`, MS mixed-size pointers, qualified access                    |
+| [atomics](ir/atomics.md)                     | `_Atomic` layout and ABI per flavor, atomic builtins                                                                                      |
+| [control flow](ir/control-flow.md)           | structured control flow, function ends, side-effect hoisting, unsequenced order, `_Generic`, pragmas                                      |
+| [declarations](ir/declarations.md)           | linkage, redeclaration conflicts, symbol and object attributes, alignment, inline and noreturn                                            |
+| [initialization](ir/initialization.md)       | aggregate initializers, strings, compound literals, flexible arrays, VLAs                                                                 |
+| [calls and ABI](ir/calls-abi.md)             | call signatures, `AbiSignature`, `native_c` divergences, vector ABI, calling conventions, targets                                         |
+| [builtins](ir/builtins.md)                   | builtin registry, implicit declarations, custom lowering, `va_list`, source-location builtins                                             |
+| [asm](ir/asm.md)                             | GNU and MSVC inline asm, operand selection, Rust options, naked and file-scope asm                                                        |
+| [open design](ir/open-design.md)             | agreed but unimplemented shapes and open questions                                                                                        |
 
 Update the matching subpage in the same change as any IR change. When sema
 knowingly departs from clang, record it there with the reason.

@@ -1,6 +1,7 @@
 # long double (f80) representation
 
 <!-- toc -->
+
 - [Slate frontend](#slate-frontend)
 - [Why not just `f64`](#why-not-just-f64)
 - [ABI varies by target —
@@ -114,12 +115,12 @@ x87 lowers as `LongDouble` with the C runtime bridges.
 
 ## Integration points
 
-| Concern | Source under `crates/slate/src` |
-| --- | --- |
-| Prelude and bridge type tags | `frontend/long_double.rs` |
+| Concern                      | Source under `crates/slate/src`                        |
+| ---------------------------- | ------------------------------------------------------ |
+| Prelude and bridge type tags | `frontend/long_double.rs`                              |
 | Conversion and call lowering | `frontend/lowerer/f80.rs`, `frontend/lowerer/calls.rs` |
-| Name-based bridge rendering | `frontend/c_shim.rs` |
-| Runtime implementation | `frontend/shims/{long_double,fenv}.c` |
+| Name-based bridge rendering  | `frontend/c_shim.rs`                                   |
+| Runtime implementation       | `frontend/shims/{long_double,fenv}.c`                  |
 
 Current coverage comes from differential fixtures. A target format or source
 construct being parsed does not establish runtime support.

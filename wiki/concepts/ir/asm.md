@@ -1,6 +1,7 @@
 # Inline asm
 
 <!-- toc -->
+
 - [`Statement::Asm`](#statementasm)
 - [Operand kinds and directions](#operand-kinds-and-directions)
 - [Alternative selection](#alternative-selection)
@@ -150,7 +151,7 @@ whole asm: the first where every operand has a usable class.
 - An `Immediate` input becomes `In(const<ty>(n))`, since Rust's `const`
   operand can't read a C object. The fold follows clang's evaluator: it
   reads const non-volatile objects through their initializers (`static
-  const int k = 2`, `table[1]`, `s.field`, string elements, `*ptr` to a
+const int k = 2`, `table[1]`, `s.field`, string elements, `*ptr` to a
   const, `(int)2.5`). gcc also reads a const tentative definition as zero,
   modeled for gcc only. Volatile, non-const, extern, and non-constant
   initializers stay unfolded (`ir_asm_const_objects*.c`).
@@ -203,13 +204,13 @@ A statement asm carries `InlineAsm::options: Some(AsmOptions)`; file-scope
 asm and asm in naked functions have `None`. Verified against clang
 `-emit-llvm` and gcc `-fdump-rtl-expand`:
 
-| Option | Rule |
-| --- | --- |
+| Option                                                          | Rule                                                                                                                                                                                                                                |
+| --------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `memory` (`None`/`ReadOnly`/`Any` = `nomem`/`readonly`/neither) | from operands: memory inputs read, memory outputs write. A `"memory"` clobber or basic asm forces `Any`. clang also forces `Any` for side-effecting asm (volatile, `goto`, no outputs); gcc keeps `nomem` for volatile extended asm |
-| `pure` | not volatile, not `goto`, has an output, and `memory` is not `Any` |
-| `nostack` | always for GNU asm (neither compiler guarantees stack alignment or red zone); off for MSVC `__asm` |
-| `preserves_flags` | never on x86; elsewhere unless `"cc"` is written (gcc aarch64 and 32-bit ARM add a CC clobber only for `"cc"`) |
-| `may_unwind` | an `"unwind"` clobber |
+| `pure`                                                          | not volatile, not `goto`, has an output, and `memory` is not `Any`                                                                                                                                                                  |
+| `nostack`                                                       | always for GNU asm (neither compiler guarantees stack alignment or red zone); off for MSVC `__asm`                                                                                                                                  |
+| `preserves_flags`                                               | never on x86; elsewhere unless `"cc"` is written (gcc aarch64 and 32-bit ARM add a CC clobber only for `"cc"`)                                                                                                                      |
+| `may_unwind`                                                    | an `"unwind"` clobber                                                                                                                                                                                                               |
 
 Fixtures: `ir_asm_options.c`, `ir_asm_options_gcc.c`, and the aarch64 and
 armv7 variants.
@@ -238,10 +239,10 @@ or `None` in a naked function. `template` is rebuilt from the AST.
   input can land in a register the block writes.
 - Each C object is one `Memory { place, access }` operand however often it
   appears; the asm receives its address, and `AsmAccess::{Read, Write,
-  ReadWrite}` joins every reference (`src/sema/ms_asm_effects.rs`).
+ReadWrite}` joins every reference (`src/sema/ms_asm_effects.rs`).
   Functions are `Symbol` operands; `offset x` is `In(AddressOf(x))`.
 - Each reference is `AsmPiece::Address { operand, displacement, base,
-  index, size }`: `arr[4]`, `s.f`, `x + 4` are byte displacements. `size` is
+index, size }`: `arr[4]`, `s.f`, `x + 4` are byte displacements. `size` is
   the explicit `PTR`, or, where MASM infers it from the C type (no register
   operand, or `movzx`/`movsx`, shifts, rotates, `shld`/`shrd`), the
   innermost element size, matching the `dword ptr` clang inserts.

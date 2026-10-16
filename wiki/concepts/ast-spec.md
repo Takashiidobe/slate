@@ -1,6 +1,7 @@
 # AST Spec
 
 <!-- toc -->
+
 - [Pipeline and responsibilities](#pipeline-and-responsibilities)
 - [Parser input and name
   environment](#parser-input-and-name-environment)
@@ -48,11 +49,11 @@ before Sema. Update this page with any `src/ast.rs` or parser change.
 pp ──▶ parser ──▶ AST ──▶ src/sema/ (validation + resolution + lowering) ──▶ typed IR
 ```
 
-| Stage | Owns | Does not |
-| --- | --- | --- |
-| Parser | syntax, source form, spans, provenance, typedef-name tracking | evaluate, resolve names, compute types |
-| `src/sema/validate.rs` | early checks needing no names or types | guarantee semantic validity |
-| `src/sema/` | names, types, conversions, constants, layout, semantic diagnostics, typed IR | produce a semantic AST |
+| Stage                  | Owns                                                                         | Does not                               |
+| ---------------------- | ---------------------------------------------------------------------------- | -------------------------------------- |
+| Parser                 | syntax, source form, spans, provenance, typedef-name tracking                | evaluate, resolve names, compute types |
+| `src/sema/validate.rs` | early checks needing no names or types                                       | guarantee semantic validity            |
+| `src/sema/`            | names, types, conversions, constants, layout, semantic diagnostics, typed IR | produce a semantic AST                 |
 
 ## Parser input and name environment
 
@@ -179,13 +180,13 @@ InitDeclarator {
 }
 ```
 
-| Source | AST |
-| --- | --- |
-| `int a, *b = &a;` | 1 `Declaration`, 2 `InitDeclarator`s |
-| `typedef struct { int a; } T, *PT;` | storage `Typedef`, tag definition in the specifier, declarators `T`, `*PT` |
-| `static struct S { int x; } s = { 1 };` | storage `Static`, tag definition, `s` with initializer |
-| `struct S;` / `struct S { int x; };` | no declarators |
-| `int x, f(void);` | declarators `x`, `f(void)` |
+| Source                                  | AST                                                                        |
+| --------------------------------------- | -------------------------------------------------------------------------- |
+| `int a, *b = &a;`                       | 1 `Declaration`, 2 `InitDeclarator`s                                       |
+| `typedef struct { int a; } T, *PT;`     | storage `Typedef`, tag definition in the specifier, declarators `T`, `*PT` |
+| `static struct S { int x; } s = { 1 };` | storage `Static`, tag definition, `s` with initializer                     |
+| `struct S;` / `struct S { int x; };`    | no declarators                                                             |
+| `int x, f(void);`                       | declarators `x`, `f(void)`                                                 |
 
 Used at file scope, in blocks, in `for` initializers, and (as
 `FieldDeclaration`) in records.
@@ -210,24 +211,24 @@ The parser accepts conflicting specifiers where unambiguous; sema rejects.
 
 The base type; never pointers, arrays, or functions (those are declarators).
 
-| Variant | Source |
-| --- | --- |
-| `Void`, `Bool` | `void`, `_Bool`/`bool` |
-| `Char { signed: Option<bool> }` | `char` / `signed char` / `unsigned char`; MS `__int8` |
-| `Int { rank: Short \| Int \| Long \| LongLong \| Int128, signed }` | incl. `__int128_t`/`__uint128_t`; MS `__int16`/`__int32`/`__int64` |
-| `BitInt { width: Expr, signed }` | `_BitInt(N)`, width unevaluated |
-| `Float(FloatKind)` | `float`, `double`, `long double`, `_Float16`, `__fp16`, `_Float128`, … |
-| `Float(Decimal32 \| Decimal64 \| Decimal64x \| Decimal128)` | `_Decimal32/64/64x/128`; literals `DF`/`DD`/`DL`, `D64x`; `d`/`D` spellings of `D32`, `D64`, `D128` also work |
-| `Complex(FloatKind)`, `Imaginary(FloatKind)` | |
-| `FixedPoint { kind, rank, signed, saturated }` | `_Fract`/`_Accum`, any order, signed unless `unsigned` |
-| `Atomic(TypeName)` | `_Atomic(T)` |
-| `TypeOf { unqual: bool, operand: TypeOfOperand }` | `typeof(expr)` / `typeof(type-name)` |
-| `TypedefName(Span<String>)` | known typedef name; `NodeId` keys the reference |
-| `Tag(TagSpecifier)` | `struct`/`union`/`enum` |
-| `TargetBuiltin(String)` | `__builtin_va_list` |
-| `Inferred` | `__auto_type`, C23 `auto` |
-| `Vector { element, size }` | GNU vectors |
-| `Mode { base, mode }` | `__attribute__((mode(M)))`, name as spelled |
+| Variant                                                            | Source                                                                                                        |
+| ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------- |
+| `Void`, `Bool`                                                     | `void`, `_Bool`/`bool`                                                                                        |
+| `Char { signed: Option<bool> }`                                    | `char` / `signed char` / `unsigned char`; MS `__int8`                                                         |
+| `Int { rank: Short \| Int \| Long \| LongLong \| Int128, signed }` | incl. `__int128_t`/`__uint128_t`; MS `__int16`/`__int32`/`__int64`                                            |
+| `BitInt { width: Expr, signed }`                                   | `_BitInt(N)`, width unevaluated                                                                               |
+| `Float(FloatKind)`                                                 | `float`, `double`, `long double`, `_Float16`, `__fp16`, `_Float128`, …                                        |
+| `Float(Decimal32 \| Decimal64 \| Decimal64x \| Decimal128)`        | `_Decimal32/64/64x/128`; literals `DF`/`DD`/`DL`, `D64x`; `d`/`D` spellings of `D32`, `D64`, `D128` also work |
+| `Complex(FloatKind)`, `Imaginary(FloatKind)`                       |                                                                                                               |
+| `FixedPoint { kind, rank, signed, saturated }`                     | `_Fract`/`_Accum`, any order, signed unless `unsigned`                                                        |
+| `Atomic(TypeName)`                                                 | `_Atomic(T)`                                                                                                  |
+| `TypeOf { unqual: bool, operand: TypeOfOperand }`                  | `typeof(expr)` / `typeof(type-name)`                                                                          |
+| `TypedefName(Span<String>)`                                        | known typedef name; `NodeId` keys the reference                                                               |
+| `Tag(TagSpecifier)`                                                | `struct`/`union`/`enum`                                                                                       |
+| `TargetBuiltin(String)`                                            | `__builtin_va_list`                                                                                           |
+| `Inferred`                                                         | `__auto_type`, C23 `auto`                                                                                     |
+| `Vector { element, size }`                                         | GNU vectors                                                                                                   |
+| `Mode { base, mode }`                                              | `__attribute__((mode(M)))`, name as spelled                                                                   |
 
 Decimal floating types are accepted in every mode and target
 (`StandardFeatures::decimal_floating_point`: `Standard` from C23, else
@@ -325,10 +326,10 @@ ParameterDeclaration { specifiers, declarator: Declarator, attributes, comments:
 
 `Attributed` holds attributes written inside a declarator:
 
-| Source | AST |
-| --- | --- |
-| `(__attribute__((x)) *p)`, `(__cdecl *p)` | `Grouped(Attributed { inner: Pointer {..} })` |
-| `a [[x]]` (after the identifier) | `Attributed { inner: Name("a") }` |
+| Source                                         | AST                                                  |
+| ---------------------------------------------- | ---------------------------------------------------- |
+| `(__attribute__((x)) *p)`, `(__cdecl *p)`      | `Grouped(Attributed { inner: Pointer {..} })`        |
+| `a [[x]]` (after the identifier)               | `Attributed { inner: Name("a") }`                    |
 | `f(void) [[x]]`, `v[2] [[x]]` (after a suffix) | `Attributed { inner: Function {..} }` / `Array {..}` |
 
 Only `[[...]]` is read after the identifier or a suffix; GNU attributes
@@ -545,35 +546,35 @@ Taxonomy and rationale: [comment-placement](comment-placement.md).
 
 `Expr = Box<Span<ExprKind>>`.
 
-| Variant | Source |
-| --- | --- |
-| `Identifier(String)` | unresolved name |
-| `IntegerLiteral`, `FloatLiteral`, `CharLiteral` | [Literals](#literals) |
-| `StringLiteral(StringLiteral)` | adjacent literals concatenated |
-| `Paren(Expr)` | kept for source form |
-| `Unary { op: Plus \| Minus \| BitNot \| Not \| AddrOf \| Deref \| PreInc \| PreDec, operand }` | |
-| `Postfix { op: PostInc \| PostDec, operand }` | |
-| `Binary { op, left, right }` | arithmetic, shifts, comparisons, bitwise, `&&`, `\|\|` |
-| `Assign { op, target, value }` | `=` and compound |
-| `Conditional { condition, then_value: Option<Expr>, else_value }` | `None`: GNU `a ?: b` |
-| `Comma { left, right }` | |
-| `Call { callee, arguments }` | |
-| `Member { base, field: Span<String>, arrow: bool }` | `.` / `->` |
-| `Index { base, index }` | as written |
-| `Cast { ty: TypeName, value }` | |
-| `CompoundLiteral { ty: TypeName, initializer: Vec<InitializerItem> }` | C23 storage specifiers remain in `ty.specifiers` |
-| `SizeOfExpr`, `SizeOfType`, `AlignOf`, `AlignOfExpr` | |
-| `CountOfExpr`, `CountOfType { ty: TypeName }` | C2y `_Countof`; parsed like `sizeof` |
-| `MaxOf { ty: TypeName }`, `MinOf { ty: TypeName }` | `_Maxof(type-name)` / `_Minof(type-name)`; retain the operand, without range evaluation |
-| `OffsetOf { ty: TypeName, member: MemberDesignator }` | `offsetof`, `__builtin_offsetof` |
-| `Generic { controlling: GenericControl, associations }` | |
-| `VaArg { list, ty: TypeName }` | |
-| `TypesCompatible(TypeName, TypeName)` | GNU |
-| `BitCast { ty: TypeName, value }` | |
-| `ConvertVector { ty: TypeName, value }` | `__builtin_convertvector` |
-| `LabelAddress(Span<String>)` | GNU `&&label` |
-| `StatementExpression(CompoundStatement)` | GNU `({ ... })` |
-| `StaticAssert(Box<StaticAssert>)` | C2y `static_assert` expression; `void` |
+| Variant                                                                                        | Source                                                                                  |
+| ---------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `Identifier(String)`                                                                           | unresolved name                                                                         |
+| `IntegerLiteral`, `FloatLiteral`, `CharLiteral`                                                | [Literals](#literals)                                                                   |
+| `StringLiteral(StringLiteral)`                                                                 | adjacent literals concatenated                                                          |
+| `Paren(Expr)`                                                                                  | kept for source form                                                                    |
+| `Unary { op: Plus \| Minus \| BitNot \| Not \| AddrOf \| Deref \| PreInc \| PreDec, operand }` |                                                                                         |
+| `Postfix { op: PostInc \| PostDec, operand }`                                                  |                                                                                         |
+| `Binary { op, left, right }`                                                                   | arithmetic, shifts, comparisons, bitwise, `&&`, `\|\|`                                  |
+| `Assign { op, target, value }`                                                                 | `=` and compound                                                                        |
+| `Conditional { condition, then_value: Option<Expr>, else_value }`                              | `None`: GNU `a ?: b`                                                                    |
+| `Comma { left, right }`                                                                        |                                                                                         |
+| `Call { callee, arguments }`                                                                   |                                                                                         |
+| `Member { base, field: Span<String>, arrow: bool }`                                            | `.` / `->`                                                                              |
+| `Index { base, index }`                                                                        | as written                                                                              |
+| `Cast { ty: TypeName, value }`                                                                 |                                                                                         |
+| `CompoundLiteral { ty: TypeName, initializer: Vec<InitializerItem> }`                          | C23 storage specifiers remain in `ty.specifiers`                                        |
+| `SizeOfExpr`, `SizeOfType`, `AlignOf`, `AlignOfExpr`                                           |                                                                                         |
+| `CountOfExpr`, `CountOfType { ty: TypeName }`                                                  | C2y `_Countof`; parsed like `sizeof`                                                    |
+| `MaxOf { ty: TypeName }`, `MinOf { ty: TypeName }`                                             | `_Maxof(type-name)` / `_Minof(type-name)`; retain the operand, without range evaluation |
+| `OffsetOf { ty: TypeName, member: MemberDesignator }`                                          | `offsetof`, `__builtin_offsetof`                                                        |
+| `Generic { controlling: GenericControl, associations }`                                        |                                                                                         |
+| `VaArg { list, ty: TypeName }`                                                                 |                                                                                         |
+| `TypesCompatible(TypeName, TypeName)`                                                          | GNU                                                                                     |
+| `BitCast { ty: TypeName, value }`                                                              |                                                                                         |
+| `ConvertVector { ty: TypeName, value }`                                                        | `__builtin_convertvector`                                                               |
+| `LabelAddress(Span<String>)`                                                                   | GNU `&&label`                                                                           |
+| `StatementExpression(CompoundStatement)`                                                       | GNU `({ ... })`                                                                         |
+| `StaticAssert(Box<StaticAssert>)`                                                              | C2y `static_assert` expression; `void`                                                  |
 
 ```
 GenericControl = Expr(Expr) | Type(TypeName)
@@ -700,25 +701,25 @@ Accepted in every mode as extensions (input is assumed to compile with the
 real compiler). clang 22.1 and gcc 16.2 over `c89 gnu89 c99 c11 c17 gnu17
 c23`, plain and `-pedantic`; `warn` = only under `-pedantic`.
 
-| Construct | Since | clang before | gcc before | slate |
-| --- | --- | --- | --- | --- |
-| VLAs, `[*]` parameters | C99 | warn | warn | extension |
-| compound literals | C99 | warn | warn | extension |
-| storage-class specifiers in compound literals | C23 | err | extension | C23+ in every flavor (`compound_literal_storage`) |
-| designated initializers | C99 | warn | warn | extension |
-| declarations after statements | C99 | warn | warn | extension |
-| flexible array members | C99 | warn | warn | extension |
-| variadic macros | C99 | warn | warn | extension |
-| `//` comments | C99 | `c89` warn, `gnu89` ok | `c89` err, `gnu89` warn | extension |
-| `for (int i…)` | C99 | warn | `c89`/`gnu89` err | gated by `control_statement_scopes` |
-| `_Static_assert`, `_Generic`, `_Alignof`, `_Atomic`, `_Noreturn` | C11 | warn | warn | extension |
-| `_BitInt` | C23 | warn | warn | extension ([`_BitInt`](ir/types.md#_bitint)) |
-| `[[…]]` attributes | C23 | warn | warn | extension |
-| `0b` literals | C23 | warn | warn | extension |
-| `0o`/`0O` literals (radix `Octal`, also in `#if`) | C2y | warn | warn | extension; msvc rejects (`octal_prefix`) |
-| `_Countof` | C2y | warn | warn | extension; msvc identifier (`keyword_countof`) |
-| `_Maxof` / `_Minof` | C2y proposal | err | extension | C2y/GNU2y in every flavor (`keyword_type_limits`); identifiers earlier |
-| digit separators (`1'000`) | C23 | char constant | char constant | gated by `digit_separators` |
+| Construct                                                        | Since        | clang before           | gcc before              | slate                                                                  |
+| ---------------------------------------------------------------- | ------------ | ---------------------- | ----------------------- | ---------------------------------------------------------------------- |
+| VLAs, `[*]` parameters                                           | C99          | warn                   | warn                    | extension                                                              |
+| compound literals                                                | C99          | warn                   | warn                    | extension                                                              |
+| storage-class specifiers in compound literals                    | C23          | err                    | extension               | C23+ in every flavor (`compound_literal_storage`)                      |
+| designated initializers                                          | C99          | warn                   | warn                    | extension                                                              |
+| declarations after statements                                    | C99          | warn                   | warn                    | extension                                                              |
+| flexible array members                                           | C99          | warn                   | warn                    | extension                                                              |
+| variadic macros                                                  | C99          | warn                   | warn                    | extension                                                              |
+| `//` comments                                                    | C99          | `c89` warn, `gnu89` ok | `c89` err, `gnu89` warn | extension                                                              |
+| `for (int i…)`                                                   | C99          | warn                   | `c89`/`gnu89` err       | gated by `control_statement_scopes`                                    |
+| `_Static_assert`, `_Generic`, `_Alignof`, `_Atomic`, `_Noreturn` | C11          | warn                   | warn                    | extension                                                              |
+| `_BitInt`                                                        | C23          | warn                   | warn                    | extension ([`_BitInt`](ir/types.md#_bitint))                           |
+| `[[…]]` attributes                                               | C23          | warn                   | warn                    | extension                                                              |
+| `0b` literals                                                    | C23          | warn                   | warn                    | extension                                                              |
+| `0o`/`0O` literals (radix `Octal`, also in `#if`)                | C2y          | warn                   | warn                    | extension; msvc rejects (`octal_prefix`)                               |
+| `_Countof`                                                       | C2y          | warn                   | warn                    | extension; msvc identifier (`keyword_countof`)                         |
+| `_Maxof` / `_Minof`                                              | C2y proposal | err                    | extension               | C2y/GNU2y in every flavor (`keyword_type_limits`); identifiers earlier |
+| digit separators (`1'000`)                                       | C23          | char constant          | char constant           | gated by `digit_separators`                                            |
 
 Digit separators are gated because pre-C23 `'` starts a character constant
 in valid code: gcc.dg's `#define m(x) 0` / `m(1'2)+(3'4)` is 0 in C11 and
@@ -736,12 +737,12 @@ character, so the `e`/`p` sign rule doesn't apply across it: `0x0'e-0xe` is
 
 Where `src/ast.rs` differs from this spec.
 
-| Current | Target |
-| --- | --- |
-| `TagSpecifier::Reference` holds an optional boxed fixed enum type; `TagBody::Record` holds `FieldItem` | `MemberItem`, `EnumItem`; opaque C23 enum declarations keep `: type` |
-| `TypeSpecifier` uses `Integer(IntegerType)`, `Floating(FloatingType)`, `Complex(Box<TypeSpecifier>)`, `Named`, `TypeOf`/`TypeOfUnqual` | names and shapes in the `TypeSpecifier` table |
-| `TranslationUnit.tags` is `Vec<Span<TagDefinition>>` with gaps after pruning; use `TranslationUnit::tag` | indexed by `TagId` once pruning moves to the IR pipeline |
-| `Designator::Array` / `ArrayRange` | `Index` / `IndexRange` |
-| bare `aligned` reads `__BIGGEST_ALIGNMENT__` in the parser | argument-less `Aligned`, value chosen in sema |
-| `validate.rs` returns errors only; rejects tag definitions in parameter lists | returns checked AST plus diagnostics |
-| parser calls `filter_translation_unit` before resolution | IR pipeline prunes resolved dependencies from explicit roots |
+| Current                                                                                                                                | Target                                                               |
+| -------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| `TagSpecifier::Reference` holds an optional boxed fixed enum type; `TagBody::Record` holds `FieldItem`                                 | `MemberItem`, `EnumItem`; opaque C23 enum declarations keep `: type` |
+| `TypeSpecifier` uses `Integer(IntegerType)`, `Floating(FloatingType)`, `Complex(Box<TypeSpecifier>)`, `Named`, `TypeOf`/`TypeOfUnqual` | names and shapes in the `TypeSpecifier` table                        |
+| `TranslationUnit.tags` is `Vec<Span<TagDefinition>>` with gaps after pruning; use `TranslationUnit::tag`                               | indexed by `TagId` once pruning moves to the IR pipeline             |
+| `Designator::Array` / `ArrayRange`                                                                                                     | `Index` / `IndexRange`                                               |
+| bare `aligned` reads `__BIGGEST_ALIGNMENT__` in the parser                                                                             | argument-less `Aligned`, value chosen in sema                        |
+| `validate.rs` returns errors only; rejects tag definitions in parameter lists                                                          | returns checked AST plus diagnostics                                 |
+| parser calls `filter_translation_unit` before resolution                                                                               | IR pipeline prunes resolved dependencies from explicit roots         |

@@ -1,6 +1,7 @@
 # MSVC inline asm
 
 <!-- toc -->
+
 - [Oracle behavior](#oracle-behavior)
   - [Operands](#operands)
   - [Statement boundaries](#statement-boundaries)
@@ -34,21 +35,21 @@ clang 22.1.8 (`-target i686-pc-windows-msvc -emit-llvm`) and `tools/cl.exe`
 
 ### Operands
 
-| Source | Meaning |
-| --- | --- |
-| `mov eax, x` | Memory operand: asm gets `x`'s address (clang `*m` read, `=*m` write). |
-| `arr[4]` | Byte offset 4, not element 4. |
-| `s.b` | Field byte offset. |
-| `TYPE` / `LENGTH` / `SIZE arr` | Element size, count, total size (4/4/16 for `int[4]`); first array level only (`int m[2][3]` → 12/2/24). |
-| `[eax]T.f` | `T` a struct typedef: `[eax + offsetof(T, f)]`. A struct tag fails in clang. |
-| `jmp x`, C name and asm label both `x` | C name wins. |
-| `100h`, `0Ch`, `0x2c`, `10b`, `17o`, `010`, `1u` | MASM suffixes (`h`, `b`, `o`/`q`, `d`) and C spellings both accepted; printed decimal. `t`/`y`: clang only. |
-| `mov result, 1`, `fld a`, `mul b` | Size from the C type, inserted only where ambiguous. Explicit `dword ptr [Value]` on a 64-bit variable wins. |
-| `call g` | Direct call to the symbol (clang `${8:P}`), not memory. |
-| `done:` / `jz done` | Asm-local label, uniqued per asm. |
-| Falling off the end | EAX (EDX:EAX for 64-bit) is the return value; clang adds an `{eax}`/`A` output to every MS asm in a register-returning function (`=&` if written). |
-| Clobbers | Registers written explicitly or implicitly (`push`/`pop` → `~{esp}`, `popfd` → `~{dirflag}`, `mul` → EDX:EAX), flags always. clang doesn't treat `call` as clobbering caller-saved registers; MSVC saves callee-saved registers the block uses. |
-| Attributes | `sideeffect inteldialect`, `nounwind`; not `alignstack`. |
+| Source                                           | Meaning                                                                                                                                                                                                                                         |
+| ------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `mov eax, x`                                     | Memory operand: asm gets `x`'s address (clang `*m` read, `=*m` write).                                                                                                                                                                          |
+| `arr[4]`                                         | Byte offset 4, not element 4.                                                                                                                                                                                                                   |
+| `s.b`                                            | Field byte offset.                                                                                                                                                                                                                              |
+| `TYPE` / `LENGTH` / `SIZE arr`                   | Element size, count, total size (4/4/16 for `int[4]`); first array level only (`int m[2][3]` → 12/2/24).                                                                                                                                        |
+| `[eax]T.f`                                       | `T` a struct typedef: `[eax + offsetof(T, f)]`. A struct tag fails in clang.                                                                                                                                                                    |
+| `jmp x`, C name and asm label both `x`           | C name wins.                                                                                                                                                                                                                                    |
+| `100h`, `0Ch`, `0x2c`, `10b`, `17o`, `010`, `1u` | MASM suffixes (`h`, `b`, `o`/`q`, `d`) and C spellings both accepted; printed decimal. `t`/`y`: clang only.                                                                                                                                     |
+| `mov result, 1`, `fld a`, `mul b`                | Size from the C type, inserted only where ambiguous. Explicit `dword ptr [Value]` on a 64-bit variable wins.                                                                                                                                    |
+| `call g`                                         | Direct call to the symbol (clang `${8:P}`), not memory.                                                                                                                                                                                         |
+| `done:` / `jz done`                              | Asm-local label, uniqued per asm.                                                                                                                                                                                                               |
+| Falling off the end                              | EAX (EDX:EAX for 64-bit) is the return value; clang adds an `{eax}`/`A` output to every MS asm in a register-returning function (`=&` if written).                                                                                              |
+| Clobbers                                         | Registers written explicitly or implicitly (`push`/`pop` → `~{esp}`, `popfd` → `~{dirflag}`, `mul` → EDX:EAX), flags always. clang doesn't treat `call` as clobbering caller-saved registers; MSVC saves callee-saved registers the block uses. |
+| Attributes                                       | `sideeffect inteldialect`, `nounwind`; not `alignstack`.                                                                                                                                                                                        |
 
 - C/asm label jumps: MSVC accepts `jmp c_label` and `goto asm_label`;
   clang rejects both. The msvc flavor lowers the first as an asm-goto
@@ -216,7 +217,7 @@ write only costs a `mut` or clobber).
   removed), else late; each half has its own direction (clang's `A` marks
   both early).
 - `Fallthrough::Return` reads the locals, builds `u64(eax) | (u64(edx) <<
-  32)` for two registers, and converts: narrow integers truncate, `_Bool`
+32)` for two registers, and converts: narrow integers truncate, `_Bool`
   keeps the low bit, enums via underlying type, pointers via `IntToPtr`.
   Evaluated only at the end, so explicit returns and loops need no
   rewriting. Noreturn overrides with `ub`. C99 `main` zero-initializes its

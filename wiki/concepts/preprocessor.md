@@ -1,6 +1,7 @@
 # Preprocessor
 
 <!-- toc -->
+
 - [Pipeline](#pipeline)
 - [Predefines](#predefines)
 - [Includes](#includes)
@@ -16,15 +17,15 @@
 stream of `PPNode`s (`Code`, `Comment`, `Pragma`) that the parser reads as
 `ParserInput`.
 
-| File | Contents |
-| --- | --- |
-| `mod.rs` | `Preprocessor`, predefine seeding, `process`, directives, the conditional stack, pragma operators, provenance |
-| `syntax.rs` | `TokenSource`: directive and physical text lines read from the token stream |
-| `expand.rs` | `Stream`, the hide-set expander, substitution, builtin macros, `#if` operand protection |
-| `hide_set.rs` | interned hide sets with memoized union and intersection |
-| `define.rs` | `#define` / `#undef` parsing |
-| `include.rs` | include resolution, `#pragma once`, depth limit, outermost system header |
-| `embed.rs` | `#embed` and `__has_embed`, sharing one embed-parameter parser |
+| File            | Contents                                                                                                                                                             |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `mod.rs`        | `Preprocessor`, predefine seeding, `process`, directives, the conditional stack, pragma operators, provenance                                                        |
+| `syntax.rs`     | `TokenSource`: directive and physical text lines read from the token stream                                                                                          |
+| `expand.rs`     | `Stream`, the hide-set expander, substitution, builtin macros, `#if` operand protection                                                                              |
+| `hide_set.rs`   | interned hide sets with memoized union and intersection                                                                                                              |
+| `define.rs`     | `#define` / `#undef` parsing                                                                                                                                         |
+| `include.rs`    | include resolution, `#pragma once`, depth limit, outermost system header                                                                                             |
+| `embed.rs`      | `#embed` and `__has_embed`, sharing one embed-parameter parser                                                                                                       |
 | `has_checks.rs` | hand-maintained `__has_builtin` / `__has_feature` / … answers, seeded from clang tablegen and extended per flavor ([attributes](attributes.md#preprocessor-queries)) |
 
 Include directories come from `compiler_headers.rs` and `sysroot.rs`,
@@ -100,15 +101,15 @@ error in a taken one, as in gcc's strict ISO modes and cl's C7730.
 Seeded in order; each group is parsed as `#define`s under a pseudo-file.
 Later groups remove earlier definitions of the names they set.
 
-| Pseudo-file | Kind | Contents |
-| --- | --- | --- |
-| snapshot name | System | `target.profile.predefines(flavor)`, captured from the real compiler ([adding-a-target](adding-a-target.md)); missing snapshot is an error |
-| `<slate-target-defaults>` | System | slate-side target defaults |
-| `<slate-gnu-namespace-predefines>` | System | gnu modes only |
-| `<microsoft modes>` | System | clang: delta from the snapshot's default [MS modes](compiler-flags.md#ms-modes) |
-| `<standard predefines>` | System | `__STDC_VERSION__`, `__STRICT_ANSI__`, GNU inline macros, C23 `char8_t` / `bool` / `_FMTb__` macros, recomputed for the selected standard |
-| `<target options>` | User | long-double and ISA macros (not for msvc on Windows), `__ROUNDING_MATH__` (gcc, `-frounding-math`), msvc explicit `__STDC_VERSION__`, inline-semantics swap; gcc/clang option deltas from the snapshot: `__STDC_HOSTED__`, `stdc-predef.h` macros, `__GCC_HAVE_DWARF2_CFI_ASM`, char signedness, `wchar_t` macros, PIC/PIE, `__SSP*__`, `__CET__`, macros of disabled x86 features, clang `__FLT_EVAL_METHOD__` (`option_predefines`) |
-| `<command line>` | User | `-D` / `-U` in order |
+| Pseudo-file                        | Kind   | Contents                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| ---------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| snapshot name                      | System | `target.profile.predefines(flavor)`, captured from the real compiler ([adding-a-target](adding-a-target.md)); missing snapshot is an error                                                                                                                                                                                                                                                                                            |
+| `<slate-target-defaults>`          | System | slate-side target defaults                                                                                                                                                                                                                                                                                                                                                                                                            |
+| `<slate-gnu-namespace-predefines>` | System | gnu modes only                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| `<microsoft modes>`                | System | clang: delta from the snapshot's default [MS modes](compiler-flags.md#ms-modes)                                                                                                                                                                                                                                                                                                                                                       |
+| `<standard predefines>`            | System | `__STDC_VERSION__`, `__STRICT_ANSI__`, GNU inline macros, C23 `char8_t` / `bool` / `_FMTb__` macros, recomputed for the selected standard                                                                                                                                                                                                                                                                                             |
+| `<target options>`                 | User   | long-double and ISA macros (not for msvc on Windows), `__ROUNDING_MATH__` (gcc, `-frounding-math`), msvc explicit `__STDC_VERSION__`, inline-semantics swap; gcc/clang option deltas from the snapshot: `__STDC_HOSTED__`, `stdc-predef.h` macros, `__GCC_HAVE_DWARF2_CFI_ASM`, char signedness, `wchar_t` macros, PIC/PIE, `__SSP*__`, `__CET__`, macros of disabled x86 features, clang `__FLT_EVAL_METHOD__` (`option_predefines`) |
+| `<command line>`                   | User   | `-D` / `-U` in order                                                                                                                                                                                                                                                                                                                                                                                                                  |
 
 Forced files (`-imacros`, `-include`) follow, resolved as quoted includes
 from `<command line>` ([compiler-arg-rules](compiler-arg-rules.md#forced-files-and-macros)).

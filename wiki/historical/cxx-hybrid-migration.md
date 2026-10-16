@@ -3,6 +3,7 @@
 > Historical record. See the [archive index](index.md) for scope and source revision.
 
 <!-- toc -->
+
 - [The baseline may be a C++
   launcher](#the-baseline-may-be-a-c-launcher)
 - [Native Rust and C++ representations may
@@ -18,7 +19,7 @@
 - [Migration diagnostics are part of the
   product](#migration-diagnostics-are-part-of-the-product)
 - [Suggested implementation
-  sequence](#suggested-implementation-sequence)
+sequence](#suggested-implementation-sequence)
 <!-- /toc -->
 
 > Design sketch, not implemented. This extends

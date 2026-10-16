@@ -3,6 +3,7 @@
 > Historical record. See the [archive index](index.md) for scope and source revision.
 
 <!-- toc -->
+
 - [Correction to prior scoping: CIR already models this in
   detail](#correction-to-prior-scoping-cir-already-models-this-in-detail)
 - [What `-emit-cir` produces](#what--emit-cir-produces)

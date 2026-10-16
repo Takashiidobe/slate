@@ -3,6 +3,7 @@
 > Historical record. See the [archive index](index.md) for scope and source revision.
 
 <!-- toc -->
+
 - [The pipeline at a glance](#the-pipeline-at-a-glance)
 - [Why CIR, not LLVM IR](#why-cir-not-llvm-ir)
 - [The clang-ir crate (CIR

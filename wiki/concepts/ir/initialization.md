@@ -1,6 +1,7 @@
 # Objects, initialization, and VLAs
 
 <!-- toc -->
+
 - [Principles](#principles)
 - [Aggregate initializers](#aggregate-initializers)
 - [String literals](#string-literals)
@@ -51,7 +52,7 @@ zero_fill }` (`sema/initializer.rs`), printed
 - A later initializer for the same target replaces the earlier one; a
   partially overlapping range is split so members stay disjoint. Only the
   scalars an initializer reaches are overwritten: `{[2 ... 4] = .., [2] =
-  2}` keeps the rest of `[2]`, while a braced `[2] = {2}` replaces it whole.
+2}` keeps the rest of `[2]`, while a braced `[2] = {2}` replaces it whole.
 - The checker walks once and records a plan of path writes
   ([sema-passes](../sema-passes.md#checker-owned-rules)); lowering executes
   it. An element range with nested designators stays one `Range` member
@@ -61,7 +62,7 @@ zero_fill }` (`sema/initializer.rs`), printed
   (`int a[][0] = {1, 2}` is `array<array<i32, 0>, 2>`). gcc's quirks for
   zero-size element types (`int[][0][2]`) are not reproduced.
 - A braced scalar uses its first item; `{}` is `aggregate<T,
-  zero_fill=true>()` on the scalar.
+zero_fill=true>()` on the scalar.
 - `T a[] = ...` takes its length from the last initialized element;
   `T a[] = {}` is GNU `array<T, 0>`. `sizeof` in `static_assert` uses
   `TypeResolver::inferred_array_length`, the same walk without checking.

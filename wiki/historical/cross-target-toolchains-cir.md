@@ -3,6 +3,7 @@
 > Historical record. See the [archive index](index.md) for scope and source revision.
 
 <!-- toc -->
+
 - [Musl oracle sysroots](#musl-oracle-sysroots)
 - [Runtime differential matrix](#runtime-differential-matrix)
 - [Standards baseline vs. glibc oracle vs. musl
@@ -128,7 +129,7 @@ because the host's `aarch64-linux-gnu-gcc` defaults pull in a nonexistent
 (default `aarch64-linux-gnu-gcc`). x86-64 and i386 musl link through the
 sysroot's own `bin/musl-clang` wrapper instead; that wrapper only preserves a
 caller's `-l*`/`-L*` flags when the caller supplies at least one `-l` flag
-itself (it wraps the *whole* argument list in `-l-user-start`/`-l-user-end`
+itself (it wraps the _whole_ argument list in `-l-user-start`/`-l-user-end`
 markers the first time it sees `-l*` anywhere), so callers must pass an
 explicit `-Wl,--start-group -lc -lgcc -Wl,--end-group` rather than relying on
 Clang's own default library injection, or the link silently drops `libc`.
@@ -178,7 +179,7 @@ glibc-specific Rust env vars are needed.
 
 ## Standards baseline vs. glibc oracle vs. musl oracle
 
-Slate's own C headers (`libc-shim/include`) are the *standards baseline*: a
+Slate's own C headers (`libc-shim/include`) are the _standards baseline_: a
 standards-compliant (mostly musl-shaped, POSIX-first) set of declarations that
 Slate compiles user C against with `-nostdlib`, and that the generated Rust's
 `libc` crate bindings must match at the ABI level. See
@@ -186,12 +187,12 @@ Slate compiles user C against with `-nostdlib`, and that the generated Rust's
 musl can disagree on a function's exact signature (`strerror_r` is the classic
 example).
 
-The *glibc oracle* and *musl oracle* are the real system headers/libraries for
+The _glibc oracle_ and _musl oracle_ are the real system headers/libraries for
 each libc, used only to check the standards baseline for correctness -- never
 as a substitute for each other, and never as a substitute for the shim in
 translated output. The ABI matrix compiles the same probe source against an
 oracle and against the shim (`-D__SLATE_LIBC_SHIM`) and diffs the two record
-streams; the runtime matrix compiles the *fixture under test* against an
+streams; the runtime matrix compiles the _fixture under test_ against an
 oracle only (the shim is exercised indirectly, through the `libc` crate, on
 the Rust side). A target passing the ABI matrix does not by itself prove the
 runtime matrix passes, and vice versa: the ABI matrix catches layout/signature
@@ -223,11 +224,11 @@ safe; deleting all of `target/` forces every suite to rebuild everything.
 
 ## Target matrix
 
-| Target | Clang triple | Rust target | Linker | QEMU | Slate status |
-| --- | --- | --- | --- | --- | --- |
-| ARM32 GNU hard-float | `armv7-linux-gnueabihf` | `armv7-unknown-linux-gnueabihf` | `arm-none-linux-gnueabihf-gcc` or distro equivalent | `qemu-arm-static` | implemented |
-| AArch64 GNU | `aarch64-linux-gnu` | `aarch64-unknown-linux-gnu` | `aarch64-linux-gnu-gcc` | `qemu-aarch64-static` | implemented |
-| i686 GNU | `i686-linux-gnu` | `i686-unknown-linux-gnu` | Clang with `-m32` | native execution | implemented |
+| Target               | Clang triple            | Rust target                     | Linker                                              | QEMU                  | Slate status |
+| -------------------- | ----------------------- | ------------------------------- | --------------------------------------------------- | --------------------- | ------------ |
+| ARM32 GNU hard-float | `armv7-linux-gnueabihf` | `armv7-unknown-linux-gnueabihf` | `arm-none-linux-gnueabihf-gcc` or distro equivalent | `qemu-arm-static`     | implemented  |
+| AArch64 GNU          | `aarch64-linux-gnu`     | `aarch64-unknown-linux-gnu`     | `aarch64-linux-gnu-gcc`                             | `qemu-aarch64-static` | implemented  |
+| i686 GNU             | `i686-linux-gnu`        | `i686-unknown-linux-gnu`        | Clang with `-m32`                                   | native execution      | implemented  |
 
 The i686 target is 32-bit x86 (`target_arch = "x86"`), not x86-64's x32
 ABI. The Rust target and the Clang target must both select the ordinary i386

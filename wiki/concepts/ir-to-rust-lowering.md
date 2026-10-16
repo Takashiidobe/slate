@@ -1,6 +1,7 @@
 # IR-to-Rust lowering
 
 <!-- toc -->
+
 - [Types and storage](#types-and-storage)
 - [Atomics](#atomics)
 - [Control flow](#control-flow)
@@ -9,33 +10,33 @@
 
 ## Types and storage
 
-| Parser IR | Rust |
-| --- | --- |
-| Incomplete array | `[T; 0]`, retaining element alignment |
-| `vla<T, %e>` (pointee) | `[T; 0]`; only reached through raw pointers |
-| VLA local | Zero-filled `Vec<E>` of the innermost fixed element, sized by the captured extents; the place is `*(v.as_mut_ptr() as *mut [T; 0])` |
-| Flexible record member | Zero-length field at the parser-provided offset |
-| Flexible-array decay | Raw field address cast to an element pointer |
-| C function pointer | `Option<unsafe extern "C-unwind" fn(...) -> R>` |
-| Variadic C function pointer | Fixed parameters followed by `...` |
-| `storage=thread` global | `#[thread_local] static mut` (crate `#![feature(thread_local)]`); exported ones add `#[unsafe(no_mangle)]`, imports are `#[thread_local]` statics in the extern block |
+| Parser IR                                                                          | Rust                                                                                                                                                                                                                                    |
+| ---------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Incomplete array                                                                   | `[T; 0]`, retaining element alignment                                                                                                                                                                                                   |
+| `vla<T, %e>` (pointee)                                                             | `[T; 0]`; only reached through raw pointers                                                                                                                                                                                             |
+| VLA local                                                                          | Zero-filled `Vec<E>` of the innermost fixed element, sized by the captured extents; the place is `*(v.as_mut_ptr() as *mut [T; 0])`                                                                                                     |
+| Flexible record member                                                             | Zero-length field at the parser-provided offset                                                                                                                                                                                         |
+| Flexible-array decay                                                               | Raw field address cast to an element pointer                                                                                                                                                                                            |
+| C function pointer                                                                 | `Option<unsafe extern "C-unwind" fn(...) -> R>`                                                                                                                                                                                         |
+| Variadic C function pointer                                                        | Fixed parameters followed by `...`                                                                                                                                                                                                      |
+| `storage=thread` global                                                            | `#[thread_local] static mut` (crate `#![feature(thread_local)]`); exported ones add `#[unsafe(no_mangle)]`, imports are `#[thread_local]` statics in the extern block                                                                   |
 | Global, local, or dispatch slot whose `align` exceeds its type's natural alignment | `__SlateAlignN<T>` (`#[repr(C, align(N))]` newtype); the place is `.0`. Includes the x86-64 ABI 16-byte alignment of arrays of 16+ bytes, which clang's vector loads rely on (`object_alignment.c`); extern declarations stay unwrapped |
-| `[visibility=...]` global | Ignored, as for functions: an exported static gets default visibility (`global_visibility_internal.c`) |
-| Const-qualified address | `&raw const`; mutable addresses use `&raw mut` |
-| Volatile read / write | `ptr::read_volatile` / `ptr::write_volatile` on raw addresses |
-| f32 / f64 classification | Float classification methods; zero compares equal to either signed zero |
-| Scalar `__builtin_clz*` / `ctz*` / `popcount*` calls | Unsigned operand's `leading_zeros()` / `trailing_zeros()` / `count_ones()`, cast to the C result type |
-| `__builtin_expect`, `expect_with_probability`, `unpredictable` | The first operand (IR operands are side-effect free) |
-| `__builtin_prefetch` | Empty block |
-| `__builtin_unreachable` | `unsafe { std::hint::unreachable_unchecked() }` |
-| `__builtin_assume(c)`, MSVC `__assume(c)` | `unsafe { std::hint::assert_unchecked(c) }`; the parser has already replaced a side-effecting `c` with `true` |
-| `__builtin_assume_aligned(p, align[, offset])` | `p` cast to the result type; the alignment is not asserted |
-| `__builtin_abort`, `nan*`, `memcpy`, `memmove`, `memset`, `memcmp` | Extern with the library `link_name` |
-| `target("...")` function | `#[target_feature(enable = ...)] unsafe fn` (clang names mapped to rustc: `bmi`→`bmi1`, `pclmul`→`pclmulqdq`, `cx16`→`cmpxchg16b`, `rdrnd`→`rdrand`); `rtm` adds `#![feature(rtm_target_feature)]` |
-| `__builtin_cpu_supports("x")` / `__builtin_cpu_init()` | `std::arch::is_x86_feature_detected!("x")` / empty block |
-| f80 classification | `__slate_f80_is_fp_class(x, llvm fpclass mask)` / `__slate_f80_signbit`; signaling-NaN tests remain barriers |
-| Infinity constructors | `f32::INFINITY` / `f64::INFINITY` / x87 +inf `LongDouble` literal |
-| NaN constructors | libc `nan` / `nanf` / `nanl`, preserving payload and argument evaluation |
+| `[visibility=...]` global                                                          | Ignored, as for functions: an exported static gets default visibility (`global_visibility_internal.c`)                                                                                                                                  |
+| Const-qualified address                                                            | `&raw const`; mutable addresses use `&raw mut`                                                                                                                                                                                          |
+| Volatile read / write                                                              | `ptr::read_volatile` / `ptr::write_volatile` on raw addresses                                                                                                                                                                           |
+| f32 / f64 classification                                                           | Float classification methods; zero compares equal to either signed zero                                                                                                                                                                 |
+| Scalar `__builtin_clz*` / `ctz*` / `popcount*` calls                               | Unsigned operand's `leading_zeros()` / `trailing_zeros()` / `count_ones()`, cast to the C result type                                                                                                                                   |
+| `__builtin_expect`, `expect_with_probability`, `unpredictable`                     | The first operand (IR operands are side-effect free)                                                                                                                                                                                    |
+| `__builtin_prefetch`                                                               | Empty block                                                                                                                                                                                                                             |
+| `__builtin_unreachable`                                                            | `unsafe { std::hint::unreachable_unchecked() }`                                                                                                                                                                                         |
+| `__builtin_assume(c)`, MSVC `__assume(c)`                                          | `unsafe { std::hint::assert_unchecked(c) }`; the parser has already replaced a side-effecting `c` with `true`                                                                                                                           |
+| `__builtin_assume_aligned(p, align[, offset])`                                     | `p` cast to the result type; the alignment is not asserted                                                                                                                                                                              |
+| `__builtin_abort`, `nan*`, `memcpy`, `memmove`, `memset`, `memcmp`                 | Extern with the library `link_name`                                                                                                                                                                                                     |
+| `target("...")` function                                                           | `#[target_feature(enable = ...)] unsafe fn` (clang names mapped to rustc: `bmi`→`bmi1`, `pclmul`→`pclmulqdq`, `cx16`→`cmpxchg16b`, `rdrnd`→`rdrand`); `rtm` adds `#![feature(rtm_target_feature)]`                                      |
+| `__builtin_cpu_supports("x")` / `__builtin_cpu_init()`                             | `std::arch::is_x86_feature_detected!("x")` / empty block                                                                                                                                                                                |
+| f80 classification                                                                 | `__slate_f80_is_fp_class(x, llvm fpclass mask)` / `__slate_f80_signbit`; signaling-NaN tests remain barriers                                                                                                                            |
+| Infinity constructors                                                              | `f32::INFINITY` / `f64::INFINITY` / x87 +inf `LongDouble` literal                                                                                                                                                                       |
+| NaN constructors                                                                   | libc `nan` / `nanf` / `nanl`, preserving payload and argument evaluation                                                                                                                                                                |
 
 - Record size, alignment, offsets, and pointer strides must match the C layout.
 - Aggregate initialization must account for zero-length flexible fields even
@@ -78,15 +79,15 @@
 
 ## Atomics
 
-| IR | Rust |
-| --- | --- |
-| Scalar atomic read / write | `Atomic*::from_ptr(address).load(order)` / `.store(value, order)` |
-| Function-pointer atomic access | `AtomicPtr<u8>` with representation-preserving transmutation |
-| Consume ordering | Acquire |
-| Thread / signal fence | `atomic::fence` / `atomic::compiler_fence` |
-| Relaxed fence | Empty block |
-| Volatile atomic access | Nightly `Atomic*::from_ptr_raw` and `load_volatile` / `store_volatile` |
-| 128-bit atomic access on Linux | Opaque calls to libatomic load/store entry points |
+| IR                             | Rust                                                                   |
+| ------------------------------ | ---------------------------------------------------------------------- |
+| Scalar atomic read / write     | `Atomic*::from_ptr(address).load(order)` / `.store(value, order)`      |
+| Function-pointer atomic access | `AtomicPtr<u8>` with representation-preserving transmutation           |
+| Consume ordering               | Acquire                                                                |
+| Thread / signal fence          | `atomic::fence` / `atomic::compiler_fence`                             |
+| Relaxed fence                  | Empty block                                                            |
+| Volatile atomic access         | Nightly `Atomic*::from_ptr_raw` and `load_volatile` / `store_volatile` |
+| 128-bit atomic access on Linux | Opaque calls to libatomic load/store entry points                      |
 
 - Preserve byte width and raw-pointer storage, including const pointer values.
 - Volatile atomic operations retain the requested ordering and remain observable
@@ -124,14 +125,14 @@
 - Function entry, joins, and branch/switch successors start blocks. Forwarding
   cycles retain a self-loop; effectful cycles retain their operations and backedges.
 
-| IR | CFG behavior |
-| --- | --- |
-| Label / goto | One shared target state per label ID |
-| If | Conditional successors |
-| While / do-while | Condition effects repeat at the condition entry |
-| For | Continue enters increment, then condition effects |
+| IR                      | CFG behavior                                                             |
+| ----------------------- | ------------------------------------------------------------------------ |
+| Label / goto            | One shared target state per label ID                                     |
+| If                      | Conditional successors                                                   |
+| While / do-while        | Condition effects repeat at the condition entry                          |
+| For                     | Continue enters increment, then condition effects                        |
 | Switch / case / default | Discriminant evaluated once; cases enter their original nested positions |
-| Break / continue | Resolved owner ID selects the successor |
+| Break / continue        | Resolved owner ID selects the successor                                  |
 
 - Every local and synthetic temporary has hoisted `MaybeUninit<T>` storage
   and a stable raw pointer; parameters retain their existing representation.

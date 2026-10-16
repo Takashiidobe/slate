@@ -1,6 +1,7 @@
 # Declarations, linkage, and attributes
 
 <!-- toc -->
+
 - [Globals, statics, and linkage](#globals-statics-and-linkage)
 - [Redeclaration conflicts](#redeclaration-conflicts)
 - [Overloadable functions](#overloadable-functions)
@@ -43,7 +44,7 @@ printing in the [grammar](../ir-grammar.md#globals).
 - `constexpr` (`Variable.constexpr`): implicitly const, internal linkage at
   file scope, initializer required and kept as structured IR. One that
   folds is usable in integer constant expressions (`constexpr int w = 7;
-  int a[w];`).
+int a[w];`).
 - Pre-C23 `f()` is unprototyped; C23 `f()` and `f(void)` are zero-parameter
   prototypes.
 - Fixtures: `ir_globals_linkage.c`, `static_locals.c`.
@@ -54,14 +55,14 @@ One rule, checked against clang 22, gcc, and MSVC: where all three reject,
 reject; where one only warns (always MSVC), accept with
 `-Wconflicting-types`.
 
-| Conflict | Result |
-| --- | --- |
-| return/object type of another kind, size, or pointer depth | error |
-| incompatible C types of identical layout, also through pointers | warning (MSVC C4142) |
-| prototyped parameter lists differing in types, count, or `...` | warning (MSVC C4028/C4030/C4031/C4052) |
-| unprototyped vs prototyped, or only top-level parameter qualifiers | accepted |
-| struct/union/enum redefined in the same scope | error |
-| same, C23, with matching members or enumerators | accepted, reuses the first |
+| Conflict                                                           | Result                                 |
+| ------------------------------------------------------------------ | -------------------------------------- |
+| return/object type of another kind, size, or pointer depth         | error                                  |
+| incompatible C types of identical layout, also through pointers    | warning (MSVC C4142)                   |
+| prototyped parameter lists differing in types, count, or `...`     | warning (MSVC C4028/C4030/C4031/C4052) |
+| unprototyped vs prototyped, or only top-level parameter qualifiers | accepted                               |
+| struct/union/enum redefined in the same scope                      | error                                  |
+| same, C23, with matching members or enumerators                    | accepted, reuses the first             |
 
 - `TypeResolver::merge_redeclaration` (`src/sema/types.rs`) decides on C
   types. Compatible declarations merge into the composite (completing
@@ -70,7 +71,7 @@ reject; where one only warns (always MSVC), accept with
   own C4142/C2371 split: on LLP64 `int x; long x;` warns, on LP64 it errors.
 - A `[]` definition after a sized declaration takes the composite before its
   initializer is counted (`Checker::previously_sized`): `T a[64]; T a[] =
-  {x, y};` has 64 elements, zero-filled (CPython's `pyexpat.c`).
+{x, y};` has 64 elements, zero-filled (CPython's `pyexpat.c`).
 - Tag redefinitions: `TypeResolver::define_tag`.
 - File-scope typedef redefinition: `define_alias` rejects "typedef
   redefinition with different types" unless the types are compatible. The
@@ -101,10 +102,10 @@ on it.
   - incompatible pointer;
   - dropped pointee qualifiers;
   - variadic argument.
-  The candidate that is at least as good on every argument and better on one
-  wins. On a tie, a candidate with a `pass_object_size` parameter beats one
-  without, as in clang. It is written into `references` for the callee. Ambiguous calls and
-  calls with no viable candidate are rejected, as clang does.
+    The candidate that is at least as good on every argument and better on one
+    wins. On a tie, a candidate with a `pass_object_size` parameter beats one
+    without, as in clang. It is written into `references` for the callee. Ambiguous calls and
+    calls with no viable candidate are rejected, as clang does.
 - `pass_object_size` on any parameter (`NameResolution::passes_object_size`)
   distinguishes overloads of the same type, so glibc's clang fortify wrappers
   (`static` overloadable `fprintf`, `snprintf`, ...) don't redeclare the plain
@@ -167,7 +168,7 @@ alignment):
   `packed, aligned(2)` 2). A typedef redeclared in one scope keeps its
   largest `aligned`.
 - `alignof` of an incomplete array is its element's (`TypeResolver::
-  measured_storage`): `__alignof__(tfm->ctx)` of a flexible array member
+measured_storage`): `__alignof__(tfm->ctx)` of a flexible array member
   gives the member's laid-out alignment (the kernel's
   `crypto_tfm_ctx_alignment`), and clang's `__alignof__(short[])` is 2.
   `sizeof` of one is still rejected (`ir_alignof_flexible_array.c`).

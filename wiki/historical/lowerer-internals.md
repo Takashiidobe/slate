@@ -3,6 +3,7 @@
 > Historical record. See the [archive index](index.md) for scope and source revision.
 
 <!-- toc -->
+
 - [Two-tier state: `Lowerer` vs
   `FunctionLowerer`](#two-tier-state-lowerer-vs-functionlowerer)
 - [Op dispatch](#op-dispatch)

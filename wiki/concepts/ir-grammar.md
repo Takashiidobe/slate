@@ -1,6 +1,7 @@
 # IR Grammar
 
 <!-- toc -->
+
 - [Notation](#notation)
 - [Lexical](#lexical)
 - [Module](#module)
@@ -21,27 +22,26 @@
 EBNF of the IR printed by `slate-parser ir source.c` (also
 `parse source.c --dump-ir`). Meaning: [IR Spec](ir-spec.md).
 
-Source of truth: `src/ir/module_print.rs` (module, declarations,
-statements), `Value::format` in `src/ir/mod.rs`, `Place::format` in
-`src/ir/declarations.rs`, and the `Display` impls in `src/ir/numeric.rs`,
-`src/ir/abi.rs`, `src/ir/module.rs`. Update this page with any change to
-what they print.
+Source of truth: `src/ir/module_print.rs` (module, declarations, statements),
+`Value::format` in `src/ir/mod.rs`, `Place::format` in `src/ir/declarations.rs`,
+and the `Display` impls in `src/ir/numeric.rs`, `src/ir/abi.rs`,
+`src/ir/module.rs`. Update this page with any change to what they print.
 
 ## Notation
 
-- `a = ... ;` defines `a`; `|` separates choices; `[ x ]` is optional;
-  `{ x }` is zero or more; `( ... )` groups; `(* ... *)` is a comment.
+- `a = ... ;` defines `a`; `|` separates choices; `[ x ]` is optional; `{ x }`
+  is zero or more; `( ... )` groups; `(* ... *)` is a comment.
 - Quoted terminals are printed exactly, including the spaces inside them.
-  Adjacent symbols are separated by one space unless a terminal carries its
-  own punctuation (`"<"`, `">("`, `", "`).
-- Layout: module items are indented 4 spaces, statements 8. A nested `body`
-  is the statements indented one level (4 spaces) deeper than their owner;
-  only blocks and evaluations use braces.
+  Adjacent symbols are separated by one space unless a terminal carries its own
+  punctuation (`"<"`, `">("`, `", "`).
+- Layout: module items are indented 4 spaces, statements 8. A nested `body` is
+  the statements indented one level (4 spaces) deeper than their owner; only
+  blocks and evaluations use braces.
 - This is the default form. `--show-metadata` adds [metadata](#metadata);
   `--compact-ir` removes parts as listed in [Compact form](#compact-form).
-- Out of scope: the diagnostic dumps `--dump-ir-types`,
-  `--dump-ir-expressions`, and `--dump-ir-names`, and the
-  `[spelling=..., expansion=...]` suffixes `--show-spans` adds.
+- Out of scope: the diagnostic dumps `--dump-ir-types`, `--dump-ir-expressions`,
+  and `--dump-ir-names`, and the `[spelling=..., expansion=...]` suffixes
+  `--show-spans` adds.
 
 ## Lexical
 
@@ -57,9 +57,9 @@ int_list   = "[" [ int { ", " int } ] "]" ;
 opt_int    = "Some(" int ")" | "None" ;
 ```
 
-`%N` is identity; the name printed after it is only a spelling. A `binding`
-used before its declaration (a function called before its definition, a loop
-ID in `break`) refers to the same entity.
+`%N` is identity; the name printed after it is only a spelling. A `binding` used
+before its declaration (a function called before its definition, a loop ID in
+`break`) refers to the same entity.
 
 ## Module
 
@@ -78,14 +78,13 @@ storage_of = "bool" | "i8, u8" | "i16, u16" | "i32, u32" | "i64, u64"
            | "d32" | "d64" | "d128" ;
 ```
 
-- `storage` lines cover every scalar format a module can name (`bool`,
-  standard integers, floats, in that order), only for formats the target
-  supports. Bit-precise integers, pointers, `va_list`, and composites are
-  derived at the use site.
-- A module-level [`asm`](#statements) is a file-scope `asm("...")`, in
-  source order before the types. No qualifiers or goto labels; operands
-  only under the GNU personality, so it is almost always the single-`;`
-  form.
+- `storage` lines cover every scalar format a module can name (`bool`, standard
+  integers, floats, in that order), only for formats the target supports.
+  Bit-precise integers, pointers, `va_list`, and composites are derived at the
+  use site.
+- A module-level [`asm`](#statements) is a file-scope `asm("...")`, in source
+  order before the types. No qualifiers or goto labels; operands only under the
+  GNU personality, so it is almost always the single-`;` form.
 
 ## Types
 
@@ -115,15 +114,15 @@ fn_params     = "unprototyped" | type { ", " type } [ ", ..." ] | "..." ;
 - `b` marks a bit-precise integer (`_BitInt(N)`), distinct from the standard
   integer of the same width: `i128b` is not `i128`.
 - `d32`/`d64`/`d128` are decimal floating types, never converted to binary.
-- `vector<T, N>` is a GNU `vector_size` or Clang `ext_vector_type` type with
-  `N` lanes of the scalar `T`; both source forms print the same way.
+- `vector<T, N>` is a GNU `vector_size` or Clang `ext_vector_type` type with `N`
+  lanes of the scalar `T`; both source forms print the same way.
 - `fixed<iW, S>` is an N1169 fixed-point type: a two's-complement `iW`/`uW`
-  storage word with `S` fractional bits, leaving `W - S - signed` integral
-  bits. `sat_fixed<..>` is the `_Sat` form, whose operations saturate where
-  the plain form is undefined. `_Fract` and `_Accum` of the same rank differ
-  only in width, so the kind is not printed.
-- `ptr<const T>` records pointee constness; `volatile`/`atomic` on a pointee
-  are what make accesses through the pointer volatile or atomic.
+  storage word with `S` fractional bits, leaving `W - S - signed` integral bits.
+  `sat_fixed<..>` is the `_Sat` form, whose operations saturate where the plain
+  form is undefined. `_Fract` and `_Accum` of the same rank differ only in
+  width, so the kind is not printed.
+- `ptr<const T>` records pointee constness; `volatile`/`atomic` on a pointee are
+  what make accesses through the pointer volatile or atomic.
 - `vla<T, %n>` has a runtime extent held in synthetic binding `%n`, captured
   once at the declaration. `vla<T, *>` is a variable extent with no captured
   value: `[*]`, or any non-constant bound in prototype scope.
@@ -149,8 +148,8 @@ unit          = "(" int ", " int ")" ;                        (* byte offset, si
 enumerators   = "{" { binding c_identifier "=" value { metadata } ";" } "}" ;
 ```
 
-- `fieldN` is the field's index in declaration order; places refer to fields
-  by that index. `: W` is a bit-field width.
+- `fieldN` is the field's index in declaration order; places refer to fields by
+  that index. `: W` is a bit-field width.
 - `offsets` has one byte offset per field. `bit_offsets` and `field_units` are
   per field (`None` for ordinary fields); `bit_units` are the byte extents of
   bit-field storage units.
@@ -177,8 +176,8 @@ visibility   = "default" | "hidden" | "protected" | "internal" ;
 tls_model    = "global-dynamic" | "local-dynamic" | "initial-exec" | "local-exec" ;
 ```
 
-- `global` is a definition, `extern` a declaration only. All declarations of
-  one object with linkage are merged into a single `global`.
+- `global` is a definition, `extern` a declaration only. All declarations of one
+  object with linkage are merged into a single `global`.
 - A global's storage is `static` or `thread`, never `automatic`. Block-scope
   statics and string literals (`.strN`, `code_units`) are internal globals.
 - No initializer means zero initialization for a `global`.
@@ -207,26 +206,27 @@ target_feature = ( "+" | "-" ) feature_name | "arch=" cpu_name | "tune=" cpu_nam
                | "branch-protection=" protection ;
 ```
 
-- One `fn` per function: the body and parameters come from the definition,
-  or else the first prototype.
-- `[abi=...]` is printed only when some argument or the result is not passed
-  as a plain scalar, or the calling convention is not the default C one.
+- One `fn` per function: the body and parameters come from the definition, or
+  else the first prototype.
+- `[abi=...]` is printed only when some argument or the result is not passed as
+  a plain scalar, or the calling convention is not the default C one.
   `[abi=incomplete]` marks a declaration whose parameter or result type is a
   record still incomplete at the end of the translation unit.
-- `fallthrough` is present only on definitions and says what reaching the end
-  of the body means. `ret(value)` evaluates the value only when control reaches
+- `fallthrough` is present only on definitions and says what reaching the end of
+  the body means. `ret(value)` evaluates the value only when control reaches
   that point; its local bindings belong to the function body.
 - Inlining preference and definition emission are independent. Inline bodies
   print whether they supply a linkable definition; `inline_only` bodies do not.
-  `noreturn` survives compact printing and makes fallthrough unconditionally `ub`.
+  `noreturn` survives compact printing and makes fallthrough unconditionally
+  `ub`.
 - `[naked]` is `__attribute__((naked))` from any declaration: no prologue or
   epilogue, fallthrough `ub`, and its asm statements print no `[options=...]`.
 - `[overloadable]` is clang's `__attribute__((overloadable))`. Several functions
-  may share `c_identifier`; the binding is the identity, and each call names
-  the overload chosen for it. The C name is not the symbol: consumers give
-  each overload a unique name. Only internal-linkage overloads reach the IR
-  (extern ones need Itanium mangling and are not implemented). A function in
-  the set without the attribute keeps its C name and prints no flag.
+  may share `c_identifier`; the binding is the identity, and each call names the
+  overload chosen for it. The C name is not the symbol: consumers give each
+  overload a unique name. Only internal-linkage overloads reach the IR (extern
+  ones need Itanium mangling and are not implemented). A function in the set
+  without the attribute keeps its C name and prints no flag.
 - `[target=...]` is `__attribute__((target("...")))` split as clang does:
   comma-separated and trimmed, empty entries dropped, `no-x` is `-x`. The last
   `target` attribute across declarations wins. Feature names are not validated.
@@ -246,12 +246,12 @@ abi_pass      = "void" | "scalar" | "direct" | "native_c"
 chunk         = "i" digits | float_type | "pair<" float_type ">" | "quad<" float_type ">" ;
 ```
 
-- `native_c`: rustc's `extern "C"` passes a same-layout `repr(C)` type
-  exactly as the C compiler does. Other record and complex shapes are
-  explicit because rustc would differ.
+- `native_c`: rustc's `extern "C"` passes a same-layout `repr(C)` type exactly
+  as the C compiler does. Other record and complex shapes are explicit because
+  rustc would differ.
 - `pair<T>` / `quad<T>`: two or four `T` lanes in one SSE eightbyte.
-- `direct`: passed in registers as its own type, no coercion or memory
-  copy; used by vectors that fit the target's vector registers.
+- `direct`: passed in registers as its own type, no coercion or memory copy;
+  used by vectors that fit the target's vector registers.
 
 ## Statements
 
@@ -337,79 +337,76 @@ evaluation = value | "{" { statement } "yield" value ";" "}" ;
 ```
 
 - Loops, switches and labels are identified by their `binding`. `break` and
-  `continue` name the loop or switch they leave, and `case`/`default` name
-  their switch even when nested deeper (Duff's device). There are no implicit
-  targets.
+  `continue` name the loop or switch they leave, and `case`/`default` name their
+  switch even when nested deeper (Duff's device). There are no implicit targets.
 - Statement order and the absence of `break` express fallthrough.
-- An `asm` with no operand sections prints as a single `;` statement; that
-  is basic asm, whose template is emitted verbatim. The quoted string after
-  the qualifiers is always the raw source template; `template:` is the same
-  text with `%`-directives resolved. In a resolved piece, `%N` is an index
-  into the operand lines, and `%lN` is an index into the `labels:` list —
-  neither is necessarily the number the source wrote, because a tied input
-  is folded into its output and later operands renumber. An operand piece may carry a one-letter target modifier (`%a1`).
-  `(N)` after it is the register slice in bits the reference prints,
-  overriding the operand's own width: a width modifier (`%k0(32)`,
-  `%h0(high8)`), or on x86 a tied input narrower or wider than its
-  output (`%0(32)`).
-- `width N` is the operand's storage size in bits; absent when the type
-  has no fixed size (a VLA under `"m"`).
-- `[alternative=N]` is the constraint alternative chosen for the whole
-  asm, printed when there is more than one; `none` means no alternative
-  fits Rust. `-> class` is the class an operand took when its chosen
-  alternative offered several (`rm`, `g`). `rejected:` lists each
-  alternative tried before the chosen one with the first operand that
-  ruled it out, numbered as in the source.
+- An `asm` with no operand sections prints as a single `;` statement; that is
+  basic asm, whose template is emitted verbatim. The quoted string after the
+  qualifiers is always the raw source template; `template:` is the same text
+  with `%`-directives resolved. In a resolved piece, `%N` is an index into the
+  operand lines, and `%lN` is an index into the `labels:` list — neither is
+  necessarily the number the source wrote, because a tied input is folded into
+  its output and later operands renumber. An operand piece may carry a
+  one-letter target modifier (`%a1`). `(N)` after it is the register slice in
+  bits the reference prints, overriding the operand's own width: a width
+  modifier (`%k0(32)`, `%h0(high8)`), or on x86 a tied input narrower or wider
+  than its output (`%0(32)`).
+- `width N` is the operand's storage size in bits; absent when the type has no
+  fixed size (a VLA under `"m"`).
+- `[alternative=N]` is the constraint alternative chosen for the whole asm,
+  printed when there is more than one; `none` means no alternative fits Rust.
+  `-> class` is the class an operand took when its chosen alternative offered
+  several (`rm`, `g`). `rejected:` lists each alternative tried before the
+  chosen one with the first operand that ruled it out, numbered as in the
+  source.
 - `[dialect=...]` is the assembler syntax the template is written in; it is
   present on x86 and absent on targets without a dialect choice. `template:`
-  holds only the selected side of each `{att|intel}` alternation, so it
-  never contains one.
-- `[options=...]` is the set of Rust `asm!` options derived during lowering,
-  in that fixed order, printed on every statement asm except inside a
-  naked function, and never on file-scope asm; `nomem` and `readonly` are exclusive.
+  holds only the selected side of each `{att|intel}` alternation, so it never
+  contains one.
+- `[options=...]` is the set of Rust `asm!` options derived during lowering, in
+  that fixed order, printed on every statement asm except inside a naked
+  function, and never on file-scope asm; `nomem` and `readonly` are exclusive.
   It is left out when no option is set, as for MSVC `__asm`.
-- An operand line starts with its Rust-facing direction. `=` and `+` and
-  `&` are folded into it and no longer appear in the quoted constraint,
-  which keeps `,`-separated alternatives, each with `%` or `-` and then a
-  hard register `{reg}`, a matching operand number, or constraint letters.
-- The bracket after the constraint resolves it, one entry per alternative:
-  a hard register or explicit-register letter (`a` is `{ax}`) as its
-  canonical name, a matching operand number, or the letters' classes joined
-  by `|`. Class names are Rust's, except `reg_legacy` and `vreg_low8`,
-  subsets that emission pins to an explicit register. `{dx:ax}` is the
-  register pair of x86 `A`, high half first; a letter we cannot resolve
-  prints as `unresolved("<")`.
-- An `in` with an `asm_place` is a memory-capable input naming its object;
-  the asm may address it in place, so no load precedes the statement.
+- An operand line starts with its Rust-facing direction. `=` and `+` and `&` are
+  folded into it and no longer appear in the quoted constraint, which keeps
+  `,`-separated alternatives, each with `%` or `-` and then a hard register
+  `{reg}`, a matching operand number, or constraint letters.
+- The bracket after the constraint resolves it, one entry per alternative: a
+  hard register or explicit-register letter (`a` is `{ax}`) as its canonical
+  name, a matching operand number, or the letters' classes joined by `|`. Class
+  names are Rust's, except `reg_legacy` and `vreg_low8`, subsets that emission
+  pins to an explicit register. `{dx:ax}` is the register pair of x86 `A`, high
+  half first; a letter we cannot resolve prints as `unresolved("<")`.
+- An `in` with an `asm_place` is a memory-capable input naming its object; the
+  asm may address it in place, so no load precedes the statement.
 - An `in` with an `asm_symbol` selected `sym`: a link-time address, the
   binding's symbol plus a byte offset, which Rust takes as a `sym` operand.
-- MSVC `__asm` lowers to the same node with `[dialect=intel]`. Its quoted
-  string is the statement rebuilt from the AST (instructions joined by `\n`,
-  numbers in decimal), not raw source. Its operands carry no constraint:
-  `mem<access>` is a C object the asm addresses, so the operand is the
-  object's address; `access` is what the asm may do there. A function is a
-  `sym`, and `offset x` is an `addr_of` value. In `template:`,
-  `addr<size>(%N + base + index*scale + disp)` is a memory reference into
-  operand `N` (the size appears where MASM needs it spelled out), and
-  `label(name)` is an asm-local label, lowercased, which emission renumbers
-  because Rust `asm!` rejects named labels. `entry_label(%N, name)` defines
-  a label inside MSVC asm that C `goto` can enter at that position; its
-  binding is the target of the `goto`. Register-only memory such as
-  `dword ptr [esp + 12]` stays text.
-- `from value` on an `inout`/`inlateout` is a tied input (`"0"`); without
-  it the place itself is read (`"+r"`).
+- MSVC `__asm` lowers to the same node with `[dialect=intel]`. Its quoted string
+  is the statement rebuilt from the AST (instructions joined by `\n`, numbers in
+  decimal), not raw source. Its operands carry no constraint: `mem<access>` is a
+  C object the asm addresses, so the operand is the object's address; `access`
+  is what the asm may do there. A function is a `sym`, and `offset x` is an
+  `addr_of` value. In `template:`, `addr<size>(%N + base + index*scale + disp)`
+  is a memory reference into operand `N` (the size appears where MASM needs it
+  spelled out), and `label(name)` is an asm-local label, lowercased, which
+  emission renumbers because Rust `asm!` rejects named labels.
+  `entry_label(%N, name)` defines a label inside MSVC asm that C `goto` can
+  enter at that position; its binding is the target of the `goto`. Register-only
+  memory such as `dword ptr [esp + 12]` stays text.
+- `from value` on an `inout`/`inlateout` is a tied input (`"0"`); without it the
+  place itself is read (`"+r"`).
 - A clobbered or hard-coded register prints its source spelling, plus
   `as <canonical>` when the target's register table recognized it. The
-  register's width is not carried: a clobber names the whole register, and
-  an operand carries its own `width`.
-- `evaluation` is a loop condition or `for` increment with hoisted side
-  effects: the statements run each time, then `yield` gives the value. An
-  increment yields `void`.
+  register's width is not carried: a clobber names the whole register, and an
+  operand carries its own `width`.
+- `evaluation` is a loop condition or `for` increment with hoisted side effects:
+  the statements run each time, then `yield` gives the value. An increment
+  yields `void`.
 - `[synthetic]` lets are temporaries that lowering introduced (hoisted old
   values, short-circuit results, VLA extents). They have no source variable.
 - `unsequenced` on a temporary or a write marks a statement whose position
-  commits to an evaluation order C leaves unspecified, so a different C
-  compiler may order it differently. See
+  commits to an evaluation order C leaves unspecified, so a different C compiler
+  may order it differently. See
   [unsequenced effects](ir/control-flow.md#unsequenced-effects-follow-clang).
 - A local `let` always has `storage=automatic`.
 
@@ -438,11 +435,12 @@ scope    = "device" | "workgroup" | "wavefront" | "single" | "cluster"
 ```
 
 - A place is a storage location, not a read. Only `read`, `write`, `store`,
-  `update`, `compare_exchange`, `addr_of`, the decays and the `va_*` values
-  use one.
+  `update`, `compare_exchange`, `addr_of`, the decays and the `va_*` values use
+  one.
 - `ordering` belongs to the operation, not the place: it is absent on a
-  non-atomic access and follows `access` when present (`read<i32, volatile,
-  atomic=acquire>`). `dynamic(v)` is a runtime ordering value.
+  non-atomic access and follows `access` when present
+  (`read<i32, volatile, atomic=acquire>`). `dynamic(v)` is a runtime ordering
+  value.
 - `sync_scope` is the synchronization scope of an atomic operation, from the
   `__scoped_atomic_*` builtins. The system scope is the default and is never
   printed, so it has no spelling here; every other scope prints after the
@@ -452,17 +450,17 @@ scope    = "device" | "workgroup" | "wavefront" | "single" | "cluster"
   significant bit of that unit. Bit-fields are not addressable.
 - `lane(p, i)` is element `i` of the vector place `p`. Like a bit-field it is
   readable and writable but not addressable, and `i` is a runtime value, not a
-  constant. A vector *value* is indexed by the `lane<T>(..)` value instead.
+  constant. A vector _value_ is indexed by the `lane<T>(..)` value instead.
 - `swizzle<lanes=[..]>(p)` is the several-lane form, for an `ext_vector`
   component selection such as `v.xy` or `v.lo`. Its lanes are constants and
   distinct, since a repeated component is not assignable; a repeated or
   out-of-range selection is a `shuffle<..>` value instead.
 - `compound_literal %N` is a distinct object with its own storage duration.
-  `[align=N]` is printed only when an `_Alignas` in its type name changes
-  the natural alignment.
-- `temporary %N = v` materializes an aggregate rvalue (`f().x`) so a
-  member can be projected. Not an object: places rooted in one are neither
-  assignable nor addressable.
+  `[align=N]` is printed only when an `_Alignas` in its type name changes the
+  natural alignment.
+- `temporary %N = v` materializes an aggregate rvalue (`f().x`) so a member can
+  be projected. Not an object: places rooted in one are neither assignable nor
+  addressable.
 - Lowering does not produce `index(..)` yet: all indexing is
   `deref(ptr_offset(..))`, including arrays through `array_decay`.
 - Values printed inside a place never carry metadata.
@@ -526,8 +524,9 @@ reason     = "return" | "assign" | "arg" | "vararg" | "promotion"
 ```
 
 - The type after `<` is the result type, except in `read`/`write` and
-  `compare_exchange` (result `bool`, or the place type for `form=old`), where it is the place type, and in `compare_op`, where it is the operand type. A
-  scalar comparison results in `bool`; a vector comparison prints its
+  `compare_exchange` (result `bool`, or the place type for `form=old`), where it
+  is the place type, and in `compare_op`, where it is the operand type. A scalar
+  comparison results in `bool`; a vector comparison prints its
   `result=vector<iN, lanes>` lane-mask type instead.
 - `lane<T>(v, i)` extracts element `i` from the vector value `v`, for a
   subscript whose base is not an lvalue. An lvalue base yields a `lane(..)`
@@ -539,16 +538,16 @@ reason     = "return" | "assign" | "arg" | "vararg" | "promotion"
   operand and comes from an `ext_vector` swizzle. `mask=dynamic(v)` is the
   two-operand `__builtin_shufflevector` form, whose mask is a runtime integer
   vector, not constants.
-- `intrinsic<T, llvm.name>(args)` calls an LLVM intrinsic by its unmangled
-  name (`llvm.vector.reduce.add`, `llvm.umax`); overload suffixes come from
-  the argument and result types. Only builtin expansion produces it
+- `intrinsic<T, llvm.name>(args)` calls an LLVM intrinsic by its unmangled name
+  (`llvm.vector.reduce.add`, `llvm.umax`); overload suffixes come from the
+  argument and result types. Only builtin expansion produces it
   ([builtins](ir/builtins.md#vector-builtin-expansion)).
 - `float_literal` is a round-trippable decimal (`1.0`, `-0.0`, `inf`); a NaN
   prints as `bits=0x...` to keep its payload. Decimal floats keep their digit
   spelling.
 - `aggregate` members are resolved targets in order; nested subobjects are
-  nested `aggregate`s. `zero_fill=true` means some member or element was
-  omitted and is zero-initialized. A union has exactly one member.
+  nested `aggregate`s. `zero_fill=true` means some member or element was omitted
+  and is zero-initialized. A union has exactly one member.
 - `call` names a direct callee by `binding` and an indirect callee by a pointer
   value. A function-like builtin is a direct callee: its `fn` is either the
   source declaration that kept builtin status or an implicit declaration named
@@ -557,21 +556,21 @@ reason     = "return" | "assign" | "arg" | "vararg" | "promotion"
 - `overflow_add/sub/mul` stores the converted arithmetic result through its
   place operand and returns whether that conversion overflowed.
 - `float_class` tests one real floating operand against an IEEE class and
-  results in `bool`; it never raises, so the classification builtins that
-  return `int` wrap it in `from_bool<int>`.
+  results in `bool`; it never raises, so the classification builtins that return
+  `int` wrap it in `from_bool<int>`.
 - Side-effect hoisting turns `store` and non-atomic `update` into `write`
   statements, so the module dump contains only atomic `update`s (one
-  read-modify-write). Atomic `update` and `compare_exchange` are each kept
-  whole in a synthetic temporary. A fence value becomes a `fence` statement.
+  read-modify-write). Atomic `update` and `compare_exchange` are each kept whole
+  in a synthetic temporary. A fence value becomes a `fence` statement.
 - `compare_exchange(place, expected, desired)`: with `form=write_back`,
   `expected` is a pointer that receives the current value on failure and the
   result is whether the exchange happened. With `form=success` and `form=old`
-  (the `__sync_*_compare_and_swap` builtins), `expected` is a value, nothing
-  is written back, and the result is whether the exchange happened or the
-  old value respectively. `old<T>` is the place's old value inside an `update`
+  (the `__sync_*_compare_and_swap` builtins), `expected` is a value, nothing is
+  written back, and the result is whether the exchange happened or the old value
+  respectively. `old<T>` is the place's old value inside an `update`
   computation.
-- `array_decay`'s `length` is the source array's length (`None` for a VLA or
-  an incomplete array).
+- `array_decay`'s `length` is the source array's length (`None` for a VLA or an
+  incomplete array).
 
 ### Operations
 
@@ -626,45 +625,45 @@ floating          = ", rounding=" ( "nearest_even" | "environment" )
 exceptions        = "ignore" | "observable" ;
 ```
 
-- A policy is the operation's behavior _if_ the case occurs, not a claim that
-  it does. `overflow=ub` is signed C arithmetic; `wrap` is unsigned or
-  `-fwrapv`; `trap` is `-ftrapv`.
+- A policy is the operation's behavior _if_ the case occurs, not a claim that it
+  does. `overflow=ub` is signed C arithmetic; `wrap` is unsigned or `-fwrapv`;
+  `trap` is `-ftrapv`.
 - `fits` appears on `truncate`/`reinterpret`; `exact=` on `int_to_float`;
-  `out_of_range=ub` on `float_to_int`; `floating` on the other float
-  conversions that can round.
+  `out_of_range=ub` on `float_to_int`; `floating` on the other float conversions
+  that can round.
 - The arithmetic choices are, in order: `and`/`or`/`xor`/`not` and floating
   `neg`; integer `add`/`sub`/`mul`/`neg`; `div`/`rem` (signed adds
   `min_by_neg_one`); `shl` (signed adds `negative_left`); `shr`; floating
-  arithmetic (`add`/`sub`/`mul`/`div` and the six extrema); complex
-  floating; complex integer; fixed-point.
-- `contract=` is the fused multiply-add permission of floating arithmetic:
-  `off` never fuses, `on` may fuse within one source expression, `fast` may
-  fuse across statements. `range=` is the complex multiply/divide algorithm:
-  `full` handles infinities and NaNs (C Annex G), `basic` may use the plain
-  textbook formulas. Both are permissions; ignoring them is always correct.
+  arithmetic (`add`/`sub`/`mul`/`div` and the six extrema); complex floating;
+  complex integer; fixed-point.
+- `contract=` is the fused multiply-add permission of floating arithmetic: `off`
+  never fuses, `on` may fuse within one source expression, `fast` may fuse
+  across statements. `range=` is the complex multiply/divide algorithm: `full`
+  handles infinities and NaNs (C Annex G), `basic` may use the plain textbook
+  formulas. Both are permissions; ignoring them is always correct.
 - A fixed-point contract is `overflow=saturate` for a `_Sat` type and
   `overflow=ub` otherwise, and always `rounding=toward_zero`, which is the
   fractional bits the operation discards. It appears on `add`/`sub`/`mul`/
-  `div`/`shl`/`shr`/`neg` and on every conversion into or out of a
-  fixed-point type except one that is exact.
+  `div`/`shl`/`shr`/`neg` and on every conversion into or out of a fixed-point
+  type except one that is exact.
 
 ## Metadata
 
 With `--show-comments`, source comment groups print as
 `comment ("leading" | "trailing" | "detached") ["doc"] string [spelling=file:offset+length, expansion=file:offset+length];`.
 Detached comments precede the target; statement comments remain in their body.
-Owned comments print on their own lines directly above their owner (type,
-field, enumerator, global, or function); a parameter's comments print above its
-function prefixed with `param <name>`.
-These are non-executing metadata and are absent from default dumps.
+Owned comments print on their own lines directly above their owner (type, field,
+enumerator, global, or function); a parameter's comments print above its
+function prefixed with `param <name>`. These are non-executing metadata and are
+absent from default dumps.
 
 ```ebnf
 metadata = "[" key "=" string "]" ;          (* only with --show-metadata *)
 ```
 
 - Metadata is source context keyed by node: C type (`c`, `c_canon`,
-  `typedef_chain`, `c_const`, …), storage class (`c_storage`), folded
-  layout queries (`size_of`, …). Never needed for semantics.
+  `typedef_chain`, `c_const`, …), storage class (`c_storage`), folded layout
+  queries (`size_of`, …). Never needed for semantics.
 - Every other `[...]` (storage, linkage, symbol attributes, `restrict`,
   `synthetic`, ABI, fallthrough) is semantics and always printed.
 
@@ -675,8 +674,8 @@ metadata = "[" key "=" string "]" ;          (* only with --show-metadata *)
 - `, reason=...` and the conversion policy on conversions;
 - the policy on arithmetic and unary operations (`add<i32>(..)`);
 - `, reason=` and `, exceptions=` on comparisons;
-- `, element=...` and the overflow policy on `ptr_offset`; everything after
-  the type on `ptr_diff`;
+- `, element=...` and the overflow policy on `ptr_offset`; everything after the
+  type on `ptr_diff`;
 - `, signature=...` on calls.
 
 Reading aid only; fixtures and consumers use the default form.

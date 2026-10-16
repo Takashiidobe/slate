@@ -1,6 +1,7 @@
 # Differential fixtures
 
 <!-- toc -->
+
 - [Suites](#suites)
 - [Supported/unsupported ratchet](#supportedunsupported-ratchet)
 - [Triage](#triage)

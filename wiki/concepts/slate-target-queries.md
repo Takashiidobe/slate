@@ -1,6 +1,7 @@
 # Slate target queries
 
 <!-- toc -->
+
 - [Ownership](#ownership)
 - [Configuration](#configuration)
 - [Preprocessing](#preprocessing)
@@ -9,13 +10,13 @@
 
 ## Ownership
 
-| Facts | Source |
-| --- | --- |
-| Scalar widths, char signedness, long double, endianness | `slate-parser::target_info::TargetInfo` |
-| Supported triples and predefine snapshots | `slate-parser::target_registry` |
-| Active target selection | `slate::target` |
-| Rust target cfg fields | `slate::frontend::{preprocess,directive_translate}` |
-| Target facts used by rewrites | IR module's `target`, passed to `backend::apply_with_target` |
+| Facts                                                   | Source                                                       |
+| ------------------------------------------------------- | ------------------------------------------------------------ |
+| Scalar widths, char signedness, long double, endianness | `slate-parser::target_info::TargetInfo`                      |
+| Supported triples and predefine snapshots               | `slate-parser::target_registry`                              |
+| Active target selection                                 | `slate::target`                                              |
+| Rust target cfg fields                                  | `slate::frontend::{preprocess,directive_translate}`          |
+| Target facts used by rewrites                           | IR module's `target`, passed to `backend::apply_with_target` |
 
 ## Configuration
 

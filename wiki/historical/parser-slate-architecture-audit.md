@@ -3,6 +3,7 @@
 > Historical record. See the [archive index](index.md) for scope and source revision.
 
 <!-- toc -->
+
 - [Scope and evidence](#scope-and-evidence)
 - [Priorities](#priorities)
 - [Checked semantic facts](#checked-semantic-facts)
@@ -25,23 +26,23 @@
 
 ## Priorities
 
-| Order | Change | Main payoff | Tracking |
-| --- | --- | --- | --- |
-| 1 | Require checked semantic facts at the public lowering boundary | Enforce invariants and reduce accidental rule duplication | `slate-5ezs` |
-| 2 | Centralize exact source snapshots and diagnostics | Correct diagnostics, less copying and repeated I/O | `slate-bd8f` |
-| 3 | Complete the existing migration with explicit pass options | One implementation and consistent entry points | `slate-p58o.6`, `slate-p58o.1.4` |
-| 4 | Consume pruned AST nodes instead of cloning them | Remove an identifiable whole-tree copy | `slate-lrdn` |
-| 5 | Bound project representation lifetimes | Lower peak memory and improve worker scaling | `slate-db4s` |
-| 6 | Measure phases before changing representation or the scanner | Select optimizations supported by real workloads | `slate-wepr`; existing `slate-parser-xgj9` |
+| Order | Change                                                         | Main payoff                                               | Tracking                                   |
+| ----- | -------------------------------------------------------------- | --------------------------------------------------------- | ------------------------------------------ |
+| 1     | Require checked semantic facts at the public lowering boundary | Enforce invariants and reduce accidental rule duplication | `slate-5ezs`                               |
+| 2     | Centralize exact source snapshots and diagnostics              | Correct diagnostics, less copying and repeated I/O        | `slate-bd8f`                               |
+| 3     | Complete the existing migration with explicit pass options     | One implementation and consistent entry points            | `slate-p58o.6`, `slate-p58o.1.4`           |
+| 4     | Consume pruned AST nodes instead of cloning them               | Remove an identifiable whole-tree copy                    | `slate-lrdn`                               |
+| 5     | Bound project representation lifetimes                         | Lower peak memory and improve worker scaling              | `slate-db4s`                               |
+| 6     | Measure phases before changing representation or the scanner   | Select optimizations supported by real workloads          | `slate-wepr`; existing `slate-parser-xgj9` |
 
 ## Checked semantic facts
 
-| Evidence | Architectural consequence |
-| --- | --- |
-| [Sema](../../crates/slate-parser/src/sema/mod.rs:36), [analyze](../../crates/slate-parser/src/sema/validate.rs:56), [lower](../../crates/slate-parser/src/sema/module.rs:24) | The same public type permits lowering before checking; the documented ordering is a caller convention. |
-| [TypeResolver](../../crates/slate-parser/src/sema/types.rs:44) | Semantic facts, diagnostic accumulation, entity state, type interning, and extent binding share one mutable object. |
-| [operand_steps and computation](../../crates/slate-parser/src/sema/expression.rs:697) | Lowering clones conversion lists; missing or unbound facts can invoke typing. VLA rebinding is a documented exception. |
-| [Slate integration](../../crates/slate/src/frontend.rs:188) | Successful analysis and lowering warning results are discarded; parser/sema failures are converted to strings. |
+| Evidence                                                                                                                                                                     | Architectural consequence                                                                                              |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| [Sema](../../crates/slate-parser/src/sema/mod.rs:36), [analyze](../../crates/slate-parser/src/sema/validate.rs:56), [lower](../../crates/slate-parser/src/sema/module.rs:24) | The same public type permits lowering before checking; the documented ordering is a caller convention.                 |
+| [TypeResolver](../../crates/slate-parser/src/sema/types.rs:44)                                                                                                               | Semantic facts, diagnostic accumulation, entity state, type interning, and extent binding share one mutable object.    |
+| [operand_steps and computation](../../crates/slate-parser/src/sema/expression.rs:697)                                                                                        | Lowering clones conversion lists; missing or unbound facts can invoke typing. VLA rebinding is a documented exception. |
+| [Slate integration](../../crates/slate/src/frontend.rs:188)                                                                                                                  | Successful analysis and lowering warning results are discarded; parser/sema failures are converted to strings.         |
 
 - Return a `CheckedUnit` from successful checking; require it for primary IR lowering. Keep the existing AST and side tables rather than allocating a second typed tree.
 - Separate immutable semantic facts from lowering state: captured extents, temporary bindings, emitted IR, and diagnostics.
@@ -51,12 +52,12 @@
 
 ## Source ownership
 
-| Evidence | Architectural consequence |
-| --- | --- |
-| [Preprocessor source setup](../../crates/slate-parser/src/pp/mod.rs:645) | Stores source text and duplicates each file's line table in two structures. |
-| [Parser handoff](../../crates/slate-parser/src/parser/mod.rs:421), [IR lowering setup](../../crates/slate-parser/src/sema/module.rs:33) | Clone `Files` and line tables across stage boundaries. |
-| [Files](../../crates/slate-parser/src/files.rs:50) | Stores paths and line tables, but not the input snapshots; path interning scans the entries. |
-| [Sema diagnostics](../../crates/slate-parser/src/sema/validate.rs:229), [Slate diagnostics](../../crates/slate/src/frontend.rs:75) | Reopen source files; in-memory sanitized input or later filesystem changes can differ from the text that produced the spans. Slate also uses a different invalid-byte decoding path. |
+| Evidence                                                                                                                                | Architectural consequence                                                                                                                                                            |
+| --------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [Preprocessor source setup](../../crates/slate-parser/src/pp/mod.rs:645)                                                                | Stores source text and duplicates each file's line table in two structures.                                                                                                          |
+| [Parser handoff](../../crates/slate-parser/src/parser/mod.rs:421), [IR lowering setup](../../crates/slate-parser/src/sema/module.rs:33) | Clone `Files` and line tables across stage boundaries.                                                                                                                               |
+| [Files](../../crates/slate-parser/src/files.rs:50)                                                                                      | Stores paths and line tables, but not the input snapshots; path interning scans the entries.                                                                                         |
+| [Sema diagnostics](../../crates/slate-parser/src/sema/validate.rs:229), [Slate diagnostics](../../crates/slate/src/frontend.rs:75)      | Reopen source files; in-memory sanitized input or later filesystem changes can differ from the text that produced the spans. Slate also uses a different invalid-byte decoding path. |
 
 - Use one source manager with indexed paths, immutable decoded snapshots, and shared line tables. Borrow or share it across stages.
 - Render diagnostics from the exact input snapshot, including `parse_file_with_source` and virtual files.

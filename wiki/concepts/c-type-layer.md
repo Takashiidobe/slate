@@ -1,6 +1,7 @@
 # C type layer
 
 <!-- toc -->
+
 - [Representation](#representation)
 - [Rendering](#rendering)
 - [Layout](#layout)
@@ -81,15 +82,15 @@ _Atomic`. Tags print by definition name.
   `operand.rs`; `ctype/arith.rs` picks C result types, `numeric.rs` emits.
   No layout→C-type reverse mapping. `typeof` reads the operand's C type.
 
-| Rule | Implementation | C23 |
-| --- | --- | --- |
-| Lvalue conversion, array/function decay | `CTypes::lvalue_conversion` | 6.3.2.1p2–4 |
-| Address of a qualified object | `Lowerer::expr`, pointer to `Lvalue.c` | 6.5.3.2 |
-| Member qualification | `Lowerer::field_place`, field ∪ base qualifiers | 6.5.2.3p3–4 |
-| Integer and bit-field promotions | `CTypes::integer_promotion` | 6.3.1.1p2 |
-| Default argument promotions | `CTypes::default_promotion` | 6.5.2.2p6 |
-| Usual arithmetic conversions | `CTypes::usual_real_type` | 6.3.1.8 |
-| Pointer difference | `Lowerer::binary`, unqualified compatible pointees, `ptrdiff_t` | 6.5.6 |
+| Rule                                    | Implementation                                                  | C23         |
+| --------------------------------------- | --------------------------------------------------------------- | ----------- |
+| Lvalue conversion, array/function decay | `CTypes::lvalue_conversion`                                     | 6.3.2.1p2–4 |
+| Address of a qualified object           | `Lowerer::expr`, pointer to `Lvalue.c`                          | 6.5.3.2     |
+| Member qualification                    | `Lowerer::field_place`, field ∪ base qualifiers                 | 6.5.2.3p3–4 |
+| Integer and bit-field promotions        | `CTypes::integer_promotion`                                     | 6.3.1.1p2   |
+| Default argument promotions             | `CTypes::default_promotion`                                     | 6.5.2.2p6   |
+| Usual arithmetic conversions            | `CTypes::usual_real_type`                                       | 6.3.1.8     |
+| Pointer difference                      | `Lowerer::binary`, unqualified compatible pointees, `ptrdiff_t` | 6.5.6       |
 
 - A standard integer outranks a bit-precise one of the same width. Enums
   promote through their compatible integer type. Floating components keep
@@ -155,7 +156,7 @@ level), `compatible_unqualified`, `composite`.
   value operands (`AtomicBuiltin::operands`). Lowering has no unrecorded
   `convert`; nothing classifies a conversion there.
 - `conversions` is `HashMap<NodeId, Conversion>` with `Conversion { kind,
-  warning }`: one per operand node, no target type. `convert_recorded`'s
+warning }`: one per operand node, no target type. `convert_recorded`'s
   caller supplies the target from a fact: the callee signature's
   parameter, the cast's type name, the assigned place, the declared return
   type, the element target. Keeping the target out of the record keeps
@@ -186,7 +187,7 @@ level), `compatible_unqualified`, `composite`.
   promoted type in `promoted_parameters`. `record_casts` records a chain
   of casts, classifying each hop from the previous target.
 - Atomic lowering's own values (a `_Bool` object handled as `unsigned
-  char`, pointer bitwise ops through `size_t`, min/max signedness) are
+char`, pointer bitwise ops through `size_t`, min/max signedness) are
   emitter choices: it names the `CastKind` directly.
 - Recorded targets may hold unbound extents (`vla<T, *>`); `operand_steps`
   and `computation` then drop the owner's memo and type it again under
@@ -217,7 +218,7 @@ level), `compatible_unqualified`, `composite`.
   records the result per declaration in `declared_types`; lowering's
   `declare_global` / `declare_function` only read it (`redeclared`).
 - Compatible declarations merge into their `composite` (`int a[]; int
-  a[5];`). Otherwise the
+a[5];`). Otherwise the
   [conflict table](ir/declarations.md#redeclaration-conflicts) applies;
   `types::same_layout` (lowered types, signedness ignored) decides
   warning vs error.
@@ -233,13 +234,13 @@ grep -rn 'ty ==\|ty !=\|== Type::\|!= Type::' src/sema/
 
 Every hit must be in this table; account for new ones.
 
-| Site | Question | Why allowed |
-| --- | --- | --- |
-| `numeric.rs`, `expression.rs::emit_cast` | `value.ty == to`, `ty == Type::Bool` | Representation check during emission; `CastKind::Identity` needs it (truth values are IR `Bool`, C `int`) |
-| `fold.rs` | operand vs value type | Folding over IR values |
-| `effects.rs`, `atomic.rs` | `== Type::Void`, `== Type::Bool` | IR normalization |
-| `expression.rs` via `types.rs::is_va_list` | lowered type == target `va_list` | `VaList` is IR-only; `char *` targets use `ptr<i8>` |
-| `types.rs::same_layout` | same shape ignoring signedness | Warning-vs-error for redeclarations (MSVC C4142/C2371) |
+| Site                                       | Question                             | Why allowed                                                                                               |
+| ------------------------------------------ | ------------------------------------ | --------------------------------------------------------------------------------------------------------- |
+| `numeric.rs`, `expression.rs::emit_cast`   | `value.ty == to`, `ty == Type::Bool` | Representation check during emission; `CastKind::Identity` needs it (truth values are IR `Bool`, C `int`) |
+| `fold.rs`                                  | operand vs value type                | Folding over IR values                                                                                    |
+| `effects.rs`, `atomic.rs`                  | `== Type::Void`, `== Type::Bool`     | IR normalization                                                                                          |
+| `expression.rs` via `types.rs::is_va_list` | lowered type == target `va_list`     | `VaList` is IR-only; `char *` targets use `ptr<i8>`                                                       |
+| `types.rs::same_layout`                    | same shape ignoring signedness       | Warning-vs-error for redeclarations (MSVC C4142/C2371)                                                    |
 
 Tag redefinitions:
 

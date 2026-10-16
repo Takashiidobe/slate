@@ -1,6 +1,7 @@
 # Intrinsic lowering
 
 <!-- toc -->
+
 - [Catalog](#catalog)
 - [Frontend](#frontend)
 - [Limits](#limits)
@@ -8,11 +9,11 @@
 
 ## Catalog
 
-| Input | Generated facts |
-| --- | --- |
-| LLVM C++ intrinsic API | LLVM names, signatures, immediate parameters, overload positions |
-| `llvm-tblgen --dump-json` over `Intrinsics.td` | C builtin aliases and overloaded immediate parameters |
-| Optional stdarch sources | Internal x86/x86_64 LLVM link-name signature overrides |
+| Input                                          | Generated facts                                                  |
+| ---------------------------------------------- | ---------------------------------------------------------------- |
+| LLVM C++ intrinsic API                         | LLVM names, signatures, immediate parameters, overload positions |
+| `llvm-tblgen --dump-json` over `Intrinsics.td` | C builtin aliases and overloaded immediate parameters            |
+| Optional stdarch sources                       | Internal x86/x86_64 LLVM link-name signature overrides           |
 
 - Generator: [`slate-intrinsic-gen`](../../crates/slate-intrinsic-gen/README.md).
 - Checked-in catalog: `crates/slate/src/frontend/lowerer/intrinsics_table.rs`.

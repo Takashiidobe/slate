@@ -1,6 +1,7 @@
 # Atomics
 
 <!-- toc -->
+
 - [`_Atomic` layout per flavor](#_atomic-layout-per-flavor)
   - [Argument passing](#argument-passing)
 - [Atomic updates](#atomic-updates)
@@ -8,7 +9,7 @@
   - [Orderings and arguments](#orderings-and-arguments)
   - [Arithmetic](#arithmetic)
   - [Lock-free queries](#lock-free-queries)
-<!-- /toc -->
+  <!-- /toc -->
 
 Part of the [IR spec](../ir-spec.md). How atomic accesses print is in
 [qualified access](places-pointers.md#qualified-access).
@@ -19,16 +20,16 @@ Part of the [IR spec](../ir-spec.md). How atomic accesses print is in
 Scalars agree because natural alignment already satisfies every rule. Sizes
 reaching the IR are already adjusted.
 
-| Flavor | Rule | `char a[3]` | `char a[16]` |
-| --- | --- | --- | --- |
-| clang | pad to a power of two and align to it, up to the widest lock-free width (16 on x86-64/AArch64, 8 on i686/ARM32); zero-sized gets 1 byte | 4/4 | 16/16 |
-| gcc | no change; non-lock-free accesses go through libatomic | 3/1 | 16/1 |
-| msvc (`/experimental:c11atomics`) | sizes 1/2/4/8 keep size, aligned to it; else `struct { int lock; T value; }` | 8/4 | 20/4 |
+| Flavor                            | Rule                                                                                                                                    | `char a[3]` | `char a[16]` |
+| --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ----------- | ------------ |
+| clang                             | pad to a power of two and align to it, up to the widest lock-free width (16 on x86-64/AArch64, 8 on i686/ARM32); zero-sized gets 1 byte | 4/4         | 16/16        |
+| gcc                               | no change; non-lock-free accesses go through libatomic                                                                                  | 3/1         | 16/1         |
+| msvc (`/experimental:c11atomics`) | sizes 1/2/4/8 keep size, aligned to it; else `struct { int lock; T value; }`                                                            | 8/4         | 20/4         |
 
 - `_Atomic` never qualifies an array; an array of atomics adjusts each
   element.
 - Enclosing offsets differ too: `struct { char head; _Atomic struct { char
-  a[3]; } value; char tail; }` is 12 bytes, value at 4 (clang); 5 bytes at
+a[3]; } value; char tail; }` is 12 bytes, value at 4 (clang); 5 bytes at
   1 (gcc); 16 bytes at 4, tail at 12 (msvc).
 - The MSVC lock word is modeled as size and alignment only: C forbids
   reaching members of an atomic aggregate, so interior offsets aren't
@@ -69,25 +70,25 @@ temporary instead of splitting it.
 typed from the pointer argument's pointee. They reuse the access nodes;
 only compare-exchange and fences get their own.
 
-| Source | IR |
-| --- | --- |
-| `load(p, o)` | `read<T, atomic=o>(deref(p))` |
-| `store(p, v, o)` | `write<T, atomic=o>(deref(p), v)` |
-| `fetch_OP(p, v, o)` | `update<T, result=old, atomic=o>(deref(p), OP(old, v))` |
-| `__atomic_OP_fetch(p, v, o)` | `update<T, result=new, atomic=o>(..)` |
-| `exchange(p, v, o)` | `update<T, result=old, atomic=o>(deref(p), v)` |
-| nand / min / max | `not(and(old, v))` / `conditional(lt\|gt(old, v), old, v)` |
-| `__atomic_test_and_set` / `__atomic_clear` | `update` to 1 / `write` of 0 (a `void *` pointee is `u8`) |
-| generic `__atomic_load/store/exchange` | the same nodes through the pointer arguments |
-| `__c11_atomic_init(p, v)` | non-atomic `write` |
-| compare-exchange | `compare_exchange<T, weak=, success=, failure=>(place, expected, desired)` |
-| `*_thread_fence` / `*_signal_fence` | `fence<scope=thread\|signal, order=o>` |
-| `__sync_fetch_and_OP` / `__sync_OP_and_fetch` | `update`, `result=old`/`new`, `atomic=seq_cst` |
-| `__sync_bool/val_compare_and_swap` | `compare_exchange<T, form=success\|old, weak=false, success=seq_cst, failure=seq_cst>` |
-| `__sync_lock_test_and_set` / `__sync_swap` | `update<T, result=old>`, `acquire` / `seq_cst` |
-| `__sync_lock_release` | `write<T, atomic=release>` of 0 |
-| `__sync_synchronize` | `fence<scope=thread, order=seq_cst>` |
-| lock-free queries | `const<bool>` when decidable, else a call to libatomic `__atomic_is_lock_free` |
+| Source                                        | IR                                                                                     |
+| --------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `load(p, o)`                                  | `read<T, atomic=o>(deref(p))`                                                          |
+| `store(p, v, o)`                              | `write<T, atomic=o>(deref(p), v)`                                                      |
+| `fetch_OP(p, v, o)`                           | `update<T, result=old, atomic=o>(deref(p), OP(old, v))`                                |
+| `__atomic_OP_fetch(p, v, o)`                  | `update<T, result=new, atomic=o>(..)`                                                  |
+| `exchange(p, v, o)`                           | `update<T, result=old, atomic=o>(deref(p), v)`                                         |
+| nand / min / max                              | `not(and(old, v))` / `conditional(lt\|gt(old, v), old, v)`                             |
+| `__atomic_test_and_set` / `__atomic_clear`    | `update` to 1 / `write` of 0 (a `void *` pointee is `u8`)                              |
+| generic `__atomic_load/store/exchange`        | the same nodes through the pointer arguments                                           |
+| `__c11_atomic_init(p, v)`                     | non-atomic `write`                                                                     |
+| compare-exchange                              | `compare_exchange<T, weak=, success=, failure=>(place, expected, desired)`             |
+| `*_thread_fence` / `*_signal_fence`           | `fence<scope=thread\|signal, order=o>`                                                 |
+| `__sync_fetch_and_OP` / `__sync_OP_and_fetch` | `update`, `result=old`/`new`, `atomic=seq_cst`                                         |
+| `__sync_bool/val_compare_and_swap`            | `compare_exchange<T, form=success\|old, weak=false, success=seq_cst, failure=seq_cst>` |
+| `__sync_lock_test_and_set` / `__sync_swap`    | `update<T, result=old>`, `acquire` / `seq_cst`                                         |
+| `__sync_lock_release`                         | `write<T, atomic=release>` of 0                                                        |
+| `__sync_synchronize`                          | `fence<scope=thread, order=seq_cst>`                                                   |
+| lock-free queries                             | `const<bool>` when decidable, else a call to libatomic `__atomic_is_lock_free`         |
 
 ### Orderings and arguments
 

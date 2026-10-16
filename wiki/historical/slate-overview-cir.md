@@ -3,6 +3,7 @@
 > Historical record. See the [archive index](index.md) for scope and source revision.
 
 <!-- toc -->
+
 - [Approach in one line](#approach-in-one-line)
 - [Current state](#current-state)
 - [Not handled yet](#not-handled-yet)

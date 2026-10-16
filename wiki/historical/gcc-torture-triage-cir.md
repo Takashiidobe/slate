@@ -3,6 +3,7 @@
 > Historical record. See the [archive index](index.md) for scope and source revision.
 
 <!-- toc -->
+
 - [The three-test pattern](#the-three-test-pattern)
   - [Reproducing one case](#reproducing-one-case)
   - [Directory layout (this varies per suite — check before

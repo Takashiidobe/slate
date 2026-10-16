@@ -3,6 +3,7 @@
 > Historical record. See the [archive index](index.md) for scope and source revision.
 
 <!-- toc -->
+
 - [Direction](#direction)
 - [Storage class](#storage-class)
   - [Output wiring for addressed (`maybe_memory`)
@@ -49,23 +50,23 @@ constraint already proved a register substitution works for how the template
 uses the operand. That's why `g`/`imr` resolve to `reg` outright rather than
 needing a register-pressure heuristic.
 
-| Constraint                                                                                                         | Resolves to                                                                                                                                                                                                |
-| ------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `{name}` explicit register                                                                                         | `Explicit(name)`                                                                                                                                                                                           |
-| fixed letter `a`/`b`/`c`/`d`/`S`/`D`                                                                               | `Explicit(<width-name>)`; `b` routes through the ebx overlay below                                                                                                                                         |
-| `=@ccX` flag output                                                                                                | synthesized `setcc` + zero-extend, bound `reg`                                                                                                                                                             |
-| `r`, `g`, `imr`, any alternative set containing `r` (`ri`, `rm`, …)                                                | `reg`                                                                                                                                                                                                      |
-| `i`, `n`, x86 range immediates `I J K L M N O`                                                                     | `const`, when CIR proves the value compile-time-constant; error otherwise (no fallback exists — no `r` alternative was offered)                                                                            |
-| `p` (address operand)                                                                                              | address materialized in a register                                                                                                                                                                         |
-| `m`/`o`/`V`/`+m`, or any set with no `r` alternative, template references the slot exactly once, no `%aN` modifier | address bound `in(reg)` (or read-before/write-after for `+m`/`=m`), template placeholder wrapped in deref syntax: AT&T `({0})`, Intel `[{0}]` with a synthesized `dword ptr`/`byte ptr`/`qword ptr` prefix |
-| same, but the slot is referenced more than once or uses a `%aN` address modifier                                   | **error** — no per-template analysis attempted                                                                                                                                                             |
-| `x` (SSE register)                                                                                                 | `xmm_reg` (`AsmReg::Class("xmm_reg")` — the backend's `AsmReg::Class` already takes an arbitrary class name, so no codegen changes were needed, only a new `AsmRegConstraint::Sse` resolution case)         |
-| ARM `w`/`t`/`x` floating-point register                                                                             | type-sensitive `sreg`/`dreg`/`qreg` classes, with `t` and `x` selecting the corresponding low-register subsets                                                                                              |
-| `Q` (always abcd), `q` in 32-bit mode, on a non-byte operand                                                        | `reg_abcd` (`AsmRegConstraint::ByteAddressableAbcd`/`ByteAddressableGpr`)                                                                                                                                    |
-| `q` in 64-bit mode, on a non-byte operand                                                                          | `reg` (equivalent to unrestricted `Generic`, since GCC's `q` means "any GPR" there)                                                                                                                          |
-| `q` in 64-bit mode, on a byte operand                                                                              | `reg_byte`                                                                                                                                                                                                  |
+| Constraint                                                                                                         | Resolves to                                                                                                                                                                                                   |
+| ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `{name}` explicit register                                                                                         | `Explicit(name)`                                                                                                                                                                                              |
+| fixed letter `a`/`b`/`c`/`d`/`S`/`D`                                                                               | `Explicit(<width-name>)`; `b` routes through the ebx overlay below                                                                                                                                            |
+| `=@ccX` flag output                                                                                                | synthesized `setcc` + zero-extend, bound `reg`                                                                                                                                                                |
+| `r`, `g`, `imr`, any alternative set containing `r` (`ri`, `rm`, …)                                                | `reg`                                                                                                                                                                                                         |
+| `i`, `n`, x86 range immediates `I J K L M N O`                                                                     | `const`, when CIR proves the value compile-time-constant; error otherwise (no fallback exists — no `r` alternative was offered)                                                                               |
+| `p` (address operand)                                                                                              | address materialized in a register                                                                                                                                                                            |
+| `m`/`o`/`V`/`+m`, or any set with no `r` alternative, template references the slot exactly once, no `%aN` modifier | address bound `in(reg)` (or read-before/write-after for `+m`/`=m`), template placeholder wrapped in deref syntax: AT&T `({0})`, Intel `[{0}]` with a synthesized `dword ptr`/`byte ptr`/`qword ptr` prefix    |
+| same, but the slot is referenced more than once or uses a `%aN` address modifier                                   | **error** — no per-template analysis attempted                                                                                                                                                                |
+| `x` (SSE register)                                                                                                 | `xmm_reg` (`AsmReg::Class("xmm_reg")` — the backend's `AsmReg::Class` already takes an arbitrary class name, so no codegen changes were needed, only a new `AsmRegConstraint::Sse` resolution case)           |
+| ARM `w`/`t`/`x` floating-point register                                                                            | type-sensitive `sreg`/`dreg`/`qreg` classes, with `t` and `x` selecting the corresponding low-register subsets                                                                                                |
+| `Q` (always abcd), `q` in 32-bit mode, on a non-byte operand                                                       | `reg_abcd` (`AsmRegConstraint::ByteAddressableAbcd`/`ByteAddressableGpr`)                                                                                                                                     |
+| `q` in 64-bit mode, on a non-byte operand                                                                          | `reg` (equivalent to unrestricted `Generic`, since GCC's `q` means "any GPR" there)                                                                                                                           |
+| `q` in 64-bit mode, on a byte operand                                                                              | `reg_byte`                                                                                                                                                                                                    |
 | `Q` on a byte operand, `q` in 32-bit mode on a byte operand                                                        | `reg_abcd`, widened to a 32-bit temp (`ah`/`bh`/`ch`/`dh` cannot be named as an explicit Rust operand; the low byte view uses `{N:l}`, the high byte view uses `{N:h}` — see the widen-hack subsection below) |
-| `y` (MMX register), `A` (edx:eax pair)                                                                             | **error** — see below                                                                                                                                                                                       |
+| `y` (MMX register), `A` (edx:eax pair)                                                                             | **error** — see below                                                                                                                                                                                         |
 
 Fixed-width x86 vector operands using `x` are bridged from Slate's array
 representation to `core::arch::x86`/`x86_64` `__m128`/`__m128d`/`__m128i`
@@ -86,8 +87,9 @@ Only operands passed by address ever appear in `out`; a register output never
 does — it only ever comes through `op.res`/`op.res_ty` (packed into a struct
 when there is more than one). This means the `out` group's length is exactly
 the count of addressed outputs, and `register_output_count = total_output_count
-- out.len()` where `total_output_count` is the number of raw constraints
-starting with `=` (flag outputs included).
+
+- out.len()`where`total_output_count`is the number of raw constraints
+starting with`=` (flag outputs included).
 
 A raw output constraint's leading `*` (after stripping `=`/`&`) is CIR's own
 signal that this operand is addressed — independent of whether the letter set
@@ -105,7 +107,7 @@ Rust-visible result to bind at all.
 Before this wiring existed, `out`-group entries were flattened together with
 `in`/`in_out` into one `input_operands` list with no group boundary tracked;
 an addressed output with a register alternative (`=g`/`=imr`) silently landed
-in the *input* constraint slot instead, reading the address as data with no
+in the _input_ constraint slot instead, reading the address as data with no
 deref — no error, just a wrong runtime result. Fixed in `slate-3f8g.4.15.4`.
 
 ## `ebx`/`rbx` handling (from zstd to work around gcc's limitation)
@@ -192,7 +194,7 @@ AArch64 FP/SIMD constraints: `w` maps to Rust's full `vreg`, and `x` maps to
 Slate's array representation afterward.
 
 `y` (GCC's `FP_LO8_REGS`, V0-V7 — a plain NEON register subset used by some
-narrow-encoded AdvSIMD instructions, *not* SVE; confirmed against
+narrow-encoded AdvSIMD instructions, _not_ SVE; confirmed against
 `gcc/config/aarch64/constraints.md` and against real CIR codegen, which
 accepts `"y"` on an ordinary 128-bit vector operand with no SVE type
 involved) is unsupported, but not because of anything SVE-related — an
@@ -201,7 +203,7 @@ letters. The real blocker: Rust's AArch64 `asm!` only exposes `vreg`
 (V0-V31) and `vreg_low16` (V0-V15) — there is no `vreg_low8` equivalent to
 GCC's V0-V7 restriction. Unlike the x86 `g`/`imr` widening (sound because
 "any register works whenever a register alternative was offered"), `y`
-narrows in the *other* direction: the instruction's encoding hard-requires
+narrows in the _other_ direction: the instruction's encoding hard-requires
 a 3-bit register field, so binding the wider `vreg_low16` class could let
 Rust's allocator pick V8-V15, which the real instruction can't encode —
 unsound, not just imprecise. `'y'` constraints correctly hit
@@ -232,7 +234,7 @@ x86 float-immediate work).
 
 `S` (absolute symbolic address) is out of scope: CIR does not preserve
 symbol identity through an `S` operand — `"S"(global_var)` lowers to a
-`cir.get_global` + `cir.load`, i.e. the *value* of the global, not an
+`cir.get_global` + `cir.load`, i.e. the _value_ of the global, not an
 address reference Slate could bind to a real Rust symbol/global-asm operand.
 There is no CIR-side hook to recover the original symbol name once lowering
 reaches this point.
@@ -249,7 +251,7 @@ valid-looking token downstream). Gated all six letters behind
 Note: this repo's installed reference `clang` (22.1.8, used as the
 differential-test ground truth, distinct from the CIR-enabled `SLATE_CLANG`
 fork) currently has real bugs in both letters that make them uncompilable
-regardless of Slate: `"Z"(0)` — the *only* legal value for `Z` — is rejected
+regardless of Slate: `"Z"(0)` — the _only_ legal value for `Z` — is rejected
 with "value out of range for constraint 'Z'" (confirmed `aarch64-linux-gnu-gcc`
 16.1.0 accepts identical code fine), and any `Y` operand is rejected with
 "constraint 'Y' expects an integer constant expression" even for a literal
@@ -294,7 +296,7 @@ concrete non-GCC-internal example of either letter in the wild — SVE inline
 asm is inherently rare (server/HPC-only hardware, needs `-march=+sve`), same
 frequency class as x86's `y`/`A`. More fundamentally, Arm's own inline-SVE-asm
 guidance states SVE vector/predicate values cannot appear as ordinary
-asm *outputs* at all and must stay internal to the asm block — the same
+asm _outputs_ at all and must stay internal to the asm block — the same
 "can only be a clobber, not a bound operand" shape as x86 `y` (`mmx_reg`).
 Slate also has no scalable-vector type representation to give a `Upl`/`Upa`
 operand a Rust type in the first place, the identical blocker already

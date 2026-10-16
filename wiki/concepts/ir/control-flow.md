@@ -1,6 +1,7 @@
 # Control flow and side effects
 
 <!-- toc -->
+
 - [Function bodies](#function-bodies)
 - [Structured control flow](#structured-control-flow)
   - [Structured exception handling](#structured-exception-handling)
@@ -88,13 +89,13 @@ form was.
 
 ### Materialized function ends
 
-| Case | IR |
-| --- | --- |
-| C99+ `main` falling off the end | `fallthrough=ret_zero` |
-| `void` function falling off the end | `fallthrough=ret_void` |
-| non-void function reaching the end | `fallthrough=ub_if_used` |
-| `noreturn` or naked function reaching the end | `fallthrough=ub` |
-| valueless `return` in a non-void function | `return`, same meaning; accepted only under gcc C89/gnu89 and MSVC (C4033) |
+| Case                                          | IR                                                                         |
+| --------------------------------------------- | -------------------------------------------------------------------------- |
+| C99+ `main` falling off the end               | `fallthrough=ret_zero`                                                     |
+| `void` function falling off the end           | `fallthrough=ret_void`                                                     |
+| non-void function reaching the end            | `fallthrough=ub_if_used`                                                   |
+| `noreturn` or naked function reaching the end | `fallthrough=ub`                                                           |
+| valueless `return` in a non-void function     | `return`, same meaning; accepted only under gcc C89/gnu89 and MSVC (C4033) |
 
 ## Side-effect hoisting
 
@@ -145,12 +146,12 @@ Where C leaves two effects on one object unsequenced (C11 6.5p2) there is
 no order to reproduce and the oracles disagree. With `i = 1`, `f(i++, i++)`
 where `f(a, b) = a * 10 + b`:
 
-| Compiler | Result | Arguments |
-| --- | --- | --- |
-| clang 22 | 12 | `f(1, 2)` |
-| gcc 16 | 21 | `f(2, 1)` |
-| MSVC 19.51 | 11 | `f(1, 1)` |
-| slate | 12 | `f(1, 2)` |
+| Compiler   | Result | Arguments |
+| ---------- | ------ | --------- |
+| clang 22   | 12     | `f(1, 2)` |
+| gcc 16     | 21     | `f(2, 1)` |
+| MSVC 19.51 | 11     | `f(1, 1)` |
+| slate      | 12     | `f(1, 2)` |
 
 - slate hoists left to right, like clang and like Rust's argument order.
   Emulating each flavor would pin codegen accidents, not semantics; the

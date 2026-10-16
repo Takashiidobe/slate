@@ -3,6 +3,7 @@
 > Historical design record. See the [archive index](index.md) for scope and source revision.
 
 <!-- toc -->
+
 - [The mandate](#the-mandate)
 - [Rejected: retrofit the existing
   engine](#rejected-retrofit-the-existing-engine)

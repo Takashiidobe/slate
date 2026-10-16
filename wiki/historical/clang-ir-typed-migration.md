@@ -3,6 +3,7 @@
 > Historical record. See the [archive index](index.md) for scope and source revision.
 
 <!-- toc -->
+
 - [Phase 1 — typed `Attribute`/`Type`
   layer](#phase-1--typed-attributetype-layer)
 - [Phase 2 — `CirOpKind` → `model::Instruction`
@@ -13,7 +14,7 @@
   `Instruction`](#phase-3-in-progress--fully-self-sufficient-instruction)
 - [cir-opt invocation ownership](#cir-opt-invocation-ownership)
 - [Completion (`slate-jedr`,
-  `slate-3hkk`)](#completion-slate-jedr-slate-3hkk)
+`slate-3hkk`)](#completion-slate-jedr-slate-3hkk)
 <!-- /toc -->
 
 Tracked by epic `slate-cevu` (phases 1–3 below) and completed by the

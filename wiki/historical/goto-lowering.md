@@ -3,6 +3,7 @@
 > Historical record. See the [archive index](index.md) for scope and source revision.
 
 <!-- toc -->
+
 - [Why this needs a state machine at
   all](#why-this-needs-a-state-machine-at-all)
 - [Phase 1: does this function need flattening?

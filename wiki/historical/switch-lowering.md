@@ -3,6 +3,7 @@
 > Historical record. See the [archive index](index.md) for scope and source revision.
 
 <!-- toc -->
+
 - [The CIR shape](#the-cir-shape)
 - [Lowering: one shape, no
   cleverness](#lowering-one-shape-no-cleverness)

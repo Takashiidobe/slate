@@ -1,6 +1,7 @@
 # Rust rewrite engine
 
 <!-- toc -->
+
 - [Ownership](#ownership)
 - [Scheduling and facts](#scheduling-and-facts)
 - [Control-flow rewrites](#control-flow-rewrites)
@@ -11,12 +12,12 @@
 
 ## Ownership
 
-| Component under `crates/slate/src/backend` | Responsibility |
-| --- | --- |
-| `rust_ast`, `codegen` | Rust representation and emission |
-| `interproc` | Call-graph, pointer, length and string analyses |
-| `engine` | Arena, rule dispatch, caches and worklist scheduling |
-| `engine/rules` | Registered local rewrites |
+| Component under `crates/slate/src/backend` | Responsibility                                       |
+| ------------------------------------------ | ---------------------------------------------------- |
+| `rust_ast`, `codegen`                      | Rust representation and emission                     |
+| `interproc`                                | Call-graph, pointer, length and string analyses      |
+| `engine`                                   | Arena, rule dispatch, caches and worklist scheduling |
+| `engine/rules`                             | Registered local rewrites                            |
 
 The backend consumes the Rust AST and the IR module's target facts. C typing,
 conversions and layout remain slate-parser responsibilities.
@@ -41,12 +42,12 @@ conversions and layout remain slate-parser responsibilities.
 
 ## Control-flow rewrites
 
-| CFG shape | Rust-to-Rust rewrite |
-| --- | --- |
-| Straight-line chain / forwarding states | Coalesce basic blocks / thread jumps |
-| Acyclic region | `if` / `match` and labeled join blocks |
-| Natural loop | Labeled `loop`; existing loop/while/for peepholes refine it |
-| Multi-entry cyclic region | Existing SCC-local dispatch; explicit-tail-call helpers are an optimization candidate |
+| CFG shape                               | Rust-to-Rust rewrite                                                                  |
+| --------------------------------------- | ------------------------------------------------------------------------------------- |
+| Straight-line chain / forwarding states | Coalesce basic blocks / thread jumps                                                  |
+| Acyclic region                          | `if` / `match` and labeled join blocks                                                |
+| Natural loop                            | Labeled `loop`; existing loop/while/for peepholes refine it                           |
+| Multi-entry cyclic region               | Existing SCC-local dispatch; explicit-tail-call helpers are an optimization candidate |
 
 - Retained rules: `engine/rules/structure_goto.rs` and
   `structure_goto/reducible.rs` provide normalization, dominators, natural loops,

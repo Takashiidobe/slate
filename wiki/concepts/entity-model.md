@@ -1,6 +1,7 @@
 # Declared-entity model
 
 <!-- toc -->
+
 - [Entity](#entity)
 - [Merging](#merging)
 - [Prototype scope](#prototype-scope)
@@ -36,16 +37,16 @@ struct ObjectRequest { alignment: Option<u64>, common: Option<bool> }
 
 IR fields are projections of the entity:
 
-| IR field | Source |
-| --- | --- |
-| `Variable.ty`, `Parameter.ty` | `layout(entity.ty)` |
-| `is_const`, `restrict`, `access.volatile`, `access.atomic` | `quals(entity.ty)` / `access_of(entity.ty)` |
-| `Variable.alignment` (`[align=N]`) | `effective_alignment(request.alignment, natural)` |
-| `Global.common` | `request.common`, then `-fcommon` |
-| register-address constraint | `is_register` |
-| `__alignof__` of an object | `declared_alignment(request.alignment, natural)` |
-| effects access map | `entities.types()`, once, after lowering |
-| linkage, symbol attributes, storage duration, definition state | merged entity state |
+| IR field                                                       | Source                                            |
+| -------------------------------------------------------------- | ------------------------------------------------- |
+| `Variable.ty`, `Parameter.ty`                                  | `layout(entity.ty)`                               |
+| `is_const`, `restrict`, `access.volatile`, `access.atomic`     | `quals(entity.ty)` / `access_of(entity.ty)`       |
+| `Variable.alignment` (`[align=N]`)                             | `effective_alignment(request.alignment, natural)` |
+| `Global.common`                                                | `request.common`, then `-fcommon`                 |
+| register-address constraint                                    | `is_register`                                     |
+| `__alignof__` of an object                                     | `declared_alignment(request.alignment, natural)`  |
+| effects access map                                             | `entities.types()`, once, after lowering          |
+| linkage, symbol attributes, storage duration, definition state | merged entity state                               |
 
 The two alignment rules differ on purpose:
 [object properties](ir/declarations.md#object-properties). Initializers and
@@ -110,18 +111,18 @@ grep -rn 'requested_alignment\|\.request(\|object_alignment' src/sema
 
 IR object construction sites:
 
-| Site | Status |
-| --- | --- |
-| `module.rs::parameters` | from `TypeResolver::parameter_shape`, which also returns the adjusted `QualType` it declares |
-| `module.rs::declaration` (`Variable`, two `Global` wrappers) | declared `QualType`; `[align=N]` and `common` from the request |
-| `expression.rs::place` (`PlaceKind::CompoundLiteral`) | declared into the table; `access` from its `QualType` |
-| `expression.rs` string-literal `Global` | synthetic `.strN` |
-| `atomic.rs` trampoline `Parameter`s | synthetic |
-| `module.rs` unnamed prototype `Parameter`s | function *type* prototypes have no parameter declarations |
-| `types.rs::resolve_parameters` | `resolve_type_module` path: no entity table, counter-allocated ids; shares `parameter_shape` |
-| `types.rs` record `Field`s | no `BindingId`; qualifiers and requests live in the record definition |
-| `effects.rs` `PlaceKind::CompoundLiteral` | rebuilds an existing place |
-| `module.rs`/`types.rs` `ArrayParameter` | grep false positive |
+| Site                                                         | Status                                                                                       |
+| ------------------------------------------------------------ | -------------------------------------------------------------------------------------------- |
+| `module.rs::parameters`                                      | from `TypeResolver::parameter_shape`, which also returns the adjusted `QualType` it declares |
+| `module.rs::declaration` (`Variable`, two `Global` wrappers) | declared `QualType`; `[align=N]` and `common` from the request                               |
+| `expression.rs::place` (`PlaceKind::CompoundLiteral`)        | declared into the table; `access` from its `QualType`                                        |
+| `expression.rs` string-literal `Global`                      | synthetic `.strN`                                                                            |
+| `atomic.rs` trampoline `Parameter`s                          | synthetic                                                                                    |
+| `module.rs` unnamed prototype `Parameter`s                   | function _type_ prototypes have no parameter declarations                                    |
+| `types.rs::resolve_parameters`                               | `resolve_type_module` path: no entity table, counter-allocated ids; shares `parameter_shape` |
+| `types.rs` record `Field`s                                   | no `BindingId`; qualifiers and requests live in the record definition                        |
+| `effects.rs` `PlaceKind::CompoundLiteral`                    | rebuilds an existing place                                                                   |
+| `module.rs`/`types.rs` `ArrayParameter`                      | grep false positive                                                                          |
 
 Alignment requests go through `entities.request` / `merge_request`, except
 `field_request` (field-level) and `requested_alignment(self,

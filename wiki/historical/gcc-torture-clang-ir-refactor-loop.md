@@ -3,13 +3,14 @@
 > Historical record. See the [archive index](index.md) for scope and source revision.
 
 <!-- toc -->
+
 - [Loop](#loop)
 - [Stale-artifact trap](#stale-artifact-trap)
 - [Comparison-kind trap](#comparison-kind-trap)
 - [Long double: AST facts, never CIR-text
   fallback](#long-double-ast-facts-never-cir-text-fallback)
 - [Where semantic loss tends to hide after this class of
-  refactor](#where-semantic-loss-tends-to-hide-after-this-class-of-refactor)
+refactor](#where-semantic-loss-tends-to-hide-after-this-class-of-refactor)
 <!-- /toc -->
 
 When `clang-ir`'s typed-operation model changes underneath Slate (e.g. the

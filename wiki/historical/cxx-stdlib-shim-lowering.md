@@ -3,6 +3,7 @@
 > Historical record. See the [archive index](index.md) for scope and source revision.
 
 <!-- toc -->
+
 - [Why not reimplement, why not `cxx`](#why-not-reimplement-why-not-cxx)
 - [Design: opaque blob + generated C++ wrapper, every crossing goes
   through a

@@ -1,6 +1,7 @@
 # Calls, ABI signatures, and calling conventions
 
 <!-- toc -->
+
 - [Calls](#calls)
 - [ABI signatures](#abi-signatures)
   - [`native_c` means trust rustc](#native_c-means-trust-rustc)
@@ -38,14 +39,14 @@ argument and result. Source types are never replaced with hidden pointers or
 registers. Calls keep their own because an indirect or variadic call can
 differ from the callee.
 
-| Pass | Meaning |
-| --- | --- |
-| `scalar` | implicit in the default dump |
-| `native_c` | rustc's `extern "C"` already passes the obvious `repr(C)` stand-in like the C compiler |
-| `direct` | a vector passed in registers as its own type |
-| `coerce<...>` | direct value pieces |
-| `byval` / `byref` | copied memory argument / indirect argument |
-| `sret` | indirect result |
+| Pass              | Meaning                                                                                |
+| ----------------- | -------------------------------------------------------------------------------------- |
+| `scalar`          | implicit in the default dump                                                           |
+| `native_c`        | rustc's `extern "C"` already passes the obvious `repr(C)` stand-in like the C compiler |
+| `direct`          | a vector passed in registers as its own type                                           |
+| `coerce<...>`     | direct value pieces                                                                    |
+| `byval` / `byref` | copied memory argument / indirect argument                                             |
+| `sret`            | indirect result                                                                        |
 
 - A declaration may name a record incomplete at that point; its ABI is
   computed at the end of the unit. A record never completed prints
@@ -71,19 +72,19 @@ Divergences found by diffing `rustc --emit=llvm-ir` (`#![no_core]`) against
 over-aligned, bit-field, union, and array records; i686 records;
 `x86_win32` over-aligned; `win64` records) agrees:
 
-| Case | Conventions | Explicit shape |
-| --- | --- | --- |
-| `_Atomic` record/complex, clang and msvc flavors | `sysv64`, `x86_cdecl`, `x86_win32`, `aapcs64`, `win_arm64`, `aapcs32_hard_float` | memory, integer, or non-HFA form of the qualified layout |
-| flexible array member, clang and msvc (gcc agrees with rustc) | `sysv64` (≤ 16 bytes), `win64` (1/2/4/8 bytes) | `byval`/`byref` + `sret` |
-| zero-length or flexible array in an otherwise homogeneous float record | `aapcs64`, `win_arm64`, `aapcs32_hard_float` | integer pieces |
-| `_Float16`, `__bf16`, `long double`, `__float128` members setting the register class | `sysv64`, `aapcs64`, `win_arm64` | SysV eightbyte classes or HFA |
-| complex with such a component | `sysv64`, `aapcs64`, `win_arm64` | same |
-| GNU empty record result | `x86_cdecl` | `sret` |
-| empty record result, clang flavor only | `x86_win32` | `void` |
-| register-sized record result clang returns in memory (`char[3]`, `_BitInt`, flexible array) | `x86_win32` | `sret` |
-| complex result ≤ 8 bytes (gcc agrees) | `x86_cdecl` | `coerce<i16/i32/i64>` |
-| homogeneous float record, `_Complex float`/`double` | `aapcs32_hard_float` on Windows | `coerce<fN...>` |
-| homogeneous float record or complex float, variadic | `win_arm64` | integer pieces, `byref` above 16 bytes |
+| Case                                                                                        | Conventions                                                                      | Explicit shape                                           |
+| ------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| `_Atomic` record/complex, clang and msvc flavors                                            | `sysv64`, `x86_cdecl`, `x86_win32`, `aapcs64`, `win_arm64`, `aapcs32_hard_float` | memory, integer, or non-HFA form of the qualified layout |
+| flexible array member, clang and msvc (gcc agrees with rustc)                               | `sysv64` (≤ 16 bytes), `win64` (1/2/4/8 bytes)                                   | `byval`/`byref` + `sret`                                 |
+| zero-length or flexible array in an otherwise homogeneous float record                      | `aapcs64`, `win_arm64`, `aapcs32_hard_float`                                     | integer pieces                                           |
+| `_Float16`, `__bf16`, `long double`, `__float128` members setting the register class        | `sysv64`, `aapcs64`, `win_arm64`                                                 | SysV eightbyte classes or HFA                            |
+| complex with such a component                                                               | `sysv64`, `aapcs64`, `win_arm64`                                                 | same                                                     |
+| GNU empty record result                                                                     | `x86_cdecl`                                                                      | `sret`                                                   |
+| empty record result, clang flavor only                                                      | `x86_win32`                                                                      | `void`                                                   |
+| register-sized record result clang returns in memory (`char[3]`, `_BitInt`, flexible array) | `x86_win32`                                                                      | `sret`                                                   |
+| complex result ≤ 8 bytes (gcc agrees)                                                       | `x86_cdecl`                                                                      | `coerce<i16/i32/i64>`                                    |
+| homogeneous float record, `_Complex float`/`double`                                         | `aapcs32_hard_float` on Windows                                                  | `coerce<fN...>`                                          |
+| homogeneous float record or complex float, variadic                                         | `win_arm64`                                                                      | integer pieces, `byref` above 16 bytes                   |
 
 - The check classifies twice, over the C types and over the Rust stand-ins,
   and prints `native_c` when they agree. On `sysv64` that is a full
@@ -117,14 +118,14 @@ same value that drives ISA predefines. On `sysv64` "> 16 bytes" means wider
 than the widest vector register (16 baseline, 32 with AVX, 64 with
 AVX-512F): no wider is `direct`, wider is `byval` (clang's `-Wpsabi`).
 
-| Convention | < 8 bytes | 8 bytes | 16 bytes | > 16 bytes |
-| --- | --- | --- | --- | --- |
-| `sysv64` | `coerce<iN>` | `coerce<f64>` | `direct` | arg `byval`, result `direct` |
-| `win64` | `direct` | `direct` | `direct` | `direct` |
-| `x86_cdecl` | `direct` | arg `coerce<i64>` if MMX | `direct` | `direct` |
-| `x86_win32` | `direct` | `direct` | `direct` | arg `byref` past 64 bytes or 3 vectors |
-| `aapcs64`/`win_arm64` | arg `coerce<i32>` | `direct` | `direct` | arg `byref`, result `sret` (align 16) |
-| `aapcs32`(`_hard_float`) | arg `coerce<i32>` | `direct` | `direct` | arg `direct`, result `sret` (align 8) |
+| Convention               | < 8 bytes         | 8 bytes                  | 16 bytes | > 16 bytes                             |
+| ------------------------ | ----------------- | ------------------------ | -------- | -------------------------------------- |
+| `sysv64`                 | `coerce<iN>`      | `coerce<f64>`            | `direct` | arg `byval`, result `direct`           |
+| `win64`                  | `direct`          | `direct`                 | `direct` | `direct`                               |
+| `x86_cdecl`              | `direct`          | arg `coerce<i64>` if MMX | `direct` | `direct`                               |
+| `x86_win32`              | `direct`          | `direct`                 | `direct` | arg `byref` past 64 bytes or 3 vectors |
+| `aapcs64`/`win_arm64`    | arg `coerce<i32>` | `direct`                 | `direct` | arg `byref`, result `sret` (align 16)  |
+| `aapcs32`(`_hard_float`) | arg `coerce<i32>` | `direct`                 | `direct` | arg `direct`, result `sret` (align 8)  |
 
 - Results are `direct` where the table coerces only arguments.
 - gcc corners: `vector<f64, 1>` is `byval<align=8>` on `sysv64` (result
@@ -171,7 +172,7 @@ member, so Slate must pass that member's type at the boundary
   conventions instead of lowering them as C.
 - `-mregparm=N` on 32-bit x86 puts `regparm=N` on every non-variadic
   `cdecl` or `stdcall` `AbiSignature` (`x86_cdecl regparm=3(scalar) ->
-  scalar`): the first N integer-class registers (`eax`, `edx`, `ecx`) carry
+scalar`): the first N integer-class registers (`eax`, `edx`, `ecx`) carry
   arguments as clang's `inreg` assigns them. gcc and clang both pass a
   variadic function's fixed arguments on the stack, so variadics get none.
   It is recorded, not modeled: rustc's `-Zregparm=N` is the matching

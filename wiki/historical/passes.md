@@ -3,11 +3,11 @@
 > Historical record. See the [archive index](index.md) for scope and source revision.
 
 <!-- toc -->
+
 - [Pipeline](#pipeline)
 - [The rewrite stage](#the-rewrite-stage)
   - [Interproc analyses (phase 1)](#interproc-analyses-phase-1)
-  - [Per-function worklist rules (phase
-    2)](#per-function-worklist-rules-phase-2)
+  - [Per-function worklist rules (phase 2)](#per-function-worklist-rules-phase-2)
 - [Debugging the rewrite stage](#debugging-the-rewrite-stage)
 - [Adding a feature vs. a rewrite](#adding-a-feature-vs-a-rewrite)
 <!-- /toc -->

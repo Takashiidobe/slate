@@ -16,17 +16,17 @@ It invokes `translate-lowered` for each fixture and inspects
 `emit-slate-ir` when the lowerer stops at its module type gate. The TSV is a
 snapshot; rerun the command after either lowerer or parser changes.
 
-| Stage | Fixtures |
-| --- | ---: |
-| Parser or semantic analysis failure | 13 |
-| Unsupported Slate lowering | 348 |
-| Rust emitted, differential behavior unverified by this inventory | 83 |
+| Stage                                                            | Fixtures |
+| ---------------------------------------------------------------- | -------: |
+| Parser or semantic analysis failure                              |       13 |
+| Unsupported Slate lowering                                       |      348 |
+| Rust emitted, differential behavior unverified by this inventory |       83 |
 
-| Scope owner | Fixtures |
-| --- | ---: |
-| Phase 3 common semantics | 113 |
-| Phase 4 difficult semantics and source facts | 276 |
-| Phase 5 rewrite and full parity | 55 |
+| Scope owner                                  | Fixtures |
+| -------------------------------------------- | -------: |
+| Phase 3 common semantics                     |      113 |
+| Phase 4 difficult semantics and source facts |      276 |
+| Phase 5 rewrite and full parity              |       55 |
 
 Only `add.c`, `loop_sum.c`, and `pointers.c` currently carry both Slate FileCheck
 prefixes. The inventory does not compile the emitted Rust or compare it with C.
@@ -54,17 +54,17 @@ gates `CMPLX` and `CMPLXL` behind a GNU compiler version test that the
 parser's Clang-like predefines do not satisfy. The migrated path must stop
 defaulting to `libc-shim`.
 
-| First barrier | Fixtures | Ticket |
-| --- | --- | --- |
-| Missing C23 libc APIs and headers | `c23_library.c`, `c23_stdlib_memory_management.c` | `slate-p58o.1.6` |
-| `complex.h` feature macro gate | `c11.c`, `long_double_complex.c` | `slate-p58o.1.7` |
+| First barrier                      | Fixtures                                                          | Ticket                |
+| ---------------------------------- | ----------------------------------------------------------------- | --------------------- |
+| Missing C23 libc APIs and headers  | `c23_library.c`, `c23_stdlib_memory_management.c`                 | `slate-p58o.1.6`      |
+| `complex.h` feature macro gate     | `c11.c`, `long_double_complex.c`                                  | `slate-p58o.1.7`      |
 | `auto` and `__auto_type` inference | `c23_language.c`, `gnu_auto_type.c`, `statement_expr_auto_type.c` | `slate-parser-dyd.38` |
-| `nullptr_t` | `c23_nullptr.c` | `slate-parser-dyd.51` |
-| GNU function pointer arithmetic | `gnu_function_pointer_arithmetic.c` | `slate-parser-dyd.52` |
-| GNU flexible array in union | `gnu_init_designator_survey.c` | `slate-parser-dyd.53` |
-| Attributed module statement | `gnu_misc_extension_survey.c` | `slate-parser-dyd.26` |
-| GNU `sizeof(function)` | `misc_language_survey.c` | `slate-parser-dyd.54` |
-| Transparent union call conversion | `transparent_union_call.c` | `slate-parser-dyd.34` |
+| `nullptr_t`                        | `c23_nullptr.c`                                                   | `slate-parser-dyd.51` |
+| GNU function pointer arithmetic    | `gnu_function_pointer_arithmetic.c`                               | `slate-parser-dyd.52` |
+| GNU flexible array in union        | `gnu_init_designator_survey.c`                                    | `slate-parser-dyd.53` |
+| Attributed module statement        | `gnu_misc_extension_survey.c`                                     | `slate-parser-dyd.26` |
+| GNU `sizeof(function)`             | `misc_language_survey.c`                                          | `slate-parser-dyd.54` |
+| Transparent union call conversion  | `transparent_union_call.c`                                        | `slate-parser-dyd.34` |
 
 `c23_library.c` reaches parser `char8_t` lowering (`slate-parser-dyd.50`)
 after its missing headers are supplied. `c23_language.c` also uses
@@ -92,12 +92,12 @@ records the `slate-p58o.3.24` audit against the TSV above.
 - The name-based route sent seven common-semantics fixtures to Phase 4. They
   are rerouted to Phase 3 children:
 
-| Gap | Fixtures | Ticket |
-| --- | --- | --- |
-| switch fallthrough | `switch_fallthrough`, `switch_default_first_fallthrough`, `switch_default_middle_fallthrough` | `slate-p58o.3.41` |
-| compound literals | `compound_literal_address` | `slate-p58o.3.42` |
-| pointers to extern C functions | `fn_ptr_cmp_libc`, `libc_address_taken_safe_callback` | `slate-p58o.3.43` |
-| anonymous members | `anonymous_members` | `slate-p58o.3.44` |
+| Gap                            | Fixtures                                                                                      | Ticket            |
+| ------------------------------ | --------------------------------------------------------------------------------------------- | ----------------- |
+| switch fallthrough             | `switch_fallthrough`, `switch_default_first_fallthrough`, `switch_default_middle_fallthrough` | `slate-p58o.3.41` |
+| compound literals              | `compound_literal_address`                                                                    | `slate-p58o.3.42` |
+| pointers to extern C functions | `fn_ptr_cmp_libc`, `libc_address_taken_safe_callback`                                         | `slate-p58o.3.43` |
+| anonymous members              | `anonymous_members`                                                                           | `slate-p58o.3.44` |
 
 The remaining Phase 4 rows were spot-checked by first barrier: atomics,
 volatile and `_Atomic` globals, bit-fields, packed/aligned records, complex,

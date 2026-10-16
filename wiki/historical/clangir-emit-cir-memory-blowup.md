@@ -3,6 +3,7 @@
 > Historical record. See the [archive index](index.md) for scope and source revision.
 
 <!-- toc -->
+
 - [Symptom](#symptom)
 - [Root cause: non-cyclic alias re-expansion during printing, not
   CIRGen](#root-cause-non-cyclic-alias-re-expansion-during-printing-not-cirgen)

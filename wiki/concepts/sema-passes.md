@@ -1,6 +1,7 @@
 # Sema passes
 
 <!-- toc -->
+
 - [Pass order](#pass-order)
 - [Files by pass](#files-by-pass)
 - [`ResolveError` policy](#resolveerror-policy)
@@ -17,15 +18,15 @@ Principles: [architecture](parser-architecture.md#checker-first-lowering-trusts)
 
 Driven by `src/main.rs`.
 
-| # | Pass | Entry | Output |
-| --- | --- | --- | --- |
-| 1 | Reachability pruning | `reachability::filter_translation_unit`, called by the parser before sema | pruned `TranslationUnit` ([rules](ir/pipeline.md#reachability-pruning)) |
-| 2 | Name resolution | `Sema::new` → `names::resolve_items` | `NameResolution` + one `ItemResolution { errors, declared, references }` per top-level item |
-| 3 | Resolver setup | `Sema::new` → `TypeResolver::with_names` | shared `TypeResolver`; runs `pragmas::collect` |
-| 4 | Checker | `Sema::analyze` → `assertion::validate` | errors; warnings stashed per item in `item_diagnostics` |
-| 5 | Early validation | `Sema::analyze` → `validate::analyze` (after the checker) | structural errors, unknown typedef names, literal and type-extension warnings |
-| 6 | Lowering | `Sema::lower` → `module::resolve_module` | `Module` + warnings |
-| 7 | Module finish | `Lowerer::finish_module` | object requests, inline emission, declaration ABIs, then `effects_statements::normalize` (side-effect hoisting, unsequenced marking) |
+| #   | Pass                 | Entry                                                                     | Output                                                                                                                               |
+| --- | -------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| 1   | Reachability pruning | `reachability::filter_translation_unit`, called by the parser before sema | pruned `TranslationUnit` ([rules](ir/pipeline.md#reachability-pruning))                                                              |
+| 2   | Name resolution      | `Sema::new` → `names::resolve_items`                                      | `NameResolution` + one `ItemResolution { errors, declared, references }` per top-level item                                          |
+| 3   | Resolver setup       | `Sema::new` → `TypeResolver::with_names`                                  | shared `TypeResolver`; runs `pragmas::collect`                                                                                       |
+| 4   | Checker              | `Sema::analyze` → `assertion::validate`                                   | errors; warnings stashed per item in `item_diagnostics`                                                                              |
+| 5   | Early validation     | `Sema::analyze` → `validate::analyze` (after the checker)                 | structural errors, unknown typedef names, literal and type-extension warnings                                                        |
+| 6   | Lowering             | `Sema::lower` → `module::resolve_module`                                  | `Module` + warnings                                                                                                                  |
+| 7   | Module finish        | `Lowerer::finish_module`                                                  | object requests, inline emission, declaration ABIs, then `effects_statements::normalize` (side-effect hoisting, unsequenced marking) |
 
 - `analyze` returns `SemaErrors` on any error and `main` stops, so lowering
   only runs on a checker-clean unit.
@@ -36,31 +37,31 @@ Driven by `src/main.rs`.
 
 ## Files by pass
 
-| Role | Files |
-| --- | --- |
-| Names | `names.rs` |
-| Checker | `assertion.rs` (the `Checker`), `validate.rs` (early checks, `analyze` driver, `with_sources`) |
+| Role                      | Files                                                                                                                                                                                                                                                                                                                                                                      |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Names                     | `names.rs`                                                                                                                                                                                                                                                                                                                                                                 |
+| Checker                   | `assertion.rs` (the `Checker`), `validate.rs` (early checks, `analyze` driver, `with_sources`)                                                                                                                                                                                                                                                                             |
 | Shared, on `TypeResolver` | `types.rs` (declarator/tag resolution, layout, `check_attributes`), `typer.rs` (expression typer), `operand.rs` (typed arithmetic, constants), `initializer.rs` (current-object walk), `type_of.rs`, `builtins.rs` (builtin registry, custom rules), `entity.rs`, `attributes.rs` (`declaration_use`), `pragmas.rs`, `fold.rs`, `ctype/` ([c-type-layer](c-type-layer.md)) |
-| Shared rules and emitters | `numeric.rs` (`ResolveError`, `Context`, `binary_rule` / `unary_rule`, IR emission) |
-| Lowering, on `Lowerer` | `module.rs` (driver, declarations, statements), `function.rs`, `expression.rs`, `asm.rs`, `atomic.rs`, `abi.rs`, `ms_asm.rs`, `ms_asm_effects.rs`, `ms_asm_return.rs`; `initializer.rs` and `type_of.rs` have `Lowerer` halves |
-| After lowering | `effects.rs`, `effects_statements.rs`, `sequencing.rs` |
-| Generated | `clang_builtins.rs` (`tools/generate_clang_builtins.py`) |
+| Shared rules and emitters | `numeric.rs` (`ResolveError`, `Context`, `binary_rule` / `unary_rule`, IR emission)                                                                                                                                                                                                                                                                                        |
+| Lowering, on `Lowerer`    | `module.rs` (driver, declarations, statements), `function.rs`, `expression.rs`, `asm.rs`, `atomic.rs`, `abi.rs`, `ms_asm.rs`, `ms_asm_effects.rs`, `ms_asm_return.rs`; `initializer.rs` and `type_of.rs` have `Lowerer` halves                                                                                                                                             |
+| After lowering            | `effects.rs`, `effects_statements.rs`, `sequencing.rs`                                                                                                                                                                                                                                                                                                                     |
+| Generated                 | `clang_builtins.rs` (`tools/generate_clang_builtins.py`)                                                                                                                                                                                                                                                                                                                   |
 
 ## `ResolveError` policy
 
 Defined in `sema/numeric.rs`.
 
-| Variant | Meaning | Who returns it |
-| --- | --- | --- |
-| `Rejected(&str)` | Ill-formed C that every oracle rejects ([strictness](parser-architecture.md#strictness-policy)) | checker, typer, shared rule functions |
-| `InvalidOperands` / `InvalidOperand` | Typed rejection of arithmetic operands | `numeric::binary_rule` / `unary_rule` |
-| `Unimplemented(&str)` | Valid C not modeled yet (LLVM NYI); not a rejection | anywhere |
-| `UnsupportedBuiltin(String)` | Known builtin without lowering; a kind of `Unimplemented` | `expression.rs` |
-| `Internal(&str)` | An invariant the checker should guarantee; always a slate bug | lowering |
-| `MissingExpressionBinding(String)` | Identifier without a binding | `expression.rs` |
-| `IntegerLiteral(String)` | Literal with no target type | `numeric.rs`, `operand.rs` |
-| `Names`, `Literal`, `Layout` | Wrapped `names::ResolveError`, `ConstExprError`, `LayoutError` | name resolution, literal decoding, `TargetInfo` |
-| `Located { loc, error }` | Location wrapper from `ResolveError::at` | `Lowerer::expr` / `place` / `statements` |
+| Variant                              | Meaning                                                                                         | Who returns it                                  |
+| ------------------------------------ | ----------------------------------------------------------------------------------------------- | ----------------------------------------------- |
+| `Rejected(&str)`                     | Ill-formed C that every oracle rejects ([strictness](parser-architecture.md#strictness-policy)) | checker, typer, shared rule functions           |
+| `InvalidOperands` / `InvalidOperand` | Typed rejection of arithmetic operands                                                          | `numeric::binary_rule` / `unary_rule`           |
+| `Unimplemented(&str)`                | Valid C not modeled yet (LLVM NYI); not a rejection                                             | anywhere                                        |
+| `UnsupportedBuiltin(String)`         | Known builtin without lowering; a kind of `Unimplemented`                                       | `expression.rs`                                 |
+| `Internal(&str)`                     | An invariant the checker should guarantee; always a slate bug                                   | lowering                                        |
+| `MissingExpressionBinding(String)`   | Identifier without a binding                                                                    | `expression.rs`                                 |
+| `IntegerLiteral(String)`             | Literal with no target type                                                                     | `numeric.rs`, `operand.rs`                      |
+| `Names`, `Literal`, `Layout`         | Wrapped `names::ResolveError`, `ConstExprError`, `LayoutError`                                  | name resolution, literal decoding, `TargetInfo` |
+| `Located { loc, error }`             | Location wrapper from `ResolveError::at`                                                        | `Lowerer::expr` / `place` / `statements`        |
 
 Rules:
 
@@ -151,7 +152,7 @@ lowering reads its facts and derives no types
 - A typed `sizeof` operand is not lowered unless it is a VLA.
 - Null pointer constants: `integer_constant_zero`, an ICE by 6.6p6
   operand rules that folds to zero (`(void *)(1 - 1)` yes; `(void *)(0,
-  0)`, `(int)(0.0 + 0.0)`, `(size_t)(void *)0` no). Used by
+0)`, `(int)(0.0 + 0.0)`, `(size_t)(void *)0` no). Used by
   `null_pointer_constant`, pointer `?:` and `Checker::comparison_warning`
   (`-Wpointer-integer-compare`, `-Wcompare-distinct-pointer-types`, also
   in unevaluated operands, as clang); a cast of a zero ICE lowers to
@@ -187,7 +188,7 @@ remaining guards (`Internal` on an impossible shape) are not rules.
   valueless `return` per flavor; fallthrough on a non-empty statement
   (non-gcc); nested function definitions (non-gcc). `constant_value` folds
   `?:` without requiring the unselected arm to be constant (`case (1 ? 1 :
-  i)`).
+i)`).
 - **Declarations**: shared `module::linkage`, `symbol_attributes`,
   `function_symbol`, `deduced_initializer` / `inferred_base` /
   `check_inferred` (`auto`, `__auto_type`), `attribute_error` (warning-free

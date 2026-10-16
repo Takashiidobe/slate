@@ -1,6 +1,7 @@
 # Open IR design
 
 <!-- toc -->
+
 - [Information ownership](#information-ownership)
 - [Macro provenance](#macro-provenance)
 - [String literal views](#string-literal-views)
@@ -21,17 +22,17 @@ piece here lands, move it to the subpage for its area.
 The rule that decides where a fact lives. A side table does not by itself
 make information optional.
 
-| Information | Owner | Required? |
-| --- | --- | --- |
-| numeric value domain | the numeric type | yes |
-| size, alignment, representation | type storage, with object/field overrides | yes when stored |
-| storage duration, linkage | the declaration | yes |
-| calling convention and ABI | the signature and each call | yes at calls |
-| overflow and conversion behavior | the operation | yes |
-| volatile/atomic access | the memory operation | yes |
-| original C type, typedef chain | metadata on the type use | no |
-| spelling, radix, suffix, macro/header origin | node metadata | no |
-| proven ranges, known bits, no-overflow | analysis facts keyed by node | no |
+| Information                                  | Owner                                     | Required?       |
+| -------------------------------------------- | ----------------------------------------- | --------------- |
+| numeric value domain                         | the numeric type                          | yes             |
+| size, alignment, representation              | type storage, with object/field overrides | yes when stored |
+| storage duration, linkage                    | the declaration                           | yes             |
+| calling convention and ABI                   | the signature and each call               | yes at calls    |
+| overflow and conversion behavior             | the operation                             | yes             |
+| volatile/atomic access                       | the memory operation                      | yes             |
+| original C type, typedef chain               | metadata on the type use                  | no              |
+| spelling, radix, suffix, macro/header origin | node metadata                             | no              |
+| proven ranges, known bits, no-overflow       | analysis facts keyed by node              | no              |
 
 Optional context may improve Rust names and idioms but must never be needed
 to reconstruct arithmetic, storage, or calling semantics.
@@ -72,17 +73,17 @@ type, symbol, `ParamIndex`, identifier, list), and a resolution state
 Resolved effects move to their owner (signature, symbol, contracts) and keep
 the occurrence id.
 
-| Attribute information | Resolved owner |
-| --- | --- |
-| calling convention | function type (done) |
-| symbol name, visibility, weak, import/export, section | symbol attributes (done) |
-| alias, ifunc resolver | function implementation |
-| noreturn (done), returns_twice | control-flow facts |
-| constructor/destructor priority, target features, interrupt | execution requirements |
+| Attribute information                                               | Resolved owner                                                                        |
+| ------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| calling convention                                                  | function type (done)                                                                  |
+| symbol name, visibility, weak, import/export, section               | symbol attributes (done)                                                              |
+| alias, ifunc resolver                                               | function implementation                                                               |
+| noreturn (done), returns_twice                                      | control-flow facts                                                                    |
+| constructor/destructor priority, target features, interrupt         | execution requirements                                                                |
 | nonnull, access, alloc_size, alloc_align, malloc (deallocator done) | parameter/result contracts (`alloc_size(1, 2)` → `Product(Argument(0), Argument(1))`) |
-| pure/const | function contracts (done as `memory=`) |
-| inline, hot/cold, optimize | hints |
-| deprecated, nodiscard, format | hints/metadata |
+| pure/const                                                          | function contracts (done as `memory=`)                                                |
+| inline, hot/cold, optimize                                          | hints                                                                                 |
+| deprecated, nodiscard, format                                       | hints/metadata                                                                        |
 
 Rules: declared contracts stay distinct from proven facts (nonnull does not
 prove a valid borrow); function-pointer attributes stay visible at indirect

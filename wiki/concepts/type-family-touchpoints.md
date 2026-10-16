@@ -1,6 +1,7 @@
 # Type Family Touchpoints
 
 <!-- toc -->
+
 - [Layers](#layers)
 - [Caught by the compiler](#caught-by-the-compiler)
 - [Not caught by the compiler](#not-caught-by-the-compiler)
@@ -15,13 +16,13 @@ when a match site over `ir::Type` or `CTypeKind` is added or removed.
 
 ## Layers
 
-| Layer | Type | Home |
-| --- | --- | --- |
-| Source | `TypeSpecifier` | `src/ast.rs`, `src/parser/declarator.rs` |
-| Semantic | `CTypeKind` | `src/sema/ctype/mod.rs` |
-| Lowered | `ir::Type` | `src/ir/numeric.rs` |
-| Target | `StorageLayout` | `src/target_info.rs` |
-| Printed | `Display for Type`, `CTypes::name` | `src/ir/numeric.rs`, `src/sema/ctype/render.rs` |
+| Layer    | Type                               | Home                                            |
+| -------- | ---------------------------------- | ----------------------------------------------- |
+| Source   | `TypeSpecifier`                    | `src/ast.rs`, `src/parser/declarator.rs`        |
+| Semantic | `CTypeKind`                        | `src/sema/ctype/mod.rs`                         |
+| Lowered  | `ir::Type`                         | `src/ir/numeric.rs`                             |
+| Target   | `StorageLayout`                    | `src/target_info.rs`                            |
+| Printed  | `Display for Type`, `CTypes::name` | `src/ir/numeric.rs`, `src/sema/ctype/render.rs` |
 
 `CTypeKind` keeps the source shape (kind, rank, signedness, sugar) for
 metadata; `ir::Type` keeps only the resolved shape (width, scale, lanes,
@@ -58,6 +59,7 @@ operation correct.
 These have `_ =>` arms that silently accept a new family.
 
 Classification (`sema/ctype/convert.rs`):
+
 - `is_integer`, `is_floating`, `is_fixed_point`, `is_vector`,
   `is_complex_domain`, and `is_arithmetic` / `is_scalar`. Missing from
   `is_arithmetic` means no conversions at all.
@@ -66,12 +68,14 @@ Classification (`sema/ctype/convert.rs`):
 - Kept as `matches!` on purpose: "no" is the right default answer.
 
 Promotion and common type (`sema/ctype/arith.rs`):
+
 - `integer()` returns `None` for non-integers, so `integer_promotion`
   leaves them alone.
 - `usual_real_type`, `arithmetic_component`: a family with its own
   common-type rule needs its own function (model: `usual_fixed_type`).
 
 Operand conversion (`sema/operand.rs`):
+
 - `binary_types` is ordered: vector, shift, family-specific, then
   real/complex. Place the new branch before anything that would capture
   its operands.
@@ -80,6 +84,7 @@ Operand conversion (`sema/operand.rs`):
   apply them.
 
 Arithmetic (`sema/numeric.rs`, `sema/expression.rs`):
+
 - `emit_binary`, `emit_unary_arith` (`-`, `~`), `condition()` in
   `numeric.rs`.
 - `emit_arithmetic_conversion`: `(from, to)` match with a postcondition;
@@ -90,12 +95,14 @@ Arithmetic (`sema/numeric.rs`, `sema/expression.rs`):
   code.
 
 Pointers:
+
 - `Type::Pointer` carries a `PointerSpace` (`__ptr32`/`__ptr64`). Take
   storage from `TargetInfo::pointer_storage(space)` or `storage_of` and ABI
   widths from `space.width(..)`, never `target.pointer` /
   `target.pointer_width`.
 
 Printing (`ir/mod.rs`):
+
 - `format_semantics` (`ArithSema`) and the `ConversionSema` match in the
   `ValueKind::Convert` arm are exhaustive over their enums; a family that
   reuses existing variants is not caught.
@@ -124,5 +131,5 @@ Printing (`ir/mod.rs`):
   `Checker::comparison_warning`, `type_class`.
 - Fixed-point is the fullest example (new `ArithSema`, five
   `ConversionKind`s, own common type): `git log --grep "lower fixed-point
-  types" -p`. Cite commits by subject; the beads post-commit hook amends
+types" -p`. Cite commits by subject; the beads post-commit hook amends
   every commit, so hashes shift.

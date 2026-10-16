@@ -1,6 +1,7 @@
 # Attribute pipeline
 
 <!-- toc -->
+
 - [Stages](#stages)
 - [Parsing](#parsing)
   - [C23 placement](#c23-placement)
@@ -19,26 +20,26 @@ How an attribute gets from source to the IR. AST shape:
 
 ## Stages
 
-| # | Stage | Where | Decides |
-| --- | --- | --- | --- |
-| 1 | Parse | `parser/attributes.rs::parse_attribute_groups` | spelling → `Attribute` variant with parsed arguments |
-| 2 | Registration | `attribute_support.rs` (called by the parser) | does this flavor know the spelling on this target; if not, `Unknown` / `IgnoredDeclspec` |
-| 3 | Early validation | `validate.rs::check_attributes` | `Invalid` arguments, `alloc_size` arity |
-| 4 | Applicability | `sema/attributes.rs::declaration_use` | what the attribute does on this `Subject` |
-| 5 | Check | `TypeResolver::attribute_error` (checker), `check_attributes` (lowering, `define_tag`) | reject, warn, or accept |
-| 6 | Consume | `symbol_attributes`, `function_symbol`, `record_function`, `requested_alignment`, `field_request`, record layout, `c_attributes` metadata | IR effect |
+| #   | Stage            | Where                                                                                                                                     | Decides                                                                                  |
+| --- | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| 1   | Parse            | `parser/attributes.rs::parse_attribute_groups`                                                                                            | spelling → `Attribute` variant with parsed arguments                                     |
+| 2   | Registration     | `attribute_support.rs` (called by the parser)                                                                                             | does this flavor know the spelling on this target; if not, `Unknown` / `IgnoredDeclspec` |
+| 3   | Early validation | `validate.rs::check_attributes`                                                                                                           | `Invalid` arguments, `alloc_size` arity                                                  |
+| 4   | Applicability    | `sema/attributes.rs::declaration_use`                                                                                                     | what the attribute does on this `Subject`                                                |
+| 5   | Check            | `TypeResolver::attribute_error` (checker), `check_attributes` (lowering, `define_tag`)                                                    | reject, warn, or accept                                                                  |
+| 6   | Consume          | `symbol_attributes`, `function_symbol`, `record_function`, `requested_alignment`, `field_request`, record layout, `c_attributes` metadata | IR effect                                                                                |
 
 ## Parsing
 
 `parse_attribute_groups` reads any run of these, in any order:
 
-| Syntax | Handling |
-| --- | --- |
-| `__cdecl`, `__stdcall`, `__fastcall`, `__vectorcall`, `__thiscall` (and `_x` forms) | `CallingConvention` |
-| `__declspec(a b(x) ...)` | `align` → `aligned`, `allocate` → `section`; unregistered → `IgnoredDeclspec` |
-| `_Alignas(...)` / `alignas(...)` | `AlignAs(Type \| Expr)`; a type name is tried first |
-| `__attribute__((...))` / `__attribute((...))` | unregistered → `Unknown` |
-| `[[name]]`, `[[scope::name]]` | `c23_attribute_name` maps standard names, `gnu::` / `clang::` names, `msvc::noinline`, `msvc::forceinline` (→ `always_inline`); anything else → `Unknown` |
+| Syntax                                                                              | Handling                                                                                                                                                  |
+| ----------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `__cdecl`, `__stdcall`, `__fastcall`, `__vectorcall`, `__thiscall` (and `_x` forms) | `CallingConvention`                                                                                                                                       |
+| `__declspec(a b(x) ...)`                                                            | `align` → `aligned`, `allocate` → `section`; unregistered → `IgnoredDeclspec`                                                                             |
+| `_Alignas(...)` / `alignas(...)`                                                    | `AlignAs(Type \| Expr)`; a type name is tried first                                                                                                       |
+| `__attribute__((...))` / `__attribute((...))`                                       | unregistered → `Unknown`                                                                                                                                  |
+| `[[name]]`, `[[scope::name]]`                                                       | `c23_attribute_name` maps standard names, `gnu::` / `clang::` names, `msvc::noinline`, `msvc::forceinline` (→ `always_inline`); anything else → `Unknown` |
 
 - `parse_attribute_value` matches the unwrapped name (`__name__` → `name`)
   and argument shape. A modeled name with the wrong arguments is
@@ -61,14 +62,14 @@ How an attribute gets from source to the IR. AST shape:
 only warn before C23; see
 [ast-spec](ast-spec.md#post-c89-constructs-in-older-modes)):
 
-| Written | C23 appertains to | AST | slate treats it as |
-| --- | --- | --- | --- |
-| `[[x]] int a;` | the declared entities | `specifiers.attributes` | declaration |
-| `int [[x]] a;` | the type specifier | `specifiers.attributes` | declaration |
-| `int a [[x]];`, `void f [[x]] (void);` | the entity | `Attributed { Name }` | declaration |
-| `int *[[x]] p;` | the pointer type | `Pointer.attributes` | as GNU `* __attribute__` |
-| `int f(void) [[x]];`, `int v[2] [[x]];` | the function/array type | `Attributed { Function \| Array }` | declaration |
-| `[[x]];` at file scope | nothing | `DeclKind::Attribute` | gcc: `-Wignored-attributes` per attribute; clang, msvc: silent |
+| Written                                 | C23 appertains to       | AST                                | slate treats it as                                             |
+| --------------------------------------- | ----------------------- | ---------------------------------- | -------------------------------------------------------------- |
+| `[[x]] int a;`                          | the declared entities   | `specifiers.attributes`            | declaration                                                    |
+| `int [[x]] a;`                          | the type specifier      | `specifiers.attributes`            | declaration                                                    |
+| `int a [[x]];`, `void f [[x]] (void);`  | the entity              | `Attributed { Name }`              | declaration                                                    |
+| `int *[[x]] p;`                         | the pointer type        | `Pointer.attributes`               | as GNU `* __attribute__`                                       |
+| `int f(void) [[x]];`, `int v[2] [[x]];` | the function/array type | `Attributed { Function \| Array }` | declaration                                                    |
+| `[[x]];` at file scope                  | nothing                 | `DeclKind::Attribute`              | gcc: `-Wignored-attributes` per attribute; clang, msvc: silent |
 
 - Type-position attributes are treated like GNU declaration attributes
   (permissive, decided 2026-09-29). gcc and clang drop declaration-only
@@ -132,16 +133,16 @@ position without resolving names:
 `Subject` is `Function`, `Object { automatic }`, `Parameter`, `Typedef`,
 `Field`, or `Record { union }`.
 
-| `Use` | Meaning | Effect in `check_attributes` |
-| --- | --- | --- |
-| `Symbol` | folds into `SymbolAttributes` | none |
-| `Layout` | read by type resolution or the object request | none |
-| `Ignored` | nothing the declaration needs (or consumed elsewhere, e.g. by `record_function`) | none |
-| `Inapplicable { spelling, applies_to }` | outside clang's subject list | `-Wignored-attributes`; dropped |
-| `Unknown` | `Attribute::Unknown` | `-Wunknown-attributes` unless the fallback lists register it |
-| `UnsupportedDeclspec` | `Attribute::IgnoredDeclspec` | `-Wignored-attributes` |
-| `Rejected(reason)` | error in every oracle (e.g. `section` on a field, `_Alignas` on a typedef) | `ResolveError::Rejected` |
-| `Unimplemented(reason)` | valid but not modeled (`code_seg`, other attributes on a parameter) | `ResolveError::Unimplemented` |
+| `Use`                                   | Meaning                                                                          | Effect in `check_attributes`                                 |
+| --------------------------------------- | -------------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| `Symbol`                                | folds into `SymbolAttributes`                                                    | none                                                         |
+| `Layout`                                | read by type resolution or the object request                                    | none                                                         |
+| `Ignored`                               | nothing the declaration needs (or consumed elsewhere, e.g. by `record_function`) | none                                                         |
+| `Inapplicable { spelling, applies_to }` | outside clang's subject list                                                     | `-Wignored-attributes`; dropped                              |
+| `Unknown`                               | `Attribute::Unknown`                                                             | `-Wunknown-attributes` unless the fallback lists register it |
+| `UnsupportedDeclspec`                   | `Attribute::IgnoredDeclspec`                                                     | `-Wignored-attributes`                                       |
+| `Rejected(reason)`                      | error in every oracle (e.g. `section` on a field, `_Alignas` on a typedef)       | `ResolveError::Rejected`                                     |
+| `Unimplemented(reason)`                 | valid but not modeled (`code_seg`, other attributes on a parameter)              | `ResolveError::Unimplemented`                                |
 
 - Order: `inapplicable` first, then per-subject rules (`parameter_use`,
   `member_use`), then `general_use`.
@@ -157,25 +158,25 @@ position without resolving names:
 clang 22.1.8 subject behavior; `ok` accepted, `ign`
 `-Wignored-attributes`, `err` error:
 
-| Written on | object | function | typedef | parameter |
-| --- | --- | --- | --- | --- |
-| `used`, `retain` | ok, `ign` if automatic | ok | `ign` | `ign` |
-| `common`, `nocommon` | ok | `ign` | `ign` | ok |
-| `visibility`, `weak` | ok | ok | `ign` | ok |
-| `cleanup` | `ign` unless automatic | `ign` | `ign` | `ign` |
-| `packed`, `ms_struct`, `gcc_struct`, `transparent_union` | `ign` | `ign` | `ign` | `ign` |
-| `malloc`, `cold`, `ifunc`, `alloc_size`, … | `ign` | ok | `ign` | `ign` |
+| Written on                                               | object                 | function | typedef | parameter |
+| -------------------------------------------------------- | ---------------------- | -------- | ------- | --------- |
+| `used`, `retain`                                         | ok, `ign` if automatic | ok       | `ign`   | `ign`     |
+| `common`, `nocommon`                                     | ok                     | `ign`    | `ign`   | ok        |
+| `visibility`, `weak`                                     | ok                     | ok       | `ign`   | ok        |
+| `cleanup`                                                | `ign` unless automatic | `ign`    | `ign`   | `ign`     |
+| `packed`, `ms_struct`, `gcc_struct`, `transparent_union` | `ign`                  | `ign`    | `ign`   | `ign`     |
+| `malloc`, `cold`, `ifunc`, `alloc_size`, …               | `ign`                  | ok       | `ign`   | `ign`     |
 
-| Written on | field | struct/union definition |
-| --- | --- | --- |
-| `packed`, `aligned`, `vector_size`, `may_alias` | ok | ok |
-| `ms_struct`, `gcc_struct` | `ign` | ok (layout) |
-| `transparent_union` | `ign` | ok on union, `ign` on struct |
-| `mode` | ok | `err` |
-| `section`, `alias`, `tls_model` | `err` | `err` |
-| `used`, `retain`, `weak`, `common`, `nocommon`, `cleanup` | `ign` | `ign` |
-| `malloc`, `cold`, `noinline`, … | `ign` | `ign` |
-| `noreturn`, `format`, `nonnull`, `alloc_size`, `alloc_align` | by type (below) | `ign` |
+| Written on                                                   | field           | struct/union definition      |
+| ------------------------------------------------------------ | --------------- | ---------------------------- |
+| `packed`, `aligned`, `vector_size`, `may_alias`              | ok              | ok                           |
+| `ms_struct`, `gcc_struct`                                    | `ign`           | ok (layout)                  |
+| `transparent_union`                                          | `ign`           | ok on union, `ign` on struct |
+| `mode`                                                       | ok              | `err`                        |
+| `section`, `alias`, `tls_model`                              | `err`           | `err`                        |
+| `used`, `retain`, `weak`, `common`, `nocommon`, `cleanup`    | `ign`           | `ign`                        |
+| `malloc`, `cold`, `noinline`, …                              | `ign`           | `ign`                        |
+| `noreturn`, `format`, `nonnull`, `alloc_size`, `alloc_align` | by type (below) | `ign`                        |
 
 - `noreturn`, `format`, `nonnull`, `alloc_size`, and `alloc_align` depend on
   the declared type, not the `Subject` (`attributes.rs::function_type_attribute`).
@@ -234,24 +235,24 @@ Fixtures: `sema/ir_attribute_applicability.c`,
 
 ## Consumers
 
-| Consumer | Reads | IR result |
-| --- | --- | --- |
-| `module::symbol_attributes` | `visibility`, `tls_model`, `weak`, `alias`, `section`, `used`, `retain`, `dllimport`/`dllexport`, `weakref`, `ifunc`, `selectany`, `asm("sym")` | `SymbolAttributes` on `Global` / `Function` ([ir/declarations](ir/declarations.md#symbol-attributes)) |
-| `module::function_symbol` | same, filtered to function-relevant ones; rejects a register asm label or `__declspec(thread)` on a function | function `SymbolAttributes` |
-| `Pragmas::apply` | `#pragma visibility`, `#pragma weak`, `#pragma redefine_extname` | fills unset `SymbolAttributes` fields |
-| `Lowerer::record_function` | `gnu_inline`, `always_inline`, `noinline`, `noreturn`, `naked`, `const`, `pure`, `malloc(f[, n])` | `FunctionSemantics`; every attribute is also kept |
-| `render_c_attributes` | the kept attributes, integer constant arguments folded | `c_attributes` metadata |
-| `types::requested_alignment` | `aligned`, `_Alignas` | object request → `[align=N]` ([object properties](ir/declarations.md#object-properties)) |
-| `TypeResolver::resolve_type_name` | `aligned` in a type name's specifiers (gcc only; clang and msvc warn and ignore) | an anonymous aligned `Typedef` ([types](ir/types.md#alignment)) |
-| `types::field_request` | `packed`, `aligned` on field and its declaration | record layout |
-| `names::Resolver::bind_function` | `overloadable` (clang) on a function declaration or definition | a fresh binding per overload and `NameResolution::overload_sets`; calls pick one, and the function prints `[overloadable]` ([ir/declarations](ir/declarations.md#overloadable-functions)) |
-| `TypeResolver::field_counters` (`define_tag`) | `counted_by(member)` on a field | `__builtin_counted_by_ref` result ([builtins](ir/builtins.md#compile-time-queries-and-types)) |
-| counter check (`define_tag`) | `counted_by`, plus clang's `counted_by_or_null`, `sized_by`, `sized_by_or_null` (`Attribute::BoundedBy`) | rejects a counter that is not a member of the record, reached through anonymous members in either direction; later members count only under gcc or clang's `-fexperimental-late-parse-attributes`. An anonymous record defers its unresolved counters to the record that embeds it |
-| record layout (`define_tag`) | `packed`, `ms_struct`, `gcc_struct`, `aligned` on the tag, plus `#pragma pack` / `ms_struct` | offsets and alignment |
-| entity request | `common`, `nocommon` | `[common]` |
-| `TypeResolver::resolve_declarator` | declarator-position `vector_size`, `ext_vector_type`, `mode` | the declarator's type |
-| `Lowerer` local declaration | `cleanup` on an automatic object | `Variable.cleanup`, the function's `BindingId` (`[cleanup=%N]`) |
-| function type | `CallingConvention` | x86 conventions in the type ([calling conventions](ir/calls-abi.md#calling-conventions)) |
+| Consumer                                      | Reads                                                                                                                                           | IR result                                                                                                                                                                                                                                                                          |
+| --------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `module::symbol_attributes`                   | `visibility`, `tls_model`, `weak`, `alias`, `section`, `used`, `retain`, `dllimport`/`dllexport`, `weakref`, `ifunc`, `selectany`, `asm("sym")` | `SymbolAttributes` on `Global` / `Function` ([ir/declarations](ir/declarations.md#symbol-attributes))                                                                                                                                                                              |
+| `module::function_symbol`                     | same, filtered to function-relevant ones; rejects a register asm label or `__declspec(thread)` on a function                                    | function `SymbolAttributes`                                                                                                                                                                                                                                                        |
+| `Pragmas::apply`                              | `#pragma visibility`, `#pragma weak`, `#pragma redefine_extname`                                                                                | fills unset `SymbolAttributes` fields                                                                                                                                                                                                                                              |
+| `Lowerer::record_function`                    | `gnu_inline`, `always_inline`, `noinline`, `noreturn`, `naked`, `const`, `pure`, `malloc(f[, n])`                                               | `FunctionSemantics`; every attribute is also kept                                                                                                                                                                                                                                  |
+| `render_c_attributes`                         | the kept attributes, integer constant arguments folded                                                                                          | `c_attributes` metadata                                                                                                                                                                                                                                                            |
+| `types::requested_alignment`                  | `aligned`, `_Alignas`                                                                                                                           | object request → `[align=N]` ([object properties](ir/declarations.md#object-properties))                                                                                                                                                                                           |
+| `TypeResolver::resolve_type_name`             | `aligned` in a type name's specifiers (gcc only; clang and msvc warn and ignore)                                                                | an anonymous aligned `Typedef` ([types](ir/types.md#alignment))                                                                                                                                                                                                                    |
+| `types::field_request`                        | `packed`, `aligned` on field and its declaration                                                                                                | record layout                                                                                                                                                                                                                                                                      |
+| `names::Resolver::bind_function`              | `overloadable` (clang) on a function declaration or definition                                                                                  | a fresh binding per overload and `NameResolution::overload_sets`; calls pick one, and the function prints `[overloadable]` ([ir/declarations](ir/declarations.md#overloadable-functions))                                                                                          |
+| `TypeResolver::field_counters` (`define_tag`) | `counted_by(member)` on a field                                                                                                                 | `__builtin_counted_by_ref` result ([builtins](ir/builtins.md#compile-time-queries-and-types))                                                                                                                                                                                      |
+| counter check (`define_tag`)                  | `counted_by`, plus clang's `counted_by_or_null`, `sized_by`, `sized_by_or_null` (`Attribute::BoundedBy`)                                        | rejects a counter that is not a member of the record, reached through anonymous members in either direction; later members count only under gcc or clang's `-fexperimental-late-parse-attributes`. An anonymous record defers its unresolved counters to the record that embeds it |
+| record layout (`define_tag`)                  | `packed`, `ms_struct`, `gcc_struct`, `aligned` on the tag, plus `#pragma pack` / `ms_struct`                                                    | offsets and alignment                                                                                                                                                                                                                                                              |
+| entity request                                | `common`, `nocommon`                                                                                                                            | `[common]`                                                                                                                                                                                                                                                                         |
+| `TypeResolver::resolve_declarator`            | declarator-position `vector_size`, `ext_vector_type`, `mode`                                                                                    | the declarator's type                                                                                                                                                                                                                                                              |
+| `Lowerer` local declaration                   | `cleanup` on an automatic object                                                                                                                | `Variable.cleanup`, the function's `BindingId` (`[cleanup=%N]`)                                                                                                                                                                                                                    |
+| function type                                 | `CallingConvention`                                                                                                                             | x86 conventions in the type ([calling conventions](ir/calls-abi.md#calling-conventions))                                                                                                                                                                                           |
 
 Statement attributes: the checker validates `[[fallthrough]]` placement;
 lowering drops statement attributes

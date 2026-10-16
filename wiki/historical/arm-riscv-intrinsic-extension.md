@@ -3,6 +3,7 @@
 > Historical record. See the [archive index](index.md) for scope and source revision.
 
 <!-- toc -->
+
 - [What's already generic vs. what's
   x86-only](#whats-already-generic-vs-whats-x86-only)
 - [Risk profile per target](#risk-profile-per-target)

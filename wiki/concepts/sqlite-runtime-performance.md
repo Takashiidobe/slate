@@ -1,6 +1,7 @@
 # SQLite runtime performance
 
 <!-- toc -->
+
 - [Experiment](#experiment)
 - [Why statement dispatch was
   expensive](#why-statement-dispatch-was-expensive)

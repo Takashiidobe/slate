@@ -1,6 +1,7 @@
 # Configuration threading
 
 <!-- toc -->
+
 - [`Dialect` owns it](#dialect-owns-it)
 - [Accessors](#accessors)
 - [Where a rule goes](#where-a-rule-goes)
@@ -41,13 +42,13 @@ CompilerArgParser::parse → CompilerArgs
 
 ## Accessors
 
-| Stage | Flavor | Target | Standard / features |
-| --- | --- | --- | --- |
-| Preprocessor | `self.dialect.flavor()` | `self.dialect.target()` | `self.dialect.standard()` / `.features()` |
-| Parser | `self.flavor()` | `self.dialect().target()` | `self.standard()` / `self.features()` |
-| `TypeResolver` | `self.flavor()` | `self.dialect.target()` | `self.standard()` / `self.features()` |
-| Lowerer, checker | `self.types.flavor()` | `self.context.target` (Lowerer) | `self.types.features()` |
-| `fold.rs` | `Env.flavor` | — | — |
+| Stage            | Flavor                  | Target                          | Standard / features                       |
+| ---------------- | ----------------------- | ------------------------------- | ----------------------------------------- |
+| Preprocessor     | `self.dialect.flavor()` | `self.dialect.target()`         | `self.dialect.standard()` / `.features()` |
+| Parser           | `self.flavor()`         | `self.dialect().target()`       | `self.standard()` / `self.features()`     |
+| `TypeResolver`   | `self.flavor()`         | `self.dialect.target()`         | `self.standard()` / `self.features()`     |
+| Lowerer, checker | `self.types.flavor()`   | `self.context.target` (Lowerer) | `self.types.features()`                   |
+| `fold.rs`        | `Env.flavor`            | —                               | —                                         |
 
 Only `context.region` (FP pragmas) changes within a translation unit.
 
@@ -63,19 +64,19 @@ Ask questions with the shared helpers, never by comparing values:
 
 ## Where a rule goes
 
-| Question | Owner |
-| --- | --- |
-| Macro predefined, and its value | `src/predefines/` snapshot; computed macros in `Preprocessor::configure` |
-| Keyword or grammar exists in this mode | `StandardFeatures` field |
-| Attribute name exists (`__has_attribute`, unknown-attribute warning) | `Gate` table, `src/attribute_support.rs` ([attributes](attributes.md)) |
-| Attribute argument forms | `parse_attribute_value` (`parser/attributes.rs`); flavor-blind, accepts the union |
-| Where an attribute applies | `declaration_use` / `inapplicable` (`sema/attributes.rs`); flavor-blind |
-| What an attribute means for this flavor | its checker rule, then its lowering consumer (`symbol_attributes`, `record_function`, layout requests) |
-| Layout, alignment, atomic storage | `TargetInfo` + `TypeResolver` ([c-type-layer](c-type-layer.md)) |
-| Argument classification | `AbiClassifier` (`sema/abi.rs`) |
-| Builtins | `sema/builtins.rs` |
-| Constant-evaluation corners | `fold.rs` |
-| Default warning vs error | `Warning::default_severity(standard, flavor)` ([diagnostic-severity](diagnostic-severity.md)) |
+| Question                                                             | Owner                                                                                                  |
+| -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| Macro predefined, and its value                                      | `src/predefines/` snapshot; computed macros in `Preprocessor::configure`                               |
+| Keyword or grammar exists in this mode                               | `StandardFeatures` field                                                                               |
+| Attribute name exists (`__has_attribute`, unknown-attribute warning) | `Gate` table, `src/attribute_support.rs` ([attributes](attributes.md))                                 |
+| Attribute argument forms                                             | `parse_attribute_value` (`parser/attributes.rs`); flavor-blind, accepts the union                      |
+| Where an attribute applies                                           | `declaration_use` / `inapplicable` (`sema/attributes.rs`); flavor-blind                                |
+| What an attribute means for this flavor                              | its checker rule, then its lowering consumer (`symbol_attributes`, `record_function`, layout requests) |
+| Layout, alignment, atomic storage                                    | `TargetInfo` + `TypeResolver` ([c-type-layer](c-type-layer.md))                                        |
+| Argument classification                                              | `AbiClassifier` (`sema/abi.rs`)                                                                        |
+| Builtins                                                             | `sema/builtins.rs`                                                                                     |
+| Constant-evaluation corners                                          | `fold.rs`                                                                                              |
+| Default warning vs error                                             | `Warning::default_severity(standard, flavor)` ([diagnostic-severity](diagnostic-severity.md))          |
 
 ## Checker vs lowering
 

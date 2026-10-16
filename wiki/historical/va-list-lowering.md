@@ -3,11 +3,12 @@
 > Historical record. See the [archive index](index.md) for scope and source revision.
 
 <!-- toc -->
+
 - [Type and place recognition](#type-and-place-recognition)
 - [Known gap: `va_list*` pointer
   places](#known-gap-va_list-pointer-places)
 - [The hard case: malloc'd va_list arrays with a real `vprintf`
-  call](#the-hard-case-mallocd-va_list-arrays-with-a-real-vprintf-call)
+call](#the-hard-case-mallocd-va_list-arrays-with-a-real-vprintf-call)
 <!-- /toc -->
 
 Two representations, chosen per translation unit. `module_requires_native_va_list`

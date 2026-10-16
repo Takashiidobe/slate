@@ -1,6 +1,7 @@
 # Compiler argument rules
 
 <!-- toc -->
+
 - [Option parsing](#option-parsing)
 - [Include search](#include-search)
 - [Forced files and macros](#forced-files-and-macros)
@@ -156,6 +157,7 @@ Put a rule in the narrowest bucket that owns the constraint.
    predefine delta (oracle vs slate, each against its own baseline). A
    `DIFF` line is a gap. Put flags with a separate value in one quoted
    argument (`"-mllvm -foo"`).
+
 2. No predefine delta and no semantic effect: add a row to
    `CODEGEN_ONLY_FLAGS`, using `switch` or `value` with `GNU_FLAVORS`,
    `CLANG_ONLY`, or a gcc-only slice. Chain `negated_by` if the opposite is
