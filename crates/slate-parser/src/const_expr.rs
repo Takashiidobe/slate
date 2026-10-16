@@ -334,6 +334,44 @@ pub enum IntegerSizeSuffix {
     Long,
     LongLong,
     BitInt,
+    Microsoft(MicrosoftIntegerSuffix),
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum MicrosoftIntegerSuffix {
+    Int8,
+    Int16,
+    Int32,
+    Int64,
+    Int128,
+}
+
+impl MicrosoftIntegerSuffix {
+    pub fn width(self) -> u32 {
+        match self {
+            Self::Int8 => 8,
+            Self::Int16 => 16,
+            Self::Int32 => 32,
+            Self::Int64 => 64,
+            Self::Int128 => 128,
+        }
+    }
+
+    pub(crate) fn from_spelling(spelling: &str) -> Option<(Self, usize)> {
+        let lower = spelling.to_ascii_lowercase();
+        let (suffix, digits) = [
+            (Self::Int8, "i8"),
+            (Self::Int16, "i16"),
+            (Self::Int32, "i32"),
+            (Self::Int64, "i64"),
+            (Self::Int128, "i128"),
+        ]
+        .into_iter()
+        .find(|(_, digits)| lower.ends_with(digits))?;
+        let start = lower.len() - digits.len();
+        let start = start - usize::from(lower[..start].ends_with('u'));
+        Some((suffix, start))
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -366,6 +404,23 @@ impl IntegerLiteral {
             },
             imaginary: false,
         }
+    }
+
+    pub fn microsoft_value(&self) -> Option<WideInt> {
+        let IntegerSizeSuffix::Microsoft(suffix) = self.suffix.size else {
+            return None;
+        };
+        Some(WideInt::wrap(
+            BigInt::from(self.value.clone()),
+            suffix.width(),
+            !self.suffix.unsigned,
+        ))
+    }
+
+    fn microsoft_promoted(&self, width: u32) -> Option<WideInt> {
+        let value = self.microsoft_value()?;
+        let signed = value.signed || value.width < 32;
+        Some(WideInt::wrap(value.value, width.max(value.width), signed))
     }
 }
 
@@ -747,13 +802,16 @@ fn strip_imaginary(digits: &str) -> (&str, bool) {
 }
 
 fn integer_literal_wide(literal: &IntegerLiteral) -> WideInt {
+    if let Some(value) = literal.microsoft_promoted(32) {
+        return value;
+    }
     let signed = !literal.suffix.unsigned;
     let width = literal.value.bits() as u32 + u32::from(signed);
     WideInt::wrap(BigInt::from(literal.value.clone()), width.max(2), signed)
 }
 
 fn integer_literal_i64(literal: &IntegerLiteral) -> i64 {
-    if literal.value.bits() > 64 {
+    if literal.value.bits() > 64 || literal.microsoft_value().is_some() {
         return integer_literal_wide(literal).truncate_to_i64();
     }
     let bytes = literal.value.to_bytes_le();
@@ -765,7 +823,9 @@ fn integer_literal_i64(literal: &IntegerLiteral) -> i64 {
 fn parse_integer_suffix(spelling: &str, digits_len: usize) -> IntegerSuffix {
     let suffix = spelling[digits_len..].to_ascii_lowercase();
     let unsigned = suffix.contains('u');
-    let size = if suffix.contains("wb") {
+    let size = if let Some((microsoft, _)) = MicrosoftIntegerSuffix::from_spelling(&suffix) {
+        IntegerSizeSuffix::Microsoft(microsoft)
+    } else if suffix.contains("wb") {
         IntegerSizeSuffix::BitInt
     } else {
         match suffix.matches('l').count() {
@@ -1167,6 +1227,11 @@ impl<'a> Parser<'a> {
                 Err(ConstExprError::NotConstant("imaginary literal"))
             }
             ExprKind::IntegerLiteral(literal) if ctx.is_defined.is_some() => {
+                if ctx.flavor.is_msvc()
+                    && let Some(value) = literal.microsoft_promoted(64)
+                {
+                    return Ok(value);
+                }
                 if literal.value.bits() > 64 {
                     return Err(ConstExprError::IntegerOverflow);
                 }
@@ -1325,9 +1390,10 @@ impl<'a> Parser<'a> {
 
     fn pp_unsigned(expression: &Expr, ctx: EvalContext<'_>) -> bool {
         match &expression.value {
-            ExprKind::IntegerLiteral(literal) => {
-                literal.suffix.unsigned || literal.value.bits() >= 64
-            }
+            ExprKind::IntegerLiteral(literal) => match literal.microsoft_promoted(64) {
+                Some(value) if ctx.flavor.is_msvc() => !value.signed,
+                _ => literal.suffix.unsigned || literal.value.bits() >= 64,
+            },
             ExprKind::CharLiteral(literal) => ctx
                 .target
                 .is_some_and(|target| !literal.char_type_is_signed(target)),

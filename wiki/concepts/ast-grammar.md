@@ -399,7 +399,9 @@ IntegerLiteral = IntegerLiteral { value: digits, radix: Radix,
                                   imaginary?: true } ;
 Radix          = "Decimal" | "Hex" | "Octal" | "Binary" ;
 IntegerSuffix  = IntegerSuffix { unsigned: bool,
-                                 size: ( "None" | "Long" | "LongLong" | "BitInt" ) } ;
+                                 size: ( "None" | "Long" | "LongLong" | "BitInt"
+                                       | "Microsoft(" MicrosoftIntegerSuffix ")" ) } ;
+MicrosoftIntegerSuffix = "Int8" | "Int16" | "Int32" | "Int64" | "Int128" ;
 
 FloatLiteral = FloatLiteral { spelling: string, radix: ( "Decimal" | "Hex" ),
                               suffix: FloatSuffix, fixed_suffix?: FixedPointLiteralSuffix,

@@ -1,6 +1,7 @@
 use crate::ast::{FileId, Loc, Span};
+use crate::const_expr::MicrosoftIntegerSuffix;
 use crate::files::raw_byte_for_char;
-use crate::standard_features::StandardFeatures;
+use crate::standard_features::{MicrosoftIntegerLiterals, StandardFeatures};
 use std::rc::Rc;
 
 // a numeric escape or a raw source byte names a code unit directly; anything
@@ -815,6 +816,7 @@ impl Lexer {
                 if !digits.is_empty()
                     && digits.chars().all(|digit| digit.is_digit(radix))
                     && (self.features.octal_prefix || !octal_prefix)
+                    && self.microsoft_integer_accepted(&spelling)
                 {
                     self.emit(Token::IntLit(spelling.into()));
                 } else {
@@ -1024,7 +1026,22 @@ impl Lexer {
     }
 
     pub(crate) fn is_imaginary_integer(spelling: &str) -> bool {
-        spelling.contains(['i', 'I', 'j', 'J'])
+        MicrosoftIntegerSuffix::from_spelling(spelling).is_none()
+            && spelling.contains(['i', 'I', 'j', 'J'])
+    }
+
+    fn microsoft_integer_accepted(&self, spelling: &str) -> bool {
+        match (
+            MicrosoftIntegerSuffix::from_spelling(spelling),
+            self.features.microsoft_integer_literals,
+        ) {
+            (None, _) => true,
+            (Some(_), MicrosoftIntegerLiterals::Rejected) => false,
+            (Some((MicrosoftIntegerSuffix::Int128, _)), literals) => {
+                literals == MicrosoftIntegerLiterals::Checked { int128: true }
+            }
+            (Some(_), _) => true,
+        }
     }
 
     pub(crate) fn integer_radix(digits: &str) -> (u32, &str) {
@@ -1038,6 +1055,9 @@ impl Lexer {
     }
 
     pub(crate) fn integer_digits(spelling: &str) -> String {
+        if let Some((_, start)) = MicrosoftIntegerSuffix::from_spelling(spelling) {
+            return spelling[..start].to_string();
+        }
         let mut end = spelling.len();
         let bytes = spelling.as_bytes();
         loop {

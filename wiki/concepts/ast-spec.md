@@ -614,7 +614,7 @@ Lexical content is decoded; C types are assigned by sema.
 IntegerLiteral {
     value: BigUint,
     radix: Decimal | Hex | Octal | Binary,
-    suffix: IntegerSuffix { unsigned: bool, size: None | Long | LongLong | BitInt },
+    suffix: IntegerSuffix { unsigned: bool, size: None | Long | LongLong | BitInt | Microsoft(Int8 | Int16 | Int32 | Int64 | Int128) },
     spelling: String,
     imaginary: bool,                         // GNU i/j, anywhere among u/l
 }

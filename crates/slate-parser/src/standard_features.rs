@@ -15,6 +15,13 @@ impl Availability {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum MicrosoftIntegerLiterals {
+    Rejected,
+    Wrapping,
+    Checked { int128: bool },
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct StandardFeatures {
     pub keyword_alignof: Availability,
     pub keyword_bool_true_false: Availability,
@@ -58,6 +65,7 @@ pub struct StandardFeatures {
     pub microsoft_extensions: bool,
     pub microsoft_compatibility: bool,
     pub microsoft_anonymous_records: bool,
+    pub microsoft_integer_literals: MicrosoftIntegerLiterals,
     pub gnu_floating_keywords: bool,
     pub widest_integer_literal_fallback: bool,
     pub keyword_float80: bool,
@@ -141,6 +149,7 @@ impl StandardFeatures {
             microsoft_extensions: false,
             microsoft_compatibility: false,
             microsoft_anonymous_records: false,
+            microsoft_integer_literals: MicrosoftIntegerLiterals::Rejected,
             gnu_floating_keywords: false,
             widest_integer_literal_fallback: false,
             keyword_float80: false,
@@ -189,6 +198,16 @@ impl StandardFeatures {
                 )
             }
             CompilerFlavor::Gcc => (false, false),
+        };
+        features.microsoft_integer_literals = match flavor {
+            CompilerFlavor::Msvc => MicrosoftIntegerLiterals::Wrapping,
+            CompilerFlavor::Clang if features.microsoft_extensions => {
+                MicrosoftIntegerLiterals::Checked {
+                    int128: target.os == crate::target_info::TargetOs::Windows
+                        && target.pointer_width >= 64,
+                }
+            }
+            CompilerFlavor::Clang | CompilerFlavor::Gcc => MicrosoftIntegerLiterals::Rejected,
         };
         features.microsoft_anonymous_records = match flavor {
             CompilerFlavor::Msvc => true,

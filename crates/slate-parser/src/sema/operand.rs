@@ -2,6 +2,7 @@ use super::ctype::QualType;
 use super::ctype::{CTypeKind, FixedKind, FixedRank, FixedType, FloatKind, IntRank};
 use super::numeric::{Context, ResolveError};
 use super::types::TypeResolver;
+use super::validate::MicrosoftLiteralType;
 use crate::ast::{Expr, ExprKind, FixedPointKind, FixedPointRank, IntegerRank};
 use crate::const_expr::{BinaryOp, FloatSuffix};
 use crate::ir::{ConversionReason, ValueKind};
@@ -146,9 +147,23 @@ impl TypeResolver {
     ) -> Result<QualType, ResolveError> {
         let kind = match &e.value {
             ExprKind::IntegerLiteral(literal) => {
-                let component = if literal.suffix.size
-                    == crate::const_expr::IntegerSizeSuffix::BitInt
+                let component = if let crate::const_expr::IntegerSizeSuffix::Microsoft(suffix) =
+                    literal.suffix.size
                 {
+                    let microsoft =
+                        super::validate::microsoft_literal(literal, suffix, target, features)
+                            .ok_or_else(|| {
+                                ResolveError::IntegerLiteral(literal.spelling.clone())
+                            })?;
+                    match microsoft.ty {
+                        MicrosoftLiteralType::Char => CTypeKind::Char,
+                        MicrosoftLiteralType::UnsignedChar => CTypeKind::UChar,
+                        MicrosoftLiteralType::Ranked(rank) => CTypeKind::Int {
+                            rank: int_rank(rank),
+                            signed: microsoft.signed,
+                        },
+                    }
+                } else if literal.suffix.size == crate::const_expr::IntegerSizeSuffix::BitInt {
                     let width = super::validate::bit_int_literal_width(literal)
                         .ok_or_else(|| ResolveError::IntegerLiteral(literal.spelling.clone()))?;
                     CTypeKind::BitInt {
@@ -161,15 +176,10 @@ impl TypeResolver {
                             .ok_or_else(|| {
                                 ResolveError::IntegerLiteral(literal.spelling.clone())
                             })?;
-                    let signed = selection.signed;
-                    let rank = match selection.rank {
-                        IntegerRank::Short => IntRank::Short,
-                        IntegerRank::Int => IntRank::Int,
-                        IntegerRank::Long => IntRank::Long,
-                        IntegerRank::LongLong => IntRank::LongLong,
-                        IntegerRank::Int128 => IntRank::Int128,
-                    };
-                    CTypeKind::Int { rank, signed }
+                    CTypeKind::Int {
+                        rank: int_rank(selection.rank),
+                        signed: selection.signed,
+                    }
                 };
                 if literal.imaginary {
                     CTypeKind::Complex(self.ctypes.intern(component))
@@ -422,5 +432,15 @@ impl TypeResolver {
                 }),
             },
         }
+    }
+}
+
+fn int_rank(rank: IntegerRank) -> IntRank {
+    match rank {
+        IntegerRank::Short => IntRank::Short,
+        IntegerRank::Int => IntRank::Int,
+        IntegerRank::Long => IntRank::Long,
+        IntegerRank::LongLong => IntRank::LongLong,
+        IntegerRank::Int128 => IntRank::Int128,
     }
 }

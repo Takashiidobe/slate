@@ -1,6 +1,7 @@
 use super::pragmas::FloatingRegion;
 use super::validate::{
-    bit_int_literal_width, fits_rank, integer_rank_width, select_integer_candidate,
+    bit_int_literal_width, fits_rank, integer_rank_width, microsoft_literal,
+    select_integer_candidate,
 };
 use crate::ast::{Expr, ExprKind, FixedPointKind, FixedPointRank, Loc};
 use crate::const_expr::{
@@ -138,27 +139,32 @@ impl Context {
         let (ty, kind) = match &expression.value {
             ExprKind::IntegerLiteral(literal) => {
                 let bit_precise = literal.suffix.size == IntegerSizeSuffix::BitInt;
-                let (width, signed, value) = if bit_precise {
-                    bit_int_literal_width(literal)
-                        .map(|width| {
-                            (
-                                width,
-                                !literal.suffix.unsigned,
-                                Number::Integer(literal.value.clone()),
-                            )
-                        })
-                        .ok_or_else(|| ResolveError::IntegerLiteral(literal.spelling.clone()))?
-                } else {
-                    select_integer_candidate(literal, &self.target, self.features)
-                        .map(|selection| {
-                            (
-                                integer_rank_width(selection.rank, &self.target),
-                                selection.signed,
-                                selection.value,
-                            )
-                        })
-                        .ok_or_else(|| ResolveError::IntegerLiteral(literal.spelling.clone()))?
-                };
+                let (width, signed, value) =
+                    if let IntegerSizeSuffix::Microsoft(suffix) = literal.suffix.size {
+                        microsoft_literal(literal, suffix, &self.target, self.features)
+                            .map(|microsoft| (microsoft.width, microsoft.signed, microsoft.value))
+                            .ok_or_else(|| ResolveError::IntegerLiteral(literal.spelling.clone()))?
+                    } else if bit_precise {
+                        bit_int_literal_width(literal)
+                            .map(|width| {
+                                (
+                                    width,
+                                    !literal.suffix.unsigned,
+                                    Number::Integer(literal.value.clone()),
+                                )
+                            })
+                            .ok_or_else(|| ResolveError::IntegerLiteral(literal.spelling.clone()))?
+                    } else {
+                        select_integer_candidate(literal, &self.target, self.features)
+                            .map(|selection| {
+                                (
+                                    integer_rank_width(selection.rank, &self.target),
+                                    selection.signed,
+                                    selection.value,
+                                )
+                            })
+                            .ok_or_else(|| ResolveError::IntegerLiteral(literal.spelling.clone()))?
+                    };
                 let numeric = NumericType::Integer {
                     width,
                     signed,

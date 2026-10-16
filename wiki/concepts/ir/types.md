@@ -109,6 +109,16 @@ The shown type is concrete and target-resolved; the C type is metadata
 - A literal wider than `long long` is truncated first, as cpplib does, with
   `integer-literal-too-large`; clang rejects these, so every flavor takes
   gcc's value.
+- Microsoft suffixes `i8`/`i16`/`i32`/`i64` (optionally `u`, any case) skip
+  candidate selection (`microsoft_literal`): the type is exactly the suffix
+  type, the first rank of that width (`i8` is plain `char`, `ui8` is
+  `unsigned char`). `StandardFeatures::microsoft_integer_literals` picks the
+  rules. MSVC (`Wrapping`) wraps any value to the width, also in `#if`, where
+  the wrapped value then promotes (`-1ui8 > 0` is false). Clang with
+  Microsoft extensions (`Checked`) rejects values at or above 2^width,
+  reinterprets the bits otherwise, and ignores the suffix width in `#if`;
+  `i128` is clang-only, on 64-bit Windows targets. gcc and clang without
+  Microsoft extensions lex these as invalid floating literals.
 
 ### `_BitInt`
 

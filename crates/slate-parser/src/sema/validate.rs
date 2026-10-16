@@ -1,12 +1,13 @@
 use crate::ast::*;
 use crate::compiler_args::{CompilerFlavor, LanguageStandard};
 use crate::const_expr::{
-    BinaryOp, CharLiteral, Encoding, IntegerLiteral, IntegerSizeSuffix, Radix, UnaryOp,
+    BinaryOp, CharLiteral, Encoding, IntegerLiteral, IntegerSizeSuffix, MicrosoftIntegerSuffix,
+    Radix, UnaryOp, WideInt,
 };
 use crate::diagnostics::{DiagnosticContext, DiagnosticOptions, Warning};
 use crate::files::{Files, decode_source_bytes, display_path};
 use crate::ir::BindingId;
-use crate::standard_features::{Availability, StandardFeatures};
+use crate::standard_features::{Availability, MicrosoftIntegerLiterals, StandardFeatures};
 use crate::target_info::TargetInfo;
 use crate::visit::{self, Visitor};
 use miette::{Diagnostic, LabeledSpan, NamedSource, Severity, SourceCode, SourceSpan};
@@ -601,6 +602,67 @@ pub(super) fn integer_candidates(
     candidates
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum MicrosoftLiteralType {
+    Char,
+    UnsignedChar,
+    Ranked(IntegerRank),
+}
+
+pub(super) struct MicrosoftLiteral {
+    pub ty: MicrosoftLiteralType,
+    pub width: u32,
+    pub signed: bool,
+    pub value: crate::ir::Number,
+}
+
+pub(super) fn microsoft_literal(
+    literal: &IntegerLiteral,
+    suffix: MicrosoftIntegerSuffix,
+    target: &TargetInfo,
+    features: StandardFeatures,
+) -> Option<MicrosoftLiteral> {
+    let width = suffix.width();
+    if features.microsoft_integer_literals != MicrosoftIntegerLiterals::Wrapping
+        && literal.value.bits() > u64::from(width)
+    {
+        return None;
+    }
+    let (ty, signed) = if suffix == MicrosoftIntegerSuffix::Int8 && !literal.suffix.unsigned {
+        (MicrosoftLiteralType::Char, target.char_signed)
+    } else {
+        let rank = [
+            IntegerRank::Short,
+            IntegerRank::Int,
+            IntegerRank::Long,
+            IntegerRank::LongLong,
+            IntegerRank::Int128,
+        ]
+        .into_iter()
+        .find(|rank| integer_rank_width(*rank, target) == width);
+        match rank {
+            Some(rank) => (MicrosoftLiteralType::Ranked(rank), !literal.suffix.unsigned),
+            None if width == 8 => (MicrosoftLiteralType::UnsignedChar, false),
+            None => return None,
+        }
+    };
+    let wrapped = WideInt::wrap(
+        num_bigint::BigInt::from(literal.value.clone()),
+        width,
+        signed,
+    );
+    let value = match wrapped.value.to_biguint() {
+        Some(value) => crate::ir::Number::Integer(value),
+        None => crate::ir::Number::SignedInteger(wrapped.value),
+    };
+    Some(MicrosoftLiteral {
+        ty,
+        width,
+        signed,
+        value,
+    })
+}
+
 pub(super) struct IntegerLiteralSelection {
     pub rank: IntegerRank,
     pub signed: bool,
@@ -724,7 +786,19 @@ fn integer_literal_diagnostics(
             )],
         };
     }
-    match select_integer_candidate(literal, context.target, context.features) {
+    let fits = match literal.suffix.size {
+        IntegerSizeSuffix::Microsoft(suffix) => {
+            microsoft_literal(literal, suffix, context.target, context.features).map(|_| Vec::new())
+        }
+        _ => select_integer_candidate(literal, context.target, context.features).map(|selection| {
+            integer_literal_warnings(literal, &selection, context.features)
+                .into_iter()
+                .map(|(warning, message)| (Some(warning), message))
+                .collect()
+        }),
+    };
+    match fits {
+        Some(warnings) => warnings,
         None => vec![(
             None,
             format!(
@@ -732,10 +806,6 @@ fn integer_literal_diagnostics(
                 literal.spelling
             ),
         )],
-        Some(selection) => integer_literal_warnings(literal, &selection, context.features)
-            .into_iter()
-            .map(|(warning, message)| (Some(warning), message))
-            .collect(),
     }
 }
 
