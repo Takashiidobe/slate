@@ -1152,7 +1152,21 @@ pub fn translate_slate(c_src: &Path, rs_out: &Path, extra_args: &[String]) -> Re
         );
         return Err(format!("slate translate failed ({}):\n{stderr}", o.status));
     }
-    write_if_changed(rs_out, &o.stdout)
-        .map(|_| ())
-        .map_err(|e| format!("write {}: {e}", rs_out.display()))
+    write_if_changed(rs_out, &o.stdout).map_err(|e| format!("write {}: {e}", rs_out.display()))?;
+    let target = extra_args
+        .iter()
+        .find_map(|arg| arg.strip_prefix("-target="))
+        .unwrap_or(env!("SLATE_BUILD_TARGET"));
+    let fixture = std::fs::read(c_src).map_err(|e| format!("read {}: {e}", c_src.display()))?;
+    let name = rs_out
+        .file_name()
+        .and_then(|name| name.to_str())
+        .and_then(|name| name.strip_suffix(".generated.rs"))
+        .expect("translated Rust is named <fixture>.generated.rs");
+    filecheck::check_generated_rust(
+        &String::from_utf8_lossy(&fixture),
+        &String::from_utf8_lossy(&o.stdout),
+        &filecheck::prefixes_for_target(target),
+        &rs_out.with_file_name("filecheck").join(name),
+    )
 }

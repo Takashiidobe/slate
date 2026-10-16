@@ -22,16 +22,16 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN
 // CHECK-LABEL: {{^}}fn make(mut n: i32) -> *mut i32 {
-// CHECK-NEXT:     let mut p: *mut i32 =
-// CHECK-NEXT:         (unsafe { malloc(((n as i64) as u64).wrapping_mul(4 as u64)) }) as *mut i32;
+// CHECK-NEXT:     let mut p: *mut i32 = (unsafe { malloc(((n as i64) as u64).wrapping_mul(4 as u64)) })
+// CHECK-NEXT:         as *mut i32;
 // CHECK-NEXT:     let mut i: i32 = 0 as i32;
-// CHECK-NEXT:     '__slate_break_{{[0-9]+}}: while i < n {
+// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: while i < n {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *unsafe { p.offset(i as isize) } = i * i;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         let mut {{__v[0-9]+}}: i32 = i;
-// CHECK-NEXT:         let mut {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + (1 as i32);
-// CHECK-NEXT:         i = {{__v[0-9]+}};
+// CHECK-NEXT:         let mut [[V_0:__v[0-9]+]]: i32 = i;
+// CHECK-NEXT:         let mut [[V_1:__v[0-9]+]]: i32 = [[V_0]] + (1 as i32);
+// CHECK-NEXT:         i = [[V_1]];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     p
 // CHECK: {{^}}}

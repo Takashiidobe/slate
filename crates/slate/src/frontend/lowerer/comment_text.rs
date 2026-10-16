@@ -31,7 +31,24 @@ fn is_tool_annotation(lines: &[String]) -> bool {
         return false;
     };
     let line = line.trim();
-    TOOL_ANNOTATIONS.contains(&line) || line.starts_with("NOLINT")
+    TOOL_ANNOTATIONS.contains(&line) || line.starts_with("NOLINT") || is_filecheck_line(line)
+}
+
+fn is_filecheck_line(line: &str) -> bool {
+    if line.starts_with("@check-fn-") || line.starts_with("SLATE-FILECHECK-") {
+        return true;
+    }
+    let Some((name, _)) = line.split_once(':') else {
+        return false;
+    };
+    let prefix = ["-LABEL", "-DAG", "-NOT", "-NEXT", "-SAME", "-EMPTY"]
+        .iter()
+        .find_map(|suffix| name.strip_suffix(suffix))
+        .unwrap_or(name);
+    let uppercase = prefix.bytes().all(|byte| {
+        byte.is_ascii_uppercase() || byte.is_ascii_digit() || matches!(byte, b'_' | b'-')
+    });
+    uppercase && (prefix == "CHECK" || prefix.matches('-').count() >= 2)
 }
 
 fn line_lines(piece: &str) -> Vec<String> {

@@ -4,12 +4,35 @@ import os
 import re
 import subprocess
 import sys
+from collections import defaultdict
 from pathlib import Path
+from typing import NamedTuple
 
 CRATE = Path(__file__).resolve().parent.parent
 WORKSPACE = CRATE.parent.parent
 TESTS = CRATE / "tests"
-GENERATED = CRATE / "target" / "difftest-generated"
+
+
+class Suite(NamedTuple):
+    directory: str
+    subdirectories: tuple
+    work: str
+    binary: str
+    test: str
+    selector: str
+
+
+SUITES = (
+    Suite("fixtures", ("", "x86_64"), "difftest-generated/supported", "differential", "generated_differential", "SLATE_DIFF_FIXTURE"),
+    Suite("fixtures", ("i686",), "difftest-generated/i686", "differential", "i686_differential", "SLATE_DIFF_FIXTURE"),
+    Suite("fixtures.unsupported", ("",), "difftest-generated/unsupported", "differential", "fixtures_unsupported_tests_still_fail", "SLATE_DIFF_FIXTURE"),
+    Suite("fixtures.gcc-torture", ("",), "gcc-torture-suite/supported", "gcc_torture_suite", "gcc_torture_supported_tests_match_c", "SLATE_GCC_TORTURE_FIXTURE"),
+    Suite("fixtures.gcc-torture.unsupported", ("",), "gcc-torture-suite/unsupported", "gcc_torture_suite", "gcc_torture_unsupported_tests_still_fail", "SLATE_GCC_TORTURE_FIXTURE"),
+    Suite("fixtures.gcc-dg", ("",), "gcc-dg-suite/supported", "gcc_dg_suite", "gcc_dg_supported_tests_match_c", "SLATE_GCC_DG_FIXTURE"),
+    Suite("fixtures.gcc-dg.unsupported", ("",), "gcc-dg-suite/unsupported", "gcc_dg_suite", "gcc_dg_unsupported_tests_still_fail", "SLATE_GCC_DG_FIXTURE"),
+    Suite("fixtures.c-testsuite", ("",), "c-testsuite-suite/supported", "c_testsuite_suite", "c_testsuite_supported_tests_match_c", "SLATE_C_TESTSUITE_FIXTURE"),
+    Suite("fixtures.c-testsuite.unsupported", ("",), "c-testsuite-suite/unsupported", "c_testsuite_suite", "c_testsuite_unsupported_tests_still_fail", "SLATE_C_TESTSUITE_FIXTURE"),
+)
 
 BEGIN = "// SLATE-FILECHECK-BEGIN"
 END = "// SLATE-FILECHECK-END"
@@ -41,29 +64,39 @@ RUST_FN_PREFIX = r'^(?:pub(?:\([^)]*\))?\s+)?(?:unsafe\s+)?(?:extern\s+"[^"]+"\s
 RUST_STRING_PATTERN = re.compile(
     r'(?:(?:b|c)?r(?P<hash>#{0,16})".*?"(?P=hash)|(?:b|c)?"(?:\\.|[^"\\])*")'
 )
-UNSTABLE_IDENTIFIERS = (
-    (re.compile(r"\b__v[0-9]+\b"), "{{__v[0-9]+}}"),
-    (re.compile(r"\barg[0-9]+\b"), "{{arg[0-9]+}}"),
-    (re.compile(r"\banon_struct[0-9A-Za-z_]*\b"), "{{anon_struct[0-9A-Za-z_]*}}"),
-    (re.compile(r"(?<![0-9A-Za-z_])anon_[0-9]+\b"), "{{anon_[0-9]+}}"),
-    (re.compile(r"\b(__slate_[A-Za-z_]*?_)[0-9]+\b"), r"\1{{[0-9]+}}"),
+GENERATED_IDENTIFIER = re.compile(
+    r"""\b(?:
+        __v[0-9]+ | __t[0-9]+ | _v[0-9]+ | arg[0-9]+
+        | anon_struct\w* | anon_[0-9]+ | _unnamed_at_\w+
+        | __slate_(?:break|continue|slot|storage|compound|anon)_[0-9]+
+        | __slate_alloca_frame[0-9]+ | __state[0-9]+
+        | __dispatch[0-9]+(?:_[lv][0-9]+)? | __switch[0-9]+_l[0-9]+
+        | __join_[0-9]+ | __SlateRecord[0-9]+
+    )\b""",
+    re.X,
 )
+RENAMED_IDENTIFIER = re.compile(r"\b([A-Za-z_]\w*?)_[0-9]+\b")
+CANDIDATE_IDENTIFIER = re.compile(f"{GENERATED_IDENTIFIER.pattern}|{RENAMED_IDENTIFIER.pattern}", re.X)
+HANDWRITTEN_CHECK = re.compile(r"^\s*//\s*CHECK(?:-[A-Z]+)?:", re.M)
+C_IDENTIFIER = re.compile(r"\b[A-Za-z_]\w*\b")
+C_COMMENT = re.compile(r"//[^\n]*|/\*.*?\*/", re.S)
 
 
 class FixtureError(Exception):
     pass
 
 
-def harness_location(path):
+def fixture_suite(path):
     relative = path.resolve().relative_to(TESTS)
-    bucket, *rest = relative.parts
-    if bucket == "fixtures" and rest[:-1] in ([], ["x86_64"]):
-        return "supported", "generated_differential"
-    if bucket == "fixtures" and rest[:-1] == ["i686"]:
-        return "i686", "i686_differential"
-    if bucket == "fixtures.unsupported":
-        return "unsupported", "fixtures_unsupported_tests_still_fail"
-    raise FixtureError(f"{relative}: only single-file differential fixtures are supported")
+    directory, subdirectory = relative.parts[0], "/".join(relative.parts[1:-1])
+    for suite in SUITES:
+        if suite.directory == directory and subdirectory in suite.subdirectories:
+            return suite
+    raise FixtureError(f"{relative}: not in a single-file suite")
+
+
+def generated_rust(suite, path):
+    return CRATE / "target" / suite.work / f"{path.stem}.generated.rs"
 
 
 def strip_attribute_groups(text):
@@ -138,102 +171,138 @@ def escape(text):
     return text.replace("{{", "{{[{][{]}}").replace("[[", "{{\\[\\[}}")
 
 
-def check_pattern(line):
-    parts = []
-    offset = 0
-    for string in RUST_STRING_PATTERN.finditer(line):
-        parts.append(genericize(escape(line[offset : string.start()])))
-        parts.append(escape(string.group()))
-        offset = string.end()
-    parts.append(genericize(escape(line[offset:])))
-    return "".join(parts)
+class Variables:
+    def __init__(self, c_identifiers):
+        self.c_identifiers = c_identifiers
+        self.names = {}
+        self.counts = defaultdict(int)
+
+    def unstable(self, identifier):
+        if identifier in self.c_identifiers:
+            return False
+        if GENERATED_IDENTIFIER.fullmatch(identifier):
+            return True
+        renamed = RENAMED_IDENTIFIER.fullmatch(identifier)
+        return bool(renamed) and renamed.group(1) in self.c_identifiers
+
+    def substitute(self, match):
+        identifier = match.group(0)
+        if not self.unstable(identifier):
+            return identifier
+        if identifier in self.names:
+            return f"[[{self.names[identifier]}]]"
+        base = re.sub(r"\W", "_", identifier.rstrip("0123456789").strip("_")).upper() or "ID"
+        name = f"{base}_{self.counts[base]}"
+        self.counts[base] += 1
+        self.names[identifier] = name
+        return f"[[{name}:{re.sub(r'[0-9]+', '[0-9]+', identifier)}]]"
+
+    def pattern(self, line):
+        parts = []
+        offset = 0
+        for string in RUST_STRING_PATTERN.finditer(line):
+            parts.append(CANDIDATE_IDENTIFIER.sub(self.substitute, escape(line[offset : string.start()])))
+            parts.append(escape(string.group()))
+            offset = string.end()
+        parts.append(CANDIDATE_IDENTIFIER.sub(self.substitute, escape(line[offset:])))
+        return "".join(parts).replace(f"{CRATE}{os.sep}", "{{.*}}")
 
 
-def genericize(pattern):
-    for identifier, replacement in UNSTABLE_IDENTIFIERS:
-        pattern = identifier.sub(replacement, pattern)
-    return pattern
+def c_identifiers(source):
+    return set(C_IDENTIFIER.findall(C_COMMENT.sub(" ", source)))
 
 
-def function_checks(lines):
+def body_checks(lines, variables):
+    return [
+        f"// CHECK-NEXT: {variables.pattern(line)}" if line.strip() else "// CHECK-EMPTY:"
+        for line in lines
+    ]
+
+
+def function_checks(lines, identifiers):
+    variables = Variables(identifiers)
     if len(lines) == 1:
-        return [f"// CHECK: {{{{^}}}}{check_pattern(lines[0])}"]
-    checks = [f"// CHECK-LABEL: {{{{^}}}}{check_pattern(lines[0])}"]
-    for line in lines[1:-1]:
-        checks.append(f"// CHECK-NEXT: {check_pattern(line)}" if line.strip() else "// CHECK-EMPTY:")
+        return [f"// CHECK: {{{{^}}}}{variables.pattern(lines[0])}"]
+    checks = [f"// CHECK-LABEL: {{{{^}}}}{variables.pattern(lines[0])}"]
+    checks.extend(body_checks(lines[1:-1], variables))
     checks.append("// CHECK: {{^}}}")
     return checks
+
+
+def program_checks(lines, identifiers):
+    variables = Variables(identifiers)
+    first = next(index for index, line in enumerate(lines) if line.strip())
+    return [f"// CHECK: {variables.pattern(lines[first])}", *body_checks(lines[first + 1 :], variables)]
 
 
 def update_source(source, rust):
     names = checked_functions(source)
     stripped = BLOCK_PATTERN.sub("", source).rstrip("\n")
-    if not names:
-        return stripped + "\n"
-    lines = rust.splitlines()
-    checks = []
-    for name in names:
-        checks.extend(function_checks(rust_function(lines, name)))
+    identifiers = c_identifiers(stripped)
+    lines = rust.rstrip("\n").splitlines()
+    if names:
+        checks = [check for name in names for check in function_checks(rust_function(lines, name), identifiers)]
+    elif HANDWRITTEN_CHECK.search(stripped):
+        return source
+    else:
+        checks = program_checks(lines, identifiers)
     return f"{stripped}\n\n{BEGIN}\n" + "\n".join(checks) + f"\n{END}\n"
 
 
-def run_harness(fixtures):
-    tests = sorted({harness_location(path)[1] for path in fixtures})
+def run_harness(fixtures_by_suite):
     environment = os.environ.copy()
-    if len(fixtures) == 1:
-        environment["SLATE_DIFF_FIXTURE"] = fixtures[0].stem
-    command = [
-        "cargo",
-        "nextest",
-        "r",
-        "--release",
-        "--profile",
-        "slate",
-        "--no-fail-fast",
-        "--test",
-        "differential",
-        "-E",
-        " | ".join(f"test(={test})" for test in tests),
-    ]
+    names_by_selector = defaultdict(set)
+    for suite, fixtures in fixtures_by_suite.items():
+        names_by_selector[suite.selector].update(path.stem for path in fixtures)
+    for selector, names in names_by_selector.items():
+        if len(names) == 1:
+            environment[selector] = next(iter(names))
+    command = ["cargo", "nextest", "r", "--release", "--profile", "slate", "--no-fail-fast"]
+    for binary in sorted({suite.binary for suite in fixtures_by_suite}):
+        command.extend(["--test", binary])
+    command.extend(["-E", " | ".join(sorted(f"test(={suite.test})" for suite in fixtures_by_suite))])
     subprocess.run(command, cwd=WORKSPACE, env=environment, capture_output=True, check=False)
 
 
-def annotated_fixtures():
-    roots = [TESTS / "fixtures", TESTS / "fixtures" / "x86_64", TESTS / "fixtures" / "i686"]
+def supported_fixtures():
     return sorted(
         path
-        for root in roots
-        for path in root.glob("*.c")
-        if "@check-fn-" in path.read_text() or BEGIN in path.read_text()
+        for suite in SUITES
+        if not suite.directory.endswith(".unsupported")
+        for subdirectory in suite.subdirectories
+        for path in (TESTS / suite.directory / subdirectory).glob("*.c")
     )
 
 
 def main(argv):
     parser = argparse.ArgumentParser(
-        description="Regenerate CHECK blocks for @check-fn-annotated differential fixtures."
+        description="Regenerate FileCheck blocks for single-file suite fixtures: "
+        "@check-fn-wrapped functions, or the whole program when a fixture has no markers."
     )
-    parser.add_argument("fixtures", nargs="*", type=Path)
+    parser.add_argument("fixtures", nargs="*", type=Path, help="default: every supported fixture")
     parser.add_argument(
         "--no-run",
         action="store_true",
         help="reuse the Rust the last test run wrote instead of rerunning the harness",
     )
     arguments = parser.parse_args(argv)
-    fixtures = [path.resolve() for path in arguments.fixtures] or annotated_fixtures()
+    fixtures = [path.resolve() for path in arguments.fixtures] or supported_fixtures()
     generated = {}
+    fixtures_by_suite = defaultdict(list)
     failures = 0
     for path in fixtures:
         try:
-            group, _ = harness_location(path)
+            suite = fixture_suite(path)
         except FixtureError as error:
             print(f"error: {error}", file=sys.stderr)
             failures += 1
             continue
-        generated[path] = GENERATED / group / f"{path.stem}.generated.rs"
+        generated[path] = generated_rust(suite, path)
+        fixtures_by_suite[suite].append(path)
     if not arguments.no_run and generated:
         for rust in generated.values():
             rust.unlink(missing_ok=True)
-        run_harness(list(generated))
+        run_harness(fixtures_by_suite)
     for path, rust in generated.items():
         name = path.relative_to(TESTS)
         if not rust.is_file():
@@ -241,14 +310,14 @@ def main(argv):
             failures += 1
             continue
         try:
-            source = path.read_text()
+            source = path.read_text(errors="surrogateescape")
             updated = update_source(source, rust.read_text())
         except FixtureError as error:
             print(f"error: {name}: {error}", file=sys.stderr)
             failures += 1
             continue
         if updated != source:
-            path.write_text(updated)
+            path.write_text(updated, errors="surrogateescape")
             print(f"updated {name}")
     return 1 if failures else 0
 

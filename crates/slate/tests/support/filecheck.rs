@@ -15,6 +15,16 @@ pub fn check_generated_rust(
     if groups.is_empty() {
         return Ok(());
     }
+    if let Some((number, line)) = generated
+        .lines()
+        .enumerate()
+        .find(|(_, line)| directive(line, prefixes).is_some())
+    {
+        return Err(format!(
+            "FileCheck failed: generated Rust line {} carries a check directive: {line}",
+            number + 1
+        ));
+    }
     std::fs::create_dir_all(work_dir)
         .map_err(|error| format!("create {}: {error}", work_dir.display()))?;
     let input = work_dir.join("generated.rs");
