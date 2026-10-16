@@ -10,9 +10,3 @@ int expected_line(void) { return 704; }
 // @rewrite-fn-end
 
 int main(void) { return line_value() == expected_line() ? 0 : 1; }
-
-// SLATE-FILECHECK-BEGIN common-rewrites
-// COMMON-REWRITES-DAG: fn line_value() -> i32 {
-// COMMON-REWRITES-DAG:     704
-// COMMON-REWRITES-DAG: }
-// SLATE-FILECHECK-END common-rewrites

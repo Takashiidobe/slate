@@ -3,6 +3,8 @@
     reason = "shared helpers are used by different integration test binaries"
 )]
 
+pub mod filecheck;
+
 use std::collections::BTreeMap;
 use std::io::Write;
 use std::path::{Path, PathBuf};

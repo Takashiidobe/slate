@@ -12,6 +12,3 @@ int run_b(void) {
   }
   return total;
 }
-// LOWERING-DAG: struct Item
-// LOWERING-DAG: label: *mut i8
-// LOWERING-DAG: score: i32

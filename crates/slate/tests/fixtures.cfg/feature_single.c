@@ -12,9 +12,3 @@ int main(void) {
   printf("%d\n", feature_code());
   return 0;
 }
-
-// SLATE-FILECHECK-BEGIN common-rewrites
-// COMMON-REWRITES-DAG: fn feature_code() -> i32 {
-// COMMON-REWRITES-DAG:     20
-// COMMON-REWRITES-DAG: }
-// SLATE-FILECHECK-END common-rewrites

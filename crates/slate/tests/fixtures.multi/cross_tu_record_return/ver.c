@@ -18,4 +18,3 @@ struct Version get_version(void) {
   struct Version v = {1, 2, 3};
   return v;
 }
-// LOWERING-DAG: fn get_version

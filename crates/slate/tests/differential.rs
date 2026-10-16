@@ -79,6 +79,9 @@ fn run_cases_for_target(
         .join("target/difftest-generated")
         .join(group);
     std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let check_prefixes = support::filecheck::prefixes_for_target(
+        cross.map_or(env!("SLATE_BUILD_TARGET"), |cross| cross.rust_triple),
+    );
 
     let translated = support::parallel_map(fixtures, |f| {
         let generated = tmp.join(format!("{}.generated.rs", f.name));
@@ -99,6 +102,14 @@ fn run_cases_for_target(
         } else {
             support::translate_slate(&f.path, &generated, &extra_args)
         };
+        let result = result.and_then(|()| {
+            support::filecheck::check_generated_rust(
+                &std::fs::read_to_string(&f.path).map_err(|e| e.to_string())?,
+                &std::fs::read_to_string(&generated).map_err(|e| e.to_string())?,
+                &check_prefixes,
+                &tmp.join("filecheck").join(&f.name),
+            )
+        });
         result.map(|()| {
             let mut config = support::RunConfig::default();
             config.c_args.extend(dg_options);
@@ -186,6 +197,8 @@ fn first_barrier(error: &str) -> (&'static str, &str) {
         } else {
             "parse/sema"
         }
+    } else if error.starts_with("FileCheck failed") {
+        "filecheck"
     } else if error.starts_with("Rust batch build failed") {
         "rustc"
     } else if error.starts_with("exit code differs")

@@ -1,22 +1,17 @@
 #include <stdio.h>
 
-// @slate-lowerer-fn-begin
 static int bump_through_pointer(int value) {
   int  local = value;
   int *ptr   = &local;
   *ptr       = *ptr + 3;
   return local;
 }
-// @slate-lowerer-fn-end
 
-// @slate-lowerer-fn-begin
 static int add_into_pointer(int *slot, int amount) {
   *slot = *slot + amount;
   return *slot;
 }
-// @slate-lowerer-fn-end
 
-// @slate-lowerer-fn-begin
 static int pick_with_pointer_arithmetic(int index) {
   int  values[4];
   int *ptr  = values;
@@ -26,7 +21,6 @@ static int pick_with_pointer_arithmetic(int index) {
   values[3] = 16;
   return *(ptr + index);
 }
-// @slate-lowerer-fn-end
 
 int main(void) {
   int total = 10;

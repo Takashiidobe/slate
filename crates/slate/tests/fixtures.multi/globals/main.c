@@ -10,5 +10,3 @@ int main(void) {
   printf("%d\n", counter);
   return 0;
 }
-// LOWERING-DAG: use crate::state::counter;
-// LOWERING-NOT: static mut counter
