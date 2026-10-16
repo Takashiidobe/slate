@@ -96,6 +96,8 @@ pub struct TypeResolver {
     pub(super) function_names: Option<FunctionNames>,
     pub(super) locals: HashMap<BindingId, QualType>,
     pub(super) constants: HashMap<BindingId, Operand>,
+    folded_objects: HashMap<BindingId, Operand>,
+    pub(super) fold_object_bounds: bool,
     pub(super) record_fields: HashMap<TypeId, Vec<QualType>>,
     pub(super) field_counters: HashMap<TypeId, Vec<Option<String>>>,
     pending_counters: HashMap<TypeId, Vec<(String, crate::ast::Loc)>>,
@@ -166,6 +168,8 @@ impl TypeResolver {
             function_names: None,
             locals: HashMap::new(),
             constants: HashMap::new(),
+            folded_objects: HashMap::new(),
+            fold_object_bounds: false,
             record_fields: HashMap::new(),
             field_counters: HashMap::new(),
             pending_counters: HashMap::new(),
@@ -1399,7 +1403,58 @@ impl TypeResolver {
     }
 
     pub(super) fn constant(&self, e: &crate::ast::Expr) -> Option<&Operand> {
-        self.constants.get(self.references.get(&e.id)?)
+        let id = self.references.get(&e.id)?;
+        self.constants.get(id).or_else(|| {
+            self.fold_object_bounds
+                .then(|| self.folded_objects.get(id))
+                .flatten()
+        })
+    }
+
+    pub(super) fn folds_object_bounds(
+        &self,
+        global: bool,
+        storage: crate::ast::StorageClass,
+    ) -> bool {
+        use crate::ast::StorageClass;
+        self.flavor().is_clang()
+            && (global || matches!(storage, StorageClass::Static | StorageClass::Extern))
+    }
+
+    pub(super) fn declare_folded_object(
+        &mut self,
+        node: crate::ast::NodeId,
+        initializer: &crate::ast::Expr,
+        c: QualType,
+        value: BigInt,
+    ) {
+        let quals = self.ctypes.quals(c);
+        let c = self.ctypes.unqualified(c);
+        let Some(id) = self.declarations.get(&node).copied() else {
+            return;
+        };
+        let Type::Numeric(NumericType::Integer { width, signed, .. }) = self.ir_type(c) else {
+            return;
+        };
+        if !quals.is_const || quals.is_volatile {
+            return;
+        }
+        let modulus = BigInt::from(1u8) << width;
+        let mut value = ((value % &modulus) + &modulus) % &modulus;
+        if signed && value >= (&modulus >> 1u32) {
+            value -= modulus;
+        }
+        let ty = self.ir_type(c);
+        self.folded_objects.insert(
+            id,
+            Operand {
+                c,
+                value: Value {
+                    ty,
+                    node: initializer.derive(ValueKind::Constant(Number::SignedInteger(value))),
+                },
+            },
+        );
     }
 
     pub(super) fn declare_constant(&mut self, node: crate::ast::NodeId, operand: Operand) {

@@ -165,6 +165,15 @@ Macro expansion chains are not in the IR yet (only atomic builtins record
   (`TypeResolver::constant_pointer_binary`, `constant_place`), which has the
   layout `sema/fold.rs` lacks. They leave an `int_to_ptr` of a constant or a
   plain integer constant in the IR (`ir_pointer_arithmetic_constants.c`).
+- clang flavor only: a bound that reads a `const` integer object with a
+  constant initializer folds when the array has static storage or is
+  `extern` (`const int n = 3; int a[n];`, `static int b[n];`), as clang does
+  under `-Wgnu-folding-constant`. gcc and cl reject both. The checker
+  records such objects (`TypeResolver::declare_folded_object`, value wrapped
+  to the object's type) and `constant` reads them only while
+  `fold_object_bounds` is set, which the declaration paths set for static
+  and file-scope declarators; an automatic `int d[n]` stays a VLA
+  (`ir_const_object_array_bounds.c`).
 - Layout constants fold through `TypeResolver::constant_integer`, which is
   target-aware and sees predefines, enumerators, and `constexpr` objects.
   The token-level folder in `const_expr.rs` is for the preprocessor only.

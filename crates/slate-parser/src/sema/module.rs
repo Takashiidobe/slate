@@ -1204,14 +1204,18 @@ impl Lowerer {
                 .declarator
                 .name()
                 .ok_or(ResolveError::Internal("unnamed declaration"))?;
+            let folds_bounds = self.types.folds_object_bounds(global, storage_class);
             if !global {
                 let anchor = declarator.derive(());
-                self.capture_extents(
+                let folding = std::mem::replace(&mut self.types.fold_object_bounds, folds_bounds);
+                let captured = self.capture_extents(
                     (index == 0).then_some(&item.specifiers.ty),
                     &declarator.declarator,
                     &anchor,
                     &mut statements,
-                )?;
+                );
+                self.types.fold_object_bounds = folding;
+                captured?;
             }
             let owner = self.types.owner.replace(declarator.derive(()));
             let value = if inferred {
@@ -1246,11 +1250,14 @@ impl Lowerer {
                     "declarator type not recorded by the checker",
                 ))??;
             let resolved = if self.types.ctypes.has_unbound_extent(recorded) {
-                self.resolve_declarator_type(
+                let folding = std::mem::replace(&mut self.types.fold_object_bounds, folds_bounds);
+                let resolved = self.resolve_declarator_type(
                     &item.specifiers,
                     &declarator.declarator,
                     &declarator.attributes,
-                )?
+                );
+                self.types.fold_object_bounds = folding;
+                resolved?
             } else {
                 recorded
             };

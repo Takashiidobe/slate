@@ -368,9 +368,14 @@ impl Checker<'_> {
             let owner = self.types.owner.replace(declarator.derive(()));
             let mut initialized = None;
             let provisional = std::mem::replace(&mut self.types.provisional_extents, true);
+            let folds_bounds = self
+                .types
+                .folds_object_bounds(global, declaration.specifiers.storage);
+            let folding = std::mem::replace(&mut self.types.fold_object_bounds, folds_bounds);
             let resolved = self
                 .types
                 .declarator_type(&declaration.specifiers, declarator);
+            self.types.fold_object_bounds = folding;
             self.types.provisional_extents = provisional;
             self.resolution(at, &resolved);
             self.types
@@ -455,6 +460,14 @@ impl Checker<'_> {
                     && let Ok(value) = self.types.constant_value(expr)
                 {
                     self.types.declare_constant(declarator.id, value);
+                }
+                if self.types.flavor().is_clang()
+                    && let Some(Initializer::Expr(expr)) = &declarator.initializer
+                    && ice_shape(self.types, expr).is_constant()
+                    && let Ok(value) = self.types.constant_integer(expr)
+                {
+                    self.types
+                        .declare_folded_object(declarator.id, expr, completed, value);
                 }
             }
             if let Some(initializer) = &declarator.initializer {
