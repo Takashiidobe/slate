@@ -1,6 +1,6 @@
 int printf(const char *, ...);
 
-// @rewrite-fn-begin
+// @check-fn-begin
 #if defined(__LP64__) || defined(_LP64)
 int pointer_width_code(void) { return 64; }
 #elif defined(__ILP32__) || defined(_ILP32)
@@ -8,7 +8,7 @@ int pointer_width_code(void) { return 32; }
 #else
 int pointer_width_code(void) { return 0; }
 #endif
-// @rewrite-fn-end
+// @check-fn-end
 
 int main(void) {
   printf("%d\n", pointer_width_code());

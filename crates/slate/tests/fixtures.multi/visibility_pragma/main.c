@@ -19,7 +19,7 @@ int hidden_again_global = 23;
 int visible_after(void) { return 29; }
 int visible_after_global = 31;
 
-// @rewrite-fn-begin
+// @check-fn-begin
 int main(void) {
   printf("%d %d %d %d %d %d %d %d %d %d\n", visible_before(),
          visible_before_global, hidden_outer(), hidden_outer_global,
@@ -27,4 +27,4 @@ int main(void) {
          hidden_again_global, visible_after(), visible_after_global);
   return 0;
 }
-// @rewrite-fn-end
+// @check-fn-end

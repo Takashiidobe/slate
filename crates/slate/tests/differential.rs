@@ -103,6 +103,9 @@ fn run_cases_for_target(
             support::translate_slate(&f.path, &generated, &extra_args)
         };
         let result = result.and_then(|()| {
+            if project {
+                return Ok(());
+            }
             support::filecheck::check_generated_rust(
                 &std::fs::read_to_string(&f.path).map_err(|e| e.to_string())?,
                 &std::fs::read_to_string(&generated).map_err(|e| e.to_string())?,

@@ -1,12 +1,12 @@
 int printf(const char *, ...);
 
-// @rewrite-fn-begin
+// @check-fn-begin
 #if defined(_WIN64)
 int win64_code(void) { return 64; }
 #else
 int win64_code(void) { return 0; }
 #endif
-// @rewrite-fn-end
+// @check-fn-end
 
 int main(void) {
   printf("%d\n", win64_code());

@@ -1,3 +1,3 @@
-// @rewrite-fn-begin
+// @check-fn-begin
 int match(int value) { return value; }
-// @rewrite-fn-end
+// @check-fn-end

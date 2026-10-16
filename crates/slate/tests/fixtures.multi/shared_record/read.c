@@ -1,5 +1,5 @@
 #include "shared.h"
 
-// @rewrite-fn-begin
+// @check-fn-begin
 int read_pair(struct Pair *pair) { return pair->left + pair->right; }
-// @rewrite-fn-end
+// @check-fn-end

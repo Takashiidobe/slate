@@ -1,12 +1,12 @@
 #include <stdio.h>
 
-// @rewrite-fn-begin
+// @check-fn-begin
 #if defined(NDEBUG)
 int debug_code(void) { return 0; }
 #else
 int debug_code(void) { return 1; }
 #endif
-// @rewrite-fn-end
+// @check-fn-end
 
 int main(void) {
   printf("%d\n", debug_code());

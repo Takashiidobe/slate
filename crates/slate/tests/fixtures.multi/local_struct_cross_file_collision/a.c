@@ -1,4 +1,4 @@
-// @rewrite-fn-begin
+// @check-fn-begin
 int run_a(void) {
   struct Item {
     int value;
@@ -13,4 +13,4 @@ int run_a(void) {
   }
   return total;
 }
-// @rewrite-fn-end
+// @check-fn-end

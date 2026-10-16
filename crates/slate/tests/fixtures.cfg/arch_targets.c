@@ -1,6 +1,6 @@
 int printf(const char *, ...);
 
-// @rewrite-fn-begin
+// @check-fn-begin
 #if defined(__x86_64__) || defined(_M_X64)
 int arch_code(void) { return 64; }
 #elif defined(__i386__) || defined(_M_IX86)
@@ -24,7 +24,7 @@ int arch_code(void) { return 325; }
 #else
 int arch_code(void) { return 0; }
 #endif
-// @rewrite-fn-end
+// @check-fn-end
 
 int main(void) {
   printf("%d\n", arch_code());

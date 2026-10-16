@@ -1,5 +1,5 @@
 #include "shared.h"
 
-// @rewrite-fn-begin
+// @check-fn-begin
 int read_marker(struct Box *box) { return box->marker; }
-// @rewrite-fn-end
+// @check-fn-end

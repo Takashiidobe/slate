@@ -1,6 +1,6 @@
 int printf(const char *, ...);
 
-// @rewrite-fn-begin
+// @check-fn-begin
 #if defined(_WIN32)
 int os_code(void) { return 10; }
 #elif defined(__ANDROID__)
@@ -14,7 +14,7 @@ int os_code(void) { return 35; }
 #else
 int os_code(void) { return 40; }
 #endif
-// @rewrite-fn-end
+// @check-fn-end
 
 int main(void) {
   printf("%d\n", os_code());
