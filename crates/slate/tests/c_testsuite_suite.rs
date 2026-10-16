@@ -44,6 +44,8 @@ fn run_cases(group: &str, dir: &Path) -> Vec<(String, Result<(), String>)> {
             c_src: path.clone(),
             rs_src: generated,
             config: support::RunConfig {
+                filecheck_target: (group == "supported")
+                    .then(|| support::translation_target(&clang_args)),
                 c_args: clang_args,
                 ..support::RunConfig::default()
             },
@@ -67,14 +69,14 @@ fn run_cases(group: &str, dir: &Path) -> Vec<(String, Result<(), String>)> {
 #[test]
 fn c_testsuite_supported_tests_match_c() {
     let results = run_cases("supported", &supported_root());
-    let failures: Vec<String> = results
+    let failures: Vec<_> = results
         .into_iter()
-        .filter_map(|(name, result)| result.err().map(|e| format!("{name}: {e}")))
+        .filter_map(|(name, result)| result.err().map(|e| (name, e)))
         .collect();
     assert!(
         failures.is_empty(),
         "c-testsuite supported tests failed:\n{}",
-        failures.join("\n\n")
+        support::failure_report(&failures)
     );
 }
 

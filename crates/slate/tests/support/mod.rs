@@ -453,6 +453,7 @@ pub struct RunConfig {
     pub expected_stdout: Option<PathBuf>,
     pub extra_files: Vec<PathBuf>,
     pub extra_files_dir: PathBuf,
+    pub filecheck_target: Option<String>,
 }
 
 impl Default for RunConfig {
@@ -467,6 +468,7 @@ impl Default for RunConfig {
             expected_stdout: None,
             extra_files: Vec::new(),
             extra_files_dir: PathBuf::from("src/functional"),
+            filecheck_target: None,
         }
     }
 }
@@ -518,6 +520,8 @@ pub fn compare_batch_with_jobs_for_target(
     let batch_bins = build_batch(&rust_cases, &project, &bin_dir, jobs, cross);
 
     parallel_map_with_jobs(cases, jobs, |case| {
+        let runtime_ok = runtime_ok_marker(&case.rs_src);
+        let _ = std::fs::remove_file(&runtime_ok);
         let result = (|| {
             let bn = bin_name(&case.name);
             let rs_bin = match &batch_bins {
@@ -560,7 +564,13 @@ pub fn compare_batch_with_jobs_for_target(
                 &expected,
                 &run_with_config_for_target(&rs_bin, &case.config, &run_dir, cross)?,
                 case.config.compare_stderr,
-            )
+            )?;
+            std::fs::write(&runtime_ok, b"")
+                .map_err(|e| format!("write {}: {e}", runtime_ok.display()))?;
+            match &case.config.filecheck_target {
+                Some(target) => filecheck_case(case, target),
+                None => Ok(()),
+            }
         })();
         (case.name.clone(), result)
     })
@@ -1153,20 +1163,49 @@ pub fn translate_slate(c_src: &Path, rs_out: &Path, extra_args: &[String]) -> Re
         return Err(format!("slate translate failed ({}):\n{stderr}", o.status));
     }
     write_if_changed(rs_out, &o.stdout).map_err(|e| format!("write {}: {e}", rs_out.display()))?;
-    let target = extra_args
+    Ok(())
+}
+
+pub fn translation_target(extra_args: &[String]) -> String {
+    extra_args
         .iter()
         .find_map(|arg| arg.strip_prefix("-target="))
-        .unwrap_or(env!("SLATE_BUILD_TARGET"));
-    let fixture = std::fs::read(c_src).map_err(|e| format!("read {}: {e}", c_src.display()))?;
-    let name = rs_out
+        .unwrap_or(env!("SLATE_BUILD_TARGET"))
+        .to_string()
+}
+
+fn runtime_ok_marker(rs_src: &Path) -> PathBuf {
+    let name = rs_src
         .file_name()
         .and_then(|name| name.to_str())
-        .and_then(|name| name.strip_suffix(".generated.rs"))
-        .expect("translated Rust is named <fixture>.generated.rs");
+        .unwrap_or_default();
+    let stem = name.strip_suffix(".generated.rs").unwrap_or(name);
+    rs_src.with_file_name(format!("{stem}.runtime-ok"))
+}
+
+fn filecheck_case(case: &Case, target: &str) -> Result<(), String> {
+    let fixture =
+        std::fs::read(&case.c_src).map_err(|e| format!("read {}: {e}", case.c_src.display()))?;
+    let generated =
+        std::fs::read(&case.rs_src).map_err(|e| format!("read {}: {e}", case.rs_src.display()))?;
     filecheck::check_generated_rust(
         &String::from_utf8_lossy(&fixture),
-        &String::from_utf8_lossy(&o.stdout),
+        &String::from_utf8_lossy(&generated),
         &filecheck::prefixes_for_target(target),
-        &rs_out.with_file_name("filecheck").join(name),
+        &case.rs_src.with_file_name("filecheck").join(&case.name),
+    )
+}
+
+pub fn failure_report(failures: &[(String, String)]) -> String {
+    let details: Vec<String> = failures
+        .iter()
+        .map(|(name, error)| format!("[{name}] {error}"))
+        .collect();
+    let names: Vec<&str> = failures.iter().map(|(name, _)| name.as_str()).collect();
+    format!(
+        "{}\n\n{} failing fixtures: {}",
+        details.join("\n\n"),
+        failures.len(),
+        names.join(" ")
     )
 }

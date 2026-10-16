@@ -67,6 +67,8 @@ fn run_cases(group: &str, dir: &Path) -> Vec<(String, Result<(), String>)> {
             rs_src: generated,
             config: support::RunConfig {
                 timeout_seconds: Some(15),
+                filecheck_target: (group == "supported")
+                    .then(|| support::translation_target(&options)),
                 c_args: options
                     .into_iter()
                     .chain(["-latomic".to_string()])
@@ -122,16 +124,20 @@ fn gcc_dg_unsupported_tests_still_fail() {
 #[test]
 fn gcc_dg_supported_tests_match_c() {
     let results = run_cases("supported", &root("supported"));
-    let failures: Vec<String> = results
+    let failures: Vec<_> = results
         .into_iter()
-        .filter_map(|(name, result)| result.err().map(|e| format!("{name}: {e}")))
+        .filter_map(|(name, result)| result.err().map(|e| (name, e)))
         .collect();
     if let Ok(report) = std::env::var("SLATE_GCC_DG_FAILURES") {
-        std::fs::write(report, failures.join("\n")).expect("write gcc.dg failure report");
+        let text: Vec<String> = failures
+            .iter()
+            .map(|(name, e)| format!("{name}: {e}"))
+            .collect();
+        std::fs::write(report, text.join("\n")).expect("write gcc.dg failure report");
     }
     assert!(
         failures.is_empty(),
         "gcc.dg supported tests failed:\n{}",
-        failures.join("\n\n")
+        support::failure_report(&failures)
     );
 }

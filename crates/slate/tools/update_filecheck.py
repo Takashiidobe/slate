@@ -99,6 +99,10 @@ def generated_rust(suite, path):
     return CRATE / "target" / suite.work / f"{path.stem}.generated.rs"
 
 
+def runtime_ok(rust):
+    return rust.with_name(rust.name.removesuffix(".generated.rs") + ".runtime-ok")
+
+
 def strip_attribute_groups(text):
     text = re.sub(r"\[\[.*?\]\]", " ", text, flags=re.DOTALL)
     while match := C_ATTRIBUTE_PATTERN.search(text):
@@ -274,24 +278,39 @@ def supported_fixtures():
     )
 
 
+def resolve_fixture(argument):
+    path = Path(argument)
+    if path.suffix == ".c" or path.exists():
+        return path.resolve()
+    matches = [fixture for fixture in supported_fixtures() if fixture.stem == argument]
+    if len(matches) != 1:
+        found = ", ".join(str(match.relative_to(TESTS)) for match in matches) or "no supported fixture"
+        raise FixtureError(f"{argument}: name matches {found}; pass a path")
+    return matches[0]
+
+
 def main(argv):
     parser = argparse.ArgumentParser(
         description="Regenerate FileCheck blocks for single-file suite fixtures: "
         "@check-fn-wrapped functions, or the whole program when a fixture has no markers."
     )
-    parser.add_argument("fixtures", nargs="*", type=Path, help="default: every supported fixture")
+    parser.add_argument(
+        "fixtures",
+        nargs="*",
+        help="fixture paths, or names as a failing test run lists them; default: every supported fixture",
+    )
     parser.add_argument(
         "--no-run",
         action="store_true",
         help="reuse the Rust the last test run wrote instead of rerunning the harness",
     )
     arguments = parser.parse_args(argv)
-    fixtures = [path.resolve() for path in arguments.fixtures] or supported_fixtures()
     generated = {}
     fixtures_by_suite = defaultdict(list)
     failures = 0
-    for path in fixtures:
+    for argument in arguments.fixtures or supported_fixtures():
         try:
+            path = resolve_fixture(argument)
             suite = fixture_suite(path)
         except FixtureError as error:
             print(f"error: {error}", file=sys.stderr)
@@ -302,11 +321,16 @@ def main(argv):
     if not arguments.no_run and generated:
         for rust in generated.values():
             rust.unlink(missing_ok=True)
+            runtime_ok(rust).unlink(missing_ok=True)
         run_harness(fixtures_by_suite)
     for path, rust in generated.items():
         name = path.relative_to(TESTS)
         if not rust.is_file():
             print(f"error: {name}: translation failed; no {rust.name}", file=sys.stderr)
+            failures += 1
+            continue
+        if not runtime_ok(rust).is_file():
+            print(f"error: {name}: Rust did not build or did not match C; checks left unchanged", file=sys.stderr)
             failures += 1
             continue
         try:

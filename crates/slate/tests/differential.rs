@@ -88,6 +88,8 @@ fn run_cases_for_target(
         if let Some(cross) = cross {
             extra_args.push(format!("-target={}", cross.rust_triple));
         }
+        let filecheck_target =
+            (!project && group != "unsupported").then(|| support::translation_target(&extra_args));
         let result = if project {
             let crate_dir = tmp.join(&f.name);
             translate_fixture_project(std::slice::from_ref(&f.path), &crate_dir, extra_args, &[])
@@ -100,10 +102,13 @@ fn run_cases_for_target(
             support::translate_slate(&f.path, &generated, &extra_args)
         };
         result.map(|()| {
-            let mut config = support::RunConfig::default();
-            config.c_args.extend(dg_options);
-            config.expected_stdout =
-                Some(f.path.with_extension("expected")).filter(|path| path.is_file());
+            let config = support::RunConfig {
+                c_args: dg_options,
+                expected_stdout: Some(f.path.with_extension("expected"))
+                    .filter(|path| path.is_file()),
+                filecheck_target,
+                ..support::RunConfig::default()
+            };
             support::Case {
                 name: f.name.clone(),
                 c_src: f.path.clone(),
@@ -186,8 +191,6 @@ fn first_barrier(error: &str) -> (&'static str, &str) {
         } else {
             "parse/sema"
         }
-    } else if error.starts_with("FileCheck failed") {
-        "filecheck"
     } else if error.starts_with("Rust batch build failed") {
         "rustc"
     } else if error.starts_with("exit code differs")
@@ -216,7 +219,7 @@ fn generated_differential() {
             Ok(()) => eprintln!("ok    {name}"),
             Err(e) => {
                 eprintln!("FAIL  {name}");
-                failures.push(format!("[{name}] {e}"));
+                failures.push((name, e));
             }
         }
     }
@@ -226,7 +229,7 @@ fn generated_differential() {
             "{} of {} generated fixtures failed:\n\n{}",
             failures.len(),
             fixtures.len(),
-            failures.join("\n\n")
+            support::failure_report(&failures)
         );
     }
 }
@@ -237,9 +240,13 @@ fn i686_differential() {
     let cross = support::CrossTarget::i686_linux();
     let failures: Vec<_> = run_cases_for_target("i686", &fixtures, false, Some(&cross))
         .into_iter()
-        .filter_map(|(name, result)| result.err().map(|error| format!("[{name}] {error}")))
+        .filter_map(|(name, result)| result.err().map(|error| (name, error)))
         .collect();
-    assert!(failures.is_empty(), "{}", failures.join("\n\n"));
+    assert!(
+        failures.is_empty(),
+        "{}",
+        support::failure_report(&failures)
+    );
 }
 
 #[test]
