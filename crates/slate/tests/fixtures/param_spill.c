@@ -13,7 +13,7 @@ int main(void) {
 }
 
 // SLATE-FILECHECK-BEGIN
-// CHECK-LABEL: {{^}}fn adjust(mut value: i32, mut delta: i32) -> i32 {
+// CHECK-LABEL: {{^}}fn adjust(mut value: i32, delta: i32) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(value) as *mut i32)
 // CHECK-NEXT:             .store(

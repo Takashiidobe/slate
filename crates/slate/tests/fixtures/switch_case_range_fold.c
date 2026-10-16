@@ -39,7 +39,7 @@ int main(void) {
 }
 
 // SLATE-FILECHECK-BEGIN
-// CHECK-LABEL: {{^}}fn classify(mut c: i32) -> i32 {
+// CHECK-LABEL: {{^}}fn classify(c: i32) -> i32 {
 // CHECK-NEXT:     match c {
 // CHECK-NEXT:         48..=57 => {
 // CHECK-NEXT:             return 1 as i32;

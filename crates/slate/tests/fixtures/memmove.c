@@ -76,7 +76,7 @@ int main(void) {
 // CHECK-NEXT:         ((7 as i32) as i8) as u8,
 // CHECK-NEXT:         ((8 as i32) as i8) as u8,
 // CHECK-NEXT:     ];
-// CHECK-NEXT:     let mut n: i32 = get_count();
+// CHECK-NEXT:     let n: i32 = get_count();
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::copy(
 // CHECK-NEXT:             ((unsafe { (dyn_buf.as_mut_ptr() as *mut u8).offset((1 as i32) as isize) })
@@ -93,9 +93,7 @@ int main(void) {
 // CHECK-NEXT:                 .offset(i as isize) } }) as u32) as i32
 // CHECK-NEXT:             );
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:             let mut [[V_0:__v[0-9]+]]: i32 = i;
-// CHECK-NEXT:             let mut [[V_1:__v[0-9]+]]: i32 = [[V_0]] + (1 as i32);
-// CHECK-NEXT:             i = [[V_1]];
+// CHECK-NEXT:             i += 1 as i32;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     {
@@ -106,9 +104,7 @@ int main(void) {
 // CHECK-NEXT:                 .offset(i as isize) } }) as u32) as i32
 // CHECK-NEXT:             );
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:             let mut [[V_2:__v[0-9]+]]: i32 = i;
-// CHECK-NEXT:             let mut [[V_3:__v[0-9]+]]: i32 = [[V_2]] + (1 as i32);
-// CHECK-NEXT:             i = [[V_3]];
+// CHECK-NEXT:             i += 1 as i32;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut i: i32 = 0 as i32;
@@ -118,9 +114,7 @@ int main(void) {
 // CHECK-NEXT:             isize) } }) as u32) as i32
 // CHECK-NEXT:         );
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         let mut [[V_4:__v[0-9]+]]: i32 = i;
-// CHECK-NEXT:         let mut [[V_5:__v[0-9]+]]: i32 = [[V_4]] + (1 as i32);
-// CHECK-NEXT:         i = [[V_5]];
+// CHECK-NEXT:         i += 1 as i32;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("");
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());

@@ -14,8 +14,8 @@ int main(void) {
 // @check-fn-end
 
 // SLATE-FILECHECK-BEGIN
-// CHECK-LABEL: {{^}}fn add(mut a: i32, mut b: i32) -> i32 {
-// CHECK-NEXT:     let mut c: i32 = a + b;
+// CHECK-LABEL: {{^}}fn add(a: i32, b: i32) -> i32 {
+// CHECK-NEXT:     let c: i32 = a + b;
 // CHECK-NEXT:     c
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {

@@ -20,14 +20,13 @@ int main(void) {
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut bound: i32 = 3 as i32;
 // CHECK-NEXT:     let mut evaluated: u64 = 0 as u64;
-// CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: i32 = bound;
-// CHECK-NEXT:     let mut [[V_1:__v[0-9]+]]: i32 = [[V_0]] + (1 as i32);
-// CHECK-NEXT:     bound = [[V_1]];
-// CHECK-NEXT:     let mut [[V_2:__v[0-9]+]]: u64 = ([[V_0]] as i64) as u64;
-// CHECK-NEXT:     evaluated = [[V_2]].wrapping_mul(4 as u64);
-// CHECK-NEXT:     let mut unevaluated: u64 = 8 as u64;
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = bound;
+// CHECK-NEXT:     bound = [[V_0]] + (1 as i32);
+// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: u64 = ([[V_0]] as i64) as u64;
+// CHECK-NEXT:     evaluated = [[V_1]].wrapping_mul(4 as u64);
+// CHECK-NEXT:     let unevaluated: u64 = 8 as u64;
 // CHECK-NEXT:     let mut values: [i32; 3] = [7 as i32, 8 as i32, 9 as i32];
-// CHECK-NEXT:     let mut parameter: i32 = parameter_bound(3 as i32, values.as_mut_ptr() as *mut i32);
+// CHECK-NEXT:     let parameter: i32 = parameter_bound(3 as i32, values.as_mut_ptr() as *mut i32);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(

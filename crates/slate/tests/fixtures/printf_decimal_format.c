@@ -12,8 +12,8 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut a: i32 = 2 as i32;
-// CHECK-NEXT:     let mut b: i32 = 3 as i32;
+// CHECK-NEXT:     let a: i32 = 2 as i32;
+// CHECK-NEXT:     let b: i32 = 3 as i32;
 // CHECK-NEXT:     println!("sum: {} and {}", a, b);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"hex: %x\n".as_ptr() as *const i8, a) };

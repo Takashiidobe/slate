@@ -19,10 +19,8 @@ int main(void) {
 // CHECK-NEXT:         [[T_0]].tv_sec = (0 as i32) as i64;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut result: i32 = unsafe {
-// CHECK-NEXT:         timespec_get(std::ptr::addr_of_mut!(value), 1 as i32)
-// CHECK-NEXT:     };
-// CHECK-NEXT:     let mut nanoseconds_in_range: i32 = (value.tv_nsec >= ((0 as i32) as i64)
+// CHECK-NEXT:     let result: i32 = unsafe { timespec_get(std::ptr::addr_of_mut!(value), 1 as i32) };
+// CHECK-NEXT:     let nanoseconds_in_range: i32 = (value.tv_nsec >= ((0 as i32) as i64)
 // CHECK-NEXT:         && value.tv_nsec < (1000000000 as i64)) as i32;
 // CHECK-NEXT:     println!("{} {}", (result == (1 as i32)) as i32, nanoseconds_in_range);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());

@@ -5,7 +5,7 @@ __attribute__((target("bmi"))) int bmi_probe(int x) { return x + 1; }
 int main(void) { return bmi_probe(41); }
 
 // SLATE-FILECHECK-BEGIN
-// CHECK-LABEL: {{^}}unsafe fn bmi_probe(mut x: i32) -> i32 {
+// CHECK-LABEL: {{^}}unsafe fn bmi_probe(x: i32) -> i32 {
 // CHECK-NEXT:     x + (1 as i32)
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

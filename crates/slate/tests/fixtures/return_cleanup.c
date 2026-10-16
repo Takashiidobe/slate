@@ -14,7 +14,7 @@ int main(void) {
 }
 
 // SLATE-FILECHECK-BEGIN
-// CHECK-LABEL: {{^}}fn choose(mut value: i32) -> i32 {
+// CHECK-LABEL: {{^}}fn choose(value: i32) -> i32 {
 // CHECK-NEXT:     if value < (0 as i32) {
 // CHECK-NEXT:         return -(1 as i32);
 // CHECK-NEXT:     }

@@ -41,7 +41,7 @@ int main(void) {
 }
 
 // SLATE-FILECHECK-BEGIN
-// CHECK-LABEL: {{^}}fn classify_u64(mut v: u64) -> i32 {
+// CHECK-LABEL: {{^}}fn classify_u64(v: u64) -> i32 {
 // CHECK-NEXT:     match v {
 // CHECK-NEXT:         18446744073709551610..=18446744073709551612 => {
 // CHECK-NEXT:             return 1 as i32;
@@ -55,8 +55,8 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { std::mem::zeroed() }
 // CHECK: {{^}}}
-// CHECK-LABEL: {{^}}fn classify_bitint(mut seed: i32) -> i32 {
-// CHECK-NEXT:     let mut v: i128 = (170141183460469231731687303715884105720 as i128) + (seed as i128);
+// CHECK-LABEL: {{^}}fn classify_bitint(seed: i32) -> i32 {
+// CHECK-NEXT:     let v: i128 = (170141183460469231731687303715884105720 as i128) + (seed as i128);
 // CHECK-NEXT:     match v {
 // CHECK-NEXT:         170141183460469231731687303715884105720..=170141183460469231731687303715884105722 => {
 // CHECK-NEXT:             return 1 as i32;

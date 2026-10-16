@@ -22,7 +22,7 @@ int main(void) {
 }
 
 // SLATE-FILECHECK-BEGIN
-// CHECK-LABEL: {{^}}fn set_cell(mut row: &mut Row) {
+// CHECK-LABEL: {{^}}fn set_cell(row: &mut Row) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *unsafe {
 // CHECK-NEXT:             unsafe { (*(row as *mut Row)).cells.as_mut_ptr() as *mut i32 }

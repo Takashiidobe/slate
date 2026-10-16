@@ -28,13 +28,13 @@ int main(void) {
 // @check-fn-end
 
 // SLATE-FILECHECK-BEGIN
-// CHECK-LABEL: {{^}}fn mutable_pick(mut i: i32) -> *mut i8 {
+// CHECK-LABEL: {{^}}fn mutable_pick(i: i32) -> *mut i8 {
 // CHECK-NEXT:     if i == (0 as i32) {
 // CHECK-NEXT:         return c"mut".as_ptr() as *mut i8;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     c"other".as_ptr() as *mut i8
 // CHECK: {{^}}}
-// CHECK-LABEL: {{^}}fn const_pick(mut i: i32) -> *const i8 {
+// CHECK-LABEL: {{^}}fn const_pick(i: i32) -> *const i8 {
 // CHECK-NEXT:     if i == (0 as i32) {
 // CHECK-NEXT:         return c"const".as_ptr() as *const i8;
 // CHECK-NEXT:     }

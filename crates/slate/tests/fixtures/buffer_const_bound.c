@@ -63,10 +63,10 @@ int main(void) {
 // CHECK-NEXT:         30 as i32,
 // CHECK-NEXT:         40 as i32,
 // CHECK-NEXT:     ]);
-// CHECK-NEXT:     let mut r: i32 = sum_fixed(arr.0.as_mut_ptr() as *mut i32);
+// CHECK-NEXT:     let r: i32 = sum_fixed(arr.0.as_mut_ptr() as *mut i32);
 // CHECK-NEXT:     let mut a: [i32; 3] = [1 as i32, 2 as i32, 3 as i32];
 // CHECK-NEXT:     scale_fixed(a.as_mut_ptr() as *mut i32);
-// CHECK-NEXT:     let mut m: *mut i32 = (unsafe {
+// CHECK-NEXT:     let m: *mut i32 = (unsafe {
 // CHECK-NEXT:         malloc((((3 as i32) as i64) as u64).wrapping_mul(4 as u64))
 // CHECK-NEXT:     }) as *mut i32;
 // CHECK-NEXT:     unsafe {
@@ -78,7 +78,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *unsafe { m.offset((2 as i32) as isize) } = 7 as i32;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut r2: i32 = sum3(m);
+// CHECK-NEXT:     let r2: i32 = sum3(m);
 // CHECK-NEXT:     unsafe { free(m as *mut ()) };
 // CHECK-NEXT:     let mut big: __SlateAlign16<[i32; 6]> = __SlateAlign16([
 // CHECK-NEXT:         1 as i32,
@@ -88,7 +88,7 @@ int main(void) {
 // CHECK-NEXT:         5 as i32,
 // CHECK-NEXT:         6 as i32,
 // CHECK-NEXT:     ]);
-// CHECK-NEXT:     let mut r3: i32 = mix(big.0.as_mut_ptr() as *mut i32);
+// CHECK-NEXT:     let r3: i32 = mix(big.0.as_mut_ptr() as *mut i32);
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {} {}", r, unsafe { * unsafe { (a.as_mut_ptr() as * mut i32).offset((0
 // CHECK-NEXT:         as i32) as isize) } }, unsafe { * unsafe { (a.as_mut_ptr() as * mut i32)

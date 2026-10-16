@@ -14,6 +14,7 @@ mod param_spills;
 mod pattern_range;
 mod peel_casts;
 mod raw_ptr_alias;
+mod remove_mut;
 mod return_cleanup;
 mod singleton_scopes;
 mod structure_dispatch;
@@ -22,6 +23,7 @@ mod walk;
 mod zero_init;
 
 use super::NodeRule;
+pub(super) use remove_mut::demote_params;
 
 pub(super) fn control_flow_registry() -> Vec<Box<dyn NodeRule>> {
     vec![
@@ -40,7 +42,8 @@ pub(super) fn control_flow_registry() -> Vec<Box<dyn NodeRule>> {
 pub(super) fn registry(target: &slate_parser::target_info::TargetInfo) -> Vec<Box<dyn NodeRule>> {
     let mut rules = control_flow_registry();
     rules.extend(vec![
-        Box::new(zero_init::ZeroInitFold) as Box<dyn NodeRule>,
+        Box::new(remove_mut::RemoveMut) as Box<dyn NodeRule>,
+        Box::new(zero_init::ZeroInitFold),
         Box::new(param_spills::ParamSpillFold),
         Box::new(raw_ptr_alias::RawPtrAliasElide),
         Box::new(array_iter::ForArrayIterRecover),

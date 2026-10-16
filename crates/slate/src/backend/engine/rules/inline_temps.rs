@@ -23,6 +23,17 @@ fn is_pure_primitive_bit_method(method: &str) -> bool {
             | "count_ones"
             | "rotate_left"
             | "rotate_right"
+            | "offset"
+            | "wrapping_offset"
+            | "add"
+            | "sub"
+            | "cast"
+            | "wrapping_add"
+            | "wrapping_sub"
+            | "wrapping_mul"
+            | "wrapping_neg"
+            | "wrapping_shl"
+            | "wrapping_shr"
     )
 }
 

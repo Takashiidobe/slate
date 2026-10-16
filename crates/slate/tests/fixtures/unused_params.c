@@ -19,7 +19,7 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut indirect: Option<unsafe extern "C-unwind" fn(i32, i32) -> i32> = Some(
+// CHECK-NEXT:     let indirect: Option<unsafe extern "C-unwind" fn(i32, i32) -> i32> = Some(
 // CHECK-NEXT:         address_taken,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(

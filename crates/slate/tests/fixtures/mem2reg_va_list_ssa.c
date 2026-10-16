@@ -19,10 +19,10 @@ int main(void) {
 }
 
 // SLATE-FILECHECK-BEGIN
-// CHECK-LABEL: {{^}}unsafe extern "C-unwind" fn relay(mut count: i32, mut __va_args: ...) -> i32 {
+// CHECK-LABEL: {{^}}unsafe extern "C-unwind" fn relay(count: i32, mut __va_args: ...) -> i32 {
 // CHECK-NEXT:     let mut arguments: core::ffi::VaList<'_> = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     arguments = __va_args.clone();
-// CHECK-NEXT:     let mut value: i32 = consume(arguments.clone());
+// CHECK-NEXT:     let value: i32 = consume(arguments.clone());
 // CHECK-NEXT:     {}
 // CHECK-NEXT:     value
 // CHECK: {{^}}}

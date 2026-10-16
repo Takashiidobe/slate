@@ -36,7 +36,7 @@ int main(void) {
 // @check-fn-end
 
 // SLATE-FILECHECK-BEGIN
-// CHECK-LABEL: {{^}}fn freeCResources(mut ress: &mut {{__SlateRecord[0-9]+}}) {
+// CHECK-LABEL: {{^}}fn freeCResources(ress: &mut {{__SlateRecord[0-9]+}}) {
 // CHECK-NEXT:     freeDict(unsafe { std::ptr::addr_of_mut!((*(ress as *mut [[SLATERECORD_0:__SlateRecord[0-9]+]])).dict) });
 // CHECK-NEXT:     syncDestroy(unsafe { std::ptr::addr_of_mut!((*(ress as *mut [[SLATERECORD_0]])).io) });
 // CHECK: {{^}}}

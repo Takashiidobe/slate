@@ -28,7 +28,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe { remove(c"slate_stdio_file_write.tmp".as_ptr() as *const i8) };
-// CHECK-NEXT:     let mut f: *mut _IO_FILE = unsafe {
+// CHECK-NEXT:     let f: *mut _IO_FILE = unsafe {
 // CHECK-NEXT:         fopen(
 // CHECK-NEXT:             c"slate_stdio_file_write.tmp".as_ptr() as *const i8,
 // CHECK-NEXT:             c"w".as_ptr() as *const i8,
@@ -44,7 +44,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fputs(c"owned\n".as_ptr() as *const i8, f) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     unsafe { fclose(f) };
-// CHECK-NEXT:     let mut g: *mut _IO_FILE = unsafe {
+// CHECK-NEXT:     let g: *mut _IO_FILE = unsafe {
 // CHECK-NEXT:         fopen(
 // CHECK-NEXT:             c"slate_stdio_file_write.tmp".as_ptr() as *const i8,
 // CHECK-NEXT:             c"r".as_ptr() as *const i8,

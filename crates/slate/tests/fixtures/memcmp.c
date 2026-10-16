@@ -42,7 +42,7 @@ int main(void) {
 // CHECK-NEXT:         ((3 as i32) as i8) as u8,
 // CHECK-NEXT:         ((4 as i32) as i8) as u8,
 // CHECK-NEXT:     ];
-// CHECK-NEXT:     let mut equal_result: i32 = ((unsafe {
+// CHECK-NEXT:     let equal_result: i32 = ((unsafe {
 // CHECK-NEXT:         memcmp(
 // CHECK-NEXT:             equal_a.as_mut_ptr() as *const (),
 // CHECK-NEXT:             equal_b.as_mut_ptr() as *const (),
@@ -61,7 +61,7 @@ int main(void) {
 // CHECK-NEXT:         ((3 as i32) as i8) as u8,
 // CHECK-NEXT:         ((9 as i32) as i8) as u8,
 // CHECK-NEXT:     ];
-// CHECK-NEXT:     let mut unequal_result: i32 = ((unsafe {
+// CHECK-NEXT:     let unequal_result: i32 = ((unsafe {
 // CHECK-NEXT:         memcmp(
 // CHECK-NEXT:             unequal_a.as_mut_ptr() as *const (),
 // CHECK-NEXT:             unequal_b.as_mut_ptr() as *const (),
@@ -88,7 +88,7 @@ int main(void) {
 // CHECK-NEXT:         ((0 as i32) as i8) as u8,
 // CHECK-NEXT:         ((0 as i32) as i8) as u8,
 // CHECK-NEXT:     ];
-// CHECK-NEXT:     let mut partial_result: i32 = ((unsafe {
+// CHECK-NEXT:     let partial_result: i32 = ((unsafe {
 // CHECK-NEXT:         memcmp(
 // CHECK-NEXT:             partial_a.as_mut_ptr() as *const (),
 // CHECK-NEXT:             partial_b.as_mut_ptr() as *const (),
@@ -115,8 +115,8 @@ int main(void) {
 // CHECK-NEXT:         ((7 as i32) as i8) as u8,
 // CHECK-NEXT:         ((8 as i32) as i8) as u8,
 // CHECK-NEXT:     ];
-// CHECK-NEXT:     let mut n: i32 = get_count();
-// CHECK-NEXT:     let mut dyn_result: i32 = ((unsafe {
+// CHECK-NEXT:     let n: i32 = get_count();
+// CHECK-NEXT:     let dyn_result: i32 = ((unsafe {
 // CHECK-NEXT:         memcmp(
 // CHECK-NEXT:             dyn_a.as_mut_ptr() as *const (),
 // CHECK-NEXT:             dyn_b.as_mut_ptr() as *const (),

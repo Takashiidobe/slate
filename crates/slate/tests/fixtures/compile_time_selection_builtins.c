@@ -25,14 +25,14 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut a: i32 = 3 as i32;
-// CHECK-NEXT:     let mut b: i32 = 4 as i32;
-// CHECK-NEXT:     let mut chosen_true: i32 = a;
-// CHECK-NEXT:     let mut chosen_false: i32 = b;
-// CHECK-NEXT:     let mut same_type: i32 = 1 as i32;
-// CHECK-NEXT:     let mut diff_type: i32 = 0 as i32;
-// CHECK-NEXT:     let mut i_name: *const i8 = c"int".as_ptr() as *const i8;
-// CHECK-NEXT:     let mut d_name: *const i8 = c"double".as_ptr() as *const i8;
+// CHECK-NEXT:     let a: i32 = 3 as i32;
+// CHECK-NEXT:     let b: i32 = 4 as i32;
+// CHECK-NEXT:     let chosen_true: i32 = a;
+// CHECK-NEXT:     let chosen_false: i32 = b;
+// CHECK-NEXT:     let same_type: i32 = 1 as i32;
+// CHECK-NEXT:     let diff_type: i32 = 0 as i32;
+// CHECK-NEXT:     let i_name: *const i8 = c"int".as_ptr() as *const i8;
+// CHECK-NEXT:     let d_name: *const i8 = c"double".as_ptr() as *const i8;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(

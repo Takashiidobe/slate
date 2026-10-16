@@ -33,7 +33,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe { remove(c"slate_stdio_gets_loop_unsupported.tmp".as_ptr() as *const i8) };
-// CHECK-NEXT:     let mut f: *mut _IO_FILE = unsafe {
+// CHECK-NEXT:     let f: *mut _IO_FILE = unsafe {
 // CHECK-NEXT:         fopen(
 // CHECK-NEXT:             c"slate_stdio_gets_loop_unsupported.tmp".as_ptr() as *const i8,
 // CHECK-NEXT:             c"w".as_ptr() as *const i8,
@@ -52,7 +52,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fputs(c"two\n".as_ptr() as *const i8, f) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     unsafe { fclose(f) };
-// CHECK-NEXT:     let mut g: *mut _IO_FILE = unsafe {
+// CHECK-NEXT:     let g: *mut _IO_FILE = unsafe {
 // CHECK-NEXT:         fopen(
 // CHECK-NEXT:             c"slate_stdio_gets_loop_unsupported.tmp".as_ptr() as *const i8,
 // CHECK-NEXT:             c"r".as_ptr() as *const i8,
@@ -70,10 +70,9 @@ int main(void) {
 // CHECK-NEXT:         fgets(line.0.as_mut_ptr() as *mut i8, ((64 as u64) as u32) as i32, g)
 // CHECK-NEXT:     }) != std::ptr::null_mut::<i8>()
 // CHECK-NEXT:     {
-// CHECK-NEXT:         let mut [[V_0:__v[0-9]+]]: i32 = count;
-// CHECK-NEXT:         let mut [[V_1:__v[0-9]+]]: i32 = [[V_0]]
+// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = count;
+// CHECK-NEXT:         count = [[V_0]]
 // CHECK-NEXT:             + (((unsafe { strlen(line.0.as_mut_ptr() as *const i8) }) as u32) as i32);
-// CHECK-NEXT:         count = [[V_1]];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { fclose(g) };
 // CHECK-NEXT:     println!("{}", count);

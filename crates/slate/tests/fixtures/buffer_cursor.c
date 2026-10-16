@@ -28,9 +28,7 @@ int main(void) {
 // CHECK-NEXT:             *unsafe { (values.0.as_mut_ptr() as *mut i32).offset(i as isize) } = i
 // CHECK-NEXT:                 + unsafe { getchar() };
 // CHECK-NEXT:         }
-// CHECK-NEXT:         let mut [[V_0:__v[0-9]+]]: i32 = i;
-// CHECK-NEXT:         let mut [[V_1:__v[0-9]+]]: i32 = [[V_0]] + (1 as i32);
-// CHECK-NEXT:         i = [[V_1]];
+// CHECK-NEXT:         i += 1 as i32;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut c: cursor = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     c.ptr = unsafe { (values.0.as_mut_ptr() as *mut i32).offset((1 as i32) as isize) };

@@ -40,8 +40,8 @@ int main(void) {
 }
 
 // SLATE-FILECHECK-BEGIN
-// CHECK-LABEL: {{^}}fn classify(mut seed: i32) -> i32 {
-// CHECK-NEXT:     let mut v: u128 = (340282366920938463463374607431768211440 as u128)
+// CHECK-LABEL: {{^}}fn classify(seed: i32) -> i32 {
+// CHECK-NEXT:     let v: u128 = (340282366920938463463374607431768211440 as u128)
 // CHECK-NEXT:         .wrapping_add((seed as i128) as u128);
 // CHECK-NEXT:     match v {
 // CHECK-NEXT:         340282366920938463463374607431768211441
@@ -57,8 +57,8 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { std::mem::zeroed() }
 // CHECK: {{^}}}
-// CHECK-LABEL: {{^}}fn classify_run(mut seed: i32) -> i32 {
-// CHECK-NEXT:     let mut v: u128 = (340282366920938463463374607431768211440 as u128)
+// CHECK-LABEL: {{^}}fn classify_run(seed: i32) -> i32 {
+// CHECK-NEXT:     let v: u128 = (340282366920938463463374607431768211440 as u128)
 // CHECK-NEXT:         .wrapping_add((seed as i128) as u128);
 // CHECK-NEXT:     match v {
 // CHECK-NEXT:         340282366920938463463374607431768211441..=340282366920938463463374607431768211443 => {

@@ -27,7 +27,7 @@ int main(void) {
 }
 
 // SLATE-FILECHECK-BEGIN
-// CHECK-LABEL: {{^}}fn select_type(mut repeatMode: *mut u32, mut count: u32) -> u32 {
+// CHECK-LABEL: {{^}}fn select_type(repeatMode: *mut u32, count: u32) -> u32 {
 // CHECK-NEXT:     if count == ((0 as i32) as u32) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *repeatMode = (0 as i32) as u32;
@@ -36,7 +36,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     ((unsafe { *repeatMode }) as u32).wrapping_add(count)
 // CHECK: {{^}}}
-// CHECK-LABEL: {{^}}fn run(mut e: &mut {{__SlateRecord[0-9]+}}, mut count: u32) -> i32 {
+// CHECK-LABEL: {{^}}fn run(e: &mut {{__SlateRecord[0-9]+}}, count: u32) -> i32 {
 // CHECK-NEXT:     select_type(
 // CHECK-NEXT:         unsafe { std::ptr::addr_of_mut!((* (e as * mut [[SLATERECORD_0:__SlateRecord[0-9]+]])).mode) },
 // CHECK-NEXT:         count,

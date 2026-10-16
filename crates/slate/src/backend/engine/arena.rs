@@ -718,6 +718,16 @@ impl FunctionOptimizer {
         }
     }
 
+    pub(in crate::backend) fn demote_param(&mut self, name: Ident) {
+        if let Some(param) = self
+            .params
+            .iter_mut()
+            .find(|param| Ident::new(&param.name) == name)
+        {
+            param.mutable = false;
+        }
+    }
+
     pub(in crate::backend) fn rename_param(
         &mut self,
         source: Ident,

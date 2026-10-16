@@ -24,7 +24,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut end: *mut i8 = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut value: LongDouble = unsafe {
+// CHECK-NEXT:     let value: LongDouble = unsafe {
 // CHECK-NEXT:         __slate_strtold__rf80_pi8_ppi8(
 // CHECK-NEXT:             c"0x1.0000000000000002p0".as_ptr() as *const i8,
 // CHECK-NEXT:             std::ptr::addr_of_mut!(end),

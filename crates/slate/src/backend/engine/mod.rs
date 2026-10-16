@@ -135,6 +135,7 @@ fn run_function(
     let mut function = arena::build(taken, params, return_type);
     let root = function.root;
     run_worklist(&mut function, registry);
+    rules::demote_params(&mut function);
     *body = arena::reify(&function, root);
     *params = function.params().to_vec();
 }

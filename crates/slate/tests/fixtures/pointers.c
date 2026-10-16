@@ -35,7 +35,7 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN
 // CHECK-LABEL: {{^}}fn bump_through_pointer(mut local: i32) -> i32 {
-// CHECK-NEXT:     let mut ptr: *mut i32 = std::ptr::addr_of_mut!(local);
+// CHECK-NEXT:     let ptr: *mut i32 = std::ptr::addr_of_mut!(local);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *ptr = (unsafe { *ptr }) + (3 as i32);
 // CHECK-NEXT:     }

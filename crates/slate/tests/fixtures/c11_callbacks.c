@@ -44,7 +44,7 @@ int main(void) {
 // CHECK-NEXT:     let mut key: u32 = 0 as u32;
 // CHECK-NEXT:     let mut argument: i32 = 40 as i32;
 // CHECK-NEXT:     let mut thread_result: i32 = 0 as i32;
-// CHECK-NEXT:     let mut thread_created: i32 = unsafe {
+// CHECK-NEXT:     let thread_created: i32 = unsafe {
 // CHECK-NEXT:         thrd_create(
 // CHECK-NEXT:             std::ptr::addr_of_mut!(thread),
 // CHECK-NEXT:             Some(thread_worker),
@@ -62,13 +62,13 @@ int main(void) {
 // CHECK-NEXT:     let mut control: [[SLATERECORD_0:__SlateRecord[0-9]+]] = [[SLATERECORD_0]] { __data: 0 as i32 };
 // CHECK-NEXT:     unsafe { call_once(std::ptr::addr_of_mut!(control), Some(once_handler)) };
 // CHECK-NEXT:     unsafe { call_once(std::ptr::addr_of_mut!(control), Some(once_handler)) };
-// CHECK-NEXT:     let mut key_created: i32 = unsafe {
+// CHECK-NEXT:     let key_created: i32 = unsafe {
 // CHECK-NEXT:         tss_create(std::ptr::addr_of_mut!(key), Some(tss_destructor))
 // CHECK-NEXT:     };
 // CHECK-NEXT:     if key_created == (0 as i32) {
 // CHECK-NEXT:         unsafe { tss_delete(key) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut quick_registered: i32 = unsafe { at_quick_exit(Some(quick_handler)) };
+// CHECK-NEXT:     let quick_registered: i32 = unsafe { at_quick_exit(Some(quick_handler)) };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {} {} {}", thread_created, thread_joined, thread_result, unsafe {
 // CHECK-NEXT:         once_total }, key_created, quick_registered

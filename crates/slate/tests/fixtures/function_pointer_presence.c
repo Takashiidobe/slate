@@ -25,10 +25,7 @@ int main(void) {
 // @check-fn-end
 
 // SLATE-FILECHECK-BEGIN
-// CHECK-LABEL: {{^}}fn maybe_apply(
-// CHECK-NEXT:     mut op: Option<unsafe extern "C-unwind" fn(i32) -> i32>,
-// CHECK-NEXT:     mut value: i32,
-// CHECK-NEXT: ) -> i32 {
+// CHECK-LABEL: {{^}}fn maybe_apply(op: Option<unsafe extern "C-unwind" fn(i32) -> i32>, value: i32) -> i32 {
 // CHECK-NEXT:     if op != None {
 // CHECK-NEXT:         return unsafe { op.unwrap()(value) };
 // CHECK-NEXT:     }

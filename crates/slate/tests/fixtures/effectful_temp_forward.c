@@ -29,15 +29,15 @@ int main(void) {
 }
 
 // SLATE-FILECHECK-BEGIN
-// CHECK-LABEL: {{^}}fn safe_forward(mut a: i32, mut b: i32, mut c: i32, mut d: i32) -> i32 {
-// CHECK-NEXT:     let mut r: i32 = add(a, b);
-// CHECK-NEXT:     let mut kept: i32 = c + d;
+// CHECK-LABEL: {{^}}fn safe_forward(a: i32, b: i32, c: i32, d: i32) -> i32 {
+// CHECK-NEXT:     let r: i32 = add(a, b);
+// CHECK-NEXT:     let kept: i32 = c + d;
 // CHECK-NEXT:     println!("{}", r);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     kept + kept
 // CHECK: {{^}}}
-// CHECK-LABEL: {{^}}fn blocked_forward(mut a: i32, mut b: i32) {
-// CHECK-NEXT:     let mut r: i32 = add(a, b);
+// CHECK-LABEL: {{^}}fn blocked_forward(a: i32, b: i32) {
+// CHECK-NEXT:     let r: i32 = add(a, b);
 // CHECK-NEXT:     println!("{} {}", r, side_effect());
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK: {{^}}}

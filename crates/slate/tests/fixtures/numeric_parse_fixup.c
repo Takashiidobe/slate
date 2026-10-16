@@ -148,7 +148,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     let mut raw: i64 = unsafe {
+// CHECK-NEXT:     let raw: i64 = unsafe {
 // CHECK-NEXT:         strtol(
 // CHECK-NEXT:             end_source.as_mut_ptr() as *const i8,
 // CHECK-NEXT:             std::ptr::addr_of_mut!(end),

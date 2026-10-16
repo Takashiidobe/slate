@@ -21,22 +21,20 @@ int main(void) {
 // @check-fn-end
 
 // SLATE-FILECHECK-BEGIN
-// CHECK-LABEL: {{^}}fn make(mut n: i32) -> *mut i32 {
-// CHECK-NEXT:     let mut p: *mut i32 = (unsafe { malloc(((n as i64) as u64).wrapping_mul(4 as u64)) })
+// CHECK-LABEL: {{^}}fn make(n: i32) -> *mut i32 {
+// CHECK-NEXT:     let p: *mut i32 = (unsafe { malloc(((n as i64) as u64).wrapping_mul(4 as u64)) })
 // CHECK-NEXT:         as *mut i32;
 // CHECK-NEXT:     let mut i: i32 = 0 as i32;
 // CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: while i < n {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *unsafe { p.offset(i as isize) } = i * i;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         let mut [[V_0:__v[0-9]+]]: i32 = i;
-// CHECK-NEXT:         let mut [[V_1:__v[0-9]+]]: i32 = [[V_0]] + (1 as i32);
-// CHECK-NEXT:         i = [[V_1]];
+// CHECK-NEXT:         i += 1 as i32;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     p
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut q: *mut i32 = make(4 as i32);
+// CHECK-NEXT:     let q: *mut i32 = make(4 as i32);
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {}", unsafe { * unsafe { q.offset((0 as i32) as isize) } }, unsafe { * unsafe
 // CHECK-NEXT:         { q.offset((3 as i32) as isize) } }

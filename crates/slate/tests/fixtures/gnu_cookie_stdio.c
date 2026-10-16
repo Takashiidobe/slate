@@ -52,9 +52,9 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN
 // CHECK-LABEL: {{^}}extern "C-unwind" fn gnu_cookie_write(
-// CHECK-NEXT:     mut state: *mut (),
-// CHECK-NEXT:     mut buffer: *const i8,
-// CHECK-NEXT:     mut size: u64,
+// CHECK-NEXT:     state: *mut (),
+// CHECK-NEXT:     buffer: *const i8,
+// CHECK-NEXT:     size: u64,
 // CHECK-NEXT: ) -> i64 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::copy_nonoverlapping(
@@ -66,14 +66,13 @@ int main(void) {
 // CHECK-NEXT:             size as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: u64 = unsafe { (*(state as *mut GNUCookie)).length };
-// CHECK-NEXT:     let mut [[V_1:__v[0-9]+]]: u64 = [[V_0]].wrapping_add(size);
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: u64 = unsafe { (*(state as *mut GNUCookie)).length };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*(state as *mut GNUCookie)).length = [[V_1]];
+// CHECK-NEXT:         (*(state as *mut GNUCookie)).length = [[V_0]].wrapping_add(size);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     size as i64
 // CHECK: {{^}}}
-// CHECK-LABEL: {{^}}extern "C-unwind" fn gnu_cookie_close(mut state: *mut ()) -> i32 {
+// CHECK-LABEL: {{^}}extern "C-unwind" fn gnu_cookie_close(state: *mut ()) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*(state as *mut GNUCookie)).closed = 1 as i32;
 // CHECK-NEXT:     }
@@ -99,11 +98,10 @@ int main(void) {
 // CHECK-NEXT:             functions,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     let mut [[V_1:__v[0-9]+]]: i32 = [[V_0]] + ((stream != std::ptr::null_mut::<_IO_FILE>()) as i32);
-// CHECK-NEXT:     total = [[V_1]];
-// CHECK-NEXT:     let mut [[V_2:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     let mut [[V_3:__v[0-9]+]]: i32 = [[V_2]]
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = total;
+// CHECK-NEXT:     total = [[V_0]] + ((stream != std::ptr::null_mut::<_IO_FILE>()) as i32);
+// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i32 = total;
+// CHECK-NEXT:     total = [[V_1]]
 // CHECK-NEXT:         + (((unsafe {
 // CHECK-NEXT:             fprintf(
 // CHECK-NEXT:                 stream,
@@ -112,19 +110,12 @@ int main(void) {
 // CHECK-NEXT:                 7 as i32,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         }) == (8 as i32)) as i32);
-// CHECK-NEXT:     total = [[V_3]];
-// CHECK-NEXT:     let mut [[V_4:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     let mut [[V_5:__v[0-9]+]]: i32 = [[V_4]] + (((unsafe { fclose(stream) }) == (0 as i32)) as i32);
-// CHECK-NEXT:     total = [[V_5]];
-// CHECK-NEXT:     let mut [[V_6:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     let mut [[V_7:__v[0-9]+]]: i32 = [[V_6]] + ((cookie.closed == (1 as i32)) as i32);
-// CHECK-NEXT:     total = [[V_7]];
-// CHECK-NEXT:     let mut [[V_8:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     let mut [[V_9:__v[0-9]+]]: i32 = [[V_8]]
-// CHECK-NEXT:         + ((cookie.length == (((8 as i32) as i64) as u64)) as i32);
-// CHECK-NEXT:     total = [[V_9]];
-// CHECK-NEXT:     let mut [[V_10:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     let mut [[V_11:__v[0-9]+]]: i32 = [[V_10]]
+// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: i32 = total;
+// CHECK-NEXT:     total = [[V_2]] + (((unsafe { fclose(stream) }) == (0 as i32)) as i32);
+// CHECK-NEXT:     total += (cookie.closed == (1 as i32)) as i32;
+// CHECK-NEXT:     total += (cookie.length == (((8 as i32) as i64) as u64)) as i32;
+// CHECK-NEXT:     let [[V_3:__v[0-9]+]]: i32 = total;
+// CHECK-NEXT:     total = [[V_3]]
 // CHECK-NEXT:         + (((unsafe {
 // CHECK-NEXT:             memcmp(
 // CHECK-NEXT:                 cookie.bytes.as_mut_ptr() as *const (),
@@ -132,7 +123,6 @@ int main(void) {
 // CHECK-NEXT:                 ((8 as i32) as i64) as u64,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         }) == (0 as i32)) as i32);
-// CHECK-NEXT:     total = [[V_11]];
 // CHECK-NEXT:     total
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

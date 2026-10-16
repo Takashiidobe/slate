@@ -225,7 +225,6 @@ impl NodeRule for RawPtrAliasElide {
         matches!(
             arena.get(id),
             Some(NodeKind::Let {
-                mutable: true,
                 ty: Some(Type::Ptr { .. }),
                 init: Some(init),
                 ..
@@ -236,9 +235,9 @@ impl NodeRule for RawPtrAliasElide {
     fn apply(&self, arena: &mut FunctionOptimizer, id: NodeId) -> bool {
         let Some(NodeKind::Let {
             name,
-            mutable: true,
             ty: Some(ty @ Type::Ptr { .. }),
             init: Some(init),
+            ..
         }) = arena.get(id)
         else {
             return false;
