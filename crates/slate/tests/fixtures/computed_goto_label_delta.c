@@ -38,12 +38,8 @@ int main(void) {
 // CHECK-NEXT:         ((2 as i32) as i8) as u8,
 // CHECK-NEXT:         ((1 as i32) as i8) as u8,
 // CHECK-NEXT:     ];
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%d\n".as_ptr() as *const i8,
-// CHECK-NEXT:             interpret(code.as_ptr() as *const u8, 4 as i32),
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
+// CHECK-NEXT:     println!("{}", interpret(code.as_ptr() as * const u8, 4 as i32));
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     0 as i32
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

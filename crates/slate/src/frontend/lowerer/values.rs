@@ -873,6 +873,7 @@ impl FunctionLowerer<'_, '_> {
                     Vec::new(),
                     returned,
                     Vec::new(),
+                    FunctionIdentity::Unknown,
                 )
             }
             ValueKind::Call {

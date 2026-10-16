@@ -47,14 +47,8 @@ int main(void) {
 // CHECK-NEXT:         io: [[SLATERECORD_2:__SlateRecord[0-9]+]] { y: 7 as i32 },
 // CHECK-NEXT:     };
 // CHECK-NEXT:     freeCResources(unsafe { &mut (*std::ptr::addr_of_mut!(r)) });
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%d %d %d\n".as_ptr() as *const i8,
-// CHECK-NEXT:             r.dict.x,
-// CHECK-NEXT:             r.io.y,
-// CHECK-NEXT:             r.cctx,
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
+// CHECK-NEXT:     println!("{} {} {}", r.dict.x, r.io.y, r.cctx);
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     0 as i32
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

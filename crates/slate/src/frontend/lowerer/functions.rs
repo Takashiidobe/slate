@@ -153,7 +153,11 @@ impl FunctionLowerer<'_, '_> {
         let decl = rust::ExternDecl::Fn(rust::ExternFnDecl {
             attrs,
             name: function.name.clone(),
-            identity: FunctionIdentity::Unknown,
+            identity: self
+                .tables
+                .names
+                .get(&function.value.id)
+                .map_or(FunctionIdentity::Unknown, |name| name.identity),
             declared_type: None,
             trusted_headers: Default::default(),
             params: fixed

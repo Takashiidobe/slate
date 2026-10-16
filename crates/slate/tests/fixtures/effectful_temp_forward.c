@@ -32,11 +32,13 @@ int main(void) {
 // CHECK-LABEL: {{^}}fn safe_forward(mut a: i32, mut b: i32, mut c: i32, mut d: i32) -> i32 {
 // CHECK-NEXT:     let mut r: i32 = add(a, b);
 // CHECK-NEXT:     let mut kept: i32 = c + d;
-// CHECK-NEXT:     unsafe { printf(c"%d\n".as_ptr() as *const i8, r) };
+// CHECK-NEXT:     println!("{}", r);
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     kept + kept
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn blocked_forward(mut a: i32, mut b: i32) {
 // CHECK-NEXT:     let mut r: i32 = add(a, b);
-// CHECK-NEXT:     unsafe { printf(c"%d %d\n".as_ptr() as *const i8, r, side_effect()) };
+// CHECK-NEXT:     println!("{} {}", r, side_effect());
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

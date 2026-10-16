@@ -56,19 +56,18 @@ int main(void) {
 // CHECK-NEXT:     ou.r#in = inr;
 // CHECK-NEXT:     let mut s: [[SLATERECORD_2:__SlateRecord[0-9]+]] = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     s.dict = std::ptr::addr_of_mut!(ou);
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%d %d\n".as_ptr() as *const i8,
-// CHECK-NEXT:             compute(
-// CHECK-NEXT:                 unsafe { &(*(std::ptr::addr_of_mut!(s) as *const [[SLATERECORD_2]])) },
-// CHECK-NEXT:                 0 as i32,
-// CHECK-NEXT:             ),
-// CHECK-NEXT:             compute(
-// CHECK-NEXT:                 unsafe { &(*(std::ptr::addr_of_mut!(s) as *const [[SLATERECORD_2]])) },
-// CHECK-NEXT:                 1 as i32,
-// CHECK-NEXT:             ),
+// CHECK-NEXT:     println!(
+// CHECK-NEXT:         "{} {}",
+// CHECK-NEXT:         compute(
+// CHECK-NEXT:             unsafe { &(*(std::ptr::addr_of_mut!(s) as *const [[SLATERECORD_2]])) },
+// CHECK-NEXT:             0 as i32
+// CHECK-NEXT:         ),
+// CHECK-NEXT:         compute(
+// CHECK-NEXT:             unsafe { &(*(std::ptr::addr_of_mut!(s) as *const [[SLATERECORD_2]])) },
+// CHECK-NEXT:             1 as i32
 // CHECK-NEXT:         )
-// CHECK-NEXT:     };
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     0 as i32
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

@@ -36,18 +36,11 @@ int main(void) {
 // CHECK-NEXT:             confidence: 1.0f64,
 // CHECK-NEXT:         },
 // CHECK-NEXT:     ]);
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%d\n".as_ptr() as *const i8,
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 (*unsafe {
-// CHECK-NEXT:                     (error_log.0.as_mut_ptr() as *mut [[SLATERECORD_0]])
-// CHECK-NEXT:                         .offset((0 as i32) as isize)
-// CHECK-NEXT:                 })
-// CHECK-NEXT:                     .code
-// CHECK-NEXT:             },
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
+// CHECK-NEXT:     println!(
+// CHECK-NEXT:         "{}", unsafe { (* unsafe { (error_log.0.as_mut_ptr() as * mut [[SLATERECORD_0]])
+// CHECK-NEXT:         .offset((0 as i32) as isize) }).code }
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     0 as i32
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

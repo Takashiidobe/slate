@@ -20,14 +20,11 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%d\n".as_ptr() as *const i8,
-// CHECK-NEXT:             (unsafe { *return_global() })
-// CHECK-NEXT:                 + unsafe { *unsafe { *return_global_pointer() } }
-// CHECK-NEXT:                 + unsafe { *return_element() },
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
+// CHECK-NEXT:     println!(
+// CHECK-NEXT:         "{}", (unsafe { * return_global() }) + unsafe { * unsafe { *
+// CHECK-NEXT:         return_global_pointer() } } + unsafe { * return_element() }
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     0 as i32
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

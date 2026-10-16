@@ -10,8 +10,10 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
-// CHECK-NEXT:     unsafe { printf(c"%d %d\n".as_ptr() as *const i8, 7 as i32, 8 as i32) };
+// CHECK-NEXT:     println!("{} {}", 7 as i32, 8 as i32);
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%ld\n".as_ptr() as *const i8, 42 as i64) };
+// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0 as i32
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

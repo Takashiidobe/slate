@@ -153,7 +153,7 @@ pub fn lower_module(
     files: &Files,
     options: &lowerer::LowerOptions,
 ) -> Result<LoweredModule, Error> {
-    let lowered = lowerer::lower(module, options).map_err(|invalid| Error::Invalid {
+    let lowered = lowerer::lower(module, files, options).map_err(|invalid| Error::Invalid {
         report: render_site(
             &invalid.site,
             files,

@@ -31,12 +31,8 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     dump80(c"strtold".as_ptr() as *const i8, value);
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%d\n".as_ptr() as *const i8,
-// CHECK-NEXT:             (((unsafe { *end }) as i32) == (0 as i32)) as i32,
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
+// CHECK-NEXT:     println!("{}", (((unsafe { * end }) as i32) == (0 as i32)) as i32);
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     0 as i32
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

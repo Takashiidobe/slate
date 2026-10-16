@@ -208,36 +208,14 @@ fn const_str_literal(expr: &Expr) -> Option<String> {
     }
 }
 
-pub(super) fn is_str_or_slice(ty: &Type) -> bool {
-    match ty {
-        Type::Str | Type::Slice(_) => true,
-        Type::Ref { inner, .. } => matches!(**inner, Type::Str | Type::Slice(_)),
-        Type::Generic { name, .. } => name == "String" || name == "Vec",
-        _ => false,
-    }
-}
-
 fn is_u8(ty: &Type) -> bool {
     matches!(ty, Type::Prim(Prim::U8))
-}
-
-pub(super) fn is_byte_str_or_slice(ty: &Type) -> bool {
-    match ty {
-        Type::Str => true,
-        Type::Slice(inner) => is_u8(inner),
-        Type::Ref { inner, .. } => is_byte_str_or_slice(inner),
-        Type::Generic { name, args } => {
-            name == "String" || (name == "Vec" && args.first().is_some_and(is_u8))
-        }
-        _ => false,
-    }
 }
 
 fn is_u8_slice(ty: &Type) -> bool {
     match ty {
         Type::Slice(inner) => is_u8(inner),
         Type::Ref { inner, .. } => is_u8_slice(inner),
-        Type::Generic { name, args } => name == "Vec" && args.first().is_some_and(is_u8),
         _ => false,
     }
 }
@@ -443,9 +421,18 @@ fn str_n_cmp(ctx: &CallCtx) -> Option<Expr> {
     ))
 }
 
+fn size_result(ctx: &CallCtx, length: Expr) -> Option<Expr> {
+    match ctx.result_type() {
+        Some(ty) if *ty == Type::Prim(Prim::Usize) => Some(length),
+        Some(ty) => Some(cast(length, ty.clone())),
+        None if ctx.discards_result() => Some(length),
+        None => None,
+    }
+}
+
 fn str_n_len(ctx: &CallCtx) -> Option<Expr> {
     let bytes = lifted_bytes(ctx, 0)?;
-    Some(c_string_len(bytes, Some(ctx.args().get(1)?.clone())))
+    size_result(ctx, c_string_len(bytes, Some(ctx.args().get(1)?.clone())))
 }
 
 fn str_span(ctx: &CallCtx, accepted: bool) -> Option<Expr> {
@@ -471,11 +458,14 @@ fn str_span(ctx: &CallCtx, accepted: bool) -> Option<Expr> {
             body: Box::new(stop),
         }],
     );
-    Some(method_call(
-        position,
-        "unwrap_or",
-        vec![method_call(input, "len", Vec::new())],
-    ))
+    size_result(
+        ctx,
+        method_call(
+            position,
+            "unwrap_or",
+            vec![method_call(input, "len", Vec::new())],
+        ),
+    )
 }
 
 fn mem_cmp(ctx: &CallCtx) -> Option<Expr> {
@@ -754,18 +744,28 @@ pub(super) fn rules(target: &slate_parser::target_info::TargetInfo) -> Vec<Box<d
             Some(free_call(&["std", "process", "abort"], ctx.args().to_vec()))
         }),
         libc_call(Known::StrLen, |ctx| {
-            let length = method_call(ctx.lifted_arg(0, is_str_or_slice)?, "len", Vec::new());
-            match ctx.result_type() {
-                Some(ty) if *ty == Type::Prim(Prim::Usize) => Some(length),
-                Some(ty) => Some(cast(length, ty.clone())),
-                None if ctx.discards_result() => Some(length),
-                None => None,
-            }
+            let length = match ctx.lifted_arg(0, is_string) {
+                Some(text) => method_call(text, "len", Vec::new()),
+                None => c_string_len(ctx.lifted_arg(0, is_u8_slice)?, None),
+            };
+            size_result(ctx, length)
         }),
         libc_call(Known::StrCmp, |ctx| {
-            let a = ctx.lifted_arg(0, is_byte_str_or_slice)?;
-            let b = ctx.lifted_arg(1, is_byte_str_or_slice)?;
-            Some(cast(method_call(a, "cmp", vec![b]), Type::Prim(Prim::I32)))
+            if let (Some(a), Some(b)) = (ctx.lifted_arg(0, is_string), ctx.lifted_arg(1, is_string))
+            {
+                return Some(cast(method_call(a, "cmp", vec![b]), Type::Prim(Prim::I32)));
+            }
+            let a = lifted_bytes(ctx, 0)?;
+            let b = lifted_bytes(ctx, 1)?;
+            let lhs = slice_to(a.clone(), c_string_len(a, None));
+            let rhs = Expr::Ref {
+                mutable: false,
+                expr: Box::new(slice_to(b.clone(), c_string_len(b, None))),
+            };
+            Some(cast(
+                method_call(lhs, "cmp", vec![rhs]),
+                Type::Prim(Prim::I32),
+            ))
         }),
         libc_call(Known::StrNCmp, str_n_cmp),
         libc_call(Known::StrNLen, str_n_len),

@@ -29,7 +29,8 @@ int main(void) {
 // CHECK-NEXT:     let mut first: i32 = int_score(value);
 // CHECK-NEXT:     let mut second: i32 = long_score(8 as i64);
 // CHECK-NEXT:     let mut third: i32 = pointer_score(array.as_mut_ptr() as *const i32);
-// CHECK-NEXT:     unsafe { printf(c"%d %d %d\n".as_ptr() as *const i8, first, second, third) };
+// CHECK-NEXT:     println!("{} {} {}", first, second, third);
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     0 as i32
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

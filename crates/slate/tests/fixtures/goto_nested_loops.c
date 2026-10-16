@@ -46,7 +46,8 @@ inner:
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
-// CHECK-NEXT:         unsafe { printf(c"%d\n".as_ptr() as *const i8, *[[SLATE_SLOT_0]]) };
+// CHECK-NEXT:         println!("{}", * [[SLATE_SLOT_0]]);
+// CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         return 0 as i32;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0

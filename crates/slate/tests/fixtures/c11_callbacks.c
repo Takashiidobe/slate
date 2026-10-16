@@ -69,17 +69,11 @@ int main(void) {
 // CHECK-NEXT:         unsafe { tss_delete(key) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut quick_registered: i32 = unsafe { at_quick_exit(Some(quick_handler)) };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%d %d %d %d %d %d\n".as_ptr() as *const i8,
-// CHECK-NEXT:             thread_created,
-// CHECK-NEXT:             thread_joined,
-// CHECK-NEXT:             thread_result,
-// CHECK-NEXT:             unsafe { once_total },
-// CHECK-NEXT:             key_created,
-// CHECK-NEXT:             quick_registered,
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
+// CHECK-NEXT:     println!(
+// CHECK-NEXT:         "{} {} {} {} {} {}", thread_created, thread_joined, thread_result, unsafe {
+// CHECK-NEXT:         once_total }, key_created, quick_registered
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     0 as i32
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

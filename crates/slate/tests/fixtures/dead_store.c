@@ -19,7 +19,8 @@ int main(void) {
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut kept: i32 = noisy(5 as i32);
 // CHECK-NEXT:     noisy(9 as i32);
-// CHECK-NEXT:     unsafe { printf(c"%d\n".as_ptr() as *const i8, kept) };
+// CHECK-NEXT:     println!("{}", kept);
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     0 as i32
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

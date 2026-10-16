@@ -12,13 +12,8 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%d %d\n".as_ptr() as *const i8,
-// CHECK-NEXT:             (unsafe { enabled }) as i32,
-// CHECK-NEXT:             (unsafe { disabled }) as i32,
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
+// CHECK-NEXT:     println!("{} {}", (unsafe { enabled }) as i32, (unsafe { disabled }) as i32);
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     0
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

@@ -89,20 +89,12 @@ int main(void) {
 // CHECK-NEXT:         6 as i32,
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let mut r3: i32 = mix(big.0.as_mut_ptr() as *mut i32);
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%d %d %d %d %d\n".as_ptr() as *const i8,
-// CHECK-NEXT:             r,
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 *unsafe { (a.as_mut_ptr() as *mut i32).offset((0 as i32) as isize) }
-// CHECK-NEXT:             },
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 *unsafe { (a.as_mut_ptr() as *mut i32).offset((2 as i32) as isize) }
-// CHECK-NEXT:             },
-// CHECK-NEXT:             r2,
-// CHECK-NEXT:             r3,
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
+// CHECK-NEXT:     println!(
+// CHECK-NEXT:         "{} {} {} {} {}", r, unsafe { * unsafe { (a.as_mut_ptr() as * mut i32).offset((0
+// CHECK-NEXT:         as i32) as isize) } }, unsafe { * unsafe { (a.as_mut_ptr() as * mut i32)
+// CHECK-NEXT:         .offset((2 as i32) as isize) } }, r2, r3
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     0 as i32
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

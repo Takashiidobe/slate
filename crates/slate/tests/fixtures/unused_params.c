@@ -22,15 +22,12 @@ int main(void) {
 // CHECK-NEXT:     let mut indirect: Option<unsafe extern "C-unwind" fn(i32, i32) -> i32> = Some(
 // CHECK-NEXT:         address_taken,
 // CHECK-NEXT:     );
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%d %d %d %d\n".as_ptr() as *const i8,
-// CHECK-NEXT:             add(5 as i32, 10 as i32),
-// CHECK-NEXT:             get_used(1 as i32, 2 as i32),
-// CHECK-NEXT:             remove_two(3 as i32, 4 as i32, 5 as i32),
-// CHECK-NEXT:             unsafe { indirect.unwrap()(8 as i32, 9 as i32) },
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
+// CHECK-NEXT:     println!(
+// CHECK-NEXT:         "{} {} {} {}", add(5 as i32, 10 as i32), get_used(1 as i32, 2 as i32),
+// CHECK-NEXT:         remove_two(3 as i32, 4 as i32, 5 as i32), unsafe { indirect.unwrap() (8 as i32, 9
+// CHECK-NEXT:         as i32) }
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     0 as i32
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

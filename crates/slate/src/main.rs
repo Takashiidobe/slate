@@ -147,7 +147,7 @@ fn lowering_barriers(path: &Path, compiler_args: &[String]) -> ExitCode {
         Err(error) => return run(Err(error)),
     };
     use slate::frontend::lowerer;
-    let lowered = match lowerer::lower(&module, &lowerer::LowerOptions::default()) {
+    let lowered = match lowerer::lower(&module, &files, &lowerer::LowerOptions::default()) {
         Ok(lowered) => lowered,
         Err(invalid) => {
             println!(

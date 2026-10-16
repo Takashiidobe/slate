@@ -11,7 +11,8 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
-// CHECK-NEXT:     unsafe { printf(c"%d\n".as_ptr() as *const i8, sum3(2 as i32, 3 as i32, 4 as i32)) };
+// CHECK-NEXT:     println!("{}", sum3(2 as i32, 3 as i32, 4 as i32));
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     0 as i32
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

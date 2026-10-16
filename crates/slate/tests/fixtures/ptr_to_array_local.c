@@ -38,7 +38,8 @@ int main(void) {
 // CHECK-NEXT:         let mut [[V_3:__v[0-9]+]]: i32 = [[V_2]] + (1 as i32);
 // CHECK-NEXT:         i = [[V_3]];
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { printf(c"%d\n".as_ptr() as *const i8, sum) };
+// CHECK-NEXT:     println!("{}", sum);
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     0 as i32
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

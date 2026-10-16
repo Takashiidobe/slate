@@ -108,6 +108,7 @@ int main(void) {
 // CHECK-NEXT:         0 as i8,
 // CHECK-NEXT:     ];
 // CHECK-NEXT:     let mut end: *mut i8 = std::ptr::null_mut::<i8>();
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%d %ld %lu %ld %ld %lu %.1f\n".as_ptr() as *const i8,
@@ -146,6 +147,7 @@ int main(void) {
 // CHECK-NEXT:             },
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let mut raw: i64 = unsafe {
 // CHECK-NEXT:         strtol(
 // CHECK-NEXT:             end_source.as_mut_ptr() as *const i8,
@@ -153,7 +155,9 @@ int main(void) {
 // CHECK-NEXT:             10 as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%ld %c\n".as_ptr() as *const i8, raw, (unsafe { *end }) as i32) };
+// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0 as i32
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

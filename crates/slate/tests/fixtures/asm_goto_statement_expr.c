@@ -39,13 +39,8 @@ int main(void) {
 // CHECK-NEXT:                 0 => {
 // CHECK-NEXT:                     {}
 // CHECK-NEXT:                     *[[SLATE_SLOT_1]] = *[[SLATE_SLOT_0]];
-// CHECK-NEXT:                     unsafe {
-// CHECK-NEXT:                         printf(
-// CHECK-NEXT:                             c"%d %d\n".as_ptr() as *const i8,
-// CHECK-NEXT:                             *[[SLATE_SLOT_3]],
-// CHECK-NEXT:                             *[[SLATE_SLOT_1]],
-// CHECK-NEXT:                         )
-// CHECK-NEXT:                     };
+// CHECK-NEXT:                     println!("{} {}", * [[SLATE_SLOT_3]], * [[SLATE_SLOT_1]]);
+// CHECK-NEXT:                     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:                     return 0 as i32;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 1 => {

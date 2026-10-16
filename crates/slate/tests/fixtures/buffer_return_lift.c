@@ -37,13 +37,11 @@ int main(void) {
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut q: *mut i32 = make(4 as i32);
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%d %d\n".as_ptr() as *const i8,
-// CHECK-NEXT:             unsafe { *unsafe { q.offset((0 as i32) as isize) } },
-// CHECK-NEXT:             unsafe { *unsafe { q.offset((3 as i32) as isize) } },
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
+// CHECK-NEXT:     println!(
+// CHECK-NEXT:         "{} {}", unsafe { * unsafe { q.offset((0 as i32) as isize) } }, unsafe { * unsafe
+// CHECK-NEXT:         { q.offset((3 as i32) as isize) } }
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { free(q as *mut ()) };
 // CHECK-NEXT:     0 as i32
 // CHECK: {{^}}}

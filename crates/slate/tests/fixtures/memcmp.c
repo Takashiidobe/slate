@@ -123,15 +123,8 @@ int main(void) {
 // CHECK-NEXT:             (n as i64) as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) == (0 as i32)) as i32;
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%d %d %d %d\n".as_ptr() as *const i8,
-// CHECK-NEXT:             equal_result,
-// CHECK-NEXT:             unequal_result,
-// CHECK-NEXT:             partial_result,
-// CHECK-NEXT:             dyn_result,
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
+// CHECK-NEXT:     println!("{} {} {} {}", equal_result, unequal_result, partial_result, dyn_result);
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     0 as i32
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

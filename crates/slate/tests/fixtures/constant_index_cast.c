@@ -16,14 +16,11 @@ int main(void) {
 // CHECK-NEXT:         *unsafe { (arr.0.as_mut_ptr() as *mut i32).offset((3 as i32) as isize) } = 5
 // CHECK-NEXT:             as i32;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%d\n".as_ptr() as *const i8,
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 *unsafe { (arr.0.as_mut_ptr() as *mut i32).offset((3 as i32) as isize) }
-// CHECK-NEXT:             },
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
+// CHECK-NEXT:     println!(
+// CHECK-NEXT:         "{}", unsafe { * unsafe { (arr.0.as_mut_ptr() as * mut i32).offset((3 as i32) as
+// CHECK-NEXT:         isize) } }
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     0 as i32
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

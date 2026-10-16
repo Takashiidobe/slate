@@ -161,7 +161,7 @@ impl FunctionLowerer<'_, '_> {
             .iter()
             .map(|argument| self.lower_value(argument))
             .collect::<Result<Vec<_>>>()?;
-        Ok(self.call_c_bridge(name, params, ret, args))
+        Ok(self.call_c_bridge(name, params, ret, args, function.identity))
     }
 
     pub(super) fn lower_long_double_variadic_trampoline(
@@ -200,6 +200,7 @@ impl FunctionLowerer<'_, '_> {
             std::iter::once(code_pointer).chain(params).collect(),
             ret,
             args,
+            FunctionIdentity::Unknown,
         ))
     }
 
@@ -317,6 +318,7 @@ impl FunctionLowerer<'_, '_> {
             std::iter::once(code_pointer).chain(params).collect(),
             ret,
             args,
+            FunctionIdentity::Unknown,
         ))
     }
 }

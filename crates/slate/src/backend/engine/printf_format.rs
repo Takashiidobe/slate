@@ -270,21 +270,32 @@ fn rewrite_block_stmts(
         rewrite_stmt_nested(&mut stmt, printf_names, needs_fflush_extern);
         let is_tail = protect_tail && Some(index) == last_index;
         if !is_tail && let Some(replacement) = try_convert(&stmt) {
-            result.extend(replacement);
+            extend_flushed(&mut result, replacement);
         } else if is_printf_stmt(&stmt, printf_names) {
             *needs_fflush_extern = true;
             if is_tail {
-                result.extend(wrap_stdout_writer_preserving_tail(stmt));
+                extend_flushed(&mut result, wrap_stdout_writer_preserving_tail(stmt));
             } else {
-                result.push(stdout_flush_stmt());
-                result.push(stmt);
-                result.push(fflush_all_stmt());
+                extend_flushed(
+                    &mut result,
+                    vec![stdout_flush_stmt(), stmt, fflush_all_stmt()],
+                );
             }
         } else {
             result.push(stmt);
         }
     }
     *stmts = result;
+}
+
+fn extend_flushed(result: &mut Vec<Stmt>, stmts: Vec<Stmt>) {
+    let flush = stdout_flush_stmt();
+    for stmt in stmts {
+        if stmt == flush && result.last() == Some(&flush) {
+            continue;
+        }
+        result.push(stmt);
+    }
 }
 
 fn rewrite_stmt_nested(
@@ -397,8 +408,79 @@ fn insert_pos(items: &[Item]) -> usize {
         .unwrap_or(items.len())
 }
 
+fn reads_writer(expr: &Expr, writer_names: &HashSet<String>) -> bool {
+    writer_names.iter().any(|name| expr.reads_var(name))
+}
+
+fn body_exposes_writer(body: &[Stmt], writer_names: &HashSet<String>) -> bool {
+    body.iter()
+        .any(|stmt| stmt_exposes_writer(stmt, writer_names))
+}
+
+fn block_exposes_writer(block: &Block, writer_names: &HashSet<String>) -> bool {
+    body_exposes_writer(&block.stmts, writer_names)
+        || block
+            .tail
+            .as_deref()
+            .is_some_and(|tail| reads_writer(tail, writer_names))
+}
+
+fn stmt_exposes_writer(stmt: &Stmt, writer_names: &HashSet<String>) -> bool {
+    if is_printf_stmt(stmt, writer_names) {
+        return false;
+    }
+    match stmt {
+        Stmt::If {
+            cond,
+            then_body,
+            else_body,
+        } => {
+            reads_writer(cond, writer_names)
+                || body_exposes_writer(then_body, writer_names)
+                || body_exposes_writer(else_body, writer_names)
+        }
+        Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
+            body_exposes_writer(body, writer_names)
+        }
+        Stmt::For { iter, body, .. } => {
+            reads_writer(iter, writer_names) || body_exposes_writer(body, writer_names)
+        }
+        Stmt::While { cond, body, .. } => {
+            reads_writer(cond, writer_names) || block_exposes_writer(body, writer_names)
+        }
+        Stmt::Unsafe { body } | Stmt::Block(body) => block_exposes_writer(body, writer_names),
+        Stmt::Match { expr, arms } => {
+            reads_writer(expr, writer_names)
+                || arms
+                    .iter()
+                    .any(|arm| body_exposes_writer(&arm.body, writer_names))
+        }
+        other => writer_names.iter().any(|name| other.reads_var(name)),
+    }
+}
+
+fn item_exposes_writer(item: &Item, writer_names: &HashSet<String>) -> bool {
+    match item {
+        Item::Fn(func) => body_exposes_writer(&func.body, writer_names),
+        Item::InlineMod { items, .. } => items
+            .iter()
+            .any(|item| item_exposes_writer(item, writer_names)),
+        Item::Impl(impl_block) => impl_block.items.iter().any(|impl_item| {
+            matches!(impl_item, ImplItem::Method(method) if reads_writer(&method.body, writer_names))
+        }),
+        _ => false,
+    }
+}
+
 pub(super) fn rewrite(program: &mut Program) {
     let printf_names = stdout_writer_shim_names(program);
+    if program
+        .items
+        .iter()
+        .any(|item| item_exposes_writer(item, &printf_names))
+    {
+        return;
+    }
     let mut needs_fflush_extern = false;
     for item in &mut program.items {
         rewrite_item(item, &printf_names, &mut needs_fflush_extern);

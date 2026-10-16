@@ -57,13 +57,13 @@ int main(void) {
 // CHECK-NEXT:     mut size: u64,
 // CHECK-NEXT: ) -> i64 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         memcpy(
-// CHECK-NEXT:             (unsafe {
+// CHECK-NEXT:         std::ptr::copy_nonoverlapping(
+// CHECK-NEXT:             buffer as *const u8,
+// CHECK-NEXT:             ((unsafe {
 // CHECK-NEXT:                 unsafe { (*(state as *mut GNUCookie)).bytes.as_mut_ptr() as *mut i8 }
 // CHECK-NEXT:                     .offset((unsafe { (*(state as *mut GNUCookie)).length }) as isize)
-// CHECK-NEXT:             }) as *mut (),
-// CHECK-NEXT:             buffer as *const (),
-// CHECK-NEXT:             size,
+// CHECK-NEXT:             }) as *mut ()) as *mut u8,
+// CHECK-NEXT:             size as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: u64 = unsafe { (*(state as *mut GNUCookie)).length };

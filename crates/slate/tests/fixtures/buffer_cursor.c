@@ -36,6 +36,7 @@ int main(void) {
 // CHECK-NEXT:     c.ptr = unsafe { (values.0.as_mut_ptr() as *mut i32).offset((1 as i32) as isize) };
 // CHECK-NEXT:     let mut d: cursor = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     d.ptr = unsafe { (values.0.as_mut_ptr() as *mut i32).offset((3 as i32) as isize) };
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%d %ld\n".as_ptr() as *const i8,
@@ -43,6 +44,7 @@ int main(void) {
 // CHECK-NEXT:             (unsafe { d.ptr.offset_from(c.ptr as *mut i32) }) as i64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0 as i32
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

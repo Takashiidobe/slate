@@ -24,13 +24,8 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut nanoseconds_in_range: i32 = (value.tv_nsec >= ((0 as i32) as i64)
 // CHECK-NEXT:         && value.tv_nsec < (1000000000 as i64)) as i32;
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%d %d\n".as_ptr() as *const i8,
-// CHECK-NEXT:             (result == (1 as i32)) as i32,
-// CHECK-NEXT:             nanoseconds_in_range,
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
+// CHECK-NEXT:     println!("{} {}", (result == (1 as i32)) as i32, nanoseconds_in_range);
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     0 as i32
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

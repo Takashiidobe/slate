@@ -41,6 +41,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     [[V_0]] = exchange_value;
 // CHECK-NEXT:     old = [[V_0]];
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%ld %ld %d\n".as_ptr() as *const i8,
@@ -53,6 +54,7 @@ int main(void) {
 // CHECK-NEXT:             index,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0 as i32
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

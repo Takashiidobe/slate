@@ -1,8 +1,9 @@
 use super::long_double;
 use crate::backend::rust_ast::{self as rust, Attr, BinOp, Expr, FnDef, FnParam, Item, Prim, Stmt};
 use crate::function_identity::CallBinding;
-use crate::function_identity::FunctionIdentity;
+use crate::function_identity::{FunctionIdentity, classify_function};
 use slate_parser::ast::Span;
+use slate_parser::files::Files;
 use slate_parser::ir::{self, BindingId, Number, PlaceKind, TypeId, ValueKind};
 use slate_parser::target_info::TargetInfo;
 use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
@@ -54,6 +55,7 @@ struct FunctionName {
     is_unsafe: bool,
     is_variadic: bool,
     exported: bool,
+    identity: FunctionIdentity,
 }
 
 struct Tables<'m> {
@@ -141,9 +143,10 @@ pub struct Lowered {
 
 pub fn lower(
     module: &ir::Module,
+    files: &Files,
     options: &LowerOptions,
 ) -> std::result::Result<Lowered, InvalidIr> {
-    let mut lowerer = ModuleLowerer::new(module, options)?;
+    let mut lowerer = ModuleLowerer::new(module, files, options)?;
     lowerer.declare()?;
     lowerer.lower_bodies()?;
     Ok(lowerer.assemble())
@@ -280,6 +283,7 @@ struct ModuleLowerer<'m> {
 impl<'m> ModuleLowerer<'m> {
     fn new(
         module: &'m ir::Module,
+        files: &Files,
         options: &'m LowerOptions,
     ) -> std::result::Result<Self, InvalidIr> {
         let mut barriers = Vec::new();
@@ -338,6 +342,19 @@ impl<'m> ModuleLowerer<'m> {
                             }
                         ),
                         exported: function.body.is_some() && exports_symbol(options, function),
+                        identity: if function.body.is_none() {
+                            classify_function(
+                                &function.name,
+                                function
+                                    .provenance
+                                    .system_header
+                                    .and_then(|header| files.get_path(header))
+                                    .and_then(|path| path.file_name())
+                                    .and_then(|name| name.to_str()),
+                            )
+                        } else {
+                            FunctionIdentity::Unknown
+                        },
                     },
                 )
             })

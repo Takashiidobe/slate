@@ -41,6 +41,7 @@ int main(void) {
 // CHECK-NEXT:     c"other".as_ptr() as *const i8
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%s %s %s\n".as_ptr() as *const i8,
@@ -49,6 +50,7 @@ int main(void) {
 // CHECK-NEXT:             bytes_pick() as *mut i8,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0 as i32
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

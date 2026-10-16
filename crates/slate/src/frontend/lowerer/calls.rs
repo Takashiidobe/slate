@@ -66,7 +66,15 @@ impl FunctionLowerer<'_, '_> {
                     )
                 })
                 .collect::<Result<Vec<_>>>()?,
-            binding: CallBinding::unknown(),
+            binding: match callee {
+                ir::Callee::Direct(id) => CallBinding::Direct {
+                    identity: names[id].identity,
+                    canonical_type: None,
+                    trusted_declaration: None,
+                    trusted_headers: Default::default(),
+                },
+                ir::Callee::Indirect(_) => CallBinding::Indirect,
+            },
         };
         let unsafe_call = match callee {
             ir::Callee::Direct(id) => names.get(id).is_some_and(|name| name.is_unsafe),
@@ -88,6 +96,7 @@ impl FunctionLowerer<'_, '_> {
         params: Vec<rust::Type>,
         ret: rust::Type,
         args: Vec<Expr>,
+        identity: FunctionIdentity,
     ) -> Expr {
         self.dependencies
             .bridges
@@ -95,7 +104,7 @@ impl FunctionLowerer<'_, '_> {
             .or_insert_with(|| rust::ExternFnDecl {
                 attrs: Vec::new(),
                 name: name.clone(),
-                identity: FunctionIdentity::Unknown,
+                identity,
                 declared_type: None,
                 trusted_headers: Default::default(),
                 params: params
@@ -117,7 +126,15 @@ impl FunctionLowerer<'_, '_> {
             tail: Some(Box::new(Expr::Call {
                 func: Box::new(Expr::Var(name.into())),
                 args,
-                binding: CallBinding::Generated,
+                binding: match identity {
+                    FunctionIdentity::Known(_) => CallBinding::Direct {
+                        identity,
+                        canonical_type: None,
+                        trusted_declaration: None,
+                        trusted_headers: Default::default(),
+                    },
+                    FunctionIdentity::Unknown => CallBinding::Generated,
+                },
             })),
         }))
     }

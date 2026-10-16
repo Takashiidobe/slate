@@ -114,16 +114,6 @@ pub enum FunctionIdentity {
     Unknown,
 }
 
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
-/// The provenance of a function declaration.
-pub enum Provenance {
-    /// The declaration came from a trusted system header.
-    TrustedHeader,
-    #[default]
-    /// The declaration has no trusted provenance.
-    Unknown,
-}
-
 #[derive(Debug, Clone, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
 /// How a call expression is bound to a function declaration.
 pub enum CallBinding {
@@ -146,16 +136,6 @@ pub enum CallBinding {
 }
 
 impl CallBinding {
-    /// Creates a direct binding with unknown identity and no provenance.
-    pub fn unknown() -> Self {
-        Self::Direct {
-            identity: FunctionIdentity::Unknown,
-            canonical_type: None,
-            trusted_declaration: None,
-            trusted_headers: BTreeSet::new(),
-        }
-    }
-
     /// Returns the known libc identity, if this binding has one.
     pub fn known(&self) -> Option<Known> {
         match self {
@@ -189,61 +169,12 @@ impl CallBinding {
     }
 }
 
-/// Classifies a function using its name, Clang AST declaration type, headers, and provenance.
-///
-/// `canonical_type` is the type string emitted by the macro-dump plugin from Clang's AST.
-///
-/// ```
-/// use slate::function_identity::{classify_function, FunctionIdentity, Known, Provenance};
-///
-/// let identity = classify_function(
-///     "malloc",
-///     ["stdlib.h"],
-///     "void *(unsigned long)",
-///     Provenance::TrustedHeader,
-/// );
-/// assert_eq!(identity, FunctionIdentity::Known(Known::Malloc));
-/// ```
-pub fn classify_function<'a>(
-    name: &str,
-    headers: impl IntoIterator<Item = &'a str>,
-    canonical_type: &str,
-    provenance: Provenance,
-) -> FunctionIdentity {
-    if !valid_function_type(canonical_type) {
-        return FunctionIdentity::Unknown;
-    }
+pub fn classify_function(name: &str, system_header: Option<&str>) -> FunctionIdentity {
     if let Some(known) = Known::from_builtin_symbol(name) {
         return FunctionIdentity::Known(known);
     }
-    if provenance != Provenance::TrustedHeader {
-        return FunctionIdentity::Unknown;
-    }
-    let headers = headers.into_iter().collect::<Vec<_>>();
-    Known::classify(name, &headers)
+    system_header
+        .and_then(|header| Known::classify(name, &[header]))
         .map(FunctionIdentity::Known)
         .unwrap_or(FunctionIdentity::Unknown)
-}
-
-fn valid_function_type(canonical_type: &str) -> bool {
-    let Some((ret, params)) = canonical_type.split_once('(') else {
-        return false;
-    };
-    if ret.trim().is_empty() {
-        return false;
-    }
-    let mut depth = 1;
-    for character in params.chars() {
-        match character {
-            '(' => depth += 1,
-            ')' => {
-                depth -= 1;
-                if depth == 0 {
-                    return true;
-                }
-            }
-            _ => {}
-        }
-    }
-    false
 }

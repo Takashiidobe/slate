@@ -41,6 +41,7 @@ int main(void) {
 // CHECK-NEXT:     let mut q: *mut i32 = unsafe {
 // CHECK-NEXT:         (values.0.as_mut_ptr() as *mut i32).offset((3 as i32) as isize)
 // CHECK-NEXT:     };
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%d %ld %d\n".as_ptr() as *const i8,
@@ -49,6 +50,7 @@ int main(void) {
 // CHECK-NEXT:             read_array_element_through_call(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0 as i32
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

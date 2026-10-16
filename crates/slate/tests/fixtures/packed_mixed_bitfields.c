@@ -35,6 +35,7 @@ int main(void) {
 // CHECK-NEXT:     bits.__slate_bits_0.__set_delta(-(17 as i32));
 // CHECK-NEXT:     bits.__slate_bits_1.__set_wide(30370190968 as u64);
 // CHECK-NEXT:     bits.__slate_bits_1.__set_tail((109517 as i32) as u32);
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%u %u %d %llu %u %zu\n".as_ptr() as *const i8,
@@ -46,6 +47,7 @@ int main(void) {
 // CHECK-NEXT:             11 as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0 as i32
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

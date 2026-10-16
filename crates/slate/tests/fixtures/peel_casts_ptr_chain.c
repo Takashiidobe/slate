@@ -13,7 +13,7 @@ int main(void) {
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut buf: [i8; 8] = [0 as i8; 8];
 // CHECK-NEXT:     let mut p: *mut i8 = buf.as_mut_ptr() as *mut i8;
-// CHECK-NEXT:     unsafe { memset(p as *mut (), 0 as i32, ((8 as i32) as i64) as u64) };
+// CHECK-NEXT:     unsafe { buf[(0usize..8usize)].fill((0 as i32) as i8) };
 // CHECK-NEXT:     (unsafe { *unsafe { p.offset((0 as i32) as isize) } }) as i32
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END
