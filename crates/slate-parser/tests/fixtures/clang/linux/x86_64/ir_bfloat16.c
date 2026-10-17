@@ -72,7 +72,7 @@ int sizes = sizeof(__bf16) + _Alignof(__bf16);
 // IR-NEXT:         return add<bf16, rounding=nearest_even, exceptions=ignore, contract=on>(read<bf16>(%[[VALUE_x]]), read<bf16>(%[[VALUE_y]]));
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_half:[0-9]+]] @half(%[[VALUE_x_2:[0-9]+]] x: bf16, %[[VALUE_y_2:[0-9]+]] y: f16) -> f16 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return add<f16, rounding=nearest_even, exceptions=ignore, contract=on>(float_narrow<f16, reason=usual_arith, rounding=nearest_even, exceptions=ignore>(read<bf16>(%[[VALUE_x_2]])), read<f16>(%[[VALUE_y_2]]));
+// IR-NEXT:         return float_narrow<f16, reason=excess_precision, rounding=nearest_even, exceptions=ignore>(add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(float_widen<f32, reason=excess_precision>(float_narrow<f16, reason=usual_arith, rounding=nearest_even, exceptions=ignore>(read<bf16>(%[[VALUE_x_2]]))), float_widen<f32, reason=excess_precision>(read<f16>(%[[VALUE_y_2]]))));
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_single:[0-9]+]] @single(%[[VALUE_x_3:[0-9]+]] x: bf16, %[[VALUE_y_3:[0-9]+]] y: f32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(float_widen<f32, reason=usual_arith>(read<bf16>(%[[VALUE_x_3]])), read<f32>(%[[VALUE_y_3]]));

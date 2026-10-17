@@ -524,7 +524,7 @@ va_passing  = ", memory"
             | ", indirect"
 va_class    = "int" | "sse" | "sse_wide"
 reason     = "return" | "assign" | "arg" | "vararg" | "promotion"
-           | "usual_arith" | "explicit" ;
+           | "usual_arith" | "excess_precision" | "explicit" ;
 ```
 
 - The type after `<` is the result type, except in `read`/`write` and

@@ -290,7 +290,10 @@ impl TargetInfo {
             || (self.family.is_x86() && self.environment != TargetEnvironment::Msvc)
     }
 
-    // gcc's _Float64x: the narrowest format wider than double
+    pub fn float16_excess_precision(&self) -> bool {
+        self.family != TargetFamily::AArch64
+    }
+
     pub fn float64x_format(&self) -> Option<FloatType> {
         match self.long_double {
             LongDoubleFormat::X87 => Some(FloatType::F80),

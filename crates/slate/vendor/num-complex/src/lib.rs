@@ -16,6 +16,7 @@
 
 #![doc(html_root_url = "https://docs.rs/num-complex/0.4")]
 #![no_std]
+#![cfg_attr(has_f16, feature(f16))]
 
 #[cfg(any(test, feature = "std"))]
 #[cfg_attr(test, macro_use)]
@@ -1079,7 +1080,9 @@ macro_rules! real_arithmetic {
         real_arithmetic!(@forward Mul::mul for $($real),*);
         real_arithmetic!(@forward Div::div for $($real),*);
         real_arithmetic!(@forward Rem::rem for $($real),*);
-
+        real_arithmetic!(@values $($real),*);
+    );
+    (@values $($real:ident),*) => (
         $(
             impl Add<Complex<$real>> for $real {
                 type Output = Complex<$real>;
@@ -1178,6 +1181,8 @@ impl<T: Clone + Num> Rem<T> for Complex<T> {
 }
 
 real_arithmetic!(usize, u8, u16, u32, u64, u128, isize, i8, i16, i32, i64, i128, f32, f64);
+#[cfg(has_f16)]
+real_arithmetic!(@values f16);
 
 // constants
 impl<T: ConstZero> Complex<T> {

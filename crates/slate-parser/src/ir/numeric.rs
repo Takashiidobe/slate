@@ -646,6 +646,7 @@ pub enum ConversionReason {
     Vararg,
     Promotion,
     UsualArith,
+    ExcessPrecision,
     Explicit,
 }
 
@@ -658,6 +659,7 @@ impl fmt::Display for ConversionReason {
             Self::Vararg => "vararg",
             Self::Promotion => "promotion",
             Self::UsualArith => "usual_arith",
+            Self::ExcessPrecision => "excess_precision",
             Self::Explicit => "explicit",
         })
     }

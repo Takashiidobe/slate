@@ -104,6 +104,9 @@ pub struct Context {
 
 type Resolved = (Type, ValueKind);
 
+const HALF: NumericType = NumericType::Float(FloatType::F16);
+const SINGLE: NumericType = NumericType::Float(FloatType::F32);
+
 impl Context {
     pub fn for_dialect(dialect: &crate::dialect::Dialect) -> Self {
         let options = dialect.options();
@@ -126,6 +129,124 @@ impl Context {
             floating: self.region.floating,
             contract: self.region.contract,
         }
+    }
+
+    fn half_excess(&self, ty: &Type) -> bool {
+        self.target.float16_excess_precision()
+            && matches!(ty, Type::Numeric(HALF) | Type::Complex(HALF))
+    }
+
+    fn widen_half(&self, value: Value) -> Result<Value, ResolveError> {
+        if !self.half_excess(&value.ty) {
+            return Ok(value);
+        }
+        let to = match value.ty {
+            Type::Complex(_) => Type::Complex(SINGLE),
+            _ => Type::Numeric(SINGLE),
+        };
+        match value.node.value {
+            ValueKind::Convert {
+                reason: ConversionReason::ExcessPrecision,
+                operand,
+                ..
+            } if operand.ty == to => Ok(*operand),
+            _ => self.emit_arithmetic_conversion(value, to, ConversionReason::ExcessPrecision),
+        }
+    }
+
+    fn excess_precision(
+        &self,
+        ty: Type,
+        operand: &Value,
+        build: impl FnOnce() -> Result<(Type, ValueKind), ResolveError>,
+    ) -> Result<Resolved, ResolveError> {
+        let (wide, kind) = build()?;
+        let value = Value {
+            ty: wide,
+            node: operand.node.derive(()).with_value(kind),
+        };
+        let narrowed =
+            self.emit_arithmetic_conversion(value, ty.clone(), ConversionReason::ExcessPrecision)?;
+        Ok((ty, narrowed.node.value))
+    }
+
+    fn arith_value(
+        &self,
+        ty: Type,
+        op: ArithOp,
+        left: Value,
+        right: Value,
+        semantics: ArithSema,
+    ) -> Result<Resolved, ResolveError> {
+        if !self.half_excess(&ty) {
+            return Ok((
+                ty,
+                ValueKind::Arith {
+                    op,
+                    left: Box::new(left),
+                    right: Box::new(right),
+                    semantics,
+                },
+            ));
+        }
+        let anchor = left.clone();
+        self.excess_precision(ty.clone(), &anchor, || {
+            let left = self.widen_half(left)?;
+            let right = self.widen_half(right)?;
+            let wide = match ty {
+                Type::Complex(_) => Type::Complex(SINGLE),
+                _ => Type::Numeric(SINGLE),
+            };
+            Ok((
+                wide,
+                ValueKind::Arith {
+                    op,
+                    left: Box::new(left),
+                    right: Box::new(right),
+                    semantics,
+                },
+            ))
+        })
+    }
+
+    fn unary_value(
+        &self,
+        op: UnaryArithOp,
+        operand: Value,
+        semantics: ArithSema,
+    ) -> Result<Resolved, ResolveError> {
+        let promoted = op == UnaryArithOp::Neg
+            && self.half_excess(&operand.ty)
+            && matches!(
+                operand.node.value,
+                ValueKind::Convert {
+                    reason: ConversionReason::ExcessPrecision,
+                    ..
+                }
+            );
+        if !promoted {
+            return Ok((
+                operand.ty.clone(),
+                ValueKind::Unary {
+                    op,
+                    operand: Box::new(operand),
+                    semantics,
+                },
+            ));
+        }
+        let ty = operand.ty.clone();
+        let anchor = operand.clone();
+        self.excess_precision(ty, &anchor, || {
+            let operand = self.widen_half(operand)?;
+            Ok((
+                operand.ty.clone(),
+                ValueKind::Unary {
+                    op,
+                    operand: Box::new(operand),
+                    semantics,
+                },
+            ))
+        })
     }
 
     fn complex_floating_arith(&self) -> ArithSema {
@@ -359,15 +480,7 @@ impl Context {
                 amount_out_of_range: UbPolicy::Undefined,
             },
         };
-        Ok((
-            left.ty.clone(),
-            ValueKind::Arith {
-                op: arith,
-                left: Box::new(left),
-                right: Box::new(right),
-                semantics,
-            },
-        ))
+        self.arith_value(left.ty.clone(), arith, left, right, semantics)
     }
 
     pub(super) fn emit_unary_arith(
@@ -441,14 +554,7 @@ impl Context {
                     by_zero: None,
                 },
             };
-            return Ok((
-                operand.ty.clone(),
-                ValueKind::Unary {
-                    op: arith,
-                    operand: Box::new(operand),
-                    semantics,
-                },
-            ));
+            return self.unary_value(arith, operand, semantics);
         }
         let semantics = match (numeric(&operand)?, arith) {
             (NumericType::Float(_), UnaryArithOp::Neg) => ArithSema::Exact,
@@ -464,14 +570,7 @@ impl Context {
             },
             (NumericType::Integer { .. }, UnaryArithOp::Not) => ArithSema::Exact,
         };
-        Ok((
-            operand.ty.clone(),
-            ValueKind::Unary {
-                op: arith,
-                operand: Box::new(operand),
-                semantics,
-            },
-        ))
+        self.unary_value(arith, operand, semantics)
     }
 
     fn vector_binary(
@@ -811,15 +910,7 @@ impl Context {
                 by_zero: (arith == ArithOp::Div).then_some(UbPolicy::Undefined),
             },
         };
-        Ok((
-            result_ty,
-            ValueKind::Arith {
-                op: arith,
-                left: Box::new(left),
-                right: Box::new(right),
-                semantics,
-            },
-        ))
+        self.arith_value(result_ty, arith, left, right, semantics)
     }
 
     fn imaginary_binary(
@@ -960,11 +1051,19 @@ impl Context {
 
     pub(super) fn emit_arithmetic_conversion(
         &self,
-        value: Value,
+        mut value: Value,
         to: Type,
         reason: ConversionReason,
     ) -> Result<Value, ResolveError> {
         if value.ty == to {
+            if reason == ConversionReason::Explicit
+                && let ValueKind::Convert {
+                    reason: why @ ConversionReason::ExcessPrecision,
+                    ..
+                } = &mut value.node.value
+            {
+                *why = reason;
+            }
             return Ok(value);
         }
         if to == Type::Bool {

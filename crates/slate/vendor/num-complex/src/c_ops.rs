@@ -122,6 +122,38 @@ macro_rules! float_methods {
 
 float_methods!(f32, mul_f32, div_f32; f64, mul_f64, div_f64);
 
+#[cfg(has_f16)]
+impl Complex<f16> {
+    fn widen(self) -> Complex<f32> {
+        Complex {
+            re: self.re as f32,
+            im: self.im as f32,
+        }
+    }
+
+    fn narrow(wide: Complex<f32>) -> Self {
+        Complex {
+            re: wide.re as f16,
+            im: wide.im as f16,
+        }
+    }
+
+    #[inline]
+    pub fn c_mul(self, other: Self, basic: bool) -> Self {
+        let x = self.re * other.re - self.im * other.im;
+        let y = self.re * other.im + self.im * other.re;
+        if basic || !(x.is_nan() && y.is_nan()) {
+            return Complex { re: x, im: y };
+        }
+        Self::narrow(mul_f32(self.widen(), other.widen(), false))
+    }
+
+    #[inline]
+    pub fn c_div(self, other: Self, basic: bool) -> Self {
+        Self::narrow(div_f32(self.widen(), other.widen(), basic))
+    }
+}
+
 macro_rules! int_methods {
     ($($t:ident),*) => {$(
         impl Complex<$t> {

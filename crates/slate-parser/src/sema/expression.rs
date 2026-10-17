@@ -1134,10 +1134,7 @@ impl Lowerer {
         reason: ConversionReason,
     ) -> Result<Value, ResolveError> {
         let ty = self.types.ir_type(to);
-        if value.ty == ty {
-            return Ok(value);
-        }
-        if ty == Type::Bool {
+        if ty == Type::Bool && value.ty != ty {
             return self.condition(value, Some(reason));
         }
         self.context.emit_arithmetic_conversion(value, ty, reason)

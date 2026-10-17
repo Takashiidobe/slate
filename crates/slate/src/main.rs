@@ -470,6 +470,10 @@ fn write_num_complex_support(crate_dir: &Path) -> Result<(), String> {
             num_complex_dir.join("LICENSE-APACHE"),
             include_str!("../vendor/num-complex/LICENSE-APACHE"),
         ),
+        (
+            num_complex_dir.join("build.rs"),
+            include_str!("../vendor/num-complex/build.rs"),
+        ),
     ] {
         std::fs::write(&path, contents).map_err(|e| format!("write {}: {e}", path.display()))?;
     }
@@ -491,6 +495,106 @@ fn write_num_complex_support(crate_dir: &Path) -> Result<(), String> {
         ("pow.rs", include_str!("../vendor/num-complex/src/pow.rs")),
     ] {
         write_file(&src_dir.join(source), contents)?;
+    }
+    write_num_traits_support(crate_dir)
+}
+
+fn write_num_traits_support(crate_dir: &Path) -> Result<(), String> {
+    let num_traits_dir = crate_dir.join("num-traits");
+    let ops_dir = num_traits_dir.join("src/ops");
+    std::fs::create_dir_all(&ops_dir).map_err(|e| format!("create {}: {e}", ops_dir.display()))?;
+    for (path, contents) in [
+        (
+            "Cargo.toml",
+            include_str!("../vendor/num-traits/Cargo.toml.template"),
+        ),
+        ("build.rs", include_str!("../vendor/num-traits/build.rs")),
+        (
+            "LICENSE-MIT",
+            include_str!("../vendor/num-traits/LICENSE-MIT"),
+        ),
+        (
+            "LICENSE-APACHE",
+            include_str!("../vendor/num-traits/LICENSE-APACHE"),
+        ),
+        (
+            "src/bounds.rs",
+            include_str!("../vendor/num-traits/src/bounds.rs"),
+        ),
+        (
+            "src/cast.rs",
+            include_str!("../vendor/num-traits/src/cast.rs"),
+        ),
+        (
+            "src/float.rs",
+            include_str!("../vendor/num-traits/src/float.rs"),
+        ),
+        (
+            "src/identities.rs",
+            include_str!("../vendor/num-traits/src/identities.rs"),
+        ),
+        (
+            "src/int.rs",
+            include_str!("../vendor/num-traits/src/int.rs"),
+        ),
+        (
+            "src/lib.rs",
+            include_str!("../vendor/num-traits/src/lib.rs"),
+        ),
+        (
+            "src/macros.rs",
+            include_str!("../vendor/num-traits/src/macros.rs"),
+        ),
+        (
+            "src/pow.rs",
+            include_str!("../vendor/num-traits/src/pow.rs"),
+        ),
+        (
+            "src/real.rs",
+            include_str!("../vendor/num-traits/src/real.rs"),
+        ),
+        (
+            "src/sign.rs",
+            include_str!("../vendor/num-traits/src/sign.rs"),
+        ),
+        (
+            "src/ops/bytes.rs",
+            include_str!("../vendor/num-traits/src/ops/bytes.rs"),
+        ),
+        (
+            "src/ops/checked.rs",
+            include_str!("../vendor/num-traits/src/ops/checked.rs"),
+        ),
+        (
+            "src/ops/euclid.rs",
+            include_str!("../vendor/num-traits/src/ops/euclid.rs"),
+        ),
+        (
+            "src/ops/inv.rs",
+            include_str!("../vendor/num-traits/src/ops/inv.rs"),
+        ),
+        (
+            "src/ops/mod.rs",
+            include_str!("../vendor/num-traits/src/ops/mod.rs"),
+        ),
+        (
+            "src/ops/mul_add.rs",
+            include_str!("../vendor/num-traits/src/ops/mul_add.rs"),
+        ),
+        (
+            "src/ops/overflowing.rs",
+            include_str!("../vendor/num-traits/src/ops/overflowing.rs"),
+        ),
+        (
+            "src/ops/saturating.rs",
+            include_str!("../vendor/num-traits/src/ops/saturating.rs"),
+        ),
+        (
+            "src/ops/wrapping.rs",
+            include_str!("../vendor/num-traits/src/ops/wrapping.rs"),
+        ),
+    ] {
+        write_file(&num_traits_dir.join(path), contents)?;
     }
     Ok(())
 }

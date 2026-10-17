@@ -1660,7 +1660,8 @@ impl TypeResolver {
             ConversionReason::Return => ConversionContext::Return,
             ConversionReason::Explicit
             | ConversionReason::Promotion
-            | ConversionReason::UsualArith => ConversionContext::Cast,
+            | ConversionReason::UsualArith
+            | ConversionReason::ExcessPrecision => ConversionContext::Cast,
         };
         let mut null = self.null_pointer_constant(operand);
         let mut current = from;

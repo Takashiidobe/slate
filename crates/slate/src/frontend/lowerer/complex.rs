@@ -180,16 +180,31 @@ impl FunctionLowerer<'_, '_> {
                 left,
                 right,
                 ..
-            } if self.complex_component(&left.ty).is_some() => {
-                self.lower_type(&left.ty)?;
+            } if let Some(component) = self
+                .complex_component(&left.ty)
+                .or_else(|| self.complex_component(&right.ty)) =>
+            {
+                self.lower_type(&ir::Type::Complex(component))?;
+                let mut sides = [None, None];
+                for (side, operand) in sides.iter_mut().zip([left, right]) {
+                    let lowered = self.lower_value(operand)?;
+                    *side = Some(if self.complex_component(&operand.ty).is_some() {
+                        lowered
+                    } else {
+                        complex_literal(lowered, component_zero(component))
+                    });
+                }
+                let [Some(lhs), Some(rhs)] = sides else {
+                    return Err(unsupported_value(value));
+                };
                 Ok(Some(Expr::Binary {
                     op: if matches!(op, ir::CompareOp::Eq) {
                         BinOp::Eq
                     } else {
                         BinOp::Ne
                     },
-                    lhs: Box::new(self.lower_value(left)?),
-                    rhs: Box::new(self.lower_value(right)?),
+                    lhs: Box::new(lhs),
+                    rhs: Box::new(rhs),
                 }))
             }
             ValueKind::Call {

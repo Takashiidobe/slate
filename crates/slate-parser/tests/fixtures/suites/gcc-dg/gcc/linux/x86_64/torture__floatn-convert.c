@@ -136,20 +136,20 @@ main (void)
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 do %[[VALUE2:[0-9]+]]
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         let %[[VALUE_a:[0-9]+]] a: volatile f16 [storage=automatic] = add<f16, rounding=nearest_even, exceptions=observable, contract=fast>(int_to_float<f16, reason=explicit, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)), const<f16>(9.7656E-4));
+// DEFAULT-NEXT:                         let %[[VALUE_a:[0-9]+]] a: volatile f16 [storage=automatic] = float_narrow<f16, reason=excess_precision, rounding=nearest_even, exceptions=observable>(add<f32, rounding=nearest_even, exceptions=observable, contract=fast>(float_widen<f32, reason=excess_precision>(int_to_float<f16, reason=explicit, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1))), float_widen<f32, reason=excess_precision>(const<f16>(9.7656E-4))));
 // DEFAULT-NEXT:                         let %[[VALUE_b:[0-9]+]] b: volatile f16 [storage=automatic] = read<f16, volatile>(%[[VALUE_a]]);
 // DEFAULT-NEXT:                         let %[[VALUE_expected:[0-9]+]] expected: volatile f16 [storage=automatic];
 // DEFAULT-NEXT:                         if lt<i32>(const<i32>(11), const<i32>(11))
 // DEFAULT-NEXT:                             write<f16, volatile>(%[[VALUE_expected]], int_to_float<f16, reason=explicit, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
 // DEFAULT-NEXT:                         else
-// DEFAULT-NEXT:                             write<f16, volatile>(%[[VALUE_expected]], add<f16, rounding=nearest_even, exceptions=observable, contract=fast>(int_to_float<f16, reason=explicit, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)), const<f16>(9.7656E-4)));
+// DEFAULT-NEXT:                             write<f16, volatile>(%[[VALUE_expected]], float_narrow<f16, reason=excess_precision, rounding=nearest_even, exceptions=observable>(add<f32, rounding=nearest_even, exceptions=observable, contract=fast>(float_widen<f32, reason=excess_precision>(int_to_float<f16, reason=explicit, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1))), float_widen<f32, reason=excess_precision>(const<f16>(9.7656E-4)))));
 // DEFAULT-NEXT:                         if ne<f16, exceptions=observable>(read<f16, volatile>(%[[VALUE_b]]), read<f16, volatile>(%[[VALUE_expected]]))
 // DEFAULT-NEXT:                             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                 while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                 do %[[VALUE3:[0-9]+]]
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         let %[[VALUE_a_2:[0-9]+]] a: volatile f16 [storage=automatic] = add<f16, rounding=nearest_even, exceptions=observable, contract=fast>(int_to_float<f16, reason=explicit, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)), const<f16>(9.7656E-4));
+// DEFAULT-NEXT:                         let %[[VALUE_a_2:[0-9]+]] a: volatile f16 [storage=automatic] = float_narrow<f16, reason=excess_precision, rounding=nearest_even, exceptions=observable>(add<f32, rounding=nearest_even, exceptions=observable, contract=fast>(float_widen<f32, reason=excess_precision>(int_to_float<f16, reason=explicit, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1))), float_widen<f32, reason=excess_precision>(const<f16>(9.7656E-4))));
 // DEFAULT-NEXT:                         let %[[VALUE_b_2:[0-9]+]] b: volatile f32 [storage=automatic] = float_widen<f32, reason=explicit>(read<f16, volatile>(%[[VALUE_a_2]]));
 // DEFAULT-NEXT:                         let %[[VALUE_expected_2:[0-9]+]] expected: volatile f32 [storage=automatic];
 // DEFAULT-NEXT:                         if lt<i32>(const<i32>(24), const<i32>(11))
@@ -162,7 +162,7 @@ main (void)
 // DEFAULT-NEXT:                 while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                 do %[[VALUE4:[0-9]+]]
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         let %[[VALUE_a_3:[0-9]+]] a: volatile f16 [storage=automatic] = add<f16, rounding=nearest_even, exceptions=observable, contract=fast>(int_to_float<f16, reason=explicit, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)), const<f16>(9.7656E-4));
+// DEFAULT-NEXT:                         let %[[VALUE_a_3:[0-9]+]] a: volatile f16 [storage=automatic] = float_narrow<f16, reason=excess_precision, rounding=nearest_even, exceptions=observable>(add<f32, rounding=nearest_even, exceptions=observable, contract=fast>(float_widen<f32, reason=excess_precision>(int_to_float<f16, reason=explicit, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1))), float_widen<f32, reason=excess_precision>(const<f16>(9.7656E-4))));
 // DEFAULT-NEXT:                         let %[[VALUE_b_3:[0-9]+]] b: volatile f64 [storage=automatic] = float_widen<f64, reason=explicit>(read<f16, volatile>(%[[VALUE_a_3]]));
 // DEFAULT-NEXT:                         let %[[VALUE_expected_3:[0-9]+]] expected: volatile f64 [storage=automatic];
 // DEFAULT-NEXT:                         if lt<i32>(const<i32>(53), const<i32>(11))
@@ -175,7 +175,7 @@ main (void)
 // DEFAULT-NEXT:                 while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                 do %[[VALUE5:[0-9]+]]
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         let %[[VALUE_a_4:[0-9]+]] a: volatile f16 [storage=automatic] = add<f16, rounding=nearest_even, exceptions=observable, contract=fast>(int_to_float<f16, reason=explicit, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)), const<f16>(9.7656E-4));
+// DEFAULT-NEXT:                         let %[[VALUE_a_4:[0-9]+]] a: volatile f16 [storage=automatic] = float_narrow<f16, reason=excess_precision, rounding=nearest_even, exceptions=observable>(add<f32, rounding=nearest_even, exceptions=observable, contract=fast>(float_widen<f32, reason=excess_precision>(int_to_float<f16, reason=explicit, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1))), float_widen<f32, reason=excess_precision>(const<f16>(9.7656E-4))));
 // DEFAULT-NEXT:                         let %[[VALUE_b_4:[0-9]+]] b: volatile f128 [storage=automatic] = float_widen<f128, reason=explicit>(read<f16, volatile>(%[[VALUE_a_4]]));
 // DEFAULT-NEXT:                         let %[[VALUE_expected_4:[0-9]+]] expected: volatile f128 [storage=automatic];
 // DEFAULT-NEXT:                         if lt<i32>(const<i32>(113), const<i32>(11))
@@ -188,7 +188,7 @@ main (void)
 // DEFAULT-NEXT:                 while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                 do %[[VALUE6:[0-9]+]]
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         let %[[VALUE_a_5:[0-9]+]] a: volatile f16 [storage=automatic] = add<f16, rounding=nearest_even, exceptions=observable, contract=fast>(int_to_float<f16, reason=explicit, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)), const<f16>(9.7656E-4));
+// DEFAULT-NEXT:                         let %[[VALUE_a_5:[0-9]+]] a: volatile f16 [storage=automatic] = float_narrow<f16, reason=excess_precision, rounding=nearest_even, exceptions=observable>(add<f32, rounding=nearest_even, exceptions=observable, contract=fast>(float_widen<f32, reason=excess_precision>(int_to_float<f16, reason=explicit, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1))), float_widen<f32, reason=excess_precision>(const<f16>(9.7656E-4))));
 // DEFAULT-NEXT:                         let %[[VALUE_b_5:[0-9]+]] b: volatile f64 [storage=automatic] = float_widen<f64, reason=explicit>(read<f16, volatile>(%[[VALUE_a_5]]));
 // DEFAULT-NEXT:                         let %[[VALUE_expected_5:[0-9]+]] expected: volatile f64 [storage=automatic];
 // DEFAULT-NEXT:                         if lt<i32>(const<i32>(53), const<i32>(11))
@@ -201,7 +201,7 @@ main (void)
 // DEFAULT-NEXT:                 while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                 do %[[VALUE7:[0-9]+]]
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         let %[[VALUE_a_6:[0-9]+]] a: volatile f16 [storage=automatic] = add<f16, rounding=nearest_even, exceptions=observable, contract=fast>(int_to_float<f16, reason=explicit, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)), const<f16>(9.7656E-4));
+// DEFAULT-NEXT:                         let %[[VALUE_a_6:[0-9]+]] a: volatile f16 [storage=automatic] = float_narrow<f16, reason=excess_precision, rounding=nearest_even, exceptions=observable>(add<f32, rounding=nearest_even, exceptions=observable, contract=fast>(float_widen<f32, reason=excess_precision>(int_to_float<f16, reason=explicit, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1))), float_widen<f32, reason=excess_precision>(const<f16>(9.7656E-4))));
 // DEFAULT-NEXT:                         let %[[VALUE_b_6:[0-9]+]] b: volatile f80 [storage=automatic] = float_widen<f80, reason=explicit>(read<f16, volatile>(%[[VALUE_a_6]]));
 // DEFAULT-NEXT:                         let %[[VALUE_expected_6:[0-9]+]] expected: volatile f80 [storage=automatic];
 // DEFAULT-NEXT:                         if lt<i32>(const<i32>(64), const<i32>(11))
@@ -214,7 +214,7 @@ main (void)
 // DEFAULT-NEXT:                 while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                 do %[[VALUE8:[0-9]+]]
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         let %[[VALUE_a_7:[0-9]+]] a: volatile f16 [storage=automatic] = add<f16, rounding=nearest_even, exceptions=observable, contract=fast>(int_to_float<f16, reason=explicit, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)), const<f16>(9.7656E-4));
+// DEFAULT-NEXT:                         let %[[VALUE_a_7:[0-9]+]] a: volatile f16 [storage=automatic] = float_narrow<f16, reason=excess_precision, rounding=nearest_even, exceptions=observable>(add<f32, rounding=nearest_even, exceptions=observable, contract=fast>(float_widen<f32, reason=excess_precision>(int_to_float<f16, reason=explicit, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1))), float_widen<f32, reason=excess_precision>(const<f16>(9.7656E-4))));
 // DEFAULT-NEXT:                         let %[[VALUE_b_7:[0-9]+]] b: volatile f32 [storage=automatic] = float_widen<f32, reason=explicit>(read<f16, volatile>(%[[VALUE_a_7]]));
 // DEFAULT-NEXT:                         let %[[VALUE_expected_7:[0-9]+]] expected: volatile f32 [storage=automatic];
 // DEFAULT-NEXT:                         if lt<i32>(const<i32>(24), const<i32>(11))
@@ -237,7 +237,7 @@ main (void)
 // DEFAULT-NEXT:                         if lt<i32>(const<i32>(11), const<i32>(24))
 // DEFAULT-NEXT:                             write<f16, volatile>(%[[VALUE_expected_8]], int_to_float<f16, reason=explicit, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
 // DEFAULT-NEXT:                         else
-// DEFAULT-NEXT:                             write<f16, volatile>(%[[VALUE_expected_8]], add<f16, rounding=nearest_even, exceptions=observable, contract=fast>(int_to_float<f16, reason=explicit, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)), float_narrow<f16, reason=explicit, rounding=nearest_even, exceptions=observable>(const<f32>(1.1920929e-7))));
+// DEFAULT-NEXT:                             write<f16, volatile>(%[[VALUE_expected_8]], float_narrow<f16, reason=excess_precision, rounding=nearest_even, exceptions=observable>(add<f32, rounding=nearest_even, exceptions=observable, contract=fast>(float_widen<f32, reason=excess_precision>(int_to_float<f16, reason=explicit, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1))), float_widen<f32, reason=excess_precision>(float_narrow<f16, reason=explicit, rounding=nearest_even, exceptions=observable>(const<f32>(1.1920929e-7))))));
 // DEFAULT-NEXT:                         if ne<f16, exceptions=observable>(read<f16, volatile>(%[[VALUE_b_8]]), read<f16, volatile>(%[[VALUE_expected_8]]))
 // DEFAULT-NEXT:                             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                     }
@@ -332,7 +332,7 @@ main (void)
 // DEFAULT-NEXT:                         if lt<i32>(const<i32>(11), const<i32>(53))
 // DEFAULT-NEXT:                             write<f16, volatile>(%[[VALUE_expected_15]], int_to_float<f16, reason=explicit, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
 // DEFAULT-NEXT:                         else
-// DEFAULT-NEXT:                             write<f16, volatile>(%[[VALUE_expected_15]], add<f16, rounding=nearest_even, exceptions=observable, contract=fast>(int_to_float<f16, reason=explicit, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)), float_narrow<f16, reason=explicit, rounding=nearest_even, exceptions=observable>(const<f64>(2.220446049250313e-16))));
+// DEFAULT-NEXT:                             write<f16, volatile>(%[[VALUE_expected_15]], float_narrow<f16, reason=excess_precision, rounding=nearest_even, exceptions=observable>(add<f32, rounding=nearest_even, exceptions=observable, contract=fast>(float_widen<f32, reason=excess_precision>(int_to_float<f16, reason=explicit, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1))), float_widen<f32, reason=excess_precision>(float_narrow<f16, reason=explicit, rounding=nearest_even, exceptions=observable>(const<f64>(2.220446049250313e-16))))));
 // DEFAULT-NEXT:                         if ne<f16, exceptions=observable>(read<f16, volatile>(%[[VALUE_b_15]]), read<f16, volatile>(%[[VALUE_expected_15]]))
 // DEFAULT-NEXT:                             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                     }
@@ -427,7 +427,7 @@ main (void)
 // DEFAULT-NEXT:                         if lt<i32>(const<i32>(11), const<i32>(113))
 // DEFAULT-NEXT:                             write<f16, volatile>(%[[VALUE_expected_22]], int_to_float<f16, reason=explicit, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
 // DEFAULT-NEXT:                         else
-// DEFAULT-NEXT:                             write<f16, volatile>(%[[VALUE_expected_22]], add<f16, rounding=nearest_even, exceptions=observable, contract=fast>(int_to_float<f16, reason=explicit, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)), float_narrow<f16, reason=explicit, rounding=nearest_even, exceptions=observable>(const<f128>(1.92592994438723585305597794258492732E-34))));
+// DEFAULT-NEXT:                             write<f16, volatile>(%[[VALUE_expected_22]], float_narrow<f16, reason=excess_precision, rounding=nearest_even, exceptions=observable>(add<f32, rounding=nearest_even, exceptions=observable, contract=fast>(float_widen<f32, reason=excess_precision>(int_to_float<f16, reason=explicit, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1))), float_widen<f32, reason=excess_precision>(float_narrow<f16, reason=explicit, rounding=nearest_even, exceptions=observable>(const<f128>(1.92592994438723585305597794258492732E-34))))));
 // DEFAULT-NEXT:                         if ne<f16, exceptions=observable>(read<f16, volatile>(%[[VALUE_b_22]]), read<f16, volatile>(%[[VALUE_expected_22]]))
 // DEFAULT-NEXT:                             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                     }
@@ -522,7 +522,7 @@ main (void)
 // DEFAULT-NEXT:                         if lt<i32>(const<i32>(11), const<i32>(53))
 // DEFAULT-NEXT:                             write<f16, volatile>(%[[VALUE_expected_29]], int_to_float<f16, reason=explicit, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
 // DEFAULT-NEXT:                         else
-// DEFAULT-NEXT:                             write<f16, volatile>(%[[VALUE_expected_29]], add<f16, rounding=nearest_even, exceptions=observable, contract=fast>(int_to_float<f16, reason=explicit, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)), float_narrow<f16, reason=explicit, rounding=nearest_even, exceptions=observable>(const<f64>(2.220446049250313e-16))));
+// DEFAULT-NEXT:                             write<f16, volatile>(%[[VALUE_expected_29]], float_narrow<f16, reason=excess_precision, rounding=nearest_even, exceptions=observable>(add<f32, rounding=nearest_even, exceptions=observable, contract=fast>(float_widen<f32, reason=excess_precision>(int_to_float<f16, reason=explicit, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1))), float_widen<f32, reason=excess_precision>(float_narrow<f16, reason=explicit, rounding=nearest_even, exceptions=observable>(const<f64>(2.220446049250313e-16))))));
 // DEFAULT-NEXT:                         if ne<f16, exceptions=observable>(read<f16, volatile>(%[[VALUE_b_29]]), read<f16, volatile>(%[[VALUE_expected_29]]))
 // DEFAULT-NEXT:                             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                     }
@@ -617,7 +617,7 @@ main (void)
 // DEFAULT-NEXT:                         if lt<i32>(const<i32>(11), const<i32>(64))
 // DEFAULT-NEXT:                             write<f16, volatile>(%[[VALUE_expected_36]], int_to_float<f16, reason=explicit, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
 // DEFAULT-NEXT:                         else
-// DEFAULT-NEXT:                             write<f16, volatile>(%[[VALUE_expected_36]], add<f16, rounding=nearest_even, exceptions=observable, contract=fast>(int_to_float<f16, reason=explicit, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)), float_narrow<f16, reason=explicit, rounding=nearest_even, exceptions=observable>(const<f80>(1.08420217248550443401E-19))));
+// DEFAULT-NEXT:                             write<f16, volatile>(%[[VALUE_expected_36]], float_narrow<f16, reason=excess_precision, rounding=nearest_even, exceptions=observable>(add<f32, rounding=nearest_even, exceptions=observable, contract=fast>(float_widen<f32, reason=excess_precision>(int_to_float<f16, reason=explicit, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1))), float_widen<f32, reason=excess_precision>(float_narrow<f16, reason=explicit, rounding=nearest_even, exceptions=observable>(const<f80>(1.08420217248550443401E-19))))));
 // DEFAULT-NEXT:                         if ne<f16, exceptions=observable>(read<f16, volatile>(%[[VALUE_b_36]]), read<f16, volatile>(%[[VALUE_expected_36]]))
 // DEFAULT-NEXT:                             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                     }
@@ -712,7 +712,7 @@ main (void)
 // DEFAULT-NEXT:                         if lt<i32>(const<i32>(11), const<i32>(24))
 // DEFAULT-NEXT:                             write<f16, volatile>(%[[VALUE_expected_43]], int_to_float<f16, reason=explicit, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
 // DEFAULT-NEXT:                         else
-// DEFAULT-NEXT:                             write<f16, volatile>(%[[VALUE_expected_43]], add<f16, rounding=nearest_even, exceptions=observable, contract=fast>(int_to_float<f16, reason=explicit, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)), float_narrow<f16, reason=explicit, rounding=nearest_even, exceptions=observable>(const<f32>(1.1920929e-7))));
+// DEFAULT-NEXT:                             write<f16, volatile>(%[[VALUE_expected_43]], float_narrow<f16, reason=excess_precision, rounding=nearest_even, exceptions=observable>(add<f32, rounding=nearest_even, exceptions=observable, contract=fast>(float_widen<f32, reason=excess_precision>(int_to_float<f16, reason=explicit, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1))), float_widen<f32, reason=excess_precision>(float_narrow<f16, reason=explicit, rounding=nearest_even, exceptions=observable>(const<f32>(1.1920929e-7))))));
 // DEFAULT-NEXT:                         if ne<f16, exceptions=observable>(read<f16, volatile>(%[[VALUE_b_43]]), read<f16, volatile>(%[[VALUE_expected_43]]))
 // DEFAULT-NEXT:                             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                     }

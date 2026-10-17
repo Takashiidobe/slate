@@ -62,10 +62,10 @@ int main(void) {
 // DEFAULT-NEXT:     global %[[VALUE_str_3:[0-9]+]] .str[[VALUE_str_3]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_add16:[0-9]+]] @add16(%[[VALUE_a:[0-9]+]] a: f16, %[[VALUE_b:[0-9]+]] b: f16) -> f16 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return add<f16, rounding=nearest_even, exceptions=ignore, contract=on>(read<f16>(%[[VALUE_a]]), read<f16>(%[[VALUE_b]]));
+// DEFAULT-NEXT:         return float_narrow<f16, reason=excess_precision, rounding=nearest_even, exceptions=ignore>(add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(float_widen<f32, reason=excess_precision>(read<f16>(%[[VALUE_a]])), float_widen<f32, reason=excess_precision>(read<f16>(%[[VALUE_b]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_mul16:[0-9]+]] @mul16(%[[VALUE_a_2:[0-9]+]] a: f16, %[[VALUE_b_2:[0-9]+]] b: f16) -> f16 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return mul<f16, rounding=nearest_even, exceptions=ignore, contract=on>(read<f16>(%[[VALUE_a_2]]), read<f16>(%[[VALUE_b_2]]));
+// DEFAULT-NEXT:         return float_narrow<f16, reason=excess_precision, rounding=nearest_even, exceptions=ignore>(mul<f32, rounding=nearest_even, exceptions=ignore, contract=on>(float_widen<f32, reason=excess_precision>(read<f16>(%[[VALUE_a_2]])), float_widen<f32, reason=excess_precision>(read<f16>(%[[VALUE_b_2]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_sum_variadic:[0-9]+]] @sum_variadic(%[[VALUE_n:[0-9]+]] n: i32, ...) -> f16 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_ap:[0-9]+]] ap: va_list [storage=automatic];
@@ -83,7 +83,7 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     write<f16>(%[[VALUE_total]], add<f16, rounding=nearest_even, exceptions=ignore, contract=on>(read<f16>(%[[VALUE_total]]), va_arg<f16>(%[[VALUE_ap]])));
+// DEFAULT-NEXT:                     write<f16>(%[[VALUE_total]], float_narrow<f16, reason=excess_precision, rounding=nearest_even, exceptions=ignore>(add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(float_widen<f32, reason=excess_precision>(read<f16>(%[[VALUE_total]])), float_widen<f32, reason=excess_precision>(va_arg<f16>(%[[VALUE_ap]])))));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap]]);
 // DEFAULT-NEXT:         return read<f16>(%[[VALUE_total]]);

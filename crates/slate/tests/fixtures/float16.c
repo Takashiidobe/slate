@@ -34,10 +34,10 @@ int main(void) {
 // CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn add16(a: f16, b: f16) -> f16 {
-// CHECK-NEXT:     a + b
+// CHECK-NEXT:     ((a as f32) + (b as f32)) as f16
 // CHECK-NEXT: }
 // CHECK-NEXT: fn mul16(a: f16, b: f16) -> f16 {
-// CHECK-NEXT:     a * b
+// CHECK-NEXT:     ((a as f32) * (b as f32)) as f16
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C-unwind" fn sum_variadic(n: i32, mut __va_args: ...) -> f16 {
 // CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { std::mem::zeroed() };
@@ -49,7 +49,9 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut total: f16 = (0 as i32) as f16;
 // CHECK-NEXT:     for i in 0..n {
-// CHECK-NEXT:         total += unsafe { f16::from_bits(ap.next_arg::<f64>().to_bits() as u16) };
+// CHECK-NEXT:         total = ((total as f32)
+// CHECK-NEXT:             + ((unsafe { f16::from_bits(ap.next_arg::<f64>().to_bits() as u16) })
+// CHECK-NEXT:                 as f32)) as f16;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     {}
 // CHECK-NEXT:     total

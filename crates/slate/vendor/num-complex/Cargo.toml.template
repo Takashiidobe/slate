@@ -15,6 +15,7 @@ rust-version = "1.85"
 name = "num-complex"
 version = "0.4.6"
 authors = ["The Rust Project Developers"]
+build = "build.rs"
 exclude = [
     "/ci/*",
     "/.github/*",
@@ -56,9 +57,12 @@ version = "1"
 optional = true
 
 [dependencies.num-traits]
-version = "0.2.18"
+path = "../num-traits"
 features = ["i128"]
 default-features = false
+
+[build-dependencies.autocfg]
+version = "1"
 
 [dependencies.rand]
 version = "0.8"

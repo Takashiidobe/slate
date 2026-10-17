@@ -7,6 +7,7 @@
 - [Conversions](#conversions)
   - [Who decides](#who-decides)
   - [Promotions stay visible](#promotions-stay-visible)
+  - [`_Float16` excess precision](#_float16-excess-precision)
 - [Operator rules checked in sema](#operator-rules-checked-in-sema)
 <!-- /toc -->
 
@@ -144,6 +145,26 @@ return truncate<i16, reason=return, fits=unknown>(add<i32, overflow=ub>(widen<i3
 `s` really is stored as `i16`, so widen and truncate stay; the metadata lets
 Slate choose `wrapping_add` or retype `s` once analysis proves every store
 fits.
+
+### `_Float16` excess precision
+
+Clang evaluates `_Float16` (and `_Complex _Float16`) `+ - * /` in `float`
+and rounds to half once, at the end of a chain of such operators, on every
+target except aarch64, whose default CPUs have native half arithmetic
+(`TargetInfo::float16_excess_precision`). Sema spells this out: each
+operator widens its half operands with `reason=excess_precision`, computes
+in `f32`/`complex<f32>`, and narrows the result with the same reason. An
+operand that is already such a narrow is unwrapped, so `a * b + c` rounds
+once:
+
+```text
+float_narrow<f16, reason=excess_precision>(add<f32>(mul<f32>(float_widen<f32, reason=excess_precision>(read<f16>(%1)), ...), ...))
+```
+
+Unary `-` joins a chain only when its operand is one. Comparisons, stores,
+and explicit casts see the rounded half value: a same-type cast retags the
+narrow as `reason=explicit`, which ends the chain like clang's
+`(_Float16)(a * b)`.
 
 ## Operator rules checked in sema
 
