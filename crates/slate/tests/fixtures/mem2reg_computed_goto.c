@@ -21,12 +21,6 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN
 // CHECK-LABEL: {{^}}fn walk(mut position: *mut i32) {
-// CHECK-NEXT:     let mut [[SLATE_STORAGE_0:__slate_storage_[0-9]+]]: std::mem::MaybeUninit<*mut i32> = std::mem::MaybeUninit::uninit();
-// CHECK-NEXT:     let [[SLATE_SLOT_0:__slate_slot_[0-9]+]]: *mut *mut i32 = std::ptr::addr_of_mut!([[SLATE_STORAGE_0]])
-// CHECK-NEXT:         as *mut *mut i32;
-// CHECK-NEXT:     let mut [[SLATE_STORAGE_1:__slate_storage_[0-9]+]]: std::mem::MaybeUninit<*mut i32> = std::mem::MaybeUninit::uninit();
-// CHECK-NEXT:     let [[SLATE_SLOT_1:__slate_slot_[0-9]+]]: *mut *mut i32 = std::ptr::addr_of_mut!([[SLATE_STORAGE_1]])
-// CHECK-NEXT:         as *mut *mut i32;
 // CHECK-NEXT:     let mut __slate_state: usize = 2usize;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         loop {
@@ -35,12 +29,8 @@ int main(void) {
 // CHECK-NEXT:                     return;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 1 => {
-// CHECK-NEXT:                     std::ptr::write([[SLATE_SLOT_1]], position);
-// CHECK-NEXT:                     std::ptr::write(
-// CHECK-NEXT:                         [[SLATE_SLOT_0]],
-// CHECK-NEXT:                         unsafe { (*[[SLATE_SLOT_1]]).offset((1 as i32) as isize) },
-// CHECK-NEXT:                     );
-// CHECK-NEXT:                     position = *[[SLATE_SLOT_0]];
+// CHECK-NEXT:                     let [[V_0:__v[0-9]+]]: *mut i32 = position;
+// CHECK-NEXT:                     position = unsafe { [[V_0]].offset((1 as i32) as isize) };
 // CHECK-NEXT:                     match (unsafe { labels.0[(unsafe { *position }) as usize] }) as usize
 // CHECK-NEXT:                     {
 // CHECK-NEXT:                         4 => {

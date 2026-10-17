@@ -40,25 +40,18 @@ done:
 
 // SLATE-FILECHECK-BEGIN
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut [[SLATE_STORAGE_0:__slate_storage_[0-9]+]]: std::mem::MaybeUninit<i32> = std::mem::MaybeUninit::uninit();
-// CHECK-NEXT:     let [[SLATE_SLOT_0:__slate_slot_[0-9]+]]: *mut i32 = std::ptr::addr_of_mut!([[SLATE_STORAGE_0]])
-// CHECK-NEXT:         as *mut i32;
-// CHECK-NEXT:     let mut [[SLATE_STORAGE_1:__slate_storage_[0-9]+]]: std::mem::MaybeUninit<i32> = std::mem::MaybeUninit::uninit();
-// CHECK-NEXT:     let [[SLATE_SLOT_1:__slate_slot_[0-9]+]]: *mut i32 = std::ptr::addr_of_mut!([[SLATE_STORAGE_1]])
-// CHECK-NEXT:         as *mut i32;
-// CHECK-NEXT:     let mut [[SLATE_STORAGE_2:__slate_storage_[0-9]+]]: std::mem::MaybeUninit<i32> = std::mem::MaybeUninit::uninit();
-// CHECK-NEXT:     let [[SLATE_SLOT_2:__slate_slot_[0-9]+]]: *mut i32 = std::ptr::addr_of_mut!([[SLATE_STORAGE_2]])
-// CHECK-NEXT:         as *mut i32;
-// CHECK-NEXT:     let mut [[SLATE_STORAGE_3:__slate_storage_[0-9]+]]: std::mem::MaybeUninit<i32> = std::mem::MaybeUninit::uninit();
-// CHECK-NEXT:     let [[SLATE_SLOT_3:__slate_slot_[0-9]+]]: *mut i32 = std::ptr::addr_of_mut!([[SLATE_STORAGE_3]]) as *mut i32;
+// CHECK-NEXT:     let mut y: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut x: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut pick_b: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut pick_a: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     let mut __slate_state: usize = 6usize;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         '[[JOIN_0:__join_[0-9]+]]: {
-// CHECK-NEXT:             std::ptr::write([[SLATE_SLOT_3]], 1 as i32);
-// CHECK-NEXT:             std::ptr::write([[SLATE_SLOT_2]], 0 as i32);
-// CHECK-NEXT:             std::ptr::write([[SLATE_SLOT_1]], 0 as i32);
-// CHECK-NEXT:             std::ptr::write([[SLATE_SLOT_0]], 0 as i32);
-// CHECK-NEXT:             if (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(* [[SLATE_SLOT_3]])) })
+// CHECK-NEXT:             pick_a = 1 as i32;
+// CHECK-NEXT:             pick_b = 0 as i32;
+// CHECK-NEXT:             x = 0 as i32;
+// CHECK-NEXT:             y = 0 as i32;
+// CHECK-NEXT:             if (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(pick_a)) })
 // CHECK-NEXT:                 != (0 as i32)
 // CHECK-NEXT:             {
 // CHECK-NEXT:                 __slate_state = 4;
@@ -69,16 +62,16 @@ done:
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             match __slate_state {
 // CHECK-NEXT:                 4 => {
-// CHECK-NEXT:                     *[[SLATE_SLOT_1]] += 2 as i32;
-// CHECK-NEXT:                     if *[[SLATE_SLOT_1]] < (4 as i32) {
+// CHECK-NEXT:                     x += 2 as i32;
+// CHECK-NEXT:                     if x < (4 as i32) {
 // CHECK-NEXT:                         __slate_state = 5;
 // CHECK-NEXT:                     } else {
 // CHECK-NEXT:                         break;
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 _ => {
-// CHECK-NEXT:                     *[[SLATE_SLOT_1]] += 1 as i32;
-// CHECK-NEXT:                     if *[[SLATE_SLOT_1]] < (3 as i32) {
+// CHECK-NEXT:                     x += 1 as i32;
+// CHECK-NEXT:                     if x < (3 as i32) {
 // CHECK-NEXT:                         __slate_state = 4;
 // CHECK-NEXT:                     } else {
 // CHECK-NEXT:                         break;
@@ -86,8 +79,7 @@ done:
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(* [[SLATE_SLOT_2]])) })
-// CHECK-NEXT:             != (0 as i32)
+// CHECK-NEXT:         if (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(pick_b)) }) != (0 as i32)
 // CHECK-NEXT:         {
 // CHECK-NEXT:             __slate_state = 1;
 // CHECK-NEXT:         } else {
@@ -96,16 +88,16 @@ done:
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             match __slate_state {
 // CHECK-NEXT:                 1 => {
-// CHECK-NEXT:                     *[[SLATE_SLOT_0]] += 5 as i32;
-// CHECK-NEXT:                     if *[[SLATE_SLOT_0]] < (11 as i32) {
+// CHECK-NEXT:                     y += 5 as i32;
+// CHECK-NEXT:                     if y < (11 as i32) {
 // CHECK-NEXT:                         __slate_state = 2;
 // CHECK-NEXT:                     } else {
 // CHECK-NEXT:                         break;
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 _ => {
-// CHECK-NEXT:                     *[[SLATE_SLOT_0]] += 3 as i32;
-// CHECK-NEXT:                     if *[[SLATE_SLOT_0]] < (9 as i32) {
+// CHECK-NEXT:                     y += 3 as i32;
+// CHECK-NEXT:                     if y < (9 as i32) {
 // CHECK-NEXT:                         __slate_state = 1;
 // CHECK-NEXT:                     } else {
 // CHECK-NEXT:                         break;
@@ -113,10 +105,9 @@ done:
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
-// CHECK-NEXT:         println!("{} {}", * [[SLATE_SLOT_1]], * [[SLATE_SLOT_0]]);
+// CHECK-NEXT:         println!("{} {}", x, y);
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         return 0 as i32;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     0
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

@@ -87,11 +87,10 @@ int main(void) {
 // CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: _IO_cookie_io_functions_t = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut stream: *mut _IO_FILE = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     let mut total: i32 = 0 as i32;
 // CHECK-NEXT:     functions.write = Some(gnu_cookie_write);
 // CHECK-NEXT:     functions.close = Some(gnu_cookie_close);
-// CHECK-NEXT:     stream = unsafe {
+// CHECK-NEXT:     let stream: *mut _IO_FILE = unsafe {
 // CHECK-NEXT:         fopencookie(
 // CHECK-NEXT:             std::ptr::addr_of_mut!(cookie) as *mut (),
 // CHECK-NEXT:             c"w".as_ptr() as *const i8,

@@ -104,6 +104,93 @@ fn final_return(arena: &Arena, id: NodeId) -> bool {
             .unwrap_or(false)
 }
 
+fn last_statement(arena: &Arena, list: &[NodeId]) -> Option<NodeId> {
+    list.iter()
+        .rev()
+        .find(|&&child| !matches!(arena.get(child), Some(NodeKind::Comment(_))))
+        .copied()
+}
+
+fn diverges(arena: &Arena, id: NodeId) -> bool {
+    match arena.get(id) {
+        Some(NodeKind::Return(_)) => true,
+        Some(
+            kind @ (NodeKind::Unsafe { tail: None, .. }
+            | NodeKind::Block { tail: None, .. }
+            | NodeKind::Scope { .. }),
+        ) => kind
+            .child_lists()
+            .first()
+            .and_then(|list| last_statement(arena, list))
+            .is_some_and(|last| diverges(arena, last)),
+        Some(kind @ NodeKind::If { .. }) => {
+            let lists = kind.child_lists();
+            lists.len() == 2
+                && lists.iter().all(|list| {
+                    last_statement(arena, list).is_some_and(|last| diverges(arena, last))
+                })
+        }
+        _ => false,
+    }
+}
+
+fn unreachable_after(arena: &Arena, id: NodeId) -> Vec<NodeId> {
+    if !diverges(arena, id) {
+        return Vec::new();
+    }
+    let Some((parent, list_index, pos)) = position(arena, id) else {
+        return Vec::new();
+    };
+    arena
+        .get(parent)
+        .and_then(|kind| {
+            kind.child_lists()
+                .get(list_index)
+                .map(|list| list[pos + 1..].to_vec())
+        })
+        .unwrap_or_default()
+        .into_iter()
+        .filter(|&sibling| !matches!(arena.get(sibling), Some(NodeKind::Comment(_))))
+        .collect()
+}
+
+pub(in crate::backend::engine) struct UnreachableAfterReturn;
+
+impl NodeRule for UnreachableAfterReturn {
+    fn name(&self) -> &'static str {
+        "return_cleanup::unreachable"
+    }
+
+    fn priority(&self) -> u32 {
+        39
+    }
+
+    fn kinds(&self) -> &'static [NodeKindTag] {
+        &[
+            NodeKindTag::Return,
+            NodeKindTag::Unsafe,
+            NodeKindTag::Block,
+            NodeKindTag::Scope,
+            NodeKindTag::If,
+        ]
+    }
+
+    fn matches(&self, arena: &FunctionOptimizer, id: NodeId) -> bool {
+        !unreachable_after(arena, id).is_empty()
+    }
+
+    fn apply(&self, arena: &mut FunctionOptimizer, id: NodeId) -> bool {
+        let dead = unreachable_after(arena, id);
+        if dead.is_empty() {
+            return false;
+        }
+        for sibling in dead {
+            arena.retire_subtree(sibling, None);
+        }
+        true
+    }
+}
+
 pub(in crate::backend::engine) struct ReturnSlotFold;
 
 impl NodeRule for ReturnSlotFold {

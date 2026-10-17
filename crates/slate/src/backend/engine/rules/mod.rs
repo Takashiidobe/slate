@@ -17,6 +17,7 @@ mod raw_ptr_alias;
 mod remove_mut;
 mod return_cleanup;
 mod singleton_scopes;
+mod slot_promote;
 mod structure_dispatch;
 mod structure_goto;
 mod walk;
@@ -44,10 +45,13 @@ pub(super) fn registry(target: &slate_parser::target_info::TargetInfo) -> Vec<Bo
     let mut rules = control_flow_registry();
     rules.extend(vec![
         Box::new(remove_mut::RemoveMut) as Box<dyn NodeRule>,
+        Box::new(slot_promote::SlotPromote),
+        Box::new(slot_promote::DeclSink),
         Box::new(zero_init::ZeroInitFold),
         Box::new(param_spills::ParamSpillFold),
         Box::new(raw_ptr_alias::RawPtrAliasElide),
         Box::new(array_iter::ForArrayIterRecover),
+        Box::new(return_cleanup::UnreachableAfterReturn),
         Box::new(return_cleanup::ReturnSlotFold),
         Box::new(bool_ternary::BoolTernaryFold),
         Box::new(inline_temps::LateInlineTemps),

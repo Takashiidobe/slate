@@ -24,38 +24,33 @@ second:
 
 // SLATE-FILECHECK-BEGIN
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut [[SLATE_STORAGE_0:__slate_storage_[0-9]+]]: std::mem::MaybeUninit<i32> = std::mem::MaybeUninit::uninit();
-// CHECK-NEXT:     let [[SLATE_SLOT_0:__slate_slot_[0-9]+]]: *mut i32 = std::ptr::addr_of_mut!([[SLATE_STORAGE_0]]) as *mut i32;
-// CHECK-NEXT:     let mut [[SLATE_STORAGE_1:__slate_storage_[0-9]+]]: std::mem::MaybeUninit<i32> = std::mem::MaybeUninit::uninit();
-// CHECK-NEXT:     let [[SLATE_SLOT_1:__slate_slot_[0-9]+]]: *mut i32 = std::ptr::addr_of_mut!([[SLATE_STORAGE_1]]) as *mut i32;
-// CHECK-NEXT:     let mut [[SLATE_STORAGE_2:__slate_storage_[0-9]+]]: std::mem::MaybeUninit<i32> = std::mem::MaybeUninit::uninit();
-// CHECK-NEXT:     let [[SLATE_SLOT_2:__slate_slot_[0-9]+]]: *mut i32 = std::ptr::addr_of_mut!([[SLATE_STORAGE_2]]) as *mut i32;
-// CHECK-NEXT:     let mut [[SLATE_STORAGE_3:__slate_storage_[0-9]+]]: std::mem::MaybeUninit<i32> = std::mem::MaybeUninit::uninit();
-// CHECK-NEXT:     let [[SLATE_SLOT_3:__slate_slot_[0-9]+]]: *mut i32 = std::ptr::addr_of_mut!([[SLATE_STORAGE_3]]) as *mut i32;
+// CHECK-NEXT:     let mut prod: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut sum: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut k: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut i: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::ptr::write([[SLATE_SLOT_3]], 0 as i32);
-// CHECK-NEXT:         std::ptr::write([[SLATE_SLOT_2]], 0 as i32);
-// CHECK-NEXT:         std::ptr::write([[SLATE_SLOT_1]], 0 as i32);
-// CHECK-NEXT:         std::ptr::write([[SLATE_SLOT_0]], 1 as i32);
+// CHECK-NEXT:         i = 0 as i32;
+// CHECK-NEXT:         k = 0 as i32;
+// CHECK-NEXT:         sum = 0 as i32;
+// CHECK-NEXT:         prod = 1 as i32;
 // CHECK-NEXT:         loop {
-// CHECK-NEXT:             *[[SLATE_SLOT_1]] += *[[SLATE_SLOT_3]];
-// CHECK-NEXT:             *[[SLATE_SLOT_3]] += 1 as i32;
-// CHECK-NEXT:             if !(*[[SLATE_SLOT_3]] < (5 as i32)) {
+// CHECK-NEXT:             sum += i;
+// CHECK-NEXT:             i += 1 as i32;
+// CHECK-NEXT:             if !(i < (5 as i32)) {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
-// CHECK-NEXT:         *[[SLATE_SLOT_2]] = 1 as i32;
+// CHECK-NEXT:         k = 1 as i32;
 // CHECK-NEXT:         loop {
-// CHECK-NEXT:             *[[SLATE_SLOT_0]] *= *[[SLATE_SLOT_2]];
-// CHECK-NEXT:             *[[SLATE_SLOT_2]] += 1 as i32;
-// CHECK-NEXT:             if !(*[[SLATE_SLOT_2]] < (5 as i32)) {
+// CHECK-NEXT:             prod *= k;
+// CHECK-NEXT:             k += 1 as i32;
+// CHECK-NEXT:             if !(k < (5 as i32)) {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
-// CHECK-NEXT:         println!("{} {}", * [[SLATE_SLOT_1]], * [[SLATE_SLOT_0]]);
+// CHECK-NEXT:         println!("{} {}", sum, prod);
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         return 0 as i32;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     0
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

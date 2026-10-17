@@ -65,7 +65,6 @@ int main(void) {
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         return 0 as i32;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { std::mem::zeroed() }
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn absent_check() -> i32 {
 // CHECK-NEXT:     unsafe { unsetenv(c"SLATE_GETENV_FIXTURE_ABSENT".as_ptr() as *const i8) };
@@ -77,7 +76,6 @@ int main(void) {
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         return 0 as i32;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { std::mem::zeroed() }
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn rejected_check() -> i32 {
 // CHECK-NEXT:     unsafe {

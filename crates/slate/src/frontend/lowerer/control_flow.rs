@@ -500,7 +500,7 @@ impl FunctionLowerer<'_, '_> {
                 }
                 None => ty.clone(),
             };
-            let storage = format!("__slate_storage_{}", id.0);
+            let storage = binding_name(id, &self.tables.bindings).to_string();
             storage_positions.insert(id, lowered.len());
             lowered.push(Stmt::Let {
                 name: storage.clone(),

@@ -28,10 +28,9 @@ int main(void) {
 // CHECK-NEXT:     let mut index: i32 = 0 as i32;
 // CHECK-NEXT:     let mut old: i64 = 0 as i64;
 // CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: i64;
-// CHECK-NEXT:     let mut exchange_pointer: *mut i64 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i32 = index;
 // CHECK-NEXT:     index = [[V_1]] + (1 as i32);
-// CHECK-NEXT:     exchange_pointer = unsafe {
+// CHECK-NEXT:     let exchange_pointer: *mut i64 = unsafe {
 // CHECK-NEXT:         (values.0.as_mut_ptr() as *mut i64).offset([[V_1]] as isize)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let exchange_value: i64 = unsafe { *exchange_pointer };
