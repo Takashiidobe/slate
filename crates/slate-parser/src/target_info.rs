@@ -158,6 +158,7 @@ impl Default for TargetAbi {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ScalarLayouts {
     entries: BTreeMap<ScalarKey, StorageLayout>,
+    bit_precise_max_alignment: u32,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
@@ -209,7 +210,10 @@ impl ScalarLayouts {
                 },
             );
         }
-        Self { entries }
+        Self {
+            entries,
+            bit_precise_max_alignment: 8,
+        }
     }
 
     fn for_family(family: TargetFamily) -> Self {
@@ -222,9 +226,11 @@ impl ScalarLayouts {
                 }
                 layouts.set(ScalarKey::Float(FloatType::F64), 8, 4);
                 layouts.set(ScalarKey::Float(FloatType::F80), 12, 4);
+                layouts.bit_precise_max_alignment = 4;
             }
             TargetFamily::AArch64 => {
                 layouts.entries.remove(&ScalarKey::Float(FloatType::F80));
+                layouts.bit_precise_max_alignment = 16;
             }
             TargetFamily::Arm32 => {
                 layouts.entries.remove(&ScalarKey::Float(FloatType::F80));
@@ -268,11 +274,10 @@ impl ScalarLayouts {
         {
             return Some(layout);
         }
-        let widest = integer(64)?;
-        let alignment = u64::from(widest.alignment_bytes);
+        let alignment = u64::from(self.bit_precise_max_alignment);
         Some(StorageLayout {
             size_bytes: u64::from(width).div_ceil(8).div_ceil(alignment) * alignment,
-            alignment_bytes: widest.alignment_bytes,
+            alignment_bytes: self.bit_precise_max_alignment,
         })
     }
 }

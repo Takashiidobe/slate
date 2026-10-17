@@ -124,7 +124,11 @@ The shown type is concrete and target-resolved; the C type is metadata
 - Distinct from the standard integer of the same width; prints with a `b`
   suffix. On x86-64 `__int128` is `i128` (16/16) and `_BitInt(128)` is
   `i128b` (16/8). arm32 rejects `__int128` but accepts `_BitInt(128)`.
-  Layout: `ScalarLayouts::bit_precise`.
+  Layout: `ScalarLayouts::bit_precise`. N <= 64 takes the smallest
+  standard integer layout that holds it. N > 64 has clang's
+  `BitIntMaxAlign`: 8 on x86-64 and arm32, 4 on i686, 16 on AArch64. Its
+  size is the bytes rounded up to that alignment (`_BitInt(129)` is 24/8,
+  20/4, 32/16). clang caps AArch64 at 128 bits; gcc does not.
 - Rules apply in every standard mode: clang and gcc accept `_BitInt` as an
   extension before C23 with identical results.
 - `wb`/`uwb` literals take the narrowest fitting width (`1wb` is `i2b`,
@@ -202,6 +206,12 @@ The shown type is concrete and target-resolved; the C type is metadata
   clang's record-layout dump.
 - ARM lets zero-width bit-fields raise record alignment, packed records
   included; x86 does not.
+- A bit-field starts at the current bit unless `offset % align + width >
+  size` (bits of its declared type's natural alignment and size), in which
+  case it moves to the next `align` boundary. This is the clang and gcc
+  rule. It differs from "never cross a `size` boundary" when size exceeds
+  alignment: `long long b : 40` at bit 40 stays put on i686, and
+  `_BitInt(N > 64)` fields pack across 64-bit words.
 - A trailing flexible array member (or, GNU, an incomplete array anywhere
   in a union) has size 0 and the element's alignment. Its initialized extent
   lives on the initializer ([initialization](initialization.md#flexible-array-members)).

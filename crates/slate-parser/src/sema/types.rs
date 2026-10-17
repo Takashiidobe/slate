@@ -3712,10 +3712,10 @@ impl TypeResolver {
                             .checked_mul(8)
                             .ok_or(ResolveError::Rejected("field alignment overflow"))?,
                     )?;
-                    let last_bit = end_bits
-                        .checked_add(u64::from(width) - 1)
-                        .ok_or(ResolveError::Rejected("record size overflow"))?;
-                    if end_bits == 0 || end_bits / unit_bits != last_bit / unit_bits {
+                    let natural_bits = natural
+                        .checked_mul(8)
+                        .ok_or(ResolveError::Rejected("field alignment overflow"))?;
+                    if end_bits % natural_bits + u64::from(width) > unit_bits {
                         boundary
                     } else {
                         end_bits
