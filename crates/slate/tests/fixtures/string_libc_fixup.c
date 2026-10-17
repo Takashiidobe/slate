@@ -27,3 +27,114 @@ int main(void) {
   printf("%d\n", strchr(utf8, second_byte) != 0);
   return 0;
 }
+
+// SLATE-FILECHECK-BEGIN
+// CHECK: {{^}}#![allow(non_camel_case_types)]
+// CHECK-NEXT: #![no_main]
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn memcmp(__s1: *const (), __s2: *const (), __n: u64) -> i32;
+// CHECK-NEXT:     fn strcmp(__s1: *const i8, __s2: *const i8) -> i32;
+// CHECK-NEXT:     fn strncmp(__s1: *const i8, __s2: *const i8, __n: u64) -> i32;
+// CHECK-NEXT:     fn strchr(__s: *const i8, __c: i32) -> *mut i8;
+// CHECK-NEXT:     fn strrchr(__s: *const i8, __c: i32) -> *mut i8;
+// CHECK-NEXT:     fn strcspn(__s: *const i8, __reject: *const i8) -> u64;
+// CHECK-NEXT:     fn strspn(__s: *const i8, __accept: *const i8) -> u64;
+// CHECK-NEXT:     fn strpbrk(__s: *const i8, __accept: *const i8) -> *mut i8;
+// CHECK-NEXT:     fn strstr(__haystack: *const i8, __needle: *const i8) -> *mut i8;
+// CHECK-NEXT:     fn strlen(__s: *const i8) -> u64;
+// CHECK-NEXT: }
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT: }
+// CHECK-NEXT: fn __slate_main() -> i32 {
+// CHECK-NEXT:     let mut alpha: [i8; 4] = [97, 98, 99, 0];
+// CHECK-NEXT:     let mut beta: [i8; 4] = [97, 98, 100, 0];
+// CHECK-NEXT:     let mut bytes_a: [u8; 3] = [255, 1, 0];
+// CHECK-NEXT:     let mut bytes_b: [u8; 3] = [255, 2, 0];
+// CHECK-NEXT:     let mut hay: [i8; 7] = [97, 98, 97, 99, 97, 100, 0];
+// CHECK-NEXT:     let mut sub: [i8; 4] = [97, 99, 97, 0];
+// CHECK-NEXT:     let mut empty: [i8; 1] = [0];
+// CHECK-NEXT:     let mut set: [i8; 3] = [99, 120, 0];
+// CHECK-NEXT:     let mut prefix: [i8; 3] = [97, 98, 0];
+// CHECK-NEXT:     let mut reject: [i8; 3] = [99, 100, 0];
+// CHECK-NEXT:     let mut utf8: [i8; 4] = [104, -61, -87, 0];
+// CHECK-NEXT:     let second_byte: i32 = 169;
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         printf(
+// CHECK-NEXT:             c"%zu %d %d %d %d\n".as_ptr(),
+// CHECK-NEXT:             unsafe { strlen(alpha.as_mut_ptr() as *const i8) },
+// CHECK-NEXT:             ((unsafe {
+// CHECK-NEXT:                 strcmp(alpha.as_mut_ptr() as *const i8, alpha.as_mut_ptr() as *const i8)
+// CHECK-NEXT:             }) == 0) as i32,
+// CHECK-NEXT:             ((unsafe {
+// CHECK-NEXT:                 strcmp(alpha.as_mut_ptr() as *const i8, beta.as_mut_ptr() as *const i8)
+// CHECK-NEXT:             }) < 0) as i32,
+// CHECK-NEXT:             ((unsafe {
+// CHECK-NEXT:                 strncmp(
+// CHECK-NEXT:                     alpha.as_mut_ptr() as *const i8,
+// CHECK-NEXT:                     beta.as_mut_ptr() as *const i8,
+// CHECK-NEXT:                     2 as u64,
+// CHECK-NEXT:                 )
+// CHECK-NEXT:             }) == 0) as i32,
+// CHECK-NEXT:             ((unsafe {
+// CHECK-NEXT:                 memcmp(
+// CHECK-NEXT:                     bytes_a.as_mut_ptr() as *const (),
+// CHECK-NEXT:                     bytes_b.as_mut_ptr() as *const (),
+// CHECK-NEXT:                     1 as u64,
+// CHECK-NEXT:                 )
+// CHECK-NEXT:             }) == 0) as i32,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     let first: *mut i8 = unsafe { strchr(hay.as_mut_ptr() as *const i8, 97 as i32) };
+// CHECK-NEXT:     let last: *mut i8 = unsafe { strrchr(hay.as_mut_ptr() as *const i8, 97 as i32) };
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         printf(
+// CHECK-NEXT:             c"%c %c %d %d %d %d %zu %zu\n".as_ptr(),
+// CHECK-NEXT:             (unsafe { *first }) as i32,
+// CHECK-NEXT:             (unsafe { *last }) as i32,
+// CHECK-NEXT:             (last == unsafe { first.offset(4 as isize) }) as i32,
+// CHECK-NEXT:             ((unsafe {
+// CHECK-NEXT:                 strstr(hay.as_mut_ptr() as *const i8, sub.as_mut_ptr() as *const i8)
+// CHECK-NEXT:             }) != std::ptr::null_mut::<i8>()) as i32,
+// CHECK-NEXT:             ((unsafe {
+// CHECK-NEXT:                 strstr(hay.as_mut_ptr() as *const i8, empty.as_mut_ptr() as *const i8)
+// CHECK-NEXT:             }) != std::ptr::null_mut::<i8>()) as i32,
+// CHECK-NEXT:             ((unsafe {
+// CHECK-NEXT:                 strpbrk(hay.as_mut_ptr() as *const i8, set.as_mut_ptr() as *const i8)
+// CHECK-NEXT:             }) == std::ptr::null_mut::<i8>()) as i32,
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 strspn(hay.as_mut_ptr() as *const i8, prefix.as_mut_ptr() as *const i8)
+// CHECK-NEXT:             },
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 strcspn(hay.as_mut_ptr() as *const i8, reject.as_mut_ptr() as *const i8)
+// CHECK-NEXT:             },
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     let __slate_printf_arg0 = ((unsafe {
+// CHECK-NEXT:         strchr(hay.as_mut_ptr() as *const i8, 0 as i32)
+// CHECK-NEXT:     }) != std::ptr::null_mut::<i8>()) as i32;
+// CHECK-NEXT:     let __slate_printf_arg1 = ((unsafe {
+// CHECK-NEXT:         strchr(hay.as_mut_ptr() as *const i8, 122 as i32)
+// CHECK-NEXT:     }) == std::ptr::null_mut::<i8>()) as i32;
+// CHECK-NEXT:     println!("{} {}", __slate_printf_arg0, __slate_printf_arg1);
+// CHECK-NEXT:     let __slate_printf_arg0 = ((unsafe {
+// CHECK-NEXT:         strchr(utf8.as_mut_ptr() as *const i8, second_byte)
+// CHECK-NEXT:     }) != std::ptr::null_mut::<i8>()) as i32;
+// CHECK-NEXT:     println!("{}", __slate_printf_arg0);
+// CHECK-NEXT:     0
+// CHECK-NEXT: }
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: unsafe extern "C-unwind" fn main(
+// CHECK-NEXT:     argc: i32,
+// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT: ) -> i32 {
+// CHECK-NEXT:     unsafe { __slate_main() }
+// CHECK-NEXT: }
+// CHECK-NOT: {{.}}
+// SLATE-FILECHECK-END

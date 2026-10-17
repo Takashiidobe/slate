@@ -11,3 +11,41 @@ int main(void) {
   printf("%d\n", address_probe());
   return 0;
 }
+
+// SLATE-FILECHECK-BEGIN
+// CHECK: {{^}}#![allow(non_camel_case_types)]
+// CHECK-NEXT: #![feature(link_llvm_intrinsics)]
+// CHECK-NEXT: #![no_main]
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT: }
+// CHECK-NEXT: unsafe extern "llvm-intrinsic" {
+// CHECK-NEXT:     #[link_name = "llvm.frameaddress.p0"]
+// CHECK-NEXT:     fn __slate_intrinsic_2d7c29df8fdf6378([[ARG_0:arg[0-9]+]]: i32) -> *mut ();
+// CHECK-NEXT:     #[link_name = "llvm.returnaddress.p0"]
+// CHECK-NEXT:     fn __slate_intrinsic_ded315013ea6523([[ARG_0]]: i32) -> *mut ();
+// CHECK-NEXT: }
+// CHECK-NEXT: fn address_probe() -> i32 {
+// CHECK-NEXT:     let return_address: *mut () = unsafe {
+// CHECK-NEXT:         __slate_intrinsic_ded315013ea6523(const { ((0 as i32) as u32) as i32 })
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let frame_address: *mut () = unsafe {
+// CHECK-NEXT:         __slate_intrinsic_2d7c29df8fdf6378(const { ((0 as i32) as u32) as i32 })
+// CHECK-NEXT:     };
+// CHECK-NEXT:     ((return_address != std::ptr::null_mut::<()>()) as i32)
+// CHECK-NEXT:         + ((frame_address != std::ptr::null_mut::<()>()) as i32)
+// CHECK-NEXT: }
+// CHECK-NEXT: fn __slate_main() -> i32 {
+// CHECK-NEXT:     println!("{}", address_probe());
+// CHECK-NEXT:     0
+// CHECK-NEXT: }
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: unsafe extern "C-unwind" fn main(
+// CHECK-NEXT:     argc: i32,
+// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT: ) -> i32 {
+// CHECK-NEXT:     unsafe { __slate_main() }
+// CHECK-NEXT: }
+// CHECK-NOT: {{.}}
+// SLATE-FILECHECK-END

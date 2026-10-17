@@ -65,3 +65,140 @@ int main(void) {
          global_outer.inner.weight, global_outer.items[1]);
   return local.id % 7;
 }
+
+// SLATE-FILECHECK-BEGIN
+// CHECK: {{^}}#![allow(non_camel_case_types)]
+// CHECK-NEXT: #![no_main]
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT: }
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT: }
+// CHECK-NEXT: #[repr(C)]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct Inner {
+// CHECK-NEXT:     value: i32,
+// CHECK-NEXT:     weight: f64,
+// CHECK-NEXT: }
+// CHECK-NEXT: #[repr(C)]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct Outer {
+// CHECK-NEXT:     id: i32,
+// CHECK-NEXT:     inner: Inner,
+// CHECK-NEXT:     items: [i32; 4],
+// CHECK-NEXT:     link: *mut Inner,
+// CHECK-NEXT: }
+// CHECK-NEXT: static mut global_outer: Outer = unsafe { std::mem::zeroed() };
+// CHECK-NEXT: fn bump([[V_0:__v[0-9]+]]: *mut i32, by: i32) {
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         *[[V_0]] = (unsafe { *[[V_0]] }) + by;
+// CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn scale([[V_1:__v[0-9]+]]: *mut f64, factor: f64) {
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         *[[V_1]] = (unsafe { *[[V_1]] }) * factor;
+// CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn pick(outer: &mut Outer, which: i32) -> *mut i32 {
+// CHECK-NEXT:     if which == 0 {
+// CHECK-NEXT:         return unsafe { std::ptr::addr_of_mut!((* (outer as * mut Outer)).id) };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if which == 1 {
+// CHECK-NEXT:         return unsafe { std::ptr::addr_of_mut!((* (outer as * mut Outer)).inner.value) };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         unsafe { (*(outer as *mut Outer)).items.as_mut_ptr() as *mut i32 }
+// CHECK-NEXT:             .offset((which - 2) as isize)
+// CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn inner_of(outer: &mut Outer) -> *mut Inner {
+// CHECK-NEXT:     unsafe { std::ptr::addr_of_mut!((* (outer as * mut Outer)).inner) }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn __slate_main() -> i32 {
+// CHECK-NEXT:     let mut local: Outer = Outer {
+// CHECK-NEXT:         id: 1,
+// CHECK-NEXT:         inner: Inner { value: 2, weight: 1.5f64 },
+// CHECK-NEXT:         items: [10, 20, 30, 40],
+// CHECK-NEXT:         link: std::ptr::null_mut::<Inner>(),
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let mut spare: Inner = Inner { value: 7, weight: 0.25f64 };
+// CHECK-NEXT:     local.link = std::ptr::addr_of_mut!(spare);
+// CHECK-NEXT:     bump(std::ptr::addr_of_mut!(local.id), 5 as i32);
+// CHECK-NEXT:     bump(std::ptr::addr_of_mut!(local.inner.value), 3 as i32);
+// CHECK-NEXT:     bump(
+// CHECK-NEXT:         unsafe { (local.items.as_mut_ptr() as *mut i32).offset(2 as isize) },
+// CHECK-NEXT:         100 as i32,
+// CHECK-NEXT:     );
+// CHECK-NEXT:     scale(std::ptr::addr_of_mut!(local.inner.weight), 4.0f64);
+// CHECK-NEXT:     bump(unsafe { std::ptr::addr_of_mut!((* local.link).value) }, 9 as i32);
+// CHECK-NEXT:     scale(unsafe { std::ptr::addr_of_mut!((* local.link).weight) }, 8.0f64);
+// CHECK-NEXT:     let slot: *mut i32 = pick(
+// CHECK-NEXT:         unsafe { &mut (*std::ptr::addr_of_mut!(local)) },
+// CHECK-NEXT:         3 as i32,
+// CHECK-NEXT:     );
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         *slot = (unsafe { *slot }) * 2;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: *mut i32 = pick(
+// CHECK-NEXT:         unsafe { &mut (*std::ptr::addr_of_mut!(local)) },
+// CHECK-NEXT:         0 as i32,
+// CHECK-NEXT:     );
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         *[[V_2]] = (unsafe { *[[V_2]] }) + 1000;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     let inner: *mut Inner = inner_of(unsafe { &mut (*std::ptr::addr_of_mut!(local)) });
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         (*inner).value = (unsafe { (*inner).value }) + 50;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         global_outer.id = 3;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     bump(unsafe { std::ptr::addr_of_mut!(global_outer.id) }, 4 as i32);
+// CHECK-NEXT:     bump(unsafe { std::ptr::addr_of_mut!(global_outer.inner.value) }, 11 as i32);
+// CHECK-NEXT:     scale(unsafe { std::ptr::addr_of_mut!(global_outer.inner.weight) }, 2.0f64);
+// CHECK-NEXT:     let global_slot: *mut i32 = unsafe {
+// CHECK-NEXT:         unsafe { std::ptr::addr_of_mut!(global_outer.items) as *mut i32 }
+// CHECK-NEXT:             .offset(1 as isize)
+// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         *global_slot = 77;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         global_outer.link = unsafe { std::ptr::addr_of_mut!(global_outer.inner) };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     bump(
+// CHECK-NEXT:         unsafe { std::ptr::addr_of_mut!((* unsafe { global_outer.link }).value) },
+// CHECK-NEXT:         1 as i32,
+// CHECK-NEXT:     );
+// CHECK-NEXT:     println!(
+// CHECK-NEXT:         "{} {} {} {} {} {}", local.id, local.inner.value, local.items[0], local.items[1],
+// CHECK-NEXT:         local.items[2], local.items[3]
+// CHECK-NEXT:     );
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         printf(c"%.2f %d %.2f\n".as_ptr(), local.inner.weight, spare.value, spare.weight)
+// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         printf(
+// CHECK-NEXT:             c"%d %d %.2f %d\n".as_ptr(),
+// CHECK-NEXT:             unsafe { global_outer.id },
+// CHECK-NEXT:             unsafe { global_outer.inner.value },
+// CHECK-NEXT:             unsafe { global_outer.inner.weight },
+// CHECK-NEXT:             unsafe { global_outer.items[1] },
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     local.id % 7
+// CHECK-NEXT: }
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: unsafe extern "C-unwind" fn main(
+// CHECK-NEXT:     argc: i32,
+// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT: ) -> i32 {
+// CHECK-NEXT:     unsafe { __slate_main() }
+// CHECK-NEXT: }
+// CHECK-NOT: {{.}}
+// SLATE-FILECHECK-END

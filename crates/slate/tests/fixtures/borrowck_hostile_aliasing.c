@@ -135,3 +135,229 @@ int main(void) {
          global_alias_with_local(), type_punning());
   return 0;
 }
+
+// SLATE-FILECHECK-BEGIN
+// CHECK: {{^}}#![allow(non_camel_case_types)]
+// CHECK-NEXT: #![no_main]
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT: }
+// CHECK-NEXT: fn add_in_place(a: &mut i32, b: &i32) {
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         *a = (unsafe { *a }) + unsafe { *(b as *const i32) };
+// CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn alias_same_object() -> i32 {
+// CHECK-NEXT:     let mut x: i32 = 5;
+// CHECK-NEXT:     add_in_place(
+// CHECK-NEXT:         unsafe { &mut (*std::ptr::addr_of_mut!(x)) },
+// CHECK-NEXT:         unsafe { &(*std::ptr::addr_of_mut!(x)) },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     x
+// CHECK-NEXT: }
+// CHECK-NEXT: #[repr(C)]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct Pair {
+// CHECK-NEXT:     lo: i32,
+// CHECK-NEXT:     hi: i32,
+// CHECK-NEXT: }
+// CHECK-NEXT: fn pair_lo(p: &mut Pair) -> *mut i32 {
+// CHECK-NEXT:     unsafe { std::ptr::addr_of_mut!((* (p as * mut Pair)).lo) }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn pair_hi(p: &mut Pair) -> *mut i32 {
+// CHECK-NEXT:     unsafe { std::ptr::addr_of_mut!((* (p as * mut Pair)).hi) }
+// CHECK-NEXT: }
+// CHECK-NEXT: #[repr(C, align(16))]
+// CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: fn alias_struct_fields() -> i32 {
+// CHECK-NEXT:     let mut pair: Pair = Pair { lo: 1, hi: 2 };
+// CHECK-NEXT:     let lo: *mut i32 = pair_lo(unsafe { &mut (*std::ptr::addr_of_mut!(pair)) });
+// CHECK-NEXT:     let hi: *mut i32 = pair_hi(unsafe { &mut (*std::ptr::addr_of_mut!(pair)) });
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         *lo = (unsafe { *lo }) + unsafe { *hi };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         *hi = (unsafe { *hi }) + unsafe { *lo };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     pair.lo + pair.hi
+// CHECK-NEXT: }
+// CHECK-NEXT: #[repr(C)]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct Node {
+// CHECK-NEXT:     val: i32,
+// CHECK-NEXT:     next: *mut Node,
+// CHECK-NEXT:     prev: *mut Node,
+// CHECK-NEXT: }
+// CHECK-NEXT: fn circular_list() -> i32 {
+// CHECK-NEXT:     let mut a: Node = Node {
+// CHECK-NEXT:         val: 1,
+// CHECK-NEXT:         next: std::ptr::null_mut::<Node>(),
+// CHECK-NEXT:         prev: std::ptr::null_mut::<Node>(),
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let mut b: Node = Node {
+// CHECK-NEXT:         val: 2,
+// CHECK-NEXT:         next: std::ptr::null_mut::<Node>(),
+// CHECK-NEXT:         prev: std::ptr::null_mut::<Node>(),
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let mut c: Node = Node {
+// CHECK-NEXT:         val: 3,
+// CHECK-NEXT:         next: std::ptr::null_mut::<Node>(),
+// CHECK-NEXT:         prev: std::ptr::null_mut::<Node>(),
+// CHECK-NEXT:     };
+// CHECK-NEXT:     a.next = std::ptr::addr_of_mut!(b);
+// CHECK-NEXT:     b.next = std::ptr::addr_of_mut!(c);
+// CHECK-NEXT:     c.next = std::ptr::addr_of_mut!(a);
+// CHECK-NEXT:     a.prev = std::ptr::addr_of_mut!(c);
+// CHECK-NEXT:     b.prev = std::ptr::addr_of_mut!(a);
+// CHECK-NEXT:     c.prev = std::ptr::addr_of_mut!(b);
+// CHECK-NEXT:     let mut cur: *mut Node = std::ptr::addr_of_mut!(a);
+// CHECK-NEXT:     let mut sum: i32 = 0;
+// CHECK-NEXT:     for i in 0 as i32..6 as i32 {
+// CHECK-NEXT:         sum += unsafe { (*cur).val };
+// CHECK-NEXT:         cur = unsafe { (*cur).next };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut Node = unsafe { (*cur).prev };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         (*[[V_0]]).val = (unsafe { (*[[V_0]]).val }) + 10;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     sum + a.val + b.val + c.val
+// CHECK-NEXT: }
+// CHECK-NEXT: #[repr(C)]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct Tree {
+// CHECK-NEXT:     val: i32,
+// CHECK-NEXT:     parent: *mut Tree,
+// CHECK-NEXT:     left: *mut Tree,
+// CHECK-NEXT:     right: *mut Tree,
+// CHECK-NEXT: }
+// CHECK-NEXT: fn parent_pointer_tree() -> i32 {
+// CHECK-NEXT:     let mut root: Tree = Tree {
+// CHECK-NEXT:         val: 1,
+// CHECK-NEXT:         parent: std::ptr::null_mut::<Tree>(),
+// CHECK-NEXT:         left: std::ptr::null_mut::<Tree>(),
+// CHECK-NEXT:         right: std::ptr::null_mut::<Tree>(),
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let mut left: Tree = Tree {
+// CHECK-NEXT:         val: 2,
+// CHECK-NEXT:         parent: std::ptr::addr_of_mut!(root),
+// CHECK-NEXT:         left: std::ptr::null_mut::<Tree>(),
+// CHECK-NEXT:         right: std::ptr::null_mut::<Tree>(),
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let mut right: Tree = Tree {
+// CHECK-NEXT:         val: 3,
+// CHECK-NEXT:         parent: std::ptr::addr_of_mut!(root),
+// CHECK-NEXT:         left: std::ptr::null_mut::<Tree>(),
+// CHECK-NEXT:         right: std::ptr::null_mut::<Tree>(),
+// CHECK-NEXT:     };
+// CHECK-NEXT:     root.left = std::ptr::addr_of_mut!(left);
+// CHECK-NEXT:     root.right = std::ptr::addr_of_mut!(right);
+// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: *mut Tree = left.parent;
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         (*[[V_1]]).val = (unsafe { (*[[V_1]]).val }) + left.val;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: *mut Tree = right.parent;
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         (*[[V_2]]).val = (unsafe { (*[[V_2]]).val }) + right.val;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     root.val + left.val + right.val
+// CHECK-NEXT: }
+// CHECK-NEXT: #[repr(C)]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct Buf {
+// CHECK-NEXT:     data: [i8; 8],
+// CHECK-NEXT:     cursor: *mut i8,
+// CHECK-NEXT: }
+// CHECK-NEXT: fn self_referential_struct() -> i32 {
+// CHECK-NEXT:     let mut buf: Buf = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     for i in 0 as i32..8 as i32 {
+// CHECK-NEXT:         buf.data[i as usize] = (97 + i) as i8;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     buf.cursor = unsafe { (buf.data.as_mut_ptr() as *mut i8).offset(3 as isize) };
+// CHECK-NEXT:     let [[V_3:__v[0-9]+]]: *mut i8 = buf.cursor;
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         *[[V_3]] = (((unsafe { *[[V_3]] }) as i32) + 1) as i8;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     (buf.data[3] as i32)
+// CHECK-NEXT:         + ((unsafe { *unsafe { buf.cursor.offset(0 as isize) } }) as i32) - 2 * 97
+// CHECK-NEXT: }
+// CHECK-NEXT: fn reverse_in_place(mut lo: *mut i32, mut hi: *mut i32) {
+// CHECK-NEXT:     while lo < hi {
+// CHECK-NEXT:         let t: i32 = unsafe { *lo };
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             *lo = unsafe { *hi };
+// CHECK-NEXT:         }
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             *hi = t;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         let [[V_4:__v[0-9]+]]: *mut i32 = lo;
+// CHECK-NEXT:         lo = unsafe { [[V_4]].offset(1 as isize) };
+// CHECK-NEXT:         let [[V_5:__v[0-9]+]]: *mut i32 = hi;
+// CHECK-NEXT:         hi = unsafe { [[V_5]].offset(-(1 as isize)) };
+// CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn overlapping_array_pointers() -> i32 {
+// CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 5]> = __SlateAlign16([
+// CHECK-NEXT:         1 as i32,
+// CHECK-NEXT:         2 as i32,
+// CHECK-NEXT:         3 as i32,
+// CHECK-NEXT:         4 as i32,
+// CHECK-NEXT:         5 as i32,
+// CHECK-NEXT:     ]);
+// CHECK-NEXT:     reverse_in_place(
+// CHECK-NEXT:         unsafe { (values.0.as_mut_ptr() as *mut i32).offset(0 as isize) },
+// CHECK-NEXT:         unsafe { (values.0.as_mut_ptr() as *mut i32).offset(4 as isize) },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     values.0[0] * 10000 + values.0[1] * 1000 + values.0[2] * 100 + values.0[3] * 10
+// CHECK-NEXT:         + values.0[4]
+// CHECK-NEXT: }
+// CHECK-NEXT: static mut g_ptr: *mut i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT: fn capture_global(p: *mut i32) {
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         g_ptr = p;
+// CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn global_alias_with_local() -> i32 {
+// CHECK-NEXT:     let mut x: i32 = 7;
+// CHECK-NEXT:     capture_global(std::ptr::addr_of_mut!(x));
+// CHECK-NEXT:     let [[V_6:__v[0-9]+]]: *mut i32 = unsafe { g_ptr };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         *[[V_6]] = (unsafe { *[[V_6]] }) + 1;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     x += 1;
+// CHECK-NEXT:     x + unsafe { *unsafe { g_ptr } }
+// CHECK-NEXT: }
+// CHECK-NEXT: #[repr(C)]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: union Pun {
+// CHECK-NEXT:     i: i32,
+// CHECK-NEXT:     f: f32,
+// CHECK-NEXT: }
+// CHECK-NEXT: fn type_punning() -> i32 {
+// CHECK-NEXT:     let mut u: Pun = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         u.f = 1.0f32;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     let bits: i32 = unsafe { u.i };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         u.i = (unsafe { u.i }) + 1;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if bits == unsafe { u.i } { -1 } else { (unsafe { u.f }) as i32 }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn __slate_main() -> i32 {
+// CHECK-NEXT:     println!(
+// CHECK-NEXT:         "{} {} {} {} {} {} {} {}", alias_same_object(), alias_struct_fields(),
+// CHECK-NEXT:         circular_list(), parent_pointer_tree(), self_referential_struct(),
+// CHECK-NEXT:         overlapping_array_pointers(), global_alias_with_local(), type_punning()
+// CHECK-NEXT:     );
+// CHECK-NEXT:     0
+// CHECK-NEXT: }
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: unsafe extern "C-unwind" fn main(
+// CHECK-NEXT:     argc: i32,
+// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT: ) -> i32 {
+// CHECK-NEXT:     unsafe { __slate_main() }
+// CHECK-NEXT: }
+// CHECK-NOT: {{.}}
+// SLATE-FILECHECK-END

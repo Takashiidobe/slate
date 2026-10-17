@@ -29,3 +29,61 @@ int main(void) {
   free(suite.tests);
   return 0;
 }
+
+// SLATE-FILECHECK-BEGIN
+// CHECK: {{^}}#![allow(non_camel_case_types)]
+// CHECK-NEXT: #![no_main]
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn malloc(__size: u64) -> *mut ();
+// CHECK-NEXT:     fn free(__ptr: *mut ());
+// CHECK-NEXT: }
+// CHECK-NEXT: #[repr(C)]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct [[SLATERECORD_0:__SlateRecord[0-9]+]] {
+// CHECK-NEXT:     tests: *mut Option<unsafe extern "C-unwind" fn()>,
+// CHECK-NEXT:     ntests: i32,
+// CHECK-NEXT: }
+// CHECK-NEXT: static mut last_ran: i32 = -(1 as i32);
+// CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.test_a")]
+// CHECK-NEXT: extern "C-unwind" fn test_a() {
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         last_ran = 0;
+// CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.test_b")]
+// CHECK-NEXT: extern "C-unwind" fn test_b() {
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         last_ran = 1;
+// CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn __slate_main() -> i32 {
+// CHECK-NEXT:     let mut suite: [[SLATERECORD_0]] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     suite.tests = (unsafe { malloc((2 as u64).wrapping_mul(8 as u64)) })
+// CHECK-NEXT:         as *mut Option<unsafe extern "C-unwind" fn()>;
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         *unsafe { suite.tests.offset(0 as isize) } = Some(test_a);
+// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         *unsafe { suite.tests.offset(1 as isize) } = Some(test_b);
+// CHECK-NEXT:     }
+// CHECK-NEXT:     suite.ntests = 2;
+// CHECK-NEXT:     let mut i: i32 = 0;
+// CHECK-NEXT:     while i < suite.ntests {
+// CHECK-NEXT:         unsafe { unsafe { *unsafe { suite.tests.offset(i as isize) } }.unwrap()() };
+// CHECK-NEXT:         println!("{}", unsafe { last_ran });
+// CHECK-NEXT:         i += 1;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe { free(suite.tests as *mut ()) };
+// CHECK-NEXT:     0
+// CHECK-NEXT: }
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: unsafe extern "C-unwind" fn main(
+// CHECK-NEXT:     argc: i32,
+// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT: ) -> i32 {
+// CHECK-NEXT:     unsafe { __slate_main() }
+// CHECK-NEXT: }
+// CHECK-NOT: {{.}}
+// SLATE-FILECHECK-END

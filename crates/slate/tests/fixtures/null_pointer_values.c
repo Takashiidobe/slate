@@ -55,3 +55,134 @@ int main(void) {
   printf("%d %s\n", length(head), last_key);
   return entries[1].slot == NULL ? 0 : 1;
 }
+
+// SLATE-FILECHECK-BEGIN
+// CHECK: {{^}}#![allow(non_camel_case_types)]
+// CHECK-NEXT: #![no_main]
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT: }
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT: }
+// CHECK-NEXT: #[repr(C)]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct Node {
+// CHECK-NEXT:     value: i32,
+// CHECK-NEXT:     next: *mut Node,
+// CHECK-NEXT: }
+// CHECK-NEXT: #[repr(C)]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct Entry {
+// CHECK-NEXT:     key: *const i8,
+// CHECK-NEXT:     slot: *mut i32,
+// CHECK-NEXT: }
+// CHECK-NEXT: #[repr(C, align(16))]
+// CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: static mut head: *mut Node = std::ptr::null_mut::<Node>();
+// CHECK-NEXT: static mut last_key: *const i8 = std::ptr::null::<i8>();
+// CHECK-NEXT: static mut opaque: *mut () = std::ptr::null_mut::<()>();
+// CHECK-NEXT: static mut table: __SlateAlign16<[*mut i32; 3]> = __SlateAlign16([
+// CHECK-NEXT:     std::ptr::null_mut::<i32>(),
+// CHECK-NEXT:     std::ptr::null_mut::<i32>(),
+// CHECK-NEXT:     std::ptr::null_mut::<i32>(),
+// CHECK-NEXT: ]);
+// CHECK-NEXT: fn find(mut node: *mut Node, value: i32) -> *mut Node {
+// CHECK-NEXT:     while node != std::ptr::null_mut::<Node>() {
+// CHECK-NEXT:         if (unsafe { (*node).value }) == value {
+// CHECK-NEXT:             return node;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         node = unsafe { (*node).next };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     std::ptr::null_mut::<Node>()
+// CHECK-NEXT: }
+// CHECK-NEXT: fn length(mut list: *const Node) -> i32 {
+// CHECK-NEXT:     let mut count: i32 = 0;
+// CHECK-NEXT:     while list != std::ptr::null::<Node>() {
+// CHECK-NEXT:         count += 1;
+// CHECK-NEXT:         list = (unsafe { (*list).next }) as *const Node;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     count
+// CHECK-NEXT: }
+// CHECK-NEXT: fn name_or_default(name: *const i8) -> *const i8 {
+// CHECK-NEXT:     if name != std::ptr::null::<i8>() { name } else { c"default".as_ptr() }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn __slate_main() -> i32 {
+// CHECK-NEXT:     let mut c: Node = Node {
+// CHECK-NEXT:         value: 3,
+// CHECK-NEXT:         next: std::ptr::null_mut::<Node>(),
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let mut b: Node = Node {
+// CHECK-NEXT:         value: 2,
+// CHECK-NEXT:         next: std::ptr::addr_of_mut!(c),
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let mut a: Node = Node {
+// CHECK-NEXT:         value: 1,
+// CHECK-NEXT:         next: std::ptr::addr_of_mut!(b),
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let mut stored: i32 = 7;
+// CHECK-NEXT:     let entries: __SlateAlign16<[Entry; 2]> = __SlateAlign16([
+// CHECK-NEXT:         Entry {
+// CHECK-NEXT:             key: c"present".as_ptr(),
+// CHECK-NEXT:             slot: std::ptr::addr_of_mut!(stored),
+// CHECK-NEXT:         },
+// CHECK-NEXT:         Entry {
+// CHECK-NEXT:             key: std::ptr::null::<i8>(),
+// CHECK-NEXT:             slot: std::ptr::null_mut::<i32>(),
+// CHECK-NEXT:         },
+// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let missing: i32 = (find(std::ptr::addr_of_mut!(a), 9 as i32)
+// CHECK-NEXT:         == std::ptr::null_mut::<Node>()) as i32;
+// CHECK-NEXT:     let found: i32 = (find(std::ptr::addr_of_mut!(a), 2 as i32)
+// CHECK-NEXT:         != std::ptr::null_mut::<Node>()) as i32;
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         head = std::ptr::addr_of_mut!(a);
+// CHECK-NEXT:     }
+// CHECK-NEXT:     let mut cursor: *mut i32 = std::ptr::null_mut::<i32>();
+// CHECK-NEXT:     if !(cursor != std::ptr::null_mut::<i32>()) {
+// CHECK-NEXT:         cursor = entries.0[0].slot;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     println!(
+// CHECK-NEXT:         "{} {} {} {}", length((unsafe { head }) as * const Node), missing, found, unsafe
+// CHECK-NEXT:         { * cursor }
+// CHECK-NEXT:     );
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         printf(
+// CHECK-NEXT:             c"%s %s\n".as_ptr(),
+// CHECK-NEXT:             name_or_default(entries.0[0].key),
+// CHECK-NEXT:             name_or_default(entries.0[1].key),
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     println!(
+// CHECK-NEXT:         "{} {} {}", ((unsafe { last_key }) == std::ptr::null::< i8 > ()) as i32, ((unsafe
+// CHECK-NEXT:         { opaque }) == std::ptr::null_mut::< () > ()) as i32, ((unsafe { table.0[1] }) ==
+// CHECK-NEXT:         std::ptr::null_mut::< i32 > ()) as i32
+// CHECK-NEXT:     );
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         head = std::ptr::null_mut::<Node>();
+// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         last_key = entries.0[0].key;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         printf(
+// CHECK-NEXT:             c"%d %s\n".as_ptr(),
+// CHECK-NEXT:             length((unsafe { head }) as *const Node),
+// CHECK-NEXT:             unsafe { last_key },
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     if entries.0[1].slot == std::ptr::null_mut::<i32>() { 0 } else { 1 }
+// CHECK-NEXT: }
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: unsafe extern "C-unwind" fn main(
+// CHECK-NEXT:     argc: i32,
+// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT: ) -> i32 {
+// CHECK-NEXT:     unsafe { __slate_main() }
+// CHECK-NEXT: }
+// CHECK-NOT: {{.}}
+// SLATE-FILECHECK-END

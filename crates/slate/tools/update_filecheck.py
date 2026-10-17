@@ -232,16 +232,21 @@ def function_checks(lines, identifiers):
     return checks
 
 
+def file_checks(lines, identifiers):
+    variables = Variables(identifiers)
+    first, *rest = lines
+    return [f"// CHECK: {{{{^}}}}{variables.pattern(first)}", *body_checks(rest, variables), "// CHECK-NOT: {{.}}"]
+
+
 def update_source(source, rust):
     names = checked_functions(source)
-    if not names and not BLOCK_PATTERN.search(source):
-        return source
     stripped = BLOCK_PATTERN.sub("", source).rstrip("\n")
-    if not names:
-        return f"{stripped}\n"
     identifiers = c_identifiers(stripped)
     lines = rust.rstrip("\n").splitlines()
-    checks = [check for name in names for check in function_checks(rust_function(lines, name), identifiers)]
+    if names:
+        checks = [check for name in names for check in function_checks(rust_function(lines, name), identifiers)]
+    else:
+        checks = file_checks(lines, identifiers)
     return f"{stripped}\n\n{BEGIN}\n" + "\n".join(checks) + f"\n{END}\n"
 
 
@@ -269,14 +274,6 @@ def suite_fixtures():
     )
 
 
-def checked_fixtures():
-    return [
-        path
-        for path in suite_fixtures()
-        if re.search(r"@check-fn-begin|SLATE-FILECHECK-BEGIN", path.read_text(errors="surrogateescape"))
-    ]
-
-
 def resolve_fixture(argument):
     path = Path(argument)
     if path.suffix == ".c" or path.exists():
@@ -290,12 +287,12 @@ def resolve_fixture(argument):
 
 def main(argv):
     parser = argparse.ArgumentParser(
-        description="Regenerate FileCheck blocks for the @check-fn-wrapped functions of tests/fixtures fixtures."
+        description="Regenerate the FileCheck blocks of tests/fixtures fixtures: the whole generated Rust, or only the @check-fn-wrapped functions."
     )
     parser.add_argument(
         "fixtures",
         nargs="*",
-        help="fixture paths, or names as a failing test run lists them; default: every fixture with markers or a check block",
+        help="fixture paths, or names as a failing test run lists them; default: every fixture",
     )
     parser.add_argument(
         "--no-run",
@@ -306,7 +303,7 @@ def main(argv):
     generated = {}
     fixtures_by_suite = defaultdict(list)
     failures = 0
-    for argument in arguments.fixtures or checked_fixtures():
+    for argument in arguments.fixtures or suite_fixtures():
         try:
             path = resolve_fixture(argument)
             suite = fixture_suite(path)

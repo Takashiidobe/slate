@@ -35,3 +35,63 @@ int main() {
   printf("%d\n", classify(9));
   return 0;
 }
+
+// SLATE-FILECHECK-BEGIN
+// CHECK: {{^}}#![allow(non_camel_case_types)]
+// CHECK-NEXT: #![no_main]
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT: }
+// CHECK-NEXT: fn classify(c: i32) -> i32 {
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         '[[JOIN_0:__join_[0-9]+]]: {
+// CHECK-NEXT:             '[[JOIN_1:__join_[0-9]+]]: {
+// CHECK-NEXT:                 '[[JOIN_2:__join_[0-9]+]]: {
+// CHECK-NEXT:                     let [[T_0:__t[0-9]+]]: i32 = c;
+// CHECK-NEXT:                     if [[T_0]] == 1 {} else {
+// CHECK-NEXT:                         if [[T_0]] == 2 {} else {
+// CHECK-NEXT:                             if [[T_0]] == 3 {
+// CHECK-NEXT:                                 break '[[JOIN_0]];
+// CHECK-NEXT:                             } else {
+// CHECK-NEXT:                                 if [[T_0]] == 4 {
+// CHECK-NEXT:                                     break '[[JOIN_1]];
+// CHECK-NEXT:                                 } else {
+// CHECK-NEXT:                                     return -1;
+// CHECK-NEXT:                                 }
+// CHECK-NEXT:                             }
+// CHECK-NEXT:                         }
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                 }
+// CHECK-NEXT:                 let [[T_1:__t[0-9]+]]: i32 = c;
+// CHECK-NEXT:                 if [[T_1]] == 5 {
+// CHECK-NEXT:                     break '[[JOIN_0]];
+// CHECK-NEXT:                 } else {
+// CHECK-NEXT:                     if [[T_1]] == 6 {} else {
+// CHECK-NEXT:                         return -2;
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                 }
+// CHECK-NEXT:             }
+// CHECK-NEXT:             return 200;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         return 100;
+// CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn __slate_main() -> i32 {
+// CHECK-NEXT:     println!("{}", classify(1 as i32));
+// CHECK-NEXT:     println!("{}", classify(3 as i32));
+// CHECK-NEXT:     println!("{}", classify(4 as i32));
+// CHECK-NEXT:     println!("{}", classify(5 as i32));
+// CHECK-NEXT:     println!("{}", classify(6 as i32));
+// CHECK-NEXT:     println!("{}", classify(9 as i32));
+// CHECK-NEXT:     0
+// CHECK-NEXT: }
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: unsafe extern "C-unwind" fn main(
+// CHECK-NEXT:     argc: i32,
+// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT: ) -> i32 {
+// CHECK-NEXT:     unsafe { __slate_main() }
+// CHECK-NEXT: }
+// CHECK-NOT: {{.}}
+// SLATE-FILECHECK-END

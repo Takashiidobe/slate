@@ -43,3 +43,64 @@ int main(void) {
   printf("%d\n", FuzzSix);
   return 0;
 }
+
+// SLATE-FILECHECK-BEGIN
+// CHECK: {{^}}#![allow(non_camel_case_types)]
+// CHECK-NEXT: #![no_main]
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT: }
+// CHECK-NEXT: #[repr(C)]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: union FuzzPair {
+// CHECK-NEXT:     left: i32,
+// CHECK-NEXT:     right: i32,
+// CHECK-NEXT: }
+// CHECK-NEXT: fn helper(a: i32, b: i32) -> i32 {
+// CHECK-NEXT:     let c: i32 = a + b;
+// CHECK-NEXT:     c
+// CHECK-NEXT: }
+// CHECK-NEXT: fn loop_sum(n: i32) -> i32 {
+// CHECK-NEXT:     let mut total: i32 = 0;
+// CHECK-NEXT:     let mut i: i32 = 1;
+// CHECK-NEXT:     while i <= n {
+// CHECK-NEXT:         total += i;
+// CHECK-NEXT:         i += 1;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     total
+// CHECK-NEXT: }
+// CHECK-NEXT: fn array_pick(index: i32) -> i32 {
+// CHECK-NEXT:     let mut values: [i32; 3] = [0 as i32; 3];
+// CHECK-NEXT:     values[0] = 6;
+// CHECK-NEXT:     values[1] = 1;
+// CHECK-NEXT:     values[2] = values[0] + values[1];
+// CHECK-NEXT:     values[index as usize]
+// CHECK-NEXT: }
+// CHECK-NEXT: fn union_pick(a: i32, b: i32) -> i32 {
+// CHECK-NEXT:     let mut p: FuzzPair = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         p.left = a;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         p.right = b;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe { p.left }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn __slate_main() -> i32 {
+// CHECK-NEXT:     println!("{}", helper(7 as i32, 2 as i32));
+// CHECK-NEXT:     println!("{}", loop_sum(2 as i32));
+// CHECK-NEXT:     println!("{}", array_pick(1 as i32));
+// CHECK-NEXT:     println!("{}", union_pick(8 as i32, 9 as i32));
+// CHECK-NEXT:     println!("{}", 6 as i32);
+// CHECK-NEXT:     0
+// CHECK-NEXT: }
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: unsafe extern "C-unwind" fn main(
+// CHECK-NEXT:     argc: i32,
+// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT: ) -> i32 {
+// CHECK-NEXT:     unsafe { __slate_main() }
+// CHECK-NEXT: }
+// CHECK-NOT: {{.}}
+// SLATE-FILECHECK-END

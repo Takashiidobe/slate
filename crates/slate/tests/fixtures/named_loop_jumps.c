@@ -68,3 +68,135 @@ int main(void) {
         printf("countdown %d = %d\n", n, countdown(n));
     return 0;
 }
+
+// SLATE-FILECHECK-BEGIN
+// CHECK: {{^}}#![allow(non_camel_case_types)]
+// CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
+// CHECK-NEXT: //! { dg-options "-std=c2y" }
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: fn grid(limit: i32) -> i32 {
+// CHECK-NEXT:     let mut j: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut i: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut hits: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         hits = 0;
+// CHECK-NEXT:         i = 0;
+// CHECK-NEXT:         '__loop_1: loop {
+// CHECK-NEXT:             if i < 6 {
+// CHECK-NEXT:                 j = 0;
+// CHECK-NEXT:                 loop {
+// CHECK-NEXT:                     if j < 6 {
+// CHECK-NEXT:                         if j > i {
+// CHECK-NEXT:                             break;
+// CHECK-NEXT:                         } else {
+// CHECK-NEXT:                             if i * j > limit {
+// CHECK-NEXT:                                 break '__loop_1;
+// CHECK-NEXT:                             } else {
+// CHECK-NEXT:                                 if (i + j) % 3 == 0 {
+// CHECK-NEXT:                                 } else {
+// CHECK-NEXT:                                     hits += i * 10 + j;
+// CHECK-NEXT:                                 }
+// CHECK-NEXT:                                 j += 1;
+// CHECK-NEXT:                             }
+// CHECK-NEXT:                         }
+// CHECK-NEXT:                     } else {
+// CHECK-NEXT:                         break;
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                 }
+// CHECK-NEXT:                 i += 1;
+// CHECK-NEXT:             } else {
+// CHECK-NEXT:                 break;
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
+// CHECK-NEXT:         return hits;
+// CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: fn dispatch(n: i32) -> i32 {
+// CHECK-NEXT:     let mut k: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut total: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         total = 0;
+// CHECK-NEXT:         k = 0;
+// CHECK-NEXT:         '[[JOIN_0:__join_[0-9]+]]: {
+// CHECK-NEXT:             loop {
+// CHECK-NEXT:                 if k < 8 {
+// CHECK-NEXT:                     k += 1;
+// CHECK-NEXT:                     let [[T_0:__t[0-9]+]]: i32 = n + k;
+// CHECK-NEXT:                     if [[T_0]] == 3 {
+// CHECK-NEXT:                         total += 1;
+// CHECK-NEXT:                     } else {
+// CHECK-NEXT:                         if [[T_0]] == 5 {
+// CHECK-NEXT:                             total += 100;
+// CHECK-NEXT:                             continue;
+// CHECK-NEXT:                         } else {
+// CHECK-NEXT:                             if [[T_0]] == 9 {
+// CHECK-NEXT:                                 break;
+// CHECK-NEXT:                             }
+// CHECK-NEXT:                         }
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                     total += 10;
+// CHECK-NEXT:                 } else {
+// CHECK-NEXT:                     break '[[JOIN_0]];
+// CHECK-NEXT:                 }
+// CHECK-NEXT:             }
+// CHECK-NEXT:             total += 1000;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         return total * 16 + k;
+// CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: fn countdown(mut n: i32) -> i32 {
+// CHECK-NEXT:     let mut steps: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         steps = 0;
+// CHECK-NEXT:         loop {
+// CHECK-NEXT:             n -= 1;
+// CHECK-NEXT:             steps += 1;
+// CHECK-NEXT:             if n % 2 != 0 {
+// CHECK-NEXT:             } else {
+// CHECK-NEXT:                 if n < 3 {
+// CHECK-NEXT:                     break;
+// CHECK-NEXT:                 } else {
+// CHECK-NEXT:                     steps += 5;
+// CHECK-NEXT:                 }
+// CHECK-NEXT:             }
+// CHECK-NEXT:             if !(n > 0) {
+// CHECK-NEXT:                 break;
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
+// CHECK-NEXT:         return steps * 100 + n;
+// CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: fn __slate_main() -> i32 {
+// CHECK-NEXT:     let mut limit: i32 = 0;
+// CHECK-NEXT:     while limit < 30 {
+// CHECK-NEXT:         println!("grid {} = {}", limit, grid(limit));
+// CHECK-NEXT:         limit += 7;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     for n in 0 as i32..6 as i32 {
+// CHECK-NEXT:         println!("dispatch {} = {}", n, dispatch(n));
+// CHECK-NEXT:     }
+// CHECK-NEXT:     let mut n: i32 = 1;
+// CHECK-NEXT:     while n < 12 {
+// CHECK-NEXT:         println!("countdown {} = {}", n, countdown(n));
+// CHECK-NEXT:         n += 3;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     0
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: unsafe extern "C-unwind" fn main(
+// CHECK-NEXT:     argc: i32,
+// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT: ) -> i32 {
+// CHECK-NEXT:     unsafe { __slate_main() }
+// CHECK-NEXT: }
+// CHECK-NOT: {{.}}
+// SLATE-FILECHECK-END

@@ -9,3 +9,43 @@ int main(int argc, char **argv) {
     printf("%s\n", argv[i]);
   return argc - 1;
 }
+
+// SLATE-FILECHECK-BEGIN
+// CHECK: {{^}}#![allow(non_camel_case_types)]
+// CHECK-NEXT: #![no_main]
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn strlen(__s: *const i8) -> u64;
+// CHECK-NEXT: }
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT: }
+// CHECK-NEXT: fn __slate_main(argc: i32, argv: *mut *mut i8) -> i32 {
+// CHECK-NEXT:     println!(
+// CHECK-NEXT:         "{} {} {}", argc, ((unsafe { * unsafe { argv.offset(0 as isize) } }) !=
+// CHECK-NEXT:         std::ptr::null_mut::< i8 > ()) as i32, ((unsafe { * unsafe { argv.offset(argc as
+// CHECK-NEXT:         isize) } }) == std::ptr::null_mut::< i8 > ()) as i32
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let length: u64 = unsafe {
+// CHECK-NEXT:         strlen((unsafe { *unsafe { argv.offset(0 as isize) } }) as *const i8)
+// CHECK-NEXT:     };
+// CHECK-NEXT:     println!("{}", (length > 0) as i32);
+// CHECK-NEXT:     for i in 1..argc {
+// CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             printf(c"%s\n".as_ptr(), unsafe { *unsafe { argv.offset(i as isize) } })
+// CHECK-NEXT:         };
+// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     argc - 1
+// CHECK-NEXT: }
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: unsafe extern "C-unwind" fn main(
+// CHECK-NEXT:     argc: i32,
+// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT: ) -> i32 {
+// CHECK-NEXT:     unsafe { __slate_main(argc as _, argv as _) }
+// CHECK-NEXT: }
+// CHECK-NOT: {{.}}
+// SLATE-FILECHECK-END

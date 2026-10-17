@@ -18,3 +18,40 @@ int main(void) {
   printf("ok\n");
   return 0;
 }
+
+// SLATE-FILECHECK-BEGIN
+// CHECK: {{^}}#![allow(non_camel_case_types)]
+// CHECK-NEXT: #![no_main]
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn malloc(__size: u64) -> *mut ();
+// CHECK-NEXT:     fn realloc(__ptr: *mut (), __size: u64) -> *mut ();
+// CHECK-NEXT:     fn free(__ptr: *mut ());
+// CHECK-NEXT:     fn free_sized(__ptr: *mut (), __size: u64);
+// CHECK-NEXT:     fn free_aligned_sized(__ptr: *mut (), __alignment: u64, __size: u64);
+// CHECK-NEXT:     fn aligned_alloc(__alignment: u64, __size: u64) -> *mut ();
+// CHECK-NEXT:     fn memalignment(__p: *const ()) -> u64;
+// CHECK-NEXT: }
+// CHECK-NEXT: fn __slate_main() -> i32 {
+// CHECK-NEXT:     let p: *mut () = unsafe { malloc(16 as u64) };
+// CHECK-NEXT:     unsafe { free_sized(p, 16 as u64) };
+// CHECK-NEXT:     let q: *mut () = unsafe { aligned_alloc(16 as u64, 32 as u64) };
+// CHECK-NEXT:     unsafe { free_aligned_sized(q, 16 as u64, 32 as u64) };
+// CHECK-NEXT:     let r: *mut () = unsafe { realloc(std::ptr::null_mut::<()>(), 0 as u64) };
+// CHECK-NEXT:     unsafe { free(r) };
+// CHECK-NEXT:     let a: *mut () = unsafe { aligned_alloc(64 as u64, 64 as u64) };
+// CHECK-NEXT:     println!("{}", ((unsafe { memalignment(a as * const ()) }) % 64 == 0) as i32);
+// CHECK-NEXT:     unsafe { free(a) };
+// CHECK-NEXT:     println!("ok");
+// CHECK-NEXT:     0
+// CHECK-NEXT: }
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: unsafe extern "C-unwind" fn main(
+// CHECK-NEXT:     argc: i32,
+// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT: ) -> i32 {
+// CHECK-NEXT:     unsafe { __slate_main() }
+// CHECK-NEXT: }
+// CHECK-NOT: {{.}}
+// SLATE-FILECHECK-END

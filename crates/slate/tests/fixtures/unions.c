@@ -23,3 +23,48 @@ int main(void) {
   printf("%d\n", overwrite(3, 9));
   return 0;
 }
+
+// SLATE-FILECHECK-BEGIN
+// CHECK: {{^}}#![allow(non_camel_case_types)]
+// CHECK-NEXT: #![no_main]
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT: }
+// CHECK-NEXT: #[repr(C)]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: union Pair {
+// CHECK-NEXT:     left: i32,
+// CHECK-NEXT:     right: i32,
+// CHECK-NEXT: }
+// CHECK-NEXT: fn pick_left(value: i32) -> i32 {
+// CHECK-NEXT:     let mut p: Pair = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         p.left = value;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe { p.left }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn overwrite(a: i32, b: i32) -> i32 {
+// CHECK-NEXT:     let mut p: Pair = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         p.left = a;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         p.right = b;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe { p.left }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn __slate_main() -> i32 {
+// CHECK-NEXT:     println!("{}", pick_left(7 as i32));
+// CHECK-NEXT:     println!("{}", overwrite(3 as i32, 9 as i32));
+// CHECK-NEXT:     0
+// CHECK-NEXT: }
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: unsafe extern "C-unwind" fn main(
+// CHECK-NEXT:     argc: i32,
+// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT: ) -> i32 {
+// CHECK-NEXT:     unsafe { __slate_main() }
+// CHECK-NEXT: }
+// CHECK-NOT: {{.}}
+// SLATE-FILECHECK-END

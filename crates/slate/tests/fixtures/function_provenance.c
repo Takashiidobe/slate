@@ -211,3 +211,938 @@ int main(void) {
   exit(0);
   return project_state == 80 ? 1 : 58;
 }
+
+// SLATE-FILECHECK-BEGIN
+// CHECK: {{^}}#![allow(non_camel_case_types)]
+// CHECK-NEXT: #![no_main]
+// CHECK-NEXT: static mut project_state: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT: fn malloc(size: u64) -> *mut () {
+// CHECK-NEXT:     if size != 0 { (16 as i32) as *mut () } else { std::ptr::null_mut::<()>() }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn calloc(count: u64, size: u64) -> *mut () {
+// CHECK-NEXT:     if count != 0 && size != 0 {
+// CHECK-NEXT:         (16 as i32) as *mut ()
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         std::ptr::null_mut::<()>()
+// CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn realloc(ptr: *mut (), size: u64) -> *mut () {
+// CHECK-NEXT:     if ptr != std::ptr::null_mut::<()>() && size != 0 {
+// CHECK-NEXT:         (16 as i32) as *mut ()
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         std::ptr::null_mut::<()>()
+// CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn free(ptr: *mut ()) {
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         project_state = if ptr != std::ptr::null_mut::<()>() { 77 } else { 0 };
+// CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn memcpy(dst: *mut (), src: *const (), count: u64) -> *mut () {
+// CHECK-NEXT:     if count != 0 && src != std::ptr::null::<()>() {
+// CHECK-NEXT:         dst
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         std::ptr::null_mut::<()>()
+// CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn memmove(dst: *mut (), src: *const (), count: u64) -> *mut () {
+// CHECK-NEXT:     if count != 0 && src != std::ptr::null::<()>() {
+// CHECK-NEXT:         dst
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         std::ptr::null_mut::<()>()
+// CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn memset(dst: *mut (), value: i32, count: u64) -> *mut () {
+// CHECK-NEXT:     if value != 0 && count != 0 { dst } else { std::ptr::null_mut::<()>() }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn memchr(ptr: *const (), value: i32, count: u64) -> *mut () {
+// CHECK-NEXT:     if ptr != std::ptr::null::<()>() && value != 0 && count != 0 {
+// CHECK-NEXT:         (24 as i32) as *mut ()
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         std::ptr::null_mut::<()>()
+// CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.strlen")]
+// CHECK-NEXT: extern "C-unwind" fn strlen(s: *const i8) -> u64 {
+// CHECK-NEXT:     ((if s != std::ptr::null::<i8>() { 5 as i32 } else { 0 as i32 }) as i64) as u64
+// CHECK-NEXT: }
+// CHECK-NEXT: fn strcpy(dst: *mut i8, src: *const i8) -> *mut i8 {
+// CHECK-NEXT:     if src != std::ptr::null::<i8>() { dst } else { std::ptr::null_mut::<i8>() }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn strcat(dst: *mut i8, src: *const i8) -> *mut i8 {
+// CHECK-NEXT:     if src != std::ptr::null::<i8>() { dst } else { std::ptr::null_mut::<i8>() }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn strncpy(dst: *mut i8, src: *const i8, count: u64) -> *mut i8 {
+// CHECK-NEXT:     if src != std::ptr::null::<i8>() && count != 0 {
+// CHECK-NEXT:         dst
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         std::ptr::null_mut::<i8>()
+// CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn strncat(dst: *mut i8, src: *const i8, count: u64) -> *mut i8 {
+// CHECK-NEXT:     if src != std::ptr::null::<i8>() && count != 0 {
+// CHECK-NEXT:         dst
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         std::ptr::null_mut::<i8>()
+// CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn strcmp(lhs: *const i8, rhs: *const i8) -> i32 {
+// CHECK-NEXT:     if lhs != std::ptr::null::<i8>() && rhs != std::ptr::null::<i8>() { 11 } else { 0 }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn strncmp(lhs: *const i8, rhs: *const i8, count: u64) -> i32 {
+// CHECK-NEXT:     if lhs != std::ptr::null::<i8>() && rhs != std::ptr::null::<i8>() && count != 0 {
+// CHECK-NEXT:         12
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         0
+// CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn memcmp(lhs: *const (), rhs: *const (), count: u64) -> i32 {
+// CHECK-NEXT:     if lhs != std::ptr::null::<()>() && rhs != std::ptr::null::<()>() && count != 0 {
+// CHECK-NEXT:         13
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         0
+// CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn strchr(s: *const i8, value: i32) -> *mut i8 {
+// CHECK-NEXT:     if s != std::ptr::null::<i8>() && value != 0 {
+// CHECK-NEXT:         (32 as i32) as *mut i8
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         std::ptr::null_mut::<i8>()
+// CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn strrchr(s: *const i8, value: i32) -> *mut i8 {
+// CHECK-NEXT:     if s != std::ptr::null::<i8>() && value != 0 {
+// CHECK-NEXT:         (32 as i32) as *mut i8
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         std::ptr::null_mut::<i8>()
+// CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn strstr(s: *const i8, needle: *const i8) -> *mut i8 {
+// CHECK-NEXT:     if s != std::ptr::null::<i8>() && needle != std::ptr::null::<i8>() {
+// CHECK-NEXT:         (32 as i32) as *mut i8
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         std::ptr::null_mut::<i8>()
+// CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn strpbrk(s: *const i8, accept: *const i8) -> *mut i8 {
+// CHECK-NEXT:     if s != std::ptr::null::<i8>() && accept != std::ptr::null::<i8>() {
+// CHECK-NEXT:         (32 as i32) as *mut i8
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         std::ptr::null_mut::<i8>()
+// CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn strspn(s: *const i8, accept: *const i8) -> u64 {
+// CHECK-NEXT:     ((if s != std::ptr::null::<i8>() && accept != std::ptr::null::<i8>() {
+// CHECK-NEXT:         31 as i32
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         0 as i32
+// CHECK-NEXT:     }) as i64) as u64
+// CHECK-NEXT: }
+// CHECK-NEXT: fn strcspn(s: *const i8, reject: *const i8) -> u64 {
+// CHECK-NEXT:     ((if s != std::ptr::null::<i8>() && reject != std::ptr::null::<i8>() {
+// CHECK-NEXT:         32 as i32
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         0 as i32
+// CHECK-NEXT:     }) as i64) as u64
+// CHECK-NEXT: }
+// CHECK-NEXT: fn atoi(s: *const i8) -> i32 {
+// CHECK-NEXT:     if s != std::ptr::null::<i8>() { 41 } else { 0 }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn atol(s: *const i8) -> i64 {
+// CHECK-NEXT:     (if s != std::ptr::null::<i8>() { 42 as i32 } else { 0 as i32 }) as i64
+// CHECK-NEXT: }
+// CHECK-NEXT: fn strtol(s: *const i8, end: *mut *mut i8, base: i32) -> i64 {
+// CHECK-NEXT:     (if s != std::ptr::null::<i8>() && end != std::ptr::null_mut::<*mut i8>()
+// CHECK-NEXT:         && base != 0
+// CHECK-NEXT:     {
+// CHECK-NEXT:         43 as i32
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         0 as i32
+// CHECK-NEXT:     }) as i64
+// CHECK-NEXT: }
+// CHECK-NEXT: fn strtoul(s: *const i8, end: *mut *mut i8, base: i32) -> u64 {
+// CHECK-NEXT:     ((if s != std::ptr::null::<i8>() && end != std::ptr::null_mut::<*mut i8>()
+// CHECK-NEXT:         && base != 0
+// CHECK-NEXT:     {
+// CHECK-NEXT:         44 as i32
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         0 as i32
+// CHECK-NEXT:     }) as i64) as u64
+// CHECK-NEXT: }
+// CHECK-NEXT: fn strtod(s: *const i8, end: *mut *mut i8) -> f64 {
+// CHECK-NEXT:     if s != std::ptr::null::<i8>() && end != std::ptr::null_mut::<*mut i8>() {
+// CHECK-NEXT:         45.0f64
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         0.0f64
+// CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn printf(format: *const i8) -> i32 {
+// CHECK-NEXT:     if format != std::ptr::null::<i8>() { 51 } else { 0 }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn puts(s: *const i8) -> i32 {
+// CHECK-NEXT:     if s != std::ptr::null::<i8>() { 52 } else { 0 }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn fopen(path: *const i8, mode: *const i8) -> *mut () {
+// CHECK-NEXT:     if path != std::ptr::null::<i8>() && mode != std::ptr::null::<i8>() {
+// CHECK-NEXT:         (48 as i32) as *mut ()
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         std::ptr::null_mut::<()>()
+// CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn fputs(s: *const i8, stream: *mut ()) -> i32 {
+// CHECK-NEXT:     if s != std::ptr::null::<i8>() && stream != std::ptr::null_mut::<()>() {
+// CHECK-NEXT:         54
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         0
+// CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn fgets(s: *mut i8, count: i32, stream: *mut ()) -> *mut i8 {
+// CHECK-NEXT:     if s != std::ptr::null_mut::<i8>() && count != 0
+// CHECK-NEXT:         && stream != std::ptr::null_mut::<()>()
+// CHECK-NEXT:     {
+// CHECK-NEXT:         (40 as i32) as *mut i8
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         std::ptr::null_mut::<i8>()
+// CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn fread(ptr: *mut (), size: u64, count: u64, stream: *mut ()) -> u64 {
+// CHECK-NEXT:     ((if ptr != std::ptr::null_mut::<()>() && size != 0 && count != 0
+// CHECK-NEXT:         && stream != std::ptr::null_mut::<()>()
+// CHECK-NEXT:     {
+// CHECK-NEXT:         56 as i32
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         0 as i32
+// CHECK-NEXT:     }) as i64) as u64
+// CHECK-NEXT: }
+// CHECK-NEXT: fn fwrite(ptr: *const (), size: u64, count: u64, stream: *mut ()) -> u64 {
+// CHECK-NEXT:     ((if ptr != std::ptr::null::<()>() && size != 0 && count != 0
+// CHECK-NEXT:         && stream != std::ptr::null_mut::<()>()
+// CHECK-NEXT:     {
+// CHECK-NEXT:         57 as i32
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         0 as i32
+// CHECK-NEXT:     }) as i64) as u64
+// CHECK-NEXT: }
+// CHECK-NEXT: fn fclose(stream: *mut ()) -> i32 {
+// CHECK-NEXT:     if stream != std::ptr::null_mut::<()>() { 58 } else { 0 }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn fflush(stream: *mut ()) -> i32 {
+// CHECK-NEXT:     if stream != std::ptr::null_mut::<()>() { 59 } else { 0 }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn remove(path: *const i8) -> i32 {
+// CHECK-NEXT:     if path != std::ptr::null::<i8>() { 60 } else { 0 }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn toupper(value: i32) -> i32 {
+// CHECK-NEXT:     if value != 0 { 61 } else { 0 }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn tolower(value: i32) -> i32 {
+// CHECK-NEXT:     if value != 0 { 62 } else { 0 }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn sin(value: f64) -> f64 {
+// CHECK-NEXT:     if value != 0.0f64 { 63.0f64 } else { 0.0f64 }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn cos(value: f64) -> f64 {
+// CHECK-NEXT:     if value != 0.0f64 { 64.0f64 } else { 0.0f64 }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn tan(value: f64) -> f64 {
+// CHECK-NEXT:     if value != 0.0f64 { 65.0f64 } else { 0.0f64 }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn log(value: f64) -> f64 {
+// CHECK-NEXT:     if value != 0.0f64 { 66.0f64 } else { 0.0f64 }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn log10(value: f64) -> f64 {
+// CHECK-NEXT:     if value != 0.0f64 { 67.0f64 } else { 0.0f64 }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn log2(value: f64) -> f64 {
+// CHECK-NEXT:     if value != 0.0f64 { 68.0f64 } else { 0.0f64 }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn pow(lhs: f64, rhs: f64) -> f64 {
+// CHECK-NEXT:     if lhs != 0.0f64 && rhs != 0.0f64 { 69.0f64 } else { 0.0f64 }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn sqrt(value: f64) -> f64 {
+// CHECK-NEXT:     if value != 0.0f64 { 70.0f64 } else { 0.0f64 }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn exp(value: f64) -> f64 {
+// CHECK-NEXT:     if value != 0.0f64 { 71.0f64 } else { 0.0f64 }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn exp2(value: f64) -> f64 {
+// CHECK-NEXT:     if value != 0.0f64 { 72.0f64 } else { 0.0f64 }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn fmod(lhs: f64, rhs: f64) -> f64 {
+// CHECK-NEXT:     if lhs != 0.0f64 && rhs != 0.0f64 { 73.0f64 } else { 0.0f64 }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn lround(value: f64) -> i64 {
+// CHECK-NEXT:     (if value != 0.0f64 { 74 as i32 } else { 0 as i32 }) as i64
+// CHECK-NEXT: }
+// CHECK-NEXT: fn llround(value: f64) -> i64 {
+// CHECK-NEXT:     (if value != 0.0f64 { 75 as i32 } else { 0 as i32 }) as i64
+// CHECK-NEXT: }
+// CHECK-NEXT: fn pthread_create(
+// CHECK-NEXT:     thread: *mut u64,
+// CHECK-NEXT:     attr: *const (),
+// CHECK-NEXT:     start: Option<unsafe extern "C-unwind" fn(*mut ()) -> *mut ()>,
+// CHECK-NEXT:     arg: *mut (),
+// CHECK-NEXT: ) -> i32 {
+// CHECK-NEXT:     if thread != std::ptr::null_mut::<u64>() && !(attr != std::ptr::null::<()>())
+// CHECK-NEXT:         && start != None && arg != std::ptr::null_mut::<()>()
+// CHECK-NEXT:     {
+// CHECK-NEXT:         78
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         0
+// CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn pthread_join(thread: u64, result: *mut *mut ()) -> i32 {
+// CHECK-NEXT:     if thread != 0 && result != std::ptr::null_mut::<*mut ()>() { 79 } else { 0 }
+// CHECK-NEXT: }
+// CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.compare")]
+// CHECK-NEXT: extern "C-unwind" fn compare(lhs: *const (), rhs: *const ()) -> i32 {
+// CHECK-NEXT:     if lhs == rhs { 0 } else { 1 }
+// CHECK-NEXT: }
+// CHECK-NEXT: extern "C-unwind" fn start(arg: *mut ()) -> *mut () {
+// CHECK-NEXT:     arg
+// CHECK-NEXT: }
+// CHECK-NEXT: fn qsort(
+// CHECK-NEXT:     base: *mut (),
+// CHECK-NEXT:     count: u64,
+// CHECK-NEXT:     size: u64,
+// CHECK-NEXT:     callback: Option<unsafe extern "C-unwind" fn(*const (), *const ()) -> i32>,
+// CHECK-NEXT: ) {
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         project_state = if base != std::ptr::null_mut::<()>() && count != 0 && size != 0
+// CHECK-NEXT:             && callback != None
+// CHECK-NEXT:         {
+// CHECK-NEXT:             76
+// CHECK-NEXT:         } else {
+// CHECK-NEXT:             0
+// CHECK-NEXT:         };
+// CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn bsearch(
+// CHECK-NEXT:     key: *const (),
+// CHECK-NEXT:     base: *const (),
+// CHECK-NEXT:     count: u64,
+// CHECK-NEXT:     size: u64,
+// CHECK-NEXT:     callback: Option<unsafe extern "C-unwind" fn(*const (), *const ()) -> i32>,
+// CHECK-NEXT: ) -> *mut () {
+// CHECK-NEXT:     if key != std::ptr::null::<()>() && base != std::ptr::null::<()>() && count != 0
+// CHECK-NEXT:         && size != 0 && callback != None
+// CHECK-NEXT:     {
+// CHECK-NEXT:         (56 as i32) as *mut ()
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         std::ptr::null_mut::<()>()
+// CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn exit(status: i32) {
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         project_state = status + 80;
+// CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-NEXT: fn __slate_main() -> i32 {
+// CHECK-NEXT:     let mut a: [i8; 8] = [97, 0, 0, 0, 0, 0, 0, 0];
+// CHECK-NEXT:     let mut b: [i8; 8] = [98, 0, 0, 0, 0, 0, 0, 0];
+// CHECK-NEXT:     let mut end: *mut i8 = a.as_mut_ptr() as *mut i8;
+// CHECK-NEXT:     let count: u64 = 1;
+// CHECK-NEXT:     let number: i32 = 1;
+// CHECK-NEXT:     let real: f64 = 1.0f64;
+// CHECK-NEXT:     let mut ptr: *mut () = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut thread: u64 = 1;
+// CHECK-NEXT:     let strlen_call: Option<unsafe extern "C-unwind" fn(*const i8) -> u64> = Some(
+// CHECK-NEXT:         strlen,
+// CHECK-NEXT:     );
+// CHECK-NEXT:     ptr = malloc(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(count)) });
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if ptr != ((16 as i32) as *mut ()) {
+// CHECK-NEXT:             return 2;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if calloc(
+// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(count)) },
+// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(count)) },
+// CHECK-NEXT:         ) != ((16 as i32) as *mut ())
+// CHECK-NEXT:         {
+// CHECK-NEXT:             return 3;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if realloc(ptr, unsafe { std::ptr::read_volatile(std::ptr::addr_of!(count)) })
+// CHECK-NEXT:             != ((16 as i32) as *mut ())
+// CHECK-NEXT:         {
+// CHECK-NEXT:             return 4;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     free(ptr);
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if (unsafe { project_state }) != 77 {
+// CHECK-NEXT:             return 5;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if memcpy(
+// CHECK-NEXT:             a.as_mut_ptr() as *mut (),
+// CHECK-NEXT:             b.as_mut_ptr() as *const (),
+// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(count)) },
+// CHECK-NEXT:         ) != (a.as_mut_ptr() as *mut ())
+// CHECK-NEXT:         {
+// CHECK-NEXT:             return 6;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if memmove(
+// CHECK-NEXT:             a.as_mut_ptr() as *mut (),
+// CHECK-NEXT:             b.as_mut_ptr() as *const (),
+// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(count)) },
+// CHECK-NEXT:         ) != (a.as_mut_ptr() as *mut ())
+// CHECK-NEXT:         {
+// CHECK-NEXT:             return 7;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if memset(
+// CHECK-NEXT:             a.as_mut_ptr() as *mut (),
+// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(number)) },
+// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(count)) },
+// CHECK-NEXT:         ) != (a.as_mut_ptr() as *mut ())
+// CHECK-NEXT:         {
+// CHECK-NEXT:             return 8;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if memchr(
+// CHECK-NEXT:             a.as_mut_ptr() as *const (),
+// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(number)) },
+// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(count)) },
+// CHECK-NEXT:         ) != ((24 as i32) as *mut ())
+// CHECK-NEXT:         {
+// CHECK-NEXT:             return 9;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if strlen(a.as_mut_ptr() as *const i8) != 5 {
+// CHECK-NEXT:             return 10;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if (unsafe { strlen_call.unwrap()(a.as_mut_ptr() as *const i8) }) != 5 {
+// CHECK-NEXT:             return 10;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if strcpy(a.as_mut_ptr() as *mut i8, b.as_mut_ptr() as *const i8)
+// CHECK-NEXT:             != (a.as_mut_ptr() as *mut i8)
+// CHECK-NEXT:         {
+// CHECK-NEXT:             return 11;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if strcat(a.as_mut_ptr() as *mut i8, b.as_mut_ptr() as *const i8)
+// CHECK-NEXT:             != (a.as_mut_ptr() as *mut i8)
+// CHECK-NEXT:         {
+// CHECK-NEXT:             return 12;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if strncpy(
+// CHECK-NEXT:             a.as_mut_ptr() as *mut i8,
+// CHECK-NEXT:             b.as_mut_ptr() as *const i8,
+// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(count)) },
+// CHECK-NEXT:         ) != (a.as_mut_ptr() as *mut i8)
+// CHECK-NEXT:         {
+// CHECK-NEXT:             return 13;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if strncat(
+// CHECK-NEXT:             a.as_mut_ptr() as *mut i8,
+// CHECK-NEXT:             b.as_mut_ptr() as *const i8,
+// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(count)) },
+// CHECK-NEXT:         ) != (a.as_mut_ptr() as *mut i8)
+// CHECK-NEXT:         {
+// CHECK-NEXT:             return 14;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if strcmp(a.as_mut_ptr() as *const i8, b.as_mut_ptr() as *const i8) != 11 {
+// CHECK-NEXT:             return 15;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if strncmp(
+// CHECK-NEXT:             a.as_mut_ptr() as *const i8,
+// CHECK-NEXT:             b.as_mut_ptr() as *const i8,
+// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(count)) },
+// CHECK-NEXT:         ) != 12
+// CHECK-NEXT:         {
+// CHECK-NEXT:             return 16;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if memcmp(
+// CHECK-NEXT:             a.as_mut_ptr() as *const (),
+// CHECK-NEXT:             b.as_mut_ptr() as *const (),
+// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(count)) },
+// CHECK-NEXT:         ) != 13
+// CHECK-NEXT:         {
+// CHECK-NEXT:             return 17;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if strchr(
+// CHECK-NEXT:             a.as_mut_ptr() as *const i8,
+// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(number)) },
+// CHECK-NEXT:         ) != ((32 as i32) as *mut i8)
+// CHECK-NEXT:         {
+// CHECK-NEXT:             return 18;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if strrchr(
+// CHECK-NEXT:             a.as_mut_ptr() as *const i8,
+// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(number)) },
+// CHECK-NEXT:         ) != ((32 as i32) as *mut i8)
+// CHECK-NEXT:         {
+// CHECK-NEXT:             return 19;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if strstr(a.as_mut_ptr() as *const i8, b.as_mut_ptr() as *const i8)
+// CHECK-NEXT:             != ((32 as i32) as *mut i8)
+// CHECK-NEXT:         {
+// CHECK-NEXT:             return 20;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if strpbrk(a.as_mut_ptr() as *const i8, b.as_mut_ptr() as *const i8)
+// CHECK-NEXT:             != ((32 as i32) as *mut i8)
+// CHECK-NEXT:         {
+// CHECK-NEXT:             return 21;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if strspn(a.as_mut_ptr() as *const i8, b.as_mut_ptr() as *const i8) != 31 {
+// CHECK-NEXT:             return 22;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if strcspn(a.as_mut_ptr() as *const i8, b.as_mut_ptr() as *const i8) != 32 {
+// CHECK-NEXT:             return 23;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if atoi(a.as_mut_ptr() as *const i8) != 41 {
+// CHECK-NEXT:             return 24;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if atol(a.as_mut_ptr() as *const i8) != 42 {
+// CHECK-NEXT:             return 25;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if strtol(
+// CHECK-NEXT:             a.as_mut_ptr() as *const i8,
+// CHECK-NEXT:             std::ptr::addr_of_mut!(end),
+// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(number)) },
+// CHECK-NEXT:         ) != 43
+// CHECK-NEXT:         {
+// CHECK-NEXT:             return 26;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if strtoul(
+// CHECK-NEXT:             a.as_mut_ptr() as *const i8,
+// CHECK-NEXT:             std::ptr::addr_of_mut!(end),
+// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(number)) },
+// CHECK-NEXT:         ) != 44
+// CHECK-NEXT:         {
+// CHECK-NEXT:             return 27;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if strtod(a.as_mut_ptr() as *const i8, std::ptr::addr_of_mut!(end)) != 45.0f64 {
+// CHECK-NEXT:             return 28;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if printf(a.as_mut_ptr() as *const i8) != 51 {
+// CHECK-NEXT:             return 29;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if puts(a.as_mut_ptr() as *const i8) != 52 {
+// CHECK-NEXT:             return 30;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     let stream: *mut () = fopen(
+// CHECK-NEXT:         a.as_mut_ptr() as *const i8,
+// CHECK-NEXT:         b.as_mut_ptr() as *const i8,
+// CHECK-NEXT:     );
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if stream != ((48 as i32) as *mut ()) {
+// CHECK-NEXT:             return 31;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if fputs(a.as_mut_ptr() as *const i8, stream) != 54 {
+// CHECK-NEXT:             return 32;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if fgets(
+// CHECK-NEXT:             a.as_mut_ptr() as *mut i8,
+// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(number)) },
+// CHECK-NEXT:             stream,
+// CHECK-NEXT:         ) != ((40 as i32) as *mut i8)
+// CHECK-NEXT:         {
+// CHECK-NEXT:             return 33;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if fread(
+// CHECK-NEXT:             a.as_mut_ptr() as *mut (),
+// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(count)) },
+// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(count)) },
+// CHECK-NEXT:             stream,
+// CHECK-NEXT:         ) != 56
+// CHECK-NEXT:         {
+// CHECK-NEXT:             return 34;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if fwrite(
+// CHECK-NEXT:             a.as_mut_ptr() as *const (),
+// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(count)) },
+// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(count)) },
+// CHECK-NEXT:             stream,
+// CHECK-NEXT:         ) != 57
+// CHECK-NEXT:         {
+// CHECK-NEXT:             return 35;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if fclose(stream) != 58 {
+// CHECK-NEXT:             return 36;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if fflush(stream) != 59 {
+// CHECK-NEXT:             return 37;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if remove(a.as_mut_ptr() as *const i8) != 60 {
+// CHECK-NEXT:             return 38;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if toupper(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(number)) }) != 61
+// CHECK-NEXT:         {
+// CHECK-NEXT:             return 39;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if tolower(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(number)) }) != 62
+// CHECK-NEXT:         {
+// CHECK-NEXT:             return 40;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if sin(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) }) != 63.0f64 {
+// CHECK-NEXT:             return 41;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if cos(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) }) != 64.0f64 {
+// CHECK-NEXT:             return 42;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if tan(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) }) != 65.0f64 {
+// CHECK-NEXT:             return 43;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if log(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) }) != 66.0f64 {
+// CHECK-NEXT:             return 44;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if log10(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) }) != 67.0f64
+// CHECK-NEXT:         {
+// CHECK-NEXT:             return 45;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if log2(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) }) != 68.0f64
+// CHECK-NEXT:         {
+// CHECK-NEXT:             return 46;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if pow(
+// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) },
+// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) },
+// CHECK-NEXT:         ) != 69.0f64
+// CHECK-NEXT:         {
+// CHECK-NEXT:             return 47;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if sqrt(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) }) != 70.0f64
+// CHECK-NEXT:         {
+// CHECK-NEXT:             return 48;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if exp(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) }) != 71.0f64 {
+// CHECK-NEXT:             return 49;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if exp2(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) }) != 72.0f64
+// CHECK-NEXT:         {
+// CHECK-NEXT:             return 50;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if fmod(
+// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) },
+// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) },
+// CHECK-NEXT:         ) != 73.0f64
+// CHECK-NEXT:         {
+// CHECK-NEXT:             return 51;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if lround(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) }) != 74 {
+// CHECK-NEXT:             return 52;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if llround(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) }) != 75 {
+// CHECK-NEXT:             return 53;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if pthread_create(
+// CHECK-NEXT:             std::ptr::addr_of_mut!(thread),
+// CHECK-NEXT:             std::ptr::null::<()>(),
+// CHECK-NEXT:             Some(start),
+// CHECK-NEXT:             ptr,
+// CHECK-NEXT:         ) != 78
+// CHECK-NEXT:         {
+// CHECK-NEXT:             return 54;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if pthread_join(thread, std::ptr::addr_of_mut!(ptr)) != 79 {
+// CHECK-NEXT:             return 55;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     qsort(
+// CHECK-NEXT:         a.as_mut_ptr() as *mut (),
+// CHECK-NEXT:         unsafe { std::ptr::read_volatile(std::ptr::addr_of!(count)) },
+// CHECK-NEXT:         unsafe { std::ptr::read_volatile(std::ptr::addr_of!(count)) },
+// CHECK-NEXT:         Some(compare),
+// CHECK-NEXT:     );
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if (unsafe { project_state }) != 76 {
+// CHECK-NEXT:             return 56;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if bsearch(
+// CHECK-NEXT:             a.as_mut_ptr() as *const (),
+// CHECK-NEXT:             b.as_mut_ptr() as *const (),
+// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(count)) },
+// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(count)) },
+// CHECK-NEXT:             Some(compare),
+// CHECK-NEXT:         ) != ((56 as i32) as *mut ())
+// CHECK-NEXT:         {
+// CHECK-NEXT:             return 57;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     exit(0 as i32);
+// CHECK-NEXT:     if (unsafe { project_state }) == 80 { 1 } else { 58 }
+// CHECK-NEXT: }
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: unsafe extern "C-unwind" fn main(
+// CHECK-NEXT:     argc: i32,
+// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT: ) -> i32 {
+// CHECK-NEXT:     unsafe { __slate_main() }
+// CHECK-NEXT: }
+// CHECK-NOT: {{.}}
+// SLATE-FILECHECK-END

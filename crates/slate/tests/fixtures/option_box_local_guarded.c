@@ -22,3 +22,44 @@ int main(void) {
   compute(0);
   return 0;
 }
+
+// SLATE-FILECHECK-BEGIN
+// CHECK: {{^}}#![allow(non_camel_case_types)]
+// CHECK-NEXT: #![no_main]
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn malloc(__size: u64) -> *mut ();
+// CHECK-NEXT:     fn free(__ptr: *mut ());
+// CHECK-NEXT: }
+// CHECK-NEXT: fn compute(flag: i32) -> i32 {
+// CHECK-NEXT:     let mut p: *mut i32 = std::ptr::null_mut::<i32>();
+// CHECK-NEXT:     if flag != 0 {
+// CHECK-NEXT:         p = (unsafe { malloc(4 as u64) }) as *mut i32;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if p != std::ptr::null_mut::<i32>() {
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             *p = 41;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         let v: i32 = unsafe { *p };
+// CHECK-NEXT:         println!("{}", v);
+// CHECK-NEXT:         unsafe { free(p as *mut ()) };
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         println!("no alloc");
+// CHECK-NEXT:     }
+// CHECK-NEXT:     0
+// CHECK-NEXT: }
+// CHECK-NEXT: fn __slate_main() -> i32 {
+// CHECK-NEXT:     compute(1 as i32);
+// CHECK-NEXT:     compute(0 as i32);
+// CHECK-NEXT:     0
+// CHECK-NEXT: }
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: unsafe extern "C-unwind" fn main(
+// CHECK-NEXT:     argc: i32,
+// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT: ) -> i32 {
+// CHECK-NEXT:     unsafe { __slate_main() }
+// CHECK-NEXT: }
+// CHECK-NOT: {{.}}
+// SLATE-FILECHECK-END

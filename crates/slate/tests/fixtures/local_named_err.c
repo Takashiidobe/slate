@@ -21,3 +21,46 @@ int main(void) {
   printf("%d\n", pick(3, 4));
   return 0;
 }
+
+// SLATE-FILECHECK-BEGIN
+// CHECK: {{^}}#![allow(non_camel_case_types)]
+// CHECK-NEXT: #![no_main]
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT: }
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT: }
+// CHECK-NEXT: fn describe(code: i32) -> *const i8 {
+// CHECK-NEXT:     let mut [[ERR_0:Err_[0-9]+]]: *const i8 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     if code == 0 {
+// CHECK-NEXT:         [[ERR_0]] = c"ok".as_ptr();
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         [[ERR_0]] = c"bad".as_ptr();
+// CHECK-NEXT:     }
+// CHECK-NEXT:     [[ERR_0]]
+// CHECK-NEXT: }
+// CHECK-NEXT: fn pick([[OK_0:Ok_[0-9]+]]: i32, [[NONE_0:None_[0-9]+]]: i32) -> i32 {
+// CHECK-NEXT:     let [[SOME_0:Some_[0-9]+]]: i32 = [[OK_0]] + [[NONE_0]];
+// CHECK-NEXT:     [[SOME_0]] * 2
+// CHECK-NEXT: }
+// CHECK-NEXT: fn __slate_main() -> i32 {
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:     unsafe { printf(c"%s\n".as_ptr(), describe(0 as i32)) };
+// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:     unsafe { printf(c"%s\n".as_ptr(), describe(1 as i32)) };
+// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     println!("{}", pick(3 as i32, 4 as i32));
+// CHECK-NEXT:     0
+// CHECK-NEXT: }
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: unsafe extern "C-unwind" fn main(
+// CHECK-NEXT:     argc: i32,
+// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT: ) -> i32 {
+// CHECK-NEXT:     unsafe { __slate_main() }
+// CHECK-NEXT: }
+// CHECK-NOT: {{.}}
+// SLATE-FILECHECK-END

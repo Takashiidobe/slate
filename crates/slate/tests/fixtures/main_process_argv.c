@@ -18,3 +18,74 @@ int main(int argc, char **argv, char **envp) {
     printf("environ after argv %d\n", environ[0] == NULL || environ[0] > argv[argc - 1]);
     return 0;
 }
+
+// SLATE-FILECHECK-BEGIN
+// CHECK: {{^}}#![allow(non_camel_case_types)]
+// CHECK-NEXT: #![no_main]
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     static mut environ: *mut *mut i8;
+// CHECK-NEXT:     fn open(__file: *const i8, __oflag: i32, ...) -> i32;
+// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn memcpy(__dest: *mut (), __src: *const (), __n: u64) -> *mut ();
+// CHECK-NEXT:     fn memset(__s: *mut (), __c: i32, __n: u64) -> *mut ();
+// CHECK-NEXT:     fn strlen(__s: *const i8) -> u64;
+// CHECK-NEXT:     fn close(__fd: i32) -> i32;
+// CHECK-NEXT:     fn read(__fd: i32, __buf: *mut (), __nbytes: u64) -> i64;
+// CHECK-NEXT: }
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT: }
+// CHECK-NEXT: #[repr(C, align(16))]
+// CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: fn __slate_main(argc: i32, argv: *mut *mut i8, envp: *mut *mut i8) -> i32 {
+// CHECK-NEXT:     println!("envp {} argc {}", (envp == unsafe { environ }) as i32, argc);
+// CHECK-NEXT:     let len: u64 = unsafe {
+// CHECK-NEXT:         strlen((unsafe { *unsafe { argv.offset(0 as isize) } }) as *const i8)
+// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         std::ptr::write_bytes(
+// CHECK-NEXT:             ((unsafe { *unsafe { argv.offset(0 as isize) } }) as *mut ()) as *mut u8,
+// CHECK-NEXT:             0 as u8,
+// CHECK-NEXT:             len as usize,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         std::ptr::copy_nonoverlapping(
+// CHECK-NEXT:             c"renamed".as_ptr() as *const u8,
+// CHECK-NEXT:             ((unsafe { *unsafe { argv.offset(0 as isize) } }) as *mut ()) as *mut u8,
+// CHECK-NEXT:             (if len < 7 { len } else { 7 as u64 }) as usize,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let mut buf: __SlateAlign16<[i8; 64]> = __SlateAlign16({
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [i8; 64] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         [[T_0]][0] = 0 as i8;
+// CHECK-NEXT:         [[T_0]]
+// CHECK-NEXT:     });
+// CHECK-NEXT:     let fd: i32 = unsafe { open(c"/proc/self/cmdline".as_ptr(), 0 as i32) };
+// CHECK-NEXT:     let n: i64 = unsafe {
+// CHECK-NEXT:         read(fd, buf.0.as_mut_ptr() as *mut (), (64 as u64).wrapping_sub(1 as u64))
+// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { close(fd) };
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         printf(c"%d %s\n".as_ptr(), (n > 0) as i32, buf.0.as_mut_ptr() as *mut i8)
+// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     println!(
+// CHECK-NEXT:         "environ after argv {}", ((unsafe { * unsafe { unsafe { environ } .offset(0 as
+// CHECK-NEXT:         isize) } }) == std::ptr::null_mut::< i8 > () || (unsafe { * unsafe { unsafe {
+// CHECK-NEXT:         environ } .offset(0 as isize) } }) > unsafe { * unsafe { argv.offset((argc - 1)
+// CHECK-NEXT:         as isize) } }) as i32
+// CHECK-NEXT:     );
+// CHECK-NEXT:     0
+// CHECK-NEXT: }
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: unsafe extern "C-unwind" fn main(
+// CHECK-NEXT:     argc: i32,
+// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT: ) -> i32 {
+// CHECK-NEXT:     unsafe { __slate_main(argc as _, argv as _, envp as _) }
+// CHECK-NEXT: }
+// CHECK-NOT: {{.}}
+// SLATE-FILECHECK-END

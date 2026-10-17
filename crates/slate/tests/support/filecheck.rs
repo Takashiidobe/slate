@@ -13,7 +13,9 @@ pub fn check_generated_rust(
 ) -> Result<(), String> {
     let groups = check_groups(fixture, prefixes)?;
     if groups.is_empty() {
-        return Ok(());
+        return Err(
+            "FileCheck failed: fixture has no SLATE-FILECHECK block; generate one with crates/slate/tools/update_filecheck.py".into(),
+        );
     }
     if let Some((number, line)) = generated
         .lines()
@@ -80,6 +82,10 @@ fn check_groups(fixture: &str, prefixes: &[String]) -> Result<Vec<Vec<String>>, 
             let group = global_groups
                 .last_mut()
                 .ok_or_else(|| format!("`{check}` requires a preceding global check"))?;
+            group.push(check);
+        } else if check.starts_with("// CHECK-NOT:")
+            && let Some(group) = global_groups.last_mut()
+        {
             group.push(check);
         } else {
             global_groups.push(vec![check]);

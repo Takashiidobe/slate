@@ -48,3 +48,102 @@ int main(void) {
   printf("%d\n", (_Bool)p);
   return 0;
 }
+
+// SLATE-FILECHECK-BEGIN
+// CHECK: {{^}}#![allow(non_camel_case_types)]
+// CHECK-NEXT: #![no_main]
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT: }
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT: }
+// CHECK-NEXT: #[repr(C, align(16))]
+// CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: fn as_int(color: u32) -> i32 {
+// CHECK-NEXT:     (color as u32) as i32
+// CHECK-NEXT: }
+// CHECK-NEXT: fn from_int(value: i32) -> u32 {
+// CHECK-NEXT:     value as u32
+// CHECK-NEXT: }
+// CHECK-NEXT: fn flip(value: i32) -> i32 {
+// CHECK-NEXT:     -(value as i32) as i32
+// CHECK-NEXT: }
+// CHECK-NEXT: fn __slate_main() -> i32 {
+// CHECK-NEXT:     println!("{} {} {}", as_int(0 as u32), as_int(5 as u32), as_int(6 as u32));
+// CHECK-NEXT:     let mut color: u32 = from_int(6 as i32);
+// CHECK-NEXT:     println!("{} {}", ((color as u32) == 6) as i32, (color as u32).wrapping_add(1));
+// CHECK-NEXT:     color = 42;
+// CHECK-NEXT:     println!("{}", (color as u32) as i32);
+// CHECK-NEXT:     color = (color as u32).wrapping_add(1) as u32;
+// CHECK-NEXT:     println!("{}", color as u32);
+// CHECK-NEXT:     println!("{} {}", flip(- 3 as i32) as i32, ((flip(3 as i32) as i32) < 0) as i32);
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         printf(
+// CHECK-NEXT:             c"%u %d\n".as_ptr(),
+// CHECK-NEXT:             4294967295 as u32,
+// CHECK-NEXT:             ((4294967295 as u32) > (0 as u32)) as i32,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     let wide: i64 = -3;
+// CHECK-NEXT:     let narrow: u8 = (-3 as i8) as u8;
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:     unsafe { printf(c"%lld %u\n".as_ptr(), wide, narrow as u32) };
+// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 4]> = __SlateAlign16([
+// CHECK-NEXT:         10 as i32,
+// CHECK-NEXT:         20 as i32,
+// CHECK-NEXT:         30 as i32,
+// CHECK-NEXT:         40 as i32,
+// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let p: *mut i32 = values.0.as_mut_ptr() as *mut i32;
+// CHECK-NEXT:     let address: u64 = p as u64;
+// CHECK-NEXT:     let back: *mut i32 = address as *mut i32;
+// CHECK-NEXT:     println!("{} {}", (back == p) as i32, unsafe { * back });
+// CHECK-NEXT:     println!(
+// CHECK-NEXT:         "{}", (((unsafe { p.offset(3 as isize) }) as u64).wrapping_sub(address) as u32)
+// CHECK-NEXT:         as i32
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let signed_address: i64 = (unsafe { p.offset(2 as isize) }) as i64;
+// CHECK-NEXT:     println!("{}", unsafe { * (signed_address as * mut i32) });
+// CHECK-NEXT:     let opaque: *mut () = (unsafe {
+// CHECK-NEXT:         (values.0.as_mut_ptr() as *mut i32).offset(1 as isize)
+// CHECK-NEXT:     }) as *mut ();
+// CHECK-NEXT:     let read_only: *const i32 = opaque as *const i32;
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         *(read_only as *mut i32) = (unsafe { *(read_only as *mut i32) }) + 5;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     println!("{}", values.0[1]);
+// CHECK-NEXT:     let bytes: *mut u8 = (unsafe {
+// CHECK-NEXT:         (values.0.as_mut_ptr() as *mut i32).offset(0 as isize)
+// CHECK-NEXT:     }) as *mut u8;
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         printf(
+// CHECK-NEXT:             c"%u %u\n".as_ptr(),
+// CHECK-NEXT:             (unsafe { *unsafe { bytes.offset(0 as isize) } }) as u32,
+// CHECK-NEXT:             (unsafe { *unsafe { bytes.offset(1 as isize) } }) as u32,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     let null: *mut () = std::ptr::null_mut::<()>();
+// CHECK-NEXT:     println!(
+// CHECK-NEXT:         "{} {} {}", (null == std::ptr::null_mut::< () > ()) as i32, ! (null !=
+// CHECK-NEXT:         std::ptr::null_mut::< () > ()) as i32, ((null as i64) == 0) as i32
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let from_zero: *mut i32 = std::ptr::null_mut::<i32>();
+// CHECK-NEXT:     println!("{}", (from_zero == std::ptr::null_mut::< i32 > ()) as i32);
+// CHECK-NEXT:     println!("{}", (p != std::ptr::null_mut::< i32 > ()) as i32);
+// CHECK-NEXT:     0
+// CHECK-NEXT: }
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: unsafe extern "C-unwind" fn main(
+// CHECK-NEXT:     argc: i32,
+// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT: ) -> i32 {
+// CHECK-NEXT:     unsafe { __slate_main() }
+// CHECK-NEXT: }
+// CHECK-NOT: {{.}}
+// SLATE-FILECHECK-END

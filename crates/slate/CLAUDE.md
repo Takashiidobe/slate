@@ -126,9 +126,9 @@ that `target-*` directory and rerun.
 
 ## Workflow for a rewrite change
 
-1. Add or extend a `tests/fixtures/` fixture. Wrap the functions whose output
-   should change in `// @check-fn-begin` / `// @check-fn-end`, and confirm the
-   current output lacks the rewrite.
+1. Add or extend a `tests/fixtures/` fixture and confirm the current output
+   lacks the rewrite. Every fixture needs a `SLATE-FILECHECK` block; by
+   default it checks the whole generated file.
 2. Implement the rewrite, then run
    `crates/slate/tools/update_filecheck.py crates/slate/tests/fixtures/<name>.c`
    to regenerate its `SLATE-FILECHECK` block. Read the block: it should show

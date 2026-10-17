@@ -87,13 +87,29 @@ directive.
 
 ## FileCheck
 
-`tests/fixtures/` fixtures (including `x86_64/` and `i686/`) can pin the shape
-of the Rust that the rewrite pipeline emits. Runtime parity is still the
-correctness gate. FileCheck checks that rewrites fire: a check runs only after
-the fixture's runtime comparison passes, and a mismatch fails
-`generated_differential` in the `slate` profile.
+Every `tests/fixtures/` fixture (including `x86_64/` and `i686/`) pins the
+Rust that the rewrite pipeline emits in a trailing
+`// SLATE-FILECHECK-BEGIN` ... `// SLATE-FILECHECK-END` block. Runtime parity
+is still the correctness gate. A check runs only after the fixture's runtime
+comparison passes. A mismatch, or a fixture with no block, fails
+`generated_differential` (or `i686_differential`) in the `slate` profile.
 
-Wrap each C function whose output you want checked:
+Generate the block from the workspace root:
+
+```bash
+crates/slate/tools/update_filecheck.py crates/slate/tests/fixtures/<name>.c
+```
+
+The tool runs the harness, then rewrites the block. By default the block
+checks the whole generated file: a `CHECK` on its first line, `CHECK-NEXT`
+lines for the rest, and a final `// CHECK-NOT: {{.}}` so appended output fails
+too. Generated names (`__v12`, `__slate_slot_3`) become FileCheck variables,
+so renumbering does not break checks. With no arguments the tool regenerates
+every fixture. `--no-run` reuses the Rust from the last test run. Fixture
+names, as a failing run prints them, work as arguments too.
+
+When a whole-file block is a problem for a fixture, narrow it to specific C
+functions:
 
 ```c
 // @check-fn-begin
@@ -101,20 +117,8 @@ static int count(int n) { ... }
 // @check-fn-end
 ```
 
-Then generate the expected output from the workspace root:
-
-```bash
-crates/slate/tools/update_filecheck.py crates/slate/tests/fixtures/<name>.c
-```
-
-The tool runs the harness, then rewrites the fixture's trailing
-`// SLATE-FILECHECK-BEGIN` ... `// SLATE-FILECHECK-END` block. Each marked
-function gets a `CHECK-LABEL` on its Rust signature, `CHECK-NEXT` lines for
-its body, and a closing `// CHECK: {{^}}}`. Generated names (`__v12`,
-`__slate_slot_3`) become FileCheck variables, so renumbering does not break
-checks. With no arguments the tool regenerates every fixture that has markers
-or a block. `--no-run` reuses the Rust from the last test run. Fixture names,
-as a failing run prints them, work as arguments too.
+Each marked function then gets a `CHECK-LABEL` on its Rust signature,
+`CHECK-NEXT` lines for its body, and a closing `// CHECK: {{^}}}`.
 
 Review the regenerated block: it is the claim that a rewrite fired. When a
 change alters output, the `slate` profile reports `FileCheck failed` for each
@@ -123,5 +127,5 @@ affected fixture. Regenerate exactly those and read the diff.
 Prefixes are `CHECK` and the upper-cased target triple. Supported directives
 are `CHECK`, `-LABEL`, `-NEXT`, `-SAME`, `-EMPTY`, `-DAG` and `-NOT`. A label
 block must end with `// CHECK: {{^}}}`, and generated Rust must never contain
-a directive. Prefer markers and the tool over hand-written checks. The old
+a directive. Prefer the tool over hand-written checks. The old
 `@lowering`, `@rewrite` and `@slate-lowerer` markers are gone.
