@@ -244,8 +244,7 @@ int main(void) {
 // CHECK-NEXT:         + 8 * ((a >= b) as i32) + 16 * ((a == b) as i32) + 32 * ((a != b) as i32)
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let x: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63])
-// CHECK-NEXT:         / LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
+// CHECK-NEXT:     let x: LongDouble = LongDouble([171, 170, 170, 170, 170, 170, 170, 170, 253, 63]);
 // CHECK-NEXT:     let y: LongDouble = x * unsafe { scale }
 // CHECK-NEXT:         - LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 253, 63]);
 // CHECK-NEXT:     let uninit: LongDouble = -y;

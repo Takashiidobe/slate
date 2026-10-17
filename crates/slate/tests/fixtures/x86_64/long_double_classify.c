@@ -385,14 +385,11 @@ int main(void) {
 // CHECK-NEXT:         LongDouble([255, 255, 255, 255, 255, 255, 255, 255, 254, 127]),
 // CHECK-NEXT:         LongDouble([255, 255, 255, 255, 255, 255, 255, 255, 254, 255]),
 // CHECK-NEXT:         LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 0]),
-// CHECK-NEXT:         LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 0])
-// CHECK-NEXT:             / LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 64]),
-// CHECK-NEXT:         LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 128])
-// CHECK-NEXT:             / LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 9, 64]),
+// CHECK-NEXT:         LongDouble([0, 0, 0, 0, 0, 0, 0, 32, 0, 0]),
+// CHECK-NEXT:         LongDouble([0, 0, 0, 0, 0, 0, 32, 0, 0, 128]),
 // CHECK-NEXT:         LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]),
 // CHECK-NEXT:         LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 255]),
-// CHECK-NEXT:         LongDouble([255, 255, 255, 255, 255, 255, 255, 255, 254, 127])
-// CHECK-NEXT:             * LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 64]),
+// CHECK-NEXT:         LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]),
 // CHECK-NEXT:         LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]),
 // CHECK-NEXT:         LongDouble([7, 0, 0, 0, 0, 0, 0, 192, 255, 255]),
 // CHECK-NEXT:     ];

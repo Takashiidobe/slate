@@ -122,21 +122,19 @@ impl Tables<'_> {
             ValueKind::Aggregate { members, .. } => members
                 .iter()
                 .all(|member| self.is_constant_initializer(&member.value)),
-            ValueKind::Unary { op, operand, .. } => {
+            ValueKind::Unary { operand, .. } => {
                 if self.is_long_double(&value.ty) {
-                    *op == ir::UnaryArithOp::Neg
-                        && matches!(
-                            operand.node.value,
-                            ValueKind::Constant(ir::Number::FloatBits(_))
-                        )
+                    self.fold_long_double(value).is_some()
                 } else {
                     self.is_constant_initializer(operand)
                 }
             }
             ValueKind::Arith { left, right, .. } => {
-                !self.is_long_double(&value.ty)
-                    && self.is_constant_initializer(left)
-                    && self.is_constant_initializer(right)
+                if self.is_long_double(&value.ty) {
+                    self.fold_long_double(value).is_some()
+                } else {
+                    self.is_constant_initializer(left) && self.is_constant_initializer(right)
+                }
             }
             ValueKind::Compare { left, right, .. } => [left, right].iter().all(|operand| {
                 !self.is_long_double(&operand.ty)

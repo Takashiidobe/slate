@@ -888,6 +888,12 @@ impl FunctionLowerer<'_, '_> {
                     ty: self.lower_type(&value.ty)?,
                 }
             }
+            ValueKind::Arith { .. } | ValueKind::Unary { .. }
+                if let Some(bits) = self.tables.fold_long_double(value) =>
+            {
+                self.lower_type(&value.ty)?;
+                long_double_literal(bits)
+            }
             ValueKind::Arith {
                 op, left, right, ..
             } if self.tables.wide_int(&value.ty).is_some()

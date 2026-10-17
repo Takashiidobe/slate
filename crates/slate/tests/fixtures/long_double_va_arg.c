@@ -335,8 +335,7 @@ int main(void) {
 // CHECK-NEXT:         + second * LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 2, 64]) + again
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let precise: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63])
-// CHECK-NEXT:         + LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 192, 63]);
+// CHECK-NEXT:     let precise: LongDouble = LongDouble([1, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __slate_printf__ri32_pi8_f80(

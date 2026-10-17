@@ -318,3 +318,49 @@ impl FunctionLowerer<'_, '_> {
         ))
     }
 }
+
+impl Tables<'_> {
+    pub(super) fn fold_long_double(&self, value: &ir::Value) -> Option<u128> {
+        use rustc_apfloat::{Float, ieee::X87DoubleExtended};
+        if !self.is_long_double(&value.ty) {
+            return None;
+        }
+        let operand = |value: &ir::Value| {
+            self.fold_long_double(value)
+                .map(X87DoubleExtended::from_bits)
+        };
+        match &value.node.value {
+            ValueKind::Constant(ir::Number::FloatBits(bits)) => Some(*bits),
+            ValueKind::Unary {
+                op: ir::UnaryArithOp::Neg,
+                operand: inner,
+                ..
+            } => Some((-operand(inner)?).to_bits()),
+            ValueKind::Arith {
+                op,
+                left,
+                right,
+                semantics:
+                    ir::ArithSema::Floating {
+                        floating:
+                            ir::FloatingSemantics {
+                                rounding: ir::Rounding::NearestEven,
+                                ..
+                            },
+                        ..
+                    },
+            } => {
+                let (left, right) = (operand(left)?, operand(right)?);
+                let result = match op {
+                    ir::ArithOp::Add => left + right,
+                    ir::ArithOp::Sub => left - right,
+                    ir::ArithOp::Mul => left * right,
+                    ir::ArithOp::Div => left / right,
+                    _ => return None,
+                };
+                Some(result.value.to_bits())
+            }
+            _ => None,
+        }
+    }
+}
