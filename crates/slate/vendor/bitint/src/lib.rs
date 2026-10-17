@@ -218,6 +218,18 @@ impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> BU
         cast_bytes::<BITS, DBYTES, BITS, BYTES>(&self.bytes, false)
     }
 
+    pub const fn count_ones(self) -> u32 {
+        self.to_limbs().count_ones()
+    }
+
+    pub const fn leading_zeros(self) -> u32 {
+        self.to_limbs().leading_zeros()
+    }
+
+    pub const fn trailing_zeros(self) -> u32 {
+        self.to_limbs().trailing_zeros()
+    }
+
     pub const fn to_ieee_bits(self, frac_bits: u32, exp_bits: u32, explicit: bool) -> u128 {
         self.to_limbs()
             .magnitude_to_ieee(false, frac_bits, exp_bits, explicit)
@@ -624,6 +636,28 @@ impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> BI
 
     pub const fn to_i128(self) -> i128 {
         self.to_limbs().to_i128()
+    }
+
+    pub const fn count_ones(self) -> u32 {
+        self.to_limbs().bits.count_ones()
+    }
+
+    pub const fn leading_zeros(self) -> u32 {
+        self.to_limbs().bits.leading_zeros()
+    }
+
+    pub const fn trailing_zeros(self) -> u32 {
+        self.to_limbs().bits.trailing_zeros()
+    }
+
+    pub const fn redundant_sign_bits(self) -> u32 {
+        let limbs = self.to_limbs();
+        let pattern = if limbs.is_negative() {
+            limbs.bits.bitnot()
+        } else {
+            limbs.bits
+        };
+        pattern.leading_zeros() - 1
     }
 
     pub const fn to_ieee_bits(self, frac_bits: u32, exp_bits: u32, explicit: bool) -> u128 {
@@ -1134,6 +1168,31 @@ impl<const BITS: usize, const LIMBS: usize> BUintLimbs<BITS, LIMBS> {
             i += 1;
         }
         true
+    }
+
+    const fn count_ones(&self) -> u32 {
+        let mut total = 0;
+        let mut i = 0;
+        while i < LIMBS {
+            total += self.limbs[i].count_ones();
+            i += 1;
+        }
+        total
+    }
+
+    const fn leading_zeros(&self) -> u32 {
+        (BITS - self.bit_len()) as u32
+    }
+
+    const fn trailing_zeros(&self) -> u32 {
+        let mut i = 0;
+        while i < LIMBS {
+            if self.limbs[i] != 0 {
+                return (i * 64) as u32 + self.limbs[i].trailing_zeros();
+            }
+            i += 1;
+        }
+        BITS as u32
     }
 
     const fn has_bits_below(&self, count: usize) -> bool {

@@ -5,7 +5,7 @@ use rustc_apfloat::{
 };
 use slate_parser::target_info::TargetFamily;
 
-fn is_small_bit_precise(ty: &ir::Type) -> bool {
+pub(super) fn is_small_bit_precise(ty: &ir::Type) -> bool {
     matches!(
         ty,
         ir::Type::Numeric(ir::NumericType::Integer {
@@ -60,12 +60,22 @@ pub(super) fn bit_count_method(builtin: &str) -> Option<&'static str> {
 pub(super) fn is_find_first_set(builtin: &str) -> bool {
     matches!(
         builtin,
-        "__builtin_ffs" | "__builtin_ffsl" | "__builtin_ffsll"
+        "__builtin_ffs" | "__builtin_ffsl" | "__builtin_ffsll" | "__builtin_ffsg"
     )
 }
 
+pub(super) fn is_parity_or_clrsb(builtin: &str) -> bool {
+    matches!(builtin, "__builtin_parityg" | "__builtin_clrsbg")
+}
+
 pub(super) fn open_coded_builtin(builtin: &str) -> bool {
-    bit_count_method(builtin).is_some() || is_find_first_set(builtin)
+    bit_count_method(builtin).is_some()
+        || is_find_first_set(builtin)
+        || is_parity_or_clrsb(builtin)
+        || matches!(
+            builtin,
+            "__builtin_elementwise_add_sat" | "__builtin_elementwise_sub_sat"
+        )
 }
 
 fn rotate_method(builtin: &str) -> Option<&'static str> {
@@ -82,7 +92,7 @@ fn rotate_method(builtin: &str) -> Option<&'static str> {
     }
 }
 
-fn prim_width(prim: Prim) -> u32 {
+pub(super) fn prim_width(prim: Prim) -> u32 {
     match prim {
         Prim::I8 | Prim::U8 => 8,
         Prim::I16 | Prim::U16 => 16,
@@ -152,16 +162,12 @@ impl FunctionLowerer<'_, '_> {
         let Some(operand) = arguments.first() else {
             return Err(unsupported_value(value));
         };
-        if odd_width(self.tables.resolve_type(&operand.ty)).is_some() {
+        let Some(shape) = self.tables.bit_shape(&operand.ty) else {
             return Err(unsupported_value(value));
-        }
+        };
         let result = self.lower_type(&value.ty)?;
         let count = |recv: Expr| Expr::Cast {
-            expr: Box::new(Expr::MethodCall {
-                recv: Box::new(recv),
-                method: method.into(),
-                args: Vec::new(),
-            }),
+            expr: Box::new(bit_count_expr(shape, recv, method)),
             ty: result.clone(),
         };
         let fallback = match arguments {
@@ -194,8 +200,80 @@ impl FunctionLowerer<'_, '_> {
         })))
     }
 
+    fn lower_parity_or_clrsb(
+        &mut self,
+        value: &ir::Value,
+        builtin: &str,
+        arguments: &[ir::Value],
+    ) -> Result<Expr> {
+        let [operand] = arguments else {
+            return Err(unsupported_value(value));
+        };
+        let Some(shape) = self.tables.bit_shape(&operand.ty) else {
+            return Err(unsupported_value(value));
+        };
+        let bits = self.next_temp();
+        let var = || Expr::Var(bits.as_str().into());
+        let result = self.lower_type(&value.ty)?;
+        let one = || Expr::Cast {
+            expr: Box::new(Expr::Value(rust::RustValue::U128(1))),
+            ty: rust::Type::Prim(Prim::U32),
+        };
+        let tail = if builtin == "__builtin_parityg" {
+            Expr::Binary {
+                op: BinOp::BitAnd,
+                lhs: Box::new(bit_count_expr(shape, var(), "count_ones")),
+                rhs: Box::new(one()),
+            }
+        } else if self.tables.wide_int(&operand.ty).is_some() {
+            Expr::MethodCall {
+                recv: Box::new(var()),
+                method: "redundant_sign_bits".into(),
+                args: Vec::new(),
+            }
+        } else {
+            Expr::Binary {
+                op: BinOp::Sub,
+                lhs: Box::new(Expr::If {
+                    cond: Box::new(Expr::Binary {
+                        op: BinOp::Lt,
+                        lhs: Box::new(var()),
+                        rhs: Box::new(
+                            self.lower_number(&Number::Integer(0u32.into()), &operand.ty)?,
+                        ),
+                    }),
+                    then_expr: Box::new(bit_count_expr(
+                        shape,
+                        Expr::Unary {
+                            op: rust::UnaryOp::Not,
+                            expr: Box::new(var()),
+                        },
+                        "leading_zeros",
+                    )),
+                    else_expr: Box::new(bit_count_expr(shape, var(), "leading_zeros")),
+                }),
+                rhs: Box::new(one()),
+            }
+        };
+        Ok(Expr::Block(Box::new(rust::Block {
+            stmts: vec![Stmt::Let {
+                name: bits.clone(),
+                mutable: false,
+                ty: None,
+                init: Some(self.lower_value(operand)?),
+            }],
+            tail: Some(Box::new(Expr::Cast {
+                expr: Box::new(tail),
+                ty: result,
+            })),
+        })))
+    }
+
     fn lower_find_first_set(&mut self, value: &ir::Value, arguments: &[ir::Value]) -> Result<Expr> {
         let [operand] = arguments else {
+            return Err(unsupported_value(value));
+        };
+        let Some(shape) = self.tables.bit_shape(&operand.ty) else {
             return Err(unsupported_value(value));
         };
         let bits = self.next_temp();
@@ -218,11 +296,7 @@ impl FunctionLowerer<'_, '_> {
                 else_expr: Box::new(Expr::Binary {
                     op: BinOp::Add,
                     lhs: Box::new(Expr::Cast {
-                        expr: Box::new(Expr::MethodCall {
-                            recv: Box::new(var()),
-                            method: "trailing_zeros".into(),
-                            args: Vec::new(),
-                        }),
+                        expr: Box::new(bit_count_expr(shape, var(), "trailing_zeros")),
                         ty: result,
                     }),
                     rhs: Box::new(self.lower_number(&Number::Integer(1u32.into()), &value.ty)?),
@@ -1198,6 +1272,38 @@ impl FunctionLowerer<'_, '_> {
                 ..
             } if self.tables.builtin_name(*id).is_some_and(is_find_first_set) => {
                 self.lower_find_first_set(value, arguments)?
+            }
+            ValueKind::Call {
+                callee: ir::Callee::Direct(id),
+                arguments,
+                ..
+            } if matches!(
+                self.tables.builtin_name(*id),
+                Some("__builtin_elementwise_add_sat" | "__builtin_elementwise_sub_sat")
+            ) && matches!(
+                self.tables.resolve_type(&value.ty),
+                ir::Type::Numeric(ir::NumericType::Integer { .. })
+            ) =>
+            {
+                let method = match self.tables.builtin_name(*id) {
+                    Some("__builtin_elementwise_add_sat") => "saturating_add",
+                    _ => "saturating_sub",
+                };
+                self.lower_elementwise_saturating(value, method, arguments)?
+            }
+            ValueKind::Call {
+                callee: ir::Callee::Direct(id),
+                arguments,
+                ..
+            } if self
+                .tables
+                .builtin_name(*id)
+                .is_some_and(is_parity_or_clrsb) =>
+            {
+                let Some(builtin) = self.tables.builtin_name(*id) else {
+                    return Err(unsupported_value(value));
+                };
+                self.lower_parity_or_clrsb(value, builtin, arguments)?
             }
             ValueKind::Call {
                 callee: ir::Callee::Direct(id),

@@ -316,6 +316,160 @@ impl FunctionLowerer<'_, '_> {
         })
     }
 
+    fn integer_to_accumulator(&self, wide: WideInt, ty: &ir::Type, expr: Expr) -> Expr {
+        if let Some(source) = self.tables.wide_int(ty) {
+            return wide.call(
+                if source.signed {
+                    "from_bint"
+                } else {
+                    "from_buint"
+                },
+                vec![expr],
+            );
+        }
+        let signed = matches!(
+            self.tables.resolve_type(ty),
+            ir::Type::Numeric(ir::NumericType::Integer { signed: true, .. })
+        );
+        let (name, prim) = if signed {
+            ("from_i128", Prim::I128)
+        } else {
+            ("from_u128", Prim::U128)
+        };
+        wide.call(
+            name,
+            vec![Expr::Cast {
+                expr: Box::new(expr),
+                ty: rust::Type::Prim(prim),
+            }],
+        )
+    }
+
+    fn accumulator_to_integer(&mut self, expr: Expr, ty: &ir::Type) -> Result<Expr> {
+        if let Some(target) = self.tables.wide_int(ty) {
+            return Ok(target.call("from_bint", vec![expr]));
+        }
+        let low = Expr::MethodCall {
+            recv: Box::new(expr),
+            method: "to_i128".into(),
+            args: Vec::new(),
+        };
+        self.narrow_integer(low, ty)
+    }
+
+    pub(super) fn lower_wide_overflow(
+        &mut self,
+        value: &ir::Value,
+        method: &str,
+        left: &ir::Value,
+        right: &ir::Value,
+        result: &ir::Place,
+    ) -> Result<Expr> {
+        let width_of = |this: &Self, ty: &ir::Type| match this.tables.resolve_type(ty) {
+            ir::Type::Numeric(ir::NumericType::Integer { width, .. }) => Some(*width),
+            _ => None,
+        };
+        let (Some(left_width), Some(right_width), Some(result_width)) = (
+            width_of(self, &left.ty),
+            width_of(self, &right.ty),
+            width_of(self, &result.ty),
+        ) else {
+            return Err(unsupported_value(value));
+        };
+        let bits = (2 * left_width.max(right_width) + 2).max(result_width + 1);
+        let accumulator = WideInt {
+            width: bits,
+            signed: true,
+            bytes: u64::from(bits.div_ceil(64)) * 8,
+            align: 8,
+        };
+        let [lhs, rhs, exact, narrowed] = [
+            self.next_temp(),
+            self.next_temp(),
+            self.next_temp(),
+            self.next_temp(),
+        ];
+        let var = |name: &String| Expr::Var(name.as_str().into());
+        let bind = |name: &String, ty: Option<rust::Type>, init: Expr| Stmt::Let {
+            name: name.clone(),
+            mutable: false,
+            ty,
+            init: Some(init),
+        };
+        let accumulator_type = Some(accumulator.rust_type());
+        let left_value = self.lower_value(left)?;
+        let right_value = self.lower_value(right)?;
+        let lhs_init = self.integer_to_accumulator(accumulator, &left.ty, left_value);
+        let rhs_init = self.integer_to_accumulator(accumulator, &right.ty, right_value);
+        let narrowed_init = self.accumulator_to_integer(var(&exact), &result.ty)?;
+        let result_type = self.lower_type(&result.ty)?;
+        let back = self.integer_to_accumulator(accumulator, &result.ty, var(&narrowed));
+        Ok(Expr::Block(Box::new(rust::Block {
+            stmts: vec![
+                bind(&lhs, accumulator_type.clone(), lhs_init),
+                bind(&rhs, accumulator_type.clone(), rhs_init),
+                bind(
+                    &exact,
+                    accumulator_type,
+                    Expr::MethodCall {
+                        recv: Box::new(var(&lhs)),
+                        method: format!("wrapping_{method}"),
+                        args: vec![var(&rhs)],
+                    },
+                ),
+                bind(&narrowed, Some(result_type), narrowed_init),
+                self.lower_assignment(result, var(&narrowed))?,
+            ],
+            tail: Some(Box::new(Expr::Binary {
+                op: BinOp::Ne,
+                lhs: Box::new(Expr::MethodCall {
+                    recv: Box::new(var(&exact)),
+                    method: "compare".into(),
+                    args: vec![back],
+                }),
+                rhs: Box::new(Expr::Value(rust::RustValue::I64(0))),
+            })),
+        })))
+    }
+
+    pub(super) fn lower_elementwise_saturating(
+        &mut self,
+        value: &ir::Value,
+        method: &str,
+        arguments: &[ir::Value],
+    ) -> Result<Expr> {
+        let [left, right] = arguments else {
+            return Err(unsupported_value(value));
+        };
+        let ir::Type::Numeric(ir::NumericType::Integer { signed, .. }) =
+            *self.tables.resolve_type(&value.ty)
+        else {
+            return Err(unsupported_value(value));
+        };
+        let saturated = Expr::MethodCall {
+            recv: Box::new(self.lower_value(left)?),
+            method: method.into(),
+            args: vec![self.lower_value(right)?],
+        };
+        let Some((width, _, container)) = odd_width(self.tables.resolve_type(&value.ty)) else {
+            return Ok(saturated);
+        };
+        let (low, high) = if signed {
+            (-(1i128 << (width - 1)), (1i128 << (width - 1)) - 1)
+        } else {
+            (0, (1i128 << width) - 1)
+        };
+        let bound = |bound: i128| Expr::Cast {
+            expr: Box::new(Expr::Value(rust::RustValue::I128(bound))),
+            ty: rust::Type::Prim(container),
+        };
+        Ok(Expr::MethodCall {
+            recv: Box::new(saturated),
+            method: "clamp".into(),
+            args: vec![bound(low), bound(high)],
+        })
+    }
+
     pub(super) fn lower_small_bitint_arith(
         &mut self,
         value: &ir::Value,
@@ -393,5 +547,72 @@ impl FunctionLowerer<'_, '_> {
             }),
             rhs: Box::new(Expr::Value(rust::RustValue::I64(0))),
         })
+    }
+}
+
+#[derive(Clone, Copy)]
+pub(super) enum BitShape {
+    Plain,
+    Small { width: u32, container: Prim },
+}
+
+impl Tables<'_> {
+    pub(super) fn bit_shape(&self, ty: &ir::Type) -> Option<BitShape> {
+        let resolved = self.resolve_type(ty);
+        match odd_width(resolved) {
+            None => Some(BitShape::Plain),
+            Some((width, _, container)) if is_small_bit_precise(resolved) => {
+                Some(BitShape::Small { width, container })
+            }
+            Some(_) => None,
+        }
+    }
+}
+
+fn unsigned_prim(prim: Prim) -> Prim {
+    match prim {
+        Prim::I8 => Prim::U8,
+        Prim::I16 => Prim::U16,
+        Prim::I32 => Prim::U32,
+        Prim::I64 => Prim::U64,
+        Prim::I128 => Prim::U128,
+        other => other,
+    }
+}
+
+pub(super) fn bit_count_expr(shape: BitShape, recv: Expr, method: &str) -> Expr {
+    let call = |recv: Expr, method: &str, args: Vec<Expr>| Expr::MethodCall {
+        recv: Box::new(recv),
+        method: method.into(),
+        args,
+    };
+    let BitShape::Small { width, container } = shape else {
+        return call(recv, method, Vec::new());
+    };
+    let unsigned = unsigned_prim(container);
+    let literal = |value: u128, prim: Prim| Expr::Cast {
+        expr: Box::new(Expr::Value(rust::RustValue::U128(value))),
+        ty: rust::Type::Prim(prim),
+    };
+    let view = Expr::Binary {
+        op: BinOp::BitAnd,
+        lhs: Box::new(Expr::Cast {
+            expr: Box::new(recv),
+            ty: rust::Type::Prim(unsigned),
+        }),
+        rhs: Box::new(literal((1u128 << width) - 1, unsigned)),
+    };
+    let count = call(view, method, Vec::new());
+    match method {
+        "leading_zeros" => Expr::Binary {
+            op: BinOp::Sub,
+            lhs: Box::new(count),
+            rhs: Box::new(literal(
+                u128::from(prim_width(container) - width),
+                Prim::U32,
+            )),
+        },
+        "trailing_zeros" => call(count, "min", vec![literal(u128::from(width), Prim::U32)]),
+        _ => count,
     }
 }

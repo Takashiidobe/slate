@@ -35,6 +35,7 @@ mod vectors;
 mod vla;
 
 use arithmetic::*;
+use bitint::bit_count_expr;
 use calls::*;
 pub use errors::{Barrier, Construct, Context, InvalidIr, Invariant, Site};
 use errors::{Failure, variant_name};

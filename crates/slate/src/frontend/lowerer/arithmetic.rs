@@ -19,16 +19,19 @@ impl FunctionLowerer<'_, '_> {
         result: &ir::Place,
     ) -> Result<Expr> {
         let method = overflow_method(op).ok_or_else(|| unsupported_value(value))?;
+        let mut all_narrow = true;
         for ty in [&left.ty, &right.ty, &result.ty] {
-            if !matches!(
-                self.tables.resolve_type(ty),
-                ir::Type::Numeric(ir::NumericType::Integer { width, .. }) if *width <= 64
-            ) {
-                return Err(unsupported_value(value));
+            match self.tables.resolve_type(ty) {
+                ir::Type::Numeric(ir::NumericType::Integer { width, .. }) => {
+                    all_narrow &= *width <= 64;
+                }
+                _ => return Err(unsupported_value(value)),
             }
         }
+        if !all_narrow {
+            return self.lower_wide_overflow(value, method, left, right, result);
+        }
         let wide = rust::Type::Prim(Prim::I128);
-        let target = self.lower_type(&result.ty)?;
         let [lhs, rhs, exact] = [self.next_temp(), self.next_temp(), self.next_temp()];
         let var = |name: &String| Expr::Var(name.as_str().into());
         let bind = |name: &String, init: Expr| Stmt::Let {
@@ -42,10 +45,7 @@ impl FunctionLowerer<'_, '_> {
             method,
             args: vec![var(&rhs)],
         };
-        let truncated = Expr::Cast {
-            expr: Box::new(var(&exact)),
-            ty: target.clone(),
-        };
+        let truncated = self.narrow_integer(var(&exact), &result.ty)?;
         Ok(Expr::Block(Box::new(rust::Block {
             stmts: vec![
                 bind(
