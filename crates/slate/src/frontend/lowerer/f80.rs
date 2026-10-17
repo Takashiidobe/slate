@@ -85,10 +85,7 @@ impl Tables<'_> {
     }
 
     pub(super) fn passes_long_double(&self, function: &ir::Function) -> bool {
-        let ir::Parameters::Prototype { fixed, .. } = &function.parameters else {
-            return false;
-        };
-        fixed
+        types::fixed_parameters(&function.parameters)
             .iter()
             .map(|parameter| &parameter.ty)
             .chain(&function.return_type)

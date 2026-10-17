@@ -334,13 +334,10 @@ impl<'m> ModuleLowerer<'m> {
                                 function.parameters,
                                 ir::Parameters::Prototype { variadic: true, .. }
                             ),
-                        is_variadic: !matches!(
-                            function.parameters,
-                            ir::Parameters::Prototype {
-                                variadic: false,
-                                ..
-                            }
-                        ),
+                        is_variadic: match function.parameters {
+                            ir::Parameters::Prototype { variadic, .. } => variadic,
+                            ir::Parameters::Unprototyped => function.body.is_none(),
+                        },
                         exported: function.body.is_some() && exports_symbol(options, function),
                         identity: if function.body.is_none() {
                             classify_function(

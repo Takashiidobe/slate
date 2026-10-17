@@ -3,6 +3,15 @@ use slate_parser::target_info::Endian;
 
 pub(super) const BIT_UNIT_MODULE: &str = "__slate_bits";
 
+pub(super) fn fixed_parameters(
+    parameters: &ir::Parameters,
+) -> &[slate_parser::ast::Span<ir::Parameter>] {
+    match parameters {
+        ir::Parameters::Prototype { fixed, .. } => fixed,
+        ir::Parameters::Unprototyped => &[],
+    }
+}
+
 impl<'m> Tables<'m> {
     pub(super) fn resolve_type<'a>(&self, mut ty: &'a ir::Type) -> &'a ir::Type
     where
@@ -38,10 +47,7 @@ impl<'m> Tables<'m> {
     }
 
     pub(super) fn function_has_vector(&self, function: &ir::Function) -> bool {
-        let ir::Parameters::Prototype { fixed, .. } = &function.parameters else {
-            return false;
-        };
-        fixed
+        fixed_parameters(&function.parameters)
             .iter()
             .map(|parameter| &parameter.ty)
             .chain(&function.return_type)

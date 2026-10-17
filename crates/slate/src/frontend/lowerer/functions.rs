@@ -185,13 +185,11 @@ impl FunctionLowerer<'_, '_> {
         function: &slate_parser::ast::Span<ir::Function>,
         body: &[slate_parser::ast::Span<ir::Statement>],
     ) -> Result<Item> {
-        let ir::Parameters::Prototype { fixed, variadic } = &function.parameters else {
-            return Err(Construct::Function {
-                name: function.name.clone(),
-                detail: "unprototyped definition".into(),
-            }
-            .into());
-        };
+        let fixed = types::fixed_parameters(&function.parameters);
+        let variadic = matches!(
+            function.parameters,
+            ir::Parameters::Prototype { variadic: true, .. }
+        );
         let abi = self.tables.function_abi(function)?;
         self.target_features = self.tables.enabled_target_features(function)?;
         let ret = self.lower_return(function)?;
@@ -208,7 +206,7 @@ impl FunctionLowerer<'_, '_> {
                 })
             })
             .collect::<Result<Vec<_>>>()?;
-        if *variadic {
+        if variadic {
             params.push(FnParam {
                 comments: Vec::new(),
                 name: VA_ARGS.into(),
@@ -222,7 +220,7 @@ impl FunctionLowerer<'_, '_> {
             }
             return Ok(Item::Fn(FnDef {
                 comments: self.claim_comments(function.id),
-                unsafe_: *variadic,
+                unsafe_: variadic,
                 attrs: vec![rust::Attr::Naked],
                 vis: rust::Visibility::Private,
                 abi: Some(abi),
@@ -300,10 +298,10 @@ impl FunctionLowerer<'_, '_> {
         let target_feature = self.tables.target_feature_attr(function)?;
         Ok(Item::Fn(FnDef {
             comments: self.claim_comments(function.id),
-            unsafe_: *variadic || target_feature.is_some(),
+            unsafe_: variadic || target_feature.is_some(),
             attrs: target_feature.into_iter().collect(),
             vis: rust::Visibility::Private,
-            abi: (*variadic || abi != rust::Abi::CUnwind).then_some(abi),
+            abi: (variadic || abi != rust::Abi::CUnwind).then_some(abi),
             name: self.tables.names[&function.value.id].rust.clone(),
             params,
             ret,
