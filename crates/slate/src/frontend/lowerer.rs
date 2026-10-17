@@ -90,6 +90,7 @@ struct Dependencies {
     atomic128: bool,
     long_double: bool,
     f16: bool,
+    f128: bool,
     simd: bool,
     intrinsics: BTreeMap<String, rust::ExternFnDecl>,
     bridges: BTreeMap<String, rust::ExternFnDecl>,
@@ -674,7 +675,10 @@ impl<'m> ModuleLowerer<'m> {
             externs.extend(
                 long_double::f80_shim_decls()
                     .into_iter()
-                    .filter(|decl| decl.name.starts_with("__slate_f80_"))
+                    .filter(|decl| {
+                        decl.name.starts_with("__slate_f80_")
+                            && (dependencies.f128 || !decl.name.ends_with("_f128"))
+                    })
                     .map(rust::ExternDecl::Fn),
             );
         }
@@ -762,6 +766,9 @@ impl<'m> ModuleLowerer<'m> {
         }
         if dependencies.f16 {
             features.push(rust::CrateAttr::Feature(rust::Feature::F16));
+        }
+        if dependencies.f128 {
+            features.push(rust::CrateAttr::Feature(rust::Feature::F128));
         }
         if items
             .iter()

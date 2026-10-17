@@ -602,6 +602,9 @@ __slate_f80 __slate_f80_from_f32(float a) {
 __slate_f80 __slate_f80_from_f64(double a) {
   return __slate_f80_store((long double)a);
 }
+__slate_f80 __slate_f80_from_f128(__float128 a) {
+  return __slate_f80_store((long double)a);
+}
 __slate_f80 __slate_f80_from_bool(_Bool a) {
   return __slate_f80_store((long double)a);
 }
@@ -637,6 +640,10 @@ uint64_t __slate_f80_to_u64(__slate_f80 a) {
 float __slate_f80_to_f32(__slate_f80 a) { return (float)__slate_f80_load(a); }
 
 double __slate_f80_to_f64(__slate_f80 a) { return (double)__slate_f80_load(a); }
+
+__float128 __slate_f80_to_f128(__slate_f80 a) {
+  return (__float128)__slate_f80_load(a);
+}
 
 _Bool __slate_f80_to_bool(__slate_f80 a) { return __slate_f80_load(a) != 0.0L; }
 

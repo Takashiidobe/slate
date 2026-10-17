@@ -1,5 +1,8 @@
 use super::*;
-use rustc_apfloat::{Float, ieee::Half};
+use rustc_apfloat::{
+    Float,
+    ieee::{Half, Quad},
+};
 use slate_parser::target_info::TargetFamily;
 
 fn odd_width(ty: &ir::Type) -> Option<(u32, bool, Prim)> {
@@ -403,7 +406,9 @@ impl FunctionLowerer<'_, '_> {
                     {
                         rust::Type::Prim(Prim::F64)
                     }
-                    rust::Type::Prim(Prim::F16) => return Err(unsupported_value(value)),
+                    rust::Type::Prim(Prim::F16 | Prim::F128) => {
+                        return Err(unsupported_value(value));
+                    }
                     rust::Type::Prim(Prim::I8) => rust::Type::Prim(Prim::I32),
                     rust::Type::Prim(Prim::U8) => rust::Type::Prim(Prim::U32),
                     _ => ty.clone(),
@@ -754,6 +759,7 @@ impl FunctionLowerer<'_, '_> {
                         | ir::FloatType::F32
                         | ir::FloatType::F64
                         | ir::FloatType::F80
+                        | ir::FloatType::F128
                 ))
             ) =>
             {
@@ -911,7 +917,10 @@ impl FunctionLowerer<'_, '_> {
                 if matches!(
                     self.tables.resolve_type(&operand.ty),
                     ir::Type::Numeric(ir::NumericType::Float(
-                        ir::FloatType::F16 | ir::FloatType::F32 | ir::FloatType::F64
+                        ir::FloatType::F16
+                            | ir::FloatType::F32
+                            | ir::FloatType::F64
+                            | ir::FloatType::F128
                     ))
                 ) =>
             {
@@ -1322,13 +1331,11 @@ impl FunctionLowerer<'_, '_> {
                 let (literal, finite, infinite, name) = match ty {
                     ir::Type::Numeric(ir::NumericType::Float(ir::FloatType::F16)) => {
                         self.lower_type(ty)?;
-                        let value = Half::from_bits(*bits);
-                        (
-                            value.to_string(),
-                            value.is_finite(),
-                            value.is_infinite(),
-                            "f16",
-                        )
+                        apfloat_literal::<Half>(*bits, "f16")
+                    }
+                    ir::Type::Numeric(ir::NumericType::Float(ir::FloatType::F128)) => {
+                        self.lower_type(ty)?;
+                        apfloat_literal::<Quad>(*bits, "f128")
                     }
                     ir::Type::Numeric(ir::NumericType::Float(ir::FloatType::F32)) => {
                         let value = f32::from_bits(*bits as u32);
@@ -1388,6 +1395,20 @@ pub(super) fn unsupported_value(value: &ir::Value) -> Failure {
         ir: value.display(false).to_string(),
     }
     .into()
+}
+
+fn apfloat_literal<F: Float>(bits: u128, name: &'static str) -> (String, bool, bool, &'static str) {
+    let value = F::from_bits(bits);
+    let literal = value.to_string();
+    let exact = literal
+        .parse::<F>()
+        .is_ok_and(|parsed| parsed.to_bits() == bits);
+    (
+        literal,
+        value.is_finite() && exact,
+        value.is_infinite(),
+        name,
+    )
 }
 
 fn unsupported_constant(number: &Number) -> Failure {

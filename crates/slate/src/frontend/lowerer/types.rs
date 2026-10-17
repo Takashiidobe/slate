@@ -447,6 +447,10 @@ impl FunctionLowerer<'_, '_> {
                 self.dependencies.f16 = true;
                 Prim::F16
             }
+            ir::Type::Numeric(ir::NumericType::Float(ir::FloatType::F128)) => {
+                self.dependencies.f128 = true;
+                Prim::F128
+            }
             ir::Type::Numeric(ir::NumericType::Float(ir::FloatType::F32)) => Prim::F32,
             ir::Type::Numeric(ir::NumericType::Float(ir::FloatType::F64)) => Prim::F64,
             ir::Type::Numeric(ir::NumericType::Float(ir::FloatType::F80)) => {
