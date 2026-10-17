@@ -1,7 +1,6 @@
 # Slate overview
 
 <!-- toc -->
-
 - [Pipeline](#pipeline)
 - [Use](#use)
 - [Coverage and failures](#coverage-and-failures)
@@ -54,8 +53,9 @@ bd ready
 ```
 
 Typed errors distinguish parser/analysis failures, unsupported lowering and
-invalid IR. CLI boundaries render diagnostics to text. FileCheck shape tests
-are suspended; current coverage comes from the differential fixture suites.
+invalid IR. CLI boundaries render diagnostics to text. The differential fixture
+suites are the correctness gate. FileCheck blocks in `tests/fixtures/` check
+that rewrites fire ([FileCheck](differential-fixtures.md#filecheck)).
 
 ## Further reading
 

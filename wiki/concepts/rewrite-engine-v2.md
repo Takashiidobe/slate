@@ -1,7 +1,6 @@
 # Rust rewrite engine
 
 <!-- toc -->
-
 - [Ownership](#ownership)
 - [Scheduling and facts](#scheduling-and-facts)
 - [Control-flow rewrites](#control-flow-rewrites)
@@ -101,10 +100,11 @@ cargo fmt
 cargo nextest r --release --profile slate
 ```
 
-Run from the workspace root. The Slate profile covers raw lowering, optimized
-project control-flow fixtures, and multi-unit project linkage. `translate` runs
+Run from the workspace root. The Slate profile covers rewritten single-file
+fixtures, optimized project control-flow fixtures, and multi-unit project linkage. `translate` runs
 the full backend; project translation runs its control-flow subset. FileCheck
-shape checks are suspended.
+blocks in `tests/fixtures/` show which rewrites fire, and the `slate` profile
+enforces them ([FileCheck](differential-fixtures.md#filecheck)).
 
 ## Design history
 

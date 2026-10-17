@@ -1,7 +1,6 @@
 # Fixture layout
 
 <!-- toc -->
-
 - [Path](#path)
 - [Ids in generated expectations](#ids-in-generated-expectations)
 - [Matcher](#matcher)

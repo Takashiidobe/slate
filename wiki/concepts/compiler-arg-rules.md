@@ -1,7 +1,6 @@
 # Compiler argument rules
 
 <!-- toc -->
-
 - [Option parsing](#option-parsing)
 - [Include search](#include-search)
 - [Forced files and macros](#forced-files-and-macros)

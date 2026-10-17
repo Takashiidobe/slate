@@ -1,7 +1,6 @@
 # Pointer capability lattice
 
 <!-- toc -->
-
 - [The tables](#the-tables)
 - [Why not SSA](#why-not-ssa)
 - [Monotonicity](#monotonicity)

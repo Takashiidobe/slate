@@ -1,7 +1,6 @@
 # Comment placement
 
 <!-- toc -->
-
 - [Problem](#problem)
 - [Ownership model](#ownership-model)
 - [Taxonomy](#taxonomy)

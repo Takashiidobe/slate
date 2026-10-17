@@ -1,7 +1,6 @@
 # Adding a target
 
 <!-- toc -->
-
 - [TargetSpec fields](#targetspec-fields)
 - [Steps](#steps)
 - [Linux musl](#linux-musl)

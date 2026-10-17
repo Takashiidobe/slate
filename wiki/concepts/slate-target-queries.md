@@ -1,7 +1,6 @@
 # Slate target queries
 
 <!-- toc -->
-
 - [Ownership](#ownership)
 - [Configuration](#configuration)
 - [Preprocessing](#preprocessing)

@@ -124,9 +124,21 @@ that `target-*` directory and rerun.
 4. Run the full `slate` profile. It must be green; promote any other fixtures
    the change makes pass.
 
-**FileCheck is suspended** until lowering covers enough that shape checks are
-signal rather than noise. Do not add `@lowering`, `@rewrite`, or
-`@slate-lowerer` markers or `SLATE-FILECHECK` blocks.
+## Workflow for a rewrite change
+
+1. Add or extend a `tests/fixtures/` fixture. Wrap the functions whose output
+   should change in `// @check-fn-begin` / `// @check-fn-end`, and confirm the
+   current output lacks the rewrite.
+2. Implement the rewrite, then run
+   `crates/slate/tools/update_filecheck.py crates/slate/tests/fixtures/<name>.c`
+   to regenerate its `SLATE-FILECHECK` block. Read the block: it should show
+   the rewrite firing.
+3. Run the full `slate` profile. FileCheck runs after runtime parity passes.
+   For each `FileCheck failed` fixture, regenerate it with the tool and review
+   the diff.
+
+[FileCheck](../../wiki/concepts/differential-fixtures.md#filecheck) documents
+the block format and directives. Never hand-edit a generated block.
 
 ## Conventions
 

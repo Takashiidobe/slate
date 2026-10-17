@@ -1,7 +1,6 @@
 # Generated sources
 
 <!-- toc -->
-
 - [Builtins](#builtins)
 - [Attributes](#attributes)
 - [Predefines](#predefines)

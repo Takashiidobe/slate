@@ -1,7 +1,6 @@
 # Objects, initialization, and VLAs
 
 <!-- toc -->
-
 - [Principles](#principles)
 - [Aggregate initializers](#aggregate-initializers)
 - [String literals](#string-literals)

@@ -1,7 +1,6 @@
 # GCC torture triage
 
 <!-- toc -->
-
 - [Buckets](#buckets)
 - [Inspect one case](#inspect-one-case)
 - [Promote and validate](#promote-and-validate)
@@ -45,4 +44,4 @@ cargo run --release -p slate-c2rust -- translate <fixture.c>
 - Track the gap with `bd` and fix it at its owning layer.
 - Promote passing cases with the `git mv` printed by the unsupported ratchet.
 - Run `cargo nextest r --release --profile slate` after Slate changes; also run the parser profile if parser code changed.
-- FileCheck is suspended. A plausible Rust shape is not proof of runtime parity.
+- A plausible Rust shape is not proof of runtime parity. Corpus suites do not run FileCheck; shape checks live in `tests/fixtures/` ([FileCheck](differential-fixtures.md#filecheck)).

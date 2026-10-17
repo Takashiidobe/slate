@@ -1,7 +1,6 @@
 # AST Enum Touchpoints
 
 <!-- toc -->
-
 - [Adding a `Decl` variant](#adding-a-decl-variant)
 - [Adding a `Stmt` variant](#adding-a-stmt-variant)
 - [Adding an `ExprKind` variant](#adding-an-exprkind-variant)

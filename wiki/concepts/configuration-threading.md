@@ -1,7 +1,6 @@
 # Configuration threading
 
 <!-- toc -->
-
 - [`Dialect` owns it](#dialect-owns-it)
 - [Accessors](#accessors)
 - [Where a rule goes](#where-a-rule-goes)

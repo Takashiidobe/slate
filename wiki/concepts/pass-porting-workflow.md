@@ -1,7 +1,6 @@
 # Porting a backend pass
 
 <!-- toc -->
-
 - [Choose and implement](#choose-and-implement)
 - [Verify](#verify)
 - [Measure](#measure)
@@ -18,9 +17,9 @@
 ## Verify
 
 - Start changed behavior with a failing C differential fixture.
-- Exercise `translate` for backend work. The current Slate profile runs raw lowering and cannot alone establish rewrite parity.
+- Exercise `translate` for backend work. The Slate profile runs every fixture through `translate`, so rewrites are always on.
 - Run `cargo clippy -p slate-c2rust --allow-dirty --fix`, `cargo fmt` and `cargo nextest r --release --profile slate` from the workspace root.
-- FileCheck is suspended. Judge semantic correctness by executed C/Rust parity.
+- Judge semantic correctness by executed C/Rust parity. To check that a rewrite fires, mark the functions with `@check-fn-begin`/`@check-fn-end` and regenerate their checks with `crates/slate/tools/update_filecheck.py` ([FileCheck](differential-fixtures.md#filecheck)).
 
 ## Measure
 

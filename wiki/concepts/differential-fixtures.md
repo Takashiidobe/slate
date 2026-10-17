@@ -1,13 +1,12 @@
 # Differential fixtures
 
 <!-- toc -->
-
 - [Suites](#suites)
 - [Supported/unsupported ratchet](#supportedunsupported-ratchet)
 - [Triage](#triage)
 - [Workflow](#workflow)
 - [Per-fixture compiler flags](#per-fixture-compiler-flags)
-- [FileCheck (suspended)](#filecheck-suspended)
+- [FileCheck](#filecheck)
 <!-- /toc -->
 
 Fixtures are C programs. Slate compiles and runs the C source with
@@ -86,10 +85,43 @@ the list in `is_semantic_dg_flag` in `tests/support/mod.rs`), and a
 `{ target ... }` clause that does not match the host triple drops the
 directive.
 
-## FileCheck (suspended)
+## FileCheck
 
-FileCheck shape assertions are suspended until lowering coverage makes them
-signal rather than noise. Differential suites do not run FileCheck; do not add
-`SLATE-FILECHECK` blocks or `@lowering`, `@rewrite`, or `@slate-lowerer` markers.
-Earlier shape-check workflows and tools are documented in the
-[historical index](../historical/index.md).
+`tests/fixtures/` fixtures (including `x86_64/` and `i686/`) can pin the shape
+of the Rust that the rewrite pipeline emits. Runtime parity is still the
+correctness gate. FileCheck checks that rewrites fire: a check runs only after
+the fixture's runtime comparison passes, and a mismatch fails
+`generated_differential` in the `slate` profile.
+
+Wrap each C function whose output you want checked:
+
+```c
+// @check-fn-begin
+static int count(int n) { ... }
+// @check-fn-end
+```
+
+Then generate the expected output from the workspace root:
+
+```bash
+crates/slate/tools/update_filecheck.py crates/slate/tests/fixtures/<name>.c
+```
+
+The tool runs the harness, then rewrites the fixture's trailing
+`// SLATE-FILECHECK-BEGIN` ... `// SLATE-FILECHECK-END` block. Each marked
+function gets a `CHECK-LABEL` on its Rust signature, `CHECK-NEXT` lines for
+its body, and a closing `// CHECK: {{^}}}`. Generated names (`__v12`,
+`__slate_slot_3`) become FileCheck variables, so renumbering does not break
+checks. With no arguments the tool regenerates every fixture that has markers
+or a block. `--no-run` reuses the Rust from the last test run. Fixture names,
+as a failing run prints them, work as arguments too.
+
+Review the regenerated block: it is the claim that a rewrite fired. When a
+change alters output, the `slate` profile reports `FileCheck failed` for each
+affected fixture. Regenerate exactly those and read the diff.
+
+Prefixes are `CHECK` and the upper-cased target triple. Supported directives
+are `CHECK`, `-LABEL`, `-NEXT`, `-SAME`, `-EMPTY`, `-DAG` and `-NOT`. A label
+block must end with `// CHECK: {{^}}}`, and generated Rust must never contain
+a directive. Prefer markers and the tool over hand-written checks. The old
+`@lowering`, `@rewrite` and `@slate-lowerer` markers are gone.

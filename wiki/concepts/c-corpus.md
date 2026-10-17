@@ -1,7 +1,6 @@
 # C corpus
 
 <!-- toc -->
-
 - [Layout](#layout)
 - [Setup](#setup)
 - [Recipes](#recipes)

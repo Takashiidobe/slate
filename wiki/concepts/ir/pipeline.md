@@ -1,7 +1,6 @@
 # IR pipeline, dumps, and pruning
 
 <!-- toc -->
-
 - [Placement](#placement)
 - [Failure kinds](#failure-kinds)
 - [Node identity and metadata](#node-identity-and-metadata)
