@@ -1,4 +1,5 @@
 use super::*;
+use rustc_apfloat::{Float, ieee::Half};
 use slate_parser::target_info::TargetFamily;
 
 fn odd_width(ty: &ir::Type) -> Option<(u32, bool, Prim)> {
@@ -394,6 +395,15 @@ impl FunctionLowerer<'_, '_> {
                 let read_ty = match ty {
                     rust::Type::FnPtr { .. } => byte_pointer_type(),
                     rust::Type::Prim(Prim::F32) => rust::Type::Prim(Prim::F64),
+                    rust::Type::Prim(Prim::F16)
+                        if matches!(
+                            self.tables.target.family,
+                            TargetFamily::X86_64 | TargetFamily::AArch64
+                        ) =>
+                    {
+                        rust::Type::Prim(Prim::F64)
+                    }
+                    rust::Type::Prim(Prim::F16) => return Err(unsupported_value(value)),
                     rust::Type::Prim(Prim::I8) => rust::Type::Prim(Prim::I32),
                     rust::Type::Prim(Prim::U8) => rust::Type::Prim(Prim::U32),
                     _ => ty.clone(),
@@ -413,6 +423,19 @@ impl FunctionLowerer<'_, '_> {
                     stmts: Vec::new(),
                     tail: Some(Box::new(if read_ty == ty {
                         read
+                    } else if ty == rust::Type::Prim(Prim::F16) {
+                        Expr::Call {
+                            func: Box::new(Expr::Var("f16::from_bits".into())),
+                            args: vec![Expr::Cast {
+                                expr: Box::new(Expr::MethodCall {
+                                    recv: Box::new(read),
+                                    method: "to_bits".into(),
+                                    args: Vec::new(),
+                                }),
+                                ty: rust::Type::Prim(Prim::U16),
+                            }],
+                            binding: CallBinding::Generated,
+                        }
                     } else if matches!(ty, rust::Type::Prim(_)) {
                         Expr::Cast {
                             expr: Box::new(read),
@@ -727,7 +750,10 @@ impl FunctionLowerer<'_, '_> {
             } if matches!(
                 value.ty,
                 ir::Type::Numeric(ir::NumericType::Float(
-                    ir::FloatType::F32 | ir::FloatType::F64 | ir::FloatType::F80
+                    ir::FloatType::F16
+                        | ir::FloatType::F32
+                        | ir::FloatType::F64
+                        | ir::FloatType::F80
                 ))
             ) =>
             {
@@ -1318,6 +1344,11 @@ impl FunctionLowerer<'_, '_> {
             ),
             Number::FloatBits(bits) => {
                 let (literal, finite, name) = match ty {
+                    ir::Type::Numeric(ir::NumericType::Float(ir::FloatType::F16)) => {
+                        self.lower_type(ty)?;
+                        let value = Half::from_bits(*bits);
+                        (value.to_string(), value.is_finite(), "f16")
+                    }
                     ir::Type::Numeric(ir::NumericType::Float(ir::FloatType::F32)) => {
                         let value = f32::from_bits(*bits as u32);
                         (format!("{value:?}"), value.is_finite(), "f32")

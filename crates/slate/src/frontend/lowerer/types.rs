@@ -443,6 +443,10 @@ impl FunctionLowerer<'_, '_> {
                     _ => return Err(unsupported_type(ty)),
                 }
             }
+            ir::Type::Numeric(ir::NumericType::Float(ir::FloatType::F16)) => {
+                self.dependencies.f16 = true;
+                Prim::F16
+            }
             ir::Type::Numeric(ir::NumericType::Float(ir::FloatType::F32)) => Prim::F32,
             ir::Type::Numeric(ir::NumericType::Float(ir::FloatType::F64)) => Prim::F64,
             ir::Type::Numeric(ir::NumericType::Float(ir::FloatType::F80)) => {

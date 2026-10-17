@@ -37,6 +37,7 @@ serde_json.workspace = true
 shlex.workspace = true
 thiserror.workspace = true
 ordered-float.workspace = true
+rustc_apfloat.workspace = true
 miette.workspace = true
 rayon.workspace = true
 slate-parser.workspace = true

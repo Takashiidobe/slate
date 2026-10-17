@@ -89,6 +89,7 @@ struct Dependencies {
     asm_strings: BTreeMap<u32, Item>,
     atomic128: bool,
     long_double: bool,
+    f16: bool,
     simd: bool,
     intrinsics: BTreeMap<String, rust::ExternFnDecl>,
     bridges: BTreeMap<String, rust::ExternFnDecl>,
@@ -758,6 +759,9 @@ impl<'m> ModuleLowerer<'m> {
         }
         if dependencies.atomic_volatile {
             features.push(rust::CrateAttr::Feature(rust::Feature::AtomicVolatile));
+        }
+        if dependencies.f16 {
+            features.push(rust::CrateAttr::Feature(rust::Feature::F16));
         }
         if items
             .iter()
