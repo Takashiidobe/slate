@@ -25,6 +25,6 @@ int main(void) {
 // CHECK-NEXT:         return_global_pointer() } } + unsafe { * return_element() }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     0 as i32
+// CHECK-NEXT:     0
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

@@ -42,13 +42,13 @@ int main(void) {
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut r: [[SLATERECORD_0:__SlateRecord[0-9]+]] = [[SLATERECORD_0]] {
-// CHECK-NEXT:         dict: [[SLATERECORD_1:__SlateRecord[0-9]+]] { x: 5 as i32 },
-// CHECK-NEXT:         cctx: 9 as i32,
-// CHECK-NEXT:         io: [[SLATERECORD_2:__SlateRecord[0-9]+]] { y: 7 as i32 },
+// CHECK-NEXT:         dict: [[SLATERECORD_1:__SlateRecord[0-9]+]] { x: 5 },
+// CHECK-NEXT:         cctx: 9,
+// CHECK-NEXT:         io: [[SLATERECORD_2:__SlateRecord[0-9]+]] { y: 7 },
 // CHECK-NEXT:     };
 // CHECK-NEXT:     freeCResources(unsafe { &mut (*std::ptr::addr_of_mut!(r)) });
 // CHECK-NEXT:     println!("{} {} {}", r.dict.x, r.io.y, r.cctx);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     0 as i32
+// CHECK-NEXT:     0
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

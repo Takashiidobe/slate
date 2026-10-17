@@ -36,69 +36,33 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
-// CHECK-NEXT:     let full_src: [u8; 8] = [
-// CHECK-NEXT:         ((1 as i32) as i8) as u8,
-// CHECK-NEXT:         ((2 as i32) as i8) as u8,
-// CHECK-NEXT:         ((3 as i32) as i8) as u8,
-// CHECK-NEXT:         ((4 as i32) as i8) as u8,
-// CHECK-NEXT:         ((5 as i32) as i8) as u8,
-// CHECK-NEXT:         ((6 as i32) as i8) as u8,
-// CHECK-NEXT:         ((7 as i32) as i8) as u8,
-// CHECK-NEXT:         ((8 as i32) as i8) as u8,
-// CHECK-NEXT:     ];
+// CHECK-NEXT:     let full_src: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
 // CHECK-NEXT:     let mut full_dst: [u8; 8] = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [u8; 8] = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]][0] = ((0 as i32) as i8) as u8;
+// CHECK-NEXT:         [[T_0]][0] = 0 as u8;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { full_dst[0usize..8usize].copy_from_slice(&full_src[0usize..8usize]) };
-// CHECK-NEXT:     let partial_src: [u8; 8] = [
-// CHECK-NEXT:         ((9 as i32) as i8) as u8,
-// CHECK-NEXT:         ((8 as i32) as i8) as u8,
-// CHECK-NEXT:         ((7 as i32) as i8) as u8,
-// CHECK-NEXT:         ((6 as i32) as i8) as u8,
-// CHECK-NEXT:         ((5 as i32) as i8) as u8,
-// CHECK-NEXT:         ((4 as i32) as i8) as u8,
-// CHECK-NEXT:         ((3 as i32) as i8) as u8,
-// CHECK-NEXT:         ((2 as i32) as i8) as u8,
-// CHECK-NEXT:     ];
+// CHECK-NEXT:     let partial_src: [u8; 8] = [9, 8, 7, 6, 5, 4, 3, 2];
 // CHECK-NEXT:     let mut partial_dst: [u8; 8] = {
 // CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: [u8; 8] = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_1]][0] = ((0 as i32) as i8) as u8;
+// CHECK-NEXT:         [[T_1]][0] = 0 as u8;
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { partial_dst[0usize..4usize].copy_from_slice(&partial_src[0usize..4usize]) };
-// CHECK-NEXT:     let mut alias_buf: [u8; 8] = [
-// CHECK-NEXT:         ((1 as i32) as i8) as u8,
-// CHECK-NEXT:         ((2 as i32) as i8) as u8,
-// CHECK-NEXT:         ((3 as i32) as i8) as u8,
-// CHECK-NEXT:         ((4 as i32) as i8) as u8,
-// CHECK-NEXT:         ((5 as i32) as i8) as u8,
-// CHECK-NEXT:         ((6 as i32) as i8) as u8,
-// CHECK-NEXT:         ((7 as i32) as i8) as u8,
-// CHECK-NEXT:         ((8 as i32) as i8) as u8,
-// CHECK-NEXT:     ];
+// CHECK-NEXT:     let mut alias_buf: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             ((unsafe { (alias_buf.as_mut_ptr() as *mut u8).offset((4 as i32) as isize) })
+// CHECK-NEXT:             ((unsafe { (alias_buf.as_mut_ptr() as *mut u8).offset(4 as isize) })
 // CHECK-NEXT:                 as *const ()) as *const u8,
 // CHECK-NEXT:             alias_buf.as_mut_ptr() as *mut u8,
-// CHECK-NEXT:             (((4 as i32) as i64) as u64) as usize,
+// CHECK-NEXT:             4 as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut dyn_src: [u8; 8] = [
-// CHECK-NEXT:         ((1 as i32) as i8) as u8,
-// CHECK-NEXT:         ((1 as i32) as i8) as u8,
-// CHECK-NEXT:         ((1 as i32) as i8) as u8,
-// CHECK-NEXT:         ((1 as i32) as i8) as u8,
-// CHECK-NEXT:         ((1 as i32) as i8) as u8,
-// CHECK-NEXT:         ((1 as i32) as i8) as u8,
-// CHECK-NEXT:         ((1 as i32) as i8) as u8,
-// CHECK-NEXT:         ((1 as i32) as i8) as u8,
-// CHECK-NEXT:     ];
+// CHECK-NEXT:     let mut dyn_src: [u8; 8] = [1, 1, 1, 1, 1, 1, 1, 1];
 // CHECK-NEXT:     let mut dyn_dst: [u8; 8] = {
 // CHECK-NEXT:         let mut [[T_2:__t[0-9]+]]: [u8; 8] = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_2]][0] = ((0 as i32) as i8) as u8;
+// CHECK-NEXT:         [[T_2]][0] = 0 as u8;
 // CHECK-NEXT:         [[T_2]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let n: i32 = get_count();
@@ -110,37 +74,37 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     {
-// CHECK-NEXT:         let mut i: i32 = 0 as i32;
-// CHECK-NEXT:         while i < (8 as i32) {
+// CHECK-NEXT:         let mut i: i32 = 0;
+// CHECK-NEXT:         while i < 8 {
 // CHECK-NEXT:             print!("{} ", (full_dst[i as usize] as u32) as i32);
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:             i += 1 as i32;
+// CHECK-NEXT:             i += 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     {
-// CHECK-NEXT:         let mut i: i32 = 0 as i32;
-// CHECK-NEXT:         while i < (8 as i32) {
+// CHECK-NEXT:         let mut i: i32 = 0;
+// CHECK-NEXT:         while i < 8 {
 // CHECK-NEXT:             print!("{} ", (partial_dst[i as usize] as u32) as i32);
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:             i += 1 as i32;
+// CHECK-NEXT:             i += 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     {
-// CHECK-NEXT:         let mut i: i32 = 0 as i32;
-// CHECK-NEXT:         while i < (8 as i32) {
+// CHECK-NEXT:         let mut i: i32 = 0;
+// CHECK-NEXT:         while i < 8 {
 // CHECK-NEXT:             print!("{} ", (alias_buf[i as usize] as u32) as i32);
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:             i += 1 as i32;
+// CHECK-NEXT:             i += 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut i: i32 = 0 as i32;
-// CHECK-NEXT:     while i < (8 as i32) {
+// CHECK-NEXT:     let mut i: i32 = 0;
+// CHECK-NEXT:     while i < 8 {
 // CHECK-NEXT:         print!("{} ", (dyn_dst[i as usize] as u32) as i32);
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         i += 1 as i32;
+// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("");
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     0 as i32
+// CHECK-NEXT:     0
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

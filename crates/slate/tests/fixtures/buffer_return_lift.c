@@ -22,9 +22,9 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN
 // CHECK-LABEL: {{^}}fn make(n: i32) -> *mut i32 {
-// CHECK-NEXT:     let p: *mut i32 = (unsafe { malloc(((n as i64) as u64).wrapping_mul(4 as u64)) })
+// CHECK-NEXT:     let p: *mut i32 = (unsafe { malloc(((n as i64) as u64).wrapping_mul(4)) })
 // CHECK-NEXT:         as *mut i32;
-// CHECK-NEXT:     for i in 0 as i32..n {
+// CHECK-NEXT:     for i in 0..n {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *unsafe { p.offset(i as isize) } = i * i;
 // CHECK-NEXT:         }
@@ -34,11 +34,11 @@ int main(void) {
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let q: *mut i32 = make(4 as i32);
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {}", unsafe { * unsafe { q.offset((0 as i32) as isize) } }, unsafe { * unsafe
-// CHECK-NEXT:         { q.offset((3 as i32) as isize) } }
+// CHECK-NEXT:         "{} {}", unsafe { * unsafe { q.offset(0 as isize) } }, unsafe { * unsafe { q
+// CHECK-NEXT:         .offset(3 as isize) } }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { free(q as *mut ()) };
-// CHECK-NEXT:     0 as i32
+// CHECK-NEXT:     0
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

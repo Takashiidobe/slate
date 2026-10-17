@@ -50,14 +50,14 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut s: Bits = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     s.__slate_bits_0.__set_a((5 as i32) as u32);
+// CHECK-NEXT:     s.__slate_bits_0.__set_a(5 as u32);
 // CHECK-NEXT:     s.__slate_bits_0.__set_b(-(3 as i32));
-// CHECK-NEXT:     s.__slate_bits_0.__set_c((1 as i32) as u32);
-// CHECK-NEXT:     s.__slate_bits_0.__set_d((4000 as i32) as u32);
+// CHECK-NEXT:     s.__slate_bits_0.__set_c(1 as u32);
+// CHECK-NEXT:     s.__slate_bits_0.__set_d(4000 as u32);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%u %d %u %u\n".as_ptr() as *const i8,
+// CHECK-NEXT:             c"%u %d %u %u\n".as_ptr(),
 // CHECK-NEXT:             s.__slate_bits_0.__get_a() as i32,
 // CHECK-NEXT:             s.__slate_bits_0.__get_b(),
 // CHECK-NEXT:             s.__slate_bits_0.__get_c() as i32,
@@ -65,13 +65,13 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     s.__slate_bits_0.__set_a((13 as i32) as u32);
+// CHECK-NEXT:     s.__slate_bits_0.__set_a(13 as u32);
 // CHECK-NEXT:     s.__slate_bits_0.__set_b(20 as i32);
-// CHECK-NEXT:     s.__slate_bits_0.__set_c((3 as i32) as u32);
+// CHECK-NEXT:     s.__slate_bits_0.__set_c(3 as u32);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%u %d %u\n".as_ptr() as *const i8,
+// CHECK-NEXT:             c"%u %d %u\n".as_ptr(),
 // CHECK-NEXT:             s.__slate_bits_0.__get_a() as i32,
 // CHECK-NEXT:             s.__slate_bits_0.__get_b(),
 // CHECK-NEXT:             s.__slate_bits_0.__get_c() as i32,
@@ -79,26 +79,26 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: u32 = s.__slate_bits_0.__get_a();
-// CHECK-NEXT:     s.__slate_bits_0.__set_a((([[V_0]] as i32) + (4 as i32)) as u32);
+// CHECK-NEXT:     s.__slate_bits_0.__set_a((([[V_0]] as i32) + 4) as u32);
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i32 = s.__slate_bits_0.__get_b();
-// CHECK-NEXT:     s.__slate_bits_0.__set_b([[V_1]] - (1 as i32));
+// CHECK-NEXT:     s.__slate_bits_0.__set_b([[V_1]] - 1);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%u %d\n".as_ptr() as *const i8,
+// CHECK-NEXT:             c"%u %d\n".as_ptr(),
 // CHECK-NEXT:             s.__slate_bits_0.__get_a() as i32,
 // CHECK-NEXT:             s.__slate_bits_0.__get_b(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     s.__slate_bits_0.__set_a((7 as i32) as u32);
+// CHECK-NEXT:     s.__slate_bits_0.__set_a(7 as u32);
 // CHECK-NEXT:     s.__slate_bits_0.__set_b(15 as i32);
-// CHECK-NEXT:     s.__slate_bits_0.__set_c((0 as i32) as u32);
-// CHECK-NEXT:     s.__slate_bits_0.__set_d((4095 as i32) as u32);
+// CHECK-NEXT:     s.__slate_bits_0.__set_c(0 as u32);
+// CHECK-NEXT:     s.__slate_bits_0.__set_d(4095 as u32);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%u %d %u %u\n".as_ptr() as *const i8,
+// CHECK-NEXT:             c"%u %d %u %u\n".as_ptr(),
 // CHECK-NEXT:             s.__slate_bits_0.__get_a() as i32,
 // CHECK-NEXT:             s.__slate_bits_0.__get_b(),
 // CHECK-NEXT:             s.__slate_bits_0.__get_c() as i32,
@@ -108,22 +108,22 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let mut w: Wide = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     w.__slate_bits_0.__set_x(1099511627775 as u64);
-// CHECK-NEXT:     w.__slate_bits_1.__set_y(-(500000 as i32) as i64);
+// CHECK-NEXT:     w.__slate_bits_1.__set_y(-500000 as i64);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%llu %lld\n".as_ptr() as *const i8,
+// CHECK-NEXT:             c"%llu %lld\n".as_ptr(),
 // CHECK-NEXT:             w.__slate_bits_0.__get_x(),
 // CHECK-NEXT:             w.__slate_bits_1.__get_y(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let [[V_2:__v[0-9]+]]: u64 = w.__slate_bits_0.__get_x();
-// CHECK-NEXT:     let [[V_3:__v[0-9]+]]: u64 = [[V_2]].wrapping_add(((1 as i32) as i64) as u64);
+// CHECK-NEXT:     let [[V_3:__v[0-9]+]]: u64 = [[V_2]].wrapping_add(1);
 // CHECK-NEXT:     w.__slate_bits_0.__set_x([[V_3]]);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu\n".as_ptr() as *const i8, w.__slate_bits_0.__get_x()) };
+// CHECK-NEXT:     unsafe { printf(c"%llu\n".as_ptr(), w.__slate_bits_0.__get_x()) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     0 as i32
+// CHECK-NEXT:     0
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

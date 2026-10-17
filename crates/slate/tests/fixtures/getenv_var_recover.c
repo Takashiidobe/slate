@@ -50,50 +50,33 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN
 // CHECK-LABEL: {{^}}fn present_check() -> i32 {
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         setenv(
-// CHECK-NEXT:             c"SLATE_GETENV_FIXTURE_PRESENT".as_ptr() as *const i8,
-// CHECK-NEXT:             c"1".as_ptr() as *const i8,
-// CHECK-NEXT:             1 as i32,
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
-// CHECK-NEXT:     let value: *mut i8 = unsafe {
-// CHECK-NEXT:         getenv(c"SLATE_GETENV_FIXTURE_PRESENT".as_ptr() as *const i8)
-// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { setenv(c"SLATE_GETENV_FIXTURE_PRESENT".as_ptr(), c"1".as_ptr(), 1 as i32) };
+// CHECK-NEXT:     let value: *mut i8 = unsafe { getenv(c"SLATE_GETENV_FIXTURE_PRESENT".as_ptr()) };
 // CHECK-NEXT:     if value != std::ptr::null_mut::<i8>() {
-// CHECK-NEXT:         return 1 as i32;
+// CHECK-NEXT:         return 1;
 // CHECK-NEXT:     } else {
-// CHECK-NEXT:         return 0 as i32;
+// CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn absent_check() -> i32 {
-// CHECK-NEXT:     unsafe { unsetenv(c"SLATE_GETENV_FIXTURE_ABSENT".as_ptr() as *const i8) };
-// CHECK-NEXT:     let value: *mut i8 = unsafe {
-// CHECK-NEXT:         getenv(c"SLATE_GETENV_FIXTURE_ABSENT".as_ptr() as *const i8)
-// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { unsetenv(c"SLATE_GETENV_FIXTURE_ABSENT".as_ptr()) };
+// CHECK-NEXT:     let value: *mut i8 = unsafe { getenv(c"SLATE_GETENV_FIXTURE_ABSENT".as_ptr()) };
 // CHECK-NEXT:     if value != std::ptr::null_mut::<i8>() {
-// CHECK-NEXT:         return 1 as i32;
+// CHECK-NEXT:         return 1;
 // CHECK-NEXT:     } else {
-// CHECK-NEXT:         return 0 as i32;
+// CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn rejected_check() -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         setenv(
-// CHECK-NEXT:             c"SLATE_GETENV_FIXTURE_REJECTED".as_ptr() as *const i8,
-// CHECK-NEXT:             c"ready".as_ptr() as *const i8,
-// CHECK-NEXT:             1 as i32,
-// CHECK-NEXT:         )
+// CHECK-NEXT:         setenv(c"SLATE_GETENV_FIXTURE_REJECTED".as_ptr(), c"ready".as_ptr(), 1 as i32)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let value: *mut i8 = unsafe {
-// CHECK-NEXT:         getenv(c"SLATE_GETENV_FIXTURE_REJECTED".as_ptr() as *const i8)
-// CHECK-NEXT:     };
-// CHECK-NEXT:     let mut found: i32 = 0 as i32;
+// CHECK-NEXT:     let value: *mut i8 = unsafe { getenv(c"SLATE_GETENV_FIXTURE_REJECTED".as_ptr()) };
+// CHECK-NEXT:     let mut found: i32 = 0;
 // CHECK-NEXT:     if value != std::ptr::null_mut::<i8>() {
-// CHECK-NEXT:         found = ((unsafe { strcmp(value as *const i8, c"ready".as_ptr() as *const i8) })
-// CHECK-NEXT:             == (0 as i32)) as i32;
+// CHECK-NEXT:         found = ((unsafe { strcmp(value as *const i8, c"ready".as_ptr()) }) == 0) as i32;
 // CHECK-NEXT:     } else {
-// CHECK-NEXT:         found = 0 as i32;
+// CHECK-NEXT:         found = 0;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     found
 // CHECK: {{^}}}

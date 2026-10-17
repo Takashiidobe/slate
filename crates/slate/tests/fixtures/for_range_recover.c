@@ -111,107 +111,107 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN
 // CHECK-LABEL: {{^}}fn sum(a: *const i32, n: i32) -> i32 {
-// CHECK-NEXT:     let mut s: i32 = 0 as i32;
-// CHECK-NEXT:     for i in 0 as i32..n {
+// CHECK-NEXT:     let mut s: i32 = 0;
+// CHECK-NEXT:     for i in 0..n {
 // CHECK-NEXT:         s += unsafe { *unsafe { a.offset(i as isize) } };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     s
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn skip_and_stop(n: i32) -> i32 {
-// CHECK-NEXT:     let mut t: i32 = 0 as i32;
-// CHECK-NEXT:     for j in 0 as i32..n {
-// CHECK-NEXT:         if j == (7 as i32) {
+// CHECK-NEXT:     let mut t: i32 = 0;
+// CHECK-NEXT:     for j in 0..n {
+// CHECK-NEXT:         if j == 7 {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if j % (2 as i32) != (0 as i32) {} else {
+// CHECK-NEXT:         if j % 2 != 0 {} else {
 // CHECK-NEXT:             t += j;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     t
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn triangle(n: i32) -> i32 {
-// CHECK-NEXT:     let mut t: i32 = 0 as i32;
-// CHECK-NEXT:     for j in 0 as i32..n {
-// CHECK-NEXT:         for k in 0 as i32..j {
+// CHECK-NEXT:     let mut t: i32 = 0;
+// CHECK-NEXT:     for j in 0..n {
+// CHECK-NEXT:         for k in 0..j {
 // CHECK-NEXT:             t += k;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     t
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn c89_style(n: i32) -> i32 {
-// CHECK-NEXT:     let mut t: i32 = 0 as i32;
-// CHECK-NEXT:     for i in 2 as i32..n {
+// CHECK-NEXT:     let mut t: i32 = 0;
+// CHECK-NEXT:     for i in 2..n {
 // CHECK-NEXT:         t += i * i;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     t
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn unsigned_sum(n: u32) -> u32 {
-// CHECK-NEXT:     let mut t: u32 = (0 as i32) as u32;
-// CHECK-NEXT:     for i in (0 as i32) as u32..n {
+// CHECK-NEXT:     let mut t: u32 = 0;
+// CHECK-NEXT:     for i in 0..n {
 // CHECK-NEXT:         t = t.wrapping_add(i);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     t
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn shrinking_bound(mut n: i32) -> i32 {
-// CHECK-NEXT:     let mut t: i32 = 0 as i32;
-// CHECK-NEXT:     let mut i: i32 = 0 as i32;
+// CHECK-NEXT:     let mut t: i32 = 0;
+// CHECK-NEXT:     let mut i: i32 = 0;
 // CHECK-NEXT:     while i < n {
-// CHECK-NEXT:         if i == (2 as i32) {
-// CHECK-NEXT:             n -= 1 as i32;
+// CHECK-NEXT:         if i == 2 {
+// CHECK-NEXT:             n -= 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         t += i;
-// CHECK-NEXT:         i += 1 as i32;
+// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     t
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn bound_through_pointer(mut n: i32) -> i32 {
 // CHECK-NEXT:     let p: *mut i32 = std::ptr::addr_of_mut!(n);
-// CHECK-NEXT:     let mut t: i32 = 0 as i32;
-// CHECK-NEXT:     let mut i: i32 = 0 as i32;
+// CHECK-NEXT:     let mut t: i32 = 0;
+// CHECK-NEXT:     let mut i: i32 = 0;
 // CHECK-NEXT:     while i < n {
 // CHECK-NEXT:         t += i;
-// CHECK-NEXT:         if i == (1 as i32) {
+// CHECK-NEXT:         if i == 1 {
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 *p = 3 as i32;
+// CHECK-NEXT:                 *p = 3;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
-// CHECK-NEXT:         i += 1 as i32;
+// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     t
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn find(a: *const i32, n: i32, x: i32) -> i32 {
-// CHECK-NEXT:     let mut i: i32 = 0 as i32;
+// CHECK-NEXT:     let mut i: i32 = 0;
 // CHECK-NEXT:     while i < n {
 // CHECK-NEXT:         if (unsafe { *unsafe { a.offset(i as isize) } }) == x {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         i += 1 as i32;
+// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     i
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn stride(n: i32) -> i32 {
-// CHECK-NEXT:     let mut t: i32 = 0 as i32;
-// CHECK-NEXT:     let mut i: i32 = 0 as i32;
+// CHECK-NEXT:     let mut t: i32 = 0;
+// CHECK-NEXT:     let mut i: i32 = 0;
 // CHECK-NEXT:     while i < n {
 // CHECK-NEXT:         t += i;
-// CHECK-NEXT:         if i % (3 as i32) == (0 as i32) {
-// CHECK-NEXT:             i += 1 as i32;
+// CHECK-NEXT:         if i % 3 == 0 {
+// CHECK-NEXT:             i += 1;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         i += 1 as i32;
+// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     t
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn global_bound() -> u32 {
-// CHECK-NEXT:     let mut t: u32 = (0 as i32) as u32;
-// CHECK-NEXT:     let mut i: u32 = (0 as i32) as u32;
+// CHECK-NEXT:     let mut t: u32 = 0;
+// CHECK-NEXT:     let mut i: u32 = 0;
 // CHECK-NEXT:     while i < unsafe { limit } {
 // CHECK-NEXT:         t = t.wrapping_add(i);
-// CHECK-NEXT:         if i == ((1 as i32) as u32) {
+// CHECK-NEXT:         if i == 1 {
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 limit = (6 as i32) as u32;
+// CHECK-NEXT:                 limit = 6;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
-// CHECK-NEXT:         i = i.wrapping_add((1 as i32) as u32);
+// CHECK-NEXT:         i = i.wrapping_add(1);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     t
 // CHECK: {{^}}}

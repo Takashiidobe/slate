@@ -22,9 +22,9 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN
 // CHECK-LABEL: {{^}}fn read_array_element_through_call() -> i32 {
-// CHECK-NEXT:     let mut values: [i32; 1] = [10 as i32];
+// CHECK-NEXT:     let mut values: [i32; 1] = [10];
 // CHECK-NEXT:     let pointer: *mut i32 = unsafe {
-// CHECK-NEXT:         (values.as_mut_ptr() as *mut i32).offset((0 as i32) as isize)
+// CHECK-NEXT:         (values.as_mut_ptr() as *mut i32).offset(0 as isize)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     read_pointer(pointer)
 // CHECK: {{^}}}
@@ -35,22 +35,18 @@ int main(void) {
 // CHECK-NEXT:         6 as i32,
 // CHECK-NEXT:         8 as i32,
 // CHECK-NEXT:     ]);
-// CHECK-NEXT:     let p: *mut i32 = unsafe {
-// CHECK-NEXT:         (values.0.as_mut_ptr() as *mut i32).offset((1 as i32) as isize)
-// CHECK-NEXT:     };
-// CHECK-NEXT:     let q: *mut i32 = unsafe {
-// CHECK-NEXT:         (values.0.as_mut_ptr() as *mut i32).offset((3 as i32) as isize)
-// CHECK-NEXT:     };
+// CHECK-NEXT:     let p: *mut i32 = unsafe { (values.0.as_mut_ptr() as *mut i32).offset(1 as isize) };
+// CHECK-NEXT:     let q: *mut i32 = unsafe { (values.0.as_mut_ptr() as *mut i32).offset(3 as isize) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%d %ld %d\n".as_ptr() as *const i8,
+// CHECK-NEXT:             c"%d %ld %d\n".as_ptr(),
 // CHECK-NEXT:             (unsafe { *p }) + unsafe { *q },
 // CHECK-NEXT:             (unsafe { q.offset_from(p as *mut i32) }) as i64,
 // CHECK-NEXT:             read_array_element_through_call(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     0 as i32
+// CHECK-NEXT:     0
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

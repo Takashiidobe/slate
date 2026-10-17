@@ -28,8 +28,8 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut first: First = First { value: 17 as i32 };
-// CHECK-NEXT:     let mut second: Second = Second { value: 29 as i32 };
+// CHECK-NEXT:     let mut first: First = First { value: 17 };
+// CHECK-NEXT:     let mut second: Second = Second { value: 29 };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {}", read_value({ let mut [[T_0:__t[0-9]+]] : [[SLATERECORD_0:__SlateRecord[0-9]+]] = unsafe { std::mem::zeroed()
 // CHECK-NEXT:         }; [[T_0]].first = std::ptr::addr_of_mut!(first); [[T_0]] }), read_value({ let mut [[T_1:__t[0-9]+]]
@@ -37,6 +37,6 @@ int main(void) {
 // CHECK-NEXT:         std::ptr::addr_of_mut!(second); [[T_1]] })
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     0 as i32
+// CHECK-NEXT:     0
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

@@ -39,8 +39,8 @@ int main(void) {
 // CHECK-NEXT:         total += maybe_apply(op, 5 as i32);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if op == None {
-// CHECK-NEXT:         return 2 as i32;
+// CHECK-NEXT:         return 2;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if total == (10 as i32) { 0 as i32 } else { 1 as i32 }
+// CHECK-NEXT:     if total == 10 { 0 } else { 1 }
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

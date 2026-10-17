@@ -89,22 +89,20 @@ int main(void) {
 // CHECK-NEXT:         3 as i32,
 // CHECK-NEXT:         4 as i32,
 // CHECK-NEXT:     ]);
-// CHECK-NEXT:     let mut s: i32 = 0 as i32;
+// CHECK-NEXT:     let mut s: i32 = 0;
 // CHECK-NEXT:     for i in a.0.iter().copied() {
 // CHECK-NEXT:         s += i;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     s
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn constant_slots() -> i32 {
-// CHECK-NEXT:     let mut a: [i32; 3] = [0 as i32, 0 as i32, 0 as i32];
-// CHECK-NEXT:     a[0] = 4 as i32;
-// CHECK-NEXT:     a[2] = a[0] + (1 as i32);
+// CHECK-NEXT:     let mut a: [i32; 3] = [0, 0, 0];
+// CHECK-NEXT:     a[0] = 4;
+// CHECK-NEXT:     a[2] = a[0] + 1;
 // CHECK-NEXT:     a[0] * a[2]
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn member_and_global(k: i32) -> i32 {
-// CHECK-NEXT:     let mut r: Row = Row {
-// CHECK-NEXT:         v: [1 as i32, 2 as i32, 3 as i32],
-// CHECK-NEXT:     };
+// CHECK-NEXT:     let mut r: Row = Row { v: [1, 2, 3] };
 // CHECK-NEXT:     r.v[1] = unsafe { table.0[k as usize] };
 // CHECK-NEXT:     r.v[0] + r.v[1] + r.v[2]
 // CHECK: {{^}}}
@@ -114,36 +112,36 @@ int main(void) {
 // CHECK-NEXT:     });
 // CHECK-NEXT:     for i in 0 as i32..2 as i32 {
 // CHECK-NEXT:         for j in 0 as i32..3 as i32 {
-// CHECK-NEXT:             g.0[i as usize][j as usize] = i * (3 as i32) + j;
+// CHECK-NEXT:             g.0[i as usize][j as usize] = i * 3 + j;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     g.0[1][2] - g.0[0][1]
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn doubled() -> i32 {
-// CHECK-NEXT:     let mut a: [i32; 3] = [1 as i32, 2 as i32, 3 as i32];
+// CHECK-NEXT:     let mut a: [i32; 3] = [1, 2, 3];
 // CHECK-NEXT:     for i in 0 as i32..3 as i32 {
-// CHECK-NEXT:         a[i as usize] *= 2 as i32;
+// CHECK-NEXT:         a[i as usize] *= 2;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     a[0] + a[1] + a[2]
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn aliased() -> i32 {
-// CHECK-NEXT:     let mut a: [i32; 3] = [1 as i32, 2 as i32, 3 as i32];
+// CHECK-NEXT:     let mut a: [i32; 3] = [1, 2, 3];
 // CHECK-NEXT:     let q: *mut i32 = a.as_mut_ptr() as *mut i32;
-// CHECK-NEXT:     let mut s: i32 = 0 as i32;
+// CHECK-NEXT:     let mut s: i32 = 0;
 // CHECK-NEXT:     for i in 0 as i32..3 as i32 {
 // CHECK-NEXT:         s += a[i as usize];
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *unsafe { q.offset((2 as i32) as isize) } = 10 as i32;
+// CHECK-NEXT:             *unsafe { q.offset(2 as isize) } = 10;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     s
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn through_pointer(p: *const i32, t: &mut Tail) -> i32 {
-// CHECK-NEXT:     (unsafe { *unsafe { p.offset((1 as i32) as isize) } })
+// CHECK-NEXT:     (unsafe { *unsafe { p.offset(1 as isize) } })
 // CHECK-NEXT:         + unsafe {
 // CHECK-NEXT:             *unsafe {
 // CHECK-NEXT:                 unsafe { (*(t as *mut Tail)).data.as_mut_ptr() as *mut i32 }
-// CHECK-NEXT:                     .offset((0 as i32) as isize)
+// CHECK-NEXT:                     .offset(0 as isize)
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK: {{^}}}

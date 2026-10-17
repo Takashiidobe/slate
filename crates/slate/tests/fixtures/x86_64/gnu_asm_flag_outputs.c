@@ -41,9 +41,9 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN
 // CHECK-LABEL: {{^}}fn compare_flags(mut left: i32, mut right: i32) -> i32 {
-// CHECK-NEXT:     let mut equal: i32 = 0 as i32;
-// CHECK-NEXT:     let mut above: i32 = 0 as i32;
-// CHECK-NEXT:     let mut less: i32 = 0 as i32;
+// CHECK-NEXT:     let mut equal: i32 = 0;
+// CHECK-NEXT:     let mut above: i32 = 0;
+// CHECK-NEXT:     let mut less: i32 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u8;
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]]: u8;
@@ -57,11 +57,11 @@ int main(void) {
 // CHECK-NEXT:         above = unsafe { std::mem::transmute::<u32, i32>([[T_1]] as u32) };
 // CHECK-NEXT:         less = unsafe { std::mem::transmute::<u32, i32>([[T_2]] as u32) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     equal * (100 as i32) + above * (10 as i32) + less
+// CHECK-NEXT:     equal * 100 + above * 10 + less
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn compare_flag_widths(mut value: i32) -> i32 {
-// CHECK-NEXT:     let mut sign: u16 = 0 as u16;
-// CHECK-NEXT:     let mut nonzero: u64 = 0 as u64;
+// CHECK-NEXT:     let mut sign: u16 = 0;
+// CHECK-NEXT:     let mut nonzero: u64 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u8;
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]]: u8;
@@ -73,7 +73,6 @@ int main(void) {
 // CHECK-NEXT:         sign = unsafe { std::mem::transmute::<u16, u16>([[T_0]] as u16) };
 // CHECK-NEXT:         nonzero = unsafe { std::mem::transmute::<u64, u64>([[T_1]] as u64) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     ((((((sign as u32) as i32) * (10 as i32)) as i64) as u64).wrapping_add(nonzero)
-// CHECK-NEXT:         as u32) as i32
+// CHECK-NEXT:     ((((((sign as u32) as i32) * 10) as i64) as u64).wrapping_add(nonzero) as u32) as i32
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

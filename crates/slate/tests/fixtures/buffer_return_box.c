@@ -84,10 +84,10 @@ int main(void) {
 // CHECK-NEXT:     let raw: *mut i32 = make_raw(2 as i32);
 // CHECK-NEXT:     let raw2: *mut i32 = make_raw(2 as i32);
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {} {} {}", unsafe { * unsafe { q.offset((3 as i32) as isize) } },
-// CHECK-NEXT:         unsafe { * unsafe { r.offset((7 as i32) as isize) } }, (m !=
-// CHECK-NEXT:         std::ptr::null_mut::< i32 > ()) as i32, (a != std::ptr::null_mut::< i32 > ()) as
-// CHECK-NEXT:         i32, read_first(raw), unsafe { * unsafe { raw2.offset((1 as i32) as isize) } }
+// CHECK-NEXT:         "{} {} {} {} {} {}", unsafe { * unsafe { q.offset(3 as isize) } }, unsafe { *
+// CHECK-NEXT:         unsafe { r.offset(7 as isize) } }, (m != std::ptr::null_mut::< i32 > ()) as i32,
+// CHECK-NEXT:         (a != std::ptr::null_mut::< i32 > ()) as i32, read_first(raw), unsafe { * unsafe
+// CHECK-NEXT:         { raw2.offset(1 as isize) } }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { free(q as *mut ()) };
@@ -101,6 +101,6 @@ int main(void) {
 // CHECK-NEXT:     let free: Option<unsafe extern "C-unwind" fn(*mut ())> = Some(custom_free);
 // CHECK-NEXT:     let shadow: *mut i32 = make_shadow(1 as i32);
 // CHECK-NEXT:     unsafe { free.unwrap()(shadow as *mut ()) };
-// CHECK-NEXT:     0 as i32
+// CHECK-NEXT:     0
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

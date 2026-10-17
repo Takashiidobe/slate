@@ -25,27 +25,27 @@ int main(void) {
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = x.__slate_bits_0.__get_a();
-// CHECK-NEXT:     x.__slate_bits_0.__set_a([[V_0]] + (1 as i32));
+// CHECK-NEXT:     x.__slate_bits_0.__set_a([[V_0]] + 1);
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i32 = x.__slate_bits_0.__get_b();
-// CHECK-NEXT:     x.__slate_bits_0.__set_b([[V_1]] + (1 as i32));
+// CHECK-NEXT:     x.__slate_bits_0.__set_b([[V_1]] + 1);
 // CHECK-NEXT:     let [[V_2:__v[0-9]+]]: i32 = x.__slate_bits_0.__get_c();
-// CHECK-NEXT:     x.__slate_bits_0.__set_c([[V_2]] + (1 as i32));
+// CHECK-NEXT:     x.__slate_bits_0.__set_c([[V_2]] + 1);
 // CHECK-NEXT:     println!("{} {} {} {}", [[V_0]], [[V_1]], [[V_2]], 4 as u64);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     let [[V_3:__v[0-9]+]]: i32 = x.__slate_bits_0.__get_a();
-// CHECK-NEXT:     let [[V_4:__v[0-9]+]]: i32 = [[V_3]] + (1 as i32);
+// CHECK-NEXT:     let [[V_4:__v[0-9]+]]: i32 = [[V_3]] + 1;
 // CHECK-NEXT:     x.__slate_bits_0.__set_a([[V_4]]);
 // CHECK-NEXT:     let [[V_5:__v[0-9]+]]: i32 = x.__slate_bits_0.__get_b();
-// CHECK-NEXT:     let [[V_6:__v[0-9]+]]: i32 = [[V_5]] + (1 as i32);
+// CHECK-NEXT:     let [[V_6:__v[0-9]+]]: i32 = [[V_5]] + 1;
 // CHECK-NEXT:     x.__slate_bits_0.__set_b([[V_6]]);
 // CHECK-NEXT:     let [[V_7:__v[0-9]+]]: i32 = x.__slate_bits_0.__get_c();
-// CHECK-NEXT:     let [[V_8:__v[0-9]+]]: i32 = [[V_7]] + (1 as i32);
+// CHECK-NEXT:     let [[V_8:__v[0-9]+]]: i32 = [[V_7]] + 1;
 // CHECK-NEXT:     x.__slate_bits_0.__set_c([[V_8]]);
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {}", (([[V_4]] as i16) << 6 >> 6) as i32, (([[V_6]] as i16) << 6 >> 6) as i32,
 // CHECK-NEXT:         (([[V_8]] as i16) << 6 >> 6) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     0 as i32
+// CHECK-NEXT:     0
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

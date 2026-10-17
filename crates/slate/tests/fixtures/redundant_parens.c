@@ -23,13 +23,13 @@ int main() {
 
 // SLATE-FILECHECK-BEGIN
 // CHECK-LABEL: {{^}}fn classify(mut a: i32, b: i32) -> i32 {
-// CHECK-NEXT:     let mut r: i32 = 0 as i32;
+// CHECK-NEXT:     let mut r: i32 = 0;
 // CHECK-NEXT:     while a < b {
-// CHECK-NEXT:         a += 1 as i32;
-// CHECK-NEXT:         r += 1 as i32;
+// CHECK-NEXT:         a += 1;
+// CHECK-NEXT:         r += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if a == b {
-// CHECK-NEXT:         r += 10 as i32;
+// CHECK-NEXT:         r += 10;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let t: i32 = if a > b { a - b } else { b - a };
 // CHECK-NEXT:     let m: i32 = (a & b) + (a << (1 as i32));

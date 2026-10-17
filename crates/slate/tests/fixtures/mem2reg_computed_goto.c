@@ -30,7 +30,7 @@ int main(void) {
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 1 => {
 // CHECK-NEXT:                     let [[V_0:__v[0-9]+]]: *mut i32 = position;
-// CHECK-NEXT:                     position = unsafe { [[V_0]].offset((1 as i32) as isize) };
+// CHECK-NEXT:                     position = unsafe { [[V_0]].offset(1 as isize) };
 // CHECK-NEXT:                     match (unsafe { labels.0[(unsafe { *position }) as usize] }) as usize
 // CHECK-NEXT:                     {
 // CHECK-NEXT:                         4 => {

@@ -26,26 +26,26 @@ inner:
 // CHECK-NEXT:     let mut j: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     let mut i: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         i = 0 as i32;
-// CHECK-NEXT:         j = 0 as i32;
-// CHECK-NEXT:         total = 0 as i32;
+// CHECK-NEXT:         i = 0;
+// CHECK-NEXT:         j = 0;
+// CHECK-NEXT:         total = 0;
 // CHECK-NEXT:         loop {
-// CHECK-NEXT:             j = 0 as i32;
+// CHECK-NEXT:             j = 0;
 // CHECK-NEXT:             loop {
 // CHECK-NEXT:                 total += i * j;
-// CHECK-NEXT:                 j += 1 as i32;
-// CHECK-NEXT:                 if !(j < (3 as i32)) {
+// CHECK-NEXT:                 j += 1;
+// CHECK-NEXT:                 if !(j < 3) {
 // CHECK-NEXT:                     break;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
-// CHECK-NEXT:             i += 1 as i32;
-// CHECK-NEXT:             if !(i < (4 as i32)) {
+// CHECK-NEXT:             i += 1;
+// CHECK-NEXT:             if !(i < 4) {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:         println!("{}", total);
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         return 0 as i32;
+// CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

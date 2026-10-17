@@ -15,8 +15,8 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN
 // CHECK-LABEL: {{^}}fn sum_ints(src: *const (), n: u64) -> i32 {
-// CHECK-NEXT:     let mut total: i32 = 0 as i32;
-// CHECK-NEXT:     for i in ((0 as i32) as i64) as u64..n {
+// CHECK-NEXT:     let mut total: i32 = 0;
+// CHECK-NEXT:     for i in 0..n {
 // CHECK-NEXT:         total += unsafe { *unsafe { (src as *const i32).offset(i as isize) } };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total

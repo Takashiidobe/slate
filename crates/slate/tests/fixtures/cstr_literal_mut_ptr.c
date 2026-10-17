@@ -29,28 +29,28 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN
 // CHECK-LABEL: {{^}}fn mutable_pick(i: i32) -> *mut i8 {
-// CHECK-NEXT:     if i == (0 as i32) {
+// CHECK-NEXT:     if i == 0 {
 // CHECK-NEXT:         return c"mut".as_ptr() as *mut i8;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     c"other".as_ptr() as *mut i8
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn const_pick(i: i32) -> *const i8 {
-// CHECK-NEXT:     if i == (0 as i32) {
-// CHECK-NEXT:         return c"const".as_ptr() as *const i8;
+// CHECK-NEXT:     if i == 0 {
+// CHECK-NEXT:         return c"const".as_ptr();
 // CHECK-NEXT:     }
-// CHECK-NEXT:     c"other".as_ptr() as *const i8
+// CHECK-NEXT:     c"other".as_ptr()
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%s %s %s\n".as_ptr() as *const i8,
+// CHECK-NEXT:             c"%s %s %s\n".as_ptr(),
 // CHECK-NEXT:             mutable_pick(0 as i32),
 // CHECK-NEXT:             const_pick(0 as i32),
 // CHECK-NEXT:             bytes_pick() as *mut i8,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     0 as i32
+// CHECK-NEXT:     0
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

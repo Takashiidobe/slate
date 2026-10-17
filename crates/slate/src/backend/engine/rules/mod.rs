@@ -9,6 +9,7 @@ mod getenv_var;
 mod inline_temps;
 mod label_elide;
 mod libc_call;
+mod literal_casts;
 mod loop_to_while;
 mod param_spills;
 mod pattern_range;
@@ -24,6 +25,7 @@ mod walk;
 mod zero_init;
 
 use super::NodeRule;
+use crate::backend::rust_ast::Prim;
 pub(super) use remove_mut::demote_params;
 
 pub(super) fn control_flow_registry() -> Vec<Box<dyn NodeRule>> {
@@ -61,7 +63,13 @@ pub(super) fn registry(target: &slate_parser::target_info::TargetInfo) -> Vec<Bo
         Box::new(peel_casts::PeelCasts),
         Box::new(constant_index_casts::ConstantIndexCasts),
         Box::new(pattern_range::MatchRangeFold),
-        Box::new(cstr_literal::CStrLiteral),
+        Box::new(cstr_literal::CStrLiteral {
+            c_char: if target.char_signed {
+                Prim::I8
+            } else {
+                Prim::U8
+            },
+        }),
         Box::new(getenv_var::GetenvVar),
         Box::new(compound_assign::CompoundAssignRecover),
         Box::new(dead_store::DeadStore),
@@ -69,4 +77,8 @@ pub(super) fn registry(target: &slate_parser::target_info::TargetInfo) -> Vec<Bo
     ]);
     rules.extend(libc_call::rules(target));
     rules
+}
+
+pub(super) fn late_registry() -> Vec<Box<dyn NodeRule>> {
+    vec![Box::new(literal_casts::LiteralCasts)]
 }

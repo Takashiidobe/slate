@@ -81,32 +81,30 @@ pub(in crate::backend) fn apply(
     crate::backend::interproc::string_params::run(program);
     crate::backend::interproc::pointer_lattice::apply(program);
 
-    let registry = RuleRegistry::build(rules::registry(target));
+    let passes = [
+        RuleRegistry::build(rules::registry(target)),
+        RuleRegistry::build(rules::late_registry()),
+    ];
     for item in &mut program.items {
-        apply_item(item, &registry);
+        apply_item(item, &passes);
     }
     prelude::inject(program, target);
     printf_format::rewrite(program);
 }
 
 pub(in crate::backend) fn apply_control_flow(program: &mut Program) {
-    let registry = RuleRegistry::build(rules::control_flow_registry());
+    let passes = [RuleRegistry::build(rules::control_flow_registry())];
     for item in &mut program.items {
-        apply_item(item, &registry);
+        apply_item(item, &passes);
     }
 }
 
-fn apply_item(item: &mut Item, registry: &RuleRegistry) {
+fn apply_item(item: &mut Item, passes: &[RuleRegistry]) {
     match item {
-        Item::Fn(func) => run_function(
-            &mut func.body,
-            &mut func.params,
-            func.ret.as_ref(),
-            registry,
-        ),
+        Item::Fn(func) => run_function(&mut func.body, &mut func.params, func.ret.as_ref(), passes),
         Item::InlineMod { items, .. } => {
             for item in items {
-                apply_item(item, registry);
+                apply_item(item, passes);
             }
         }
         Item::Impl(impl_block) => {
@@ -116,7 +114,7 @@ fn apply_item(item: &mut Item, registry: &RuleRegistry) {
                         continue;
                     };
                     let mut body = std::mem::take(&mut block.stmts);
-                    run_function(&mut body, &mut method.params, method.ret.as_ref(), registry);
+                    run_function(&mut body, &mut method.params, method.ret.as_ref(), passes);
                     block.stmts = body;
                 }
             }
@@ -129,12 +127,14 @@ fn run_function(
     body: &mut Vec<Stmt>,
     params: &mut Vec<FnParam>,
     return_type: Option<&crate::backend::rust_ast::Type>,
-    registry: &RuleRegistry,
+    passes: &[RuleRegistry],
 ) {
     let taken = std::mem::take(body);
     let mut function = arena::build(taken, params, return_type);
     let root = function.root;
-    run_worklist(&mut function, registry);
+    for registry in passes {
+        run_worklist(&mut function, registry);
+    }
     rules::demote_params(&mut function);
     *body = arena::reify(&function, root);
     *params = function.params().to_vec();

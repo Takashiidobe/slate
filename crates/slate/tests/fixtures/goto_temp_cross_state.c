@@ -48,11 +48,11 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut inr: [[SLATERECORD_0:__SlateRecord[0-9]+]] = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     inr.pad = 0 as i32;
-// CHECK-NEXT:     inr.x = 3 as i32;
-// CHECK-NEXT:     inr.y = 4 as i32;
+// CHECK-NEXT:     inr.pad = 0;
+// CHECK-NEXT:     inr.x = 3;
+// CHECK-NEXT:     inr.y = 4;
 // CHECK-NEXT:     let mut ou: [[SLATERECORD_1:__SlateRecord[0-9]+]] = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     ou.lead = 0 as i32;
+// CHECK-NEXT:     ou.lead = 0;
 // CHECK-NEXT:     ou.r#in = inr;
 // CHECK-NEXT:     let mut s: [[SLATERECORD_2:__SlateRecord[0-9]+]] = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     s.dict = std::ptr::addr_of_mut!(ou);
@@ -68,6 +68,6 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     0 as i32
+// CHECK-NEXT:     0
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

@@ -28,10 +28,10 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN
 // CHECK-LABEL: {{^}}fn touch_and_maybe_free(q: *mut i32, do_free: i32) -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *q = (unsafe { *q }) + (1 as i32);
+// CHECK-NEXT:         *q = (unsafe { *q }) + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let v: i32 = unsafe { *q };
-// CHECK-NEXT:     if do_free != (0 as i32) {
+// CHECK-NEXT:     if do_free != 0 {
 // CHECK-NEXT:         unsafe { free(q as *mut ()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     v

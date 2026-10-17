@@ -37,8 +37,8 @@ int main(void) {
 // CHECK-NEXT:     result
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn roundtrip_via_x(mut a: i32) -> i32 {
-// CHECK-NEXT:     let mut mid: i32 = 0 as i32;
-// CHECK-NEXT:     let mut result: i32 = 0 as i32;
+// CHECK-NEXT:     let mut mid: i32 = 0;
+// CHECK-NEXT:     let mut result: i32 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
 // CHECK-NEXT:         core::arch::asm!(

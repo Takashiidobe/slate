@@ -30,7 +30,7 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN
 // CHECK-LABEL: {{^}}fn read_via_o(mut x: i32) -> i32 {
-// CHECK-NEXT:     let mut result: i32 = 0 as i32;
+// CHECK-NEXT:     let mut result: i32 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
 // CHECK-NEXT:         core::arch::asm!(
@@ -51,7 +51,7 @@ int main(void) {
 // CHECK-NEXT:     x
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn store_via_o() -> i32 {
-// CHECK-NEXT:     let mut x: i32 = 0 as i32;
+// CHECK-NEXT:     let mut x: i32 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "movl $42, ({0:r})", in (reg) std::ptr::addr_of_mut!(x), options(nostack,

@@ -63,11 +63,11 @@ int main(void) {
 // CHECK-NEXT:     let mut total: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     let mut i: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         i = 0 as i32;
-// CHECK-NEXT:         total = 0 as i32;
+// CHECK-NEXT:         i = 0;
+// CHECK-NEXT:         total = 0;
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             total += i;
-// CHECK-NEXT:             i += 1 as i32;
+// CHECK-NEXT:             i += 1;
 // CHECK-NEXT:             if !(i < n) {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
@@ -80,11 +80,11 @@ int main(void) {
 // CHECK-NEXT:     let mut x: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         x = n;
-// CHECK-NEXT:         k = 0 as i32;
+// CHECK-NEXT:         k = 0;
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             bump(unsafe { &mut (*std::ptr::addr_of_mut!(x)) });
-// CHECK-NEXT:             k += 1 as i32;
-// CHECK-NEXT:             if !(k < (3 as i32)) {
+// CHECK-NEXT:             k += 1;
+// CHECK-NEXT:             if !(k < 3) {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
@@ -96,11 +96,11 @@ int main(void) {
 // CHECK-NEXT:     let mut p: std::mem::MaybeUninit<Pair> = std::mem::MaybeUninit::uninit();
 // CHECK-NEXT:     let [[SLATE_SLOT_0:__slate_slot_[0-9]+]]: *mut Pair = std::ptr::addr_of_mut!(p) as *mut Pair;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::ptr::write([[SLATE_SLOT_0]], Pair { a: 1 as i32, b: 2 as i32 });
-// CHECK-NEXT:         k = 0 as i32;
+// CHECK-NEXT:         std::ptr::write([[SLATE_SLOT_0]], Pair { a: 1, b: 2 });
+// CHECK-NEXT:         k = 0;
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             (*[[SLATE_SLOT_0]]).a += (*[[SLATE_SLOT_0]]).b;
-// CHECK-NEXT:             let [[V_0:__v[0-9]+]]: i32 = k + (1 as i32);
+// CHECK-NEXT:             let [[V_0:__v[0-9]+]]: i32 = k + 1;
 // CHECK-NEXT:             k = [[V_0]];
 // CHECK-NEXT:             if !([[V_0]] < n) {
 // CHECK-NEXT:                 break;
@@ -115,10 +115,10 @@ int main(void) {
 // CHECK-NEXT:     let [[SLATE_SLOT_0:__slate_slot_[0-9]+]]: *mut i32 = std::ptr::addr_of_mut!(v) as *mut i32;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::write([[SLATE_SLOT_0]], 1 as i32);
-// CHECK-NEXT:         k = 0 as i32;
+// CHECK-NEXT:         k = 0;
 // CHECK-NEXT:         loop {
-// CHECK-NEXT:             *[[SLATE_SLOT_0]] *= 2 as i32;
-// CHECK-NEXT:             let [[V_0:__v[0-9]+]]: i32 = k + (1 as i32);
+// CHECK-NEXT:             *[[SLATE_SLOT_0]] *= 2;
+// CHECK-NEXT:             let [[V_0:__v[0-9]+]]: i32 = k + 1;
 // CHECK-NEXT:             k = [[V_0]];
 // CHECK-NEXT:             if !([[V_0]] < n) {
 // CHECK-NEXT:                 break;

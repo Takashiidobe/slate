@@ -44,28 +44,28 @@ int main(void) {
 // CHECK-LABEL: {{^}}fn classify_u64(v: u64) -> i32 {
 // CHECK-NEXT:     match v {
 // CHECK-NEXT:         18446744073709551610..=18446744073709551612 => {
-// CHECK-NEXT:             return 1 as i32;
+// CHECK-NEXT:             return 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         18446744073709551615 => {
-// CHECK-NEXT:             return 2 as i32;
+// CHECK-NEXT:             return 2;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         _ => {
-// CHECK-NEXT:             return 0 as i32;
+// CHECK-NEXT:             return 0;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { std::mem::zeroed() }
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn classify_bitint(seed: i32) -> i32 {
-// CHECK-NEXT:     let v: i128 = (170141183460469231731687303715884105720 as i128) + (seed as i128);
+// CHECK-NEXT:     let v: i128 = 170141183460469231731687303715884105720 + (seed as i128);
 // CHECK-NEXT:     match v {
 // CHECK-NEXT:         170141183460469231731687303715884105720..=170141183460469231731687303715884105722 => {
-// CHECK-NEXT:             return 1 as i32;
+// CHECK-NEXT:             return 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         170141183460469231731687303715884105727 => {
-// CHECK-NEXT:             return 2 as i32;
+// CHECK-NEXT:             return 2;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         _ => {
-// CHECK-NEXT:             return 0 as i32;
+// CHECK-NEXT:             return 0;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { std::mem::zeroed() }

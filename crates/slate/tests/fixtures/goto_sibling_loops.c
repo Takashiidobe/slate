@@ -29,28 +29,28 @@ second:
 // CHECK-NEXT:     let mut k: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     let mut i: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         i = 0 as i32;
-// CHECK-NEXT:         k = 0 as i32;
-// CHECK-NEXT:         sum = 0 as i32;
-// CHECK-NEXT:         prod = 1 as i32;
+// CHECK-NEXT:         i = 0;
+// CHECK-NEXT:         k = 0;
+// CHECK-NEXT:         sum = 0;
+// CHECK-NEXT:         prod = 1;
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             sum += i;
-// CHECK-NEXT:             i += 1 as i32;
-// CHECK-NEXT:             if !(i < (5 as i32)) {
+// CHECK-NEXT:             i += 1;
+// CHECK-NEXT:             if !(i < 5) {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
-// CHECK-NEXT:         k = 1 as i32;
+// CHECK-NEXT:         k = 1;
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             prod *= k;
-// CHECK-NEXT:             k += 1 as i32;
-// CHECK-NEXT:             if !(k < (5 as i32)) {
+// CHECK-NEXT:             k += 1;
+// CHECK-NEXT:             if !(k < 5) {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:         println!("{} {}", sum, prod);
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         return 0 as i32;
+// CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

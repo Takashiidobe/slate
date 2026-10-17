@@ -35,15 +35,15 @@ int main(void) {
 // CHECK-NEXT:                     {}
 // CHECK-NEXT:                     println!("{} {}", [[V_0]], * [[SLATE_SLOT_0]]);
 // CHECK-NEXT:                     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:                     return 0 as i32;
+// CHECK-NEXT:                     return 0;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 1 => {
-// CHECK-NEXT:                     *[[SLATE_SLOT_0]] = 13 as i32;
+// CHECK-NEXT:                     *[[SLATE_SLOT_0]] = 13;
 // CHECK-NEXT:                     __slate_state = 0usize;
 // CHECK-NEXT:                     continue;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 2 => {
-// CHECK-NEXT:                     *[[SLATE_SLOT_0]] = 11 as i32;
+// CHECK-NEXT:                     *[[SLATE_SLOT_0]] = 11;
 // CHECK-NEXT:                     __slate_state = 0usize;
 // CHECK-NEXT:                     continue;
 // CHECK-NEXT:                 }
@@ -62,12 +62,12 @@ int main(void) {
 // CHECK-NEXT:                     continue;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 4 => {
-// CHECK-NEXT:                     *[[SLATE_SLOT_1]] = 13 as i32;
+// CHECK-NEXT:                     *[[SLATE_SLOT_1]] = 13;
 // CHECK-NEXT:                     __slate_state = 3usize;
 // CHECK-NEXT:                     continue;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 5 => {
-// CHECK-NEXT:                     *[[SLATE_SLOT_1]] = 11 as i32;
+// CHECK-NEXT:                     *[[SLATE_SLOT_1]] = 11;
 // CHECK-NEXT:                     __slate_state = 3usize;
 // CHECK-NEXT:                     continue;
 // CHECK-NEXT:                 }

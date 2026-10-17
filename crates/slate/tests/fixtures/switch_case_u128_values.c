@@ -46,13 +46,13 @@ int main(void) {
 // CHECK-NEXT:     match v {
 // CHECK-NEXT:         340282366920938463463374607431768211441
 // CHECK-NEXT:         | 340282366920938463463374607431768211443 => {
-// CHECK-NEXT:             return 1 as i32;
+// CHECK-NEXT:             return 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         340282366920938463463374607431768211450..=340282366920938463463374607431768211453 => {
-// CHECK-NEXT:             return 2 as i32;
+// CHECK-NEXT:             return 2;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         _ => {
-// CHECK-NEXT:             return 0 as i32;
+// CHECK-NEXT:             return 0;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { std::mem::zeroed() }
@@ -62,13 +62,13 @@ int main(void) {
 // CHECK-NEXT:         .wrapping_add((seed as i128) as u128);
 // CHECK-NEXT:     match v {
 // CHECK-NEXT:         340282366920938463463374607431768211441..=340282366920938463463374607431768211443 => {
-// CHECK-NEXT:             return 1 as i32;
+// CHECK-NEXT:             return 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         340282366920938463463374607431768211450 => {
-// CHECK-NEXT:             return 2 as i32;
+// CHECK-NEXT:             return 2;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         _ => {
-// CHECK-NEXT:             return 0 as i32;
+// CHECK-NEXT:             return 0;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { std::mem::zeroed() }

@@ -26,8 +26,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *unsafe {
 // CHECK-NEXT:             unsafe { (*(row as *mut Row)).cells.as_mut_ptr() as *mut i32 }
-// CHECK-NEXT:                 .offset((1 as i32) as isize)
-// CHECK-NEXT:         } = 9 as i32;
+// CHECK-NEXT:                 .offset(1 as isize)
+// CHECK-NEXT:         } = 9;
 // CHECK-NEXT:     }
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

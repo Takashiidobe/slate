@@ -64,19 +64,17 @@ int main(void) {
 // CHECK-NEXT:         40 as i32,
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let r: i32 = sum_fixed(arr.0.as_mut_ptr() as *mut i32);
-// CHECK-NEXT:     let mut a: [i32; 3] = [1 as i32, 2 as i32, 3 as i32];
+// CHECK-NEXT:     let mut a: [i32; 3] = [1, 2, 3];
 // CHECK-NEXT:     scale_fixed(a.as_mut_ptr() as *mut i32);
-// CHECK-NEXT:     let m: *mut i32 = (unsafe {
-// CHECK-NEXT:         malloc((((3 as i32) as i64) as u64).wrapping_mul(4 as u64))
-// CHECK-NEXT:     }) as *mut i32;
+// CHECK-NEXT:     let m: *mut i32 = (unsafe { malloc((3 as u64).wrapping_mul(4 as u64)) }) as *mut i32;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *unsafe { m.offset((0 as i32) as isize) } = 5 as i32;
+// CHECK-NEXT:         *unsafe { m.offset(0 as isize) } = 5;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *unsafe { m.offset((1 as i32) as isize) } = 6 as i32;
+// CHECK-NEXT:         *unsafe { m.offset(1 as isize) } = 6;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *unsafe { m.offset((2 as i32) as isize) } = 7 as i32;
+// CHECK-NEXT:         *unsafe { m.offset(2 as isize) } = 7;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let r2: i32 = sum3(m);
 // CHECK-NEXT:     unsafe { free(m as *mut ()) };
@@ -91,6 +89,6 @@ int main(void) {
 // CHECK-NEXT:     let r3: i32 = mix(big.0.as_mut_ptr() as *mut i32);
 // CHECK-NEXT:     println!("{} {} {} {} {}", r, a[0], a[2], r2, r3);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     0 as i32
+// CHECK-NEXT:     0
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

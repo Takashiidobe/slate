@@ -26,10 +26,10 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN
 // CHECK-LABEL: {{^}}fn make_byte() -> Byte {
-// CHECK-NEXT:     let result: Byte = Byte { value: (7 as i32) as i8 };
+// CHECK-NEXT:     let result: Byte = Byte { value: 7 };
 // CHECK-NEXT:     return result;
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn initialize_chars() -> i32 {
-// CHECK-NEXT:     5 as i32
+// CHECK-NEXT:     5
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

@@ -21,6 +21,6 @@ int main(void) {
 // CHECK-NEXT:     noisy(9 as i32);
 // CHECK-NEXT:     println!("{}", kept);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     0 as i32
+// CHECK-NEXT:     0
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

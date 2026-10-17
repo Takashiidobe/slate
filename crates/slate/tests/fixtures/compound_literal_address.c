@@ -37,8 +37,8 @@ int main(void) {
 // CHECK-NEXT:                     std::ptr::addr_of_mut!([[SLATE_COMPOUND_0]]) }
 // CHECK-NEXT:                 )
 // CHECK-NEXT:             },
-// CHECK-NEXT:             c"slate".as_ptr() as *const i8,
-// CHECK-NEXT:             (6 as u64).wrapping_sub(((1 as i32) as i64) as u64),
+// CHECK-NEXT:             c"slate".as_ptr(),
+// CHECK-NEXT:             (6 as u64).wrapping_sub(1 as u64),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut second: Slice = unsafe {
@@ -50,21 +50,21 @@ int main(void) {
 // CHECK-NEXT:                     std::ptr::addr_of_mut!([[SLATE_COMPOUND_1]]) }
 // CHECK-NEXT:                 )
 // CHECK-NEXT:             },
-// CHECK-NEXT:             c"translation".as_ptr() as *const i8,
-// CHECK-NEXT:             (12 as u64).wrapping_sub(((1 as i32) as i64) as u64),
+// CHECK-NEXT:             c"translation".as_ptr(),
+// CHECK-NEXT:             (12 as u64).wrapping_sub(1 as u64),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%c %lu %c %lu\n".as_ptr() as *const i8,
-// CHECK-NEXT:             (unsafe { *unsafe { first.data.offset((0 as i32) as isize) } }) as i32,
+// CHECK-NEXT:             c"%c %lu %c %lu\n".as_ptr(),
+// CHECK-NEXT:             (unsafe { *unsafe { first.data.offset(0 as isize) } }) as i32,
 // CHECK-NEXT:             first.length,
-// CHECK-NEXT:             (unsafe { *unsafe { second.data.offset((0 as i32) as isize) } }) as i32,
+// CHECK-NEXT:             (unsafe { *unsafe { second.data.offset(0 as isize) } }) as i32,
 // CHECK-NEXT:             second.length,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     0 as i32
+// CHECK-NEXT:     0
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

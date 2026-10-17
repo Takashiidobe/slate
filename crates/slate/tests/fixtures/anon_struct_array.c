@@ -21,23 +21,23 @@ int main(void) {
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let error_log: __SlateAlign16<[[[SLATERECORD_0:__SlateRecord[0-9]+]]; 3]> = __SlateAlign16([
 // CHECK-NEXT:         [[SLATERECORD_0]] {
-// CHECK-NEXT:             code: 404 as i32,
-// CHECK-NEXT:             message: c"Not Found".as_ptr() as *const i8,
+// CHECK-NEXT:             code: 404,
+// CHECK-NEXT:             message: c"Not Found".as_ptr(),
 // CHECK-NEXT:             confidence: 0.99f64,
 // CHECK-NEXT:         },
 // CHECK-NEXT:         [[SLATERECORD_0]] {
-// CHECK-NEXT:             code: 500 as i32,
-// CHECK-NEXT:             message: c"Internal Server Error".as_ptr() as *const i8,
+// CHECK-NEXT:             code: 500,
+// CHECK-NEXT:             message: c"Internal Server Error".as_ptr(),
 // CHECK-NEXT:             confidence: 0.85f64,
 // CHECK-NEXT:         },
 // CHECK-NEXT:         [[SLATERECORD_0]] {
-// CHECK-NEXT:             code: 200 as i32,
-// CHECK-NEXT:             message: c"OK".as_ptr() as *const i8,
+// CHECK-NEXT:             code: 200,
+// CHECK-NEXT:             message: c"OK".as_ptr(),
 // CHECK-NEXT:             confidence: 1.0f64,
 // CHECK-NEXT:         },
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     println!("{}", error_log.0[0].code);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     0 as i32
+// CHECK-NEXT:     0
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

@@ -42,19 +42,19 @@ int main(void) {
 // CHECK-LABEL: {{^}}fn classify(c: i32) -> i32 {
 // CHECK-NEXT:     match c {
 // CHECK-NEXT:         48..=57 => {
-// CHECK-NEXT:             return 1 as i32;
+// CHECK-NEXT:             return 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         97..=99 => {
-// CHECK-NEXT:             return 2 as i32;
+// CHECK-NEXT:             return 2;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         100 | 200 => {
-// CHECK-NEXT:             return 3 as i32;
+// CHECK-NEXT:             return 3;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         -3..=-1 | 7 => {
-// CHECK-NEXT:             return 4 as i32;
+// CHECK-NEXT:             return 4;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         _ => {
-// CHECK-NEXT:             return 0 as i32;
+// CHECK-NEXT:             return 0;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { std::mem::zeroed() }

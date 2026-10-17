@@ -28,11 +28,11 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN
 // CHECK-LABEL: {{^}}fn select_type(repeatMode: *mut u32, count: u32) -> u32 {
-// CHECK-NEXT:     if count == ((0 as i32) as u32) {
+// CHECK-NEXT:     if count == 0 {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *repeatMode = (0 as i32) as u32;
+// CHECK-NEXT:             *repeatMode = 0;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         return (0 as i32) as u32;
+// CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     ((unsafe { *repeatMode }) as u32).wrapping_add(count)
 // CHECK: {{^}}}

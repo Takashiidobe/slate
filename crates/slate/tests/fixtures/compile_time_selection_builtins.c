@@ -25,18 +25,18 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
-// CHECK-NEXT:     let a: i32 = 3 as i32;
-// CHECK-NEXT:     let b: i32 = 4 as i32;
+// CHECK-NEXT:     let a: i32 = 3;
+// CHECK-NEXT:     let b: i32 = 4;
 // CHECK-NEXT:     let chosen_true: i32 = a;
 // CHECK-NEXT:     let chosen_false: i32 = b;
-// CHECK-NEXT:     let same_type: i32 = 1 as i32;
-// CHECK-NEXT:     let diff_type: i32 = 0 as i32;
-// CHECK-NEXT:     let i_name: *const i8 = c"int".as_ptr() as *const i8;
-// CHECK-NEXT:     let d_name: *const i8 = c"double".as_ptr() as *const i8;
+// CHECK-NEXT:     let same_type: i32 = 1;
+// CHECK-NEXT:     let diff_type: i32 = 0;
+// CHECK-NEXT:     let i_name: *const i8 = c"int".as_ptr();
+// CHECK-NEXT:     let d_name: *const i8 = c"double".as_ptr();
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%d %d %d %d %s %s\n".as_ptr() as *const i8,
+// CHECK-NEXT:             c"%d %d %d %d %s %s\n".as_ptr(),
 // CHECK-NEXT:             chosen_true,
 // CHECK-NEXT:             chosen_false,
 // CHECK-NEXT:             same_type,
@@ -46,6 +46,6 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     0 as i32
+// CHECK-NEXT:     0
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

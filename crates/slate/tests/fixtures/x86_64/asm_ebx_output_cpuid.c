@@ -12,9 +12,9 @@ int main(void) { return cpuid_leaf7_ebx_nonzero(); }
 
 // SLATE-FILECHECK-BEGIN
 // CHECK-LABEL: {{^}}fn cpuid_leaf7_ebx_nonzero() -> i32 {
-// CHECK-NEXT:     let mut f7a: u32 = 0 as u32;
-// CHECK-NEXT:     let mut f7b: u32 = 0 as u32;
-// CHECK-NEXT:     let mut f7c: u32 = 0 as u32;
+// CHECK-NEXT:     let mut f7a: u32 = 0;
+// CHECK-NEXT:     let mut f7b: u32 = 0;
+// CHECK-NEXT:     let mut f7c: u32 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]]: u32;
@@ -28,7 +28,6 @@ int main(void) { return cpuid_leaf7_ebx_nonzero(); }
 // CHECK-NEXT:         f7b = unsafe { std::mem::transmute::<u32, u32>([[T_1]] as u32) };
 // CHECK-NEXT:         f7c = unsafe { std::mem::transmute::<u32, u32>([[T_2]] as u32) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     (f7b != ((0 as i32) as u32) || f7a != ((0 as i32) as u32)
-// CHECK-NEXT:         || f7c != ((0 as i32) as u32)) as i32
+// CHECK-NEXT:     (f7b != 0 || f7a != 0 || f7c != 0) as i32
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

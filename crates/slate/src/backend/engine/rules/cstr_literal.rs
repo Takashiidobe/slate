@@ -18,8 +18,8 @@ const KINDS: &[NodeKindTag] = &[
     NodeKindTag::Block,
 ];
 
-fn is_const_c_char_ptr(ty: &Type) -> bool {
-    matches!(ty, Type::Ptr { mutable: false, inner } if **inner == Type::CLib(CLibType::CHAR))
+fn is_const_c_char_ptr(ty: &Type, c_char: Prim) -> bool {
+    matches!(ty, Type::Ptr { mutable: false, inner } if **inner == Type::CLib(CLibType::CHAR) || **inner == Type::Prim(c_char))
 }
 
 fn is_byte_ptr(ty: &Type) -> bool {
@@ -62,7 +62,7 @@ fn cstr_content(expr: &Expr) -> Option<Vec<u8>> {
     }
 }
 
-fn rewrite_of(expr: &Expr) -> Option<Expr> {
+fn rewrite_of(expr: &Expr, c_char: Prim) -> Option<Expr> {
     let content = cstr_content(expr)?;
     let Expr::Cast { ty, .. } = expr else {
         return None;
@@ -72,7 +72,7 @@ fn rewrite_of(expr: &Expr) -> Option<Expr> {
         method: "as_ptr".into(),
         args: Vec::new(),
     };
-    let rewritten = if is_const_c_char_ptr(ty) {
+    let rewritten = if is_const_c_char_ptr(ty, c_char) {
         ptr
     } else {
         Expr::Cast {
@@ -83,15 +83,17 @@ fn rewrite_of(expr: &Expr) -> Option<Expr> {
     (rewritten != *expr).then_some(rewritten)
 }
 
-fn rewrite_here(expr: &mut Expr) -> bool {
-    let Some(rewritten) = rewrite_of(expr) else {
+fn rewrite_here(expr: &mut Expr, c_char: Prim) -> bool {
+    let Some(rewritten) = rewrite_of(expr, c_char) else {
         return false;
     };
     *expr = rewritten;
     true
 }
 
-pub(in crate::backend::engine) struct CStrLiteral;
+pub(in crate::backend::engine) struct CStrLiteral {
+    pub(super) c_char: Prim,
+}
 
 impl NodeRule for CStrLiteral {
     fn name(&self) -> &'static str {
@@ -110,7 +112,8 @@ impl NodeRule for CStrLiteral {
         arena.get(id).is_some_and(|kind| {
             let mut found = false;
             walk::visit_kind_exprs(kind, |expr| {
-                found |= walk::any_collapsible(expr, &|expr| rewrite_of(expr).is_some())
+                found |=
+                    walk::any_collapsible(expr, &|expr| rewrite_of(expr, self.c_char).is_some())
             });
             found
         })
@@ -122,7 +125,7 @@ impl NodeRule for CStrLiteral {
         };
         let mut changed = false;
         walk::visit_kind_exprs_mut(kind, |expr| {
-            changed |= walk::fold_bottom_up(expr, &mut rewrite_here)
+            changed |= walk::fold_bottom_up(expr, &mut |expr| rewrite_here(expr, self.c_char))
         });
         if !changed {
             return false;
