@@ -1,3 +1,4 @@
+use super::{inline_temps, walk};
 use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{Arena, FunctionOptimizer, NodeId, NodeKind, NodeKindTag};
 use crate::backend::rust_ast::{
@@ -635,6 +636,76 @@ fn known_call_args(expr: &Expr, known: Known) -> Option<&[Expr]> {
     }
 }
 
+fn nth_expr_mut<'a>(
+    expr: &'a mut Expr,
+    target: usize,
+    counter: &mut usize,
+) -> Option<&'a mut Expr> {
+    if *counter == target {
+        return Some(expr);
+    }
+    *counter += 1;
+    for child in walk::child_exprs_mut(expr) {
+        if let Some(found) = nth_expr_mut(child, target, counter) {
+            return Some(found);
+        }
+    }
+    None
+}
+
+impl LibcCall {
+    fn site_replacement(&self, arena: &FunctionOptimizer, expr: &Expr) -> Option<Expr> {
+        let args = known_call_args(expr, self.known)?;
+        if args
+            .iter()
+            .any(|arg| inline_temps::expr_effects(arg).is_side_effect())
+        {
+            return None;
+        }
+        let result_type = match expr {
+            Expr::Cast { ty, .. } => Some(ty.clone()),
+            _ => None,
+        };
+        (self.build)(&CallCtx {
+            arena,
+            args,
+            result_type,
+            discards_result: false,
+        })
+    }
+
+    fn search(
+        &self,
+        arena: &FunctionOptimizer,
+        expr: &Expr,
+        skip: Option<&Expr>,
+        counter: &mut usize,
+    ) -> Option<(usize, Expr)> {
+        let ordinal = *counter;
+        *counter += 1;
+        if !skip.is_some_and(|skip| std::ptr::eq(skip, expr))
+            && let Some(replacement) = self.site_replacement(arena, expr)
+        {
+            return Some((ordinal, replacement));
+        }
+        walk::child_exprs(expr)
+            .into_iter()
+            .find_map(|child| self.search(arena, child, skip, counter))
+    }
+
+    fn nested_site(&self, arena: &FunctionOptimizer, kind: &NodeKind) -> Option<(usize, Expr)> {
+        let skip = call_slot(kind);
+        let mut counter = 0;
+        let mut found = None;
+        walk::visit_kind_exprs(kind, |expr| {
+            if found.is_none() {
+                found = self.search(arena, expr, skip, &mut counter);
+            }
+        });
+        found
+    }
+}
+
 impl NodeRule for LibcCall {
     fn name(&self) -> &'static str {
         self.known.symbol()
@@ -651,6 +722,9 @@ impl NodeRule for LibcCall {
             NodeKindTag::Return,
             NodeKindTag::Assign,
             NodeKindTag::CompoundAssign,
+            NodeKindTag::If,
+            NodeKindTag::While,
+            NodeKindTag::Match,
         ]
     }
 
@@ -662,30 +736,47 @@ impl NodeRule for LibcCall {
         let Some(kind) = arena.get(id) else {
             return false;
         };
-        let Some(slot) = call_slot(kind) else {
-            return false;
-        };
-        let Some(args) = known_call_args(slot, self.known) else {
-            return false;
-        };
-        let ctx = CallCtx {
-            arena,
-            args,
-            result_type: call_result_type(kind),
-            discards_result: node_discards_result(arena, kind),
-        };
-        (self.build)(&ctx).is_some()
+        if let Some(slot) = call_slot(kind)
+            && let Some(args) = known_call_args(slot, self.known)
+        {
+            let ctx = CallCtx {
+                arena,
+                args,
+                result_type: call_result_type(kind),
+                discards_result: node_discards_result(arena, kind),
+            };
+            return (self.build)(&ctx).is_some();
+        }
+        self.nested_site(arena, kind).is_some()
     }
 
     fn apply(&self, arena: &mut FunctionOptimizer, id: NodeId) -> bool {
         let Some(kind) = arena.get(id) else {
             return false;
         };
-        let Some(slot) = call_slot(kind) else {
-            return false;
-        };
-        let Some(args) = known_call_args(slot, self.known) else {
-            return false;
+        let slot_args = call_slot(kind).and_then(|slot| known_call_args(slot, self.known));
+        let Some(args) = slot_args else {
+            let Some((ordinal, replacement)) = self.nested_site(arena, kind) else {
+                return false;
+            };
+            let Some(kind) = arena.get_mut(id) else {
+                return false;
+            };
+            let mut counter = 0;
+            let mut replacement = Some(replacement);
+            walk::visit_kind_exprs_mut(kind, |expr| {
+                if replacement.is_some()
+                    && let Some(site) = nth_expr_mut(expr, ordinal, &mut counter)
+                    && let Some(replacement) = replacement.take()
+                {
+                    *peel_call_head_mut(site) = replacement;
+                }
+            });
+            if replacement.is_some() {
+                return false;
+            }
+            arena.touch(id);
+            return true;
         };
         let args = args.to_vec();
         let result_type = call_result_type(kind);

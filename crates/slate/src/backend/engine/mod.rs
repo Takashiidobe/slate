@@ -59,13 +59,17 @@ impl RuleRegistry {
         }
     }
 
-    fn candidates(&self, kind: NodeKindTag, call_anchor: Option<Ident>) -> Vec<&dyn NodeRule> {
+    fn candidates(&self, kind: NodeKindTag, reads: &[Ident]) -> Vec<&dyn NodeRule> {
         let mut indices: Vec<u32> = self.by_kind[kind as usize].clone();
-        if let Some(anchor) = call_anchor
-            && let Some(anchored) = self.by_anchor.get(&(kind, anchor))
-        {
-            indices.extend_from_slice(anchored);
+        let before = indices.len();
+        for name in reads {
+            if let Some(anchored) = self.by_anchor.get(&(kind, *name)) {
+                indices.extend_from_slice(anchored);
+            }
+        }
+        if indices.len() > before {
             indices.sort_unstable();
+            indices.dedup();
         }
         indices
             .into_iter()
@@ -181,7 +185,7 @@ fn run_worklist(arena: &mut FunctionOptimizer, registry: &RuleRegistry) {
         let prior_reads: Vec<Ident> = arena.reads(id).to_vec();
         let prior_parent = arena.parent(id);
         let candidates: Vec<&dyn NodeRule> = registry
-            .candidates(kind.tag(), kind.call_anchor())
+            .candidates(kind.tag(), &prior_reads)
             .into_iter()
             .filter(|rule| rule.matches(arena, id))
             .collect();
