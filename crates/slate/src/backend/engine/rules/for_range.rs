@@ -1,9 +1,10 @@
 use super::inline_temps;
-use super::remove_mut::invariant_within;
+use super::remove_mut::{binding_invariant_within, invariant_within};
 use super::walk::kind_has_stmt_exprs;
 use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{Arena, FunctionOptimizer, NodeId, NodeKind, NodeKindTag};
 use crate::backend::rust_ast::{BinOp, Expr, Ident, Prim, RustValue, Type, UnaryOp};
+use std::collections::HashSet;
 
 struct RecoveredFor {
     ind_var: Ident,
@@ -151,19 +152,24 @@ fn plan(arena: &FunctionOptimizer, while_id: NodeId) -> Option<RecoveredFor> {
     }
     if !is_unit_increment(arena, increment_id, ind_var)
         || body.iter().any(|&id| continues_here(arena, id))
-        || !invariant_within(arena, ind_var, &body_region)
     {
         return None;
     }
 
-    let definition = arena.definition(ind_var)?;
+    let earlier = earlier_siblings(arena, while_id)?;
+    let local_definition =
+        earlier.iter().rev().copied().find(
+            |&id| matches!(arena.get(id), Some(NodeKind::Let { name, .. }) if *name == ind_var),
+        );
+    let definition = local_definition.or_else(|| arena.definition(ind_var))?;
     let Some(NodeKind::Let { ty, init, .. }) = arena.get(definition) else {
         return None;
     };
-    if !is_integer(ty.as_ref()) {
+    if !is_integer(ty.as_ref())
+        || !binding_invariant_within(arena, ind_var, ty.as_ref(), &body_region)
+    {
         return None;
     }
-    let earlier = earlier_siblings(arena, while_id)?;
     let (start, start_id, decl_id) = match arena.get(*earlier.last()?)? {
         NodeKind::Assign {
             target: Expr::Var(name),
@@ -198,12 +204,25 @@ fn plan(arena: &FunctionOptimizer, while_id: NodeId) -> Option<RecoveredFor> {
     if !loop_invariant(arena, end, &region) {
         return None;
     }
+    let mut binding_scope = Vec::new();
+    if let Some(local) = local_definition {
+        let siblings = arena
+            .get(arena.parent(while_id)?)?
+            .child_lists()
+            .into_iter()
+            .find(|list| list.contains(&local))?;
+        let position = siblings.iter().position(|&id| id == local)?;
+        for &id in &siblings[position..] {
+            subtree_ids(arena, id, &mut binding_scope);
+        }
+    }
+    let binding_scope: HashSet<NodeId> = binding_scope.into_iter().collect();
     let outside = [Some(start_id), decl_id];
-    if !arena
-        .def_use_neighbors(ind_var)
-        .iter()
-        .all(|n| region.contains(n) || outside.contains(&Some(*n)))
-    {
+    if !arena.def_use_neighbors(ind_var).iter().all(|n| {
+        region.contains(n)
+            || outside.contains(&Some(*n))
+            || (local_definition.is_some() && !binding_scope.contains(n))
+    }) {
         return None;
     }
 

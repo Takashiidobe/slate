@@ -126,6 +126,15 @@ pub(in crate::backend::engine) fn invariant_within(
             None => return false,
         },
     };
+    binding_invariant_within(arena, name, ty, region)
+}
+
+pub(in crate::backend::engine) fn binding_invariant_within(
+    arena: &FunctionOptimizer,
+    name: Ident,
+    ty: Option<&Type>,
+    region: &[NodeId],
+) -> bool {
     let binding = Binding { name, ty };
     arena.def_use_neighbors(name).iter().all(|neighbor| {
         arena.get(*neighbor).is_some_and(|kind| {
