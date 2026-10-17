@@ -7,7 +7,7 @@ static int frame_address_is_plausible(void) {
 
 int main(void) { return frame_address_is_plausible() ? 0 : 1; }
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![feature(link_llvm_intrinsics)]
 // CHECK-NEXT: #![no_main]

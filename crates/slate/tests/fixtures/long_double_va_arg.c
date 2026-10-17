@@ -52,7 +52,7 @@ int main(void) {
   return (int)sum_long_doubles(2, 20.5L, 21.5L);
 }
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {

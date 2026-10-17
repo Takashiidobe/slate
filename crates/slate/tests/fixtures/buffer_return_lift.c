@@ -20,7 +20,7 @@ int main(void) {
 }
 // @check-fn-end
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn make(n: i32) -> *mut i32 {
 // CHECK-NEXT:     let p: *mut i32 = (unsafe { malloc(((n as i64) as u64).wrapping_mul(4)) })
 // CHECK-NEXT:         as *mut i32;

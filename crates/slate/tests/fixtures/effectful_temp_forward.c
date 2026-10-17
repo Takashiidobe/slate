@@ -28,7 +28,7 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn safe_forward(a: i32, b: i32, c: i32, d: i32) -> i32 {
 // CHECK-NEXT:     let r: i32 = add(a, b);
 // CHECK-NEXT:     let kept: i32 = c + d;

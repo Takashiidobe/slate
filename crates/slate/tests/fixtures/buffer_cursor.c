@@ -19,7 +19,7 @@ int main(void) {
 }
 // @check-fn-end
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 4]> = __SlateAlign16([0 as i32; 4]);
 // CHECK-NEXT:     for i in 0 as i32..4 as i32 {

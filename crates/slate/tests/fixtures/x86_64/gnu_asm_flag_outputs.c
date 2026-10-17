@@ -39,7 +39,7 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn compare_flags(mut left: i32, mut right: i32) -> i32 {
 // CHECK-NEXT:     let mut equal: i32 = 0;
 // CHECK-NEXT:     let mut above: i32 = 0;

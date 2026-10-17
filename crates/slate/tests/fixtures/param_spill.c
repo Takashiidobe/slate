@@ -12,7 +12,7 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn adjust(mut value: i32, delta: i32) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(value) as *mut i32)

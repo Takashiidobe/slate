@@ -11,7 +11,7 @@ int main(void) {
 }
 // @check-fn-end
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let msg: *const i8 = c"hello".as_ptr();
 // CHECK-NEXT:     let n: u64 = unsafe { "hello".len() as u64 };

@@ -50,7 +50,7 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}extern "C-unwind" fn gnu_cookie_write(
 // CHECK-NEXT:     state: *mut (),
 // CHECK-NEXT:     buffer: *const i8,

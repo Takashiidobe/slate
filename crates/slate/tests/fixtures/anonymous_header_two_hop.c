@@ -6,7 +6,7 @@ int main(void) {
   return state.count + (state.value.wide != 7);
 }
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: #[repr(C)]

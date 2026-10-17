@@ -21,7 +21,7 @@ int main() {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn classify(mut a: i32, b: i32) -> i32 {
 // CHECK-NEXT:     let mut r: i32 = 0;
 // CHECK-NEXT:     while a < b {

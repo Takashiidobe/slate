@@ -25,7 +25,7 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn choose_value(first: *mut i32, second: *mut i32, choose_first: i32) -> *mut i32 {
 // CHECK-NEXT:     if choose_first != 0 {
 // CHECK-NEXT:         return first;

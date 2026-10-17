@@ -17,7 +17,7 @@ int main(void) {
 }
 // @check-fn-end
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let error_log: __SlateAlign16<[[[SLATERECORD_0:__SlateRecord[0-9]+]]; 3]> = __SlateAlign16([
 // CHECK-NEXT:         [[SLATERECORD_0]] {

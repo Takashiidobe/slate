@@ -10,7 +10,7 @@ int cpuid_leaf7_ebx_nonzero(void) {
 
 int main(void) { return cpuid_leaf7_ebx_nonzero(); }
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn cpuid_leaf7_ebx_nonzero() -> i32 {
 // CHECK-NEXT:     let mut f7a: u32 = 0;
 // CHECK-NEXT:     let mut f7b: u32 = 0;

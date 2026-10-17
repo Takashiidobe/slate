@@ -64,7 +64,7 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn widen(n: i32) -> i64 {
 // CHECK-NEXT:     let mut t: i64 = 0;
 // CHECK-NEXT:     if n > 3 {

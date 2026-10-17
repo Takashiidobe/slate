@@ -8,7 +8,7 @@ int main(void) {
 }
 // @check-fn-end
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!("{} {}", 7 as i32, 8 as i32);
 // CHECK-NEXT:     unsafe { printf(c"%ld\n".as_ptr(), 42 as i64) };

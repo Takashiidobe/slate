@@ -27,7 +27,7 @@ int main(void) {
 }
 // @check-fn-end
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn mutable_pick(i: i32) -> *mut i8 {
 // CHECK-NEXT:     if i == 0 {
 // CHECK-NEXT:         return c"mut".as_ptr() as *mut i8;

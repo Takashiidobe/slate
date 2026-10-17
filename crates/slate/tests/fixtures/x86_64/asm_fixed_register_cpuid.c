@@ -10,7 +10,7 @@ static int cpuid_leaf1_nonzero(void) {
 
 int main(void) { return cpuid_leaf1_nonzero(); }
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn cpuid_leaf1_nonzero() -> i32 {
 // CHECK-NEXT:     let mut f1a: u32 = 0;
 // CHECK-NEXT:     let mut f1c: u32 = 0;

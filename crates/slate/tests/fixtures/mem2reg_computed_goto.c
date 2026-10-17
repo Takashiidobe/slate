@@ -19,7 +19,7 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn walk(mut position: *mut i32) {
 // CHECK-NEXT:     let mut __slate_state: usize = 2usize;
 // CHECK-NEXT:     unsafe {

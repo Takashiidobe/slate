@@ -40,7 +40,7 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn classify_u64(v: u64) -> i32 {
 // CHECK-NEXT:     match v {
 // CHECK-NEXT:         18446744073709551610..=18446744073709551612 => {

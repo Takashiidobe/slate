@@ -45,7 +45,7 @@ int main(void) {
 }
 // @check-fn-end
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut inr: [[SLATERECORD_0:__SlateRecord[0-9]+]] = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     inr.pad = 0;

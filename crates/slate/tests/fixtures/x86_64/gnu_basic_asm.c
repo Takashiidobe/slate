@@ -25,7 +25,7 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn gnu_function_basic_asm() -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::asm!(

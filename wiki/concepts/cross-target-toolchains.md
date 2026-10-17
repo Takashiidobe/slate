@@ -29,6 +29,7 @@ cargo run --release -p slate-c2rust -- translate \
 
 ## Coverage
 
-- The current Slate nextest profile executes host-target differential suites.
-- Architecture-specific runtime suites are tracked for restoration under `slate-p58o.6.11` through `slate-p58o.6.13`.
+- The `slate` nextest profile executes x86_64 Linux differential suites.
+- `slate-i686`, `slate-aarch64` and `slate-targets` run `tests/fixtures` for other Linux targets, under `qemu-aarch64-static` for aarch64 ([targets](differential-fixtures.md#targets)). aarch64 needs `aarch64-linux-gnu-gcc` and its sysroot in `/usr/aarch64-linux-gnu`.
+- Other environments and OSes are tracked in `slate-5vj0.8`; corpus suites remain host-only.
 - Successful translation alone is not cross-target runtime validation.

@@ -83,13 +83,29 @@ starts passing, `fixtures_unsupported_tests_still_fail` fails and prints the
 `git mv` that promotes it. Corpus suites work the same way with their own
 `*.unsupported` directories.
 
-`tests/fixtures/i686/` is a separate bucket (`i686_differential`): fixtures
-translate with `-target=i686-unknown-linux-gnu`, the C side builds with
-`clang --target=i686-linux-gnu -m32`, and both binaries run natively with no
-emulator. A fixture with a sibling `<name>.expected` is not built with
-clang: the Rust output is compared to that file instead (for MSVC-only code,
-recorded with `MSVC_ARCH=x86 crates/slate-parser/tools/cl.exe` under wine, link
-with `/link legacy_stdio_definitions.lib`). Other `arm`/`aarch64` fixture directories are not collected.
+`generated_differential` runs once per target in `SLATE_TEST_TARGETS`
+(default `x86_64-unknown-linux-gnu`). For each target it runs the
+target-independent `tests/fixtures/*.c` plus `tests/fixtures/<arch>/`, where
+`<arch>` is the triple's first component (`x86_64`, `i686`, `aarch64`).
+Profiles in `.config/nextest.toml` set the targets with setup scripts:
+
+| Profile         | Targets                          | Runs                    |
+| --------------- | -------------------------------- | ----------------------- |
+| `slate`         | x86_64                           | every suite             |
+| `slate-i686`    | i686, natively with `-m32`       | `generated_differential` |
+| `slate-aarch64` | aarch64, under `qemu-aarch64-static` | `generated_differential` |
+| `slate-targets` | all three                        | `generated_differential` |
+
+`CrossTarget::for_triple` in `tests/support/mod.rs` holds each target's C
+oracle flags, Rust linker and emulator.
+`tests/fixtures.unsupported/<triple>.txt` lists the target-independent
+fixtures that still fail on that target. The run fails when a listed
+fixture passes (remove it from the list) or an unlisted one fails. A
+fixture with a sibling `<name>.expected` is not built with clang: the Rust
+output is compared to that file instead (for MSVC-only code, recorded with
+`MSVC_ARCH=x86 crates/slate-parser/tools/cl.exe` under wine, link with
+`/link legacy_stdio_definitions.lib`). `tests/fixtures/arm/` is not
+collected yet (slate-5vj0.8).
 
 Isolate one fixture while developing:
 

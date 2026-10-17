@@ -48,7 +48,7 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn present_check() -> i32 {
 // CHECK-NEXT:     unsafe { setenv(c"SLATE_GETENV_FIXTURE_PRESENT".as_ptr(), c"1".as_ptr(), 1 as i32) };
 // CHECK-NEXT:     let value: *mut i8 = unsafe { getenv(c"SLATE_GETENV_FIXTURE_PRESENT".as_ptr()) };

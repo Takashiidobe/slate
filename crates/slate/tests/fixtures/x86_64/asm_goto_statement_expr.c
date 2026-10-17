@@ -20,7 +20,7 @@ int main(void) {
 }
 // @check-fn-end
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut result: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     let mut [[RESULT_0:result_[0-9]+]]: i32 = unsafe { std::mem::zeroed() };

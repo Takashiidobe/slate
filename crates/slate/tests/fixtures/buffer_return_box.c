@@ -75,7 +75,7 @@ int main(void) {
 }
 // @check-fn-end
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let q: *mut i32 = make(4 as i32);
 // CHECK-NEXT:     let r: *mut i32 = make8();

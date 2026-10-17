@@ -24,7 +24,7 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn consume_bin(buf: *mut i8, len: i32) -> i32 {
 // CHECK-NEXT:     unsafe { strlen(buf as *const i8) };
 // CHECK-NEXT:     let mut score: i32 = 0;

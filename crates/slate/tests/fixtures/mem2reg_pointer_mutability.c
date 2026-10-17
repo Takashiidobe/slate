@@ -21,7 +21,7 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn set_cell(row: &mut Row) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *unsafe {

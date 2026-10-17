@@ -46,7 +46,7 @@ int main(void) {
   return levels[0] + favorite;
 }
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {

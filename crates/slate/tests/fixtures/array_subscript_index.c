@@ -81,7 +81,7 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn sum4() -> i32 {
 // CHECK-NEXT:     let a: __SlateAlign16<[i32; 4]> = __SlateAlign16([
 // CHECK-NEXT:         1 as i32,

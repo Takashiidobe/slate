@@ -8,7 +8,7 @@ int main(void) {
 }
 // @check-fn-end
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut buf: [i8; 4] = [104, 101, 121, 0];
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());

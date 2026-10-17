@@ -1,37 +1,33 @@
 #!/usr/bin/env python3
 import argparse
+import difflib
 import os
 import re
 import subprocess
 import sys
 from collections import defaultdict
 from pathlib import Path
-from typing import NamedTuple
 
 CRATE = Path(__file__).resolve().parent.parent
 WORKSPACE = CRATE.parent.parent
 TESTS = CRATE / "tests"
+FIXTURES = TESTS / "fixtures"
+WORK = CRATE / "target" / "difftest-generated"
 
-
-class Suite(NamedTuple):
-    directory: str
-    subdirectories: tuple
-    work: str
-    binary: str
-    test: str
-    selector: str
-
-
-SUITES = (
-    Suite("fixtures", ("", "x86_64"), "difftest-generated/supported", "differential", "generated_differential", "SLATE_DIFF_FIXTURE"),
-    Suite("fixtures", ("i686",), "difftest-generated/i686", "differential", "i686_differential", "SLATE_DIFF_FIXTURE"),
-)
+DEFAULT_TARGET = "x86_64-unknown-linux-gnu"
+ARCH_TARGETS = {
+    "x86_64": "x86_64-unknown-linux-gnu",
+    "i686": "i686-unknown-linux-gnu",
+    "aarch64": "aarch64-unknown-linux-gnu",
+}
+TEST_COMMAND = ["--test", "differential", "-E", "test(=generated_differential)"]
 
 BEGIN = "// SLATE-FILECHECK-BEGIN"
 END = "// SLATE-FILECHECK-END"
 BLOCK_PATTERN = re.compile(
     rf"(?ms)^{re.escape(BEGIN)}[^\n]*\n.*?^{re.escape(END)}[^\n]*(?:\n|$)"
 )
+HEADER_PATTERN = re.compile(rf"(?m)^{re.escape(BEGIN)}([^\n]*)$")
 MARKER_PATTERN = re.compile(r"^\s*//\s*@check-fn-(begin|end)\s*$")
 STALE_MARKER_PATTERN = re.compile(r"^\s*//\s*@[a-z-]+-(begin|end)\s*$")
 C_DECLARATOR_KEYWORDS = frozenset(
@@ -78,17 +74,23 @@ class FixtureError(Exception):
     pass
 
 
-def fixture_suite(path):
-    relative = path.resolve().relative_to(TESTS)
-    directory, subdirectory = relative.parts[0], "/".join(relative.parts[1:-1])
-    for suite in SUITES:
-        if suite.directory == directory and subdirectory in suite.subdirectories:
-            return suite
-    raise FixtureError(f"{relative}: not in a single-file suite")
+def fixture_arch(path):
+    relative = path.resolve().relative_to(FIXTURES)
+    if len(relative.parts) == 1:
+        return None
+    if len(relative.parts) == 2 and relative.parts[0] in ARCH_TARGETS:
+        return relative.parts[0]
+    raise FixtureError(f"{path}: not a tests/fixtures fixture")
 
 
-def generated_rust(suite, path):
-    return CRATE / "target" / suite.work / f"{path.stem}.generated.rs"
+def check_target(path, target):
+    arch = fixture_arch(path)
+    if arch is not None and target.split("-", 1)[0] != arch:
+        raise FixtureError(f"{path.relative_to(TESTS)}: {arch} fixtures only run for {arch} targets, not {target}")
+
+
+def generated_rust(target, path):
+    return WORK / target / f"{path.stem}.generated.rs"
 
 
 def runtime_ok(rust):
@@ -148,7 +150,12 @@ def checked_functions(source):
     return names
 
 
-def rust_function(lines, c_name):
+def block_targets(source):
+    match = HEADER_PATTERN.search(source)
+    return match.group(1).split() if match else []
+
+
+def rust_function(lines, c_name, target):
     rust_name = "__slate_main" if c_name == "main" else c_name
     pattern = re.compile(RUST_FN_PREFIX + re.escape(rust_name) + r"\s*[(<]")
     for index, line in enumerate(lines):
@@ -160,7 +167,7 @@ def rust_function(lines, c_name):
             if lines[end] == "}":
                 return lines[index : end + 1]
         break
-    raise FixtureError(f"generated Rust has no top-level fn {rust_name}")
+    raise FixtureError(f"generated Rust for {target} has no top-level fn {rust_name}")
 
 
 def escape(text):
@@ -172,6 +179,7 @@ class Variables:
         self.c_identifiers = c_identifiers
         self.names = {}
         self.counts = defaultdict(int)
+        self.defined = defaultdict(set)
 
     def unstable(self, identifier):
         if identifier in self.c_identifiers:
@@ -181,17 +189,25 @@ class Variables:
         renamed = RENAMED_IDENTIFIER.fullmatch(identifier)
         return bool(renamed) and renamed.group(1) in self.c_identifiers
 
-    def substitute(self, match):
-        identifier = match.group(0)
-        if not self.unstable(identifier):
-            return identifier
-        if identifier in self.names:
-            return f"[[{self.names[identifier]}]]"
-        base = re.sub(r"\W", "_", identifier.rstrip("0123456789").strip("_")).upper() or "ID"
-        name = f"{base}_{self.counts[base]}"
-        self.counts[base] += 1
-        self.names[identifier] = name
-        return f"[[{name}:{re.sub(r'[0-9]+', '[0-9]+', identifier)}]]"
+    def name(self, identifier):
+        if identifier not in self.names:
+            base = re.sub(r"\W", "_", identifier.rstrip("0123456789").strip("_")).upper() or "ID"
+            self.names[identifier] = f"{base}_{self.counts[base]}"
+            self.counts[base] += 1
+        return self.names[identifier]
+
+    def substitute(self, lane):
+        def replace(match):
+            identifier = match.group(0)
+            if not self.unstable(identifier):
+                return identifier
+            name = self.name(identifier)
+            if identifier in self.defined[lane]:
+                return f"[[{name}]]"
+            self.defined[lane].add(identifier)
+            return f"[[{name}:{re.sub(r'[0-9]+', '[0-9]+', identifier)}]]"
+
+        return replace
 
     def anonymous(self, match):
         identifier = match.group(0)
@@ -199,8 +215,8 @@ class Variables:
             return identifier
         return "{{" + re.sub(r"[0-9]+", "[0-9]+", identifier) + "}}"
 
-    def pattern(self, line, label=False):
-        substitute = self.anonymous if label else self.substitute
+    def pattern(self, line, lane, label=False):
+        substitute = self.anonymous if label else self.substitute(lane)
         parts = []
         offset = 0
         for string in RUST_STRING_PATTERN.finditer(line):
@@ -215,74 +231,142 @@ def c_identifiers(source):
     return set(C_IDENTIFIER.findall(C_COMMENT.sub(" ", source)))
 
 
-def body_checks(lines, variables):
-    return [
-        f"// CHECK-NEXT: {variables.pattern(line)}" if line.strip() else "// CHECK-EMPTY:"
-        for line in lines
-    ]
+def merge(lines_by_target):
+    targets = list(lines_by_target)
+    merged = [(line, {targets[0]}) for line in lines_by_target[targets[0]]]
+    for count, target in enumerate(targets[1:], 1):
+        seen = set(targets[:count])
+        anchors = [index for index, (_, lanes) in enumerate(merged) if lanes >= seen]
+        lines = lines_by_target[target]
+        matcher = difflib.SequenceMatcher(None, [merged[index][0] for index in anchors], lines, autojunk=False)
+        inserts = defaultdict(list)
+        for tag, i1, i2, j1, j2 in matcher.get_opcodes():
+            if tag == "equal":
+                for offset in range(i2 - i1):
+                    merged[anchors[i1 + offset]][1].add(target)
+            elif j1 < j2:
+                position = anchors[i2] if i2 < len(anchors) else len(merged)
+                inserts[position].extend(lines[j1:j2])
+        rebuilt = []
+        for index in range(len(merged) + 1):
+            rebuilt.extend((line, {target}) for line in inserts.get(index, ()))
+            if index < len(merged):
+                rebuilt.append(merged[index])
+        merged = rebuilt
+    return merged
 
 
-def function_checks(lines, identifiers):
+def file_kind(position, length, line):
+    if position == 0:
+        return "", True
+    return ("-EMPTY", False) if not line.strip() else ("-NEXT", False)
+
+
+def function_kind(position, length, line):
+    if length == 1:
+        return "", True
+    if position == 0:
+        return "-LABEL", True
+    if position == length - 1:
+        return "", True
+    return ("-EMPTY", False) if not line.strip() else ("-NEXT", False)
+
+
+def render(lines_by_target, identifiers, kind):
+    targets = list(lines_by_target)
     variables = Variables(identifiers)
-    if len(lines) == 1:
-        return [f"// CHECK: {{{{^}}}}{variables.pattern(lines[0])}"]
-    checks = [f"// CHECK-LABEL: {{{{^}}}}{variables.pattern(lines[0], label=True)}"]
-    checks.extend(body_checks(lines[1:-1], variables))
-    checks.append("// CHECK: {{^}}}")
+    lengths = {target: len(lines) for target, lines in lines_by_target.items()}
+    positions = defaultdict(int)
+    checks = []
+    for line, lanes in merge(lines_by_target):
+        rendered = {}
+        for lane in targets:
+            if lane not in lanes:
+                continue
+            suffix, anchored = kind(positions[lane], lengths[lane], line)
+            positions[lane] += 1
+            if suffix == "-EMPTY":
+                rendered[lane] = (suffix, "")
+            elif kind is function_kind and anchored and suffix == "" and line == "}":
+                rendered[lane] = ("", "{{^}}}")
+            else:
+                pattern = variables.pattern(line, lane, label=suffix == "-LABEL")
+                rendered[lane] = (suffix, f"{{{{^}}}}{pattern}" if anchored else pattern)
+        if len(rendered) == len(targets) and len(set(rendered.values())) == 1:
+            checks.append(directive("CHECK", *next(iter(rendered.values()))))
+        else:
+            checks.extend(directive(lane.upper(), *value) for lane, value in rendered.items())
     return checks
 
 
-def file_checks(lines, identifiers):
-    variables = Variables(identifiers)
-    first, *rest = lines
-    return [f"// CHECK: {{{{^}}}}{variables.pattern(first)}", *body_checks(rest, variables), "// CHECK-NOT: {{.}}"]
+def directive(prefix, suffix, pattern):
+    return f"// {prefix}{suffix}: {pattern}".rstrip() if pattern else f"// {prefix}{suffix}:"
 
 
-def update_source(source, rust):
+def update_source(source, outputs):
     names = checked_functions(source)
     stripped = BLOCK_PATTERN.sub("", source).rstrip("\n")
     identifiers = c_identifiers(stripped)
-    lines = rust.rstrip("\n").splitlines()
+    lines_by_target = {target: rust.rstrip("\n").splitlines() for target, rust in outputs.items()}
     if names:
-        checks = [check for name in names for check in function_checks(rust_function(lines, name), identifiers)]
+        checks = [
+            check
+            for name in names
+            for check in render(
+                {target: rust_function(lines, name, target) for target, lines in lines_by_target.items()},
+                identifiers,
+                function_kind,
+            )
+        ]
     else:
-        checks = file_checks(lines, identifiers)
-    return f"{stripped}\n\n{BEGIN}\n" + "\n".join(checks) + f"\n{END}\n"
+        checks = [*render(lines_by_target, identifiers, file_kind), "// CHECK-NOT: {{.}}"]
+    header = " ".join([BEGIN, *outputs])
+    return f"{stripped}\n\n{header}\n" + "\n".join(checks) + f"\n{END}\n"
 
 
-def run_harness(fixtures_by_suite):
+def run_harness(targets, fixtures):
     environment = os.environ.copy()
-    names_by_selector = defaultdict(set)
-    for suite, fixtures in fixtures_by_suite.items():
-        names_by_selector[suite.selector].update(path.stem for path in fixtures)
-    for selector, names in names_by_selector.items():
-        if len(names) == 1:
-            environment[selector] = next(iter(names))
-    command = ["cargo", "nextest", "r", "--release", "--profile", "slate", "--no-fail-fast"]
-    for binary in sorted({suite.binary for suite in fixtures_by_suite}):
-        command.extend(["--test", binary])
-    command.extend(["-E", " | ".join(sorted(f"test(={suite.test})" for suite in fixtures_by_suite))])
+    environment["SLATE_TEST_TARGETS"] = ",".join(targets)
+    names = {path.stem for path in fixtures}
+    if len(names) == 1:
+        environment["SLATE_DIFF_FIXTURE"] = next(iter(names))
+    command = ["cargo", "nextest", "r", "--release", "--profile", "slate", "--no-fail-fast", *TEST_COMMAND]
     subprocess.run(command, cwd=WORKSPACE, env=environment, capture_output=True, check=False)
 
 
-def suite_fixtures():
+def all_fixtures():
     return sorted(
         path
-        for suite in SUITES
-        for subdirectory in suite.subdirectories
-        for path in (TESTS / suite.directory / subdirectory).glob("*.c")
+        for subdirectory in ("", *ARCH_TARGETS)
+        for path in (FIXTURES / subdirectory).glob("*.c")
     )
 
 
 def resolve_fixture(argument):
     path = Path(argument)
     if path.suffix == ".c" or path.exists():
-        return path.resolve()
-    matches = [fixture for fixture in suite_fixtures() if fixture.stem == argument]
+        return path.resolve(), None
+    target, _, name = argument.rpartition("/")
+    matches = [fixture for fixture in all_fixtures() if fixture.stem == name]
     if len(matches) != 1:
         found = ", ".join(str(match.relative_to(TESTS)) for match in matches) or "no fixture"
         raise FixtureError(f"{argument}: name matches {found}; pass a path")
-    return matches[0]
+    return matches[0], target or None
+
+
+def fixture_targets(path, requested, extra):
+    if requested:
+        targets = list(requested)
+    else:
+        targets = block_targets(path.read_text(errors="surrogateescape"))
+        if not targets:
+            arch = fixture_arch(path)
+            targets = [ARCH_TARGETS[arch] if arch else DEFAULT_TARGET]
+    if extra and extra not in targets:
+        targets.append(extra)
+    for target in targets:
+        check_target(path, target)
+    return targets
 
 
 def main(argv):
@@ -292,7 +376,13 @@ def main(argv):
     parser.add_argument(
         "fixtures",
         nargs="*",
-        help="fixture paths, or names as a failing test run lists them; default: every fixture",
+        help="fixture paths, or names (optionally TARGET/NAME) as a failing test run lists them; default: every fixture",
+    )
+    parser.add_argument(
+        "--target",
+        action="append",
+        default=[],
+        help="target triple the block covers; repeatable; default: the targets the block already lists, else x86_64-unknown-linux-gnu or the fixture directory's architecture",
     )
     parser.add_argument(
         "--no-run",
@@ -300,44 +390,51 @@ def main(argv):
         help="reuse the Rust the last test run wrote instead of rerunning the harness",
     )
     arguments = parser.parse_args(argv)
-    generated = {}
-    fixtures_by_suite = defaultdict(list)
+    targets_by_fixture = {}
     failures = 0
-    for argument in arguments.fixtures or suite_fixtures():
+    for argument in arguments.fixtures or [str(path) for path in all_fixtures()]:
         try:
-            path = resolve_fixture(argument)
-            suite = fixture_suite(path)
+            path, extra = resolve_fixture(argument)
+            targets = fixture_targets(path, arguments.target, extra)
         except FixtureError as error:
             print(f"error: {error}", file=sys.stderr)
             failures += 1
             continue
-        generated[path] = generated_rust(suite, path)
-        fixtures_by_suite[suite].append(path)
-    if not arguments.no_run and generated:
-        for rust in generated.values():
-            rust.unlink(missing_ok=True)
-            runtime_ok(rust).unlink(missing_ok=True)
-        run_harness(fixtures_by_suite)
-    for path, rust in generated.items():
+        targets_by_fixture.setdefault(path, [])
+        targets_by_fixture[path].extend(target for target in targets if target not in targets_by_fixture[path])
+    if not arguments.no_run and targets_by_fixture:
+        targets = sorted({target for targets in targets_by_fixture.values() for target in targets})
+        for path, fixture_targets_ in targets_by_fixture.items():
+            for target in fixture_targets_:
+                rust = generated_rust(target, path)
+                rust.unlink(missing_ok=True)
+                runtime_ok(rust).unlink(missing_ok=True)
+        run_harness(targets, targets_by_fixture)
+    for path, targets in targets_by_fixture.items():
         name = path.relative_to(TESTS)
-        if not rust.is_file():
-            print(f"error: {name}: translation failed; no {rust.name}", file=sys.stderr)
-            failures += 1
+        outputs = {}
+        for target in targets:
+            rust = generated_rust(target, path)
+            if not rust.is_file():
+                print(f"error: {name}: translation for {target} failed; no {rust.name}", file=sys.stderr)
+                break
+            if not runtime_ok(rust).is_file():
+                print(f"error: {name}: Rust for {target} did not build or did not match C; checks left unchanged", file=sys.stderr)
+                break
+            outputs[target] = rust.read_text()
+        else:
+            try:
+                source = path.read_text(errors="surrogateescape")
+                updated = update_source(source, outputs)
+            except FixtureError as error:
+                print(f"error: {name}: {error}", file=sys.stderr)
+                failures += 1
+                continue
+            if updated != source:
+                path.write_text(updated, errors="surrogateescape")
+                print(f"updated {name}")
             continue
-        if not runtime_ok(rust).is_file():
-            print(f"error: {name}: Rust did not build or did not match C; checks left unchanged", file=sys.stderr)
-            failures += 1
-            continue
-        try:
-            source = path.read_text(errors="surrogateescape")
-            updated = update_source(source, rust.read_text())
-        except FixtureError as error:
-            print(f"error: {name}: {error}", file=sys.stderr)
-            failures += 1
-            continue
-        if updated != source:
-            path.write_text(updated, errors="surrogateescape")
-            print(f"updated {name}")
+        failures += 1
     return 1 if failures else 0
 
 

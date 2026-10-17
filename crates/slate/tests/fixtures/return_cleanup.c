@@ -13,7 +13,7 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn choose(value: i32) -> i32 {
 // CHECK-NEXT:     if value < 0 {
 // CHECK-NEXT:         return -1;

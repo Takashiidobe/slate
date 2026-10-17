@@ -15,7 +15,7 @@ int main(void) {
   return all_bytes_identical(buf, 4);
 }
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn all_bytes_identical(src: *const (), size: u64) -> i32 {
 // CHECK-NEXT:     let b: u8 = unsafe { *unsafe { (src as *const u8).offset(0 as isize) } };
 // CHECK-NEXT:     for p in 1..size {

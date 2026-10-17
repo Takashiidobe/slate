@@ -1,0 +1,17 @@
+asm_barriers
+builtin_generic_bit_counts
+c89
+flexible_array_records
+int128_arith
+int128_struct
+long_double_va_arg
+long_double_variadic_libc_name
+mem2reg_va_list_ssa
+object_alignment
+shift_contracts
+va_arg_function_pointer
+va_list_forwarding
+va_list_vfprintf
+varargs
+variadic_definitions
+variadic_function_pointers

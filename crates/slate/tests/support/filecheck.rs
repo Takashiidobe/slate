@@ -1,26 +1,51 @@
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
-pub fn prefixes_for_target(triple: &str) -> Vec<String> {
+const BLOCK_BEGIN: &str = "// SLATE-FILECHECK-BEGIN";
+
+fn prefixes_for_target(triple: &str) -> Vec<String> {
     vec!["CHECK".to_string(), triple.to_ascii_uppercase()]
+}
+
+fn block_targets(fixture: &str) -> Option<Vec<&str>> {
+    fixture.lines().find_map(|line| {
+        line.trim_end()
+            .strip_prefix(BLOCK_BEGIN)
+            .map(|targets| targets.split_whitespace().collect())
+    })
 }
 
 pub fn check_generated_rust(
     fixture: &str,
     generated: &str,
-    prefixes: &[String],
+    target: &str,
     work_dir: &Path,
 ) -> Result<(), String> {
-    let groups = check_groups(fixture, prefixes)?;
+    let regenerate = format!("crates/slate/tools/update_filecheck.py --target {target}");
+    let Some(targets) = block_targets(fixture) else {
+        return Err(format!(
+            "FileCheck failed: fixture has no SLATE-FILECHECK block; generate one with {regenerate}"
+        ));
+    };
+    if targets.is_empty() {
+        return Err(format!(
+            "FileCheck failed: the SLATE-FILECHECK block lists no targets; regenerate it with {regenerate}"
+        ));
+    }
+    if !targets.contains(&target) {
+        return Ok(());
+    }
+    let prefixes = prefixes_for_target(target);
+    let groups = check_groups(fixture, &prefixes)?;
     if groups.is_empty() {
-        return Err(
-            "FileCheck failed: fixture has no SLATE-FILECHECK block; generate one with crates/slate/tools/update_filecheck.py".into(),
-        );
+        return Err(format!(
+            "FileCheck failed: the SLATE-FILECHECK block has no checks for {target}"
+        ));
     }
     if let Some((number, line)) = generated
         .lines()
         .enumerate()
-        .find(|(_, line)| directive(line, prefixes).is_some())
+        .find(|(_, line)| directive(line, &prefixes).is_some())
     {
         return Err(format!(
             "FileCheck failed: generated Rust line {} carries a check directive: {line}",

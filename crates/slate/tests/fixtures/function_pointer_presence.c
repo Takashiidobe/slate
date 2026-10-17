@@ -24,7 +24,7 @@ int main(void) {
 }
 // @check-fn-end
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn maybe_apply(op: Option<unsafe extern "C-unwind" fn(i32) -> i32>, value: i32) -> i32 {
 // CHECK-NEXT:     if op != None {
 // CHECK-NEXT:         return unsafe { op.unwrap()(value) };

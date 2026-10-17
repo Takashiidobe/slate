@@ -13,7 +13,7 @@ int main(void) {
   return buf[0] + buf[1] + buf[2] + buf[3];
 }
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {

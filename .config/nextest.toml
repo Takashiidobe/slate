@@ -1,8 +1,40 @@
+experimental = ["setup-scripts"]
+
 [profile.slate]
 default-filter = 'package(slate-c2rust)'
 
 [profile.parser]
 default-filter = 'package(slate-parser)'
+
+[scripts.setup.target-i686]
+command = ["sh", "-c", "echo SLATE_TEST_TARGETS=i686-unknown-linux-gnu >> \"$NEXTEST_ENV\""]
+
+[scripts.setup.target-aarch64]
+command = ["sh", "-c", "echo SLATE_TEST_TARGETS=aarch64-unknown-linux-gnu >> \"$NEXTEST_ENV\""]
+
+[scripts.setup.target-all]
+command = ["sh", "-c", "echo SLATE_TEST_TARGETS=x86_64-unknown-linux-gnu,i686-unknown-linux-gnu,aarch64-unknown-linux-gnu >> \"$NEXTEST_ENV\""]
+
+[profile.slate-i686]
+default-filter = 'package(slate-c2rust) & test(=generated_differential)'
+
+[[profile.slate-i686.scripts]]
+filter = 'test(=generated_differential)'
+setup = "target-i686"
+
+[profile.slate-aarch64]
+default-filter = 'package(slate-c2rust) & test(=generated_differential)'
+
+[[profile.slate-aarch64.scripts]]
+filter = 'test(=generated_differential)'
+setup = "target-aarch64"
+
+[profile.slate-targets]
+default-filter = 'package(slate-c2rust) & test(=generated_differential)'
+
+[[profile.slate-targets.scripts]]
+filter = 'test(=generated_differential)'
+setup = "target-all"
 
 [[profile.default.overrides]]
 filter = 'test(gcc_torture_supported_tests_match_c)'

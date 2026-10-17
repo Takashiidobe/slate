@@ -108,7 +108,7 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![feature(link_llvm_intrinsics)]
 // CHECK-NEXT: #![feature(portable_simd)]

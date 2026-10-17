@@ -24,7 +24,7 @@ int main(void) {
 }
 // @check-fn-end
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut whole: [i8; 3] = [52, 50, 0];
 // CHECK-NEXT:     let mut whole_long: [i8; 7] = [45, 49, 50, 51, 52, 53, 0];

@@ -49,10 +49,22 @@ fn fixtures(root: &Path) -> Vec<Fixture> {
     fixtures
 }
 
-fn i686_fixtures() -> Vec<Fixture> {
+fn target_unsupported(list: &Path) -> std::collections::BTreeSet<String> {
+    std::fs::read_to_string(list)
+        .unwrap_or_default()
+        .lines()
+        .map(str::trim)
+        .filter(|line| !line.is_empty())
+        .map(str::to_string)
+        .collect()
+}
+
+fn target_fixtures(triple: &str) -> Vec<Fixture> {
     let selected = std::env::var("SLATE_DIFF_FIXTURE").ok();
+    let arch = triple.split('-').next().unwrap_or(triple);
     let mut fixtures = Vec::new();
-    collect_fixtures(&fixtures_dir(), Path::new("i686"), &selected, &mut fixtures);
+    collect_fixtures(&fixtures_dir(), Path::new(""), &selected, &mut fixtures);
+    collect_fixtures(&fixtures_dir(), Path::new(arch), &selected, &mut fixtures);
     fixtures.sort_by(|a, b| a.name.cmp(&b.name));
     fixtures
 }
@@ -206,20 +218,48 @@ fn first_barrier(error: &str) -> (&'static str, &str) {
 
 #[test]
 fn generated_differential() {
-    let fixtures = fixtures(&fixtures_dir());
-    assert!(
-        !fixtures.is_empty() || std::env::var("SLATE_DIFF_FIXTURE").is_ok(),
-        "no fixtures found in {:?}",
-        fixtures_dir()
-    );
-
     let mut failures = Vec::new();
-    for (name, result) in run_cases("supported", &fixtures) {
-        match result {
-            Ok(()) => eprintln!("ok    {name}"),
-            Err(e) => {
-                eprintln!("FAIL  {name}");
-                failures.push((name, e));
+    let mut total = 0;
+    for triple in support::test_targets() {
+        let fixtures = target_fixtures(&triple);
+        assert!(
+            !fixtures.is_empty() || std::env::var("SLATE_DIFF_FIXTURE").is_ok(),
+            "no fixtures found in {:?} for {triple}",
+            fixtures_dir()
+        );
+        total += fixtures.len();
+        let list = unsupported_dir().join(format!("{triple}.txt"));
+        let mut expected_failures = target_unsupported(&list);
+        let cross = support::CrossTarget::for_triple(&triple);
+        for (name, result) in run_cases_for_target(&triple, &fixtures, false, cross.as_ref()) {
+            let expected = expected_failures.remove(&name);
+            match result {
+                Err(e) if expected && !e.starts_with("FileCheck failed") => {
+                    eprintln!("xfail {triple} {name}");
+                }
+                Ok(()) | Err(_) if expected => {
+                    eprintln!("FAIL  {triple} {name}");
+                    failures.push((
+                        format!("{triple}/{name}"),
+                        format!("now passes on {triple}; remove it from {}", list.display()),
+                    ));
+                }
+                Ok(()) => eprintln!("ok    {triple} {name}"),
+                Err(e) => {
+                    eprintln!("FAIL  {triple} {name}");
+                    failures.push((format!("{triple}/{name}"), e));
+                }
+            }
+        }
+        if std::env::var("SLATE_DIFF_FIXTURE").is_err() {
+            for name in expected_failures {
+                failures.push((
+                    format!("{triple}/{name}"),
+                    format!(
+                        "listed in {} but no such fixture runs on {triple}",
+                        list.display()
+                    ),
+                ));
             }
         }
     }
@@ -228,25 +268,10 @@ fn generated_differential() {
         panic!(
             "{} of {} generated fixtures failed:\n\n{}",
             failures.len(),
-            fixtures.len(),
+            total,
             support::failure_report(&failures)
         );
     }
-}
-
-#[test]
-fn i686_differential() {
-    let fixtures = i686_fixtures();
-    let cross = support::CrossTarget::i686_linux();
-    let failures: Vec<_> = run_cases_for_target("i686", &fixtures, false, Some(&cross))
-        .into_iter()
-        .filter_map(|(name, result)| result.err().map(|error| (name, error)))
-        .collect();
-    assert!(
-        failures.is_empty(),
-        "{}",
-        support::failure_report(&failures)
-    );
 }
 
 #[test]

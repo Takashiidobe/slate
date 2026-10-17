@@ -19,7 +19,7 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn inc_byte_tied_via_Q(mut x: u8) -> u8 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;

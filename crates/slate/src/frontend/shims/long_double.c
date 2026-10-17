@@ -729,6 +729,7 @@ __slate_cf80 __slate_cf80_from_bool(_Bool a) {
   return __slate_cf80_from_f80(__slate_f80_from_bool(a));
 }
 
+#ifdef __SIZEOF_INT128__
 __int128 __slate_f80_to_i128(__slate_f80 a) {
   return (__int128)__slate_f80_load(a);
 }
@@ -752,3 +753,4 @@ __slate_f80 __slate_f80_from_i128(__int128 a) {
 __slate_f80 __slate_f80_from_u128(unsigned __int128 a) {
   return __slate_f80_store((long double)a);
 }
+#endif

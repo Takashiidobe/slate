@@ -13,7 +13,7 @@ int main(void) {
   return sum_ints(buf, 4);
 }
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn sum_ints(src: *const (), n: u64) -> i32 {
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     for i in 0..n {

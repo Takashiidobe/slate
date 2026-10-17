@@ -109,7 +109,7 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn sum(a: *const i32, n: i32) -> i32 {
 // CHECK-NEXT:     let mut s: i32 = 0;
 // CHECK-NEXT:     for i in 0..n {

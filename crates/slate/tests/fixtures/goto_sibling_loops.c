@@ -22,7 +22,7 @@ second:
 }
 // @check-fn-end
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut prod: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     let mut sum: i32 = unsafe { std::mem::zeroed() };

@@ -17,7 +17,7 @@ int main(void) {
 }
 // @check-fn-end
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let indirect: Option<unsafe extern "C-unwind" fn(i32, i32) -> i32> = Some(
 // CHECK-NEXT:         address_taken,

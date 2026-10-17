@@ -17,7 +17,7 @@ int main(void) {
   printf("%u %u %u\n", first, second, middle(&values));
 }
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {

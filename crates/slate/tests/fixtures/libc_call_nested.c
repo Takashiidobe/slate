@@ -67,7 +67,7 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn count_alpha() -> i32 {
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = total;

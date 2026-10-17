@@ -47,7 +47,7 @@ int main(void) {
 }
 // @check-fn-end
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut s: Bits = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     s.__slate_bits_0.__set_a(5 as u32);

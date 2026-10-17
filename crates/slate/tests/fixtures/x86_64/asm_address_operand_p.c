@@ -15,7 +15,7 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn read_via_address() -> i32 {
 // CHECK-NEXT:     let mut result: i32 = 0;
 // CHECK-NEXT:     unsafe {

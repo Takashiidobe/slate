@@ -58,7 +58,7 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn counted(n: i32) -> i32 {
 // CHECK-NEXT:     let mut total: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     let mut i: i32 = unsafe { std::mem::zeroed() };

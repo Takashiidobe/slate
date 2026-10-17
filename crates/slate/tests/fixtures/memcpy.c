@@ -34,7 +34,7 @@ int main(void) {
 }
 // @check-fn-end
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let full_src: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
 // CHECK-NEXT:     let mut full_dst: [u8; 8] = {

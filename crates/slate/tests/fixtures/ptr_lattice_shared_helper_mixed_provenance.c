@@ -25,7 +25,7 @@ int main(void) {
   return stack_val + from_stack + from_heap;
 }
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn touch_and_maybe_free(q: *mut i32, do_free: i32) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *q = (unsafe { *q }) + 1;

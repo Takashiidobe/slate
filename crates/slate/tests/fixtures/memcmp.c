@@ -28,7 +28,7 @@ int main(void) {
 }
 // @check-fn-end
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut equal_a: [u8; 4] = [1, 2, 3, 4];
 // CHECK-NEXT:     let mut equal_b: [u8; 4] = [1, 2, 3, 4];

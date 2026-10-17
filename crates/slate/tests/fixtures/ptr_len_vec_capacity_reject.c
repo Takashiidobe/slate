@@ -21,7 +21,7 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn consume_extra_capacity(values: *mut i32, len: i32) -> i32 {
 // CHECK-NEXT:     let mut sum: i32 = 0;
 // CHECK-NEXT:     for i in 0..len {

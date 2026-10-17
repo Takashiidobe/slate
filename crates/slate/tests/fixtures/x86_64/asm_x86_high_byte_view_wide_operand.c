@@ -12,7 +12,7 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn inc_high_byte_of_wide_operand(mut x: i32) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;

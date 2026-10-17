@@ -13,7 +13,7 @@ int main(void) {
 }
 // @check-fn-end
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn add(a: i32, b: i32) -> i32 {
 // CHECK-NEXT:     let c: i32 = a + b;
 // CHECK-NEXT:     c

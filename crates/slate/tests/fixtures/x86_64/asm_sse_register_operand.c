@@ -22,7 +22,7 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn add_via_x(mut a: f64, mut b: f64) -> f64 {
 // CHECK-NEXT:     let mut result: f64 = 0 as f64;
 // CHECK-NEXT:     unsafe {

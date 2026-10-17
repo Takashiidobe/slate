@@ -26,7 +26,7 @@ int main(void) {
   return run(&e, 0) + run(&e, 5);
 }
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn select_type(repeatMode: *mut u32, count: u32) -> u32 {
 // CHECK-NEXT:     if count == 0 {
 // CHECK-NEXT:         unsafe {

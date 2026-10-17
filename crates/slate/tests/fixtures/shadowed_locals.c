@@ -53,7 +53,7 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn nested(k: i32) -> i32 {
 // CHECK-NEXT:     let x: i32 = k + 1;
 // CHECK-NEXT:     {

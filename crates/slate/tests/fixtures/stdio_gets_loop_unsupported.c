@@ -30,7 +30,7 @@ int main(void) {
 }
 // @check-fn-end
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe { remove(c"slate_stdio_gets_loop_unsupported.tmp".as_ptr()) };
 // CHECK-NEXT:     let f: *mut _IO_FILE = unsafe {

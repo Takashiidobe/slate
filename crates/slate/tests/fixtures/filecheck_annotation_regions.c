@@ -14,7 +14,7 @@ int main(void) {
 }
 // @check-fn-end
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let value: i32 = 40 + 2;
 // CHECK-NEXT:     let lowered_value: i32 = 6 * 7;

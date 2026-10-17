@@ -39,7 +39,7 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn classify(seed: i32) -> i32 {
 // CHECK-NEXT:     let v: u128 = (340282366920938463463374607431768211440 as u128)
 // CHECK-NEXT:         .wrapping_add((seed as i128) as u128);

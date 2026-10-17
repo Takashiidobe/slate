@@ -9,7 +9,7 @@ int main(void) {
 }
 // @check-fn-end
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut buf: [i8; 8] = [0 as i8; 8];
 // CHECK-NEXT:     let p: *mut i8 = buf.as_mut_ptr() as *mut i8;

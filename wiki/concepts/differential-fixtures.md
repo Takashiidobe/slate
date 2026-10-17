@@ -2,6 +2,7 @@
 
 <!-- toc -->
 - [Suites](#suites)
+  - [Targets](#targets)
 - [Supported/unsupported ratchet](#supportedunsupported-ratchet)
 - [Triage](#triage)
 - [Workflow](#workflow)
@@ -18,9 +19,9 @@ stdout and exit status. Runtime parity is the only correctness gate.
 `generated_differential`, `gcc_torture_suite`, `gcc_dg_suite`, and
 `c_testsuite_suite` translate every fixture through the slate-parser frontend
 (`support::translate_slate`, i.e. `slate translate`).
-That runs the backend rewrite pipeline. Headers come from slate-sysroots, and fixtures
-run for the host target only. Together with `chibicc_suite`, these suites make
-up the `slate` nextest profile:
+That runs the backend rewrite pipeline. Headers come from slate-sysroots.
+Corpus suites run for the host target only. Together with `chibicc_suite`,
+these suites make up the `slate` nextest profile:
 
 ```bash
 cargo nextest r --release --profile slate
@@ -29,6 +30,26 @@ cargo nextest r --release --profile slate
 Run it from the workspace root. `chibicc_suite` uses `translate-project` for
 two-TU fixtures. Additional suite coverage is tracked for restoration in
 `slate-p58o.6.7` through `slate-p58o.6.17`; the fixture directories remain.
+
+### Targets
+
+`generated_differential` runs once per target in `SLATE_TEST_TARGETS`
+(comma-separated, default `x86_64-unknown-linux-gnu`). Each target runs the
+target-independent `tests/fixtures/*.c` plus `tests/fixtures/<arch>/`, where
+`<arch>` is the triple's first component. Put a fixture in an arch directory
+only when it cannot be target-independent (inline asm, ISA intrinsics). Nextest
+profiles pick targets through setup scripts in `.config/nextest.toml`:
+
+```bash
+cargo nextest r --release --profile slate-i686      # natively, with -m32
+cargo nextest r --release --profile slate-aarch64   # under qemu-aarch64-static
+cargo nextest r --release --profile slate-targets   # x86_64, i686 and aarch64
+```
+
+`tests/fixtures.unsupported/<triple>.txt` lists target-independent fixtures
+that still fail on that target. A listed fixture that passes, or an unlisted
+one that fails, fails the run. Other environments and OSes (musl, FreeBSD,
+Android, macOS, Windows) are tracked in `slate-5vj0.8`.
 
 ## Supported/unsupported ratchet
 
@@ -44,8 +65,9 @@ promotes it.
 | gcc-dg      | `tests/fixtures.gcc-dg`      | `tests/fixtures.gcc-dg.unsupported`      | `SLATE_GCC_DG_FIXTURE`      |
 | c-testsuite | `tests/fixtures.c-testsuite` | `tests/fixtures.c-testsuite.unsupported` | `SLATE_C_TESTSUITE_FIXTURE` |
 
-Paths are relative to `crates/slate`. `tests/fixtures/x86_64/` (and its
-unsupported twin) runs only on x86_64 hosts. `*.ignored` buckets hold only
+Paths are relative to `crates/slate`. `tests/fixtures/<arch>/` runs only for
+that architecture's targets; `tests/fixtures.unsupported/x86_64/` runs only on
+x86_64 hosts. `*.ignored` buckets hold only
 features Slate will never support. Selectors take a fixture stem.
 
 ## Triage
@@ -87,12 +109,14 @@ directive.
 
 ## FileCheck
 
-Every `tests/fixtures/` fixture (including `x86_64/` and `i686/`) pins the
+Every `tests/fixtures/` fixture (including the arch directories) pins the
 Rust that the rewrite pipeline emits in a trailing
-`// SLATE-FILECHECK-BEGIN` ... `// SLATE-FILECHECK-END` block. Runtime parity
-is still the correctness gate. A check runs only after the fixture's runtime
-comparison passes. A mismatch, or a fixture with no block, fails
-`generated_differential` (or `i686_differential`) in the `slate` profile.
+`// SLATE-FILECHECK-BEGIN <triple>...` ... `// SLATE-FILECHECK-END` block.
+The header lists the targets the block covers. Runtime parity is still the
+correctness gate. A check runs only after the fixture's runtime comparison
+passes. A mismatch, or a fixture with no block, fails
+`generated_differential`. A run for a target the header does not list checks
+runtime parity only.
 
 Generate the block from the workspace root:
 
@@ -106,7 +130,22 @@ lines for the rest, and a final `// CHECK-NOT: {{.}}` so appended output fails
 too. Generated names (`__v12`, `__slate_slot_3`) become FileCheck variables,
 so renumbering does not break checks. With no arguments the tool regenerates
 every fixture. `--no-run` reuses the Rust from the last test run. Fixture
-names, as a failing run prints them, work as arguments too.
+names, as a failing run prints them (`<triple>/<name>`), work as arguments too.
+
+`--target <triple>` (repeatable) sets the targets a block covers. Without it
+the tool keeps the targets the header lists, or uses
+`x86_64-unknown-linux-gnu` (an arch directory's own target for arch
+fixtures). With several targets, lines every target emits identically get
+`CHECK`; lines that differ get that target's prefix, for example:
+
+```c
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu aarch64-unknown-linux-gnu
+// X86_64-UNKNOWN-LINUX-GNU-NEXT: fn is_negative(c: i8) -> i32 {
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT: fn is_negative(c: u8) -> i32 {
+// CHECK-NEXT: }
+```
+
+Each run reads only `CHECK` and its own target's lines.
 
 When a whole-file block is a problem for a fixture, narrow it to specific C
 functions:

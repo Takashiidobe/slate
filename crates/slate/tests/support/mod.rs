@@ -46,6 +46,49 @@ impl CrossTarget {
             qemu_args: Vec::new(),
         }
     }
+
+    pub fn aarch64_linux() -> Self {
+        Self {
+            rust_triple: "aarch64-unknown-linux-gnu",
+            cc: "clang".into(),
+            cc_extra_args: vec![
+                "--target=aarch64-linux-gnu".into(),
+                "--sysroot=/usr/aarch64-linux-gnu".into(),
+                "--gcc-toolchain=/usr".into(),
+            ],
+            cargo_linker_env: "CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER".into(),
+            linker: "aarch64-linux-gnu-gcc".into(),
+            cargo_env: Vec::new(),
+            qemu: Some("qemu-aarch64-static".into()),
+            qemu_args: vec!["-L".into(), "/usr/aarch64-linux-gnu".into()],
+        }
+    }
+
+    pub fn for_triple(triple: &str) -> Option<Self> {
+        match triple {
+            _ if triple == env!("SLATE_BUILD_TARGET") => None,
+            "i686-unknown-linux-gnu" => Some(Self::i686_linux()),
+            "aarch64-unknown-linux-gnu" => Some(Self::aarch64_linux()),
+            _ => panic!("no cross toolchain configured for test target {triple}"),
+        }
+    }
+}
+
+pub const DEFAULT_TEST_TARGET: &str = "x86_64-unknown-linux-gnu";
+
+pub fn test_targets() -> Vec<String> {
+    std::env::var("SLATE_TEST_TARGETS")
+        .ok()
+        .filter(|targets| !targets.trim().is_empty())
+        .map_or_else(
+            || vec![DEFAULT_TEST_TARGET.to_string()],
+            |targets| {
+                targets
+                    .split(',')
+                    .map(|target| target.trim().to_string())
+                    .collect()
+            },
+        )
 }
 
 pub fn cc() -> String {
@@ -1191,7 +1234,7 @@ fn filecheck_case(case: &Case, target: &str) -> Result<(), String> {
     filecheck::check_generated_rust(
         &String::from_utf8_lossy(&fixture),
         &String::from_utf8_lossy(&generated),
-        &filecheck::prefixes_for_target(target),
+        target,
         &case.rs_src.with_file_name("filecheck").join(&case.name),
     )
 }

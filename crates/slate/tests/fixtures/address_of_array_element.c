@@ -20,7 +20,7 @@ int main(void) {
 }
 // @check-fn-end
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn read_array_element_through_call() -> i32 {
 // CHECK-NEXT:     let mut values: [i32; 1] = [10];
 // CHECK-NEXT:     let pointer: *mut i32 = unsafe {

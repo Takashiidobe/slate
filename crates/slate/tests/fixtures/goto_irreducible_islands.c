@@ -38,7 +38,7 @@ done:
 }
 // @check-fn-end
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut y: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     let mut x: i32 = unsafe { std::mem::zeroed() };

@@ -74,7 +74,7 @@ int main(void) {
   return pad0 + pad1 + pad2 + pad3;
 }
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![feature(portable_simd)]
 // CHECK-NEXT: #![feature(simd_ffi)]

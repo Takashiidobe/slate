@@ -212,7 +212,7 @@ int main(void) {
   return project_state == 80 ? 1 : 58;
 }
 
-// SLATE-FILECHECK-BEGIN
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: static mut project_state: i32 = unsafe { std::mem::zeroed() };
