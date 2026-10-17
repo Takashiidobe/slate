@@ -303,9 +303,6 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_fabs:[0-9]+]] @__builtin_fabs(%[[VALUE122:[0-9]+]] <unnamed>: f64) -> f64 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_fabsf:[0-9]+]] @__builtin_fabsf(%[[VALUE123:[0-9]+]] <unnamed>: f32) -> f32 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_fabsl:[0-9]+]] @__builtin_fabsl(%[[VALUE124:[0-9]+]] <unnamed>: f80) -> f80 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %[[VALUE___builtin_inf:[0-9]+]] @__builtin_inf() -> f64 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %[[VALUE___builtin_inff:[0-9]+]] @__builtin_inff() -> f32 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %[[VALUE___builtin_infl:[0-9]+]] @__builtin_infl() -> f80 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_creal:[0-9]+]] @__builtin_creal(%[[VALUE125:[0-9]+]] <unnamed>: complex<f64>) -> f64 [linkage=external] [memory=none] [abi=sysv64(native_c) -> scalar];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_cimag:[0-9]+]] @__builtin_cimag(%[[VALUE126:[0-9]+]] <unnamed>: complex<f64>) -> f64 [linkage=external] [memory=none] [abi=sysv64(native_c) -> scalar];
 // DEFAULT-NEXT:     fn %[[VALUE_gnu_builtin_floating:[0-9]+]] @gnu_builtin_floating() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
@@ -331,13 +328,13 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE138:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE137]]), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(call<f80, signature=fn(f80) -> f80>(%[[VALUE___builtin_fabsl]], neg<f80>(const<f80>(19)))));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_total_4]], read<i32>(%[[VALUE138]]));
 // DEFAULT-NEXT:         let %[[VALUE139:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_total_4]]);
-// DEFAULT-NEXT:         let %[[VALUE140:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE139]]), from_bool<i32, reason=promotion>(float_class<bool, test=infinite>(call<f64, signature=fn() -> f64>(%[[VALUE___builtin_inf]]))));
+// DEFAULT-NEXT:         let %[[VALUE140:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE139]]), from_bool<i32, reason=promotion>(float_class<bool, test=infinite>(const<f64>(inf))));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_total_4]], read<i32>(%[[VALUE140]]));
 // DEFAULT-NEXT:         let %[[VALUE141:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_total_4]]);
-// DEFAULT-NEXT:         let %[[VALUE142:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE141]]), from_bool<i32, reason=promotion>(float_class<bool, test=infinite>(call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]]))));
+// DEFAULT-NEXT:         let %[[VALUE142:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE141]]), from_bool<i32, reason=promotion>(float_class<bool, test=infinite>(const<f32>(inf))));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_total_4]], read<i32>(%[[VALUE142]]));
 // DEFAULT-NEXT:         let %[[VALUE143:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_total_4]]);
-// DEFAULT-NEXT:         let %[[VALUE144:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE143]]), from_bool<i32, reason=promotion>(float_class<bool, test=infinite>(call<f80, signature=fn() -> f80>(%[[VALUE___builtin_infl]]))));
+// DEFAULT-NEXT:         let %[[VALUE144:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE143]]), from_bool<i32, reason=promotion>(float_class<bool, test=infinite>(const<f80>(+Inf))));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_total_4]], read<i32>(%[[VALUE144]]));
 // DEFAULT-NEXT:         let %[[VALUE145:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_total_4]]);
 // DEFAULT-NEXT:         let %[[VALUE146:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE145]]), from_bool<i32, reason=promotion>(float_class<bool, test=nan>(const<f64>(bits=0x7ff8000000000000))));

@@ -64,15 +64,14 @@ int main() {
 // DEFAULT-NEXT:     global %[[VALUE_ninf:[0-9]+]] ninf: f64 [storage=static] [const] = div<f64, rounding=nearest_even, exceptions=ignore, contract=fast>(neg<f64>(const<f64>(1.0)), const<f64>(0.0)) [linkage=internal];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE___builtin_huge_val:[0-9]+]] @__builtin_huge_val() -> f64 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<f64, exceptions=observable>(read<f64>(%[[VALUE_pinf]]), div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%[[VALUE_pone]]), read<f64>(%[[VALUE_zero]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         if ne<f64, exceptions=observable>(read<f64>(%[[VALUE_ninf]]), div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%[[VALUE_none]]), read<f64>(%[[VALUE_zero]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(call<f64, signature=fn() -> f64>(%[[VALUE___builtin_huge_val]]), read<f64>(%[[VALUE_pinf]]))
+// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(const<f64>(inf), read<f64>(%[[VALUE_pinf]]))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(neg<f64>(call<f64, signature=fn() -> f64>(%[[VALUE___builtin_huge_val]])), read<f64>(%[[VALUE_ninf]]))
+// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(neg<f64>(const<f64>(inf)), read<f64>(%[[VALUE_ninf]]))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }

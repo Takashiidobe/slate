@@ -101,73 +101,70 @@ int main() {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE___builtin_inf:[0-9]+]] @__builtin_inf() -> f64 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %[[VALUE_test:[0-9]+]] @test(%[[VALUE_f:[0-9]+]] f: f64, %[[VALUE_i:[0-9]+]] i: f64) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if eq<f64, exceptions=observable>(read<f64>(%[[VALUE_f]]), call<f64, signature=fn() -> f64>(%[[VALUE___builtin_inf]]))
+// DEFAULT-NEXT:         if eq<f64, exceptions=observable>(read<f64>(%[[VALUE_f]]), const<f64>(inf))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if eq<f64, exceptions=observable>(read<f64>(%[[VALUE_f]]), neg<f64>(call<f64, signature=fn() -> f64>(%[[VALUE___builtin_inf]])))
+// DEFAULT-NEXT:         if eq<f64, exceptions=observable>(read<f64>(%[[VALUE_f]]), neg<f64>(const<f64>(inf)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if eq<f64, exceptions=observable>(read<f64>(%[[VALUE_i]]), neg<f64>(call<f64, signature=fn() -> f64>(%[[VALUE___builtin_inf]])))
+// DEFAULT-NEXT:         if eq<f64, exceptions=observable>(read<f64>(%[[VALUE_i]]), neg<f64>(const<f64>(inf)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(read<f64>(%[[VALUE_i]]), call<f64, signature=fn() -> f64>(%[[VALUE___builtin_inf]]))
+// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(read<f64>(%[[VALUE_i]]), const<f64>(inf))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ge<f64, exceptions=observable>(read<f64>(%[[VALUE_f]]), call<f64, signature=fn() -> f64>(%[[VALUE___builtin_inf]]))
+// DEFAULT-NEXT:         if ge<f64, exceptions=observable>(read<f64>(%[[VALUE_f]]), const<f64>(inf))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if gt<f64, exceptions=observable>(read<f64>(%[[VALUE_f]]), call<f64, signature=fn() -> f64>(%[[VALUE___builtin_inf]]))
+// DEFAULT-NEXT:         if gt<f64, exceptions=observable>(read<f64>(%[[VALUE_f]]), const<f64>(inf))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if gt<f64, exceptions=observable>(read<f64>(%[[VALUE_i]]), call<f64, signature=fn() -> f64>(%[[VALUE___builtin_inf]]))
+// DEFAULT-NEXT:         if gt<f64, exceptions=observable>(read<f64>(%[[VALUE_i]]), const<f64>(inf))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if le<f64, exceptions=observable>(read<f64>(%[[VALUE_f]]), neg<f64>(call<f64, signature=fn() -> f64>(%[[VALUE___builtin_inf]])))
+// DEFAULT-NEXT:         if le<f64, exceptions=observable>(read<f64>(%[[VALUE_f]]), neg<f64>(const<f64>(inf)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if lt<f64, exceptions=observable>(read<f64>(%[[VALUE_f]]), neg<f64>(call<f64, signature=fn() -> f64>(%[[VALUE___builtin_inf]])))
+// DEFAULT-NEXT:         if lt<f64, exceptions=observable>(read<f64>(%[[VALUE_f]]), neg<f64>(const<f64>(inf)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE___builtin_inff:[0-9]+]] @__builtin_inff() -> f32 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %[[VALUE_testf:[0-9]+]] @testf(%[[VALUE_f_2:[0-9]+]] f: f32, %[[VALUE_i_2:[0-9]+]] i: f32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if eq<f32, exceptions=observable>(read<f32>(%[[VALUE_f_2]]), call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]]))
+// DEFAULT-NEXT:         if eq<f32, exceptions=observable>(read<f32>(%[[VALUE_f_2]]), const<f32>(inf))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if eq<f32, exceptions=observable>(read<f32>(%[[VALUE_f_2]]), neg<f32>(call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]])))
+// DEFAULT-NEXT:         if eq<f32, exceptions=observable>(read<f32>(%[[VALUE_f_2]]), neg<f32>(const<f32>(inf)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if eq<f32, exceptions=observable>(read<f32>(%[[VALUE_i_2]]), neg<f32>(call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]])))
+// DEFAULT-NEXT:         if eq<f32, exceptions=observable>(read<f32>(%[[VALUE_i_2]]), neg<f32>(const<f32>(inf)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<f32, exceptions=observable>(read<f32>(%[[VALUE_i_2]]), call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]]))
+// DEFAULT-NEXT:         if ne<f32, exceptions=observable>(read<f32>(%[[VALUE_i_2]]), const<f32>(inf))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ge<f32, exceptions=observable>(read<f32>(%[[VALUE_f_2]]), call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]]))
+// DEFAULT-NEXT:         if ge<f32, exceptions=observable>(read<f32>(%[[VALUE_f_2]]), const<f32>(inf))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if gt<f32, exceptions=observable>(read<f32>(%[[VALUE_f_2]]), call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]]))
+// DEFAULT-NEXT:         if gt<f32, exceptions=observable>(read<f32>(%[[VALUE_f_2]]), const<f32>(inf))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if gt<f32, exceptions=observable>(read<f32>(%[[VALUE_i_2]]), call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]]))
+// DEFAULT-NEXT:         if gt<f32, exceptions=observable>(read<f32>(%[[VALUE_i_2]]), const<f32>(inf))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if le<f32, exceptions=observable>(read<f32>(%[[VALUE_f_2]]), neg<f32>(call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]])))
+// DEFAULT-NEXT:         if le<f32, exceptions=observable>(read<f32>(%[[VALUE_f_2]]), neg<f32>(const<f32>(inf)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if lt<f32, exceptions=observable>(read<f32>(%[[VALUE_f_2]]), neg<f32>(call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]])))
+// DEFAULT-NEXT:         if lt<f32, exceptions=observable>(read<f32>(%[[VALUE_f_2]]), neg<f32>(const<f32>(inf)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE___builtin_infl:[0-9]+]] @__builtin_infl() -> f80 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %[[VALUE_testl:[0-9]+]] @testl(%[[VALUE_f_3:[0-9]+]] f: f80, %[[VALUE_i_3:[0-9]+]] i: f80) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if eq<f80, exceptions=observable>(read<f80>(%[[VALUE_f_3]]), call<f80, signature=fn() -> f80>(%[[VALUE___builtin_infl]]))
+// DEFAULT-NEXT:         if eq<f80, exceptions=observable>(read<f80>(%[[VALUE_f_3]]), const<f80>(+Inf))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if eq<f80, exceptions=observable>(read<f80>(%[[VALUE_f_3]]), neg<f80>(call<f80, signature=fn() -> f80>(%[[VALUE___builtin_infl]])))
+// DEFAULT-NEXT:         if eq<f80, exceptions=observable>(read<f80>(%[[VALUE_f_3]]), neg<f80>(const<f80>(+Inf)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if eq<f80, exceptions=observable>(read<f80>(%[[VALUE_i_3]]), neg<f80>(call<f80, signature=fn() -> f80>(%[[VALUE___builtin_infl]])))
+// DEFAULT-NEXT:         if eq<f80, exceptions=observable>(read<f80>(%[[VALUE_i_3]]), neg<f80>(const<f80>(+Inf)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<f80, exceptions=observable>(read<f80>(%[[VALUE_i_3]]), call<f80, signature=fn() -> f80>(%[[VALUE___builtin_infl]]))
+// DEFAULT-NEXT:         if ne<f80, exceptions=observable>(read<f80>(%[[VALUE_i_3]]), const<f80>(+Inf))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ge<f80, exceptions=observable>(read<f80>(%[[VALUE_f_3]]), call<f80, signature=fn() -> f80>(%[[VALUE___builtin_infl]]))
+// DEFAULT-NEXT:         if ge<f80, exceptions=observable>(read<f80>(%[[VALUE_f_3]]), const<f80>(+Inf))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if gt<f80, exceptions=observable>(read<f80>(%[[VALUE_f_3]]), call<f80, signature=fn() -> f80>(%[[VALUE___builtin_infl]]))
+// DEFAULT-NEXT:         if gt<f80, exceptions=observable>(read<f80>(%[[VALUE_f_3]]), const<f80>(+Inf))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if gt<f80, exceptions=observable>(read<f80>(%[[VALUE_i_3]]), call<f80, signature=fn() -> f80>(%[[VALUE___builtin_infl]]))
+// DEFAULT-NEXT:         if gt<f80, exceptions=observable>(read<f80>(%[[VALUE_i_3]]), const<f80>(+Inf))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if le<f80, exceptions=observable>(read<f80>(%[[VALUE_f_3]]), neg<f80>(call<f80, signature=fn() -> f80>(%[[VALUE___builtin_infl]])))
+// DEFAULT-NEXT:         if le<f80, exceptions=observable>(read<f80>(%[[VALUE_f_3]]), neg<f80>(const<f80>(+Inf)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if lt<f80, exceptions=observable>(read<f80>(%[[VALUE_f_3]]), neg<f80>(call<f80, signature=fn() -> f80>(%[[VALUE___builtin_infl]])))
+// DEFAULT-NEXT:         if lt<f80, exceptions=observable>(read<f80>(%[[VALUE_f_3]]), neg<f80>(const<f80>(+Inf)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(f64, f64) -> void>(%[[VALUE_test]], const<f64>(34.0), call<f64, signature=fn() -> f64>(%[[VALUE___builtin_inf]]));
-// DEFAULT-NEXT:         call<void, signature=fn(f32, f32) -> void>(%[[VALUE_testf]], const<f32>(34.0), call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]]));
-// DEFAULT-NEXT:         call<void, signature=fn(f80, f80) -> void>(%[[VALUE_testl]], const<f80>(34), call<f80, signature=fn() -> f80>(%[[VALUE___builtin_infl]]));
+// DEFAULT-NEXT:         call<void, signature=fn(f64, f64) -> void>(%[[VALUE_test]], const<f64>(34.0), const<f64>(inf));
+// DEFAULT-NEXT:         call<void, signature=fn(f32, f32) -> void>(%[[VALUE_testf]], const<f32>(34.0), const<f32>(inf));
+// DEFAULT-NEXT:         call<void, signature=fn(f80, f80) -> void>(%[[VALUE_testl]], const<f80>(34), const<f80>(+Inf));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

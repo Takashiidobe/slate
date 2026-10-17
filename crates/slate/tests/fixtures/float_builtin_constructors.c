@@ -18,8 +18,6 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn nan(__tagb: *const i8) -> f64;
 // CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn __builtin_inff() -> f32;
-// CHECK-NEXT:     fn __builtin_inf() -> f64;
 // CHECK-NEXT:     #[link_name = "nan"]
 // CHECK-NEXT:     fn __builtin_nan([[V_0:__v[0-9]+]]: *const i8) -> f64;
 // CHECK-NEXT: }

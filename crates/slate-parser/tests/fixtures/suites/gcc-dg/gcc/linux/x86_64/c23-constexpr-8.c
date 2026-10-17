@@ -546,18 +546,16 @@ f0 (void)
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     global %[[VALUE_fi:[0-9]+]] fi: f32 [storage=static] [const] [constexpr] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(call<f64, signature=fn() -> f64>(%[[VALUE___builtin_inf:[0-9]+]])) [linkage=internal];
-// IR-NEXT:     global %[[VALUE_di:[0-9]+]] di: f64 [storage=static] [const] [constexpr] = float_widen<f64, reason=assign>(call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff:[0-9]+]])) [linkage=internal];
+// IR-NEXT:     global %[[VALUE_fi:[0-9]+]] fi: f32 [storage=static] [const] [constexpr] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(inf)) [linkage=internal];
+// IR-NEXT:     global %[[VALUE_di:[0-9]+]] di: f64 [storage=static] [const] [constexpr] = float_widen<f64, reason=assign>(const<f32>(inf)) [linkage=internal];
 // IR-NEXT:     global %[[VALUE_fn:[0-9]+]] fn: f32 [storage=static] [const] [constexpr] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(bits=0x7ff8000000000000)) [linkage=internal];
 // IR-NEXT:     global %[[VALUE_dn:[0-9]+]] dn: f64 [storage=static] [const] [constexpr] = float_widen<f64, reason=assign>(const<f32>(bits=0x7fc00000)) [linkage=internal];
 // IR-NEXT:     global %[[VALUE_fns:[0-9]+]] fns: f32 [storage=static] [const] [constexpr] = const<f32>(bits=0x7fa00000) [linkage=internal];
 // IR-NEXT:     global %[[VALUE_dns:[0-9]+]] dns: f64 [storage=static] [const] [constexpr] = const<f64>(bits=0x7ff4000000000000) [linkage=internal];
 // IR-NEXT:     global %[[VALUE_cdns:[0-9]+]] cdns: complex<f64> [storage=static] [const] [constexpr] = real_to_complex<complex<f64>, reason=assign>(const<f64>(bits=0x7ff4000000000000)) [linkage=internal];
-// IR-NEXT:     fn %[[VALUE___builtin_inf]] @__builtin_inf() -> f64 [linkage=external] [memory=none];
-// IR-NEXT:     fn %[[VALUE___builtin_inff]] @__builtin_inff() -> f32 [linkage=external] [memory=none];
 // IR-NEXT:     fn %[[VALUE_f0:[0-9]+]] @f0() -> void [linkage=external] [fallthrough=ret_void] {
-// IR-NEXT:         read<f32>(compound_literal %[[VALUE0:[0-9]+]] [storage=automatic] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(call<f64, signature=fn() -> f64>(%[[VALUE___builtin_inf]])));
-// IR-NEXT:         read<f64>(compound_literal %[[VALUE1:[0-9]+]] [storage=automatic] = float_widen<f64, reason=assign>(call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]])));
+// IR-NEXT:         read<f32>(compound_literal %[[VALUE0:[0-9]+]] [storage=automatic] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(inf)));
+// IR-NEXT:         read<f64>(compound_literal %[[VALUE1:[0-9]+]] [storage=automatic] = float_widen<f64, reason=assign>(const<f32>(inf)));
 // IR-NEXT:         read<f32>(compound_literal %[[VALUE2:[0-9]+]] [storage=automatic] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(bits=0x7ff8000000000000)));
 // IR-NEXT:         read<f64>(compound_literal %[[VALUE3:[0-9]+]] [storage=automatic] = float_widen<f64, reason=assign>(const<f32>(bits=0x7fc00000)));
 // IR-NEXT:         read<f32>(compound_literal %[[VALUE4:[0-9]+]] [storage=automatic] = const<f32>(bits=0x7fa00000));

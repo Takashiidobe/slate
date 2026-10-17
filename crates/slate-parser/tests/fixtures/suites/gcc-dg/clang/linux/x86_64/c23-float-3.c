@@ -52,13 +52,12 @@ main (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %[[VALUE_f:[0-9]+]] f: volatile f32 [storage=static] = call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff:[0-9]+]]) [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE___builtin_inff]] @__builtin_inff() -> f32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     global %[[VALUE_f:[0-9]+]] f: volatile f32 [storage=static] = const<f32>(inf) [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         const<i32>(0);
-// DEFAULT-NEXT:         if not<bool>(gt<f32, exceptions=ignore>(call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]]), const<f32>(3.4028235e38)))
+// DEFAULT-NEXT:         if not<bool>(gt<f32, exceptions=ignore>(const<f32>(inf), const<f32>(3.4028235e38)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         if not<bool>(gt<f32, exceptions=ignore>(read<f32, volatile>(%[[VALUE_f]]), const<f32>(3.4028235e38)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);

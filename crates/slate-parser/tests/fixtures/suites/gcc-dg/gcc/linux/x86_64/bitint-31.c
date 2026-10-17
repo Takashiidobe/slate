@@ -581,7 +581,6 @@ main ()
 // DEFAULT-NEXT:         return int_to_float<f128, reason=return, exact=false, rounding=environment, exceptions=observable>(read<u575b>(%[[VALUE_b_24]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE___builtin_inff:[0-9]+]] @__builtin_inff() -> f32 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         do %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             {
@@ -717,7 +716,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(i135b) -> f32>(%[[VALUE_testflt_135]], widen<i135b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282356779733661637539395458142568447)))), neg<f32>(const<f32>(3.4028235e38)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(i135b) -> f32>(%[[VALUE_testflt_135]], widen<i135b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282356779733661637539395458142568447)))), neg<f32>(call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]])))
+// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(i135b) -> f32>(%[[VALUE_testflt_135]], widen<i135b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282356779733661637539395458142568447)))), neg<f32>(const<f32>(inf)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(2048));
 // DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(i135b) -> f32>(%[[VALUE_testflt_135]], widen<i135b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282356779733661637539395458142568447)))), neg<f32>(const<f32>(3.4028235e38)))
@@ -730,10 +729,10 @@ main ()
 // DEFAULT-NEXT:         do %[[VALUE9:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(i135b) -> f32>(%[[VALUE_testflt_135]], widen<i135b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282356779733661637539395458142568448)))), neg<f32>(call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]])))
+// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(i135b) -> f32>(%[[VALUE_testflt_135]], widen<i135b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282356779733661637539395458142568448)))), neg<f32>(const<f32>(inf)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(i135b) -> f32>(%[[VALUE_testflt_135]], widen<i135b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282356779733661637539395458142568448)))), neg<f32>(call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]])))
+// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(i135b) -> f32>(%[[VALUE_testflt_135]], widen<i135b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282356779733661637539395458142568448)))), neg<f32>(const<f32>(inf)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(2048));
 // DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(i135b) -> f32>(%[[VALUE_testflt_135]], widen<i135b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282356779733661637539395458142568448)))), neg<f32>(const<f32>(3.4028235e38)))
@@ -746,10 +745,10 @@ main ()
 // DEFAULT-NEXT:         do %[[VALUE10:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(i135b) -> f32>(%[[VALUE_testflt_135]], sub<i135b, overflow=ub>(neg<i135b, overflow=ub>(const<i135b>(21778071482940061661655974875633165533183)), widen<i135b, reason=usual_arith>(const<i32>(1)))), neg<f32>(call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]])))
+// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(i135b) -> f32>(%[[VALUE_testflt_135]], sub<i135b, overflow=ub>(neg<i135b, overflow=ub>(const<i135b>(21778071482940061661655974875633165533183)), widen<i135b, reason=usual_arith>(const<i32>(1)))), neg<f32>(const<f32>(inf)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(i135b) -> f32>(%[[VALUE_testflt_135]], sub<i135b, overflow=ub>(neg<i135b, overflow=ub>(const<i135b>(21778071482940061661655974875633165533183)), widen<i135b, reason=usual_arith>(const<i32>(1)))), neg<f32>(call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]])))
+// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(i135b) -> f32>(%[[VALUE_testflt_135]], sub<i135b, overflow=ub>(neg<i135b, overflow=ub>(const<i135b>(21778071482940061661655974875633165533183)), widen<i135b, reason=usual_arith>(const<i32>(1)))), neg<f32>(const<f32>(inf)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(2048));
 // DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(i135b) -> f32>(%[[VALUE_testflt_135]], sub<i135b, overflow=ub>(neg<i135b, overflow=ub>(const<i135b>(21778071482940061661655974875633165533183)), widen<i135b, reason=usual_arith>(const<i32>(1)))), neg<f32>(const<f32>(3.4028235e38)))
@@ -896,7 +895,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(u135b) -> f32>(%[[VALUE_testfltu_135]], widen<u135b, reason=arg>(const<u128b>(340282356779733661637539395458142568447))), const<f32>(3.4028235e38))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(u135b) -> f32>(%[[VALUE_testfltu_135]], widen<u135b, reason=arg>(const<u128b>(340282356779733661637539395458142568447))), call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]]))
+// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(u135b) -> f32>(%[[VALUE_testfltu_135]], widen<u135b, reason=arg>(const<u128b>(340282356779733661637539395458142568447))), const<f32>(inf))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(3072));
 // DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(u135b) -> f32>(%[[VALUE_testfltu_135]], widen<u135b, reason=arg>(const<u128b>(340282356779733661637539395458142568447))), const<f32>(3.4028235e38))
@@ -906,13 +905,13 @@ main ()
 // DEFAULT-NEXT:         do %[[VALUE20:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(u135b) -> f32>(%[[VALUE_testfltu_135]], widen<u135b, reason=arg>(const<u128b>(340282356779733661637539395458142568448))), call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]]))
+// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(u135b) -> f32>(%[[VALUE_testfltu_135]], widen<u135b, reason=arg>(const<u128b>(340282356779733661637539395458142568448))), const<f32>(inf))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(1024));
 // DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(u135b) -> f32>(%[[VALUE_testfltu_135]], widen<u135b, reason=arg>(const<u128b>(340282356779733661637539395458142568448))), const<f32>(3.4028235e38))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(u135b) -> f32>(%[[VALUE_testfltu_135]], widen<u135b, reason=arg>(const<u128b>(340282356779733661637539395458142568448))), call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]]))
+// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(u135b) -> f32>(%[[VALUE_testfltu_135]], widen<u135b, reason=arg>(const<u128b>(340282356779733661637539395458142568448))), const<f32>(inf))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(3072));
 // DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(u135b) -> f32>(%[[VALUE_testfltu_135]], widen<u135b, reason=arg>(const<u128b>(340282356779733661637539395458142568448))), const<f32>(3.4028235e38))
@@ -922,13 +921,13 @@ main ()
 // DEFAULT-NEXT:         do %[[VALUE21:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(u135b) -> f32>(%[[VALUE_testfltu_135]], const<u135b>(43556142965880123323311949751266331066367)), call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]]))
+// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(u135b) -> f32>(%[[VALUE_testfltu_135]], const<u135b>(43556142965880123323311949751266331066367)), const<f32>(inf))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(1024));
 // DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(u135b) -> f32>(%[[VALUE_testfltu_135]], const<u135b>(43556142965880123323311949751266331066367)), const<f32>(3.4028235e38))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(u135b) -> f32>(%[[VALUE_testfltu_135]], const<u135b>(43556142965880123323311949751266331066367)), call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]]))
+// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(u135b) -> f32>(%[[VALUE_testfltu_135]], const<u135b>(43556142965880123323311949751266331066367)), const<f32>(inf))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(3072));
 // DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(u135b) -> f32>(%[[VALUE_testfltu_135]], const<u135b>(43556142965880123323311949751266331066367)), const<f32>(3.4028235e38))
@@ -1072,7 +1071,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(i192b) -> f32>(%[[VALUE_testflt_192]], widen<i192b, reason=arg>(const<i129b>(340282356779733661637539395458142568447))), const<f32>(3.4028235e38))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(i192b) -> f32>(%[[VALUE_testflt_192]], widen<i192b, reason=arg>(const<i129b>(340282356779733661637539395458142568447))), call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]]))
+// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(i192b) -> f32>(%[[VALUE_testflt_192]], widen<i192b, reason=arg>(const<i129b>(340282356779733661637539395458142568447))), const<f32>(inf))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(3072));
 // DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(i192b) -> f32>(%[[VALUE_testflt_192]], widen<i192b, reason=arg>(const<i129b>(340282356779733661637539395458142568447))), const<f32>(3.4028235e38))
@@ -1082,13 +1081,13 @@ main ()
 // DEFAULT-NEXT:         do %[[VALUE31:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(i192b) -> f32>(%[[VALUE_testflt_192]], widen<i192b, reason=arg>(const<i129b>(340282356779733661637539395458142568448))), call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]]))
+// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(i192b) -> f32>(%[[VALUE_testflt_192]], widen<i192b, reason=arg>(const<i129b>(340282356779733661637539395458142568448))), const<f32>(inf))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(1024));
 // DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(i192b) -> f32>(%[[VALUE_testflt_192]], widen<i192b, reason=arg>(const<i129b>(340282356779733661637539395458142568448))), const<f32>(3.4028235e38))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(i192b) -> f32>(%[[VALUE_testflt_192]], widen<i192b, reason=arg>(const<i129b>(340282356779733661637539395458142568448))), call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]]))
+// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(i192b) -> f32>(%[[VALUE_testflt_192]], widen<i192b, reason=arg>(const<i129b>(340282356779733661637539395458142568448))), const<f32>(inf))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(3072));
 // DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(i192b) -> f32>(%[[VALUE_testflt_192]], widen<i192b, reason=arg>(const<i129b>(340282356779733661637539395458142568448))), const<f32>(3.4028235e38))
@@ -1098,13 +1097,13 @@ main ()
 // DEFAULT-NEXT:         do %[[VALUE32:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(i192b) -> f32>(%[[VALUE_testflt_192]], const<i192b>(3138550867693340381917894711603833208051177722232017256447)), call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]]))
+// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(i192b) -> f32>(%[[VALUE_testflt_192]], const<i192b>(3138550867693340381917894711603833208051177722232017256447)), const<f32>(inf))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(1024));
 // DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(i192b) -> f32>(%[[VALUE_testflt_192]], const<i192b>(3138550867693340381917894711603833208051177722232017256447)), const<f32>(3.4028235e38))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(i192b) -> f32>(%[[VALUE_testflt_192]], const<i192b>(3138550867693340381917894711603833208051177722232017256447)), call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]]))
+// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(i192b) -> f32>(%[[VALUE_testflt_192]], const<i192b>(3138550867693340381917894711603833208051177722232017256447)), const<f32>(inf))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(3072));
 // DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(i192b) -> f32>(%[[VALUE_testflt_192]], const<i192b>(3138550867693340381917894711603833208051177722232017256447)), const<f32>(3.4028235e38))
@@ -1248,7 +1247,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(u192b) -> f32>(%[[VALUE_testfltu_192]], widen<u192b, reason=arg>(const<u128b>(340282356779733661637539395458142568447))), const<f32>(3.4028235e38))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(u192b) -> f32>(%[[VALUE_testfltu_192]], widen<u192b, reason=arg>(const<u128b>(340282356779733661637539395458142568447))), call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]]))
+// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(u192b) -> f32>(%[[VALUE_testfltu_192]], widen<u192b, reason=arg>(const<u128b>(340282356779733661637539395458142568447))), const<f32>(inf))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(3072));
 // DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(u192b) -> f32>(%[[VALUE_testfltu_192]], widen<u192b, reason=arg>(const<u128b>(340282356779733661637539395458142568447))), const<f32>(3.4028235e38))
@@ -1258,13 +1257,13 @@ main ()
 // DEFAULT-NEXT:         do %[[VALUE42:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(u192b) -> f32>(%[[VALUE_testfltu_192]], widen<u192b, reason=arg>(const<u128b>(340282356779733661637539395458142568448))), call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]]))
+// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(u192b) -> f32>(%[[VALUE_testfltu_192]], widen<u192b, reason=arg>(const<u128b>(340282356779733661637539395458142568448))), const<f32>(inf))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(1024));
 // DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(u192b) -> f32>(%[[VALUE_testfltu_192]], widen<u192b, reason=arg>(const<u128b>(340282356779733661637539395458142568448))), const<f32>(3.4028235e38))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(u192b) -> f32>(%[[VALUE_testfltu_192]], widen<u192b, reason=arg>(const<u128b>(340282356779733661637539395458142568448))), call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]]))
+// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(u192b) -> f32>(%[[VALUE_testfltu_192]], widen<u192b, reason=arg>(const<u128b>(340282356779733661637539395458142568448))), const<f32>(inf))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(3072));
 // DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(u192b) -> f32>(%[[VALUE_testfltu_192]], widen<u192b, reason=arg>(const<u128b>(340282356779733661637539395458142568448))), const<f32>(3.4028235e38))
@@ -1274,13 +1273,13 @@ main ()
 // DEFAULT-NEXT:         do %[[VALUE43:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(u192b) -> f32>(%[[VALUE_testfltu_192]], const<u192b>(6277101735386680763835789423207666416102355444464034512895)), call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]]))
+// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(u192b) -> f32>(%[[VALUE_testfltu_192]], const<u192b>(6277101735386680763835789423207666416102355444464034512895)), const<f32>(inf))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(1024));
 // DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(u192b) -> f32>(%[[VALUE_testfltu_192]], const<u192b>(6277101735386680763835789423207666416102355444464034512895)), const<f32>(3.4028235e38))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(u192b) -> f32>(%[[VALUE_testfltu_192]], const<u192b>(6277101735386680763835789423207666416102355444464034512895)), call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]]))
+// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(u192b) -> f32>(%[[VALUE_testfltu_192]], const<u192b>(6277101735386680763835789423207666416102355444464034512895)), const<f32>(inf))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(3072));
 // DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(u192b) -> f32>(%[[VALUE_testfltu_192]], const<u192b>(6277101735386680763835789423207666416102355444464034512895)), const<f32>(3.4028235e38))
@@ -1421,7 +1420,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(i575b) -> f32>(%[[VALUE_testflt_575]], widen<i575b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282356779733661637539395458142568447)))), neg<f32>(const<f32>(3.4028235e38)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(i575b) -> f32>(%[[VALUE_testflt_575]], widen<i575b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282356779733661637539395458142568447)))), neg<f32>(call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]])))
+// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(i575b) -> f32>(%[[VALUE_testflt_575]], widen<i575b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282356779733661637539395458142568447)))), neg<f32>(const<f32>(inf)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(2048));
 // DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(i575b) -> f32>(%[[VALUE_testflt_575]], widen<i575b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282356779733661637539395458142568447)))), neg<f32>(const<f32>(3.4028235e38)))
@@ -1434,10 +1433,10 @@ main ()
 // DEFAULT-NEXT:         do %[[VALUE53:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(i575b) -> f32>(%[[VALUE_testflt_575]], widen<i575b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282356779733661637539395458142568448)))), neg<f32>(call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]])))
+// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(i575b) -> f32>(%[[VALUE_testflt_575]], widen<i575b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282356779733661637539395458142568448)))), neg<f32>(const<f32>(inf)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(i575b) -> f32>(%[[VALUE_testflt_575]], widen<i575b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282356779733661637539395458142568448)))), neg<f32>(call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]])))
+// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(i575b) -> f32>(%[[VALUE_testflt_575]], widen<i575b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282356779733661637539395458142568448)))), neg<f32>(const<f32>(inf)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(2048));
 // DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(i575b) -> f32>(%[[VALUE_testflt_575]], widen<i575b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282356779733661637539395458142568448)))), neg<f32>(const<f32>(3.4028235e38)))
@@ -1450,10 +1449,10 @@ main ()
 // DEFAULT-NEXT:         do %[[VALUE54:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(i575b) -> f32>(%[[VALUE_testflt_575]], sub<i575b, overflow=ub>(neg<i575b, overflow=ub>(const<i575b>(61832600368276133515125630254911797508782837275302959978515764023224306276632966792579100265310761247399417856504034834837841258576687802491886538775473291979151693037174783)), widen<i575b, reason=usual_arith>(const<i32>(1)))), neg<f32>(call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]])))
+// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(i575b) -> f32>(%[[VALUE_testflt_575]], sub<i575b, overflow=ub>(neg<i575b, overflow=ub>(const<i575b>(61832600368276133515125630254911797508782837275302959978515764023224306276632966792579100265310761247399417856504034834837841258576687802491886538775473291979151693037174783)), widen<i575b, reason=usual_arith>(const<i32>(1)))), neg<f32>(const<f32>(inf)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(i575b) -> f32>(%[[VALUE_testflt_575]], sub<i575b, overflow=ub>(neg<i575b, overflow=ub>(const<i575b>(61832600368276133515125630254911797508782837275302959978515764023224306276632966792579100265310761247399417856504034834837841258576687802491886538775473291979151693037174783)), widen<i575b, reason=usual_arith>(const<i32>(1)))), neg<f32>(call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]])))
+// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(i575b) -> f32>(%[[VALUE_testflt_575]], sub<i575b, overflow=ub>(neg<i575b, overflow=ub>(const<i575b>(61832600368276133515125630254911797508782837275302959978515764023224306276632966792579100265310761247399417856504034834837841258576687802491886538775473291979151693037174783)), widen<i575b, reason=usual_arith>(const<i32>(1)))), neg<f32>(const<f32>(inf)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(2048));
 // DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(i575b) -> f32>(%[[VALUE_testflt_575]], sub<i575b, overflow=ub>(neg<i575b, overflow=ub>(const<i575b>(61832600368276133515125630254911797508782837275302959978515764023224306276632966792579100265310761247399417856504034834837841258576687802491886538775473291979151693037174783)), widen<i575b, reason=usual_arith>(const<i32>(1)))), neg<f32>(const<f32>(3.4028235e38)))
@@ -1600,7 +1599,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(u575b) -> f32>(%[[VALUE_testfltu_575]], widen<u575b, reason=arg>(const<u128b>(340282356779733661637539395458142568447))), const<f32>(3.4028235e38))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(u575b) -> f32>(%[[VALUE_testfltu_575]], widen<u575b, reason=arg>(const<u128b>(340282356779733661637539395458142568447))), call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]]))
+// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(u575b) -> f32>(%[[VALUE_testfltu_575]], widen<u575b, reason=arg>(const<u128b>(340282356779733661637539395458142568447))), const<f32>(inf))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(3072));
 // DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(u575b) -> f32>(%[[VALUE_testfltu_575]], widen<u575b, reason=arg>(const<u128b>(340282356779733661637539395458142568447))), const<f32>(3.4028235e38))
@@ -1610,13 +1609,13 @@ main ()
 // DEFAULT-NEXT:         do %[[VALUE64:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(u575b) -> f32>(%[[VALUE_testfltu_575]], widen<u575b, reason=arg>(const<u128b>(340282356779733661637539395458142568448))), call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]]))
+// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(u575b) -> f32>(%[[VALUE_testfltu_575]], widen<u575b, reason=arg>(const<u128b>(340282356779733661637539395458142568448))), const<f32>(inf))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(1024));
 // DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(u575b) -> f32>(%[[VALUE_testfltu_575]], widen<u575b, reason=arg>(const<u128b>(340282356779733661637539395458142568448))), const<f32>(3.4028235e38))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(u575b) -> f32>(%[[VALUE_testfltu_575]], widen<u575b, reason=arg>(const<u128b>(340282356779733661637539395458142568448))), call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]]))
+// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(u575b) -> f32>(%[[VALUE_testfltu_575]], widen<u575b, reason=arg>(const<u128b>(340282356779733661637539395458142568448))), const<f32>(inf))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(3072));
 // DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(u575b) -> f32>(%[[VALUE_testfltu_575]], widen<u575b, reason=arg>(const<u128b>(340282356779733661637539395458142568448))), const<f32>(3.4028235e38))
@@ -1626,13 +1625,13 @@ main ()
 // DEFAULT-NEXT:         do %[[VALUE65:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(u575b) -> f32>(%[[VALUE_testfltu_575]], const<u575b>(123665200736552267030251260509823595017565674550605919957031528046448612553265933585158200530621522494798835713008069669675682517153375604983773077550946583958303386074349567)), call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]]))
+// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(u575b) -> f32>(%[[VALUE_testfltu_575]], const<u575b>(123665200736552267030251260509823595017565674550605919957031528046448612553265933585158200530621522494798835713008069669675682517153375604983773077550946583958303386074349567)), const<f32>(inf))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(1024));
 // DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(u575b) -> f32>(%[[VALUE_testfltu_575]], const<u575b>(123665200736552267030251260509823595017565674550605919957031528046448612553265933585158200530621522494798835713008069669675682517153375604983773077550946583958303386074349567)), const<f32>(3.4028235e38))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(u575b) -> f32>(%[[VALUE_testfltu_575]], const<u575b>(123665200736552267030251260509823595017565674550605919957031528046448612553265933585158200530621522494798835713008069669675682517153375604983773077550946583958303386074349567)), call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]]))
+// DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(u575b) -> f32>(%[[VALUE_testfltu_575]], const<u575b>(123665200736552267030251260509823595017565674550605919957031528046448612553265933585158200530621522494798835713008069669675682517153375604983773077550946583958303386074349567)), const<f32>(inf))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(3072));
 // DEFAULT-NEXT:                 if ne<f32, exceptions=observable>(call<f32, signature=fn(u575b) -> f32>(%[[VALUE_testfltu_575]], const<u575b>(123665200736552267030251260509823595017565674550605919957031528046448612553265933585158200530621522494798835713008069669675682517153375604983773077550946583958303386074349567)), const<f32>(3.4028235e38))

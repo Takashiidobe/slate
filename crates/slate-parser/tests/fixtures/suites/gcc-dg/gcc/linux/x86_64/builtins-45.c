@@ -78,9 +78,6 @@ main ()
 // DEFAULT-NEXT:     extern %[[VALUE_z:[0-9]+]] z: f80 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_link_error:[0-9]+]] @link_error() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE___builtin_inf:[0-9]+]] @__builtin_inf() -> f64 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %[[VALUE___builtin_inff:[0-9]+]] @__builtin_inff() -> f32 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %[[VALUE___builtin_infl:[0-9]+]] @__builtin_infl() -> f80 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %[[VALUE_finite:[0-9]+]] @finite(%[[VALUE1:[0-9]+]] <unnamed>: f64) -> i32 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %[[VALUE_finitef:[0-9]+]] @finitef(%[[VALUE2:[0-9]+]] <unnamed>: f32) -> i32 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %[[VALUE_finitel:[0-9]+]] @finitel(%[[VALUE3:[0-9]+]] <unnamed>: f80) -> i32 [linkage=external] [memory=none];
@@ -88,9 +85,9 @@ main ()
 // DEFAULT-NEXT:         let %[[VALUE_nan:[0-9]+]] nan: f64 [storage=automatic] = const<f64>(bits=0x7ff8000000000000);
 // DEFAULT-NEXT:         let %[[VALUE_nanf:[0-9]+]] nanf: f32 [storage=automatic] = const<f32>(bits=0x7fc00000);
 // DEFAULT-NEXT:         let %[[VALUE_nanl:[0-9]+]] nanl: f80 [storage=automatic] = const<f80>(bits=0x7fffc000000000000000);
-// DEFAULT-NEXT:         let %[[VALUE_pinf:[0-9]+]] pinf: f64 [storage=automatic] = call<f64, signature=fn() -> f64>(%[[VALUE___builtin_inf]]);
-// DEFAULT-NEXT:         let %[[VALUE_pinff:[0-9]+]] pinff: f32 [storage=automatic] = call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]]);
-// DEFAULT-NEXT:         let %[[VALUE_pinfl:[0-9]+]] pinfl: f80 [storage=automatic] = call<f80, signature=fn() -> f80>(%[[VALUE___builtin_infl]]);
+// DEFAULT-NEXT:         let %[[VALUE_pinf:[0-9]+]] pinf: f64 [storage=automatic] = const<f64>(inf);
+// DEFAULT-NEXT:         let %[[VALUE_pinff:[0-9]+]] pinff: f32 [storage=automatic] = const<f32>(inf);
+// DEFAULT-NEXT:         let %[[VALUE_pinfl:[0-9]+]] pinfl: f80 [storage=automatic] = const<f80>(+Inf);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(f64) -> i32>(%[[VALUE_finite]], read<f64>(%[[VALUE_pinf]])), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(f32) -> i32>(%[[VALUE_finitef]], read<f32>(%[[VALUE_pinff]])), const<i32>(0))

@@ -911,7 +911,7 @@ impl FunctionLowerer<'_, '_> {
                 if matches!(
                     self.tables.resolve_type(&operand.ty),
                     ir::Type::Numeric(ir::NumericType::Float(
-                        ir::FloatType::F32 | ir::FloatType::F64
+                        ir::FloatType::F16 | ir::FloatType::F32 | ir::FloatType::F64
                     ))
                 ) =>
             {
@@ -1123,30 +1123,6 @@ impl FunctionLowerer<'_, '_> {
                 callee: ir::Callee::Direct(id),
                 arguments,
                 ..
-            } if arguments.is_empty()
-                && matches!(
-                    self.tables.builtin_name(*id),
-                    Some(
-                        "__builtin_inf"
-                            | "__builtin_inff"
-                            | "__builtin_huge_val"
-                            | "__builtin_huge_valf"
-                            | "__builtin_infl"
-                            | "__builtin_huge_vall"
-                    )
-                ) =>
-            {
-                match self.lower_type(&value.ty)? {
-                    rust::Type::Prim(Prim::F32) => Expr::Var("f32::INFINITY".into()),
-                    rust::Type::Prim(Prim::F64) => Expr::Var("f64::INFINITY".into()),
-                    rust::Type::LongDouble => long_double_literal(0x7fff_8000_0000_0000_0000),
-                    _ => return Err(unsupported_value(value)),
-                }
-            }
-            ValueKind::Call {
-                callee: ir::Callee::Direct(id),
-                arguments,
-                ..
             } if self.tables.intrinsics.contains_key(id) => {
                 let label = self.tables.names[id].rust.clone();
                 self.lower_intrinsic(&label, self.tables.intrinsics[id], arguments, &value.ty)?
@@ -1343,19 +1319,34 @@ impl FunctionLowerer<'_, '_> {
                     .map_err(|_| unsupported_constant(number))?,
             ),
             Number::FloatBits(bits) => {
-                let (literal, finite, name) = match ty {
+                let (literal, finite, infinite, name) = match ty {
                     ir::Type::Numeric(ir::NumericType::Float(ir::FloatType::F16)) => {
                         self.lower_type(ty)?;
                         let value = Half::from_bits(*bits);
-                        (value.to_string(), value.is_finite(), "f16")
+                        (
+                            value.to_string(),
+                            value.is_finite(),
+                            value.is_infinite(),
+                            "f16",
+                        )
                     }
                     ir::Type::Numeric(ir::NumericType::Float(ir::FloatType::F32)) => {
                         let value = f32::from_bits(*bits as u32);
-                        (format!("{value:?}"), value.is_finite(), "f32")
+                        (
+                            format!("{value:?}"),
+                            value.is_finite(),
+                            value.is_infinite(),
+                            "f32",
+                        )
                     }
                     ir::Type::Numeric(ir::NumericType::Float(ir::FloatType::F64)) => {
                         let value = f64::from_bits(*bits as u64);
-                        (format!("{value:?}"), value.is_finite(), "f64")
+                        (
+                            format!("{value:?}"),
+                            value.is_finite(),
+                            value.is_infinite(),
+                            "f64",
+                        )
                     }
                     ir::Type::Numeric(ir::NumericType::Float(ir::FloatType::F80)) => {
                         self.lower_type(ty)?;
@@ -1363,6 +1354,14 @@ impl FunctionLowerer<'_, '_> {
                     }
                     _ => return Err(unsupported_constant(number)),
                 };
+                if infinite {
+                    let constant = if literal.starts_with('-') {
+                        "NEG_INFINITY"
+                    } else {
+                        "INFINITY"
+                    };
+                    return Ok(Expr::Var(format!("{name}::{constant}").into()));
+                }
                 if !finite {
                     return Ok(Expr::HexFloat(format!("{name}::from_bits({bits:#x})")));
                 }

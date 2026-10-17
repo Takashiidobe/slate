@@ -38,17 +38,11 @@ long double lh = __builtin_huge_vall();
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %[[VALUE_fi:[0-9]+]] fi: f32 [storage=static] = call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff:[0-9]+]]) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_di:[0-9]+]] di: f64 [storage=static] = call<f64, signature=fn() -> f64>(%[[VALUE___builtin_inf:[0-9]+]]) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_li:[0-9]+]] li: f80 [storage=static] = call<f80, signature=fn() -> f80>(%[[VALUE___builtin_infl:[0-9]+]]) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_fh:[0-9]+]] fh: f32 [storage=static] = call<f32, signature=fn() -> f32>(%[[VALUE___builtin_huge_valf:[0-9]+]]) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_dh:[0-9]+]] dh: f64 [storage=static] = call<f64, signature=fn() -> f64>(%[[VALUE___builtin_huge_val:[0-9]+]]) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_lh:[0-9]+]] lh: f80 [storage=static] = call<f80, signature=fn() -> f80>(%[[VALUE___builtin_huge_vall:[0-9]+]]) [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE___builtin_inff]] @__builtin_inff() -> f32 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %[[VALUE___builtin_inf]] @__builtin_inf() -> f64 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %[[VALUE___builtin_infl]] @__builtin_infl() -> f80 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %[[VALUE___builtin_huge_valf]] @__builtin_huge_valf() -> f32 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %[[VALUE___builtin_huge_val]] @__builtin_huge_val() -> f64 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %[[VALUE___builtin_huge_vall]] @__builtin_huge_vall() -> f80 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     global %[[VALUE_fi:[0-9]+]] fi: f32 [storage=static] = const<f32>(inf) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_di:[0-9]+]] di: f64 [storage=static] = const<f64>(inf) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_li:[0-9]+]] li: f80 [storage=static] = const<f80>(+Inf) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_fh:[0-9]+]] fh: f32 [storage=static] = const<f32>(inf) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_dh:[0-9]+]] dh: f64 [storage=static] = const<f64>(inf) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_lh:[0-9]+]] lh: f80 [storage=static] = const<f80>(+Inf) [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

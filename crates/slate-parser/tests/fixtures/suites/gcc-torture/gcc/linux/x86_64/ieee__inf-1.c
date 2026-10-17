@@ -61,19 +61,13 @@ int main() {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE___builtin_inff:[0-9]+]] @__builtin_inff() -> f32 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %[[VALUE___builtin_inf:[0-9]+]] @__builtin_inf() -> f64 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %[[VALUE___builtin_infl:[0-9]+]] @__builtin_infl() -> f80 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %[[VALUE___builtin_huge_valf:[0-9]+]] @__builtin_huge_valf() -> f32 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %[[VALUE___builtin_huge_val:[0-9]+]] @__builtin_huge_val() -> f64 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %[[VALUE___builtin_huge_vall:[0-9]+]] @__builtin_huge_vall() -> f80 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_fi:[0-9]+]] fi: f32 [storage=automatic] = call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]]);
-// DEFAULT-NEXT:         let %[[VALUE_di:[0-9]+]] di: f64 [storage=automatic] = call<f64, signature=fn() -> f64>(%[[VALUE___builtin_inf]]);
-// DEFAULT-NEXT:         let %[[VALUE_li:[0-9]+]] li: f80 [storage=automatic] = call<f80, signature=fn() -> f80>(%[[VALUE___builtin_infl]]);
-// DEFAULT-NEXT:         let %[[VALUE_fh:[0-9]+]] fh: f32 [storage=automatic] = call<f32, signature=fn() -> f32>(%[[VALUE___builtin_huge_valf]]);
-// DEFAULT-NEXT:         let %[[VALUE_dh:[0-9]+]] dh: f64 [storage=automatic] = call<f64, signature=fn() -> f64>(%[[VALUE___builtin_huge_val]]);
-// DEFAULT-NEXT:         let %[[VALUE_lh:[0-9]+]] lh: f80 [storage=automatic] = call<f80, signature=fn() -> f80>(%[[VALUE___builtin_huge_vall]]);
+// DEFAULT-NEXT:         let %[[VALUE_fi:[0-9]+]] fi: f32 [storage=automatic] = const<f32>(inf);
+// DEFAULT-NEXT:         let %[[VALUE_di:[0-9]+]] di: f64 [storage=automatic] = const<f64>(inf);
+// DEFAULT-NEXT:         let %[[VALUE_li:[0-9]+]] li: f80 [storage=automatic] = const<f80>(+Inf);
+// DEFAULT-NEXT:         let %[[VALUE_fh:[0-9]+]] fh: f32 [storage=automatic] = const<f32>(inf);
+// DEFAULT-NEXT:         let %[[VALUE_dh:[0-9]+]] dh: f64 [storage=automatic] = const<f64>(inf);
+// DEFAULT-NEXT:         let %[[VALUE_lh:[0-9]+]] lh: f80 [storage=automatic] = const<f80>(+Inf);
 // DEFAULT-NEXT:         if ne<f32, exceptions=observable>(add<f32, rounding=nearest_even, exceptions=observable, contract=fast>(read<f32>(%[[VALUE_fi]]), read<f32>(%[[VALUE_fi]])), read<f32>(%[[VALUE_fi]]))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         if ne<f64, exceptions=observable>(add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%[[VALUE_di]]), read<f64>(%[[VALUE_di]])), read<f64>(%[[VALUE_di]]))

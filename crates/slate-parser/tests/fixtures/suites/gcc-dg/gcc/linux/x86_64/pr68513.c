@@ -167,10 +167,9 @@ fn15 (_Complex volatile int *z)
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_r]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_sqrt:[0-9]+]] @__builtin_sqrt(%[[VALUE6:[0-9]+]] <unnamed>: f64) -> f64 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE___builtin_inf:[0-9]+]] @__builtin_inf() -> f64 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %[[VALUE_fn2:[0-9]+]] @fn2() -> f64 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_r_2:[0-9]+]] r: f64 [storage=automatic];
-// DEFAULT-NEXT:         write<f64>(%[[VALUE_r_2]], int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=observable>(from_bool<i32, reason=assign>(lt<f64, exceptions=observable>(call<f64, signature=fn(f64) -> f64>(%[[VALUE___builtin_sqrt]], int_to_float<f64, reason=arg, exact=true, rounding=nearest_even, exceptions=observable>(conditional<i32>(ne<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0)), read<i32, volatile>(deref(read<ptr<volatile i32>>(%[[VALUE_e]]))), const<i32>(0)))), call<f64, signature=fn() -> f64>(%[[VALUE___builtin_inf]])))));
+// DEFAULT-NEXT:         write<f64>(%[[VALUE_r_2]], int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=observable>(from_bool<i32, reason=assign>(lt<f64, exceptions=observable>(call<f64, signature=fn(f64) -> f64>(%[[VALUE___builtin_sqrt]], int_to_float<f64, reason=arg, exact=true, rounding=nearest_even, exceptions=observable>(conditional<i32>(ne<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0)), read<i32, volatile>(deref(read<ptr<volatile i32>>(%[[VALUE_e]]))), const<i32>(0)))), const<f64>(inf)))));
 // DEFAULT-NEXT:         return read<f64>(%[[VALUE_r_2]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fn3:[0-9]+]] @fn3() -> f64 [linkage=external] [fallthrough=ub_if_used] {
@@ -183,7 +182,7 @@ fn15 (_Complex volatile int *z)
 // DEFAULT-NEXT:         return mul<f64, rounding=nearest_even, exceptions=observable, contract=fast>(call<f64, signature=fn(f64, f64) -> f64>(%[[VALUE___builtin_copysign]], int_to_float<f64, reason=arg, exact=true, rounding=nearest_even, exceptions=observable>(conditional<i32>(ne<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0)), read<i32, volatile>(deref(read<ptr<volatile i32>>(%[[VALUE_e]]))), const<i32>(0))), read<f64>(%[[VALUE_y]])), call<f64, signature=fn(f64, f64) -> f64>(%[[VALUE___builtin_copysign]], int_to_float<f64, reason=arg, exact=true, rounding=nearest_even, exceptions=observable>(conditional<i32>(ne<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0)), read<i32, volatile>(deref(read<ptr<volatile i32>>(%[[VALUE_e]]))), const<i32>(0))), read<f64>(%[[VALUE_y]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fn5:[0-9]+]] @fn5() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(le<f64, exceptions=observable>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(conditional<i32>(ne<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0)), read<i32, volatile>(deref(read<ptr<volatile i32>>(%[[VALUE_e]]))), const<i32>(0))), call<f64, signature=fn() -> f64>(%[[VALUE___builtin_inf]])));
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(le<f64, exceptions=observable>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(conditional<i32>(ne<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0)), read<i32, volatile>(deref(read<ptr<volatile i32>>(%[[VALUE_e]]))), const<i32>(0))), const<f64>(inf)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fn6:[0-9]+]] @fn6() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return sub<i32, overflow=ub>(and<i32>(read<i32>(%[[VALUE_i]]), not<i32>(conditional<i32>(ne<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0)), read<i32, volatile>(deref(read<ptr<volatile i32>>(%[[VALUE_e]]))), const<i32>(0)))), and<i32>(read<i32>(%[[VALUE_i]]), conditional<i32>(ne<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0)), read<i32, volatile>(deref(read<ptr<volatile i32>>(%[[VALUE_e]]))), const<i32>(0))));

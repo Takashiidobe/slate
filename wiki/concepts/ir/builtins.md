@@ -74,7 +74,9 @@ overflow, `lowerer/values.rs` handles rotations and scalar bit counts, and
 - `__builtin_isgreater`, `__builtin_isgreaterequal`, `__builtin_isless`,
   `__builtin_islessequal`, `__builtin_isunordered`, `__builtin_islessgreater`
 - `__builtin_complex`
-- `__builtin_inf`, `__builtin_huge_val`, with `f` and `l` forms
+- `__builtin_inf`, `__builtin_huge_val`, and their `f`, `l`, `f16`, `f128` forms: fold to
+  the positive-infinity `Number::FloatBits` constant of the return type, so they are valid
+  in static initializers. Decimal forms stay calls.
 - `__builtin_nan`, `__builtin_nans` and their `f`, `l`, `f16`, `f128` forms: a plain
   string literal argument (decimal, `0x` or leading-`0` octal payload, or empty) folds to a
   `Number::FloatBits` constant with that payload; `nans` leaves the quiet bit clear. Any other

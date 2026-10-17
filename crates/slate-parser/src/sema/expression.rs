@@ -238,7 +238,7 @@ impl Lowerer {
         let Some(signature) = signature else {
             return Ok(None);
         };
-        if let Some(value) = self.folded_nan(e, builtin, signature, arguments) {
+        if let Some(value) = self.folded_special_float(e, builtin, signature, arguments) {
             self.module
                 .annotate(&value.value.node, [("c_builtin".into(), name)]);
             return Ok(Some(value));
@@ -281,35 +281,40 @@ impl Lowerer {
         Ok(Some(value))
     }
 
-    fn folded_nan(
+    fn folded_special_float(
         &mut self,
         e: &Expr,
         builtin: &ClangBuiltin,
         signature: QualType,
         arguments: &[Expr],
     ) -> Option<Operand> {
-        let signaling = match builtin.record {
-            "Nan" | "NanF128" | "NanF16" => false,
-            "Nans" => true,
+        let special = match (builtin.record, arguments) {
+            ("Inf" | "InfF16" | "HugeVal" | "HugeValF16", []) => None,
+            ("Nan" | "NanF128" | "NanF16", [argument]) => Some((false, argument)),
+            ("Nans", [argument]) => Some((true, argument)),
             _ => return None,
         };
-        let [argument] = arguments else {
-            return None;
+        let nan = match special {
+            Some((signaling, mut argument)) => {
+                while let ExprKind::Paren(inner) = &argument.value {
+                    argument = inner;
+                }
+                let ExprKind::StringLiteral(literal) = &argument.value else {
+                    return None;
+                };
+                Some((signaling, nan_payload(&literal.code_units)?))
+            }
+            None => None,
         };
-        let mut argument = argument;
-        while let ExprKind::Paren(inner) = &argument.value {
-            argument = inner;
-        }
-        let ExprKind::StringLiteral(literal) = &argument.value else {
-            return None;
-        };
-        let payload = nan_payload(&literal.code_units)?;
         let (returned, ..) = self.types.ctypes.function_parts(signature)?;
         let ty = self.types.ir_type(returned);
         let Type::Numeric(NumericType::Float(format)) = &ty else {
             return None;
         };
-        let bits = nan_bits(*format, signaling, payload)?;
+        let bits = match nan {
+            Some((signaling, payload)) => nan_bits(*format, signaling, payload)?,
+            None => infinity_bits(*format)?,
+        };
         Some(Operand {
             c: returned,
             value: Value {
@@ -3160,6 +3165,17 @@ fn nan_payload(code_units: &[u32]) -> Option<u128> {
         return None;
     }
     u128::from_str_radix(body, radix).ok()
+}
+
+fn infinity_bits(format: FloatType) -> Option<u128> {
+    Some(match format {
+        FloatType::F16 => Half::INFINITY.to_bits(),
+        FloatType::F32 => Single::INFINITY.to_bits(),
+        FloatType::F64 => Double::INFINITY.to_bits(),
+        FloatType::F80 => X87DoubleExtended::INFINITY.to_bits(),
+        FloatType::F128 => Quad::INFINITY.to_bits(),
+        _ => return None,
+    })
 }
 
 fn nan_bits(format: FloatType, signaling: bool, payload: u128) -> Option<u128> {

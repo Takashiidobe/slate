@@ -50,8 +50,8 @@ int main(void) {
 // CHECK-NEXT:     let nz: f64 = -0.0f64;
 // CHECK-NEXT:     let neg: f64 = -2.5f64;
 // CHECK-NEXT:     let big: f64 = 1e300f64;
-// CHECK-NEXT:     let inf: f64 = f64::from_bits(0x7ff0000000000000);
-// CHECK-NEXT:     let finf: f32 = -f32::from_bits(0x7f800000);
+// CHECK-NEXT:     let inf: f64 = f64::INFINITY;
+// CHECK-NEXT:     let finf: f32 = -f32::INFINITY;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(c"%a %a %a %a\n".as_ptr(), f0 as f64, fmn as f64, fsub as f64, fmx as f64)

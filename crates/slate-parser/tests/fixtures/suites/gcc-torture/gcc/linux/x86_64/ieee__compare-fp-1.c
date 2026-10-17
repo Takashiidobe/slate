@@ -335,10 +335,9 @@ int main() {
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE___builtin_inf:[0-9]+]] @__builtin_inf() -> f64 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         write<f32>(%[[VALUE_pinf]], float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(call<f64, signature=fn() -> f64>(%[[VALUE___builtin_inf]])));
-// DEFAULT-NEXT:         write<f32>(%[[VALUE_ninf]], float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(neg<f64>(call<f64, signature=fn() -> f64>(%[[VALUE___builtin_inf]]))));
+// DEFAULT-NEXT:         write<f32>(%[[VALUE_pinf]], float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(inf)));
+// DEFAULT-NEXT:         write<f32>(%[[VALUE_ninf]], float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(neg<f64>(const<f64>(inf))));
 // DEFAULT-NEXT:         write<f32>(%[[VALUE_NaN]], float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(bits=0x7ff8000000000000)));
 // DEFAULT-NEXT:         call<i32, signature=fn(f32, f32, i32) -> i32>(%[[VALUE_iuneq]], read<f32>(%[[VALUE_ninf]]), read<f32>(%[[VALUE_pinf]]), const<i32>(0));
 // DEFAULT-NEXT:         call<i32, signature=fn(f32, f32, i32) -> i32>(%[[VALUE_iuneq]], read<f32>(%[[VALUE_NaN]]), read<f32>(%[[VALUE_NaN]]), const<i32>(1));

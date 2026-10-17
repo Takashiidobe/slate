@@ -90,29 +90,27 @@ main ()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE___builtin_inff:[0-9]+]] @__builtin_inff() -> f32 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_y:[0-9]+]] y: f32 [storage=automatic] = float_narrow<f32, reason=explicit, rounding=nearest_even, exceptions=ignore>(read<f64>(%[[VALUE_x]]));
-// DEFAULT-NEXT:         if eq<f32, exceptions=ignore>(read<f32>(%[[VALUE_y]]), neg<f32>(call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]])))
+// DEFAULT-NEXT:         if eq<f32, exceptions=ignore>(read<f32>(%[[VALUE_y]]), neg<f32>(const<f32>(inf)))
 // DEFAULT-NEXT:             return mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE_x]]), const<f64>(0.5));
 // DEFAULT-NEXT:         return float_widen<f64, reason=return>(read<f32>(%[[VALUE_y]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE___builtin_inf:[0-9]+]] @__builtin_inf() -> f64 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_x_2:[0-9]+]] x: f80) -> f80 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_y_2:[0-9]+]] y: f64 [storage=automatic] = float_narrow<f64, reason=explicit, rounding=nearest_even, exceptions=ignore>(read<f80>(%[[VALUE_x_2]]));
-// DEFAULT-NEXT:         if eq<f64, exceptions=ignore>(read<f64>(%[[VALUE_y_2]]), call<f64, signature=fn() -> f64>(%[[VALUE___builtin_inf]]))
+// DEFAULT-NEXT:         if eq<f64, exceptions=ignore>(read<f64>(%[[VALUE_y_2]]), const<f64>(inf))
 // DEFAULT-NEXT:             return mul<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%[[VALUE_x_2]]), const<f80>(0.5));
 // DEFAULT-NEXT:         return float_widen<f80, reason=return>(read<f64>(%[[VALUE_y_2]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_baz:[0-9]+]] @baz(%[[VALUE_x_3:[0-9]+]] x: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_y_3:[0-9]+]] y: f32 [storage=automatic] = float_narrow<f32, reason=explicit, rounding=nearest_even, exceptions=ignore>(read<f64>(%[[VALUE_x_3]]));
-// DEFAULT-NEXT:         if eq<f32, exceptions=ignore>(read<f32>(%[[VALUE_y_3]]), call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]]))
+// DEFAULT-NEXT:         if eq<f32, exceptions=ignore>(read<f32>(%[[VALUE_y_3]]), const<f32>(inf))
 // DEFAULT-NEXT:             return mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE_x_3]]), const<f64>(0.5));
 // DEFAULT-NEXT:         return float_widen<f64, reason=return>(read<f32>(%[[VALUE_y_3]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_qux:[0-9]+]] @qux(%[[VALUE_x_4:[0-9]+]] x: f80) -> f80 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_y_4:[0-9]+]] y: f64 [storage=automatic] = float_narrow<f64, reason=explicit, rounding=nearest_even, exceptions=ignore>(read<f80>(%[[VALUE_x_4]]));
-// DEFAULT-NEXT:         if eq<f64, exceptions=ignore>(read<f64>(%[[VALUE_y_4]]), neg<f64>(call<f64, signature=fn() -> f64>(%[[VALUE___builtin_inf]])))
+// DEFAULT-NEXT:         if eq<f64, exceptions=ignore>(read<f64>(%[[VALUE_y_4]]), neg<f64>(const<f64>(inf)))
 // DEFAULT-NEXT:             return mul<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%[[VALUE_x_4]]), const<f80>(0.5));
 // DEFAULT-NEXT:         return float_widen<f80, reason=return>(read<f64>(%[[VALUE_y_4]]));
 // DEFAULT-NEXT:     }

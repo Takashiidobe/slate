@@ -67,16 +67,15 @@ void underflow(void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE___builtin_inff:[0-9]+]] @__builtin_inff() -> f32 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %[[VALUE_overflow:[0-9]+]] @overflow() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_f1:[0-9]+]] f1: f32 [storage=automatic] = const<f32>(inf);
 // DEFAULT-NEXT:         let %[[VALUE_f2:[0-9]+]] f2: f32 [storage=automatic] = neg<f32>(const<f32>(inf));
-// DEFAULT-NEXT:         let %[[VALUE_f3:[0-9]+]] f3: f32 [storage=automatic] = call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]]);
-// DEFAULT-NEXT:         let %[[VALUE_f4:[0-9]+]] f4: f32 [storage=automatic] = neg<f32>(call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]]));
+// DEFAULT-NEXT:         let %[[VALUE_f3:[0-9]+]] f3: f32 [storage=automatic] = const<f32>(inf);
+// DEFAULT-NEXT:         let %[[VALUE_f4:[0-9]+]] f4: f32 [storage=automatic] = neg<f32>(const<f32>(inf));
 // DEFAULT-NEXT:         let %[[VALUE_d1:[0-9]+]] d1: f64 [storage=automatic] = const<f64>(inf);
 // DEFAULT-NEXT:         let %[[VALUE_d2:[0-9]+]] d2: f64 [storage=automatic] = neg<f64>(const<f64>(inf));
-// DEFAULT-NEXT:         let %[[VALUE_d3:[0-9]+]] d3: f64 [storage=automatic] = float_widen<f64, reason=assign>(call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]]));
-// DEFAULT-NEXT:         let %[[VALUE_d4:[0-9]+]] d4: f64 [storage=automatic] = float_widen<f64, reason=assign>(neg<f32>(call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]])));
+// DEFAULT-NEXT:         let %[[VALUE_d3:[0-9]+]] d3: f64 [storage=automatic] = float_widen<f64, reason=assign>(const<f32>(inf));
+// DEFAULT-NEXT:         let %[[VALUE_d4:[0-9]+]] d4: f64 [storage=automatic] = float_widen<f64, reason=assign>(neg<f32>(const<f32>(inf)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_underflow:[0-9]+]] @underflow() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_f11:[0-9]+]] f11: f32 [storage=automatic] = const<f32>(0.0);

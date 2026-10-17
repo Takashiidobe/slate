@@ -57,10 +57,9 @@ int main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         return const<f32>(42.0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE___builtin_inff:[0-9]+]] @__builtin_inff() -> f32 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if not<bool>(float_class<bool, test=infinite>(call<f32, signature=fn(f32, f32) -> f32>(%[[VALUE_foo]], call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]]), const<f32>(bits=0x7fc00000))))
+// DEFAULT-NEXT:         if not<bool>(float_class<bool, test=infinite>(call<f32, signature=fn(f32, f32) -> f32>(%[[VALUE_foo]], const<f32>(inf), const<f32>(bits=0x7fc00000))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
