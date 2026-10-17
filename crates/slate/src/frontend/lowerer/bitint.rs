@@ -179,6 +179,19 @@ impl FunctionLowerer<'_, '_> {
             ir::ArithOp::And => "bitand_bits",
             ir::ArithOp::Or => "bitor_bits",
             ir::ArithOp::Xor => "bitxor_bits",
+            ir::ArithOp::Shl | ir::ArithOp::Shr => {
+                let amount = self.lower_shift_amount(right)?;
+                return Ok(Some(Expr::MethodCall {
+                    recv: Box::new(self.lower_value(left)?),
+                    method: if op == ir::ArithOp::Shl {
+                        "shl_bits"
+                    } else {
+                        "shr_bits"
+                    }
+                    .into(),
+                    args: vec![amount],
+                }));
+            }
             _ => return Ok(None),
         };
         Ok(Some(Expr::MethodCall {
@@ -186,6 +199,22 @@ impl FunctionLowerer<'_, '_> {
             method: method.into(),
             args: vec![self.lower_value(right)?],
         }))
+    }
+
+    fn lower_shift_amount(&mut self, amount: &ir::Value) -> Result<Expr> {
+        let lowered = self.lower_value(amount)?;
+        let narrow = match self.tables.wide_int(&amount.ty) {
+            Some(wide) => Expr::MethodCall {
+                recv: Box::new(lowered),
+                method: if wide.signed { "to_i128" } else { "to_u128" }.into(),
+                args: Vec::new(),
+            },
+            None => lowered,
+        };
+        Ok(Expr::Cast {
+            expr: Box::new(narrow),
+            ty: rust::Type::Prim(Prim::Usize),
+        })
     }
 
     pub(super) fn lower_small_bitint_arith(
@@ -211,6 +240,27 @@ impl FunctionLowerer<'_, '_> {
                     lhs: Box::new(self.lower_value(left)?),
                     rhs: Box::new(self.lower_value(right)?),
                 }));
+            }
+            ir::ArithOp::Shl | ir::ArithOp::Shr => {
+                let amount = self.lower_shift_amount(right)?;
+                let shifted = Expr::MethodCall {
+                    recv: Box::new(self.lower_value(left)?),
+                    method: if op == ir::ArithOp::Shl {
+                        "wrapping_shl"
+                    } else {
+                        "wrapping_shr"
+                    }
+                    .into(),
+                    args: vec![Expr::Cast {
+                        expr: Box::new(amount),
+                        ty: rust::Type::Prim(Prim::U32),
+                    }],
+                };
+                return if op == ir::ArithOp::Shl {
+                    self.narrow_integer(shifted, &value.ty).map(Some)
+                } else {
+                    Ok(Some(shifted))
+                };
             }
             _ => return Ok(None),
         };
