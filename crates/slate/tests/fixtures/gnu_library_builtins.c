@@ -12,9 +12,9 @@ int main(void) {
   const char *found = __builtin_memchr(formatted, '-', __builtin_strlen(formatted));
   __builtin_printf("%s %s %d %d %td\n", formatted, bounded, wanted,
                    __builtin_strcmp(buffer, "slate"), found - formatted);
-  __builtin_printf("%d %d %d %d %d\n", __builtin_ffs(0), __builtin_ffs(12),
-                   __builtin_ffs(-2147483647 - 1), __builtin_ffsl(1L << 40),
-                   __builtin_ffsll(0));
+  __builtin_printf("%d %d %d %d %d %d\n", __builtin_ffs(0), __builtin_ffs(12),
+                   __builtin_ffs(-2147483647 - 1), __builtin_ffsl(1L << 20),
+                   __builtin_ffsll(1LL << 40), __builtin_ffsll(0));
   __builtin_printf("%d %ld\n", __builtin_abs(-7), __builtin_labs(-9L));
   __builtin_free(buffer);
   return 0;
@@ -99,13 +99,15 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {} {}", { let [[T_0:__t[0-9]+]] = 0 as i32; if [[T_0]] == 0 { 0 as i32 } else { ([[T_0]]
-// CHECK-NEXT:         .trailing_zeros() as i32) + 1 } }, { let [[T_1:__t[0-9]+]] = 12 as i32; if [[T_1]] == 0 { 0 as
-// CHECK-NEXT:         i32 } else { ([[T_1]].trailing_zeros() as i32) + 1 } }, { let [[T_2:__t[0-9]+]] = - (2147483647
-// CHECK-NEXT:         as i32) - (1 as i32); if [[T_2]] == 0 { 0 as i32 } else { ([[T_2]].trailing_zeros() as
-// CHECK-NEXT:         i32) + 1 } }, { let [[T_3:__t[0-9]+]] = (1 as i64) << (40 as i32); if [[T_3]] == 0 { 0 as i32 }
-// CHECK-NEXT:         else { ([[T_3]].trailing_zeros() as i32) + 1 } }, { let [[T_4:__t[0-9]+]] = 0 as i64; if [[T_4]] ==
-// CHECK-NEXT:         0 { 0 as i32 } else { ([[T_4]].trailing_zeros() as i32) + 1 } }
+// CHECK-NEXT:         "{} {} {} {} {} {}", { let [[T_0:__t[0-9]+]] = 0 as i32; if [[T_0]] == 0 { 0 as i32 } else {
+// CHECK-NEXT:         ([[T_0]].trailing_zeros() as i32) + 1 } }, { let [[T_1:__t[0-9]+]] = 12 as i32; if [[T_1]] == 0 { 0
+// CHECK-NEXT:         as i32 } else { ([[T_1]].trailing_zeros() as i32) + 1 } }, { let [[T_2:__t[0-9]+]] = -
+// CHECK-NEXT:         (2147483647 as i32) - (1 as i32); if [[T_2]] == 0 { 0 as i32 } else { ([[T_2]]
+// CHECK-NEXT:         .trailing_zeros() as i32) + 1 } }, { let [[T_3:__t[0-9]+]] = (1 as i64) << (20 as i32); if
+// CHECK-NEXT:         [[T_3]] == 0 { 0 as i32 } else { ([[T_3]].trailing_zeros() as i32) + 1 } }, { let [[T_4:__t[0-9]+]]
+// CHECK-NEXT:         = (1 as i64) << (40 as i32); if [[T_4]] == 0 { 0 as i32 } else { ([[T_4]]
+// CHECK-NEXT:         .trailing_zeros() as i32) + 1 } }, { let [[T_5:__t[0-9]+]] = 0 as i64; if [[T_5]] == 0 { 0 as i32
+// CHECK-NEXT:         } else { ([[T_5]].trailing_zeros() as i32) + 1 } }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __builtin_printf(

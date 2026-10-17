@@ -2,7 +2,6 @@ asm_barriers
 builtin_generic_bit_counts
 flexible_array_records
 float16
-gnu_library_builtins
 int128_arith
 int128_struct
 long_double_va_arg
