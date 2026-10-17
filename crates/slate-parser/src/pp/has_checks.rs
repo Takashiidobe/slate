@@ -957,6 +957,8 @@ const KNOWN_BUILTINS: &[&str] = &[
     "__builtin_ssubll_overflow",
     "__builtin_stack_address",
     "__builtin_stdarg_start",
+    "__builtin_stdc_rotate_left",
+    "__builtin_stdc_rotate_right",
     "__builtin_stpcpy",
     "__builtin_stpncpy",
     "__builtin_strcasecmp",

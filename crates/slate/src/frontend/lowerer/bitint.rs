@@ -116,6 +116,120 @@ impl Tables<'_> {
 }
 
 impl FunctionLowerer<'_, '_> {
+    pub(super) fn lower_stdc_rotate(
+        &mut self,
+        value: &ir::Value,
+        method: &str,
+        arguments: &[ir::Value],
+    ) -> Result<Expr> {
+        let [operand, count] = arguments else {
+            return Err(unsupported_value(value));
+        };
+        let count_ty = count.ty.clone();
+        let count = self.lower_value(count)?;
+        let recv = self.lower_value(operand)?;
+        let call = |recv: Expr, method: &str, args: Vec<Expr>| Expr::MethodCall {
+            recv: Box::new(recv),
+            method: method.into(),
+            args,
+        };
+        let modulus = |width: u32| Expr::Cast {
+            expr: Box::new(Expr::Value(rust::RustValue::U128(u128::from(width)))),
+            ty: rust::Type::Prim(Prim::U32),
+        };
+        let remainder = |width: u32| match self.tables.wide_int(&count_ty) {
+            Some(wide) => call(
+                count.clone(),
+                if wide.signed {
+                    "rem_euclid_u32"
+                } else {
+                    "rem_u32"
+                },
+                vec![modulus(width)],
+            ),
+            None => Expr::Cast {
+                expr: Box::new(call(
+                    Expr::Cast {
+                        expr: Box::new(count.clone()),
+                        ty: rust::Type::Prim(Prim::I64),
+                    },
+                    "rem_euclid",
+                    vec![Expr::Value(rust::RustValue::I64(i64::from(width)))],
+                )),
+                ty: rust::Type::Prim(Prim::U32),
+            },
+        };
+        if let Some(wide) = self.tables.wide_int(&operand.ty) {
+            return Ok(call(
+                recv,
+                &format!("{method}_bits"),
+                vec![remainder(wide.width)],
+            ));
+        }
+        match self.tables.bit_shape(&operand.ty) {
+            Some(BitShape::Plain) => {
+                let ty = self.lower_type(&operand.ty)?;
+                let rust::Type::Prim(prim) = ty else {
+                    return Err(unsupported_value(value));
+                };
+                Ok(call(recv, method, vec![remainder(prim_width(prim))]))
+            }
+            Some(BitShape::Small { width, .. }) => {
+                let (towards, away) = if method == "rotate_left" {
+                    (BinOp::Shl, BinOp::Shr)
+                } else {
+                    (BinOp::Shr, BinOp::Shl)
+                };
+                let (operand_name, shift_name) = (self.next_temp(), self.next_temp());
+                let var = |name: &str| Expr::Var(name.into());
+                let literal = |value: u32| Expr::Cast {
+                    expr: Box::new(Expr::Value(rust::RustValue::U128(u128::from(value)))),
+                    ty: rust::Type::Prim(Prim::U32),
+                };
+                let rotated = Expr::Binary {
+                    op: BinOp::BitOr,
+                    lhs: Box::new(Expr::Binary {
+                        op: towards,
+                        lhs: Box::new(var(&operand_name)),
+                        rhs: Box::new(var(&shift_name)),
+                    }),
+                    rhs: Box::new(Expr::Binary {
+                        op: away,
+                        lhs: Box::new(var(&operand_name)),
+                        rhs: Box::new(Expr::Binary {
+                            op: BinOp::Rem,
+                            lhs: Box::new(Expr::Binary {
+                                op: BinOp::Sub,
+                                lhs: Box::new(literal(width)),
+                                rhs: Box::new(var(&shift_name)),
+                            }),
+                            rhs: Box::new(literal(width)),
+                        }),
+                    }),
+                };
+                let tail = self.narrow_integer(rotated, &operand.ty)?;
+                Ok(Expr::Block(Box::new(rust::Block {
+                    stmts: vec![
+                        Stmt::Let {
+                            name: operand_name,
+                            mutable: false,
+                            ty: None,
+                            init: Some(recv),
+                        },
+                        Stmt::Let {
+                            name: shift_name,
+                            mutable: false,
+                            ty: None,
+                            init: Some(remainder(width)),
+                        },
+                    ],
+                    tail: Some(Box::new(tail)),
+                })))
+            }
+            None => Err(unsupported_value(value)),
+        }
+    }
+
     pub(super) fn wide_int_constant(&mut self, wide: WideInt, number: &Number) -> Result<Expr> {
         let (name, value) = match number {
             Number::Integer(value) => match u128::try_from(value) {

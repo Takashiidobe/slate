@@ -443,6 +443,20 @@ impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> BU
         Self::from_limbs(self.to_limbs().shr_bits(shift))
     }
 
+    pub const fn rotate_left_bits(self, shift: u32) -> Self {
+        self.shl_bits(shift as usize)
+            .bitor_bits(self.shr_bits((BITS - shift as usize) % BITS))
+    }
+
+    pub const fn rotate_right_bits(self, shift: u32) -> Self {
+        self.shr_bits(shift as usize)
+            .bitor_bits(self.shl_bits((BITS - shift as usize) % BITS))
+    }
+
+    pub const fn rem_u32(self, modulus: u32) -> u32 {
+        self.to_limbs().rem_u32(modulus)
+    }
+
     pub const fn compare(self, rhs: Self) -> i32 {
         match self.to_limbs().cmp_magnitude(&rhs.to_limbs()) {
             Ordering::Less => -1,
@@ -875,6 +889,16 @@ impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> BI
         Self::from_limbs(self.to_limbs().wrapping_neg())
     }
 
+    pub const fn rem_euclid_u32(self, modulus: u32) -> u32 {
+        let limbs = self.to_limbs();
+        if limbs.is_negative() {
+            let rem = limbs.wrapping_neg().bits.rem_u32(modulus);
+            (modulus - rem) % modulus
+        } else {
+            limbs.bits.rem_u32(modulus)
+        }
+    }
+
     pub const fn wrapping_div_rem(self, rhs: Self) -> (Self, Self) {
         let (q, r) = self.to_limbs().wrapping_div_rem(rhs.to_limbs());
         (Self::from_limbs(q), Self::from_limbs(r))
@@ -1113,6 +1137,16 @@ struct BUintLimbs<const BITS: usize, const LIMBS: usize> {
 }
 
 impl<const BITS: usize, const LIMBS: usize> BUintLimbs<BITS, LIMBS> {
+    const fn rem_u32(&self, modulus: u32) -> u32 {
+        let mut rem: u128 = 0;
+        let mut i = LIMBS;
+        while i > 0 {
+            i -= 1;
+            rem = ((rem << 64) | self.limbs[i] as u128) % modulus as u128;
+        }
+        rem as u32
+    }
+
     const TOP_BITS: u32 = (BITS % 64) as u32;
     const TOP_MASK: u64 = if Self::TOP_BITS == 0 {
         u64::MAX
