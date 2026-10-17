@@ -430,6 +430,11 @@ impl FunctionLowerer<'_, '_> {
                     {
                         rust::Type::Prim(Prim::F64)
                     }
+                    rust::Type::Prim(Prim::F16)
+                        if self.tables.target.family == TargetFamily::X86 =>
+                    {
+                        ty.clone()
+                    }
                     rust::Type::Prim(Prim::F16 | Prim::F128) => {
                         return Err(unsupported_value(value));
                     }
