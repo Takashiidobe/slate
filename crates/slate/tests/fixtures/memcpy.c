@@ -73,23 +73,17 @@ int main(void) {
 // CHECK-NEXT:             ((n as i64) as u64) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     {
-// CHECK-NEXT:         for i in 0 as i32..8 as i32 {
-// CHECK-NEXT:             print!("{} ", (full_dst[i as usize] as u32) as i32);
-// CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         }
+// CHECK-NEXT:     for i in 0 as i32..8 as i32 {
+// CHECK-NEXT:         print!("{} ", (full_dst[i as usize] as u32) as i32);
+// CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     }
-// CHECK-NEXT:     {
-// CHECK-NEXT:         for i in 0 as i32..8 as i32 {
-// CHECK-NEXT:             print!("{} ", (partial_dst[i as usize] as u32) as i32);
-// CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         }
+// CHECK-NEXT:     for i in 0 as i32..8 as i32 {
+// CHECK-NEXT:         print!("{} ", (partial_dst[i as usize] as u32) as i32);
+// CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     }
-// CHECK-NEXT:     {
-// CHECK-NEXT:         for i in 0 as i32..8 as i32 {
-// CHECK-NEXT:             print!("{} ", (alias_buf[i as usize] as u32) as i32);
-// CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         }
+// CHECK-NEXT:     for i in 0 as i32..8 as i32 {
+// CHECK-NEXT:         print!("{} ", (alias_buf[i as usize] as u32) as i32);
+// CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     }
 // CHECK-NEXT:     for i in 0 as i32..8 as i32 {
 // CHECK-NEXT:         print!("{} ", (dyn_dst[i as usize] as u32) as i32);

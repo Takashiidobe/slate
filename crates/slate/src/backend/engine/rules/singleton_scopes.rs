@@ -17,7 +17,10 @@ fn shadow_outlives_scope(arena: &Arena, id: NodeId) -> bool {
         return false;
     };
     body.iter()
-        .filter_map(|&child| arena.get(child).and_then(NodeKind::declared_name))
+        .filter_map(|&child| match arena.get(child)? {
+            NodeKind::For { .. } => None,
+            kind => kind.declared_name(),
+        })
         .any(|name| {
             arena.def_use_neighbors(name).iter().any(|&reader| {
                 if reader == parent {

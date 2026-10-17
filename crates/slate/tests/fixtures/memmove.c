@@ -56,17 +56,13 @@ int main(void) {
 // CHECK-NEXT:             ((n as i64) as u64) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     {
-// CHECK-NEXT:         for i in 0 as i32..8 as i32 {
-// CHECK-NEXT:             print!("{} ", (forward_buf[i as usize] as u32) as i32);
-// CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         }
+// CHECK-NEXT:     for i in 0 as i32..8 as i32 {
+// CHECK-NEXT:         print!("{} ", (forward_buf[i as usize] as u32) as i32);
+// CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     }
-// CHECK-NEXT:     {
-// CHECK-NEXT:         for i in 0 as i32..8 as i32 {
-// CHECK-NEXT:             print!("{} ", (backward_buf[i as usize] as u32) as i32);
-// CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         }
+// CHECK-NEXT:     for i in 0 as i32..8 as i32 {
+// CHECK-NEXT:         print!("{} ", (backward_buf[i as usize] as u32) as i32);
+// CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     }
 // CHECK-NEXT:     for i in 0 as i32..8 as i32 {
 // CHECK-NEXT:         print!("{} ", (dyn_buf[i as usize] as u32) as i32);
