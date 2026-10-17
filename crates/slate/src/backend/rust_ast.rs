@@ -2829,7 +2829,7 @@ impl Type {
         if s == "()" {
             return Type::Unit;
         }
-        if s == "core::ffi::VaList<'_>" {
+        if matches!(s, "core::ffi::VaList<'_>" | "core::ffi::VaList<'static>") {
             return Type::VaList;
         }
         if s == "str" {

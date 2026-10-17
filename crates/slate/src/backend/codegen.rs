@@ -1625,7 +1625,7 @@ impl<W: Write> Codegen<W> {
                 }
                 self.out.write_char('>')
             }
-            Type::VaList => self.out.write_str("core::ffi::VaList<'_>"),
+            Type::VaList => self.out.write_str("core::ffi::VaList<'static>"),
             Type::Str => self.out.write_str("str"),
             Type::Ref { mutable, inner } => {
                 self.out.write_char('&')?;
@@ -1683,6 +1683,7 @@ fn record_fields_are_copy(fields: &[RecordField]) -> bool {
 fn type_is_copy(ty: &Type) -> bool {
     match ty {
         Type::Custom(name) => name != "__SlateVaArgs",
+        Type::VaList => false,
         Type::Array { elem, .. } => type_is_copy(elem),
         _ => true,
     }

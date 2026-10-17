@@ -2,6 +2,33 @@ use super::*;
 
 pub(super) const VA_ARGS: &str = "__va_args";
 
+pub(super) fn static_va_list(list: Expr) -> Expr {
+    Expr::Unsafe(Box::new(rust::Block {
+        stmts: Vec::new(),
+        tail: Some(Box::new(Expr::Call {
+            func: Box::new(Expr::GenericPath {
+                path: rust::Path::new(["core", "mem", "transmute"].map(rust::Ident::from)),
+                type_args: vec![
+                    rust::Type::Custom("core::ffi::VaList<'_>".into()),
+                    rust::Type::VaList,
+                ],
+            }),
+            args: vec![clone_va_list(list)],
+            binding: CallBinding::Generated,
+        })),
+    }))
+}
+
+pub(super) fn through_raw_pointer(place: Expr) -> Expr {
+    Expr::Unary {
+        op: rust::UnaryOp::Deref,
+        expr: Box::new(Expr::AddrOf {
+            mutable: true,
+            expr: Box::new(place),
+        }),
+    }
+}
+
 pub(super) fn clone_va_list(list: Expr) -> Expr {
     Expr::MethodCall {
         recv: Box::new(list),

@@ -759,9 +759,14 @@ impl Hoister {
                 ordering: self.ordering(ordering, out)?,
             },
             ValueKind::AddressOf(place) => ValueKind::AddressOf(self.place(place, out)?),
-            ValueKind::VaArg { list, convention } => ValueKind::VaArg {
+            ValueKind::VaArg {
+                list,
+                convention,
+                passing,
+            } => ValueKind::VaArg {
                 list: self.place(list, out)?,
                 convention,
+                passing,
             },
             ValueKind::VaStart { list, convention } => ValueKind::VaStart {
                 list: self.place(list, out)?,

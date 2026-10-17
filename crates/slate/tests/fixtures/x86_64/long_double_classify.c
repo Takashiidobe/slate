@@ -90,7 +90,7 @@ int main(void) {
 // CHECK-NEXT:     safe fn __slate_f80_fmin(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_powi(__a: LongDouble, __n: i32) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_neg(__a: LongDouble) -> LongDouble;
-// CHECK-NEXT:     fn __slate_f80_va_arg(__ap: *mut core::ffi::VaList<'_>) -> LongDouble;
+// CHECK-NEXT:     fn __slate_f80_va_arg(__ap: *mut core::ffi::VaList<'static>) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_abs(__a: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_ceil(__a: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_floor(__a: LongDouble) -> LongDouble;

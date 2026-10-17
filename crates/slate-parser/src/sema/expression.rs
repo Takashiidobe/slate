@@ -2870,12 +2870,17 @@ impl Lowerer {
                 let resolved = self.resolve_type_name(ty)?;
                 let ty = self.types.object_type(resolved, "va_arg of void")?;
                 self.types.storage(ty.clone())?;
+                let passing = match convention {
+                    VaConvention::Target => self.va_passing(&ty)?,
+                    VaConvention::Win64 => VaPassing::Scalar,
+                };
                 Ok(self.operand(
                     e,
                     resolved,
                     ValueKind::VaArg {
                         list: list.place,
                         convention,
+                        passing,
                     },
                 ))
             }

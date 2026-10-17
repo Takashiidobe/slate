@@ -50,8 +50,13 @@ int main(void) {
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: unsafe extern "C-unwind" fn total(count: i32, mut __va_args: ...) -> i32 {
-// CHECK-NEXT:     let mut args: core::ffi::VaList<'_> = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     args = __va_args.clone();
+// CHECK-NEXT:     let mut args: core::ffi::VaList<'static> = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     args = unsafe {
+// CHECK-NEXT:         core::mem::transmute::<
+// CHECK-NEXT:             core::ffi::VaList<'_>,
+// CHECK-NEXT:             core::ffi::VaList<'static>,
+// CHECK-NEXT:         >(__va_args.clone())
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let mut result: i32 = unsafe { args.next_arg::<i32>() };
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = result;
 // CHECK-NEXT:     result = [[V_0]] + ((unsafe { args.next_arg::<f64>() }) as i32);

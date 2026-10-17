@@ -131,14 +131,18 @@ impl FunctionLowerer<'_, '_> {
                 ValueKind::VaStart {
                     list,
                     convention: ir::VaConvention::Target,
-                } => self.lower_assignment(list, clone_va_list(Expr::Var(VA_ARGS.into())))?,
+                } => self.lower_assignment(list, static_va_list(Expr::Var(VA_ARGS.into())))?,
                 ValueKind::VaCopy {
                     destination,
                     source,
                     convention,
                 } => {
+                    let unsafe_source = self.tables.place_is_unsafe(source);
                     let source = self.lower_place(source)?;
                     let source = match convention {
+                        ir::VaConvention::Target if unsafe_source => {
+                            clone_va_list(through_raw_pointer(source))
+                        }
                         ir::VaConvention::Target => clone_va_list(source),
                         ir::VaConvention::Win64 => source,
                     };

@@ -26,8 +26,13 @@ int main(void) {
 // CHECK-NEXT:     2 * x
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C-unwind" fn invoke(x: i32, mut __va_args: ...) -> i32 {
-// CHECK-NEXT:     let mut ap: core::ffi::VaList<'_> = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     ap = __va_args.clone();
+// CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     ap = unsafe {
+// CHECK-NEXT:         core::mem::transmute::<
+// CHECK-NEXT:             core::ffi::VaList<'_>,
+// CHECK-NEXT:             core::ffi::VaList<'static>,
+// CHECK-NEXT:         >(__va_args.clone())
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let first: Option<unsafe extern "C-unwind" fn(i32) -> i32> = unsafe {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             std::mem::transmute::<

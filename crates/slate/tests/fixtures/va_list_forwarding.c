@@ -100,12 +100,12 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn vprintf(__format: *const i8, __arg: core::ffi::VaList<'_>) -> i32;
+// CHECK-NEXT:     fn vprintf(__format: *const i8, __arg: core::ffi::VaList<'static>) -> i32;
 // CHECK-NEXT:     fn vsnprintf(
 // CHECK-NEXT:         __s: *mut i8,
 // CHECK-NEXT:         __maxlen: u64,
 // CHECK-NEXT:         __format: *const i8,
-// CHECK-NEXT:         __arg: core::ffi::VaList<'_>,
+// CHECK-NEXT:         __arg: core::ffi::VaList<'static>,
 // CHECK-NEXT:     ) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
@@ -114,13 +114,18 @@ int main(void) {
 // CHECK-NEXT:     buffer: *mut i8,
 // CHECK-NEXT:     size: u64,
 // CHECK-NEXT:     fmt: *const i8,
-// CHECK-NEXT:     mut ap: core::ffi::VaList<'_>,
+// CHECK-NEXT:     mut ap: core::ffi::VaList<'static>,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { vsnprintf(buffer, size, fmt, ap.clone()) }
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C-unwind" fn report(fmt: *const i8, mut __va_args: ...) -> i32 {
-// CHECK-NEXT:     let mut ap: core::ffi::VaList<'_> = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     ap = __va_args.clone();
+// CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     ap = unsafe {
+// CHECK-NEXT:         core::mem::transmute::<
+// CHECK-NEXT:             core::ffi::VaList<'_>,
+// CHECK-NEXT:             core::ffi::VaList<'static>,
+// CHECK-NEXT:         >(__va_args.clone())
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let written: i32 = unsafe { vprintf(fmt, ap.clone()) };
 // CHECK-NEXT:     {}
 // CHECK-NEXT:     written
@@ -131,15 +136,25 @@ int main(void) {
 // CHECK-NEXT:     fmt: *const i8,
 // CHECK-NEXT:     mut __va_args: ...
 // CHECK-NEXT: ) -> i32 {
-// CHECK-NEXT:     let mut ap: core::ffi::VaList<'_> = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     ap = __va_args.clone();
+// CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     ap = unsafe {
+// CHECK-NEXT:         core::mem::transmute::<
+// CHECK-NEXT:             core::ffi::VaList<'_>,
+// CHECK-NEXT:             core::ffi::VaList<'static>,
+// CHECK-NEXT:         >(__va_args.clone())
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let written: i32 = format_into(buffer, size, fmt, ap.clone());
 // CHECK-NEXT:     {}
 // CHECK-NEXT:     written
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C-unwind" fn sum_ints(count: i32, mut __va_args: ...) -> i64 {
-// CHECK-NEXT:     let mut ap: core::ffi::VaList<'_> = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     ap = __va_args.clone();
+// CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     ap = unsafe {
+// CHECK-NEXT:         core::mem::transmute::<
+// CHECK-NEXT:             core::ffi::VaList<'_>,
+// CHECK-NEXT:             core::ffi::VaList<'static>,
+// CHECK-NEXT:         >(__va_args.clone())
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let mut total: i64 = 0;
 // CHECK-NEXT:     for i in 0..count {
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i64 = total;
@@ -149,8 +164,13 @@ int main(void) {
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C-unwind" fn mixed(count: i32, mut __va_args: ...) -> f64 {
-// CHECK-NEXT:     let mut ap: core::ffi::VaList<'_> = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     ap = __va_args.clone();
+// CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     ap = unsafe {
+// CHECK-NEXT:         core::mem::transmute::<
+// CHECK-NEXT:             core::ffi::VaList<'_>,
+// CHECK-NEXT:             core::ffi::VaList<'static>,
+// CHECK-NEXT:         >(__va_args.clone())
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let mut total: f64 = (0 as i32) as f64;
 // CHECK-NEXT:     for i in 0..count {
 // CHECK-NEXT:         let kind: i32 = unsafe { ap.next_arg::<i32>() };
@@ -178,9 +198,14 @@ int main(void) {
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C-unwind" fn sum_twice(count: i32, mut __va_args: ...) -> i32 {
-// CHECK-NEXT:     let mut ap: core::ffi::VaList<'_> = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut copy: core::ffi::VaList<'_> = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     ap = __va_args.clone();
+// CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut copy: core::ffi::VaList<'static> = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     ap = unsafe {
+// CHECK-NEXT:         core::mem::transmute::<
+// CHECK-NEXT:             core::ffi::VaList<'_>,
+// CHECK-NEXT:             core::ffi::VaList<'static>,
+// CHECK-NEXT:         >(__va_args.clone())
+// CHECK-NEXT:     };
 // CHECK-NEXT:     copy = ap.clone();
 // CHECK-NEXT:     let mut first: i32 = 0;
 // CHECK-NEXT:     for i in 0..count {
@@ -194,17 +219,27 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     {}
 // CHECK-NEXT:     {}
-// CHECK-NEXT:     ap = __va_args.clone();
+// CHECK-NEXT:     ap = unsafe {
+// CHECK-NEXT:         core::mem::transmute::<
+// CHECK-NEXT:             core::ffi::VaList<'_>,
+// CHECK-NEXT:             core::ffi::VaList<'static>,
+// CHECK-NEXT:         >(__va_args.clone())
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let restarted: i32 = unsafe { ap.next_arg::<i32>() };
 // CHECK-NEXT:     {}
 // CHECK-NEXT:     first + second + restarted
 // CHECK-NEXT: }
-// CHECK-NEXT: fn take_unsigned(mut ap: core::ffi::VaList<'_>) -> u32 {
+// CHECK-NEXT: fn take_unsigned(mut ap: core::ffi::VaList<'static>) -> u32 {
 // CHECK-NEXT:     unsafe { ap.next_arg::<u32>() }
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C-unwind" fn unsigned_pair(unused: i32, mut __va_args: ...) -> u32 {
-// CHECK-NEXT:     let mut ap: core::ffi::VaList<'_> = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     ap = __va_args.clone();
+// CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     ap = unsafe {
+// CHECK-NEXT:         core::mem::transmute::<
+// CHECK-NEXT:             core::ffi::VaList<'_>,
+// CHECK-NEXT:             core::ffi::VaList<'static>,
+// CHECK-NEXT:         >(__va_args.clone())
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let high: u32 = take_unsigned(ap.clone());
 // CHECK-NEXT:     {}
 // CHECK-NEXT:     high

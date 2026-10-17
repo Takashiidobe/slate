@@ -496,7 +496,7 @@ core       = "const<" type ">(" constant ")"
            | "sequence<" type ">(" value ", " value ")"
            | "call<" type ", signature=" fn_type [ ", abi=" abi_signature ]
              ">(" ( binding | value ) { ", " value } ")"
-           | "va_arg<" type [ ", win64" ] ">(" place ")"
+           | "va_arg<" type [ ", win64" ] [ va_passing ] ">(" place ")"
            | "va_start" [ "<win64>" ] "(" place ")"
            | "va_end" [ "<win64>" ] "(" place ")"
            | "va_copy" [ "<win64>" ] "(" place ", " place ")"
@@ -518,6 +518,9 @@ constant   = int | bool | decimal_digits | float_literal | "bits=0x" hex_digits 
 member     = ( "field" digits | "index" digits | "index" digits "..=" digits )
              " = " value ;
 exchange_form = "write_back" | "success" | "old" ;
+va_passing  = ", memory"
+            | ", regs=[" va_class { ", " va_class } "]"
+va_class    = "int" | "sse" | "sse_wide"
 reason     = "return" | "assign" | "arg" | "vararg" | "promotion"
            | "usual_arith" | "explicit" ;
 ```

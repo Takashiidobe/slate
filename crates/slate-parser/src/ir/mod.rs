@@ -8,7 +8,9 @@ mod module_print;
 mod names;
 mod numeric;
 
-pub use abi::{AbiChunk, AbiConvention, AbiPass, AbiSignature, CallConv, VaConvention};
+pub use abi::{
+    AbiChunk, AbiConvention, AbiPass, AbiSignature, CallConv, VaClass, VaConvention, VaPassing,
+};
 pub use asm::{
     AsmAccess, AsmClobber, AsmConstraint, AsmConstraintAlternative, AsmConstraintLocation,
     AsmConstraintModifier, AsmDialect, AsmDirection, AsmMemory, AsmOperand, AsmOperandClass,
@@ -139,6 +141,7 @@ pub enum ValueKind {
     VaArg {
         list: Place,
         convention: VaConvention,
+        passing: VaPassing,
     },
     StatementExpression(Box<Evaluation>),
     Capture {
@@ -507,9 +510,13 @@ impl Value {
                 atomic::format_ordering(f, ordering.as_ref(), compact)?;
                 write!(f, ">({})", place.display_mode(compact))
             }
-            ValueKind::VaArg { list, convention } => write!(
+            ValueKind::VaArg {
+                list,
+                convention,
+                passing,
+            } => write!(
                 f,
-                "va_arg<{}{}>({})",
+                "va_arg<{}{}{passing}>({})",
                 self.ty,
                 va_convention_suffix(*convention),
                 list.display_mode(compact)

@@ -21,7 +21,7 @@ int main(void) {
 // CHECK-NEXT:     fn vfprintf(
 // CHECK-NEXT:         __s: *mut _IO_FILE,
 // CHECK-NEXT:         __format: *const i8,
-// CHECK-NEXT:         __arg: core::ffi::VaList<'_>,
+// CHECK-NEXT:         __arg: core::ffi::VaList<'static>,
 // CHECK-NEXT:     ) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
@@ -90,8 +90,13 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C-unwind" fn print_values(format: *const i8, mut __va_args: ...) {
-// CHECK-NEXT:     let mut args: core::ffi::VaList<'_> = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     args = __va_args.clone();
+// CHECK-NEXT:     let mut args: core::ffi::VaList<'static> = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     args = unsafe {
+// CHECK-NEXT:         core::mem::transmute::<
+// CHECK-NEXT:             core::ffi::VaList<'_>,
+// CHECK-NEXT:             core::ffi::VaList<'static>,
+// CHECK-NEXT:         >(__va_args.clone())
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { vfprintf(unsafe { stdout }, format, args.clone()) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

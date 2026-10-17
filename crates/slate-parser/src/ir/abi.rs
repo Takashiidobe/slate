@@ -72,6 +72,44 @@ pub enum VaConvention {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum VaClass {
+    Integer,
+    Sse,
+    SseWide,
+}
+
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub enum VaPassing {
+    #[default]
+    Scalar,
+    Memory,
+    Registers(Vec<VaClass>),
+}
+
+impl fmt::Display for VaPassing {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Scalar => Ok(()),
+            Self::Memory => f.write_str(", memory"),
+            Self::Registers(classes) => {
+                f.write_str(", regs=[")?;
+                for (index, class) in classes.iter().enumerate() {
+                    if index != 0 {
+                        f.write_str(", ")?;
+                    }
+                    f.write_str(match class {
+                        VaClass::Integer => "int",
+                        VaClass::Sse => "sse",
+                        VaClass::SseWide => "sse_wide",
+                    })?;
+                }
+                f.write_str("]")
+            }
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum AbiChunk {
     Integer(u32),
     Float(FloatType),

@@ -289,6 +289,7 @@ impl FunctionLowerer<'_, '_> {
             ValueKind::VaArg {
                 list,
                 convention: ir::VaConvention::Win64,
+                ..
             } => {
                 if self.tables.target.family != TargetFamily::X86_64
                     || self.tables.is_long_double(&value.ty)
@@ -316,6 +317,50 @@ impl FunctionLowerer<'_, '_> {
                     })),
                 }))
             }
+            ValueKind::VaArg { list, passing, .. } if *passing != ir::VaPassing::Scalar => {
+                if self.tables.target.family != TargetFamily::X86_64 {
+                    return Err(unsupported_value(value));
+                }
+                self.dependencies.sysv_va = true;
+                let classes = match passing {
+                    ir::VaPassing::Registers(classes) => {
+                        classes
+                            .iter()
+                            .enumerate()
+                            .fold(0u128, |code, (index, class)| {
+                                let bits = match class {
+                                    ir::VaClass::Integer => 1,
+                                    ir::VaClass::Sse => 2,
+                                    ir::VaClass::SseWide => 3,
+                                };
+                                code | (bits << (2 * index))
+                            })
+                    }
+                    _ => 0,
+                };
+                Expr::Unsafe(Box::new(rust::Block {
+                    stmts: Vec::new(),
+                    tail: Some(Box::new(Expr::Call {
+                        func: Box::new(Expr::GenericPath {
+                            path: rust::Path::new(
+                                ["__slate_sysv_va", "arg"].map(rust::Ident::from),
+                            ),
+                            type_args: vec![
+                                rust::Type::Custom("_".into()),
+                                self.lower_type(&value.ty)?,
+                            ],
+                        }),
+                        args: vec![
+                            Expr::AddrOf {
+                                mutable: true,
+                                expr: Box::new(self.lower_place(list)?),
+                            },
+                            Expr::Value(rust::RustValue::TypedUInt(classes, Prim::U32)),
+                        ],
+                        binding: CallBinding::Generated,
+                    })),
+                }))
+            }
             ValueKind::VaArg { list, .. } if self.tables.is_long_double(&value.ty) => {
                 self.dependencies.long_double = true;
                 Expr::Unsafe(Box::new(rust::Block {
@@ -331,14 +376,32 @@ impl FunctionLowerer<'_, '_> {
                 }))
             }
             ValueKind::VaArg { list, .. } => {
+                if let ir::Type::Defined(id) = *self.tables.resolve_type(&value.ty)
+                    && matches!(
+                        self.tables
+                            .types
+                            .get(&id)
+                            .map(|definition| &definition.kind),
+                        Some(ir::TypeDefinitionKind::Record { .. })
+                    )
+                {
+                    return Err(unsupported_value(value));
+                }
                 let ty = self.lower_type(&value.ty)?;
-                let read_ty = if matches!(ty, rust::Type::FnPtr { .. }) {
-                    byte_pointer_type()
+                let read_ty = match ty {
+                    rust::Type::FnPtr { .. } => byte_pointer_type(),
+                    rust::Type::Prim(Prim::F32) => rust::Type::Prim(Prim::F64),
+                    rust::Type::Prim(Prim::I8) => rust::Type::Prim(Prim::I32),
+                    rust::Type::Prim(Prim::U8) => rust::Type::Prim(Prim::U32),
+                    _ => ty.clone(),
+                };
+                let recv = if self.tables.place_is_unsafe(list) {
+                    through_raw_pointer(self.lower_place(list)?)
                 } else {
-                    ty.clone()
+                    self.lower_place(list)?
                 };
                 let read = Expr::MethodCallGeneric {
-                    recv: Box::new(self.lower_place(list)?),
+                    recv: Box::new(recv),
                     method: "next_arg".into(),
                     type_args: vec![read_ty.clone()],
                     args: Vec::new(),
@@ -347,6 +410,11 @@ impl FunctionLowerer<'_, '_> {
                     stmts: Vec::new(),
                     tail: Some(Box::new(if read_ty == ty {
                         read
+                    } else if matches!(ty, rust::Type::Prim(_)) {
+                        Expr::Cast {
+                            expr: Box::new(read),
+                            ty,
+                        }
                     } else {
                         convert_function_pointer(read_ty, ty, Box::new(read))
                     })),
@@ -403,7 +471,11 @@ impl FunctionLowerer<'_, '_> {
                     None => self.lower_place(place)?,
                 };
                 let lowered = if matches!(value.ty, ir::Type::VaList) {
-                    clone_va_list(lowered)
+                    clone_va_list(if self.tables.place_is_unsafe(place) {
+                        through_raw_pointer(lowered)
+                    } else {
+                        lowered
+                    })
                 } else {
                     lowered
                 };

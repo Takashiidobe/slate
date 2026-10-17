@@ -31,7 +31,7 @@ int main(void) {
 // CHECK-NEXT:     safe fn __slate_f80_fmin(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_powi(__a: LongDouble, __n: i32) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_neg(__a: LongDouble) -> LongDouble;
-// CHECK-NEXT:     fn __slate_f80_va_arg(__ap: *mut core::ffi::VaList<'_>) -> LongDouble;
+// CHECK-NEXT:     fn __slate_f80_va_arg(__ap: *mut core::ffi::VaList<'static>) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_abs(__a: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_ceil(__a: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_floor(__a: LongDouble) -> LongDouble;
@@ -200,8 +200,13 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C-unwind" fn exit(count: i32, mut __va_args: ...) -> LongDouble {
-// CHECK-NEXT:     let mut ap: core::ffi::VaList<'_> = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     ap = __va_args.clone();
+// CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     ap = unsafe {
+// CHECK-NEXT:         core::mem::transmute::<
+// CHECK-NEXT:             core::ffi::VaList<'_>,
+// CHECK-NEXT:             core::ffi::VaList<'static>,
+// CHECK-NEXT:         >(__va_args.clone())
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let mut total: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 // CHECK-NEXT:     for i in 0..count {
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: LongDouble = total;

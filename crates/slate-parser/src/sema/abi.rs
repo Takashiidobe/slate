@@ -5,7 +5,7 @@ use crate::ast::Span;
 use crate::compiler_args::CompilerFlavor;
 use crate::ir::{
     AbiChunk, AbiConvention, AbiPass, AbiSignature, CallConv, Field, FloatType, NumericType,
-    RecordKind, Type, TypeDefinitionKind, Value,
+    RecordKind, Type, TypeDefinitionKind, VaClass, VaPassing, Value,
 };
 use crate::target_info::{TargetInfo, TargetOs};
 
@@ -20,6 +20,10 @@ impl Lowerer {
             None,
             actual_arguments,
         )
+    }
+
+    pub(super) fn va_passing(&self, ty: &Type) -> Result<VaPassing, ResolveError> {
+        AbiClassifier::new(&self.types, &self.context.target).va_passing(ty)
     }
 
     pub(super) fn c_abi_signature(
@@ -75,6 +79,40 @@ pub(super) struct AbiClassifier<'a> {
 impl<'a> AbiClassifier<'a> {
     pub(super) fn new(types: &'a TypeResolver, target: &'a TargetInfo) -> Self {
         Self { types, target }
+    }
+
+    fn va_passing(&self, ty: &Type) -> Result<VaPassing, ResolveError> {
+        let operand = AbiOperand {
+            ty: ty.clone(),
+            atomic: false,
+        };
+        if self.abi_convention(true, CallConv::C) != AbiConvention::SysV64
+            || !self.is_record_or_complex(ty)
+            || matches!(self.types.unaliased(ty), Type::Complex(_))
+        {
+            return Ok(VaPassing::Scalar);
+        }
+        let layout = self.layout(&operand)?;
+        let mut leaves = Vec::new();
+        if layout.size_bytes > 16 || !self.sysv_leaves(ty, 0, false, &mut leaves)? {
+            return Ok(VaPassing::Memory);
+        }
+        Ok(match sysv_classify(&leaves, layout.size_bytes, false) {
+            Some(SysvShape::Chunks(chunks)) => {
+                let classes = chunks
+                    .into_iter()
+                    .map(|chunk| match chunk {
+                        AbiChunk::Integer(_) => Some(VaClass::Integer),
+                        AbiChunk::Float(FloatType::F128) => Some(VaClass::SseWide),
+                        AbiChunk::Float(_) | AbiChunk::FloatPair(_) | AbiChunk::FloatQuad(_) => {
+                            Some(VaClass::Sse)
+                        }
+                    })
+                    .collect::<Option<Vec<_>>>();
+                classes.map_or(VaPassing::Memory, VaPassing::Registers)
+            }
+            _ => VaPassing::Memory,
+        })
     }
 
     fn signature(

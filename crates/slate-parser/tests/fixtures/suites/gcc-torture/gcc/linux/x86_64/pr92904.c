@@ -690,7 +690,7 @@ int main() {
 // DEFAULT-NEXT:             yield ne<i32>(read<i32>(%[[VALUE4]]), const<i32>(0));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:             va_arg<i32>(%[[VALUE_ap_2]]);
-// DEFAULT-NEXT:         write<@type[[TYPE_S]]>(%[[VALUE_r_2]], copy<@type[[TYPE_S]], reason=assign>(va_arg<@type[[TYPE_S]]>(%[[VALUE_ap_2]])));
+// DEFAULT-NEXT:         write<@type[[TYPE_S]]>(%[[VALUE_r_2]], copy<@type[[TYPE_S]], reason=assign>(va_arg<@type[[TYPE_S]], regs=[int, int]>(%[[VALUE_ap_2]])));
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_2]]);
 // DEFAULT-NEXT:         return copy<@type[[TYPE_S]], reason=return>(read<@type[[TYPE_S]]>(%[[VALUE_r_2]]));
 // DEFAULT-NEXT:     }
@@ -705,7 +705,7 @@ int main() {
 // DEFAULT-NEXT:             yield ne<i32>(read<i32>(%[[VALUE7]]), const<i32>(0));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:             va_arg<i32>(%[[VALUE_ap_3]]);
-// DEFAULT-NEXT:         write<@type[[TYPE_T]]>(%[[VALUE_r_3]], copy<@type[[TYPE_T]], reason=assign>(va_arg<@type[[TYPE_T]]>(%[[VALUE_ap_3]])));
+// DEFAULT-NEXT:         write<@type[[TYPE_T]]>(%[[VALUE_r_3]], copy<@type[[TYPE_T]], reason=assign>(va_arg<@type[[TYPE_T]], regs=[int, int]>(%[[VALUE_ap_3]])));
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_3]]);
 // DEFAULT-NEXT:         return copy<@type[[TYPE_T]], reason=return>(read<@type[[TYPE_T]]>(%[[VALUE_r_3]]));
 // DEFAULT-NEXT:     }
@@ -732,7 +732,7 @@ int main() {
 // DEFAULT-NEXT:             yield ne<i32>(read<i32>(%[[VALUE13]]), const<i32>(0));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:             va_arg<i32>(%[[VALUE_ap_5]]);
-// DEFAULT-NEXT:         write<@type[[TYPE_S]]>(%[[VALUE_c]], copy<@type[[TYPE_S]], reason=assign>(va_arg<@type[[TYPE_S]]>(%[[VALUE_ap_5]])));
+// DEFAULT-NEXT:         write<@type[[TYPE_S]]>(%[[VALUE_c]], copy<@type[[TYPE_S]], reason=assign>(va_arg<@type[[TYPE_S]], regs=[int, int]>(%[[VALUE_ap_5]])));
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_5]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f6:[0-9]+]] @f6(%[[VALUE_x_6:[0-9]+]] x: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
@@ -745,7 +745,7 @@ int main() {
 // DEFAULT-NEXT:             yield ne<i32>(read<i32>(%[[VALUE16]]), const<i32>(0));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:             va_arg<i32>(%[[VALUE_ap_6]]);
-// DEFAULT-NEXT:         write<@type[[TYPE_T]]>(%[[VALUE_d]], copy<@type[[TYPE_T]], reason=assign>(va_arg<@type[[TYPE_T]]>(%[[VALUE_ap_6]])));
+// DEFAULT-NEXT:         write<@type[[TYPE_T]]>(%[[VALUE_d]], copy<@type[[TYPE_T]], reason=assign>(va_arg<@type[[TYPE_T]], regs=[int, int]>(%[[VALUE_ap_6]])));
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_6]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f7:[0-9]+]] @f7(%[[VALUE_x_7:[0-9]+]] x: i32, ...) -> @type[[TYPE_U]] [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
@@ -759,7 +759,7 @@ int main() {
 // DEFAULT-NEXT:             yield ne<i32>(read<i32>(%[[VALUE19]]), const<i32>(0));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:             va_arg<f64>(%[[VALUE_ap_7]]);
-// DEFAULT-NEXT:         write<@type[[TYPE_U]]>(%[[VALUE_r_4]], copy<@type[[TYPE_U]], reason=assign>(va_arg<@type[[TYPE_U]]>(%[[VALUE_ap_7]])));
+// DEFAULT-NEXT:         write<@type[[TYPE_U]]>(%[[VALUE_r_4]], copy<@type[[TYPE_U]], reason=assign>(va_arg<@type[[TYPE_U]], memory>(%[[VALUE_ap_7]])));
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_7]]);
 // DEFAULT-NEXT:         return copy<@type[[TYPE_U]], reason=return>(read<@type[[TYPE_U]]>(%[[VALUE_r_4]]));
 // DEFAULT-NEXT:     }
@@ -774,7 +774,7 @@ int main() {
 // DEFAULT-NEXT:             yield ne<i32>(read<i32>(%[[VALUE22]]), const<i32>(0));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:             va_arg<f64>(%[[VALUE_ap_8]]);
-// DEFAULT-NEXT:         write<@type[[TYPE_V]]>(%[[VALUE_r_5]], copy<@type[[TYPE_V]], reason=assign>(va_arg<@type[[TYPE_V]]>(%[[VALUE_ap_8]])));
+// DEFAULT-NEXT:         write<@type[[TYPE_V]]>(%[[VALUE_r_5]], copy<@type[[TYPE_V]], reason=assign>(va_arg<@type[[TYPE_V]], memory>(%[[VALUE_ap_8]])));
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_8]]);
 // DEFAULT-NEXT:         return copy<@type[[TYPE_V]], reason=return>(read<@type[[TYPE_V]]>(%[[VALUE_r_5]]));
 // DEFAULT-NEXT:     }
@@ -788,7 +788,7 @@ int main() {
 // DEFAULT-NEXT:             yield ne<i32>(read<i32>(%[[VALUE25]]), const<i32>(0));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:             va_arg<f64>(%[[VALUE_ap_9]]);
-// DEFAULT-NEXT:         write<@type[[TYPE_U]]>(%[[VALUE_e]], copy<@type[[TYPE_U]], reason=assign>(va_arg<@type[[TYPE_U]]>(%[[VALUE_ap_9]])));
+// DEFAULT-NEXT:         write<@type[[TYPE_U]]>(%[[VALUE_e]], copy<@type[[TYPE_U]], reason=assign>(va_arg<@type[[TYPE_U]], memory>(%[[VALUE_ap_9]])));
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_9]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f10:[0-9]+]] @f10(%[[VALUE_x_10:[0-9]+]] x: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
@@ -801,7 +801,7 @@ int main() {
 // DEFAULT-NEXT:             yield ne<i32>(read<i32>(%[[VALUE28]]), const<i32>(0));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:             va_arg<f64>(%[[VALUE_ap_10]]);
-// DEFAULT-NEXT:         write<@type[[TYPE_V]]>(%[[VALUE_f]], copy<@type[[TYPE_V]], reason=assign>(va_arg<@type[[TYPE_V]]>(%[[VALUE_ap_10]])));
+// DEFAULT-NEXT:         write<@type[[TYPE_V]]>(%[[VALUE_f]], copy<@type[[TYPE_V]], reason=assign>(va_arg<@type[[TYPE_V]], memory>(%[[VALUE_ap_10]])));
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_10]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f11:[0-9]+]] @f11(%[[VALUE_x_11:[0-9]+]] x: i32, ...) -> @type[[TYPE_W]] [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
@@ -818,7 +818,7 @@ int main() {
 // DEFAULT-NEXT:                 va_arg<i32>(%[[VALUE_ap_11]]);
 // DEFAULT-NEXT:                 va_arg<f64>(%[[VALUE_ap_11]]);
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         write<@type[[TYPE_W]]>(%[[VALUE_r_6]], copy<@type[[TYPE_W]], reason=assign>(va_arg<@type[[TYPE_W]]>(%[[VALUE_ap_11]])));
+// DEFAULT-NEXT:         write<@type[[TYPE_W]]>(%[[VALUE_r_6]], copy<@type[[TYPE_W]], reason=assign>(va_arg<@type[[TYPE_W]], regs=[sse, int]>(%[[VALUE_ap_11]])));
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_11]]);
 // DEFAULT-NEXT:         return copy<@type[[TYPE_W]], reason=return>(read<@type[[TYPE_W]]>(%[[VALUE_r_6]]));
 // DEFAULT-NEXT:     }
@@ -836,7 +836,7 @@ int main() {
 // DEFAULT-NEXT:                 va_arg<i32>(%[[VALUE_ap_12]]);
 // DEFAULT-NEXT:                 va_arg<f64>(%[[VALUE_ap_12]]);
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         write<@type[[TYPE_X]]>(%[[VALUE_r_7]], copy<@type[[TYPE_X]], reason=assign>(va_arg<@type[[TYPE_X]]>(%[[VALUE_ap_12]])));
+// DEFAULT-NEXT:         write<@type[[TYPE_X]]>(%[[VALUE_r_7]], copy<@type[[TYPE_X]], reason=assign>(va_arg<@type[[TYPE_X]], regs=[sse, int]>(%[[VALUE_ap_12]])));
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_12]]);
 // DEFAULT-NEXT:         return copy<@type[[TYPE_X]], reason=return>(read<@type[[TYPE_X]]>(%[[VALUE_r_7]]));
 // DEFAULT-NEXT:     }
@@ -853,7 +853,7 @@ int main() {
 // DEFAULT-NEXT:                 va_arg<i32>(%[[VALUE_ap_13]]);
 // DEFAULT-NEXT:                 va_arg<f64>(%[[VALUE_ap_13]]);
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         write<@type[[TYPE_W]]>(%[[VALUE_g]], copy<@type[[TYPE_W]], reason=assign>(va_arg<@type[[TYPE_W]]>(%[[VALUE_ap_13]])));
+// DEFAULT-NEXT:         write<@type[[TYPE_W]]>(%[[VALUE_g]], copy<@type[[TYPE_W]], reason=assign>(va_arg<@type[[TYPE_W]], regs=[sse, int]>(%[[VALUE_ap_13]])));
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_13]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f14:[0-9]+]] @f14(%[[VALUE_x_14:[0-9]+]] x: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
@@ -869,7 +869,7 @@ int main() {
 // DEFAULT-NEXT:                 va_arg<i32>(%[[VALUE_ap_14]]);
 // DEFAULT-NEXT:                 va_arg<f64>(%[[VALUE_ap_14]]);
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         write<@type[[TYPE_X]]>(%[[VALUE_h]], copy<@type[[TYPE_X]], reason=assign>(va_arg<@type[[TYPE_X]]>(%[[VALUE_ap_14]])));
+// DEFAULT-NEXT:         write<@type[[TYPE_X]]>(%[[VALUE_h]], copy<@type[[TYPE_X]], reason=assign>(va_arg<@type[[TYPE_X]], regs=[sse, int]>(%[[VALUE_ap_14]])));
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_14]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
