@@ -544,7 +544,7 @@ impl Preprocessor<'_> {
             name_loc: origin.expansion,
             loc: origin.expansion,
             indented: false,
-        });
+        })?;
         pieces.push(Piece::Pragma {
             tokens,
             spelling: origin.spelling,

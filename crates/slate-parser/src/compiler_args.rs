@@ -1,6 +1,6 @@
 use crate::compiler_options::{
-    CodegenOptions, CompilerOptions, LayoutOptions, LibraryBuiltins, MicrosoftFlags,
-    OperationValues, Pic, SourceGraphs, StackProtector, TrivialAutoVarInit,
+    CodegenOptions, CompilerOptions, LayoutOptions, LibraryBuiltins, MathOptions, MathSwitch,
+    MicrosoftFlags, OperationValues, Pic, SourceGraphs, StackProtector, TrivialAutoVarInit,
 };
 use crate::diagnostics::{DiagnosticOptions, Warning};
 use crate::files::SearchPaths;
@@ -305,8 +305,8 @@ struct ParsedCompilerArgs {
     trapv: Option<bool>,
     signed_overflow: Overflow,
     strict_overflow: Option<bool>,
-    rounding_math: Option<bool>,
-    trapping_math: Option<bool>,
+    math: Vec<(MathSwitch, bool)>,
+    iso_flt_eval_method: bool,
     gnu89_inline: Option<bool>,
     common: Option<bool>,
     trigraphs: Option<bool>,
@@ -402,6 +402,17 @@ enum Opt {
     StrictOverflow,
     RoundingMath,
     TrappingMath,
+    FastMath,
+    UnsafeMath,
+    AssociativeMath,
+    ReciprocalMath,
+    SignedZeros,
+    MathErrno,
+    FiniteMathOnly,
+    SignalingNans,
+    CxLimitedRange,
+    ExcessPrecision,
+    PermittedFltEvalMethods,
     Gnu89Inline,
     Common,
     Trigraphs,
@@ -492,6 +503,17 @@ impl std::fmt::Display for Opt {
             Self::StrictOverflow => "strict-overflow",
             Self::RoundingMath => "rounding-math",
             Self::TrappingMath => "trapping-math",
+            Self::FastMath => "fast-math",
+            Self::UnsafeMath => "unsafe-math-optimizations",
+            Self::AssociativeMath => "associative-math",
+            Self::ReciprocalMath => "reciprocal-math",
+            Self::SignedZeros => "signed-zeros",
+            Self::MathErrno => "math-errno",
+            Self::FiniteMathOnly => "finite-math-only",
+            Self::SignalingNans => "signaling-nans",
+            Self::CxLimitedRange => "cx-limited-range",
+            Self::ExcessPrecision => "fexcess-precision",
+            Self::PermittedFltEvalMethods => "fpermitted-flt-eval-methods",
             Self::Gnu89Inline => "gnu89-inline",
             Self::Common => "common",
             Self::Trigraphs => "trigraphs",
@@ -551,6 +573,16 @@ impl Opt {
             | Self::StrictOverflow
             | Self::RoundingMath
             | Self::TrappingMath
+            | Self::FastMath
+            | Self::UnsafeMath
+            | Self::AssociativeMath
+            | Self::ReciprocalMath
+            | Self::SignedZeros
+            | Self::MathErrno
+            | Self::FiniteMathOnly
+            | Self::SignalingNans
+            | Self::CxLimitedRange
+            | Self::ExcessPrecision
             | Self::Gnu89Inline
             | Self::Common
             | Self::Ansi
@@ -594,6 +626,7 @@ impl Opt {
             | Self::MacroPrefixMap => &[Gcc, Clang],
             Self::PreferredStackBoundary
             | Self::GccStrictFlexArrays
+            | Self::PermittedFltEvalMethods
             | Self::StackProtectorExplicit
             | Self::FpRetIn387 => &[Gcc],
             Self::StackAlignment
@@ -628,6 +661,15 @@ impl Opt {
             Self::StrictOverflow => "-fstrict-overflow",
             Self::RoundingMath => "-frounding-math",
             Self::TrappingMath => "-ftrapping-math",
+            Self::FastMath => "-ffast-math",
+            Self::UnsafeMath => "-funsafe-math-optimizations",
+            Self::AssociativeMath => "-fassociative-math",
+            Self::ReciprocalMath => "-freciprocal-math",
+            Self::SignedZeros => "-fsigned-zeros",
+            Self::MathErrno => "-fmath-errno",
+            Self::FiniteMathOnly => "-ffinite-math-only",
+            Self::SignalingNans => "-fsignaling-nans",
+            Self::CxLimitedRange => "-fcx-limited-range",
             Self::Gnu89Inline => "-fgnu89-inline",
             Self::Common => "-fcommon",
             Self::ClangTrigraphs => "-ftrigraphs",
@@ -669,6 +711,30 @@ impl Opt {
     fn parse_switch(self, argument: &str) -> Option<bool> {
         parse_switch(self.switch()?, argument)
     }
+
+    fn math_switch(self) -> Option<MathSwitch> {
+        Some(match self {
+            Self::FastMath => MathSwitch::FastMath,
+            Self::UnsafeMath => MathSwitch::UnsafeMath,
+            Self::AssociativeMath => MathSwitch::AssociativeMath,
+            Self::ReciprocalMath => MathSwitch::ReciprocalMath,
+            Self::SignedZeros => MathSwitch::SignedZeros,
+            Self::TrappingMath => MathSwitch::TrappingMath,
+            Self::MathErrno => MathSwitch::MathErrno,
+            Self::FiniteMathOnly => MathSwitch::FiniteMathOnly,
+            Self::RoundingMath => MathSwitch::RoundingMath,
+            Self::SignalingNans => MathSwitch::SignalingNans,
+            Self::CxLimitedRange => MathSwitch::CxLimitedRange,
+            _ => return None,
+        })
+    }
+}
+
+pub(crate) fn math_switch_argument(argument: &str) -> Option<(MathSwitch, bool)> {
+    SWITCH_OPTS.iter().find_map(|opt| {
+        let switch = opt.math_switch()?;
+        opt.parse_switch(argument).map(|value| (switch, value))
+    })
 }
 
 fn parse_switch(switch: &str, argument: &str) -> Option<bool> {
@@ -813,7 +879,7 @@ const CODEGEN_ONLY_FLAGS: [CodegenOnlyFlag; 59] = [
         "initial-exec",
         "local-exec",
     ]),
-    CodegenOnlyFlag::value("-fexcess-precision=", GNU_FLAVORS).one_of(&["fast", "standard", "16"]),
+    CodegenOnlyFlag::value("-finput-charset=", GNU_FLAVORS).one_of(&["utf-8", "UTF-8"]),
     CodegenOnlyFlag::switch("-fdiagnostics-color", GNU_FLAVORS),
     CodegenOnlyFlag::value("-fdiagnostics-color=", GNU_FLAVORS)
         .one_of(&["always", "never", "auto"]),
@@ -869,7 +935,7 @@ fn ignored_option(argument: &str) -> Option<IgnoredOption> {
         .then_some(IgnoredOption::Alone)
 }
 
-const SWITCH_OPTS: [Opt; 33] = [
+const SWITCH_OPTS: [Opt; 42] = [
     Opt::ClangTrigraphs,
     Opt::ClangDigraphs,
     Opt::DeleteNullPointerChecks,
@@ -903,6 +969,15 @@ const SWITCH_OPTS: [Opt; 33] = [
     Opt::StrictOverflow,
     Opt::RoundingMath,
     Opt::TrappingMath,
+    Opt::FastMath,
+    Opt::UnsafeMath,
+    Opt::AssociativeMath,
+    Opt::ReciprocalMath,
+    Opt::SignedZeros,
+    Opt::MathErrno,
+    Opt::FiniteMathOnly,
+    Opt::SignalingNans,
+    Opt::CxLimitedRange,
 ];
 
 pub struct CompilerArgParser;
@@ -944,10 +1019,10 @@ impl CompilerArgParser {
             OperationValues {
                 signed_overflow: raw.signed_overflow,
                 strict_overflow: raw.strict_overflow,
-                rounding_math: raw.rounding_math,
-                trapping_math: raw.trapping_math,
+                math: MathOptions::resolve(flavor, &raw.math),
             },
         );
+        options.iso_flt_eval_method = raw.iso_flt_eval_method;
         options.inline_semantics = raw.gnu89_inline.map(|enabled| {
             use crate::compiler_options::InlineSemantics;
             if enabled {
@@ -1076,8 +1151,7 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                 Opt::Wrapv => parsed.wrapv = Some(value),
                 Opt::Trapv => parsed.trapv = Some(value),
                 Opt::StrictOverflow => parsed.strict_overflow = Some(value),
-                Opt::RoundingMath => parsed.rounding_math = Some(value),
-                Opt::TrappingMath => parsed.trapping_math = Some(value),
+                _ if let Some(switch) = opt.math_switch() => parsed.math.push((switch, value)),
                 Opt::Gnu89Inline => parsed.gnu89_inline = Some(value),
                 Opt::Common => parsed.common = Some(value),
                 Opt::ClangTrigraphs => parsed.trigraphs = Some(value),
@@ -1168,6 +1242,20 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
         } else if argument == "-w" {
             parsed.saw(Opt::NoWarnings, argument);
             parsed.diagnostics.ignore_warnings = true;
+        } else if let Some(value) = argument.strip_prefix("-fexcess-precision=") {
+            parsed.saw(Opt::ExcessPrecision, argument);
+            let fast = match value {
+                "fast" => true,
+                "standard" | "16" => false,
+                _ => return Err(invalid(argument, "expected one of fast, standard, 16")),
+            };
+            parsed.math.push((MathSwitch::FastExcessPrecision, fast));
+        } else if let Some(value) = argument.strip_prefix("-fpermitted-flt-eval-methods=") {
+            parsed.saw(Opt::PermittedFltEvalMethods, argument);
+            if !matches!(value, "c11" | "ts-18661-3") {
+                return Err(invalid(argument, "expected one of c11, ts-18661-3"));
+            }
+            parsed.iso_flt_eval_method = true;
         } else if let Some(value) = argument.strip_prefix("-ftrivial-auto-var-init=") {
             parsed.saw(Opt::TrivialAutoVarInit, argument);
             parsed.trivial_auto_var_init = Some(parse_value(

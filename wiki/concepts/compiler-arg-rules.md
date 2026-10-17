@@ -49,6 +49,11 @@ rule pipeline. Flag effects are in [compiler-flags](compiler-flags.md).
   Unknown triples and standards are errors.
 - `-ansi` / `--ansi` (gcc, clang) is `-std=c89` and shares the `standard`
   slot with `-std`, so the later of the two wins.
+- Floating-point switches (`Opt::math_switch`) and `-fexcess-precision=`
+  are kept as an ordered `MathSwitch` list, because umbrellas like
+  `-ffast-math` overwrite components set before them. `MathOptions::resolve`
+  replays it once the flavor is known, then applies gcc's final fixups. The
+  pp reuses `math_switch_argument` for `#pragma GCC optimize`.
 - `ignored_option` is the list of driver and output options every flavor
   accepts and ignores (`-c`, `-M*`, `-g*`, `-pipe`,
   `-o`/`-MF`/`-MT`/`-MQ`/`-MJ` with a separate or joined value).

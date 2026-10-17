@@ -133,7 +133,7 @@ def main() -> int:
     extra = argv[argv.index("--") + 1 :] if "--" in argv else []
     argv = argv[: argv.index("--")] if "--" in argv else argv
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("flags", nargs="+")
+    parser.add_argument("flags", nargs="*")
     parser.add_argument("--flavor", action="append", choices=("gcc", "clang"))
     parser.add_argument("--no-variants", action="store_true")
     parser.add_argument("--jobs", type=int, default=16)

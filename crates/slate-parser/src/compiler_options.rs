@@ -7,6 +7,8 @@ use crate::target_info::{LongDoubleFormat, TargetInfo};
 pub struct CompilerOptions {
     pub inline_semantics: Option<InlineSemantics>,
     pub operations: OperationOptions,
+    pub math: MathOptions,
+    pub iso_flt_eval_method: bool,
     pub layout: LayoutOptions,
     pub diagnostics: DiagnosticOptions,
     pub common: bool,
@@ -138,12 +140,152 @@ pub struct OperationOptions {
     pub floating: FloatingSemantics,
 }
 
-#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct OperationValues {
     pub signed_overflow: Overflow,
     pub strict_overflow: Option<bool>,
-    pub rounding_math: Option<bool>,
-    pub trapping_math: Option<bool>,
+    pub math: MathOptions,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum MathSwitch {
+    FastMath,
+    UnsafeMath,
+    AssociativeMath,
+    ReciprocalMath,
+    SignedZeros,
+    TrappingMath,
+    MathErrno,
+    FiniteMathOnly,
+    RoundingMath,
+    SignalingNans,
+    CxLimitedRange,
+    FastExcessPrecision,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct MathOptions {
+    pub unsafe_math: bool,
+    pub finite_math_only: bool,
+    pub math_errno: Option<bool>,
+    pub trapping_math: bool,
+    pub requested_trapping_math: bool,
+    pub signed_zeros: bool,
+    pub associative_math: bool,
+    pub reciprocal_math: bool,
+    pub rounding_math: bool,
+    pub signaling_nans: bool,
+    pub cx_limited_range: bool,
+    pub fast_excess_precision: Option<bool>,
+}
+
+impl MathOptions {
+    pub fn for_flavor(flavor: CompilerFlavor) -> Self {
+        Self {
+            unsafe_math: false,
+            finite_math_only: false,
+            math_errno: None,
+            trapping_math: flavor.is_gcc(),
+            requested_trapping_math: flavor.is_gcc(),
+            signed_zeros: true,
+            associative_math: false,
+            reciprocal_math: false,
+            rounding_math: false,
+            signaling_nans: false,
+            cx_limited_range: false,
+            fast_excess_precision: None,
+        }
+    }
+
+    pub fn resolve(flavor: CompilerFlavor, switches: &[(MathSwitch, bool)]) -> Self {
+        let mut math = Self::for_flavor(flavor);
+        for &(switch, value) in switches {
+            math.apply(flavor, switch, value);
+        }
+        if flavor.is_gcc() {
+            math.trapping_math |= math.signaling_nans;
+            math.associative_math &= !math.trapping_math && !math.signed_zeros;
+        }
+        math
+    }
+
+    pub fn apply(&mut self, flavor: CompilerFlavor, switch: MathSwitch, value: bool) {
+        let gcc = flavor.is_gcc();
+        match switch {
+            MathSwitch::FastMath if !value && !gcc => *self = Self::for_flavor(flavor),
+            MathSwitch::FastMath => {
+                self.apply(flavor, MathSwitch::UnsafeMath, value);
+                self.finite_math_only = value;
+                self.math_errno = Some(!value);
+                if value {
+                    self.fast_excess_precision = Some(true);
+                    self.signaling_nans = false;
+                    self.rounding_math = false;
+                }
+            }
+            MathSwitch::UnsafeMath => {
+                self.unsafe_math = value;
+                self.associative_math = value;
+                self.reciprocal_math = value;
+                self.signed_zeros = !value;
+                if gcc || value {
+                    self.apply(flavor, MathSwitch::TrappingMath, !value);
+                }
+            }
+            MathSwitch::AssociativeMath => self.associative_math = value,
+            MathSwitch::ReciprocalMath => self.reciprocal_math = value,
+            MathSwitch::SignedZeros => self.signed_zeros = value,
+            MathSwitch::TrappingMath => {
+                self.trapping_math = value;
+                self.requested_trapping_math = value;
+            }
+            MathSwitch::MathErrno => self.math_errno = Some(value),
+            MathSwitch::FiniteMathOnly => self.finite_math_only = value,
+            MathSwitch::RoundingMath => self.rounding_math = value,
+            MathSwitch::SignalingNans => self.signaling_nans = value,
+            MathSwitch::CxLimitedRange => self.cx_limited_range = value,
+            MathSwitch::FastExcessPrecision => self.fast_excess_precision = Some(value),
+        }
+    }
+
+    pub fn math_errno_or(&self, default: bool) -> bool {
+        self.math_errno.unwrap_or(default)
+    }
+
+    pub fn gcc_fast_math(&self, errno_default: bool) -> bool {
+        !self.trapping_math && self.gcc_requested_fast_math(errno_default)
+    }
+
+    pub fn gcc_requested_fast_math(&self, errno_default: bool) -> bool {
+        !self.requested_trapping_math
+            && self.unsafe_math
+            && self.finite_math_only
+            && !self.signed_zeros
+            && !self.math_errno_or(errno_default)
+    }
+
+    pub fn clang_unsafe_fp_math(&self) -> bool {
+        self.unsafe_math
+            && self.associative_math
+            && self.reciprocal_math
+            && !self.signed_zeros
+            && !self.trapping_math
+    }
+
+    pub fn clang_fast_math(&self, errno_default: bool) -> bool {
+        self.clang_unsafe_fp_math()
+            && self.finite_math_only
+            && !self.math_errno_or(errno_default)
+            && !self.rounding_math
+    }
+
+    pub fn breaks_iec_559(&self) -> bool {
+        self.unsafe_math
+            || self.associative_math
+            || self.reciprocal_math
+            || self.finite_math_only
+            || !self.signed_zeros
+    }
 }
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
@@ -166,6 +308,8 @@ impl Default for CompilerOptions {
                     exceptions: Exceptions::Ignore,
                 },
             },
+            math: MathOptions::for_flavor(CompilerFlavor::Clang),
+            iso_flt_eval_method: false,
             layout: LayoutOptions::default(),
             diagnostics: DiagnosticOptions::default(),
             common: false,
@@ -191,6 +335,7 @@ impl CompilerOptions {
         if flavor.is_gcc() {
             options.operations.floating.exceptions = Exceptions::Observable;
         }
+        options.math = MathOptions::for_flavor(flavor);
         options
     }
 
@@ -206,20 +351,17 @@ impl CompilerOptions {
         if let Some(value) = values.strict_overflow {
             options.operations.pointer_wrap = !value;
         }
-        if let Some(value) = values.rounding_math {
-            options.operations.floating.rounding = if value {
-                Rounding::Environment
-            } else {
-                Rounding::NearestEven
-            };
-        }
-        if let Some(value) = values.trapping_math {
-            options.operations.floating.exceptions = if value {
-                Exceptions::Observable
-            } else {
-                Exceptions::Ignore
-            };
-        }
+        options.operations.floating.rounding = if values.math.rounding_math {
+            Rounding::Environment
+        } else {
+            Rounding::NearestEven
+        };
+        options.operations.floating.exceptions = if values.math.trapping_math {
+            Exceptions::Observable
+        } else {
+            Exceptions::Ignore
+        };
+        options.math = values.math;
         options.operations.signed_overflow = values.signed_overflow;
         options
     }

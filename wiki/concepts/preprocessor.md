@@ -24,6 +24,7 @@ stream of `PPNode`s (`Code`, `Comment`, `Pragma`) that the parser reads as
 | `hide_set.rs`   | interned hide sets with memoized union and intersection                                                                                                              |
 | `define.rs`     | `#define` / `#undef` parsing                                                                                                                                         |
 | `include.rs`    | include resolution, `#pragma once`, depth limit, outermost system header                                                                                             |
+| `math.rs`       | fast-math predefines and `#pragma GCC optimize` / `push_options` / `pop_options` / `reset_options` |
 | `embed.rs`      | `#embed` and `__has_embed`, sharing one embed-parameter parser                                                                                                       |
 | `has_checks.rs` | hand-maintained `__has_builtin` / `__has_feature` / … answers, seeded from clang tablegen and extended per flavor ([attributes](attributes.md#preprocessor-queries)) |
 
@@ -313,6 +314,17 @@ token plus an interned `HideSet`; file tokens start empty.
   Both become `Pragma` nodes, like `#pragma`.
 - `record_pragma` acts on `push_macro`, `pop_macro`, and `once`; every
   other pragma passes through to the parser.
+- gcc flavor only: `#pragma GCC optimize` applies its fast-math options
+  (`"no-math-errno"` means `-fno-math-errno`) to the current options, and
+  `push_options` / `pop_options` / `reset_options` save, restore, or go
+  back to the command line (`pp/math.rs`). Each changes only the macros
+  whose value differs: `__FAST_MATH__` (without gcc's excess-precision
+  condition), `__FINITE_MATH_ONLY__`, `__NO_MATH_ERRNO__`,
+  `__RECIPROCAL_MATH__`, `__NO_SIGNED_ZEROS__`, `__NO_TRAPPING_MATH__`,
+  `__ASSOCIATIVE_MATH__`, `__ROUNDING_MATH__`, `__SUPPORT_SNAN__`. Unlike
+  the command line, `-fassociative-math` here is not disabled by trapping
+  math. gcc also updates `__OPTIMIZE__`; slate does not yet. The pragma
+  does not change IR operation contracts.
 - `#line` and GNU line markers set `line_overrides`, read by
   `presumed_location` for `__LINE__` / `__FILE__`. An oversized `#line`
   number follows each oracle: gcc wraps it modulo 2^32 (and warns), clang

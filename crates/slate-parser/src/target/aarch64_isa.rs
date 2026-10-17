@@ -408,9 +408,9 @@ impl AArch64Isa {
         }
     }
 
-    pub fn predefines(self, flavor: CompilerFlavor, strict_iso: bool) -> Vec<String> {
+    pub fn predefines(self, flavor: CompilerFlavor, iso_flt_eval_method: bool) -> Vec<String> {
         match flavor {
-            CompilerFlavor::Gcc => self.gcc_predefines(strict_iso),
+            CompilerFlavor::Gcc => self.gcc_predefines(iso_flt_eval_method),
             _ => self.clang_predefines(),
         }
     }
@@ -491,7 +491,7 @@ impl AArch64Isa {
         defines
     }
 
-    fn gcc_predefines(self, strict_iso: bool) -> Vec<String> {
+    fn gcc_predefines(self, iso_flt_eval_method: bool) -> Vec<String> {
         use AArch64Feature::*;
         let has = |feature| self.features.contains(feature);
         let version = self.version;
@@ -557,8 +557,7 @@ impl AArch64Isa {
         defines.push(format!("__GCC_IEC_559={iec_559}"));
         defines.push(format!("__GCC_IEC_559_COMPLEX={iec_559}"));
         let eval_method = if has(Fp16) { 16 } else { 0 };
-        // strict -std=cNN does not permit the ts-18661 method in __FLT_EVAL_METHOD__ itself
-        let iso_eval_method = if strict_iso { 0 } else { eval_method };
+        let iso_eval_method = if iso_flt_eval_method { 0 } else { eval_method };
         defines.push(format!("__FLT_EVAL_METHOD__={iso_eval_method}"));
         defines.push(format!("__FLT_EVAL_METHOD_C99__={eval_method}"));
         defines.push(format!("__FLT_EVAL_METHOD_TS_18661_3__={eval_method}"));

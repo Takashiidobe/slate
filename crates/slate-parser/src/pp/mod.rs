@@ -5,6 +5,7 @@ mod expand;
 mod has_checks;
 mod hide_set;
 mod include;
+mod math;
 mod print;
 mod syntax;
 mod traditional;
@@ -285,6 +286,7 @@ pub struct Preprocessor<'a> {
     included_files: HashSet<PathBuf>,
     include_guards: HashMap<FileId, String>,
     pushed_macros: HashMap<String, Vec<Option<MacroEntry>>>,
+    math: math::PragmaMath,
     assertions: HashMap<String, Vec<Answer>>,
     pub directive_diagnostics: Vec<DirectiveDiagnostic>,
     line_overrides: HashMap<FileId, Vec<LineOverride>>,
@@ -314,6 +316,7 @@ impl<'a> Preprocessor<'a> {
             included_files: HashSet::new(),
             include_guards: HashMap::new(),
             pushed_macros: HashMap::new(),
+            math: math::PragmaMath::new(dialect.options().math),
             assertions: HashMap::new(),
             directive_diagnostics: Vec::new(),
             line_overrides: HashMap::new(),
@@ -736,15 +739,10 @@ impl<'a> Preprocessor<'a> {
             defines.extend(target.isa.predefines(
                 target.family,
                 flavor,
-                !self.dialect.standard().is_gnu(),
+                !self.dialect.standard().is_gnu() || options.iso_flt_eval_method,
             ));
             defines
         };
-        if flavor.is_gcc()
-            && options.operations.floating.rounding == crate::ir::Rounding::Environment
-        {
-            defines.push("__ROUNDING_MATH__=1".into());
-        }
         if flavor.is_msvc()
             && options.explicit_standard
             && let Some(version) = self.dialect.standard().stdc_version()
@@ -764,6 +762,7 @@ impl<'a> Preprocessor<'a> {
         }
         if !flavor.is_msvc() {
             defines.extend(self.option_predefines());
+            self.math_predefines(&mut defines);
         }
         for define in &defines {
             if let Some((name, _)) = define.split_once('=') {
@@ -775,10 +774,15 @@ impl<'a> Preprocessor<'a> {
         }
         let source: String = defines
             .iter()
-            .filter_map(|define| {
-                define
-                    .split_once('=')
-                    .map(|(name, value)| format!("#define {name} {value}\n"))
+            .enumerate()
+            .filter_map(|(index, define)| {
+                let (name, value) = define.split_once('=')?;
+                let redefined = defines[index + 1..].iter().any(|later| {
+                    later
+                        .split_once('=')
+                        .is_some_and(|(later, _)| later == name)
+                });
+                (!redefined).then(|| format!("#define {name} {value}\n"))
             })
             .collect();
         let file = self
@@ -1329,7 +1333,7 @@ impl<'a> Preprocessor<'a> {
             DirectiveName::Embed => nodes.push(self.expand_embed(directive)?),
             DirectiveName::Undef => self.record_undef(directive)?,
             DirectiveName::Pragma => {
-                self.record_pragma(directive);
+                self.record_pragma(directive)?;
                 nodes.push(self.pragma_node(directive));
             }
             DirectiveName::Error => self.record_directive_diagnostic(directive, Severity::Error),
@@ -1624,7 +1628,7 @@ impl<'a> Preprocessor<'a> {
         });
     }
 
-    fn record_pragma(&mut self, directive: &Directive) {
+    fn record_pragma(&mut self, directive: &Directive) -> Result<(), PPFailure> {
         let pragma = directive
             .arguments
             .first()
@@ -1637,8 +1641,10 @@ impl<'a> Preprocessor<'a> {
                 let key = path.canonicalize().unwrap_or_else(|_| path.to_path_buf());
                 self.pragma_once.insert(key);
             }
+            Some("GCC") => self.gcc_options_pragma(directive)?,
             _ => {}
         }
+        Ok(())
     }
 
     fn pragma_node(&self, directive: &Directive) -> PPNode {

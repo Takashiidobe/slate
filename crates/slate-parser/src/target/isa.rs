@@ -148,11 +148,11 @@ impl TargetIsa {
         self,
         family: TargetFamily,
         flavor: CompilerFlavor,
-        strict_iso: bool,
+        iso_flt_eval_method: bool,
     ) -> Vec<String> {
         match self {
             Self::X86(isa) => isa.predefines(family, flavor),
-            Self::AArch64(isa) => isa.predefines(flavor, strict_iso),
+            Self::AArch64(isa) => isa.predefines(flavor, iso_flt_eval_method),
             Self::Arm(isa) => isa.predefines(flavor),
         }
     }
