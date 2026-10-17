@@ -11,5 +11,13 @@ fn main() {
         autocfg::emit("has_f16");
     }
 
+    autocfg::emit_possibility("has_f128");
+    if ac
+        .probe_raw("#![feature(f128)]\npub fn f(x: f128) -> f128 { x + x }")
+        .is_ok()
+    {
+        autocfg::emit("has_f128");
+    }
+
     autocfg::rerun_path("build.rs");
 }

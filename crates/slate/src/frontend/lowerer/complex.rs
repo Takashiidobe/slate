@@ -231,9 +231,9 @@ impl FunctionLowerer<'_, '_> {
 
 fn complex_builtin(name: &str) -> Option<&'static str> {
     match name {
-        "__builtin_creal" | "__builtin_crealf" => Some("re"),
-        "__builtin_cimag" | "__builtin_cimagf" => Some("im"),
-        "__builtin_conj" | "__builtin_conjf" => Some("conj"),
+        "__builtin_creal" | "__builtin_crealf" | "__builtin_creall" => Some("re"),
+        "__builtin_cimag" | "__builtin_cimagf" | "__builtin_cimagl" => Some("im"),
+        "__builtin_conj" | "__builtin_conjf" | "__builtin_conjl" => Some("conj"),
         _ => None,
     }
 }

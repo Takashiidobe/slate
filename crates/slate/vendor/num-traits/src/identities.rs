@@ -70,6 +70,8 @@ zero_impl!(i128, 0);
 
 #[cfg(has_f16)]
 zero_impl!(f16, 0.0);
+#[cfg(has_f128)]
+zero_impl!(f128, 0.0);
 zero_impl!(f32, 0.0);
 zero_impl!(f64, 0.0);
 
@@ -177,6 +179,8 @@ one_impl!(i128, 1);
 
 #[cfg(has_f16)]
 one_impl!(f16, 1.0);
+#[cfg(has_f128)]
+one_impl!(f128, 1.0);
 one_impl!(f32, 1.0);
 one_impl!(f64, 1.0);
 

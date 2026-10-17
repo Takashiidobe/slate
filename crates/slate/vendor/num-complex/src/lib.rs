@@ -17,6 +17,7 @@
 #![doc(html_root_url = "https://docs.rs/num-complex/0.4")]
 #![no_std]
 #![cfg_attr(has_f16, feature(f16))]
+#![cfg_attr(has_f128, feature(f128))]
 
 #[cfg(any(test, feature = "std"))]
 #[cfg_attr(test, macro_use)]
@@ -1183,6 +1184,8 @@ impl<T: Clone + Num> Rem<T> for Complex<T> {
 real_arithmetic!(usize, u8, u16, u32, u64, u128, isize, i8, i16, i32, i64, i128, f32, f64);
 #[cfg(has_f16)]
 real_arithmetic!(@values f16);
+#[cfg(has_f128)]
+real_arithmetic!(@values f128);
 
 // constants
 impl<T: ConstZero> Complex<T> {

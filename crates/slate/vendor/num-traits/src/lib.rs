@@ -18,6 +18,7 @@
 #![deny(unconditional_recursion)]
 #![no_std]
 #![cfg_attr(has_f16, feature(f16))]
+#![cfg_attr(has_f128, feature(f128))]
 
 // Need to explicitly bring the crate in for inherent float methods
 #[cfg(feature = "std")]
@@ -398,6 +399,15 @@ impl Num for f16 {
 
     fn from_str_radix(src: &str, radix: u32) -> Result<Self, Self::FromStrRadixErr> {
         f32::from_str_radix(src, radix).map(|value| value as f16)
+    }
+}
+
+#[cfg(has_f128)]
+impl Num for f128 {
+    type FromStrRadixErr = ParseFloatError;
+
+    fn from_str_radix(src: &str, radix: u32) -> Result<Self, Self::FromStrRadixErr> {
+        f64::from_str_radix(src, radix).map(|value| value as f128)
     }
 }
 

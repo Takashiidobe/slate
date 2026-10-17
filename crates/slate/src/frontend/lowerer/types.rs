@@ -533,7 +533,10 @@ impl FunctionLowerer<'_, '_> {
                     component,
                     ir::NumericType::Integer { .. }
                         | ir::NumericType::Float(
-                            ir::FloatType::F16 | ir::FloatType::F32 | ir::FloatType::F64
+                            ir::FloatType::F16
+                                | ir::FloatType::F32
+                                | ir::FloatType::F64
+                                | ir::FloatType::F128
                         )
                 ) =>
             {

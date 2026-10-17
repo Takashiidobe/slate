@@ -154,6 +154,37 @@ impl Complex<f16> {
     }
 }
 
+#[cfg(has_f128)]
+unsafe extern "C" {
+    fn __multc3(a: f128, b: f128, c: f128, d: f128) -> Complex<f128>;
+    fn __divtc3(a: f128, b: f128, c: f128, d: f128) -> Complex<f128>;
+}
+
+#[cfg(has_f128)]
+impl Complex<f128> {
+    #[inline]
+    pub fn c_mul(self, other: Self, basic: bool) -> Self {
+        let x = self.re * other.re - self.im * other.im;
+        let y = self.re * other.im + self.im * other.re;
+        if basic || !(x.is_nan() && y.is_nan()) {
+            return Complex { re: x, im: y };
+        }
+        unsafe { __multc3(self.re, self.im, other.re, other.im) }
+    }
+
+    #[inline]
+    pub fn c_div(self, other: Self, basic: bool) -> Self {
+        if basic {
+            let denom = other.re * other.re + other.im * other.im;
+            return Complex {
+                re: (self.re * other.re + self.im * other.im) / denom,
+                im: (self.im * other.re - self.re * other.im) / denom,
+            };
+        }
+        unsafe { __divtc3(self.re, self.im, other.re, other.im) }
+    }
+}
+
 macro_rules! int_methods {
     ($($t:ident),*) => {$(
         impl Complex<$t> {

@@ -1,5 +1,7 @@
 asm_barriers
 builtin_generic_bit_counts
+c99
+complex_equality
 flexible_array_records
 int128_arith
 int128_struct
