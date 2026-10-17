@@ -32,7 +32,11 @@ int main(void) {
 // CHECK-NEXT: #[repr(C, align(64))]
 // CHECK-NEXT: struct __SlateAlign64<T>(T);
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut object: OverAligned = OverAligned { value: 7 };
+// CHECK-NEXT:     let mut object: OverAligned = {
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: OverAligned = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         [[T_0]].value = 7 as i32;
+// CHECK-NEXT:         [[T_0]]
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let mut local: __SlateAlign64<i32> = __SlateAlign64(11 as i32);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {

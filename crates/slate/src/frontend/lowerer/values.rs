@@ -830,6 +830,38 @@ impl FunctionLowerer<'_, '_> {
             {
                 self.lower_vector_convert(value, *kind, operand)?
             }
+            ValueKind::Convert {
+                kind: ir::ConversionKind::IntToFloat,
+                operand,
+                semantics:
+                    ir::ConversionSema::IntToFloat {
+                        floating:
+                            ir::FloatingSemantics {
+                                rounding: ir::Rounding::Environment,
+                                ..
+                            },
+                        ..
+                    },
+                ..
+            } if self
+                .environment_rounded_conversion(&operand.ty, &value.ty)
+                .is_some() =>
+            {
+                let helper = self
+                    .environment_rounded_conversion(&operand.ty, &value.ty)
+                    .ok_or_else(|| {
+                        Failure::from(Construct::Value {
+                            kind: "Convert".into(),
+                            ir: value.ty.to_string(),
+                        })
+                    })?;
+                self.dependencies.rounding = true;
+                Expr::Call {
+                    func: Box::new(Expr::Var(helper.into())),
+                    args: vec![self.lower_value(operand)?],
+                    binding: CallBinding::Generated,
+                }
+            }
             ValueKind::Shuffle { left, right, mask } => {
                 self.lower_shuffle(value, left, right.as_deref(), mask)?
             }
@@ -1455,6 +1487,12 @@ impl FunctionLowerer<'_, '_> {
                 let label = self.tables.names[id].rust.clone();
                 self.lower_intrinsic(&label, self.tables.intrinsics[id], arguments, &value.ty)?
             }
+            ValueKind::Intrinsic { name, arguments } if name == "slate.clear_padding" => {
+                let [pointer] = arguments.as_slice() else {
+                    return Err(unsupported_value(value));
+                };
+                self.lower_clear_padding(value, pointer)?
+            }
             ValueKind::Intrinsic { name, arguments } => {
                 let intrinsic = intrinsics::named_intrinsic(self.tables.target.family, name)
                     .ok_or_else(|| unsupported_value(value))?;
@@ -1551,7 +1589,7 @@ impl FunctionLowerer<'_, '_> {
                 .map(|field| field_name(field, index))
                 .ok_or_else(unsupported)
         };
-        let complete = !zero_fill && fields.is_none_or(|fields| fields.len() == members.len()) && !self.tables.is_union(ty) && !self.tables.has_bit_fields(ty) && members.iter().enumerate().all(|(position, member)| {
+        let complete = !zero_fill && !self.tables.has_padding(ty) && fields.is_none_or(|fields| fields.len() == members.len()) && !self.tables.is_union(ty) && !self.tables.has_bit_fields(ty) && members.iter().enumerate().all(|(position, member)| {
             matches!(
                 (&member.target, fields),
                 (ir::AggregateTarget::Field(index), Some(_)) if *index == position
@@ -1629,6 +1667,34 @@ impl FunctionLowerer<'_, '_> {
             stmts,
             tail: Some(Box::new(Expr::Var(target.as_str().into()))),
         })))
+    }
+
+    fn environment_rounded_conversion(
+        &self,
+        from: &ir::Type,
+        to: &ir::Type,
+    ) -> Option<&'static str> {
+        let ir::Type::Numeric(ir::NumericType::Integer {
+            width,
+            signed,
+            bit_precise: false,
+        }) = *self.tables.resolve_type(from)
+        else {
+            return None;
+        };
+        let ir::Type::Numeric(ir::NumericType::Float(target)) = *self.tables.resolve_type(to)
+        else {
+            return None;
+        };
+        match (width, signed, target) {
+            (64, false, ir::FloatType::F64) => Some("__slate_rounding::u64_to_f64"),
+            (64, false, ir::FloatType::F32) => Some("__slate_rounding::u64_to_f32"),
+            (128, true, ir::FloatType::F64) => Some("__slate_rounding::i128_to_f64"),
+            (128, true, ir::FloatType::F32) => Some("__slate_rounding::i128_to_f32"),
+            (128, false, ir::FloatType::F64) => Some("__slate_rounding::u128_to_f64"),
+            (128, false, ir::FloatType::F32) => Some("__slate_rounding::u128_to_f32"),
+            _ => None,
+        }
     }
 
     pub(super) fn narrow_integer(&mut self, expr: Expr, ty: &ir::Type) -> Result<Expr> {

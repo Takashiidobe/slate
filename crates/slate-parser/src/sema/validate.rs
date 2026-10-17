@@ -185,7 +185,7 @@ fn analyze(
                             unit,
                             specifiers,
                             init_declarator,
-                            true,
+                            Some(&dialect.options().fixed_registers),
                             init_declarator.provenance,
                             decl.expansion,
                             &mut errors,
@@ -1139,7 +1139,7 @@ impl Visitor for AsmCheckVisitor<'_, '_> {
                         self.unit,
                         &declaration.specifiers,
                         declarator,
-                        false,
+                        None,
                         self.provenance,
                         stmt.expansion,
                         self.errors,
@@ -1342,7 +1342,7 @@ fn check_register_variable(
     unit: &TranslationUnit,
     specifiers: &DeclarationSpecifiers,
     declarator: &InitDeclarator,
-    file_scope: bool,
+    file_scope: Option<&[String]>,
     provenance: Provenance,
     loc: Loc,
     errors: &mut Vec<SemaError>,
@@ -1351,7 +1351,7 @@ fn check_register_variable(
         return;
     }
     let Some(label) = &declarator.asm_label else {
-        if file_scope {
+        if file_scope.is_some() {
             errors.push(error(
                 provenance,
                 loc,
@@ -1366,7 +1366,8 @@ fn check_register_variable(
     match register {
         Register::Other(_) => {}
         Register::X86(x86)
-            if file_scope && !matches!(x86.spelling.as_str(), "rsp" | "rbp" | "esp" | "ebp") =>
+            if file_scope.is_some_and(|fixed| !fixed.contains(&x86.spelling))
+                && !matches!(x86.spelling.as_str(), "rsp" | "rbp" | "esp" | "ebp") =>
         {
             errors.push(error(
                 provenance,
@@ -1379,7 +1380,8 @@ fn check_register_variable(
         }
         Register::X86(_) | Register::Aarch64(_) => {}
     }
-    if file_scope && !is_register_variable_type(unit, specifiers, &declarator.declarator) {
+    if file_scope.is_some() && !is_register_variable_type(unit, specifiers, &declarator.declarator)
+    {
         errors.push(error(
             provenance,
             loc,

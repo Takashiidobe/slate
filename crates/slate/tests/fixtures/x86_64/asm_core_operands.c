@@ -124,7 +124,7 @@ int main(void) {
 // CHECK-NEXT:         core::arch::asm!("# % literal {{[{][{]}}braces}}", options(nostack, att_syntax));
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         core::arch::asm!("nop", options(nostack, att_syntax));
+// CHECK-NEXT:         core::arch::asm!("nop", options(att_syntax));
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::asm!("", options(nostack, may_unwind, att_syntax));

@@ -839,6 +839,26 @@ impl TypeResolver {
                 return self.constant_value(chosen);
             }
             ExprKind::Call { callee, arguments }
+                if self
+                    .builtin_callee(callee, arguments)
+                    .and_then(|(builtin, _)| super::builtins::custom_builtin(builtin))
+                    .is_some_and(|custom| {
+                        matches!(custom, super::builtins::CustomBuiltin::ClassifyType)
+                    }) =>
+            {
+                let [operand] = arguments.as_slice() else {
+                    return Err(ResolveError::Rejected("classify builtin arity"));
+                };
+                let operand = self.operand_type(operand)?;
+                let operand = self.ctypes.lvalue_conversion(operand);
+                let class = super::expression::type_class(&self.ctypes, operand)
+                    .ok_or(ResolveError::Unimplemented("classify builtin operand"))?;
+                (
+                    self.ctypes.int(),
+                    ValueKind::Constant(Number::SignedInteger(class.into())),
+                )
+            }
+            ExprKind::Call { callee, arguments }
                 if super::expression::constant_p_operand(callee, arguments).is_some() =>
             {
                 let operand = super::expression::constant_p_operand(callee, arguments)
@@ -3071,10 +3091,11 @@ impl TypeResolver {
                     let signed = values
                         .iter()
                         .any(|(_, _, value)| value.sign() == Sign::Minus);
-                    let packed = tag
-                        .attributes
-                        .iter()
-                        .any(|attribute| matches!(&attribute.value, Attribute::Packed));
+                    let packed = self.dialect.options().layout.short_enums
+                        || tag
+                            .attributes
+                            .iter()
+                            .any(|attribute| matches!(&attribute.value, Attribute::Packed));
                     let narrow = if packed {
                         vec![
                             if signed {

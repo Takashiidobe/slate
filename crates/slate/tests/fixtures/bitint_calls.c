@@ -121,7 +121,12 @@ int main(void) {
 // CHECK-NEXT:         .wrapping_sub(b);
 // CHECK-NEXT: }
 // CHECK-NEXT: fn mkpair(a: i16, b: bitint::BInt<100, 2, 16, bitint::A8>) -> pair {
-// CHECK-NEXT:     let p: pair = pair { a: a, b: b };
+// CHECK-NEXT:     let p: pair = {
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: pair = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         [[T_0]].a = a;
+// CHECK-NEXT:         [[T_0]].b = b;
+// CHECK-NEXT:         [[T_0]]
+// CHECK-NEXT:     };
 // CHECK-NEXT:     return p;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn usepair(p: pair) -> bitint::BInt<100, 2, 16, bitint::A8> {

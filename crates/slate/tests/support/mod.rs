@@ -145,6 +145,7 @@ cc = "1"
 [profile.dev]
 debug = 0
 overflow-checks = false
+debug-assertions = false
 panic = "unwind"
 codegen-units = 256
 
@@ -1102,6 +1103,10 @@ fn dg_target_clause_applies(clause: &str) -> bool {
     clause.contains("x86_64") || clause.contains("i?86") || clause.contains("i386")
 }
 
+pub fn is_oracle_only_dg_flag(flag: &str) -> bool {
+    flag == "-fexceptions"
+}
+
 fn is_semantic_dg_flag(flag: &str) -> bool {
     matches!(
         flag,
@@ -1110,6 +1115,12 @@ fn is_semantic_dg_flag(flag: &str) -> bool {
             | "-fno-strict-aliasing"
             | "-fno-trapping-math"
             | "-ffast-math"
+            | "-fshort-enums"
+            | "-fgnu89-inline"
+            | "-fexceptions"
+            | "-frounding-math"
+            | "-trigraphs"
+            | "-ansi"
             | "-fno-common"
             | "-mno-mmx"
             | "-fsignaling-nans"
@@ -1118,6 +1129,8 @@ fn is_semantic_dg_flag(flag: &str) -> bool {
             | "-fasm-blocks"
             | "--flavor=msvc"
     ) || flag.starts_with("-std=")
+        || flag.starts_with("-D")
+        || flag.starts_with("-ffixed-")
         || flag.starts_with("-finput-charset=")
 }
 

@@ -355,20 +355,13 @@ impl Walk<'_> {
         }
     }
 
-    fn record_tags(&mut self, collect: impl FnOnce(&mut TagCollector<'_>)) {
+    fn record_tags(&mut self, collect: impl FnOnce(&mut TagCollector<'_, '_>)) {
         let mut tags = TagCollector {
             unit: self.unit,
             found: Vec::new(),
+            walk: self,
         };
         collect(&mut tags);
-        for tag in tags.found {
-            if let Some(alignment) = self.pack {
-                self.pragmas.pack.insert(tag, alignment);
-            }
-            if self.ms_struct {
-                self.pragmas.ms_struct.insert(tag);
-            }
-        }
     }
 
     fn declaration(&mut self, declaration: &Declaration) {
@@ -503,19 +496,31 @@ fn visibility_named(name: &str) -> Option<Visibility> {
     }
 }
 
-struct TagCollector<'a> {
+struct TagCollector<'a, 'w> {
     unit: &'a TranslationUnit,
     found: Vec<TagId>,
+    walk: &'w mut Walk<'a>,
 }
 
-impl Visitor for TagCollector<'_> {
+impl Visitor for TagCollector<'_, '_> {
     type Error = Infallible;
+
+    fn visit_field_pragma(&mut self, pragma: &Pragma) -> Result<(), Self::Error> {
+        self.walk.pragma(pragma);
+        Ok(())
+    }
 
     fn visit_type_specifier(&mut self, ty: &TypeSpecifier) -> Result<(), Self::Error> {
         if let TypeSpecifier::Tag(TagSpecifier::Definition(id)) = ty
             && !self.found.contains(id)
         {
             self.found.push(*id);
+            if let Some(alignment) = self.walk.pack {
+                self.walk.pragmas.pack.insert(*id, alignment);
+            }
+            if self.walk.ms_struct {
+                self.walk.pragmas.ms_struct.insert(*id);
+            }
             if let Some(tag) = self.unit.tag(*id) {
                 visit::walk_tag_definition(self, tag)?;
             }

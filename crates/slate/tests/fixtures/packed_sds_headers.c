@@ -547,10 +547,12 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     let mut two: pack_two = pack_two {
-// CHECK-NEXT:         tag: 116,
-// CHECK-NEXT:         value: 3735928559,
-// CHECK-NEXT:         wide: 72623859790382856,
+// CHECK-NEXT:     let mut two: pack_two = {
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: pack_two = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         [[T_0]].tag = 116 as i8;
+// CHECK-NEXT:         [[T_0]].value = 3735928559 as u32;
+// CHECK-NEXT:         [[T_0]].wide = 72623859790382856 as u64;
+// CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     two.value ^= 65535;
 // CHECK-NEXT:     two.wide <<= 4 as i32;

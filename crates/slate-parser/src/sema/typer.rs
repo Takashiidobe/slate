@@ -1446,6 +1446,20 @@ impl TypeResolver {
                 }
                 self.ctypes.int()
             }
+            CustomBuiltin::ClearPadding => {
+                let [operand] = arguments else {
+                    return Err(ResolveError::Rejected("clear_padding builtin arity"));
+                };
+                let pointer = self.operand_type(operand)?;
+                let pointee = self
+                    .ctypes
+                    .pointee(pointer)
+                    .ok_or(ResolveError::Rejected("clear_padding of a non-pointer"))?;
+                if self.ctypes.is_void(pointee) || self.ctypes.is_function(pointee) {
+                    return Err(ResolveError::Rejected("clear_padding of a non-object"));
+                }
+                self.ctypes.qual(CTypeKind::Void)
+            }
             CustomBuiltin::AddressOf => {
                 let [operand] = arguments else {
                     return Err(ResolveError::Rejected("addressof builtin arity"));

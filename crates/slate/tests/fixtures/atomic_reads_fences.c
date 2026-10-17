@@ -95,7 +95,12 @@ int main(void) {
 // CHECK-NEXT:     let mut v: i32 = 17;
 // CHECK-NEXT:     let mut s: u16 = ((65000 as i32) as i16) as u16;
 // CHECK-NEXT:     let mut wide: u64 = d;
-// CHECK-NEXT:     let mut counters: Counters = Counters { value: 3, small: 9 };
+// CHECK-NEXT:     let mut counters: Counters = {
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: Counters = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         [[T_0]].value = 3 as i32;
+// CHECK-NEXT:         [[T_0]].small = 9 as u16;
+// CHECK-NEXT:         [[T_0]]
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let av: i32 = ((unsafe {
 // CHECK-NEXT:         std::sync::atomic::AtomicU8::from_ptr(std::ptr::addr_of_mut!(a) as *mut u8)
 // CHECK-NEXT:             .load(std::sync::atomic::Ordering::Relaxed)

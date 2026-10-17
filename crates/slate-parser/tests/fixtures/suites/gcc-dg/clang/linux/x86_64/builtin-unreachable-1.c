@@ -50,7 +50,7 @@ f(int a, int b)
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 asm "bug" [dialect=att] [options=nostack];
+// DEFAULT-NEXT:                 asm "bug" [dialect=att];
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE___builtin_unreachable]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }

@@ -39,6 +39,10 @@ pub trait Visitor {
         walk_type_name(self, ty)
     }
 
+    fn visit_field_pragma(&mut self, _pragma: &Pragma) -> Result<(), Self::Error> {
+        Ok(())
+    }
+
     fn visit_type_specifier(&mut self, ty: &TypeSpecifier) -> Result<(), Self::Error> {
         walk_type_specifier(self, ty)
     }
@@ -578,6 +582,9 @@ pub fn walk_tag_definition<V: Visitor + ?Sized>(
             for item in fields {
                 if let FieldItemKind::StaticAssert(assertion) = &item.value {
                     visitor.visit_expr(&assertion.condition)?;
+                }
+                if let FieldItemKind::Pragma(pragma) = &item.value {
+                    visitor.visit_field_pragma(pragma)?;
                 }
                 if let FieldItemKind::Field(field) = &item.value {
                     walk_specifiers(visitor, &field.specifiers)?;

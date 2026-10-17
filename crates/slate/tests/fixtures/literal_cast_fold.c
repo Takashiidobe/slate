@@ -94,7 +94,12 @@ int main(void) {
 // CHECK-NEXT:     d * (n as f64) + (f as f64)
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn aggregates() -> i64 {
-// CHECK-NEXT:     let p: Point = Point { x: 1, y: 2 };
+// CHECK-NEXT:     let p: Point = {
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: Point = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         [[T_0]].x = 1 as i32;
+// CHECK-NEXT:         [[T_0]].y = 2 as i64;
+// CHECK-NEXT:         [[T_0]]
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let s: [i16; 3] = [1, 2, 3];
 // CHECK-NEXT:     (p.x as i64) + p.y + ((s[2] as i32) as i64)
 // CHECK: {{^}}}

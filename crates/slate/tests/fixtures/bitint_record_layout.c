@@ -59,28 +59,46 @@ int main(void) {
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: static mut values: __SlateAlign16<[NestedBitInt; 2]> = __SlateAlign16([
-// CHECK-NEXT:     NestedBitInt {
-// CHECK-NEXT:         tag: (1 as i32) as i8,
-// CHECK-NEXT:         inner: [[SLATERECORD_0]] {
-// CHECK-NEXT:             prefix: 2 as i32,
-// CHECK-NEXT:             value: <bitint::BInt<65, 2, 16, bitint::A8>>::from_i128((333 as i32) as i128),
-// CHECK-NEXT:         },
-// CHECK-NEXT:         tail: (4 as i32) as i16,
+// CHECK-NEXT:     {
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: NestedBitInt = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         [[T_0]].tag = (1 as i32) as i8;
+// CHECK-NEXT:         [[T_0]].inner = {
+// CHECK-NEXT:             let mut [[T_1:__t[0-9]+]]: [[SLATERECORD_0]] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:             [[T_1]].prefix = 2 as i32;
+// CHECK-NEXT:             [[T_1]].value = <bitint::BInt<
+// CHECK-NEXT:                 65,
+// CHECK-NEXT:                 2,
+// CHECK-NEXT:                 16,
+// CHECK-NEXT:                 bitint::A8,
+// CHECK-NEXT:             >>::from_i128((333 as i32) as i128);
+// CHECK-NEXT:             [[T_1]]
+// CHECK-NEXT:         };
+// CHECK-NEXT:         [[T_0]].tail = (4 as i32) as i16;
+// CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     },
-// CHECK-NEXT:     NestedBitInt {
-// CHECK-NEXT:         tag: (5 as i32) as i8,
-// CHECK-NEXT:         inner: [[SLATERECORD_0]] {
-// CHECK-NEXT:             prefix: 6 as i32,
-// CHECK-NEXT:             value: <bitint::BInt<65, 2, 16, bitint::A8>>::from_i128((777 as i32) as i128),
-// CHECK-NEXT:         },
-// CHECK-NEXT:         tail: (8 as i32) as i16,
+// CHECK-NEXT:     {
+// CHECK-NEXT:         let mut [[T_2:__t[0-9]+]]: NestedBitInt = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         [[T_2]].tag = (5 as i32) as i8;
+// CHECK-NEXT:         [[T_2]].inner = {
+// CHECK-NEXT:             let mut [[T_3:__t[0-9]+]]: [[SLATERECORD_0]] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:             [[T_3]].prefix = 6 as i32;
+// CHECK-NEXT:             [[T_3]].value = <bitint::BInt<
+// CHECK-NEXT:                 65,
+// CHECK-NEXT:                 2,
+// CHECK-NEXT:                 16,
+// CHECK-NEXT:                 bitint::A8,
+// CHECK-NEXT:             >>::from_i128((777 as i32) as i128);
+// CHECK-NEXT:             [[T_3]]
+// CHECK-NEXT:         };
+// CHECK-NEXT:         [[T_2]].tail = (8 as i32) as i16;
+// CHECK-NEXT:         [[T_2]]
 // CHECK-NEXT:     },
 // CHECK-NEXT: ]);
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let item: BitIntOrArray = {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: BitIntOrArray = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0]]: BitIntOrArray = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].bytes = {
-// CHECK-NEXT:             let mut [[T_1:__t[0-9]+]]: [i8; 20] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:             let mut [[T_1]]: [i8; 20] = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:             [[T_1]][0] = 97 as i8;
 // CHECK-NEXT:             [[T_1]][1] = 98 as i8;
 // CHECK-NEXT:             [[T_1]][2] = 99 as i8;

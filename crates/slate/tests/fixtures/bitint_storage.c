@@ -167,19 +167,21 @@ int main(void) {
 // CHECK-NEXT:         84, 118, 152, 186, 220, 254, 0,
 // CHECK-NEXT:     ]),
 // CHECK-NEXT: );
-// CHECK-NEXT: static mut global_mixed: Mixed = Mixed {
-// CHECK-NEXT:     tag: (3 as i32) as i8,
-// CHECK-NEXT:     small: (-(7 as i32) as i16) << 7 >> 7,
-// CHECK-NEXT:     mid: <bitint::BUint<
+// CHECK-NEXT: static mut global_mixed: Mixed = {
+// CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: Mixed = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     [[T_0]].tag = (3 as i32) as i8;
+// CHECK-NEXT:     [[T_0]].small = (-(7 as i32) as i16) << 7 >> 7;
+// CHECK-NEXT:     [[T_0]].mid = <bitint::BUint<
 // CHECK-NEXT:         100,
 // CHECK-NEXT:         2,
 // CHECK-NEXT:         16,
 // CHECK-NEXT:         bitint::A8,
 // CHECK-NEXT:     >>::from_bint(
 // CHECK-NEXT:         <bitint::BInt<100, 2, 16, bitint::A8>>::from_i128((99 as i32) as i128),
-// CHECK-NEXT:     ),
-// CHECK-NEXT:     gap: -(2 as i32) as i16,
-// CHECK-NEXT:     wide: <bitint::BInt<200, 4, 32, bitint::A8>>::from_i128((5 as i32) as i128),
+// CHECK-NEXT:     );
+// CHECK-NEXT:     [[T_0]].gap = -(2 as i32) as i16;
+// CHECK-NEXT:     [[T_0]].wide = <bitint::BInt<200, 4, 32, bitint::A8>>::from_i128((5 as i32) as i128);
+// CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
 // CHECK-NEXT: static mut global_pair: __SlateAlign16<[bitint::BInt<128, 2, 16, bitint::A8>; 2]> = __SlateAlign16([
 // CHECK-NEXT:     <bitint::BInt<128, 2, 16, bitint::A8>>::from_i128(-(1 as i32) as i128),

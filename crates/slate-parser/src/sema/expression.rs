@@ -527,6 +527,21 @@ impl Lowerer {
                 };
                 Ok(self.operand(e, c, ValueKind::Constant(number)))
             }
+            CustomBuiltin::ClearPadding => {
+                let [operand] = arguments else {
+                    return Err(ResolveError::Internal("clear_padding builtin arity"));
+                };
+                let pointer = self.expr(operand)?;
+                let c = self.result(e)?;
+                Ok(self.operand(
+                    e,
+                    c,
+                    ValueKind::Intrinsic {
+                        name: "slate.clear_padding".into(),
+                        arguments: vec![pointer.value],
+                    },
+                ))
+            }
             CustomBuiltin::Seh(intrinsic) => {
                 let c = self.result(e)?;
                 Ok(self.operand(e, c, ValueKind::Seh(intrinsic)))
@@ -2354,10 +2369,15 @@ impl Lowerer {
                         return Ok(value);
                     }
                     let c = value.c;
+                    let ty = value.ty.clone();
+                    let zero = self.value(e, ty, ValueKind::Constant(Number::Integer(0u8.into())));
                     return Ok(self.operand(
                         e,
                         c,
-                        ValueKind::Constant(Number::Integer(0u8.into())),
+                        ValueKind::Sequence {
+                            left: Box::new(value.value),
+                            right: Box::new(zero),
+                        },
                     ));
                 };
                 let c = self.result(e)?;
@@ -2869,6 +2889,7 @@ impl Lowerer {
                 } else {
                     VaConvention::Win64
                 };
+                let extents = self.type_name_extents(ty)?;
                 let resolved = self.resolve_type_name(ty)?;
                 let ty = self.types.object_type(resolved, "va_arg of void")?;
                 self.types.storage(ty.clone())?;
@@ -2876,7 +2897,7 @@ impl Lowerer {
                     VaConvention::Target => self.va_passing(&ty)?,
                     VaConvention::Win64 => VaPassing::Scalar,
                 };
-                Ok(self.operand(
+                let value = self.operand(
                     e,
                     resolved,
                     ValueKind::VaArg {
@@ -2884,7 +2905,8 @@ impl Lowerer {
                         convention,
                         passing,
                     },
-                ))
+                );
+                Ok(self.with_extents(e, extents, value))
             }
         }
     }
@@ -3120,7 +3142,7 @@ pub(super) fn swizzle_lanes(field: &str, lanes: u32) -> Option<Vec<Option<u32>>>
     )
 }
 
-fn type_class(ctypes: &CTypes, q: QualType) -> Option<i32> {
+pub(super) fn type_class(ctypes: &CTypes, q: QualType) -> Option<i32> {
     Some(match ctypes.canonical_kind(q) {
         CTypeKind::NullPtr => -1,
         CTypeKind::Void => 0,

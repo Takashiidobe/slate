@@ -288,20 +288,21 @@ impl<'a> DeclaratorParser<'a> {
             .parser()
             .ok_or(DeclaratorError::TagDefinitionNotAllowed)?;
         loop {
-            fields.extend(
-                parser
-                    .input
-                    .take_comments(self.tokens, self.pos, self.pos)
-                    .into_iter()
-                    .filter_map(|annotation| match &annotation.value {
-                        super::Annotation::Comment(group) => Some(
-                            annotation
-                                .clone()
-                                .with_value(FieldItemKind::Comment(group.clone())),
-                        ),
-                        _ => None,
-                    }),
-            );
+            for annotation in parser.input.take(self.tokens, self.pos, self.pos) {
+                match &annotation.value {
+                    super::Annotation::Comment(group) => fields.push(
+                        annotation
+                            .clone()
+                            .with_value(FieldItemKind::Comment(group.clone())),
+                    ),
+                    super::Annotation::Pragma(tokens) => {
+                        let pragma = parser
+                            .parse_pragma_tokens(tokens)
+                            .map_err(DeclaratorError::Parse)?;
+                        fields.push(annotation.clone().with_value(FieldItemKind::Pragma(pragma)));
+                    }
+                }
+            }
             if self.matches(Token::RBrace) {
                 break;
             }

@@ -398,7 +398,7 @@ int main(void) {
 // CHECK-NEXT:         a = [[T_1]];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         core::arch::asm!("emms", options(nostack, att_syntax));
+// CHECK-NEXT:         core::arch::asm!("emms", options(att_syntax));
 // CHECK-NEXT:     }
 // CHECK-NEXT:     a
 // CHECK-NEXT: }
@@ -416,7 +416,7 @@ int main(void) {
 // CHECK-NEXT:         a = [[T_1]];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         core::arch::asm!("emms", options(nostack, att_syntax));
+// CHECK-NEXT:         core::arch::asm!("emms", options(att_syntax));
 // CHECK-NEXT:     }
 // CHECK-NEXT:     a
 // CHECK-NEXT: }

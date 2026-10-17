@@ -1970,9 +1970,54 @@ impl Lowerer {
                     .map(|r| r.binding)
                     .ok_or(ResolveError::Internal("missing goto binding"))?,
             ),
+            StmtKind::IfDeclaration {
+                declaration,
+                condition: Some(condition),
+                then_branch,
+                else_branch,
+            } => Statement::Block(self.compound(|lower| {
+                let mut body = lower.declaration(declaration, false)?;
+                let value = lower.expr(condition)?;
+                let condition = lower.condition(value.value, None)?;
+                let then_body = lower.statements(std::slice::from_ref(then_branch), return_type)?;
+                let else_body = else_branch
+                    .as_ref()
+                    .map(|branch| lower.statements(std::slice::from_ref(branch), return_type))
+                    .transpose()?;
+                body.push(statement.derive(Statement::If {
+                    condition,
+                    then_body,
+                    else_body,
+                }));
+                Ok(body)
+            })?),
+            StmtKind::SwitchDeclaration {
+                declaration,
+                discriminant: Some(discriminant),
+                body,
+            } => Statement::Block(self.compound(|lower| {
+                let mut statements = lower.declaration(declaration, false)?;
+                let value = lower.expr(discriminant)?;
+                let discriminant = lower.converted_at(statement, Slot::Discriminant, value)?;
+                if !matches!(discriminant.ty, Type::Numeric(NumericType::Integer { .. })) {
+                    return Err(ResolveError::Internal("noninteger switch discriminant"));
+                }
+                let id = lower.jump_target(statement);
+                lower.break_targets.push(id);
+                lower.switches.push(id);
+                let body = lower.statements(std::slice::from_ref(body), return_type);
+                lower.switches.pop();
+                lower.break_targets.pop();
+                statements.push(statement.derive(Statement::Switch {
+                    id,
+                    discriminant: discriminant.value,
+                    body: body?,
+                }));
+                Ok(statements)
+            })?),
             StmtKind::IfDeclaration { .. } | StmtKind::SwitchDeclaration { .. } => {
                 return Err(ResolveError::Unimplemented(
-                    "selection statement declarations",
+                    "selection statement declarations without a condition",
                 ));
             }
             StmtKind::NamedBreak(_) => Statement::Break(self.named_jump_target(statement)?),

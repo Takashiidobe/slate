@@ -138,7 +138,7 @@ void unwinds(void) {
 // IR-NEXT:             return const<i32>(0);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_basic:[0-9]+]] @basic() -> void [linkage=external] [fallthrough=ret_void] {
-// IR-NEXT:         asm "nop" [dialect=att] [options=nostack];
+// IR-NEXT:         asm "nop" [dialect=att];
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_unwinds:[0-9]+]] @unwinds() -> void [linkage=external] [fallthrough=ret_void] {
 // IR-NEXT:         asm volatile "call f" [dialect=att] [options=nostack,may_unwind] {

@@ -189,20 +189,26 @@ int main(void) {
 // CHECK-NEXT:     prev: *mut Node,
 // CHECK-NEXT: }
 // CHECK-NEXT: fn circular_list() -> i32 {
-// CHECK-NEXT:     let mut a: Node = Node {
-// CHECK-NEXT:         val: 1,
-// CHECK-NEXT:         next: std::ptr::null_mut::<Node>(),
-// CHECK-NEXT:         prev: std::ptr::null_mut::<Node>(),
+// CHECK-NEXT:     let mut a: Node = {
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: Node = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         [[T_0]].val = 1 as i32;
+// CHECK-NEXT:         [[T_0]].next = std::ptr::null_mut::<Node>();
+// CHECK-NEXT:         [[T_0]].prev = std::ptr::null_mut::<Node>();
+// CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut b: Node = Node {
-// CHECK-NEXT:         val: 2,
-// CHECK-NEXT:         next: std::ptr::null_mut::<Node>(),
-// CHECK-NEXT:         prev: std::ptr::null_mut::<Node>(),
+// CHECK-NEXT:     let mut b: Node = {
+// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: Node = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         [[T_1]].val = 2 as i32;
+// CHECK-NEXT:         [[T_1]].next = std::ptr::null_mut::<Node>();
+// CHECK-NEXT:         [[T_1]].prev = std::ptr::null_mut::<Node>();
+// CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut c: Node = Node {
-// CHECK-NEXT:         val: 3,
-// CHECK-NEXT:         next: std::ptr::null_mut::<Node>(),
-// CHECK-NEXT:         prev: std::ptr::null_mut::<Node>(),
+// CHECK-NEXT:     let mut c: Node = {
+// CHECK-NEXT:         let mut [[T_2:__t[0-9]+]]: Node = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         [[T_2]].val = 3 as i32;
+// CHECK-NEXT:         [[T_2]].next = std::ptr::null_mut::<Node>();
+// CHECK-NEXT:         [[T_2]].prev = std::ptr::null_mut::<Node>();
+// CHECK-NEXT:         [[T_2]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     a.next = std::ptr::addr_of_mut!(b);
 // CHECK-NEXT:     b.next = std::ptr::addr_of_mut!(c);
@@ -231,23 +237,29 @@ int main(void) {
 // CHECK-NEXT:     right: *mut Tree,
 // CHECK-NEXT: }
 // CHECK-NEXT: fn parent_pointer_tree() -> i32 {
-// CHECK-NEXT:     let mut root: Tree = Tree {
-// CHECK-NEXT:         val: 1,
-// CHECK-NEXT:         parent: std::ptr::null_mut::<Tree>(),
-// CHECK-NEXT:         left: std::ptr::null_mut::<Tree>(),
-// CHECK-NEXT:         right: std::ptr::null_mut::<Tree>(),
+// CHECK-NEXT:     let mut root: Tree = {
+// CHECK-NEXT:         let mut [[T_0]]: Tree = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         [[T_0]].val = 1 as i32;
+// CHECK-NEXT:         [[T_0]].parent = std::ptr::null_mut::<Tree>();
+// CHECK-NEXT:         [[T_0]].left = std::ptr::null_mut::<Tree>();
+// CHECK-NEXT:         [[T_0]].right = std::ptr::null_mut::<Tree>();
+// CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut left: Tree = Tree {
-// CHECK-NEXT:         val: 2,
-// CHECK-NEXT:         parent: std::ptr::addr_of_mut!(root),
-// CHECK-NEXT:         left: std::ptr::null_mut::<Tree>(),
-// CHECK-NEXT:         right: std::ptr::null_mut::<Tree>(),
+// CHECK-NEXT:     let mut left: Tree = {
+// CHECK-NEXT:         let mut [[T_1]]: Tree = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         [[T_1]].val = 2 as i32;
+// CHECK-NEXT:         [[T_1]].parent = std::ptr::addr_of_mut!(root);
+// CHECK-NEXT:         [[T_1]].left = std::ptr::null_mut::<Tree>();
+// CHECK-NEXT:         [[T_1]].right = std::ptr::null_mut::<Tree>();
+// CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut right: Tree = Tree {
-// CHECK-NEXT:         val: 3,
-// CHECK-NEXT:         parent: std::ptr::addr_of_mut!(root),
-// CHECK-NEXT:         left: std::ptr::null_mut::<Tree>(),
-// CHECK-NEXT:         right: std::ptr::null_mut::<Tree>(),
+// CHECK-NEXT:     let mut right: Tree = {
+// CHECK-NEXT:         let mut [[T_2]]: Tree = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         [[T_2]].val = 3 as i32;
+// CHECK-NEXT:         [[T_2]].parent = std::ptr::addr_of_mut!(root);
+// CHECK-NEXT:         [[T_2]].left = std::ptr::null_mut::<Tree>();
+// CHECK-NEXT:         [[T_2]].right = std::ptr::null_mut::<Tree>();
+// CHECK-NEXT:         [[T_2]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     root.left = std::ptr::addr_of_mut!(left);
 // CHECK-NEXT:     root.right = std::ptr::addr_of_mut!(right);

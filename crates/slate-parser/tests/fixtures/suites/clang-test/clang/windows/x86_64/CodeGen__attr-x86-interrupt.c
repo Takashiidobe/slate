@@ -34,9 +34,9 @@ __attribute__((interrupt)) void foo8(int *a) {}
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_uword:[0-9]+]] uword = u64;
-// DEFAULT-NEXT:     fn %[[VALUE_foo7:[0-9]+]] @foo7(%[[VALUE_a:[0-9]+]] a: ptr<i32>, %[[VALUE_b:[0-9]+]] b: u64) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo7:[0-9]+]] @foo7(%[[VALUE_a:[0-9]+]] a: ptr<i32>, %[[VALUE_b:[0-9]+]] b: u64) -> void [linkage=external] [interrupt] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_foo8:[0-9]+]] @foo8(%[[VALUE_a_2:[0-9]+]] a: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo8:[0-9]+]] @foo8(%[[VALUE_a_2:[0-9]+]] a: ptr<i32>) -> void [linkage=external] [interrupt] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

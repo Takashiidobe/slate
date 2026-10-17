@@ -81,7 +81,7 @@ bar (int i)
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<i32>(%[[VALUE_c]], read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(1)>(%[[VALUE_b]]), read<i32>(%[[VALUE_i]])))));
 // DEFAULT-NEXT:                     if not<bool>(ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_foo]]), const<i32>(0)))
-// DEFAULT-NEXT:                         asm "" [dialect=att] [options=nostack];
+// DEFAULT-NEXT:                         asm "" [dialect=att];
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -145,9 +145,9 @@ void f(void) {
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<volatile i32>, i32) -> i32>(%[[VALUE__InterlockedExchange_HLERelease]], null<ptr<volatile i32>>, const<i32>(0));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<volatile i32>, i32, i32) -> i32>(%[[VALUE__InterlockedCompareExchange_HLEAcquire]], null<ptr<volatile i32>>, const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<volatile i32>, i32, i32) -> i32>(%[[VALUE__InterlockedCompareExchange_HLERelease]], null<ptr<volatile i32>>, const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         asm "mov eax, ebx" [dialect=att] [options=nostack];
-// DEFAULT-NEXT:         asm ".att_syntax\nmovl %ebx, %eax" [dialect=att] [options=nostack];
-// DEFAULT-NEXT:         asm "mov eax, ebx" [dialect=att] [options=nostack];
+// DEFAULT-NEXT:         asm "mov eax, ebx" [dialect=att];
+// DEFAULT-NEXT:         asm ".att_syntax\nmovl %ebx, %eax" [dialect=att];
+// DEFAULT-NEXT:         asm "mov eax, ebx" [dialect=att];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -92,6 +92,20 @@ impl<'m> Tables<'m> {
             .is_some_and(|fields| fields.iter().any(|field| field.bit_width.is_some()))
     }
 
+    pub(super) fn has_padding(&self, ty: &ir::Type) -> bool {
+        let Some(fields) = self.record_fields(ty) else {
+            return false;
+        };
+        let Some((size, _)) = self.storage_of(ty) else {
+            return false;
+        };
+        let covered: Option<u64> = fields
+            .iter()
+            .map(|field| self.storage_of(&field.ty).map(|(size, _)| size))
+            .sum();
+        covered.is_none_or(|covered| covered != size)
+    }
+
     pub(super) fn is_union(&self, ty: &ir::Type) -> bool {
         let ir::Type::Defined(id) = self.resolve_type(ty) else {
             return false;

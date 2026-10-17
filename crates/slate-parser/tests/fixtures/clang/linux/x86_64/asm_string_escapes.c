@@ -43,7 +43,7 @@ void basic(void) {
 // IR-NEXT:         }
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_basic:[0-9]+]] @basic() -> void [linkage=external] [fallthrough=ret_void] {
-// IR-NEXT:         asm volatile "nop\n\tnop\n# \\n stays literal" [dialect=att] [options=nostack];
+// IR-NEXT:         asm volatile "nop\n\tnop\n# \\n stays literal" [dialect=att];
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

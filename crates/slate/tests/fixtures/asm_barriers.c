@@ -98,13 +98,13 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn typecheck_probe() -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         core::arch::asm!("", options(nostack, att_syntax));
+// CHECK-NEXT:         core::arch::asm!("", options(att_syntax));
 // CHECK-NEXT:     }
 // CHECK-NEXT:     1
 // CHECK-NEXT: }
 // CHECK-NEXT: fn empty_volatile() {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         core::arch::asm!("", options(nostack, att_syntax));
+// CHECK-NEXT:         core::arch::asm!("", options(att_syntax));
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn memory_barrier(p: &mut i32) -> i32 {
@@ -148,7 +148,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn curl_wrong_type() {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         core::arch::asm!("", options(nostack, att_syntax));
+// CHECK-NEXT:         core::arch::asm!("", options(att_syntax));
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn verify_volatile(x: *const u8, y: *const u8, n: i32) -> i32 {
@@ -216,7 +216,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn spin_pause() {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         core::arch::asm!("pause", options(nostack, att_syntax));
+// CHECK-NEXT:         core::arch::asm!("pause", options(att_syntax));
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn spin_pause_memory() {

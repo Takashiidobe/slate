@@ -43,7 +43,7 @@ int foo (void)
 // DEFAULT-NEXT:     extern %[[VALUE_x:[0-9]+]] x: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     extern %[[VALUE_y:[0-9]+]] y: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         asm ".ascii foo" [dialect=att] [options=nostack];
+// DEFAULT-NEXT:         asm ".ascii foo" [dialect=att];
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

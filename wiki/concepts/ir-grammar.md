@@ -187,7 +187,7 @@ tls_model    = "global-dynamic" | "local-dynamic" | "initial-exec" | "local-exec
 function    = "fn" binding "@" c_identifier "(" [ params ] ")" "->" type
               linkage symbol_attrs [ "[inline=" ( "hint" | "always" | "never" ) "]" ]
               [ "[definition=" ( "emitted" | "inline_only" ) "]" ] [ "[noreturn]" ]
-              [ "[naked]" ] [ "[overloadable]" ]
+              [ "[naked]" ] [ "[interrupt]" ] [ "[overloadable]" ]
               [ "[target=" target_feature { "," target_feature } "]" ]
               [ "[memory=" ( "none" | "read" ) "]" ]
               { "[deallocator=%" int ", argument=" int "]" }
@@ -220,6 +220,8 @@ target_feature = ( "+" | "-" ) feature_name | "arch=" cpu_name | "tune=" cpu_nam
   `ub`.
 - `[naked]` is `__attribute__((naked))` from any declaration: no prologue or
   epilogue, fallthrough `ub`, and its asm statements print no `[options=...]`.
+- `[interrupt]` is `__attribute__((interrupt))` from any declaration; the
+  backend picks the interrupt calling convention from the function.
 - `[overloadable]` is clang's `__attribute__((overloadable))`. Several functions
   may share `c_identifier`; the binding is the identity, and each call names the
   overload chosen for it. The C name is not the symbol: consumers give each

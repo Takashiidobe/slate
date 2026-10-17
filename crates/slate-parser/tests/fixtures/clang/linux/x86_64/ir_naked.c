@@ -65,7 +65,7 @@ int normal(int x) {
 // IR-NEXT:         asm "ret" [dialect=att];
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_normal:[0-9]+]] @normal(%[[VALUE_x_2:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         asm "nop" [dialect=att] [options=nostack];
+// IR-NEXT:         asm "nop" [dialect=att];
 // IR-NEXT:         return read<i32>(%[[VALUE_x_2]]);
 // IR-NEXT:     }
 // IR-NEXT: }

@@ -33,6 +33,7 @@ pub(super) fn register_global(
         (TargetFamily::X86_64, Some("bp")) => "rbp",
         (TargetFamily::X86, Some("sp")) => "esp",
         (TargetFamily::X86, Some("bp")) => "ebp",
+        (TargetFamily::X86_64 | TargetFamily::X86, _) => return None,
         _ => {
             return Some(Err(Construct::Global {
                 name: global.variable.name.clone(),

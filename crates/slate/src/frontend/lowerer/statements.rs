@@ -324,10 +324,73 @@ impl FunctionLowerer<'_, '_> {
         &mut self,
         statements: &[slate_parser::ast::Span<ir::Statement>],
     ) -> Result<Vec<Stmt>> {
-        statements
-            .iter()
-            .map(|statement| self.lower_statement(statement))
-            .collect()
+        let mut lowered = Vec::with_capacity(statements.len());
+        for statement in statements {
+            lowered.push(self.lower_statement(statement)?);
+            if let ir::Statement::Let(variable) = &statement.value
+                && let Some(cleanup) = variable.cleanup
+            {
+                lowered.extend(self.cleanup_guard(variable, cleanup)?);
+            }
+        }
+        Ok(lowered)
+    }
+
+    fn cleanup_guard(&mut self, variable: &ir::Variable, cleanup: BindingId) -> Result<[Stmt; 2]> {
+        self.dependencies.cleanup = true;
+        let names = &self.tables.names;
+        let handler = names
+            .get(&cleanup)
+            .ok_or(Invariant::UnknownCallee(cleanup))?;
+        let target = binding_name(variable.id, &self.tables.bindings);
+        let pointer = format!("__slate_cleanup_ptr_{}", variable.id.0);
+        let call = Expr::Call {
+            func: Box::new(Expr::Var(handler.rust.as_str().into())),
+            args: vec![Expr::Cast {
+                expr: Box::new(Expr::Var(pointer.as_str().into())),
+                ty: rust::Type::Custom("*mut _".into()),
+            }],
+            binding: CallBinding::Direct {
+                identity: handler.identity,
+                canonical_type: None,
+                trusted_declaration: None,
+                trusted_headers: Default::default(),
+            },
+        };
+        Ok([
+            Stmt::Let {
+                name: pointer,
+                mutable: false,
+                ty: None,
+                init: Some(Expr::Cast {
+                    expr: Box::new(Expr::AddrOf {
+                        mutable: true,
+                        expr: Box::new(Expr::Var(target.as_str().into())),
+                    }),
+                    ty: rust::Type::Custom("*mut _".into()),
+                }),
+            },
+            Stmt::Let {
+                name: format!("__slate_cleanup_{}", variable.id.0),
+                mutable: false,
+                ty: None,
+                init: Some(Expr::Call {
+                    func: Box::new(Expr::Var("__slate_cleanup::Guard".into())),
+                    args: vec![Expr::Closure {
+                        params: Vec::new(),
+                        body: Box::new(if handler.is_unsafe {
+                            Expr::Unsafe(Box::new(rust::Block {
+                                stmts: Vec::new(),
+                                tail: Some(Box::new(call)),
+                            }))
+                        } else {
+                            call
+                        }),
+                    }],
+                    binding: CallBinding::Generated,
+                }),
+            },
+        ])
     }
 
     pub(super) fn lower_statement(

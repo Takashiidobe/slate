@@ -256,7 +256,12 @@ int main(void) {
 // CHECK-NEXT:         "{} {} {} {} calls={}", slots.0[0], slots.0[1], slots.0[2], slots.0[3], unsafe {
 // CHECK-NEXT:         calls }
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let mut counter: Counter = Counter { hits: 0, total: 0.0f64 };
+// CHECK-NEXT:     let mut counter: Counter = {
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: Counter = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         [[T_0]].hits = 0 as i32;
+// CHECK-NEXT:         [[T_0]].total = 0.0f64;
+// CHECK-NEXT:         [[T_0]]
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let cp: *mut Counter = std::ptr::addr_of_mut!(counter);
 // CHECK-NEXT:     counter.hits += 1;
 // CHECK-NEXT:     unsafe {

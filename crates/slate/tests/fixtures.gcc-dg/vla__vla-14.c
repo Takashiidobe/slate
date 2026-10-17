@@ -2,7 +2,6 @@
 /* Origin: Joseph Myers <joseph@codesourcery.com> */
 /* { dg-do run } */
 /* { dg-options "-std=gnu99" } */
-/* Blocked by CIR emission: variably modified types in va_arg are not implemented. */
 
 #include <stdarg.h>
 

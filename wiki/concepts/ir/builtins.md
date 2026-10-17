@@ -33,6 +33,14 @@ imply Rust lowering for every call.
 Lowered in `slate-parser/src/sema/expression.rs`; constant and type queries
 resolve through `sema/types.rs` and `sema/ctype/`.
 
+`__builtin_classify_type` also folds inside constant expressions (for
+`__builtin_choose_expr` conditions).
+
+`__builtin_clear_padding(p)` becomes `intrinsic<void, slate.clear_padding>(p)`.
+Slate derives from the pointee layout which bytes and bit-field bits are data
+(named bit-fields and scalars; union members all count) and zeroes the rest
+(`lowerer/padding.rs`, little-endian only).
+
 ## Source location and function names
 
 - `__builtin_LINE`, `__builtin_COLUMN`

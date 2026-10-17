@@ -59,7 +59,7 @@ void basic(void) {
 // IR-NEXT:         return read<i32>(%[[VALUE_r_2]]);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_basic:[0-9]+]] @basic() -> void [linkage=external] [fallthrough=ret_void] {
-// IR-NEXT:         asm "nop" [options=nostack,preserves_flags];
+// IR-NEXT:         asm "nop" [options=preserves_flags];
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

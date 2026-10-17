@@ -295,7 +295,7 @@ fn25 (void)
 // DEFAULT-NEXT:     fn %[[VALUE_fn24:[0-9]+]] @fn24(%[[VALUE_p_2:[0-9]+]] p: ptr<i8>) -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if ne<u64>(and<u64>(ptr_to_int<u64, reason=explicit>(read<ptr<i8>>(%[[VALUE_p_2]])), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(15)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_fn23]]);
-// DEFAULT-NEXT:         asm "" [dialect=att] [options=nostack];
+// DEFAULT-NEXT:         asm "" [dialect=att];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fn25:[0-9]+]] @fn25() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i8>) -> void>(%[[VALUE_fn24]], array_decay<ptr<i8>, length=Some(32)>(%[[VALUE_var2]]));

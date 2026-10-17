@@ -15,7 +15,7 @@ fn is_dead_let(arena: &Arena, id: NodeId) -> bool {
 fn is_drop_guard(expr: &Expr) -> bool {
     matches!(
         expr,
-        Expr::Call { func, .. } if matches!(&**func, Expr::Var(name) if name.as_str() == "__slate_alloca::Mark::new")
+        Expr::Call { func, .. } if matches!(&**func, Expr::Var(name) if matches!(name.as_str(), "__slate_alloca::Mark::new" | "__slate_cleanup::Guard"))
     )
 }
 

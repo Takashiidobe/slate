@@ -56,14 +56,18 @@ int main(void) {
 // CHECK-NEXT:     Self_ + unsafe { super_ }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut ctx: context = context {
-// CHECK-NEXT:         super_: writer {
-// CHECK-NEXT:             name: c"out".as_ptr(),
-// CHECK-NEXT:             phase: 2,
-// CHECK-NEXT:         },
-// CHECK-NEXT:         self_: 5,
-// CHECK-NEXT:         crate_: 7,
-// CHECK-NEXT:         Self_: 11,
+// CHECK-NEXT:     let mut ctx: context = {
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: context = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         [[T_0]].super_ = {
+// CHECK-NEXT:             let mut [[T_1:__t[0-9]+]]: writer = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:             [[T_1]].name = c"out".as_ptr();
+// CHECK-NEXT:             [[T_1]].phase = 2 as i32;
+// CHECK-NEXT:             [[T_1]]
+// CHECK-NEXT:         };
+// CHECK-NEXT:         [[T_0]].self_ = 5 as i32;
+// CHECK-NEXT:         [[T_0]].crate_ = 7 as i32;
+// CHECK-NEXT:         [[T_0]].Self_ = 11 as i32;
+// CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     ctx.super_.phase += ctx.self_;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());

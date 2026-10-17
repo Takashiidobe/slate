@@ -316,9 +316,11 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn branch_alloca(argc: i32, argv: *const i32, min: i32) -> i32 {
 // CHECK-NEXT:     let __slate_alloca_mark = __slate_alloca::Mark::new();
-// CHECK-NEXT:     let mut f: frame = frame {
-// CHECK-NEXT:         args: argv as *mut i32,
-// CHECK-NEXT:         count: argc,
+// CHECK-NEXT:     let mut f: frame = {
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: frame = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         [[T_0]].args = argv as *mut i32;
+// CHECK-NEXT:         [[T_0]].count = argc;
+// CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     if argc < min {
 // CHECK-NEXT:         f.args = (__slate_alloca::alloca(

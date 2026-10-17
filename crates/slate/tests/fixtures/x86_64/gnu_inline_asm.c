@@ -105,7 +105,7 @@ int main(void) {
 // CHECK-NEXT: fn gnu_function_basic_asm() -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "movl $23, {0}(%rip)", sym gnu_basic_asm_value, options(nostack, att_syntax)
+// CHECK-NEXT:             "movl $23, {0}(%rip)", sym gnu_basic_asm_value, options(att_syntax)
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { gnu_basic_asm_value }

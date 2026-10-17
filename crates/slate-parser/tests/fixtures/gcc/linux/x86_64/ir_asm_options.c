@@ -134,7 +134,7 @@ void basic(void) {
 // IR-NEXT:             return const<i32>(0);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_basic:[0-9]+]] @basic() -> void [linkage=external] [fallthrough=ret_void] {
-// IR-NEXT:         asm "nop" [dialect=att] [options=nostack];
+// IR-NEXT:         asm "nop" [dialect=att];
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

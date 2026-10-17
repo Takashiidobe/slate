@@ -234,7 +234,13 @@ impl FunctionLowerer<'_, '_> {
             function.parameters,
             ir::Parameters::Prototype { variadic: true, .. }
         );
-        let abi = self.tables.function_abi(function)?;
+        let interrupt = function.semantics.interrupt;
+        let abi = if interrupt {
+            self.dependencies.x86_interrupt = true;
+            rust::Abi::X86Interrupt
+        } else {
+            self.tables.function_abi(function)?
+        };
         self.target_features = self.tables.enabled_target_features(function)?;
         let ret = self.lower_return(function)?;
         let mut params = fixed
@@ -292,6 +298,29 @@ impl FunctionLowerer<'_, '_> {
                         func: Box::new(Expr::Var("__slate_alloca::Mark::new".into())),
                         args: Vec::new(),
                         binding: CallBinding::Generated,
+                    }),
+                },
+            );
+        }
+        if interrupt
+            && let Some(frame) = params.first_mut()
+            && let rust::Type::Ptr { inner, .. } = &frame.ty
+        {
+            let pointee = (**inner).clone();
+            let original = std::mem::replace(&mut frame.name, "__slate_interrupt_frame".into());
+            frame.ty = pointee.clone();
+            statements.insert(
+                0,
+                Stmt::Let {
+                    name: original,
+                    mutable: false,
+                    ty: Some(rust::Type::Ptr {
+                        mutable: true,
+                        inner: Box::new(pointee),
+                    }),
+                    init: Some(Expr::AddrOf {
+                        mutable: true,
+                        expr: Box::new(Expr::Var("__slate_interrupt_frame".into())),
                     }),
                 },
             );

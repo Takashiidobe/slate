@@ -20,6 +20,7 @@ pub(super) struct FunctionDeclarations {
     has_external_declaration: bool,
     noreturn: bool,
     naked: bool,
+    interrupt: bool,
     memory: Option<MemoryEffects>,
     deallocators: Vec<Deallocator>,
     target: Vec<TargetFeature>,
@@ -188,6 +189,7 @@ impl Lowerer {
                 }
                 Attribute::NoReturn => state.noreturn = true,
                 Attribute::Naked => state.naked = true,
+                Attribute::Interrupt => state.interrupt = true,
                 Attribute::Target(spec) => state.target = target_features(spec),
                 Attribute::Const => state.restrict_memory(MemoryEffects::None),
                 Attribute::Pure => state.restrict_memory(MemoryEffects::Read),
@@ -271,6 +273,7 @@ impl Lowerer {
                     },
                 noreturn: state.noreturn,
                 naked: state.naked,
+                interrupt: state.interrupt,
                 overloadable: self.types.overload_sets.contains_key(&function.value.id),
                 memory: state.memory,
                 deallocators: if matches!(function.return_type, Some(Type::Pointer { .. })) {

@@ -47,7 +47,7 @@ void g (void)
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         asm "simple asm not discarded" [dialect=att] [options=nostack];
+// DEFAULT-NEXT:         asm "simple asm not discarded" [dialect=att];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

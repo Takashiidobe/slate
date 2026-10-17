@@ -124,7 +124,7 @@ void direct2indirect(void)
 // DEFAULT-NEXT:         let %[[VALUE_ind_ih:[0-9]+]] ind_ih: @type[[TYPE_item_head]] [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_unfm_ptr:[0-9]+]] unfm_ptr: u32 [storage=automatic];
 // DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(i64, i64) -> i64>(%[[VALUE___builtin_expect]], widen<i64, reason=arg>(const<i32>(32)), widen<i64, reason=arg>(const<i32>(0))), const<i64>(0))
-// DEFAULT-NEXT:             asm "break" [dialect=att] [options=nostack];
+// DEFAULT-NEXT:             asm "break" [dialect=att];
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE_item_head]]>) -> void>(%[[VALUE_set_le_ih_k_type]], addr_of<ptr<@type[[TYPE_item_head]]>>(%[[VALUE_ind_ih]]));
 // DEFAULT-NEXT:         if ne<i32>(conditional<i32>(ne<i32>(const<i32>(0), const<i32>(0)), const<i32>(1), const<i32>(2)), const<i32>(0))
 // DEFAULT-NEXT:             {

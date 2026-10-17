@@ -184,7 +184,7 @@ or dependency files are produced. Ignored codegen flags are
 and `-fdebug-prefix-map=` values.
 
 Unknown options are errors. In particular, `-Ofast`, the fast-math family,
-`-fshort-enums`, and `-fpack-struct` are not implemented. See
+and `-fpack-struct` are not implemented. See
 [compiler flags](../../wiki/concepts/compiler-flags.md) for flavor-specific
 precedence, ISA coverage, and remaining gaps, and
 [diagnostic severity](../../wiki/concepts/diagnostic-severity.md) for the

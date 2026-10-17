@@ -516,7 +516,7 @@ fn options(
     AsmOptions {
         memory,
         pure: !side_effects && memory != AsmMemory::Any,
-        nostack: true,
+        nostack: !basic,
         preserves_flags: !family.is_x86() && !clobbers(|clobber| matches!(clobber, AsmClobber::Cc)),
         may_unwind: clobbers(|clobber| matches!(clobber, AsmClobber::Unwind)),
     }

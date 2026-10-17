@@ -1690,6 +1690,7 @@ pub enum FieldItemKind {
     Comment(CommentGroup),
     Field(FieldDecl),
     StaticAssert(StaticAssert),
+    Pragma(Pragma),
 }
 
 #[derive(Debug, Clone, PartialEq)]

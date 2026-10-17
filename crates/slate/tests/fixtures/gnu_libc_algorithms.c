@@ -424,23 +424,29 @@ int main(void) {
 // CHECK-NEXT:         std::ptr::null_mut::<i8>(),
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let mut options: __SlateAlign16<[option; 3]> = __SlateAlign16([
-// CHECK-NEXT:         option {
-// CHECK-NEXT:             name: c"number".as_ptr(),
-// CHECK-NEXT:             has_arg: 1,
-// CHECK-NEXT:             flag: std::ptr::null_mut::<i32>(),
-// CHECK-NEXT:             val: 110,
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut [[T_0:__t[0-9]+]]: option = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:             [[T_0]].name = c"number".as_ptr();
+// CHECK-NEXT:             [[T_0]].has_arg = 1 as i32;
+// CHECK-NEXT:             [[T_0]].flag = std::ptr::null_mut::<i32>();
+// CHECK-NEXT:             [[T_0]].val = 110 as i32;
+// CHECK-NEXT:             [[T_0]]
 // CHECK-NEXT:         },
-// CHECK-NEXT:         option {
-// CHECK-NEXT:             name: c"flag".as_ptr(),
-// CHECK-NEXT:             has_arg: 0,
-// CHECK-NEXT:             flag: std::ptr::null_mut::<i32>(),
-// CHECK-NEXT:             val: 102,
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut [[T_1:__t[0-9]+]]: option = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:             [[T_1]].name = c"flag".as_ptr();
+// CHECK-NEXT:             [[T_1]].has_arg = 0 as i32;
+// CHECK-NEXT:             [[T_1]].flag = std::ptr::null_mut::<i32>();
+// CHECK-NEXT:             [[T_1]].val = 102 as i32;
+// CHECK-NEXT:             [[T_1]]
 // CHECK-NEXT:         },
-// CHECK-NEXT:         option {
-// CHECK-NEXT:             name: std::ptr::null::<i8>(),
-// CHECK-NEXT:             has_arg: 0,
-// CHECK-NEXT:             flag: std::ptr::null_mut::<i32>(),
-// CHECK-NEXT:             val: 0,
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut [[T_2:__t[0-9]+]]: option = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:             [[T_2]].name = std::ptr::null::<i8>();
+// CHECK-NEXT:             [[T_2]].has_arg = 0 as i32;
+// CHECK-NEXT:             [[T_2]].flag = std::ptr::null_mut::<i32>();
+// CHECK-NEXT:             [[T_2]].val = 0 as i32;
+// CHECK-NEXT:             [[T_2]]
 // CHECK-NEXT:         },
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let mut number_value: i32 = 0;
@@ -478,21 +484,25 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn gnu_argp_extensions() -> i32 {
 // CHECK-NEXT:     let mut options: __SlateAlign16<[argp_option; 2]> = __SlateAlign16([
-// CHECK-NEXT:         argp_option {
-// CHECK-NEXT:             name: c"number".as_ptr(),
-// CHECK-NEXT:             key: 110,
-// CHECK-NEXT:             arg: c"VALUE".as_ptr(),
-// CHECK-NEXT:             flags: 0,
-// CHECK-NEXT:             doc: c"number".as_ptr(),
-// CHECK-NEXT:             group: 0,
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut [[T_0]]: argp_option = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:             [[T_0]].name = c"number".as_ptr();
+// CHECK-NEXT:             [[T_0]].key = 110 as i32;
+// CHECK-NEXT:             [[T_0]].arg = c"VALUE".as_ptr();
+// CHECK-NEXT:             [[T_0]].flags = 0 as i32;
+// CHECK-NEXT:             [[T_0]].doc = c"number".as_ptr();
+// CHECK-NEXT:             [[T_0]].group = 0 as i32;
+// CHECK-NEXT:             [[T_0]]
 // CHECK-NEXT:         },
-// CHECK-NEXT:         argp_option {
-// CHECK-NEXT:             name: std::ptr::null::<i8>(),
-// CHECK-NEXT:             key: 0,
-// CHECK-NEXT:             arg: std::ptr::null::<i8>(),
-// CHECK-NEXT:             flags: 0,
-// CHECK-NEXT:             doc: std::ptr::null::<i8>(),
-// CHECK-NEXT:             group: 0,
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut [[T_1]]: argp_option = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:             [[T_1]].name = std::ptr::null::<i8>();
+// CHECK-NEXT:             [[T_1]].key = 0 as i32;
+// CHECK-NEXT:             [[T_1]].arg = std::ptr::null::<i8>();
+// CHECK-NEXT:             [[T_1]].flags = 0 as i32;
+// CHECK-NEXT:             [[T_1]].doc = std::ptr::null::<i8>();
+// CHECK-NEXT:             [[T_1]].group = 0 as i32;
+// CHECK-NEXT:             [[T_1]]
 // CHECK-NEXT:         },
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let mut parser: argp = argp {
@@ -505,8 +515,8 @@ int main(void) {
 // CHECK-NEXT:         argp_domain: std::ptr::null::<i8>(),
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut parsed: GNUArguments = {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: GNUArguments = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]]
+// CHECK-NEXT:         let mut [[T_2]]: GNUArguments = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         [[T_2]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut program: [i8; 6] = [112, 114, 111, 98, 101, 0];
 // CHECK-NEXT:     let mut option: [i8; 11] = [45, 45, 110, 117, 109, 98, 101, 114, 61, 53, 0];

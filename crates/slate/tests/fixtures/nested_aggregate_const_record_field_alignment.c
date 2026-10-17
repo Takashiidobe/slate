@@ -77,12 +77,15 @@ int main(void) {
 // CHECK-NEXT:     trailing2: Option<unsafe extern "C-unwind" fn(i32) -> i32>,
 // CHECK-NEXT:     trailing3: i32,
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut g: Outer = Outer {
-// CHECK-NEXT:     inner: Inner {
-// CHECK-NEXT:         scanners: [Some(add1), Some(add2), Some(add3)],
-// CHECK-NEXT:         tag: 42 as i32,
-// CHECK-NEXT:     },
-// CHECK-NEXT:     bytes: [
+// CHECK-NEXT: static mut g: Outer = {
+// CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: Outer = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     [[T_0]].inner = {
+// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: Inner = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         [[T_1]].scanners = [Some(add1), Some(add2), Some(add3)];
+// CHECK-NEXT:         [[T_1]].tag = 42 as i32;
+// CHECK-NEXT:         [[T_1]]
+// CHECK-NEXT:     };
+// CHECK-NEXT:     [[T_0]].bytes = [
 // CHECK-NEXT:         ((1 as i32) as i8) as u8,
 // CHECK-NEXT:         ((2 as i32) as i8) as u8,
 // CHECK-NEXT:         ((3 as i32) as i8) as u8,
@@ -91,10 +94,11 @@ int main(void) {
 // CHECK-NEXT:         ((6 as i32) as i8) as u8,
 // CHECK-NEXT:         ((7 as i32) as i8) as u8,
 // CHECK-NEXT:         ((8 as i32) as i8) as u8,
-// CHECK-NEXT:     ],
-// CHECK-NEXT:     trailing1: Some(mul5),
-// CHECK-NEXT:     trailing2: Some(mul7),
-// CHECK-NEXT:     trailing3: 99 as i32,
+// CHECK-NEXT:     ];
+// CHECK-NEXT:     [[T_0]].trailing1 = Some(mul5);
+// CHECK-NEXT:     [[T_0]].trailing2 = Some(mul7);
+// CHECK-NEXT:     [[T_0]].trailing3 = 99 as i32;
+// CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!(

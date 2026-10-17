@@ -80,8 +80,8 @@ void memory(int x, int *p, struct Pair *s) {
 // IR-NEXT:         field1 w: i32;
 // IR-NEXT:     } [size=8, align=4, offsets=[0, 4], bit_offsets=[Some(0), None], bit_units=[(0, 1)], field_units=[Some(0), None]];
 // IR-NEXT:     fn %[[VALUE_basic:[0-9]+]] @basic() -> void [linkage=external] [fallthrough=ret_void] {
-// IR-NEXT:         asm "nop" [dialect=att] [options=nostack];
-// IR-NEXT:         asm volatile "mfence" [dialect=att] [options=nostack];
+// IR-NEXT:         asm "nop" [dialect=att];
+// IR-NEXT:         asm volatile "mfence" [dialect=att];
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_extended:[0-9]+]] @extended(%[[VALUE_x:[0-9]+]] x: i32, %[[VALUE_y:[0-9]+]] y: i32, %[[VALUE_p:[0-9]+]] p: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
 // IR-NEXT:         asm volatile inline "mov %[in], %0 %% %= %{att%|intel%} %a1 %cc2" [dialect=att] [options=nostack,may_unwind] [alternative=0] {

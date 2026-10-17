@@ -93,17 +93,23 @@ int main(void) {
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: fn sum_docs() -> i32 {
 // CHECK-NEXT:     let mut cases: __SlateAlign16<[[[TESTCASE_0]]; 3]> = __SlateAlign16([
-// CHECK-NEXT:         [[TESTCASE_0]] {
-// CHECK-NEXT:             doc: c"a".as_ptr(),
-// CHECK-NEXT:             expectedStatus: 1,
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut [[T_0:__t[0-9]+]]: [[TESTCASE_0]] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:             [[T_0]].doc = c"a".as_ptr();
+// CHECK-NEXT:             [[T_0]].expectedStatus = 1 as i32;
+// CHECK-NEXT:             [[T_0]]
 // CHECK-NEXT:         },
-// CHECK-NEXT:         [[TESTCASE_0]] {
-// CHECK-NEXT:             doc: c"bb".as_ptr(),
-// CHECK-NEXT:             expectedStatus: 2,
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut [[T_1:__t[0-9]+]]: [[TESTCASE_0]] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:             [[T_1]].doc = c"bb".as_ptr();
+// CHECK-NEXT:             [[T_1]].expectedStatus = 2 as i32;
+// CHECK-NEXT:             [[T_1]]
 // CHECK-NEXT:         },
-// CHECK-NEXT:         [[TESTCASE_0]] {
-// CHECK-NEXT:             doc: c"ccc".as_ptr(),
-// CHECK-NEXT:             expectedStatus: 3,
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut [[T_2:__t[0-9]+]]: [[TESTCASE_0]] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:             [[T_2]].doc = c"ccc".as_ptr();
+// CHECK-NEXT:             [[T_2]].expectedStatus = 3 as i32;
+// CHECK-NEXT:             [[T_2]]
 // CHECK-NEXT:         },
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let mut total: i32 = 0;
@@ -137,17 +143,23 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn sum_movements() -> i32 {
 // CHECK-NEXT:     let mut cases: __SlateAlign16<[[[TESTCASE_2]]; 3]> = __SlateAlign16([
-// CHECK-NEXT:         [[TESTCASE_2]] {
-// CHECK-NEXT:             expectedMovementInChars: 1,
-// CHECK-NEXT:             input: c"x".as_ptr(),
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut [[T_0]]: [[TESTCASE_2]] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:             [[T_0]].expectedMovementInChars = 1 as i32;
+// CHECK-NEXT:             [[T_0]].input = c"x".as_ptr();
+// CHECK-NEXT:             [[T_0]]
 // CHECK-NEXT:         },
-// CHECK-NEXT:         [[TESTCASE_2]] {
-// CHECK-NEXT:             expectedMovementInChars: 2,
-// CHECK-NEXT:             input: c"yy".as_ptr(),
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut [[T_1]]: [[TESTCASE_2]] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:             [[T_1]].expectedMovementInChars = 2 as i32;
+// CHECK-NEXT:             [[T_1]].input = c"yy".as_ptr();
+// CHECK-NEXT:             [[T_1]]
 // CHECK-NEXT:         },
-// CHECK-NEXT:         [[TESTCASE_2]] {
-// CHECK-NEXT:             expectedMovementInChars: 3,
-// CHECK-NEXT:             input: c"zzz".as_ptr(),
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut [[T_2]]: [[TESTCASE_2]] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:             [[T_2]].expectedMovementInChars = 3 as i32;
+// CHECK-NEXT:             [[T_2]].input = c"zzz".as_ptr();
+// CHECK-NEXT:             [[T_2]]
 // CHECK-NEXT:         },
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let mut total: i32 = 0;

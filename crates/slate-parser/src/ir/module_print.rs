@@ -1015,6 +1015,9 @@ impl fmt::Display for DisplayModule<'_> {
             if function.semantics.naked {
                 f.write_str(" [naked]")?;
             }
+            if function.semantics.interrupt {
+                f.write_str(" [interrupt]")?;
+            }
             if function.semantics.overloadable {
                 f.write_str(" [overloadable]")?;
             }

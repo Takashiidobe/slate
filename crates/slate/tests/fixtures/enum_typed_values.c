@@ -84,10 +84,12 @@ int main(void) {
 // CHECK-NEXT:     1
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut lamp: Lamp = Lamp {
-// CHECK-NEXT:         state: 1,
-// CHECK-NEXT:         color: 4,
-// CHECK-NEXT:         size: 250,
+// CHECK-NEXT:     let mut lamp: Lamp = {
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: Lamp = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         [[T_0]].state = 1 as u32;
+// CHECK-NEXT:         [[T_0]].color = 4 as u32;
+// CHECK-NEXT:         [[T_0]].size = 250 as u8;
+// CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut color: u32 = 0;
 // CHECK-NEXT:     let mut sum: i32 = 0;

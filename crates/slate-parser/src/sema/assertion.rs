@@ -1020,20 +1020,36 @@ impl Checker<'_> {
                 self.loop_body(stmt, labels, body);
             }
             StmtKind::Switch { discriminant, body } => {
-                self.expression(discriminant);
-                let mut promoted = None;
-                if let Ok(ty) = self.types.operand_type(discriminant) {
-                    if self.types.ctypes.is_integer(ty) {
-                        promoted = self.types.record_switch(stmt, discriminant).ok();
-                    } else {
-                        self.reject(stmt, "noninteger switch discriminant");
-                    }
+                self.switch_statement(stmt, labels, discriminant, body)
+            }
+            StmtKind::IfDeclaration {
+                declaration,
+                condition,
+                then_branch,
+                else_branch,
+            } => {
+                let region = self.region;
+                self.declaration(&stmt.derive(()), declaration, false);
+                if let Some(condition) = condition {
+                    self.condition(condition);
                 }
-                self.context.breakables += 1;
-                self.context.switches.push(promoted);
-                self.named_target(stmt, labels, false, body);
-                self.context.switches.pop();
-                self.context.breakables -= 1;
+                self.statement(then_branch);
+                if let Some(branch) = else_branch {
+                    self.statement(branch);
+                }
+                self.region = region;
+            }
+            StmtKind::SwitchDeclaration {
+                declaration,
+                discriminant,
+                body,
+            } => {
+                let region = self.region;
+                self.declaration(&stmt.derive(()), declaration, false);
+                if let Some(discriminant) = discriminant {
+                    self.switch_statement(stmt, labels, discriminant, body);
+                }
+                self.region = region;
             }
             StmtKind::For {
                 init,
@@ -1202,6 +1218,29 @@ impl Checker<'_> {
             StmtKind::Expr(expr) => self.expression(expr),
             _ => {}
         }
+    }
+
+    fn switch_statement(
+        &mut self,
+        stmt: &Stmt,
+        labels: Vec<String>,
+        discriminant: &crate::ast::Expr,
+        body: &Stmt,
+    ) {
+        self.expression(discriminant);
+        let mut promoted = None;
+        if let Ok(ty) = self.types.operand_type(discriminant) {
+            if self.types.ctypes.is_integer(ty) {
+                promoted = self.types.record_switch(stmt, discriminant).ok();
+            } else {
+                self.reject(stmt, "noninteger switch discriminant");
+            }
+        }
+        self.context.breakables += 1;
+        self.context.switches.push(promoted);
+        self.named_target(stmt, labels, false, body);
+        self.context.switches.pop();
+        self.context.breakables -= 1;
     }
 
     fn finally_exit(&mut self, stmt: &Stmt, leaves: impl Fn(FinallyEntry) -> bool) {

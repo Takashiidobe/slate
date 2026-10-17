@@ -287,12 +287,14 @@ struct ParsedCompilerArgs {
     no_builtin: Vec<String>,
     char_signed: Option<bool>,
     short_wchar: Option<bool>,
+    short_enums: Option<bool>,
     ms_anonymous_structs: Option<bool>,
     strict_flex_arrays: Option<u8>,
     pthread: bool,
     delete_null_pointer_checks: Option<bool>,
     trivial_auto_var_init: Option<TrivialAutoVarInit>,
     macro_prefix_map: Vec<(String, String)>,
+    fixed_registers: Vec<String>,
     late_parsed_attributes: Option<bool>,
     asynchronous_unwind_tables: Option<bool>,
     pic: Option<Pic>,
@@ -376,6 +378,7 @@ enum Opt {
     UnsignedChar,
     SignedChar,
     ShortWchar,
+    ShortEnums,
     MsAnonymousStructs,
     StrictFlexArrays,
     GccStrictFlexArrays,
@@ -438,6 +441,7 @@ enum Opt {
     DeleteNullPointerChecks,
     TrivialAutoVarInit,
     MacroPrefixMap,
+    FixedRegister,
     Mllvm,
 }
 
@@ -477,6 +481,7 @@ impl std::fmt::Display for Opt {
             Self::UnsignedChar => "funsigned-char",
             Self::SignedChar => "fsigned-char",
             Self::ShortWchar => "fshort-wchar",
+            Self::ShortEnums => "fshort-enums",
             Self::MsAnonymousStructs => "fms-anonymous-structs",
             Self::StrictFlexArrays => "fstrict-flex-arrays=",
             Self::GccStrictFlexArrays => "fstrict-flex-arrays",
@@ -539,6 +544,7 @@ impl std::fmt::Display for Opt {
             Self::DeleteNullPointerChecks => "fdelete-null-pointer-checks",
             Self::TrivialAutoVarInit => "ftrivial-auto-var-init",
             Self::MacroPrefixMap => "fmacro-prefix-map",
+            Self::FixedRegister => "ffixed-<reg>",
             Self::Mllvm => "mllvm",
         };
         formatter.write_str(name)
@@ -605,6 +611,7 @@ impl Opt {
             | Self::UnsignedChar
             | Self::SignedChar
             | Self::ShortWchar
+            | Self::ShortEnums
             | Self::StrictFlexArrays
             | Self::AsynchronousUnwindTables
             | Self::SmallPic
@@ -623,7 +630,8 @@ impl Opt {
             | Self::Pthread
             | Self::DeleteNullPointerChecks
             | Self::TrivialAutoVarInit
-            | Self::MacroPrefixMap => &[Gcc, Clang],
+            | Self::MacroPrefixMap
+            | Self::FixedRegister => &[Gcc, Clang],
             Self::PreferredStackBoundary
             | Self::GccStrictFlexArrays
             | Self::PermittedFltEvalMethods
@@ -683,6 +691,7 @@ impl Opt {
             Self::UnsignedChar => "-funsigned-char",
             Self::SignedChar => "-fsigned-char",
             Self::ShortWchar => "-fshort-wchar",
+            Self::ShortEnums => "-fshort-enums",
             Self::MsAnonymousStructs => "-fms-anonymous-structs",
             Self::GccStrictFlexArrays => "-fstrict-flex-arrays",
             Self::LateParseAttributes => "-fexperimental-late-parse-attributes",
@@ -935,7 +944,7 @@ fn ignored_option(argument: &str) -> Option<IgnoredOption> {
         .then_some(IgnoredOption::Alone)
 }
 
-const SWITCH_OPTS: [Opt; 42] = [
+const SWITCH_OPTS: [Opt; 43] = [
     Opt::ClangTrigraphs,
     Opt::ClangDigraphs,
     Opt::DeleteNullPointerChecks,
@@ -956,6 +965,7 @@ const SWITCH_OPTS: [Opt; 42] = [
     Opt::UnsignedChar,
     Opt::SignedChar,
     Opt::ShortWchar,
+    Opt::ShortEnums,
     Opt::MsAnonymousStructs,
     Opt::LateParseAttributes,
     Opt::AsynchronousUnwindTables,
@@ -1011,6 +1021,7 @@ impl CompilerArgParser {
                 .or(raw.stack_alignment),
             char_signed: raw.char_signed,
             short_wchar: raw.short_wchar,
+            short_enums: raw.short_enums.unwrap_or(false),
         };
         let mut options = CompilerOptions::from_values(
             flavor,
@@ -1057,6 +1068,7 @@ impl CompilerArgParser {
         options.late_parsed_attributes = raw.late_parsed_attributes == Some(true);
         options.strict_flex_arrays = raw.strict_flex_arrays.unwrap_or(0);
         options.macro_prefix_map = raw.macro_prefix_map;
+        options.fixed_registers = raw.fixed_registers;
         Ok(CompilerArgs {
             options,
             defines: raw.defines,
@@ -1171,6 +1183,7 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                 Opt::UnsignedChar => parsed.char_signed = Some(!value),
                 Opt::SignedChar => parsed.char_signed = Some(value),
                 Opt::ShortWchar => parsed.short_wchar = Some(value),
+                Opt::ShortEnums => parsed.short_enums = Some(value),
                 Opt::MsAnonymousStructs => parsed.ms_anonymous_structs = Some(value),
                 Opt::LateParseAttributes => parsed.late_parsed_attributes = Some(value),
                 Opt::AsynchronousUnwindTables => parsed.asynchronous_unwind_tables = Some(value),
@@ -1274,6 +1287,12 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
             parsed
                 .macro_prefix_map
                 .push((old.to_owned(), new.to_owned()));
+        } else if let Some(register) = argument
+            .strip_prefix("-ffixed-")
+            .filter(|register| !register.is_empty())
+        {
+            parsed.saw(Opt::FixedRegister, argument);
+            parsed.fixed_registers.push(register.to_owned());
         } else if argument == "-mllvm" || argument.starts_with("-mllvm=") {
             parsed.saw(Opt::Mllvm, argument);
             if argument == "-mllvm" {

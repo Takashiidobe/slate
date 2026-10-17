@@ -108,26 +108,28 @@ int main(void) {
 // CHECK-NEXT:         };
 // CHECK-NEXT:         [[T_2]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let full: Sample = Sample {
-// CHECK-NEXT:         id: 4,
-// CHECK-NEXT:         scale: 1.5f64,
-// CHECK-NEXT:         target: std::ptr::addr_of_mut!(seed),
-// CHECK-NEXT:         data: [1, 2, 3, 4],
+// CHECK-NEXT:     let full: Sample = {
+// CHECK-NEXT:         let mut [[T_4:__t[0-9]+]]: Sample = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         [[T_4]].id = 4 as i32;
+// CHECK-NEXT:         [[T_4]].scale = 1.5f64;
+// CHECK-NEXT:         [[T_4]].target = std::ptr::addr_of_mut!(seed);
+// CHECK-NEXT:         [[T_4]].data = [1 as i32, 2 as i32, 3 as i32, 4 as i32];
+// CHECK-NEXT:         [[T_4]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     println!("{} {} {}", checksum(zero), checksum(some), checksum(full));
 // CHECK-NEXT:     let cells: __SlateAlign16<[Cell; 4]> = __SlateAlign16({
-// CHECK-NEXT:         let mut [[T_4:__t[0-9]+]]: [Cell; 4] = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_4]][1] = {
-// CHECK-NEXT:             let mut [[T_5:__t[0-9]+]]: Cell = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:             [[T_5]].value = 7 as i64;
-// CHECK-NEXT:             [[T_5]]
-// CHECK-NEXT:         };
-// CHECK-NEXT:         [[T_4]][3] = {
+// CHECK-NEXT:         let mut [[T_5:__t[0-9]+]]: [Cell; 4] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         [[T_5]][1] = {
 // CHECK-NEXT:             let mut [[T_6:__t[0-9]+]]: Cell = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:             [[T_6]].tag = 122 as i8;
+// CHECK-NEXT:             [[T_6]].value = 7 as i64;
 // CHECK-NEXT:             [[T_6]]
 // CHECK-NEXT:         };
-// CHECK-NEXT:         [[T_4]]
+// CHECK-NEXT:         [[T_5]][3] = {
+// CHECK-NEXT:             let mut [[T_7:__t[0-9]+]]: Cell = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:             [[T_7]].tag = 122 as i8;
+// CHECK-NEXT:             [[T_7]]
+// CHECK-NEXT:         };
+// CHECK-NEXT:         [[T_5]]
 // CHECK-NEXT:     });
 // CHECK-NEXT:     for i in 0 as i32..4 as i32 {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());

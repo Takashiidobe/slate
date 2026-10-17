@@ -20,20 +20,26 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let error_log: __SlateAlign16<[[[SLATERECORD_0:__SlateRecord[0-9]+]]; 3]> = __SlateAlign16([
-// CHECK-NEXT:         [[SLATERECORD_0]] {
-// CHECK-NEXT:             code: 404,
-// CHECK-NEXT:             message: c"Not Found".as_ptr(),
-// CHECK-NEXT:             confidence: 0.99f64,
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut [[T_0:__t[0-9]+]]: [[SLATERECORD_0]] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:             [[T_0]].code = 404 as i32;
+// CHECK-NEXT:             [[T_0]].message = c"Not Found".as_ptr();
+// CHECK-NEXT:             [[T_0]].confidence = 0.99f64;
+// CHECK-NEXT:             [[T_0]]
 // CHECK-NEXT:         },
-// CHECK-NEXT:         [[SLATERECORD_0]] {
-// CHECK-NEXT:             code: 500,
-// CHECK-NEXT:             message: c"Internal Server Error".as_ptr(),
-// CHECK-NEXT:             confidence: 0.85f64,
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut [[T_1:__t[0-9]+]]: [[SLATERECORD_0]] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:             [[T_1]].code = 500 as i32;
+// CHECK-NEXT:             [[T_1]].message = c"Internal Server Error".as_ptr();
+// CHECK-NEXT:             [[T_1]].confidence = 0.85f64;
+// CHECK-NEXT:             [[T_1]]
 // CHECK-NEXT:         },
-// CHECK-NEXT:         [[SLATERECORD_0]] {
-// CHECK-NEXT:             code: 200,
-// CHECK-NEXT:             message: c"OK".as_ptr(),
-// CHECK-NEXT:             confidence: 1.0f64,
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut [[T_2:__t[0-9]+]]: [[SLATERECORD_0]] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:             [[T_2]].code = 200 as i32;
+// CHECK-NEXT:             [[T_2]].message = c"OK".as_ptr();
+// CHECK-NEXT:             [[T_2]].confidence = 1.0f64;
+// CHECK-NEXT:             [[T_2]]
 // CHECK-NEXT:         },
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     println!("{}", error_log.0[0].code);

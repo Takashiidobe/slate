@@ -346,6 +346,7 @@ bitfields = {{ path = "{}" }}
 {build_section}
 [profile.dev]
 overflow-checks = false
+debug-assertions = false
 codegen-units = 256
 {test_targets}{features_section}"#,
         bitfields_path.display()

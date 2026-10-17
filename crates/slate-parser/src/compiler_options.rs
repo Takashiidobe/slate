@@ -23,6 +23,7 @@ pub struct CompilerOptions {
     pub strict_flex_arrays: u8,
     pub codegen: CodegenOptions,
     pub macro_prefix_map: Vec<(String, String)>,
+    pub fixed_registers: Vec<String>,
     pub graphs: SourceGraphs,
 }
 
@@ -294,6 +295,7 @@ pub struct LayoutOptions {
     pub preferred_stack_alignment: Option<u32>,
     pub char_signed: Option<bool>,
     pub short_wchar: Option<bool>,
+    pub short_enums: bool,
 }
 
 impl Default for CompilerOptions {
@@ -324,6 +326,7 @@ impl Default for CompilerOptions {
             strict_flex_arrays: 0,
             codegen: CodegenOptions::default(),
             macro_prefix_map: Vec::new(),
+            fixed_registers: Vec::new(),
             graphs: SourceGraphs::default(),
         }
     }

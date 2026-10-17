@@ -116,13 +116,25 @@ int main(void) {
 // CHECK-NEXT:     unsafe { std::ptr::addr_of_mut!((* (outer as * mut Outer)).inner) }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut local: Outer = Outer {
-// CHECK-NEXT:         id: 1,
-// CHECK-NEXT:         inner: Inner { value: 2, weight: 1.5f64 },
-// CHECK-NEXT:         items: [10, 20, 30, 40],
-// CHECK-NEXT:         link: std::ptr::null_mut::<Inner>(),
+// CHECK-NEXT:     let mut local: Outer = {
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: Outer = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         [[T_0]].id = 1 as i32;
+// CHECK-NEXT:         [[T_0]].inner = {
+// CHECK-NEXT:             let mut [[T_1:__t[0-9]+]]: Inner = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:             [[T_1]].value = 2 as i32;
+// CHECK-NEXT:             [[T_1]].weight = 1.5f64;
+// CHECK-NEXT:             [[T_1]]
+// CHECK-NEXT:         };
+// CHECK-NEXT:         [[T_0]].items = [10 as i32, 20 as i32, 30 as i32, 40 as i32];
+// CHECK-NEXT:         [[T_0]].link = std::ptr::null_mut::<Inner>();
+// CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut spare: Inner = Inner { value: 7, weight: 0.25f64 };
+// CHECK-NEXT:     let mut spare: Inner = {
+// CHECK-NEXT:         let mut [[T_2:__t[0-9]+]]: Inner = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         [[T_2]].value = 7 as i32;
+// CHECK-NEXT:         [[T_2]].weight = 0.25f64;
+// CHECK-NEXT:         [[T_2]]
+// CHECK-NEXT:     };
 // CHECK-NEXT:     local.link = std::ptr::addr_of_mut!(spare);
 // CHECK-NEXT:     bump(std::ptr::addr_of_mut!(local.id), 5 as i32);
 // CHECK-NEXT:     bump(std::ptr::addr_of_mut!(local.inner.value), 3 as i32);

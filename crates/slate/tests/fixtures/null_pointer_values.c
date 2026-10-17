@@ -108,17 +108,23 @@ int main(void) {
 // CHECK-NEXT:     if name != std::ptr::null::<i8>() { name } else { c"default".as_ptr() }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut c: Node = Node {
-// CHECK-NEXT:         value: 3,
-// CHECK-NEXT:         next: std::ptr::null_mut::<Node>(),
+// CHECK-NEXT:     let mut c: Node = {
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: Node = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         [[T_0]].value = 3 as i32;
+// CHECK-NEXT:         [[T_0]].next = std::ptr::null_mut::<Node>();
+// CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut b: Node = Node {
-// CHECK-NEXT:         value: 2,
-// CHECK-NEXT:         next: std::ptr::addr_of_mut!(c),
+// CHECK-NEXT:     let mut b: Node = {
+// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: Node = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         [[T_1]].value = 2 as i32;
+// CHECK-NEXT:         [[T_1]].next = std::ptr::addr_of_mut!(c);
+// CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut a: Node = Node {
-// CHECK-NEXT:         value: 1,
-// CHECK-NEXT:         next: std::ptr::addr_of_mut!(b),
+// CHECK-NEXT:     let mut a: Node = {
+// CHECK-NEXT:         let mut [[T_2:__t[0-9]+]]: Node = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         [[T_2]].value = 1 as i32;
+// CHECK-NEXT:         [[T_2]].next = std::ptr::addr_of_mut!(b);
+// CHECK-NEXT:         [[T_2]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut stored: i32 = 7;
 // CHECK-NEXT:     let entries: __SlateAlign16<[Entry; 2]> = __SlateAlign16([

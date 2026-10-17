@@ -168,13 +168,17 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut second: Node = Node {
-// CHECK-NEXT:         value: 2,
-// CHECK-NEXT:         next: std::ptr::null_mut::<Node>(),
+// CHECK-NEXT:     let mut second: Node = {
+// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: Node = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         [[T_1]].value = 2 as i32;
+// CHECK-NEXT:         [[T_1]].next = std::ptr::null_mut::<Node>();
+// CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut first: Node = Node {
-// CHECK-NEXT:         value: 1,
-// CHECK-NEXT:         next: std::ptr::addr_of_mut!(second),
+// CHECK-NEXT:     let mut first: Node = {
+// CHECK-NEXT:         let mut [[T_2:__t[0-9]+]]: Node = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         [[T_2]].value = 1 as i32;
+// CHECK-NEXT:         [[T_2]].next = std::ptr::addr_of_mut!(second);
+// CHECK-NEXT:         [[T_2]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut node: *mut Node = std::ptr::addr_of_mut!(first);
 // CHECK-NEXT:     let mut total: i32 = 0;

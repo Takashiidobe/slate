@@ -24,6 +24,7 @@ mod globals;
 mod intrinsics;
 mod intrinsics_table;
 mod names;
+mod padding;
 mod places;
 mod pointers;
 mod statements;
@@ -84,6 +85,9 @@ struct Tables<'m> {
 #[derive(Default)]
 struct Dependencies {
     alloca: bool,
+    cleanup: bool,
+    rounding: bool,
+    x86_interrupt: bool,
     win64_va: bool,
     sysv_va: bool,
     i386_va: bool,
@@ -747,6 +751,9 @@ impl<'m> ModuleLowerer<'m> {
                 rust::Lint::LongRunningConstEval,
             ]));
         }
+        if dependencies.x86_interrupt {
+            features.push(rust::CrateAttr::Feature(rust::Feature::AbiX86Interrupt));
+        }
         if dependencies.asm_unwind {
             features.push(rust::CrateAttr::Feature(rust::Feature::AsmUnwind));
         }
@@ -807,6 +814,26 @@ impl<'m> ModuleLowerer<'m> {
                 Item::SupportModule(rust::SupportModule {
                     name: "__slate_win64_va".into(),
                     source: include_str!("support/win64_va.rs").into(),
+                    exports: Vec::new(),
+                }),
+            );
+        }
+        if dependencies.rounding {
+            items.insert(
+                0,
+                Item::SupportModule(rust::SupportModule {
+                    name: "__slate_rounding".into(),
+                    source: include_str!("support/rounding.rs").into(),
+                    exports: Vec::new(),
+                }),
+            );
+        }
+        if dependencies.cleanup {
+            items.insert(
+                0,
+                Item::SupportModule(rust::SupportModule {
+                    name: "__slate_cleanup".into(),
+                    source: include_str!("support/cleanup.rs").into(),
                     exports: Vec::new(),
                 }),
             );
