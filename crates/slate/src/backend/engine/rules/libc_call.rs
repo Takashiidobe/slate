@@ -760,6 +760,10 @@ impl NodeRule for LibcCall {
         59
     }
 
+    fn requeues_producers(&self) -> bool {
+        true
+    }
+
     fn kinds(&self) -> &'static [NodeKindTag] {
         &[
             NodeKindTag::Expr,
