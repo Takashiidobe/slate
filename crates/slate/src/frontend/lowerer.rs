@@ -11,6 +11,7 @@ use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
 mod arithmetic;
 mod asm;
 mod atomics;
+mod bitint;
 mod calls;
 mod comment_text;
 mod comments;

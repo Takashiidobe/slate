@@ -1,4 +1,7 @@
+pub use aligned::{A1, A2, A4, A8, A16, Alignment};
 use std::cmp::Ordering;
+use std::fmt;
+use std::hash::{Hash, Hasher};
 use std::ops::{
     Add, AddAssign, BitAnd, BitAndAssign, BitOr, BitOrAssign, BitXor, BitXorAssign, Div, DivAssign,
     Mul, MulAssign, Neg, Not, Rem, RemAssign, Shl, ShlAssign, Shr, ShrAssign, Sub, SubAssign,
@@ -22,26 +25,66 @@ shift_amount_for_int!(
     i8, i16, i32, i64, i128, isize, u8, u16, u32, u64, u128, usize
 );
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> ShiftAmount
-    for BUint<BITS, LIMBS, BYTES>
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> ShiftAmount
+    for BUint<BITS, LIMBS, BYTES, A>
 {
     fn shift_amount(self) -> usize {
         usize::try_from(self.to_u128()).unwrap_or(usize::MAX)
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> ShiftAmount
-    for BInt<BITS, LIMBS, BYTES>
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> ShiftAmount
+    for BInt<BITS, LIMBS, BYTES, A>
 {
     fn shift_amount(self) -> usize {
         usize::try_from(self.to_i128()).unwrap_or(usize::MAX)
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
-pub struct BUint<const BITS: usize, const LIMBS: usize, const BYTES: usize> {
+#[derive(Clone, Copy)]
+#[repr(C)]
+pub struct BUint<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment = A1> {
+    _align: [A; 0],
     bytes: [u8; BYTES],
 }
+
+macro_rules! byte_traits {
+    ($name:ident) => {
+        impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> PartialEq
+            for $name<BITS, LIMBS, BYTES, A>
+        {
+            fn eq(&self, other: &Self) -> bool {
+                self.bytes == other.bytes
+            }
+        }
+
+        impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> Eq
+            for $name<BITS, LIMBS, BYTES, A>
+        {
+        }
+
+        impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> Hash
+            for $name<BITS, LIMBS, BYTES, A>
+        {
+            fn hash<H: Hasher>(&self, state: &mut H) {
+                self.bytes.hash(state);
+            }
+        }
+
+        impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> fmt::Debug
+            for $name<BITS, LIMBS, BYTES, A>
+        {
+            fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+                f.debug_struct(stringify!($name))
+                    .field("bytes", &self.bytes)
+                    .finish()
+            }
+        }
+    };
+}
+
+byte_traits!(BUint);
+byte_traits!(BInt);
 
 const fn bytes_to_limbs<const LIMBS: usize, const BYTES: usize>(
     bytes: &[u8; BYTES],
@@ -63,6 +106,17 @@ const fn limbs_to_bytes<const LIMBS: usize, const BYTES: usize>(
     while i < BYTES {
         bytes[i] = (limbs[i / 8] >> ((i % 8) * 8)) as u8;
         i += 1;
+    }
+    bytes
+}
+
+const fn sign_extend<const BITS: usize, const BYTES: usize>(mut bytes: [u8; BYTES]) -> [u8; BYTES] {
+    if bytes[(BITS - 1) / 8] & (1 << ((BITS - 1) % 8)) != 0 {
+        let mut bit = BITS;
+        while bit < BYTES * 8 {
+            bytes[bit / 8] |= 1 << (bit % 8);
+            bit += 1;
+        }
     }
     bytes
 }
@@ -97,12 +151,16 @@ const fn cast_bytes<const DBITS: usize, const DBYTES: usize, const SBITS: usize,
     out
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> BUint<BITS, LIMBS, BYTES> {
-    pub const ZERO: Self = Self { bytes: [0; BYTES] };
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> BUint<BITS, LIMBS, BYTES, A> {
+    pub const ZERO: Self = Self {
+        _align: [],
+        bytes: [0; BYTES],
+    };
     pub const ONE: Self = Self::from_limbs(BUintLimbs::<BITS, LIMBS>::ONE);
 
     const fn from_limbs(v: BUintLimbs<BITS, LIMBS>) -> Self {
         Self {
+            _align: [],
             bytes: limbs_to_bytes(&v.limbs),
         }
     }
@@ -119,18 +177,20 @@ impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> BUint<BITS, LIMB
         Self::from_limbs(BUintLimbs::from_u128(v))
     }
 
-    pub const fn from_buint<const SBITS: usize, const SLIMBS: usize, const SBYTES: usize>(
-        v: BUint<SBITS, SLIMBS, SBYTES>,
+    pub const fn from_buint<const SBITS: usize, const SLIMBS: usize, const SBYTES: usize, SA: Alignment>(
+        v: BUint<SBITS, SLIMBS, SBYTES, SA>,
     ) -> Self {
         Self {
+            _align: [],
             bytes: cast_bytes::<BITS, BYTES, SBITS, SBYTES>(&v.bytes, false),
         }
     }
 
-    pub const fn from_bint<const SBITS: usize, const SLIMBS: usize, const SBYTES: usize>(
-        v: BInt<SBITS, SLIMBS, SBYTES>,
+    pub const fn from_bint<const SBITS: usize, const SLIMBS: usize, const SBYTES: usize, SA: Alignment>(
+        v: BInt<SBITS, SLIMBS, SBYTES, SA>,
     ) -> Self {
         Self {
+            _align: [],
             bytes: cast_bytes::<BITS, BYTES, SBITS, SBYTES>(&v.bytes, true),
         }
     }
@@ -139,6 +199,7 @@ impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> BUint<BITS, LIMB
         bytes: [u8; SBYTES],
     ) -> Self {
         Self {
+            _align: [],
             bytes: cast_bytes::<BITS, BYTES, SBITS, SBYTES>(&bytes, false),
         }
     }
@@ -236,111 +297,111 @@ impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> BUint<BITS, LIMB
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> Add for BUint<BITS, LIMBS, BYTES> {
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> Add for BUint<BITS, LIMBS, BYTES, A> {
     type Output = Self;
     fn add(self, rhs: Self) -> Self {
         self.wrapping_add(rhs)
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> Sub for BUint<BITS, LIMBS, BYTES> {
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> Sub for BUint<BITS, LIMBS, BYTES, A> {
     type Output = Self;
     fn sub(self, rhs: Self) -> Self {
         self.wrapping_sub(rhs)
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> Mul for BUint<BITS, LIMBS, BYTES> {
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> Mul for BUint<BITS, LIMBS, BYTES, A> {
     type Output = Self;
     fn mul(self, rhs: Self) -> Self {
         self.wrapping_mul(rhs)
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> Neg for BUint<BITS, LIMBS, BYTES> {
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> Neg for BUint<BITS, LIMBS, BYTES, A> {
     type Output = Self;
     fn neg(self) -> Self {
         self.wrapping_neg()
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> Div for BUint<BITS, LIMBS, BYTES> {
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> Div for BUint<BITS, LIMBS, BYTES, A> {
     type Output = Self;
     fn div(self, rhs: Self) -> Self::Output {
         self.wrapping_div(rhs)
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> Rem for BUint<BITS, LIMBS, BYTES> {
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> Rem for BUint<BITS, LIMBS, BYTES, A> {
     type Output = Self;
     fn rem(self, rhs: Self) -> Self::Output {
         self.wrapping_rem(rhs)
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> AddAssign
-    for BUint<BITS, LIMBS, BYTES>
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> AddAssign
+    for BUint<BITS, LIMBS, BYTES, A>
 {
     fn add_assign(&mut self, rhs: Self) {
         *self = (*self).wrapping_add(rhs);
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> SubAssign
-    for BUint<BITS, LIMBS, BYTES>
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> SubAssign
+    for BUint<BITS, LIMBS, BYTES, A>
 {
     fn sub_assign(&mut self, rhs: Self) {
         *self = (*self).wrapping_sub(rhs);
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> MulAssign
-    for BUint<BITS, LIMBS, BYTES>
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> MulAssign
+    for BUint<BITS, LIMBS, BYTES, A>
 {
     fn mul_assign(&mut self, rhs: Self) {
         *self = (*self).wrapping_mul(rhs);
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> DivAssign
-    for BUint<BITS, LIMBS, BYTES>
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> DivAssign
+    for BUint<BITS, LIMBS, BYTES, A>
 {
     fn div_assign(&mut self, rhs: Self) {
         *self = (*self).wrapping_div(rhs);
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> RemAssign
-    for BUint<BITS, LIMBS, BYTES>
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> RemAssign
+    for BUint<BITS, LIMBS, BYTES, A>
 {
     fn rem_assign(&mut self, rhs: Self) {
         *self = (*self).wrapping_rem(rhs);
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> PartialOrd
-    for BUint<BITS, LIMBS, BYTES>
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> PartialOrd
+    for BUint<BITS, LIMBS, BYTES, A>
 {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> Ord for BUint<BITS, LIMBS, BYTES> {
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> Ord for BUint<BITS, LIMBS, BYTES, A> {
     fn cmp(&self, other: &Self) -> Ordering {
         self.to_limbs().cmp_magnitude(&other.to_limbs())
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> Not for BUint<BITS, LIMBS, BYTES> {
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> Not for BUint<BITS, LIMBS, BYTES, A> {
     type Output = Self;
     fn not(self) -> Self::Output {
         self.bitnot()
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> BitAnd
-    for BUint<BITS, LIMBS, BYTES>
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> BitAnd
+    for BUint<BITS, LIMBS, BYTES, A>
 {
     type Output = Self;
     fn bitand(self, rhs: Self) -> Self::Output {
@@ -348,8 +409,8 @@ impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> BitAnd
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> BitOr
-    for BUint<BITS, LIMBS, BYTES>
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> BitOr
+    for BUint<BITS, LIMBS, BYTES, A>
 {
     type Output = Self;
     fn bitor(self, rhs: Self) -> Self::Output {
@@ -357,8 +418,8 @@ impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> BitOr
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> BitXor
-    for BUint<BITS, LIMBS, BYTES>
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> BitXor
+    for BUint<BITS, LIMBS, BYTES, A>
 {
     type Output = Self;
     fn bitxor(self, rhs: Self) -> Self::Output {
@@ -366,8 +427,8 @@ impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> BitXor
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, S: ShiftAmount> Shl<S>
-    for BUint<BITS, LIMBS, BYTES>
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment, S: ShiftAmount> Shl<S>
+    for BUint<BITS, LIMBS, BYTES, A>
 {
     type Output = Self;
     fn shl(self, rhs: S) -> Self::Output {
@@ -375,8 +436,8 @@ impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, S: ShiftAmount> 
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, S: ShiftAmount> Shr<S>
-    for BUint<BITS, LIMBS, BYTES>
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment, S: ShiftAmount> Shr<S>
+    for BUint<BITS, LIMBS, BYTES, A>
 {
     type Output = Self;
     fn shr(self, rhs: S) -> Self::Output {
@@ -384,57 +445,63 @@ impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, S: ShiftAmount> 
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> BitAndAssign
-    for BUint<BITS, LIMBS, BYTES>
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> BitAndAssign
+    for BUint<BITS, LIMBS, BYTES, A>
 {
     fn bitand_assign(&mut self, rhs: Self) {
         *self = (*self).bitand_bits(rhs);
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> BitOrAssign
-    for BUint<BITS, LIMBS, BYTES>
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> BitOrAssign
+    for BUint<BITS, LIMBS, BYTES, A>
 {
     fn bitor_assign(&mut self, rhs: Self) {
         *self = (*self).bitor_bits(rhs);
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> BitXorAssign
-    for BUint<BITS, LIMBS, BYTES>
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> BitXorAssign
+    for BUint<BITS, LIMBS, BYTES, A>
 {
     fn bitxor_assign(&mut self, rhs: Self) {
         *self = (*self).bitxor_bits(rhs);
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, S: ShiftAmount> ShlAssign<S>
-    for BUint<BITS, LIMBS, BYTES>
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment, S: ShiftAmount> ShlAssign<S>
+    for BUint<BITS, LIMBS, BYTES, A>
 {
     fn shl_assign(&mut self, rhs: S) {
         *self = (*self).shl_bits(rhs.shift_amount());
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, S: ShiftAmount> ShrAssign<S>
-    for BUint<BITS, LIMBS, BYTES>
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment, S: ShiftAmount> ShrAssign<S>
+    for BUint<BITS, LIMBS, BYTES, A>
 {
     fn shr_assign(&mut self, rhs: S) {
         *self = (*self).shr_bits(rhs.shift_amount());
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
-pub struct BInt<const BITS: usize, const LIMBS: usize, const BYTES: usize> {
+#[derive(Clone, Copy)]
+#[repr(C)]
+pub struct BInt<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment = A1> {
+    _align: [A; 0],
     bytes: [u8; BYTES],
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> BInt<BITS, LIMBS, BYTES> {
-    pub const ZERO: Self = Self { bytes: [0; BYTES] };
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> BInt<BITS, LIMBS, BYTES, A> {
+    pub const ZERO: Self = Self {
+        _align: [],
+        bytes: [0; BYTES],
+    };
 
     const fn from_limbs(v: BIntLimbs<BITS, LIMBS>) -> Self {
         Self {
-            bytes: limbs_to_bytes(&v.bits.limbs),
+            _align: [],
+            bytes: sign_extend::<BITS, BYTES>(limbs_to_bytes(&v.bits.limbs)),
         }
     }
 
@@ -452,11 +519,14 @@ impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> BInt<BITS, LIMBS
         Self::from_limbs(BIntLimbs::from_u128(v))
     }
 
-    pub const fn from_buint<const SBITS: usize, const SLIMBS: usize, const SBYTES: usize>(
-        v: BUint<SBITS, SLIMBS, SBYTES>,
+    pub const fn from_buint<const SBITS: usize, const SLIMBS: usize, const SBYTES: usize, SA: Alignment>(
+        v: BUint<SBITS, SLIMBS, SBYTES, SA>,
     ) -> Self {
         Self {
-            bytes: cast_bytes::<BITS, BYTES, SBITS, SBYTES>(&v.bytes, false),
+            _align: [],
+            bytes: sign_extend::<BITS, BYTES>(cast_bytes::<BITS, BYTES, SBITS, SBYTES>(
+                &v.bytes, false,
+            )),
         }
     }
 
@@ -464,7 +534,10 @@ impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> BInt<BITS, LIMBS
         bytes: [u8; SBYTES],
     ) -> Self {
         Self {
-            bytes: cast_bytes::<BITS, BYTES, SBITS, SBYTES>(&bytes, true),
+            _align: [],
+            bytes: sign_extend::<BITS, BYTES>(cast_bytes::<BITS, BYTES, SBITS, SBYTES>(
+                &bytes, true,
+            )),
         }
     }
 
@@ -472,11 +545,14 @@ impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> BInt<BITS, LIMBS
         cast_bytes::<BITS, DBYTES, BITS, BYTES>(&self.bytes, false)
     }
 
-    pub const fn from_bint<const SBITS: usize, const SLIMBS: usize, const SBYTES: usize>(
-        v: BInt<SBITS, SLIMBS, SBYTES>,
+    pub const fn from_bint<const SBITS: usize, const SLIMBS: usize, const SBYTES: usize, SA: Alignment>(
+        v: BInt<SBITS, SLIMBS, SBYTES, SA>,
     ) -> Self {
         Self {
-            bytes: cast_bytes::<BITS, BYTES, SBITS, SBYTES>(&v.bytes, true),
+            _align: [],
+            bytes: sign_extend::<BITS, BYTES>(cast_bytes::<BITS, BYTES, SBITS, SBYTES>(
+                &v.bytes, true,
+            )),
         }
     }
 
@@ -611,64 +687,64 @@ impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> BInt<BITS, LIMBS
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> Add for BInt<BITS, LIMBS, BYTES> {
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> Add for BInt<BITS, LIMBS, BYTES, A> {
     type Output = Self;
     fn add(self, rhs: Self) -> Self {
         self.wrapping_add(rhs)
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> Sub for BInt<BITS, LIMBS, BYTES> {
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> Sub for BInt<BITS, LIMBS, BYTES, A> {
     type Output = Self;
     fn sub(self, rhs: Self) -> Self {
         self.wrapping_sub(rhs)
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> Mul for BInt<BITS, LIMBS, BYTES> {
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> Mul for BInt<BITS, LIMBS, BYTES, A> {
     type Output = Self;
     fn mul(self, rhs: Self) -> Self {
         self.wrapping_mul(rhs)
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> Neg for BInt<BITS, LIMBS, BYTES> {
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> Neg for BInt<BITS, LIMBS, BYTES, A> {
     type Output = Self;
     fn neg(self) -> Self {
         self.wrapping_neg()
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> PartialOrd
-    for BInt<BITS, LIMBS, BYTES>
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> PartialOrd
+    for BInt<BITS, LIMBS, BYTES, A>
 {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> Ord for BInt<BITS, LIMBS, BYTES> {
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> Ord for BInt<BITS, LIMBS, BYTES, A> {
     fn cmp(&self, other: &Self) -> Ordering {
         self.to_limbs().cmp(&other.to_limbs())
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> Div for BInt<BITS, LIMBS, BYTES> {
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> Div for BInt<BITS, LIMBS, BYTES, A> {
     type Output = Self;
     fn div(self, rhs: Self) -> Self {
         self.wrapping_div(rhs)
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> Rem for BInt<BITS, LIMBS, BYTES> {
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> Rem for BInt<BITS, LIMBS, BYTES, A> {
     type Output = Self;
     fn rem(self, rhs: Self) -> Self {
         self.wrapping_rem(rhs)
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> BitAnd
-    for BInt<BITS, LIMBS, BYTES>
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> BitAnd
+    for BInt<BITS, LIMBS, BYTES, A>
 {
     type Output = Self;
     fn bitand(self, rhs: Self) -> Self {
@@ -676,15 +752,15 @@ impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> BitAnd
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> BitOr for BInt<BITS, LIMBS, BYTES> {
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> BitOr for BInt<BITS, LIMBS, BYTES, A> {
     type Output = Self;
     fn bitor(self, rhs: Self) -> Self {
         self.bitor_bits(rhs)
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> BitXor
-    for BInt<BITS, LIMBS, BYTES>
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> BitXor
+    for BInt<BITS, LIMBS, BYTES, A>
 {
     type Output = Self;
     fn bitxor(self, rhs: Self) -> Self {
@@ -692,79 +768,79 @@ impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> BitXor
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> AddAssign
-    for BInt<BITS, LIMBS, BYTES>
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> AddAssign
+    for BInt<BITS, LIMBS, BYTES, A>
 {
     fn add_assign(&mut self, rhs: Self) {
         *self = (*self).wrapping_add(rhs);
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> SubAssign
-    for BInt<BITS, LIMBS, BYTES>
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> SubAssign
+    for BInt<BITS, LIMBS, BYTES, A>
 {
     fn sub_assign(&mut self, rhs: Self) {
         *self = (*self).wrapping_sub(rhs);
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> MulAssign
-    for BInt<BITS, LIMBS, BYTES>
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> MulAssign
+    for BInt<BITS, LIMBS, BYTES, A>
 {
     fn mul_assign(&mut self, rhs: Self) {
         *self = (*self).wrapping_mul(rhs);
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> DivAssign
-    for BInt<BITS, LIMBS, BYTES>
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> DivAssign
+    for BInt<BITS, LIMBS, BYTES, A>
 {
     fn div_assign(&mut self, rhs: Self) {
         *self = (*self).wrapping_div(rhs);
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> RemAssign
-    for BInt<BITS, LIMBS, BYTES>
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> RemAssign
+    for BInt<BITS, LIMBS, BYTES, A>
 {
     fn rem_assign(&mut self, rhs: Self) {
         *self = (*self).wrapping_rem(rhs);
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> BitAndAssign
-    for BInt<BITS, LIMBS, BYTES>
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> BitAndAssign
+    for BInt<BITS, LIMBS, BYTES, A>
 {
     fn bitand_assign(&mut self, rhs: Self) {
         *self = (*self).bitand_bits(rhs);
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> BitOrAssign
-    for BInt<BITS, LIMBS, BYTES>
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> BitOrAssign
+    for BInt<BITS, LIMBS, BYTES, A>
 {
     fn bitor_assign(&mut self, rhs: Self) {
         *self = (*self).bitor_bits(rhs);
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> BitXorAssign
-    for BInt<BITS, LIMBS, BYTES>
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> BitXorAssign
+    for BInt<BITS, LIMBS, BYTES, A>
 {
     fn bitxor_assign(&mut self, rhs: Self) {
         *self = (*self).bitxor_bits(rhs);
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> Not for BInt<BITS, LIMBS, BYTES> {
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> Not for BInt<BITS, LIMBS, BYTES, A> {
     type Output = Self;
     fn not(self) -> Self::Output {
         self.bitnot()
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, S: ShiftAmount> Shl<S>
-    for BInt<BITS, LIMBS, BYTES>
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment, S: ShiftAmount> Shl<S>
+    for BInt<BITS, LIMBS, BYTES, A>
 {
     type Output = Self;
     fn shl(self, rhs: S) -> Self::Output {
@@ -772,8 +848,8 @@ impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, S: ShiftAmount> 
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, S: ShiftAmount> Shr<S>
-    for BInt<BITS, LIMBS, BYTES>
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment, S: ShiftAmount> Shr<S>
+    for BInt<BITS, LIMBS, BYTES, A>
 {
     type Output = Self;
     fn shr(self, rhs: S) -> Self::Output {
@@ -781,16 +857,16 @@ impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, S: ShiftAmount> 
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, S: ShiftAmount> ShlAssign<S>
-    for BInt<BITS, LIMBS, BYTES>
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment, S: ShiftAmount> ShlAssign<S>
+    for BInt<BITS, LIMBS, BYTES, A>
 {
     fn shl_assign(&mut self, rhs: S) {
         *self = (*self).shl_bits(rhs.shift_amount());
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, S: ShiftAmount> ShrAssign<S>
-    for BInt<BITS, LIMBS, BYTES>
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment, S: ShiftAmount> ShrAssign<S>
+    for BInt<BITS, LIMBS, BYTES, A>
 {
     fn shr_assign(&mut self, rhs: S) {
         *self = (*self).shr_bits(rhs.shift_amount());

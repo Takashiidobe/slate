@@ -5,12 +5,18 @@ use rustc_apfloat::{
 };
 use slate_parser::target_info::TargetFamily;
 
-fn odd_width(ty: &ir::Type) -> Option<(u32, bool, Prim)> {
-    let ir::Type::Numeric(ir::NumericType::Integer { width, signed, .. }) = *ty else {
+pub(super) fn odd_width(ty: &ir::Type) -> Option<(u32, bool, Prim)> {
+    let ir::Type::Numeric(ir::NumericType::Integer {
+        width,
+        signed,
+        bit_precise,
+    }) = *ty
+    else {
         return None;
     };
     let container = match (width, signed) {
         (8 | 16 | 32 | 64 | 128, _) | (129.., _) | (0, _) => return None,
+        (65.., _) if bit_precise => return None,
         (..8, true) => Prim::I8,
         (..8, false) => Prim::U8,
         (..16, true) => Prim::I16,
@@ -684,50 +690,26 @@ impl FunctionLowerer<'_, '_> {
             {
                 self.lower_vector_unary(value, *op, operand)?
             }
+            ValueKind::Convert { operand, .. }
+                if self.tables.wide_int(&operand.ty).is_some()
+                    || self.tables.wide_int(&value.ty).is_some() =>
+            {
+                self.lower_wide_int_conversion(value, operand)?
+            }
             ValueKind::Convert { operand, .. } => {
                 let from = match odd_width(self.tables.resolve_type(&operand.ty)) {
                     Some((_, _, container)) => rust::Type::Prim(container),
                     None => self.lower_type(&operand.ty)?,
                 };
-                let expr = Box::new(self.lower_value(operand)?);
-                let Some((width, signed, container)) =
-                    odd_width(self.tables.resolve_type(&value.ty))
-                else {
+                let expr = self.lower_value(operand)?;
+                if odd_width(self.tables.resolve_type(&value.ty)).is_none() {
                     return Ok(convert_function_pointer(
                         from,
                         self.lower_type(&value.ty)?,
-                        expr,
+                        Box::new(expr),
                     ));
-                };
-                let contained = Expr::Cast {
-                    expr,
-                    ty: rust::Type::Prim(container),
-                };
-                if signed {
-                    let shift = Box::new(Expr::Value(rust::RustValue::I64(i64::from(
-                        prim_width(container) - width,
-                    ))));
-                    Expr::Binary {
-                        op: BinOp::Shr,
-                        lhs: Box::new(Expr::Binary {
-                            op: BinOp::Shl,
-                            lhs: Box::new(contained),
-                            rhs: shift.clone(),
-                        }),
-                        rhs: shift,
-                    }
-                } else {
-                    Expr::Binary {
-                        op: BinOp::BitAnd,
-                        lhs: Box::new(contained),
-                        rhs: Box::new(Expr::Cast {
-                            expr: Box::new(Expr::Value(rust::RustValue::U128(
-                                (1u128 << width) - 1,
-                            ))),
-                            ty: rust::Type::Prim(container),
-                        }),
-                    }
                 }
+                self.narrow_integer(expr, &value.ty)?
             }
             ValueKind::ArrayDecay { place, .. } => {
                 let bytes = match place.kind {
@@ -858,6 +840,17 @@ impl FunctionLowerer<'_, '_> {
                 Expr::Unary {
                     op: rust::UnaryOp::Neg,
                     expr: Box::new(self.lower_value(operand)?),
+                }
+            }
+            ValueKind::Unary { op, operand, .. } if self.tables.wide_int(&value.ty).is_some() => {
+                Expr::MethodCall {
+                    recv: Box::new(self.lower_value(operand)?),
+                    method: match op {
+                        ir::UnaryArithOp::Neg => "wrapping_neg",
+                        ir::UnaryArithOp::Not => "bitnot",
+                    }
+                    .into(),
+                    args: Vec::new(),
                 }
             }
             ValueKind::Unary {
@@ -1404,7 +1397,46 @@ impl FunctionLowerer<'_, '_> {
         })))
     }
 
+    pub(super) fn narrow_integer(&mut self, expr: Expr, ty: &ir::Type) -> Result<Expr> {
+        let Some((width, signed, container)) = odd_width(self.tables.resolve_type(ty)) else {
+            return Ok(Expr::Cast {
+                expr: Box::new(expr),
+                ty: self.lower_type(ty)?,
+            });
+        };
+        let contained = Box::new(Expr::Cast {
+            expr: Box::new(expr),
+            ty: rust::Type::Prim(container),
+        });
+        Ok(if signed {
+            let shift = Box::new(Expr::Value(rust::RustValue::I64(i64::from(
+                prim_width(container) - width,
+            ))));
+            Expr::Binary {
+                op: BinOp::Shr,
+                lhs: Box::new(Expr::Binary {
+                    op: BinOp::Shl,
+                    lhs: contained,
+                    rhs: shift.clone(),
+                }),
+                rhs: shift,
+            }
+        } else {
+            Expr::Binary {
+                op: BinOp::BitAnd,
+                lhs: contained,
+                rhs: Box::new(Expr::Cast {
+                    expr: Box::new(Expr::Value(rust::RustValue::U128((1u128 << width) - 1))),
+                    ty: rust::Type::Prim(container),
+                }),
+            }
+        })
+    }
+
     pub(super) fn lower_number(&mut self, number: &Number, ty: &ir::Type) -> Result<Expr> {
+        if let Some(wide) = self.tables.wide_int(ty) {
+            return self.wide_int_constant(wide, number);
+        }
         let value = match number {
             Number::Bool(value) => rust::RustValue::Bool(*value),
             Number::Integer(value) => rust::RustValue::U128(
@@ -1503,7 +1535,7 @@ fn apfloat_literal<F: Float>(bits: u128, name: &'static str) -> (String, bool, b
     )
 }
 
-fn unsupported_constant(number: &Number) -> Failure {
+pub(super) fn unsupported_constant(number: &Number) -> Failure {
     Construct::Value {
         kind: "Constant".into(),
         ir: format!("{number:?}"),

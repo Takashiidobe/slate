@@ -357,6 +357,9 @@ impl FunctionLowerer<'_, '_> {
             else {
                 continue;
             };
+            if self.tables.wide_int(&field.ty).is_some() {
+                return Err(unsupported_record(name, "wide _BitInt bit-field").at(Site::of(field)));
+            }
             let start = bit_offset - storage.offset * 8;
             push_bit_padding(&mut members, start - cursor);
             members.push(rust::StructField {
@@ -428,21 +431,29 @@ impl FunctionLowerer<'_, '_> {
                 };
             }
             ir::Type::Bool => Prim::Bool,
-            ir::Type::Numeric(ir::NumericType::Integer { width, signed, .. }) => {
-                match (*width, *signed) {
-                    (8, true) => Prim::I8,
-                    (16, true) => Prim::I16,
-                    (32, true) => Prim::I32,
-                    (64, true) => Prim::I64,
-                    (128, true) => Prim::I128,
-                    (8, false) => Prim::U8,
-                    (16, false) => Prim::U16,
-                    (32, false) => Prim::U32,
-                    (64, false) => Prim::U64,
-                    (128, false) => Prim::U128,
-                    _ => return Err(unsupported_type(ty)),
-                }
+            ir::Type::Numeric(ir::NumericType::Integer { .. })
+                if let Some(wide) = self.tables.wide_int(ty) =>
+            {
+                return Ok(wide.rust_type());
             }
+            ir::Type::Numeric(ir::NumericType::Integer {
+                width,
+                signed,
+                bit_precise,
+            }) => match (*width, *signed) {
+                (8, true) => Prim::I8,
+                (16, true) => Prim::I16,
+                (32, true) => Prim::I32,
+                (64, true) => Prim::I64,
+                (128, true) => Prim::I128,
+                (8, false) => Prim::U8,
+                (16, false) => Prim::U16,
+                (32, false) => Prim::U32,
+                (64, false) => Prim::U64,
+                (128, false) => Prim::U128,
+                _ if *bit_precise && let Some((_, _, container)) = odd_width(ty) => container,
+                _ => return Err(unsupported_type(ty)),
+            },
             ir::Type::Numeric(ir::NumericType::Float(ir::FloatType::F16)) => {
                 self.dependencies.f16 = true;
                 Prim::F16

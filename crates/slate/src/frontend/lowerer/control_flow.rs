@@ -617,7 +617,7 @@ impl FunctionLowerer<'_, '_> {
                         let mut dispatch = jump(default);
                         for case in cases {
                             let discriminant = Expr::Var(name.as_str().into());
-                            let start = self.lower_value(case.start)?;
+                            let start = self.lower_switch_operand(case.start)?.0;
                             let cond = match case.end {
                                 Some(end) => Expr::Binary {
                                     op: BinOp::And,
@@ -629,7 +629,7 @@ impl FunctionLowerer<'_, '_> {
                                     rhs: Box::new(Expr::Binary {
                                         op: BinOp::Le,
                                         lhs: Box::new(discriminant),
-                                        rhs: Box::new(self.lower_value(end)?),
+                                        rhs: Box::new(self.lower_switch_operand(end)?.0),
                                     }),
                                 },
                                 None => Expr::Binary {
@@ -644,11 +644,12 @@ impl FunctionLowerer<'_, '_> {
                                 else_body: dispatch,
                             }];
                         }
+                        let (init, ty) = self.lower_switch_operand(value)?;
                         let mut body = vec![Stmt::Let {
                             name,
                             mutable: false,
-                            ty: Some(self.lower_type(&value.ty)?),
-                            init: Some(self.lower_value(value)?),
+                            ty: Some(ty),
+                            init: Some(init),
                         }];
                         body.extend(dispatch);
                         body

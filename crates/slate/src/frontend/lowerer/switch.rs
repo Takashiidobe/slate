@@ -196,7 +196,7 @@ impl FunctionLowerer<'_, '_> {
         Ok(Stmt::LabeledBlock {
             label: break_label(id),
             body: vec![Stmt::Match {
-                expr: self.lower_value(discriminant)?,
+                expr: self.lower_match_scrutinee(discriminant)?,
                 arms: match_arms,
             }],
         })
@@ -257,7 +257,7 @@ impl FunctionLowerer<'_, '_> {
                     mutable: true,
                     ty: Some(rust::Type::Prim(Prim::I64)),
                     init: Some(Expr::Match {
-                        expr: Box::new(self.lower_value(discriminant)?),
+                        expr: Box::new(self.lower_match_scrutinee(discriminant)?),
                         arms: dispatch,
                     }),
                 },
@@ -270,6 +270,25 @@ impl FunctionLowerer<'_, '_> {
                 },
             ],
         })
+    }
+
+    pub(super) fn lower_switch_operand(&mut self, value: &ir::Value) -> Result<(Expr, rust::Type)> {
+        let lowered = self.lower_value(value)?;
+        match self.tables.wide_int(&value.ty) {
+            None => Ok((lowered, self.lower_type(&value.ty)?)),
+            Some(wide) => Ok(wide.switch_operand(lowered)),
+        }
+    }
+
+    fn lower_match_scrutinee(&mut self, discriminant: &ir::Value) -> Result<Expr> {
+        if self
+            .tables
+            .wide_int(&discriminant.ty)
+            .is_some_and(|wide| wide.exceeds_i128())
+        {
+            return Err(unsupported_switch("_BitInt wider than 128 bits"));
+        }
+        Ok(self.lower_switch_operand(discriminant)?.0)
     }
 
     fn lower_switch_arm(&mut self, arm: &SwitchArm) -> Result<Vec<Stmt>> {
