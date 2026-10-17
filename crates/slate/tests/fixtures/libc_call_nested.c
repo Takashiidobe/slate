@@ -47,6 +47,13 @@ static int parsed(void) {
 // @check-fn-end
 
 // @check-fn-begin
+static int embedded(int n) {
+  const char *s = "ab\0cd";
+  return (int)strspn(s, "abcd") + (strncmp(s, "abz", n) == 0);
+}
+// @check-fn-end
+
+// @check-fn-begin
 static int effectful(void) {
   if (strcmp(next_word(), "beta") == 0) return 7;
   return 8;
@@ -56,6 +63,7 @@ static int effectful(void) {
 int main(void) {
   printf("%d %d %d %d %d\n", count_alpha(), same_prefix(), long_word(), spans(), parsed());
   printf("%d %d\n", effectful(), effectful());
+  printf("%d %d %d\n", embedded(1), embedded(2), embedded(3));
   return 0;
 }
 
@@ -73,22 +81,7 @@ int main(void) {
 // CHECK-LABEL: {{^}}fn same_prefix() -> i32 {
 // CHECK-NEXT:     let a: *const i8 = c"abx".as_ptr();
 // CHECK-NEXT:     if (unsafe {
-// CHECK-NEXT:         "abx"
-// CHECK-NEXT:             .as_bytes()[0usize.."abx"
-// CHECK-NEXT:                 .as_bytes()
-// CHECK-NEXT:                 .iter()
-// CHECK-NEXT:                 .position(|__slate_byte| *__slate_byte == 0u8)
-// CHECK-NEXT:                 .unwrap_or("abx".as_bytes().len())
-// CHECK-NEXT:                 .min(2 as usize) as usize]
-// CHECK-NEXT:             .cmp(
-// CHECK-NEXT:                 &"aby"
-// CHECK-NEXT:                     .as_bytes()[0usize.."aby"
-// CHECK-NEXT:                     .as_bytes()
-// CHECK-NEXT:                     .iter()
-// CHECK-NEXT:                     .position(|__slate_byte| *__slate_byte == 0u8)
-// CHECK-NEXT:                     .unwrap_or("aby".as_bytes().len())
-// CHECK-NEXT:                     .min(2 as usize) as usize],
-// CHECK-NEXT:             ) as i32
+// CHECK-NEXT:         "abx".as_bytes()[0usize..2usize].cmp(&"aby".as_bytes()[0usize..2usize]) as i32
 // CHECK-NEXT:     }) == 0
 // CHECK-NEXT:     {
 // CHECK-NEXT:         return 1;
@@ -103,61 +96,57 @@ int main(void) {
 // CHECK-NEXT:     let s: *const i8 = c"  word".as_ptr();
 // CHECK-NEXT:     (((unsafe {
 // CHECK-NEXT:         "  word"
-// CHECK-NEXT:             .as_bytes()[0usize.."  word"
-// CHECK-NEXT:                 .as_bytes()
-// CHECK-NEXT:                 .iter()
-// CHECK-NEXT:                 .position(|__slate_byte| *__slate_byte == 0u8)
-// CHECK-NEXT:                 .unwrap_or("  word".as_bytes().len()) as usize]
+// CHECK-NEXT:             .as_bytes()
 // CHECK-NEXT:             .iter()
-// CHECK-NEXT:             .position(|__slate_byte| {
-// CHECK-NEXT:                 !" "
-// CHECK-NEXT:                     .as_bytes()[0usize.." "
-// CHECK-NEXT:                         .as_bytes()
-// CHECK-NEXT:                         .iter()
-// CHECK-NEXT:                         .position(|__slate_byte| *__slate_byte == 0u8)
-// CHECK-NEXT:                         .unwrap_or(" ".as_bytes().len()) as usize]
-// CHECK-NEXT:                     .contains(__slate_byte)
-// CHECK-NEXT:             })
-// CHECK-NEXT:             .unwrap_or(
-// CHECK-NEXT:                 "  word"
-// CHECK-NEXT:                     .as_bytes()[0usize.."  word"
-// CHECK-NEXT:                         .as_bytes()
-// CHECK-NEXT:                         .iter()
-// CHECK-NEXT:                         .position(|__slate_byte| *__slate_byte == 0u8)
-// CHECK-NEXT:                         .unwrap_or("  word".as_bytes().len()) as usize]
-// CHECK-NEXT:                     .len(),
-// CHECK-NEXT:             ) as i32
+// CHECK-NEXT:             .position(|__slate_byte| !" ".as_bytes().contains(__slate_byte))
+// CHECK-NEXT:             .unwrap_or("  word".as_bytes().len()) as i32
 // CHECK-NEXT:     }) as u32) as i32)
 // CHECK-NEXT:         + (((unsafe {
 // CHECK-NEXT:             "  word"
-// CHECK-NEXT:                 .as_bytes()[0usize.."  word"
-// CHECK-NEXT:                     .as_bytes()
-// CHECK-NEXT:                     .iter()
-// CHECK-NEXT:                     .position(|__slate_byte| *__slate_byte == 0u8)
-// CHECK-NEXT:                     .unwrap_or("  word".as_bytes().len()) as usize]
+// CHECK-NEXT:                 .as_bytes()
 // CHECK-NEXT:                 .iter()
-// CHECK-NEXT:                 .position(|__slate_byte| {
-// CHECK-NEXT:                     "r"
-// CHECK-NEXT:                         .as_bytes()[0usize.."r"
-// CHECK-NEXT:                             .as_bytes()
-// CHECK-NEXT:                             .iter()
-// CHECK-NEXT:                             .position(|__slate_byte| *__slate_byte == 0u8)
-// CHECK-NEXT:                             .unwrap_or("r".as_bytes().len()) as usize]
-// CHECK-NEXT:                         .contains(__slate_byte)
-// CHECK-NEXT:                 })
-// CHECK-NEXT:                 .unwrap_or(
-// CHECK-NEXT:                     "  word"
-// CHECK-NEXT:                         .as_bytes()[0usize.."  word"
-// CHECK-NEXT:                             .as_bytes()
-// CHECK-NEXT:                             .iter()
-// CHECK-NEXT:                             .position(|__slate_byte| *__slate_byte == 0u8)
-// CHECK-NEXT:                             .unwrap_or("  word".as_bytes().len()) as usize]
-// CHECK-NEXT:                         .len(),
-// CHECK-NEXT:                 ) as i32
+// CHECK-NEXT:                 .position(|__slate_byte| "r".as_bytes().contains(__slate_byte))
+// CHECK-NEXT:                 .unwrap_or("  word".as_bytes().len()) as i32
 // CHECK-NEXT:         }) as u32) as i32)
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn parsed() -> i32 {
 // CHECK-NEXT:     3 + (unsafe { 12i32 }) * 2
+// CHECK: {{^}}}
+// CHECK-LABEL: {{^}}fn embedded(n: i32) -> i32 {
+// CHECK-NEXT:     let s: *const i8 = b"ab\0cd\0".as_ptr() as *const i8;
+// CHECK-NEXT:     (((unsafe {
+// CHECK-NEXT:         "ab\u{0}cd"
+// CHECK-NEXT:             .as_bytes()[0usize.."ab\u{0}cd"
+// CHECK-NEXT:                 .as_bytes()
+// CHECK-NEXT:                 .iter()
+// CHECK-NEXT:                 .position(|__slate_byte| *__slate_byte == 0u8)
+// CHECK-NEXT:                 .unwrap_or("ab\u{0}cd".as_bytes().len()) as usize]
+// CHECK-NEXT:             .iter()
+// CHECK-NEXT:             .position(|__slate_byte| !"abcd".as_bytes().contains(__slate_byte))
+// CHECK-NEXT:             .unwrap_or(
+// CHECK-NEXT:                 "ab\u{0}cd"
+// CHECK-NEXT:                     .as_bytes()[0usize.."ab\u{0}cd"
+// CHECK-NEXT:                         .as_bytes()
+// CHECK-NEXT:                         .iter()
+// CHECK-NEXT:                         .position(|__slate_byte| *__slate_byte == 0u8)
+// CHECK-NEXT:                         .unwrap_or("ab\u{0}cd".as_bytes().len()) as usize]
+// CHECK-NEXT:                     .len(),
+// CHECK-NEXT:             ) as i32
+// CHECK-NEXT:     }) as u32) as i32)
+// CHECK-NEXT:         + (((unsafe {
+// CHECK-NEXT:             "ab\u{0}cd"
+// CHECK-NEXT:                 .as_bytes()[0usize.."ab\u{0}cd"
+// CHECK-NEXT:                     .as_bytes()
+// CHECK-NEXT:                     .iter()
+// CHECK-NEXT:                     .position(|__slate_byte| *__slate_byte == 0u8)
+// CHECK-NEXT:                     .unwrap_or("ab\u{0}cd".as_bytes().len())
+// CHECK-NEXT:                     .min(((n as i64) as u64) as usize) as usize]
+// CHECK-NEXT:                 .cmp(
+// CHECK-NEXT:                     &"abz"
+// CHECK-NEXT:                         .as_bytes()[0usize..(((n as i64) as u64) as usize).min(3usize)
+// CHECK-NEXT:                         as usize],
+// CHECK-NEXT:                 ) as i32
+// CHECK-NEXT:         }) == 0) as i32)
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn effectful() -> i32 {
 // CHECK-NEXT:     if (unsafe { strcmp(next_word(), c"beta".as_ptr()) }) == 0 {

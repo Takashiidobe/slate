@@ -367,7 +367,10 @@ fn slice_to(expr: Expr, len: Expr) -> Expr {
         base: Box::new(expr),
         index: Box::new(Expr::Range {
             start: Box::new(Expr::Value(RustValue::Usize(0))),
-            end: Box::new(cast(len, Type::Prim(Prim::Usize))),
+            end: Box::new(match len {
+                Expr::Value(RustValue::Usize(_)) => len,
+                other => cast(other, Type::Prim(Prim::Usize)),
+            }),
         }),
     }
 }
@@ -378,7 +381,49 @@ fn lifted_bytes(ctx: &CallCtx, i: usize) -> Option<Expr> {
         .or_else(|| ctx.lifted_arg(i, is_u8_slice))
 }
 
+fn literal_len(bytes: &Expr) -> Option<usize> {
+    match bytes {
+        Expr::MethodCall { recv, method, args }
+            if method.as_str() == "as_bytes" && args.is_empty() =>
+        {
+            match recv.as_ref() {
+                Expr::Str(text) if !text.contains('\0') => Some(text.len()),
+                _ => None,
+            }
+        }
+        _ => None,
+    }
+}
+
+fn const_bound(bound: &Expr) -> Option<usize> {
+    usize::try_from(super::for_range::int_value(bound)?).ok()
+}
+
+fn c_string_bytes(bytes: Expr, bound: Option<Expr>) -> Expr {
+    if literal_len(&bytes).is_some_and(|len| {
+        bound
+            .as_ref()
+            .is_none_or(|bound| const_bound(bound).is_some_and(|k| k >= len))
+    }) {
+        return bytes;
+    }
+    slice_to(bytes.clone(), c_string_len(bytes, bound))
+}
+
 fn c_string_len(bytes: Expr, bound: Option<Expr>) -> Expr {
+    if let Some(len) = literal_len(&bytes) {
+        return match bound {
+            None => Expr::Value(RustValue::Usize(len)),
+            Some(bound) => match const_bound(&bound) {
+                Some(k) => Expr::Value(RustValue::Usize(k.min(len))),
+                None => method_call(
+                    cast(bound, Type::Prim(Prim::Usize)),
+                    "min",
+                    vec![Expr::Value(RustValue::Usize(len))],
+                ),
+            },
+        };
+    }
     let byte = Ident::new("__slate_byte");
     let is_nul = Expr::Binary {
         op: BinOp::Eq,
@@ -411,10 +456,10 @@ fn str_n_cmp(ctx: &CallCtx) -> Option<Expr> {
     let a = lifted_bytes(ctx, 0)?;
     let b = lifted_bytes(ctx, 1)?;
     let bound = ctx.args().get(2)?.clone();
-    let lhs = slice_to(a.clone(), c_string_len(a, Some(bound.clone())));
+    let lhs = c_string_bytes(a, Some(bound.clone()));
     let rhs = Expr::Ref {
         mutable: false,
-        expr: Box::new(slice_to(b.clone(), c_string_len(b, Some(bound)))),
+        expr: Box::new(c_string_bytes(b, Some(bound))),
     };
     Some(cast(
         method_call(lhs, "cmp", vec![rhs]),
@@ -439,8 +484,8 @@ fn str_n_len(ctx: &CallCtx) -> Option<Expr> {
 fn str_span(ctx: &CallCtx, accepted: bool) -> Option<Expr> {
     let input = lifted_bytes(ctx, 0)?;
     let set = lifted_bytes(ctx, 1)?;
-    let input = slice_to(input.clone(), c_string_len(input, None));
-    let set = slice_to(set.clone(), c_string_len(set, None));
+    let input = c_string_bytes(input, None);
+    let set = c_string_bytes(set, None);
     let byte = Ident::new("__slate_byte");
     let contains = method_call(set, "contains", vec![Expr::Var(byte)]);
     let stop = if accepted {
@@ -848,10 +893,10 @@ pub(super) fn rules(target: &slate_parser::target_info::TargetInfo) -> Vec<Box<d
             }
             let a = lifted_bytes(ctx, 0)?;
             let b = lifted_bytes(ctx, 1)?;
-            let lhs = slice_to(a.clone(), c_string_len(a, None));
+            let lhs = c_string_bytes(a, None);
             let rhs = Expr::Ref {
                 mutable: false,
-                expr: Box::new(slice_to(b.clone(), c_string_len(b, None))),
+                expr: Box::new(c_string_bytes(b, None)),
             };
             Some(cast(
                 method_call(lhs, "cmp", vec![rhs]),
