@@ -295,6 +295,14 @@ impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> BU
     pub const fn shr_bits(self, shift: usize) -> Self {
         Self::from_limbs(self.to_limbs().shr_bits(shift))
     }
+
+    pub const fn compare(self, rhs: Self) -> i32 {
+        match self.to_limbs().cmp_magnitude(&rhs.to_limbs()) {
+            Ordering::Less => -1,
+            Ordering::Equal => 0,
+            Ordering::Greater => 1,
+        }
+    }
 }
 
 impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> Add for BUint<BITS, LIMBS, BYTES, A> {
@@ -684,6 +692,14 @@ impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> BI
 
     pub const fn shr_bits(self, shift: usize) -> Self {
         Self::from_limbs(self.to_limbs().shr_bits(shift))
+    }
+
+    pub const fn compare(self, rhs: Self) -> i32 {
+        match self.to_limbs().cmp(&rhs.to_limbs()) {
+            Ordering::Less => -1,
+            Ordering::Equal => 0,
+            Ordering::Greater => 1,
+        }
     }
 }
 

@@ -5,6 +5,16 @@ use rustc_apfloat::{
 };
 use slate_parser::target_info::TargetFamily;
 
+fn is_small_bit_precise(ty: &ir::Type) -> bool {
+    matches!(
+        ty,
+        ir::Type::Numeric(ir::NumericType::Integer {
+            bit_precise: true,
+            ..
+        })
+    ) && odd_width(ty).is_some()
+}
+
 pub(super) fn odd_width(ty: &ir::Type) -> Option<(u32, bool, Prim)> {
     let ir::Type::Numeric(ir::NumericType::Integer {
         width,
@@ -770,6 +780,26 @@ impl FunctionLowerer<'_, '_> {
                 }
             }
             ValueKind::Arith {
+                op, left, right, ..
+            } if self.tables.wide_int(&value.ty).is_some()
+                && let Some(lowered) = self.lower_wide_int_arith(*op, left, right)? =>
+            {
+                lowered
+            }
+            ValueKind::Arith {
+                op, left, right, ..
+            } if is_small_bit_precise(self.tables.resolve_type(&value.ty))
+                && let Some(lowered) =
+                    self.lower_small_bitint_arith(value, *op, left, right)? =>
+            {
+                lowered
+            }
+            ValueKind::Compare {
+                op, left, right, ..
+            } if self.tables.wide_int(&left.ty).is_some() => {
+                self.lower_wide_int_compare(*op, left, right)?
+            }
+            ValueKind::Arith {
                 op: op @ (ir::ArithOp::Add | ir::ArithOp::Sub | ir::ArithOp::Mul),
                 left,
                 right,
@@ -852,6 +882,23 @@ impl FunctionLowerer<'_, '_> {
                     .into(),
                     args: Vec::new(),
                 }
+            }
+            ValueKind::Unary { op, operand, .. }
+                if is_small_bit_precise(self.tables.resolve_type(&value.ty)) =>
+            {
+                let operand = self.lower_value(operand)?;
+                let unary = match op {
+                    ir::UnaryArithOp::Neg => Expr::MethodCall {
+                        recv: Box::new(operand),
+                        method: "wrapping_neg".into(),
+                        args: Vec::new(),
+                    },
+                    ir::UnaryArithOp::Not => Expr::Unary {
+                        op: rust::UnaryOp::Not,
+                        expr: Box::new(operand),
+                    },
+                };
+                self.narrow_integer(unary, &value.ty)?
             }
             ValueKind::Unary {
                 op,

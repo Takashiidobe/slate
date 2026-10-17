@@ -235,7 +235,9 @@ int main(void) {
 // CHECK-NEXT:         2,
 // CHECK-NEXT:         16,
 // CHECK-NEXT:         bitint::A8,
-// CHECK-NEXT:     >>::from_i128(-1311768467463790320 as i128);
+// CHECK-NEXT:     >>::from_i128(
+// CHECK-NEXT:         (((1311768467463790320 as i64).wrapping_neg() as i64) << 2 >> 2) as i128,
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let mut wide: bitint::BInt<200, 4, 32, bitint::A8> = widen(sixty_five);
 // CHECK-NEXT:     let mut mid: bitint::BUint<100, 2, 16, bitint::A8> = narrow(
 // CHECK-NEXT:         (unsafe { std::ptr::addr_of_mut!(global_wide) })

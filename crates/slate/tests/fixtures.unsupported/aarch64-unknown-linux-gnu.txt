@@ -1,4 +1,5 @@
 asm_barriers
+bitint_ops
 bitint_shift
 c23_stdlib_memory_management
 float128

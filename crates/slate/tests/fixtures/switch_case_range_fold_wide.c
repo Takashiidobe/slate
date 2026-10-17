@@ -62,7 +62,7 @@ int main(void) {
 // CHECK-NEXT:         16,
 // CHECK-NEXT:         bitint::A8,
 // CHECK-NEXT:     >>::from_u128(170141183460469231731687303715884105720)
-// CHECK-NEXT:         + <bitint::BInt<128, 2, 16, bitint::A8>>::from_i128(seed as i128);
+// CHECK-NEXT:         .wrapping_add(<bitint::BInt<128, 2, 16, bitint::A8>>::from_i128(seed as i128));
 // CHECK-NEXT:     match v.to_i128() {
 // CHECK-NEXT:         170141183460469231731687303715884105720..=170141183460469231731687303715884105722 => {
 // CHECK-NEXT:             return 1;

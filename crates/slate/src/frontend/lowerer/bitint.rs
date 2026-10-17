@@ -163,4 +163,86 @@ impl FunctionLowerer<'_, '_> {
             (None, None) => Err(unsupported_value(value)),
         }
     }
+
+    pub(super) fn lower_wide_int_arith(
+        &mut self,
+        op: ir::ArithOp,
+        left: &ir::Value,
+        right: &ir::Value,
+    ) -> Result<Option<Expr>> {
+        let method = match op {
+            ir::ArithOp::Add => "wrapping_add",
+            ir::ArithOp::Sub => "wrapping_sub",
+            ir::ArithOp::Mul => "wrapping_mul",
+            ir::ArithOp::Div => "wrapping_div",
+            ir::ArithOp::Rem => "wrapping_rem",
+            ir::ArithOp::And => "bitand_bits",
+            ir::ArithOp::Or => "bitor_bits",
+            ir::ArithOp::Xor => "bitxor_bits",
+            _ => return Ok(None),
+        };
+        Ok(Some(Expr::MethodCall {
+            recv: Box::new(self.lower_value(left)?),
+            method: method.into(),
+            args: vec![self.lower_value(right)?],
+        }))
+    }
+
+    pub(super) fn lower_small_bitint_arith(
+        &mut self,
+        value: &ir::Value,
+        op: ir::ArithOp,
+        left: &ir::Value,
+        right: &ir::Value,
+    ) -> Result<Option<Expr>> {
+        let method = match op {
+            ir::ArithOp::Add => "wrapping_add",
+            ir::ArithOp::Sub => "wrapping_sub",
+            ir::ArithOp::Mul => "wrapping_mul",
+            ir::ArithOp::Div => "wrapping_div",
+            ir::ArithOp::Rem => "wrapping_rem",
+            ir::ArithOp::And | ir::ArithOp::Or | ir::ArithOp::Xor => {
+                return Ok(Some(Expr::Binary {
+                    op: match op {
+                        ir::ArithOp::And => BinOp::BitAnd,
+                        ir::ArithOp::Or => BinOp::BitOr,
+                        _ => BinOp::BitXor,
+                    },
+                    lhs: Box::new(self.lower_value(left)?),
+                    rhs: Box::new(self.lower_value(right)?),
+                }));
+            }
+            _ => return Ok(None),
+        };
+        let wrapped = Expr::MethodCall {
+            recv: Box::new(self.lower_value(left)?),
+            method: method.into(),
+            args: vec![self.lower_value(right)?],
+        };
+        self.narrow_integer(wrapped, &value.ty).map(Some)
+    }
+
+    pub(super) fn lower_wide_int_compare(
+        &mut self,
+        op: ir::CompareOp,
+        left: &ir::Value,
+        right: &ir::Value,
+    ) -> Result<Expr> {
+        Ok(Expr::Binary {
+            op: match op {
+                ir::CompareOp::Eq => BinOp::Eq,
+                ir::CompareOp::Ne => BinOp::Ne,
+                ir::CompareOp::Lt => BinOp::Lt,
+                ir::CompareOp::Le => BinOp::Le,
+                ir::CompareOp::Gt => BinOp::Gt,
+                ir::CompareOp::Ge => BinOp::Ge,
+            },
+            lhs: Box::new(Expr::MethodCall {
+                recv: Box::new(self.lower_value(left)?),
+                method: "compare".into(),
+                args: vec![self.lower_value(right)?],
+            }),
+            rhs: Box::new(Expr::Value(rust::RustValue::I64(0))),
+        })
+    }
 }
