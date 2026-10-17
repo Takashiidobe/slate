@@ -256,6 +256,9 @@ impl FunctionLowerer<'_, '_> {
     }
 
     fn lower_value_node(&mut self, value: &ir::Value) -> Result<Expr> {
+        if let Some(lowered) = self.lower_complex_value(value)? {
+            return Ok(lowered);
+        }
         Ok(match &value.node.value {
             ValueKind::Constant(number) => self.lower_number(number, &value.ty)?,
             ValueKind::CodeUnits(units) => {

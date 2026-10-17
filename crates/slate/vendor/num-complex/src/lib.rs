@@ -36,6 +36,7 @@ use num_traits::float::FloatCore;
 #[cfg(any(feature = "std", feature = "libm"))]
 use num_traits::float::{Float, FloatConst};
 
+mod c_ops;
 mod cast;
 mod pow;
 

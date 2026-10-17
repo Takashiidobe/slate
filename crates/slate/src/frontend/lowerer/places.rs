@@ -60,7 +60,9 @@ impl Tables<'_> {
         match &place.kind {
             PlaceKind::Deref(_) | PlaceKind::CompoundLiteral { .. } => true,
             PlaceKind::Binding(_) if self.variably_modified(&place.ty) => true,
-            PlaceKind::Lane { base, .. } => self.place_is_unsafe(base),
+            PlaceKind::Lane { base, .. } | PlaceKind::ComplexPart { base, .. } => {
+                self.place_is_unsafe(base)
+            }
             PlaceKind::Field { base, .. } => self.is_union(&base.ty) || self.place_is_unsafe(base),
             _ => self.place_is_static(place),
         }
@@ -75,9 +77,9 @@ impl Tables<'_> {
             PlaceKind::CompoundLiteral { storage, .. } => {
                 matches!(storage, ir::StorageDuration::Static)
             }
-            PlaceKind::Field { base, .. } | PlaceKind::Lane { base, .. } => {
-                self.place_is_static(base)
-            }
+            PlaceKind::Field { base, .. }
+            | PlaceKind::Lane { base, .. }
+            | PlaceKind::ComplexPart { base, .. } => self.place_is_static(base),
             _ => false,
         }
     }
@@ -157,6 +159,16 @@ impl FunctionLowerer<'_, '_> {
                 Ok(Expr::Field {
                     base: Box::new(self.lower_place(base)?),
                     field: field_name(field, index),
+                })
+            }
+            PlaceKind::ComplexPart {
+                ref base,
+                imaginary,
+            } => {
+                self.lower_type(&base.ty)?;
+                Ok(Expr::Field {
+                    base: Box::new(self.lower_place(base)?),
+                    field: if imaginary { "im" } else { "re" }.into(),
                 })
             }
             PlaceKind::CompoundLiteral {

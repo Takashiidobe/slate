@@ -514,6 +514,17 @@ impl FunctionLowerer<'_, '_> {
                 return Ok(ty);
             }
             ir::Type::VaList => return Ok(rust::Type::VaList),
+            ir::Type::Complex(component)
+                if matches!(
+                    component,
+                    ir::NumericType::Integer { .. }
+                        | ir::NumericType::Float(ir::FloatType::F32 | ir::FloatType::F64)
+                ) =>
+            {
+                return Ok(rust::Type::Complex(Box::new(
+                    self.lower_type(&ir::Type::Numeric(*component))?,
+                )));
+            }
             _ => return Err(unsupported_type(ty)),
         };
         Ok(rust::Type::Prim(primitive))

@@ -475,6 +475,10 @@ fn write_num_complex_support(crate_dir: &Path) -> Result<(), String> {
     }
     for (source, contents) in [
         ("lib.rs", include_str!("../vendor/num-complex/src/lib.rs")),
+        (
+            "c_ops.rs",
+            include_str!("../vendor/num-complex/src/c_ops.rs"),
+        ),
         ("cast.rs", include_str!("../vendor/num-complex/src/cast.rs")),
         (
             "complex_float.rs",
