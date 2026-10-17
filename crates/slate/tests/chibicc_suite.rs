@@ -174,12 +174,7 @@ fn chibicc_supported_tests_match_c() {
 #[test]
 #[ignore]
 fn chibicc_unsupported_triage_report() {
-    let results = run_bucket("unsupported");
-    for (name, result) in results {
-        if let Err(e) = result {
-            println!("=== {name} ===\n{e}\n");
-        }
-    }
+    support::print_triage("", &run_bucket("unsupported"));
 }
 
 #[test]
@@ -195,7 +190,7 @@ fn chibicc_unsupported_tests_still_fail() {
         unexpected_passes
             .iter()
             .map(|name| format!(
-                "  git mv tests/fixtures.chibicc/unsupported/{name} tests/fixtures.chibicc/supported/{name}"
+                "  git mv crates/slate/tests/fixtures.chibicc/unsupported/{name} crates/slate/tests/fixtures.chibicc/supported/{name}"
             ))
             .collect::<Vec<_>>()
             .join("\n")

@@ -91,7 +91,7 @@ fn c_testsuite_unsupported_tests_still_fail() {
         unexpected_passes
             .iter()
             .map(|name| format!(
-                "  git mv tests/fixtures.c-testsuite.unsupported/{name}.c tests/fixtures.c-testsuite/{name}.c"
+                "  git mv crates/slate/tests/fixtures.c-testsuite.unsupported/{name}.c crates/slate/tests/fixtures.c-testsuite/{name}.c"
             ))
             .collect::<Vec<_>>()
             .join("\n")
@@ -101,11 +101,5 @@ fn c_testsuite_unsupported_tests_still_fail() {
 #[test]
 #[ignore]
 fn c_testsuite_unsupported_triage_report() {
-    let results = run_cases("unsupported", &unsupported_root());
-    for (name, result) in results {
-        match result {
-            Ok(()) => println!("PASS {name}"),
-            Err(error) => println!("FAIL {name}\n{error}\n"),
-        }
-    }
+    support::print_triage("", &run_cases("unsupported", &unsupported_root()));
 }

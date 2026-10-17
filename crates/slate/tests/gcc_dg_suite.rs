@@ -112,11 +112,17 @@ fn gcc_dg_unsupported_tests_still_fail() {
         unexpected_passes
             .iter()
             .map(|name| format!(
-                "  git mv tests/fixtures.gcc-dg.unsupported/{name}.c tests/fixtures.gcc-dg/{name}.c"
+                "  git mv crates/slate/tests/fixtures.gcc-dg.unsupported/{name}.c crates/slate/tests/fixtures.gcc-dg/{name}.c"
             ))
             .collect::<Vec<_>>()
             .join("\n")
     );
+}
+
+#[test]
+#[ignore]
+fn gcc_dg_unsupported_triage_report() {
+    support::print_triage("", &run_cases("unsupported", &root("unsupported")));
 }
 
 #[test]

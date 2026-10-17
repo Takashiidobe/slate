@@ -80,7 +80,7 @@ fixture directories remain.
 Each suite is a ratchet: `tests/fixtures/` must pass, and
 `tests/fixtures.unsupported/` must still fail. When an unsupported fixture
 starts passing, `fixtures_unsupported_tests_still_fail` fails and prints the
-`git mv` that promotes it. Corpus suites work the same way with their own
+`git mv` (from the workspace root) that promotes it. Corpus suites work the same way with their own
 `*.unsupported` directories.
 
 `generated_differential` runs once per target in `SLATE_TEST_TARGETS`
@@ -92,15 +92,18 @@ Profiles in `.config/nextest.toml` set the targets with setup scripts:
 | Profile         | Targets                          | Runs                    |
 | --------------- | -------------------------------- | ----------------------- |
 | `slate`         | x86_64                           | every suite             |
-| `slate-i686`    | i686, natively with `-m32`       | `generated_differential` |
-| `slate-aarch64` | aarch64, under `qemu-aarch64-static` | `generated_differential` |
-| `slate-targets` | all three                        | `generated_differential` |
+| `slate-i686`    | i686, natively with `-m32`       | `generated_differential`, unsupported ratchet |
+| `slate-aarch64` | aarch64, under `qemu-aarch64-static` | `generated_differential`, unsupported ratchet |
+| `slate-targets` | all three                        | `generated_differential`, unsupported ratchet |
 
 `CrossTarget::for_triple` in `tests/support/mod.rs` holds each target's C
 oracle flags, Rust linker and emulator.
 `tests/fixtures.unsupported/<triple>.txt` lists the target-independent
 fixtures that still fail on that target. The run fails when a listed
-fixture passes (remove it from the list) or an unlisted one fails. A
+fixture passes (remove it from the list) or an unlisted one fails.
+`tests/fixtures.unsupported/` also runs per target (root plus `<arch>/`); a
+fixture that passes prints the `git mv`, the `update_filecheck.py` command,
+and the per-target list entries it needs. A
 fixture with a sibling `<name>.expected` is not built with clang: the Rust
 output is compared to that file instead (for MSVC-only code, recorded with
 `MSVC_ARCH=x86 crates/slate-parser/tools/cl.exe` under wine, link with
@@ -113,17 +116,15 @@ Isolate one fixture while developing:
 SLATE_DIFF_FIXTURE=<name> cargo nextest r --release --profile slate --test differential -E 'test(generated_differential)' --nocapture
 ```
 
-Find the first barrier for every unsupported fixture:
+Find the first barrier for every unsupported fixture in every suite:
 
 ```bash
-cargo nextest r --release -p slate-c2rust --test differential -E 'test(fixtures_unsupported_triage_report)' --run-ignored ignored-only --nocapture
+cargo nextest r --release --profile slate --ignore-default-filter -E 'package(slate-c2rust) & test(/_unsupported_triage_report$/)' --run-ignored ignored-only --no-capture
 ```
 
 Corpus suites use their own selectors: `SLATE_GCC_TORTURE_FIXTURE`,
-`SLATE_GCC_DG_FIXTURE`, `SLATE_C_TESTSUITE_FIXTURE`.
-`gcc_torture_unsupported_triage_report`,
-`c_testsuite_unsupported_triage_report`, and
-`chibicc_unsupported_triage_report` are the corpus triage reports.
+`SLATE_GCC_DG_FIXTURE`, `SLATE_C_TESTSUITE_FIXTURE`. Beads that promote
+unsupported fixtures carry the `coverage` label.
 
 Batch suites write translated Rust under `crates/slate/target/*-suite/` and
 build it under `crates/slate/target/test-cache/`. A `could not parse/generate

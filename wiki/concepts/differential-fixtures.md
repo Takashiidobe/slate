@@ -48,7 +48,12 @@ cargo nextest r --release --profile slate-targets   # x86_64, i686 and aarch64
 
 `tests/fixtures.unsupported/<triple>.txt` lists target-independent fixtures
 that still fail on that target. A listed fixture that passes, or an unlisted
-one that fails, fails the run. Other environments and OSes (musl, FreeBSD,
+one that fails, fails the run. `fixtures_unsupported_tests_still_fail` and
+`fixtures_unsupported_triage_report` also run once per target, over
+`tests/fixtures.unsupported/*.c` plus `tests/fixtures.unsupported/<arch>/`, and
+the target profiles include the ratchet. A fixture that passes on any target
+prints its `git mv`, the `update_filecheck.py` command for the targets it
+passed on, and a `<triple>.txt` entry for each target it still fails on. Other environments and OSes (musl, FreeBSD,
 Android, macOS, Windows) are tracked in `slate-5vj0.8`.
 
 ## Supported/unsupported ratchet
@@ -65,22 +70,28 @@ promotes it.
 | gcc-dg      | `tests/fixtures.gcc-dg`      | `tests/fixtures.gcc-dg.unsupported`      | `SLATE_GCC_DG_FIXTURE`      |
 | c-testsuite | `tests/fixtures.c-testsuite` | `tests/fixtures.c-testsuite.unsupported` | `SLATE_C_TESTSUITE_FIXTURE` |
 
-Paths are relative to `crates/slate`. `tests/fixtures/<arch>/` runs only for
-that architecture's targets; `tests/fixtures.unsupported/x86_64/` runs only on
-x86_64 hosts. `*.ignored` buckets hold only
+Paths are relative to `crates/slate`. `tests/fixtures/<arch>/` and
+`tests/fixtures.unsupported/<arch>/` run only for that architecture's targets.
+`*.ignored` buckets hold only
 features Slate will never support. Selectors take a fixture stem.
 
 ## Triage
 
-`fixtures_unsupported_triage_report`, `gcc_torture_unsupported_triage_report`,
-and `c_testsuite_unsupported_triage_report` are ignored tests. Each prints
-`PASS`/`FAIL` per unsupported fixture, with the first barrier classified as
-`parse/sema`, `unsupported lowering`, `rustc`, or `runtime mismatch`:
+Every suite has an ignored `*_unsupported_triage_report` test. Each prints
+one `PASS`/`FAIL` line per unsupported fixture, with the first barrier
+classified as `parse/sema`, `unsupported lowering` (with the construct, for
+example `function main: unprototyped definition`), `rustc`, or
+`runtime mismatch`. Run all of them at once, or one fixture with a selector:
 
 ```bash
+cargo nextest r --release --profile slate --ignore-default-filter \
+  -E 'package(slate-c2rust) & test(/_unsupported_triage_report$/)' --run-ignored ignored-only --no-capture
 SLATE_DIFF_FIXTURE=<stem> cargo nextest r --release -p slate-c2rust --test differential \
-  -E 'test(fixtures_unsupported_triage_report)' --run-ignored ignored-only --nocapture
+  -E 'test(fixtures_unsupported_triage_report)' --run-ignored ignored-only --no-capture
 ```
+
+With `--profile slate-targets`, the `tests/fixtures.unsupported` report
+covers every target. Coverage beads carry the `coverage` label.
 
 `slate lowering-barriers [compiler args] <file.c>` lists every function
 defined in one translation unit with `ok` or its first lowering barrier, plus

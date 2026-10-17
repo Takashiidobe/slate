@@ -1239,6 +1239,48 @@ fn filecheck_case(case: &Case, target: &str) -> Result<(), String> {
     )
 }
 
+pub fn first_barrier(error: &str) -> (&'static str, &str) {
+    let error = error.strip_prefix("translate failed: ").unwrap_or(error);
+    let detail = error
+        .lines()
+        .map(str::trim)
+        .find(|line| line.starts_with("error"))
+        .unwrap_or_else(|| error.lines().next().unwrap_or_default());
+    if detail.contains("unsupported slate-parser IR") {
+        let help = error
+            .lines()
+            .map(str::trim)
+            .find_map(|line| line.strip_prefix("help: "))
+            .unwrap_or(detail);
+        return ("unsupported lowering", help);
+    }
+    let class = if error.starts_with("Rust batch build failed") {
+        "rustc"
+    } else if error.starts_with("exit code differs")
+        || error.starts_with("stdout differs")
+        || error.starts_with("stderr differs")
+    {
+        "runtime mismatch"
+    } else if error.starts_with("slate translate failed") || detail.starts_with("error") {
+        "parse/sema"
+    } else {
+        "harness"
+    };
+    (class, detail)
+}
+
+pub fn print_triage(prefix: &str, results: &[(String, Result<(), String>)]) {
+    for (name, result) in results {
+        match result {
+            Ok(()) => println!("PASS {prefix}{name}"),
+            Err(error) => {
+                let (class, detail) = first_barrier(error);
+                println!("FAIL {prefix}{name} [{class}] {detail}");
+            }
+        }
+    }
+}
+
 pub fn failure_report(failures: &[(String, String)]) -> String {
     let details: Vec<String> = failures
         .iter()

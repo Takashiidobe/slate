@@ -59,18 +59,14 @@ fn target_unsupported(list: &Path) -> std::collections::BTreeSet<String> {
         .collect()
 }
 
-fn target_fixtures(triple: &str) -> Vec<Fixture> {
+fn target_fixtures(root: &Path, triple: &str) -> Vec<Fixture> {
     let selected = std::env::var("SLATE_DIFF_FIXTURE").ok();
     let arch = triple.split('-').next().unwrap_or(triple);
     let mut fixtures = Vec::new();
-    collect_fixtures(&fixtures_dir(), Path::new(""), &selected, &mut fixtures);
-    collect_fixtures(&fixtures_dir(), Path::new(arch), &selected, &mut fixtures);
+    collect_fixtures(root, Path::new(""), &selected, &mut fixtures);
+    collect_fixtures(root, Path::new(arch), &selected, &mut fixtures);
     fixtures.sort_by(|a, b| a.name.cmp(&b.name));
     fixtures
-}
-
-fn run_cases(group: &str, fixtures: &[Fixture]) -> Vec<(String, Result<(), String>)> {
-    run_cases_with_mode(group, fixtures, false)
 }
 
 fn run_cases_with_mode(
@@ -100,8 +96,8 @@ fn run_cases_for_target(
         if let Some(cross) = cross {
             extra_args.push(format!("-target={}", cross.rust_triple));
         }
-        let filecheck_target =
-            (!project && group != "unsupported").then(|| support::translation_target(&extra_args));
+        let filecheck_target = (!project && !group.starts_with("unsupported"))
+            .then(|| support::translation_target(&extra_args));
         let result = if project {
             let crate_dir = tmp.join(&f.name);
             translate_fixture_project(std::slice::from_ref(&f.path), &crate_dir, extra_args, &[])
@@ -191,37 +187,12 @@ fn translate_fixture_project(
     }
 }
 
-fn first_barrier(error: &str) -> (&'static str, &str) {
-    let detail = error
-        .lines()
-        .map(str::trim)
-        .find(|line| line.starts_with("error"))
-        .unwrap_or_else(|| error.lines().next().unwrap_or_default());
-    let class = if error.starts_with("slate translate failed") {
-        if detail.contains("unsupported slate-parser IR") {
-            "unsupported lowering"
-        } else {
-            "parse/sema"
-        }
-    } else if error.starts_with("Rust batch build failed") {
-        "rustc"
-    } else if error.starts_with("exit code differs")
-        || error.starts_with("stdout differs")
-        || error.starts_with("stderr differs")
-    {
-        "runtime mismatch"
-    } else {
-        "harness"
-    };
-    (class, detail)
-}
-
 #[test]
 fn generated_differential() {
     let mut failures = Vec::new();
     let mut total = 0;
     for triple in support::test_targets() {
-        let fixtures = target_fixtures(&triple);
+        let fixtures = target_fixtures(&fixtures_dir(), &triple);
         assert!(
             !fixtures.is_empty() || std::env::var("SLATE_DIFF_FIXTURE").is_ok(),
             "no fixtures found in {:?} for {triple}",
@@ -417,40 +388,90 @@ fn library_differential() {
     assert!(failures.is_empty(), "{}", failures.join("\n\n"));
 }
 
+type FixtureResults = Vec<(Fixture, Result<(), String>)>;
+
+fn unsupported_results() -> Vec<(String, FixtureResults)> {
+    support::test_targets()
+        .into_iter()
+        .map(|triple| {
+            let fixtures = target_fixtures(&unsupported_dir(), &triple);
+            let cross = support::CrossTarget::for_triple(&triple);
+            let results = run_cases_for_target(
+                &format!("unsupported/{triple}"),
+                &fixtures,
+                false,
+                cross.as_ref(),
+            );
+            let paired = fixtures
+                .into_iter()
+                .zip(results)
+                .map(|(fixture, (name, result))| {
+                    assert_eq!(fixture.name, name);
+                    (fixture, result)
+                })
+                .collect();
+            (triple, paired)
+        })
+        .collect()
+}
+
 #[test]
 fn fixtures_unsupported_tests_still_fail() {
-    let fixtures = fixtures(&unsupported_dir());
-    let results = run_cases("unsupported", &fixtures);
-    let unexpected_passes: Vec<String> = results
-        .into_iter()
-        .filter(|(_, result)| result.is_ok())
-        .filter_map(|(name, _)| fixtures.iter().find(|f| f.name == name))
-        .map(|f| {
-            format!(
-                "  git mv tests/fixtures.unsupported/{0} tests/fixtures/{0}",
-                f.relative.display()
-            )
+    let mut passed = std::collections::BTreeMap::<PathBuf, Vec<String>>::new();
+    let mut failed = std::collections::BTreeMap::<PathBuf, Vec<String>>::new();
+    for (triple, results) in unsupported_results() {
+        for (fixture, result) in results {
+            let bucket = if result.is_ok() {
+                &mut passed
+            } else {
+                &mut failed
+            };
+            bucket
+                .entry(fixture.relative)
+                .or_default()
+                .push(triple.clone());
+        }
+    }
+    let promotions: Vec<String> = passed
+        .iter()
+        .map(|(relative, triples)| {
+            let name = relative.file_stem().unwrap().to_string_lossy();
+            let mut steps = vec![
+                format!("{} passes on {}:", relative.display(), triples.join(", ")),
+                format!(
+                    "  git mv crates/slate/tests/fixtures.unsupported/{0} crates/slate/tests/fixtures/{0}",
+                    relative.display()
+                ),
+                format!(
+                    "  python3 crates/slate/tools/update_filecheck.py --target {} crates/slate/tests/fixtures/{}",
+                    triples.join(" --target "),
+                    relative.display()
+                ),
+            ];
+            for triple in failed.get(relative).into_iter().flatten() {
+                steps.push(format!(
+                    "  echo {name} >> crates/slate/tests/fixtures.unsupported/{triple}.txt"
+                ));
+            }
+            steps.join("\n")
         })
         .collect();
     assert!(
-        unexpected_passes.is_empty(),
+        promotions.is_empty(),
         "fixture(s) now pass end-to-end -- promote them:\n{}",
-        unexpected_passes.join("\n")
+        promotions.join("\n")
     );
 }
 
 #[test]
 #[ignore]
 fn fixtures_unsupported_triage_report() {
-    let fixtures = fixtures(&unsupported_dir());
-    for (name, result) in run_cases("unsupported", &fixtures) {
-        match result {
-            Ok(()) => println!("PASS {name}"),
-            Err(error) => {
-                let (class, detail) = first_barrier(&error);
-                println!("FAIL {name} [{class}] {detail}");
-            }
-        }
+    for (triple, results) in unsupported_results() {
+        let results: Vec<_> = results
+            .into_iter()
+            .map(|(fixture, result)| (fixture.relative.display().to_string(), result))
+            .collect();
+        support::print_triage(&format!("{triple} "), &results);
     }
 }
 
