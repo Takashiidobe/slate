@@ -24,13 +24,11 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN
 // CHECK-LABEL: {{^}}fn consume_extra_capacity(values: *mut i32, len: i32) -> i32 {
 // CHECK-NEXT:     let mut sum: i32 = 0 as i32;
-// CHECK-NEXT:     let mut i: i32 = 0 as i32;
-// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: while i < len {
+// CHECK-NEXT:     for i in 0 as i32..len {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *unsafe { values.offset(i as isize) } = i + (1 as i32);
 // CHECK-NEXT:         }
 // CHECK-NEXT:         sum += unsafe { *unsafe { values.offset(i as isize) } };
-// CHECK-NEXT:         i += 1 as i32;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { free(values as *mut ()) };
 // CHECK-NEXT:     sum

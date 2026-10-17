@@ -23,7 +23,7 @@ int main(void) {
 // CHECK-LABEL: {{^}}fn sum_while(n: i32) -> i32 {
 // CHECK-NEXT:     let mut total: i32 = 0 as i32;
 // CHECK-NEXT:     let mut i: i32 = 1 as i32;
-// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: while i <= n {
+// CHECK-NEXT:     while i <= n {
 // CHECK-NEXT:         total += i;
 // CHECK-NEXT:         i += 1 as i32;
 // CHECK-NEXT:     }

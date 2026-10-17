@@ -29,7 +29,7 @@ int main(void) {
 // CHECK-NEXT:         as *mut *mut i32;
 // CHECK-NEXT:     let mut __slate_state: usize = 2usize;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         '__slate_dispatch: loop {
+// CHECK-NEXT:         loop {
 // CHECK-NEXT:             match __slate_state {
 // CHECK-NEXT:                 0 => {
 // CHECK-NEXT:                     return;
@@ -50,11 +50,11 @@ int main(void) {
 // CHECK-NEXT:                     {
 // CHECK-NEXT:                         4 => {
 // CHECK-NEXT:                             __slate_state = 1usize;
-// CHECK-NEXT:                             continue '__slate_dispatch;
+// CHECK-NEXT:                             continue;
 // CHECK-NEXT:                         }
 // CHECK-NEXT:                         5 => {
 // CHECK-NEXT:                             __slate_state = 0usize;
-// CHECK-NEXT:                             continue '__slate_dispatch;
+// CHECK-NEXT:                             continue;
 // CHECK-NEXT:                         }
 // CHECK-NEXT:                         _ => {
 // CHECK-NEXT:                             unreachable!();
@@ -71,11 +71,11 @@ int main(void) {
 // CHECK-NEXT:                     {
 // CHECK-NEXT:                         4 => {
 // CHECK-NEXT:                             __slate_state = 1usize;
-// CHECK-NEXT:                             continue '__slate_dispatch;
+// CHECK-NEXT:                             continue;
 // CHECK-NEXT:                         }
 // CHECK-NEXT:                         5 => {
 // CHECK-NEXT:                             __slate_state = 0usize;
-// CHECK-NEXT:                             continue '__slate_dispatch;
+// CHECK-NEXT:                             continue;
 // CHECK-NEXT:                         }
 // CHECK-NEXT:                         _ => {
 // CHECK-NEXT:                             unreachable!();

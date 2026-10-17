@@ -1,3 +1,4 @@
+use super::walk::kind_has_stmt_exprs;
 use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{Arena, FunctionOptimizer, NodeId, NodeKind, NodeKindTag};
 use crate::backend::rust_ast::Label;
@@ -5,6 +6,7 @@ use crate::backend::rust_ast::Label;
 pub(in crate::backend::engine) struct BreakToElse;
 pub(in crate::backend::engine) struct TailBreakDrop;
 pub(in crate::backend::engine) struct LabelElide;
+pub(in crate::backend::engine) struct LoopLabelElide;
 
 fn reaches_label_end(arena: &Arena, container: NodeId, label: &Label) -> bool {
     let Some(kind) = arena.get(container) else {
@@ -81,6 +83,62 @@ fn subtree_breaks(arena: &Arena, id: NodeId, label: &Label) -> bool {
         .into_iter()
         .flatten()
         .any(|&child| subtree_breaks(arena, child, label))
+}
+
+fn loop_label_jumps(
+    arena: &Arena,
+    id: NodeId,
+    label: &Label,
+    nested: bool,
+    jumps: &mut Vec<NodeId>,
+) -> bool {
+    let Some(kind) = arena.get(id) else {
+        return true;
+    };
+    if kind_has_stmt_exprs(kind) {
+        return false;
+    }
+    match kind {
+        NodeKind::Break(Some(target)) | NodeKind::Continue(Some(target)) if target == label => {
+            jumps.push(id);
+            return !nested;
+        }
+        _ => {}
+    }
+    let nested = nested
+        || matches!(
+            kind,
+            NodeKind::Loop { .. }
+                | NodeKind::While { .. }
+                | NodeKind::For { .. }
+                | NodeKind::LabeledBlock { .. }
+        );
+    kind.child_lists()
+        .into_iter()
+        .flatten()
+        .all(|&child| loop_label_jumps(arena, child, label, nested, jumps))
+}
+
+fn unlabeled_loop_jumps(arena: &Arena, id: NodeId) -> Option<Vec<NodeId>> {
+    let kind = arena.get(id)?;
+    let (NodeKind::Loop {
+        label: Some(label), ..
+    }
+    | NodeKind::While {
+        label: Some(label), ..
+    }) = kind
+    else {
+        return None;
+    };
+    if kind_has_stmt_exprs(kind) {
+        return None;
+    }
+    let mut jumps = Vec::new();
+    kind.child_lists()
+        .into_iter()
+        .flatten()
+        .all(|&child| loop_label_jumps(arena, child, label, false, &mut jumps))
+        .then_some(jumps)
 }
 
 impl NodeRule for BreakToElse {
@@ -208,6 +266,41 @@ impl NodeRule for LabelElide {
         };
         let body = body.clone();
         arena.set_kind(id, NodeKind::Scope { body });
+        true
+    }
+}
+
+impl NodeRule for LoopLabelElide {
+    fn name(&self) -> &'static str {
+        "label_elide::drop_loop_label"
+    }
+
+    fn priority(&self) -> u32 {
+        8
+    }
+
+    fn kinds(&self) -> &'static [NodeKindTag] {
+        &[NodeKindTag::Loop, NodeKindTag::While]
+    }
+
+    fn matches(&self, arena: &FunctionOptimizer, id: NodeId) -> bool {
+        unlabeled_loop_jumps(arena, id).is_some()
+    }
+
+    fn apply(&self, arena: &mut FunctionOptimizer, id: NodeId) -> bool {
+        let Some(jumps) = unlabeled_loop_jumps(arena, id) else {
+            return false;
+        };
+        for jump in jumps {
+            if let Some(NodeKind::Break(label) | NodeKind::Continue(label)) = arena.get_mut(jump) {
+                *label = None;
+            }
+        }
+        if let Some(NodeKind::Loop { label, .. } | NodeKind::While { label, .. }) =
+            arena.get_mut(id)
+        {
+            *label = None;
+        }
         true
     }
 }

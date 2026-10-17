@@ -195,7 +195,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { free(src_g as *mut ()) };
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let mut i: i32 = 0 as i32;
-// CHECK-NEXT:         '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: while i < (8 as i32) {
+// CHECK-NEXT:         while i < (8 as i32) {
 // CHECK-NEXT:             print!(
 // CHECK-NEXT:                 "{} ", ((unsafe { * unsafe { (dst_a.as_mut_ptr() as * mut u8).offset(i as
 // CHECK-NEXT:                 isize) } }) as u32) as i32
@@ -206,7 +206,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let mut i: i32 = 0 as i32;
-// CHECK-NEXT:         '[[SLATE_BREAK_1:__slate_break_[0-9]+]]: while i < (8 as i32) {
+// CHECK-NEXT:         while i < (8 as i32) {
 // CHECK-NEXT:             print!(
 // CHECK-NEXT:                 "{} ", ((unsafe { * unsafe { (dst_b.as_mut_ptr() as * mut u8).offset(i as
 // CHECK-NEXT:                 isize) } }) as u32) as i32
@@ -217,7 +217,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let mut i: i32 = 0 as i32;
-// CHECK-NEXT:         '[[SLATE_BREAK_2:__slate_break_[0-9]+]]: while i < (8 as i32) {
+// CHECK-NEXT:         while i < (8 as i32) {
 // CHECK-NEXT:             print!(
 // CHECK-NEXT:                 "{} ", ((unsafe { * unsafe { (self_c.as_mut_ptr() as * mut u8).offset(i
 // CHECK-NEXT:                 as isize) } }) as u32) as i32
@@ -228,7 +228,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let mut i: i32 = 0 as i32;
-// CHECK-NEXT:         '[[SLATE_BREAK_3:__slate_break_[0-9]+]]: while i < (8 as i32) {
+// CHECK-NEXT:         while i < (8 as i32) {
 // CHECK-NEXT:             print!(
 // CHECK-NEXT:                 "{} ", ((unsafe { * unsafe { (dst_d.as_mut_ptr() as * mut u8).offset(i as
 // CHECK-NEXT:                 isize) } }) as u32) as i32
@@ -239,7 +239,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let mut i: i32 = 0 as i32;
-// CHECK-NEXT:         '[[SLATE_BREAK_4:__slate_break_[0-9]+]]: while i < (8 as i32) {
+// CHECK-NEXT:         while i < (8 as i32) {
 // CHECK-NEXT:             print!(
 // CHECK-NEXT:                 "{} ", ((unsafe { * unsafe { (dst_e.as_mut_ptr() as * mut u8).offset(i as
 // CHECK-NEXT:                 isize) } }) as u32) as i32
@@ -250,7 +250,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let mut i: i32 = 0 as i32;
-// CHECK-NEXT:         '[[SLATE_BREAK_5:__slate_break_[0-9]+]]: while i < (8 as i32) {
+// CHECK-NEXT:         while i < (8 as i32) {
 // CHECK-NEXT:             print!(
 // CHECK-NEXT:                 "{} ", ((unsafe { * unsafe { (dst_f.as_mut_ptr() as * mut u8).offset(i as
 // CHECK-NEXT:                 isize) } }) as u32) as i32
@@ -260,7 +260,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut i: i32 = 0 as i32;
-// CHECK-NEXT:     '[[SLATE_BREAK_6:__slate_break_[0-9]+]]: while i < (4 as i32) {
+// CHECK-NEXT:     while i < (4 as i32) {
 // CHECK-NEXT:         print!(
 // CHECK-NEXT:             "{} ", ((unsafe { * unsafe { (dst_g.as_mut_ptr() as * mut u8).offset(i as
 // CHECK-NEXT:             isize) } }) as u32) as i32

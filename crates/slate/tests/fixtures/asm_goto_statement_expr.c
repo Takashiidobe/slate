@@ -34,7 +34,7 @@ int main(void) {
 // CHECK-NEXT:         as *mut i32;
 // CHECK-NEXT:     let mut __slate_state: usize = 6usize;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         '__slate_dispatch: loop {
+// CHECK-NEXT:         loop {
 // CHECK-NEXT:             match __slate_state {
 // CHECK-NEXT:                 0 => {
 // CHECK-NEXT:                     {}
@@ -46,12 +46,12 @@ int main(void) {
 // CHECK-NEXT:                 1 => {
 // CHECK-NEXT:                     *[[SLATE_SLOT_0]] = 13 as i32;
 // CHECK-NEXT:                     __slate_state = 0usize;
-// CHECK-NEXT:                     continue '__slate_dispatch;
+// CHECK-NEXT:                     continue;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 2 => {
 // CHECK-NEXT:                     *[[SLATE_SLOT_0]] = 11 as i32;
 // CHECK-NEXT:                     __slate_state = 0usize;
-// CHECK-NEXT:                     continue '__slate_dispatch;
+// CHECK-NEXT:                     continue;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 3 => {
 // CHECK-NEXT:                     {}
@@ -65,17 +65,17 @@ int main(void) {
 // CHECK-NEXT:                             att_syntax)
 // CHECK-NEXT:                         );
 // CHECK-NEXT:                     }
-// CHECK-NEXT:                     continue '__slate_dispatch;
+// CHECK-NEXT:                     continue;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 4 => {
 // CHECK-NEXT:                     *[[SLATE_SLOT_2]] = 13 as i32;
 // CHECK-NEXT:                     __slate_state = 3usize;
-// CHECK-NEXT:                     continue '__slate_dispatch;
+// CHECK-NEXT:                     continue;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 5 => {
 // CHECK-NEXT:                     *[[SLATE_SLOT_2]] = 11 as i32;
 // CHECK-NEXT:                     __slate_state = 3usize;
-// CHECK-NEXT:                     continue '__slate_dispatch;
+// CHECK-NEXT:                     continue;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 6 => {
 // CHECK-NEXT:                     std::ptr::write([[SLATE_SLOT_2]], 0 as i32);
@@ -87,7 +87,7 @@ int main(void) {
 // CHECK-NEXT:                             att_syntax)
 // CHECK-NEXT:                         );
 // CHECK-NEXT:                     }
-// CHECK-NEXT:                     continue '__slate_dispatch;
+// CHECK-NEXT:                     continue;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 _ => {
 // CHECK-NEXT:                     unreachable!();

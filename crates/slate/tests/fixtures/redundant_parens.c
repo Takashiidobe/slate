@@ -24,7 +24,7 @@ int main() {
 // SLATE-FILECHECK-BEGIN
 // CHECK-LABEL: {{^}}fn classify(mut a: i32, b: i32) -> i32 {
 // CHECK-NEXT:     let mut r: i32 = 0 as i32;
-// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: while a < b {
+// CHECK-NEXT:     while a < b {
 // CHECK-NEXT:         a += 1 as i32;
 // CHECK-NEXT:         r += 1 as i32;
 // CHECK-NEXT:     }

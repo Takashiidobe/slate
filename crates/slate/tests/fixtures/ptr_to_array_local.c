@@ -26,14 +26,12 @@ int main(void) {
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let p: *mut [i32; 5] = std::ptr::addr_of_mut!(src.0);
 // CHECK-NEXT:     let mut sum: i32 = 0 as i32;
-// CHECK-NEXT:     let mut i: i32 = 0 as i32;
-// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: while i < (5 as i32) {
+// CHECK-NEXT:     for i in 0 as i32..5 as i32 {
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = sum;
 // CHECK-NEXT:         sum = [[V_0]]
 // CHECK-NEXT:             + unsafe {
 // CHECK-NEXT:                 *unsafe { unsafe { (*p).as_mut_ptr() as *mut i32 }.offset(i as isize) }
 // CHECK-NEXT:             };
-// CHECK-NEXT:         i += 1 as i32;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("{}", sum);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());

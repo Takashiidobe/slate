@@ -61,7 +61,7 @@ int main(void) {
 // CHECK-NEXT:         as *mut i32;
 // CHECK-NEXT:     let mut __slate_state: usize = 5;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         '__slate_dispatch: loop {
+// CHECK-NEXT:         loop {
 // CHECK-NEXT:             match __slate_state {
 // CHECK-NEXT:                 0 => {
 // CHECK-NEXT:                     return unsafe { g };
@@ -69,10 +69,10 @@ int main(void) {
 // CHECK-NEXT:                 1 => {
 // CHECK-NEXT:                     if (unsafe { e }) != (0 as i32) {
 // CHECK-NEXT:                         __slate_state = 3;
-// CHECK-NEXT:                         continue '__slate_dispatch;
+// CHECK-NEXT:                         continue;
 // CHECK-NEXT:                     } else {
 // CHECK-NEXT:                         __slate_state = 0;
-// CHECK-NEXT:                         continue '__slate_dispatch;
+// CHECK-NEXT:                         continue;
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 2 => {
@@ -80,7 +80,7 @@ int main(void) {
 // CHECK-NEXT:                         e = 0 as i32;
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                     __slate_state = 1;
-// CHECK-NEXT:                     continue '__slate_dispatch;
+// CHECK-NEXT:                     continue;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 3 => {
 // CHECK-NEXT:                     std::ptr::write([[SLATE_SLOT_1]], unsafe { d });
@@ -93,10 +93,10 @@ int main(void) {
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                     if (unsafe { h }) != (0 as i16) {
 // CHECK-NEXT:                         __slate_state = 9;
-// CHECK-NEXT:                         continue '__slate_dispatch;
+// CHECK-NEXT:                         continue;
 // CHECK-NEXT:                     } else {
 // CHECK-NEXT:                         __slate_state = 2;
-// CHECK-NEXT:                         continue '__slate_dispatch;
+// CHECK-NEXT:                         continue;
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 4 => {
@@ -104,15 +104,15 @@ int main(void) {
 // CHECK-NEXT:                         e = 0 as i32;
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                     __slate_state = 1;
-// CHECK-NEXT:                     continue '__slate_dispatch;
+// CHECK-NEXT:                     continue;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 5 => {
 // CHECK-NEXT:                     if (unsafe { f }) != (0 as i32) {
 // CHECK-NEXT:                         __slate_state = 15;
-// CHECK-NEXT:                         continue '__slate_dispatch;
+// CHECK-NEXT:                         continue;
 // CHECK-NEXT:                     } else {
 // CHECK-NEXT:                         __slate_state = 4;
-// CHECK-NEXT:                         continue '__slate_dispatch;
+// CHECK-NEXT:                         continue;
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 6 => {
@@ -120,15 +120,15 @@ int main(void) {
 // CHECK-NEXT:                         f = (unsafe { a }) as i32;
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                     __slate_state = 5;
-// CHECK-NEXT:                     continue '__slate_dispatch;
+// CHECK-NEXT:                     continue;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 7 => {
 // CHECK-NEXT:                     if (unsafe { g }) <= (32 as i32) {
 // CHECK-NEXT:                         __slate_state = 14;
-// CHECK-NEXT:                         continue '__slate_dispatch;
+// CHECK-NEXT:                         continue;
 // CHECK-NEXT:                     } else {
 // CHECK-NEXT:                         __slate_state = 6;
-// CHECK-NEXT:                         continue '__slate_dispatch;
+// CHECK-NEXT:                         continue;
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 8 => {
@@ -138,24 +138,24 @@ int main(void) {
 // CHECK-NEXT:                         g = *[[SLATE_SLOT_2]];
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                     __slate_state = 7;
-// CHECK-NEXT:                     continue '__slate_dispatch;
+// CHECK-NEXT:                     continue;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 9 => {
 // CHECK-NEXT:                     if (unsafe { j }) != (0 as i32) {
 // CHECK-NEXT:                         __slate_state = 6;
-// CHECK-NEXT:                         continue '__slate_dispatch;
+// CHECK-NEXT:                         continue;
 // CHECK-NEXT:                     } else {
 // CHECK-NEXT:                         __slate_state = 8;
-// CHECK-NEXT:                         continue '__slate_dispatch;
+// CHECK-NEXT:                         continue;
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 10 => {
 // CHECK-NEXT:                     if *[[SLATE_SLOT_6]] < (3 as i32) {
 // CHECK-NEXT:                         __slate_state = 12;
-// CHECK-NEXT:                         continue '__slate_dispatch;
+// CHECK-NEXT:                         continue;
 // CHECK-NEXT:                     } else {
 // CHECK-NEXT:                         __slate_state = 9;
-// CHECK-NEXT:                         continue '__slate_dispatch;
+// CHECK-NEXT:                         continue;
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 11 => {
@@ -163,15 +163,15 @@ int main(void) {
 // CHECK-NEXT:                     std::ptr::write([[SLATE_SLOT_4]], *[[SLATE_SLOT_5]] + (1 as i32));
 // CHECK-NEXT:                     *[[SLATE_SLOT_6]] = *[[SLATE_SLOT_4]];
 // CHECK-NEXT:                     __slate_state = 10;
-// CHECK-NEXT:                     continue '__slate_dispatch;
+// CHECK-NEXT:                     continue;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 12 => {
 // CHECK-NEXT:                     if (1 as i32) > ((unsafe { d }) as i32) {
 // CHECK-NEXT:                         __slate_state = 13;
-// CHECK-NEXT:                         continue '__slate_dispatch;
+// CHECK-NEXT:                         continue;
 // CHECK-NEXT:                     } else {
 // CHECK-NEXT:                         __slate_state = 11;
-// CHECK-NEXT:                         continue '__slate_dispatch;
+// CHECK-NEXT:                         continue;
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 13 => {
@@ -183,23 +183,23 @@ int main(void) {
 // CHECK-NEXT:                     }) != (0 as i8)
 // CHECK-NEXT:                     {
 // CHECK-NEXT:                         __slate_state = 11;
-// CHECK-NEXT:                         continue '__slate_dispatch;
+// CHECK-NEXT:                         continue;
 // CHECK-NEXT:                     } else {
 // CHECK-NEXT:                         __slate_state = 12;
-// CHECK-NEXT:                         continue '__slate_dispatch;
+// CHECK-NEXT:                         continue;
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 14 => {
 // CHECK-NEXT:                     *[[SLATE_SLOT_6]] = 0 as i32;
 // CHECK-NEXT:                     __slate_state = 10;
-// CHECK-NEXT:                     continue '__slate_dispatch;
+// CHECK-NEXT:                     continue;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 15 => {
 // CHECK-NEXT:                     unsafe {
 // CHECK-NEXT:                         g = 0 as i32;
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                     __slate_state = 7;
-// CHECK-NEXT:                     continue '__slate_dispatch;
+// CHECK-NEXT:                     continue;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 _ => {
 // CHECK-NEXT:                     unreachable!();

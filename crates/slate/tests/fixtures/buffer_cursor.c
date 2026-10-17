@@ -22,13 +22,11 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 4]> = __SlateAlign16([0 as i32; 4]);
-// CHECK-NEXT:     let mut i: i32 = 0 as i32;
-// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: while i < (4 as i32) {
+// CHECK-NEXT:     for i in 0 as i32..4 as i32 {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *unsafe { (values.0.as_mut_ptr() as *mut i32).offset(i as isize) } = i
 // CHECK-NEXT:                 + unsafe { getchar() };
 // CHECK-NEXT:         }
-// CHECK-NEXT:         i += 1 as i32;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut c: cursor = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     c.ptr = unsafe { (values.0.as_mut_ptr() as *mut i32).offset((1 as i32) as isize) };

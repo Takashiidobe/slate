@@ -24,12 +24,10 @@ int main(void) {
 // CHECK-LABEL: {{^}}fn make(n: i32) -> *mut i32 {
 // CHECK-NEXT:     let p: *mut i32 = (unsafe { malloc(((n as i64) as u64).wrapping_mul(4 as u64)) })
 // CHECK-NEXT:         as *mut i32;
-// CHECK-NEXT:     let mut i: i32 = 0 as i32;
-// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: while i < n {
+// CHECK-NEXT:     for i in 0 as i32..n {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *unsafe { p.offset(i as isize) } = i * i;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         i += 1 as i32;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     p
 // CHECK: {{^}}}

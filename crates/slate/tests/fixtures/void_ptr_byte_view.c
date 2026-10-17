@@ -18,15 +18,12 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN
 // CHECK-LABEL: {{^}}fn all_bytes_identical(src: *const (), size: u64) -> i32 {
 // CHECK-NEXT:     let b: u8 = unsafe { *unsafe { (src as *const u8).offset((0 as i32) as isize) } };
-// CHECK-NEXT:     let mut p: u64 = ((1 as i32) as i64) as u64;
-// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: while p < size {
+// CHECK-NEXT:     for p in ((1 as i32) as i64) as u64..size {
 // CHECK-NEXT:         if (((unsafe { *unsafe { (src as *const u8).offset(p as isize) } }) as u32)
 // CHECK-NEXT:             as i32) != ((b as u32) as i32)
 // CHECK-NEXT:         {
 // CHECK-NEXT:             return 0 as i32;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: u64 = p;
-// CHECK-NEXT:         p = [[V_0]].wrapping_add(((1 as i32) as i64) as u64);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     1 as i32
 // CHECK: {{^}}}

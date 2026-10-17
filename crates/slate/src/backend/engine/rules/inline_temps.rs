@@ -1452,7 +1452,10 @@ impl NodeRule for LateInlineTemps {
         if consumer_effects.has_call() && !(allowed_receiver || allowed_argument) {
             return false;
         }
-        if is_receiver_use(arena, found.consumer_id, name) && !allowed_receiver {
+        let by_value_receiver = matches!(ty, Some(Type::Prim(_))) && matches!(init, Expr::Var(_));
+        if is_receiver_use(arena, found.consumer_id, name)
+            && !(allowed_receiver || by_value_receiver)
+        {
             return false;
         }
         if let Some(root) = root_var(&init)

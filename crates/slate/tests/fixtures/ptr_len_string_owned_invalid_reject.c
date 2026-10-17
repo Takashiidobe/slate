@@ -28,10 +28,8 @@ int main(void) {
 // CHECK-LABEL: {{^}}fn consume_bin(buf: *mut i8, len: i32) -> i32 {
 // CHECK-NEXT:     unsafe { strlen(buf as *const i8) };
 // CHECK-NEXT:     let mut score: i32 = 0 as i32;
-// CHECK-NEXT:     let mut i: i32 = 0 as i32;
-// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: while i < len {
+// CHECK-NEXT:     for i in 0 as i32..len {
 // CHECK-NEXT:         score += (((unsafe { *unsafe { buf.offset(i as isize) } }) as u8) as u32) as i32;
-// CHECK-NEXT:         i += 1 as i32;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { free(buf as *mut ()) };
 // CHECK-NEXT:     score

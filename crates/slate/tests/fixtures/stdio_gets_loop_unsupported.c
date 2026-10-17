@@ -66,7 +66,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut line: __SlateAlign16<[i8; 64]> = __SlateAlign16([0 as i8; 64]);
 // CHECK-NEXT:     let mut count: i32 = 0 as i32;
-// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: while (unsafe {
+// CHECK-NEXT:     while (unsafe {
 // CHECK-NEXT:         fgets(line.0.as_mut_ptr() as *mut i8, ((64 as u64) as u32) as i32, g)
 // CHECK-NEXT:     }) != std::ptr::null_mut::<i8>()
 // CHECK-NEXT:     {

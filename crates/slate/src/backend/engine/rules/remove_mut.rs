@@ -80,16 +80,24 @@ impl Binding<'_> {
         }
     }
 
-    fn node_mutates(&self, kind: &NodeKind) -> bool {
+    fn node_writes(&self, kind: &NodeKind) -> bool {
+        match kind {
+            NodeKind::Assign { target, .. } | NodeKind::CompoundAssign { target, .. } => {
+                self.roots(target)
+            }
+            NodeKind::Let { name, .. } | NodeKind::For { pat: name, .. } => *name == self.name,
+            _ => false,
+        }
+    }
+
+    fn node_borrows(&self, kind: &NodeKind) -> bool {
         match kind {
             NodeKind::Assign { target, value } | NodeKind::CompoundAssign { target, value, .. } => {
-                self.roots(target) || self.expr_mutates(target) || self.expr_mutates(value)
+                self.expr_mutates(target) || self.expr_mutates(value)
             }
-            NodeKind::Let { name, init, .. } => {
-                *name == self.name || init.as_ref().is_some_and(|init| self.expr_mutates(init))
-            }
+            NodeKind::Let { init, .. } => init.as_ref().is_some_and(|init| self.expr_mutates(init)),
             NodeKind::LetIf { .. } | NodeKind::InlineAsm(_) => true,
-            NodeKind::For { pat, iter, .. } => *pat == self.name || self.expr_mutates(iter),
+            NodeKind::For { iter, .. } => self.expr_mutates(iter),
             other => {
                 let mut mutates = false;
                 super::walk::visit_kind_exprs(other, |expr| mutates |= self.expr_mutates(expr));
@@ -97,6 +105,37 @@ impl Binding<'_> {
             }
         }
     }
+
+    fn node_mutates(&self, kind: &NodeKind) -> bool {
+        self.node_writes(kind) || self.node_borrows(kind)
+    }
+}
+
+pub(in crate::backend::engine) fn invariant_within(
+    arena: &FunctionOptimizer,
+    name: Ident,
+    region: &[NodeId],
+) -> bool {
+    let ty = match arena.definition(name) {
+        Some(id) => match arena.get(id) {
+            Some(NodeKind::Let { ty, .. }) => ty.as_ref(),
+            _ => return false,
+        },
+        None => match arena.param_type(name) {
+            Some(ty) => Some(ty),
+            None => return false,
+        },
+    };
+    let binding = Binding { name, ty };
+    arena.def_use_neighbors(name).iter().all(|neighbor| {
+        arena.get(*neighbor).is_some_and(|kind| {
+            if region.contains(neighbor) {
+                !binding.node_mutates(kind)
+            } else {
+                !binding.node_borrows(kind)
+            }
+        })
+    })
 }
 
 fn demotable(arena: &FunctionOptimizer, id: NodeId) -> bool {

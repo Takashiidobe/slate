@@ -65,10 +65,8 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN
 // CHECK-LABEL: {{^}}fn sum_values(values: *const i32, len: i32) -> i32 {
 // CHECK-NEXT:     let mut sum: i32 = 0 as i32;
-// CHECK-NEXT:     let mut i: i32 = 0 as i32;
-// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: while i < len {
+// CHECK-NEXT:     for i in 0 as i32..len {
 // CHECK-NEXT:         sum += unsafe { *unsafe { values.offset(i as isize) } };
-// CHECK-NEXT:         i += 1 as i32;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     sum
 // CHECK: {{^}}}
@@ -76,40 +74,32 @@ int main(void) {
 // CHECK-NEXT:     let __values_view = unsafe {
 // CHECK-NEXT:         std::slice::from_raw_parts_mut(values as *mut i32, len as usize)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut i: i32 = 0 as i32;
-// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: while i < len {
+// CHECK-NEXT:     for i in 0 as i32..len {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             __values_view[(i as usize)] = (unsafe { __values_view[(i as usize)] })
 // CHECK-NEXT:                 + (1 as i32);
 // CHECK-NEXT:         }
-// CHECK-NEXT:         i += 1 as i32;
 // CHECK-NEXT:     }
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn sum_prefix(values: *const i32, len: i32) -> i32 {
 // CHECK-NEXT:     let mut sum: i32 = 0 as i32;
-// CHECK-NEXT:     let mut i: i32 = 0 as i32;
-// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: while i < len {
+// CHECK-NEXT:     for i in 0 as i32..len {
 // CHECK-NEXT:         sum += unsafe { *unsafe { values.offset(i as isize) } };
-// CHECK-NEXT:         i += 1 as i32;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     sum
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn score_text(text: *const u8, len: i32) -> i32 {
 // CHECK-NEXT:     unsafe { strlen(text as *const i8) };
 // CHECK-NEXT:     let mut score: i32 = 0 as i32;
-// CHECK-NEXT:     let mut i: i32 = 0 as i32;
-// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: while i < len {
+// CHECK-NEXT:     for i in 0 as i32..len {
 // CHECK-NEXT:         score += ((unsafe { *unsafe { text.offset(i as isize) } }) as u32) as i32;
-// CHECK-NEXT:         i += 1 as i32;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     score
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn maybe_consume(values: *mut i32, len: i32, release: i32) -> i32 {
 // CHECK-NEXT:     let mut sum: i32 = 0 as i32;
-// CHECK-NEXT:     let mut i: i32 = 0 as i32;
-// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: while i < len {
+// CHECK-NEXT:     for i in 0 as i32..len {
 // CHECK-NEXT:         sum += unsafe { *unsafe { values.offset(i as isize) } };
-// CHECK-NEXT:         i += 1 as i32;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if release != (0 as i32) {
 // CHECK-NEXT:         unsafe { free(values as *mut ()) };

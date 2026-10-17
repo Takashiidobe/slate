@@ -1,28 +1,18 @@
 use super::inline_temps;
+use super::remove_mut::invariant_within;
+use super::walk::kind_has_stmt_exprs;
 use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{Arena, FunctionOptimizer, NodeId, NodeKind, NodeKindTag};
-use crate::backend::rust_ast::{BinOp, Expr, Ident, RustValue, UnaryOp};
+use crate::backend::rust_ast::{BinOp, Expr, Ident, Prim, RustValue, Type, UnaryOp};
 
 struct RecoveredFor {
     ind_var: Ident,
     start: Expr,
     end: Expr,
-    mid_body: Vec<NodeId>,
-    let_id: NodeId,
-    assign_start_id: NodeId,
-    bound_let_id: Option<NodeId>,
-    guard_if_id: NodeId,
+    body: Vec<NodeId>,
+    start_id: NodeId,
+    decl_id: Option<NodeId>,
     increment_id: NodeId,
-}
-
-fn owning_list(arena: &Arena, id: NodeId) -> Option<(NodeId, usize)> {
-    let parent_id = arena.parent(id)?;
-    let list_index = arena
-        .get(parent_id)?
-        .child_lists()
-        .iter()
-        .position(|list| list.contains(&id))?;
-    Some((parent_id, list_index))
 }
 
 fn int_value(expr: &Expr) -> Option<i128> {
@@ -30,6 +20,9 @@ fn int_value(expr: &Expr) -> Option<i128> {
         Expr::Value(RustValue::I64(n)) => Some(*n as i128),
         Expr::Value(RustValue::I128(n)) => Some(*n),
         Expr::Value(RustValue::TypedInt(n, _)) => Some(*n),
+        Expr::Value(RustValue::Usize(n)) => i128::try_from(*n).ok(),
+        Expr::Value(RustValue::U128(n) | RustValue::TypedUInt(n, _)) => i128::try_from(*n).ok(),
+        Expr::Cast { expr, .. } => int_value(expr),
         _ => None,
     }
 }
@@ -38,118 +31,55 @@ fn is_var(expr: &Expr, name: Ident) -> bool {
     matches!(expr, Expr::Var(v) if *v == name)
 }
 
-fn break_guard_cond(arena: &Arena, id: NodeId) -> Option<&Expr> {
-    let Some(NodeKind::If {
-        cond,
-        then_body,
-        else_body,
-    }) = arena.get(id)
-    else {
-        return None;
-    };
-    if !else_body.is_empty() || then_body.len() != 1 {
-        return None;
-    }
-    if !matches!(arena.get(then_body[0]), Some(NodeKind::Break(None))) {
-        return None;
-    }
-    Some(cond)
-}
-
-fn extract_negated_lt(cond: &Expr, ind_var: Ident) -> Option<Expr> {
-    let Expr::Unary {
-        op: UnaryOp::Not,
-        expr: inner,
-    } = cond
-    else {
-        return None;
-    };
-    let Expr::Binary {
-        op: BinOp::Lt,
-        lhs,
-        rhs,
-    } = inner.as_ref()
-    else {
-        return None;
-    };
-    if !is_var(lhs, ind_var) {
-        return None;
-    }
-    Some(rhs.as_ref().clone())
-}
-
-fn negated_lt_guard(arena: &Arena, id: NodeId, ind_var: Ident) -> Option<Expr> {
-    extract_negated_lt(break_guard_cond(arena, id)?, ind_var)
-}
-
-fn negated_lt_guard_through_temp(
-    arena: &Arena,
-    guard_if_id: NodeId,
-    temp_let_id: NodeId,
-    ind_var: Ident,
-) -> Option<Expr> {
-    let Some(NodeKind::Let {
-        name: tmp,
-        mutable: false,
-        init: Some(init),
-        ..
-    }) = arena.get(temp_let_id)
-    else {
-        return None;
-    };
-    let tmp = *tmp;
-    if inline_temps::expr_effects(init).is_side_effect() {
-        return None;
-    }
-    if arena.def_use_neighbors(tmp) != [guard_if_id] {
-        return None;
-    }
-    let cond = break_guard_cond(arena, guard_if_id)?;
-    let mut substituted = cond.clone();
-    substituted.substitute_var(tmp.as_str(), init);
-    extract_negated_lt(&substituted, ind_var)
-}
-
 fn is_unit_increment(arena: &Arena, id: NodeId, ind_var: Ident) -> bool {
-    let Some(NodeKind::Assign { target, value }) = arena.get(id) else {
-        return false;
-    };
-    if !is_var(target, ind_var) {
-        return false;
+    match arena.get(id) {
+        Some(NodeKind::CompoundAssign {
+            target,
+            op: BinOp::Add,
+            value,
+        }) => is_var(target, ind_var) && int_value(value) == Some(1),
+        Some(NodeKind::Assign {
+            target,
+            value:
+                Expr::Binary {
+                    op: BinOp::Add,
+                    lhs,
+                    rhs,
+                },
+        }) => is_var(target, ind_var) && is_var(lhs, ind_var) && int_value(rhs) == Some(1),
+        Some(NodeKind::Assign {
+            target,
+            value: Expr::MethodCall { recv, method, args },
+        }) => {
+            is_var(target, ind_var)
+                && is_var(recv, ind_var)
+                && method.as_str() == "wrapping_add"
+                && matches!(&args[..], [one] if int_value(one) == Some(1))
+        }
+        _ => false,
     }
-    let Expr::Binary {
-        op: BinOp::Add,
-        lhs,
-        rhs,
-    } = value
-    else {
-        return false;
-    };
-    is_var(lhs, ind_var) && int_value(rhs) == Some(1)
 }
 
-fn assigns_to(arena: &Arena, id: NodeId, name: Ident) -> bool {
+fn is_integer(ty: Option<&Type>) -> bool {
+    matches!(ty, Some(Type::Prim(prim)) if !matches!(prim, Prim::Bool | Prim::F16 | Prim::F32 | Prim::F64 | Prim::F128))
+}
+
+fn continues_here(arena: &Arena, id: NodeId) -> bool {
     let Some(kind) = arena.get(id) else {
         return false;
     };
-    let direct = match kind {
-        NodeKind::Assign { target, .. } | NodeKind::CompoundAssign { target, .. } => {
-            is_var(target, name)
+    match kind {
+        NodeKind::Continue(_) => true,
+        NodeKind::Loop { .. } | NodeKind::While { .. } | NodeKind::For { .. } => false,
+        _ => {
+            kind_has_stmt_exprs(kind)
+                || kind
+                    .child_lists()
+                    .into_iter()
+                    .flatten()
+                    .any(|&child| continues_here(arena, child))
         }
-        NodeKind::Let {
-            name: decl,
-            init: Some(_),
-            ..
-        } => *decl == name,
-        NodeKind::For { pat, .. } => *pat == name,
-        _ => false,
-    };
-    direct
-        || kind
-            .child_lists()
-            .into_iter()
-            .flatten()
-            .any(|&child| assigns_to(arena, child, name))
+    }
 }
 
 fn subtree_ids(arena: &Arena, id: NodeId, out: &mut Vec<NodeId>) {
@@ -160,93 +90,119 @@ fn subtree_ids(arena: &Arena, id: NodeId, out: &mut Vec<NodeId>) {
     }
 }
 
-fn plan(arena: &Arena, loop_id: NodeId) -> Option<RecoveredFor> {
-    let Some(NodeKind::Loop { label: None, body }) = arena.get(loop_id) else {
-        return None;
-    };
-    let increment_id = *body.last()?;
-    let Some(NodeKind::Assign {
-        target: Expr::Var(ind_var),
-        ..
-    }) = arena.get(increment_id)
+fn loop_invariant(arena: &FunctionOptimizer, expr: &Expr, region: &[NodeId]) -> bool {
+    match expr {
+        Expr::Value(_) => true,
+        Expr::Var(name) => invariant_within(arena, *name, region),
+        Expr::Cast { expr, .. }
+        | Expr::Unary {
+            op: UnaryOp::Neg | UnaryOp::Not,
+            expr,
+        } => loop_invariant(arena, expr, region),
+        Expr::Binary {
+            op:
+                BinOp::Add
+                | BinOp::Sub
+                | BinOp::Mul
+                | BinOp::Div
+                | BinOp::Rem
+                | BinOp::BitAnd
+                | BinOp::BitOr
+                | BinOp::BitXor
+                | BinOp::Shl
+                | BinOp::Shr,
+            lhs,
+            rhs,
+        } => loop_invariant(arena, lhs, region) && loop_invariant(arena, rhs, region),
+        _ => false,
+    }
+}
+
+fn earlier_siblings(arena: &Arena, id: NodeId) -> Option<Vec<NodeId>> {
+    let parent = arena.get(arena.parent(id)?)?;
+    parent.child_lists().into_iter().find_map(|list| {
+        let index = list.iter().position(|&child| child == id)?;
+        Some(list[..index].to_vec())
+    })
+}
+
+fn plan(arena: &FunctionOptimizer, while_id: NodeId) -> Option<RecoveredFor> {
+    let Some(NodeKind::While {
+        label: None,
+        cond:
+            Expr::Binary {
+                op: BinOp::Lt,
+                lhs,
+                rhs: end,
+            },
+        stmts,
+        tail: None,
+    }) = arena.get(while_id)
     else {
         return None;
     };
-    let ind_var = *ind_var;
-    if !is_unit_increment(arena, increment_id, ind_var) {
+    let Expr::Var(ind_var) = **lhs else {
+        return None;
+    };
+    let (&increment_id, body) = stmts.split_last()?;
+    let mut body_region = Vec::new();
+    for &id in body {
+        subtree_ids(arena, id, &mut body_region);
+    }
+    if !is_unit_increment(arena, increment_id, ind_var)
+        || body.iter().any(|&id| continues_here(arena, id))
+        || !invariant_within(arena, ind_var, &body_region)
+    {
         return None;
     }
 
-    let (bound_let_id, guard_if_id, end, guard_end_index) =
-        if let Some(end) = negated_lt_guard(arena, body[0], ind_var) {
-            (None, body[0], end, 0usize)
-        } else if body.len() >= 2
-            && let Some(NodeKind::Let {
-                name: tmp,
-                init: Some(bound_init),
-                ..
-            }) = arena.get(body[0])
-        {
-            let tmp = *tmp;
-            let bound_init = bound_init.clone();
-            if let Some(end) = negated_lt_guard(arena, body[1], ind_var)
-                && is_var(&end, tmp)
-                && arena.def_use_neighbors(tmp) == [body[1]]
+    let definition = arena.definition(ind_var)?;
+    let Some(NodeKind::Let { ty, init, .. }) = arena.get(definition) else {
+        return None;
+    };
+    if !is_integer(ty.as_ref()) {
+        return None;
+    }
+    let earlier = earlier_siblings(arena, while_id)?;
+    let (start, start_id, decl_id) = match arena.get(*earlier.last()?)? {
+        NodeKind::Assign {
+            target: Expr::Var(name),
+            value: start,
+        } if *name == ind_var => {
+            if init
+                .as_ref()
+                .is_some_and(|init| inline_temps::expr_effects(init).is_side_effect())
             {
-                (Some(body[0]), body[1], bound_init, 1usize)
-            } else {
-                let end = negated_lt_guard_through_temp(arena, body[1], body[0], ind_var)?;
-                (Some(body[0]), body[1], end, 1usize)
+                return None;
             }
-        } else {
-            return None;
-        };
-
-    if guard_end_index + 1 > body.len() - 1 {
-        return None;
-    }
-    let mid_body = body[guard_end_index + 1..body.len() - 1].to_vec();
-    if mid_body.iter().any(|&id| assigns_to(arena, id, ind_var)) {
-        return None;
-    }
-
-    let parent_id = arena.parent(loop_id)?;
-    let parent_kind = arena.get(parent_id)?;
-    let (index, list) = parent_kind
-        .child_lists()
-        .into_iter()
-        .find_map(|list| list.iter().position(|&x| x == loop_id).map(|i| (i, list)))?;
-    if index < 1 {
-        return None;
-    }
-    let assign_start_id = list[index - 1];
-    let Some(NodeKind::Assign {
-        target: Expr::Var(assign_name),
-        value: start,
-    }) = arena.get(assign_start_id)
-    else {
-        return None;
+            (start.clone(), *earlier.last()?, Some(definition))
+        }
+        _ => {
+            let position = earlier.iter().position(|&id| id == definition)?;
+            let start = init.as_ref()?;
+            let mut between = Vec::new();
+            for &id in &earlier[position + 1..] {
+                subtree_ids(arena, id, &mut between);
+            }
+            if inline_temps::expr_effects(start).is_side_effect()
+                || !loop_invariant(arena, start, &between)
+            {
+                return None;
+            }
+            (start.clone(), definition, None)
+        }
     };
-    if *assign_name != ind_var {
+
+    let mut region = Vec::new();
+    subtree_ids(arena, while_id, &mut region);
+    if !loop_invariant(arena, end, &region) {
         return None;
     }
-    let start = start.clone();
-
-    let let_id = arena.definition(ind_var)?;
-    let Some(NodeKind::Let { name: decl, .. }) = arena.get(let_id) else {
-        return None;
-    };
-    if *decl != ind_var || let_id == assign_start_id {
-        return None;
-    }
-    owning_list(arena, let_id)?;
-
-    let mut allowed = vec![let_id, assign_start_id];
-    subtree_ids(arena, loop_id, &mut allowed);
+    let outside = [Some(start_id), decl_id];
     if !arena
         .def_use_neighbors(ind_var)
         .iter()
-        .all(|n| allowed.contains(n))
+        .all(|n| region.contains(n) || outside.contains(&Some(*n)))
     {
         return None;
     }
@@ -254,12 +210,10 @@ fn plan(arena: &Arena, loop_id: NodeId) -> Option<RecoveredFor> {
     Some(RecoveredFor {
         ind_var,
         start,
-        end,
-        mid_body,
-        let_id,
-        assign_start_id,
-        bound_let_id,
-        guard_if_id,
+        end: (**end).clone(),
+        body: body.to_vec(),
+        start_id,
+        decl_id,
         increment_id,
     })
 }
@@ -276,7 +230,7 @@ impl NodeRule for ForRangeRecover {
     }
 
     fn kinds(&self) -> &'static [NodeKindTag] {
-        &[NodeKindTag::Loop]
+        &[NodeKindTag::While]
     }
 
     fn matches(&self, arena: &FunctionOptimizer, id: NodeId) -> bool {
@@ -287,14 +241,11 @@ impl NodeRule for ForRangeRecover {
         let Some(plan) = plan(arena, id) else {
             return false;
         };
-        arena.retire(plan.let_id, Some(id));
-        arena.retire(plan.assign_start_id, Some(id));
-        if let Some(bound_let_id) = plan.bound_let_id {
-            arena.retire(bound_let_id, Some(id));
+        arena.retire(plan.start_id, Some(id));
+        if let Some(decl_id) = plan.decl_id {
+            arena.retire(decl_id, Some(id));
         }
-        arena.retire_subtree(plan.guard_if_id, Some(id));
         arena.retire(plan.increment_id, Some(id));
-
         arena.set_kind(
             id,
             NodeKind::For {
@@ -303,7 +254,7 @@ impl NodeRule for ForRangeRecover {
                     start: Box::new(plan.start),
                     end: Box::new(plan.end),
                 },
-                body: plan.mid_body,
+                body: plan.body,
             },
         );
         true
