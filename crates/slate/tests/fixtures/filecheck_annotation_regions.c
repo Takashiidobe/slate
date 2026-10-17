@@ -20,7 +20,6 @@ int main(void) {
 // CHECK-NEXT:     let lowered_value: i32 = 6 * 7;
 // CHECK-NEXT:     let lowered_absence: i32 = 5 + 6;
 // CHECK-NEXT:     println!("{} {} {}", value, lowered_value, lowered_absence);
-// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { puts(c"_v9 anon_4 anon_struct_i32".as_ptr()) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0

@@ -69,7 +69,6 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { fclose(g) };
 // CHECK-NEXT:     println!("{}", count);
-// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { remove(c"slate_stdio_gets_loop_unsupported.tmp".as_ptr()) };
 // CHECK-NEXT:     0
 // CHECK: {{^}}}

@@ -37,7 +37,6 @@ int main(void) {
 // CHECK-NEXT:         "{} {}", unsafe { * unsafe { q.offset(0 as isize) } }, unsafe { * unsafe { q
 // CHECK-NEXT:         .offset(3 as isize) } }
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { free(q as *mut ()) };
 // CHECK-NEXT:     0
 // CHECK: {{^}}}

@@ -89,7 +89,6 @@ int main(void) {
 // CHECK-NEXT:         (a != std::ptr::null_mut::< i32 > ()) as i32, read_first(raw), unsafe { * unsafe
 // CHECK-NEXT:         { raw2.offset(1 as isize) } }
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { free(q as *mut ()) };
 // CHECK-NEXT:     unsafe { free(r as *mut ()) };
 // CHECK-NEXT:     if m != std::ptr::null_mut::<i32>() {

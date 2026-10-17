@@ -32,7 +32,6 @@ int main(void) {
 // CHECK-NEXT:                 0 => {
 // CHECK-NEXT:                     {}
 // CHECK-NEXT:                     println!("{} {}", [[V_0]], result);
-// CHECK-NEXT:                     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:                     return 0;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 1 => {

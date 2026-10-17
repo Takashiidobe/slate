@@ -68,7 +68,6 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) == 0) as i32;
 // CHECK-NEXT:     println!("{} {} {} {}", equal_result, unequal_result, partial_result, dyn_result);
-// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     0
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

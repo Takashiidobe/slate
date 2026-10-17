@@ -30,7 +30,6 @@ int main(void) {
 // CHECK-NEXT:     let second: i32 = long_score(8 as i64);
 // CHECK-NEXT:     let third: i32 = pointer_score(array.as_mut_ptr() as *const i32);
 // CHECK-NEXT:     println!("{} {} {}", first, second, third);
-// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     0
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

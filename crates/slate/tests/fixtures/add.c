@@ -20,7 +20,6 @@ int main(void) {
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!("{}", add(2 as i32, 3 as i32));
-// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     0
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

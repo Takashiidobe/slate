@@ -51,7 +51,6 @@ int main(void) {
 // CHECK-NEXT:         {}
 // CHECK-NEXT:         let second: i32 = result;
 // CHECK-NEXT:         println!("{} {} {}", first, second, value);
-// CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
 // CHECK: {{^}}}

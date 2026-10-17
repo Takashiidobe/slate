@@ -67,7 +67,6 @@ int main(void) {
 // CHECK-NEXT:             1 as i32
 // CHECK-NEXT:         )
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     0
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

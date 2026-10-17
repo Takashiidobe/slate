@@ -33,12 +33,10 @@ int main(void) {
 // CHECK-NEXT:     let r: i32 = add(a, b);
 // CHECK-NEXT:     let kept: i32 = c + d;
 // CHECK-NEXT:     println!("{}", r);
-// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     kept + kept
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn blocked_forward(a: i32, b: i32) {
 // CHECK-NEXT:     let r: i32 = add(a, b);
 // CHECK-NEXT:     println!("{} {}", r, side_effect());
-// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

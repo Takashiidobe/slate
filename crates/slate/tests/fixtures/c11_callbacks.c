@@ -73,7 +73,6 @@ int main(void) {
 // CHECK-NEXT:         "{} {} {} {} {} {}", thread_created, thread_joined, thread_result, unsafe {
 // CHECK-NEXT:         once_total }, key_created, quick_registered
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     0
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

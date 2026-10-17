@@ -36,7 +36,6 @@ int main(void) {
 // CHECK-NEXT:         : [[SLATERECORD_0]] = unsafe { std::mem::zeroed() }; [[T_1]].second =
 // CHECK-NEXT:         std::ptr::addr_of_mut!(second); [[T_1]] })
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     0
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

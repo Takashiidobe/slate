@@ -282,10 +282,18 @@ fn rewrite_block_stmts(
     *stmts = result;
 }
 
+fn leaves_stdout_flushed(stmt: &Stmt, flush: &Stmt) -> bool {
+    stmt == flush || matches!(stmt, Stmt::Expr(Expr::Macro { name, .. }) if name == "println")
+}
+
 fn extend_flushed(result: &mut Vec<Stmt>, stmts: Vec<Stmt>) {
     let flush = stdout_flush_stmt();
     for stmt in stmts {
-        if stmt == flush && result.last() == Some(&flush) {
+        if stmt == flush
+            && result
+                .last()
+                .is_some_and(|last| leaves_stdout_flushed(last, &flush))
+        {
             continue;
         }
         result.push(stmt);

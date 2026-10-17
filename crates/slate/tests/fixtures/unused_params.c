@@ -27,7 +27,6 @@ int main(void) {
 // CHECK-NEXT:         remove_two(3 as i32, 4 as i32, 5 as i32), unsafe { indirect.unwrap() (8 as i32, 9
 // CHECK-NEXT:         as i32) }
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     0
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

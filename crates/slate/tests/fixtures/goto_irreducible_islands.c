@@ -103,7 +103,6 @@ done:
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:         println!("{} {}", x, y);
-// CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
 // CHECK: {{^}}}

@@ -48,7 +48,6 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     freeCResources(unsafe { &mut (*std::ptr::addr_of_mut!(r)) });
 // CHECK-NEXT:     println!("{} {} {}", r.dict.x, r.io.y, r.cctx);
-// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     0
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

@@ -34,7 +34,6 @@ int main(void) {
 // CHECK-NEXT:             };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("{}", sum);
-// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     0
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

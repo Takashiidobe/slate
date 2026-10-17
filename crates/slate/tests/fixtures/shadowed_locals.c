@@ -59,7 +59,6 @@ int main(void) {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let x: i32 = k * 2;
 // CHECK-NEXT:         println!("{}", x);
-// CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x
 // CHECK: {{^}}}
@@ -69,7 +68,6 @@ int main(void) {
 // CHECK-NEXT:         let mut x: i32 = 3;
 // CHECK-NEXT:         x += k;
 // CHECK-NEXT:         println!("{}", x);
-// CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x * 2
 // CHECK: {{^}}}

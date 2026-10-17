@@ -23,7 +23,6 @@ int main(void) {
 // CHECK-NEXT:     let nanoseconds_in_range: i32 = (value.tv_nsec >= 0 && value.tv_nsec < 1000000000)
 // CHECK-NEXT:         as i32;
 // CHECK-NEXT:     println!("{} {}", (result == 1) as i32, nanoseconds_in_range);
-// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     0
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

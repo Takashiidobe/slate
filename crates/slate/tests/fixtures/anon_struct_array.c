@@ -37,7 +37,6 @@ int main(void) {
 // CHECK-NEXT:         },
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     println!("{}", error_log.0[0].code);
-// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     0
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

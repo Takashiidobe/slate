@@ -24,7 +24,6 @@ int main(void) {
 // CHECK-NEXT:         "{}", (unsafe { * return_global() }) + unsafe { * unsafe { *
 // CHECK-NEXT:         return_global_pointer() } } + unsafe { * return_element() }
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     0
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END
