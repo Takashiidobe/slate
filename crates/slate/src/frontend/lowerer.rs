@@ -68,6 +68,7 @@ struct Tables<'m> {
     bindings: HashMap<BindingId, String>,
     strings: HashMap<BindingId, Vec<u8>>,
     statics: HashSet<BindingId>,
+    constexprs: HashMap<BindingId, &'m ir::Value>,
     asm_names: HashMap<String, BindingId>,
     register_globals: HashMap<BindingId, &'static str>,
     over_aligned: HashMap<BindingId, u64>,
@@ -89,6 +90,7 @@ struct Dependencies {
     aapcs_va: bool,
     atomic_volatile: bool,
     asm_unwind: bool,
+    long_const_eval: bool,
     asm_goto_with_outputs: bool,
     asm_strings: BTreeMap<u32, Item>,
     atomic128: bool,
@@ -128,6 +130,7 @@ struct FunctionLowerer<'a, 'm> {
     register_locals: HashSet<BindingId>,
     old_value: Option<Expr>,
     uses_alloca: bool,
+    in_static_initializer: bool,
     target_features: Vec<&'static str>,
 }
 
@@ -412,6 +415,13 @@ impl<'m> ModuleLowerer<'m> {
             bindings,
             strings,
             statics: statics.iter().map(|global| global.variable.id).collect(),
+            constexprs: statics
+                .iter()
+                .filter(|global| global.variable.constexpr)
+                .filter_map(|global| {
+                    Some((global.variable.id, global.variable.initializer.as_ref()?))
+                })
+                .collect(),
             asm_names: asm_names(module, options, &statics),
             register_globals,
             over_aligned: HashMap::new(),
@@ -460,6 +470,7 @@ impl<'m> ModuleLowerer<'m> {
             register_locals: HashSet::new(),
             old_value: None,
             uses_alloca: false,
+            in_static_initializer: false,
             target_features: Vec::new(),
         }
     }
@@ -730,6 +741,11 @@ impl<'m> ModuleLowerer<'m> {
             );
         }
         let mut features = vec![rust::CrateAttr::Allow(vec![rust::Lint::NonCamelCaseTypes])];
+        if dependencies.long_const_eval {
+            features.push(rust::CrateAttr::Allow(vec![
+                rust::Lint::LongRunningConstEval,
+            ]));
+        }
         if dependencies.asm_unwind {
             features.push(rust::CrateAttr::Feature(rust::Feature::AsmUnwind));
         }

@@ -203,6 +203,7 @@ pub enum Lint {
     UnpredictableFunctionPointerComparisons,
     UnusedComparisons,
     RustdocAll,
+    LongRunningConstEval,
 }
 
 impl Lint {
@@ -220,6 +221,7 @@ impl Lint {
             }
             Lint::UnusedComparisons => "unused_comparisons",
             Lint::RustdocAll => "rustdoc::all",
+            Lint::LongRunningConstEval => "long_running_const_eval",
         }
     }
 }

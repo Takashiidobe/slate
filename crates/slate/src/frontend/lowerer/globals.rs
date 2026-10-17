@@ -103,6 +103,16 @@ impl Tables<'_> {
             | ValueKind::Null
             | ValueKind::LabelAddress(_)
             | ValueKind::FunctionDecay { .. } => true,
+            ValueKind::Read {
+                place:
+                    ir::Place {
+                        kind: PlaceKind::Binding(id),
+                        ..
+                    },
+                ordering: None,
+            } if let Some(initializer) = self.constexprs.get(id) => {
+                self.is_constant_initializer(initializer)
+            }
             ValueKind::ArrayDecay { place, .. } | ValueKind::AddressOf(place) => {
                 self.is_constant_address(place)
             }
@@ -202,7 +212,12 @@ impl FunctionLowerer<'_, '_> {
         }
         let init = match &variable.initializer {
             None => zeroed(),
-            Some(value) if tables.is_constant_initializer(value) => self.lower_value(value)?,
+            Some(value) if tables.is_constant_initializer(value) => {
+                self.in_static_initializer = true;
+                let lowered = self.lower_value(value);
+                self.in_static_initializer = false;
+                lowered?
+            }
             Some(value) => {
                 return Err(Failure::from(Construct::Global {
                     name: variable.name.clone(),

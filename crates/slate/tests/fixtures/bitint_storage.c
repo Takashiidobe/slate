@@ -142,7 +142,10 @@ int main(void) {
 // CHECK-NEXT:         3,
 // CHECK-NEXT:         24,
 // CHECK-NEXT:         bitint::A8,
-// CHECK-NEXT:     >>::from_decimal_str("99114423104580546006193429178388264714531")
+// CHECK-NEXT:     >>::from_le_bytes::<
+// CHECK-NEXT:         152,
+// CHECK-NEXT:         19,
+// CHECK-NEXT:     >([35, 1, 239, 205, 171, 137, 103, 69, 35, 1, 239, 205, 171, 137, 103, 69, 35, 1, 0])
 // CHECK-NEXT:         .wrapping_neg(),
 // CHECK-NEXT: );
 // CHECK-NEXT: static mut global_huge: bitint::BUint<575, 9, 72, bitint::A8> = <bitint::BUint<
@@ -156,7 +159,13 @@ int main(void) {
 // CHECK-NEXT:         3,
 // CHECK-NEXT:         24,
 // CHECK-NEXT:         bitint::A8,
-// CHECK-NEXT:     >>::from_decimal_str("6249203505451628849692820439375744481966954417427815084560"),
+// CHECK-NEXT:     >>::from_le_bytes::<
+// CHECK-NEXT:         200,
+// CHECK-NEXT:         25,
+// CHECK-NEXT:     >([
+// CHECK-NEXT:         16, 50, 84, 118, 152, 186, 220, 254, 16, 50, 84, 118, 152, 186, 220, 254, 16, 50,
+// CHECK-NEXT:         84, 118, 152, 186, 220, 254, 0,
+// CHECK-NEXT:     ]),
 // CHECK-NEXT: );
 // CHECK-NEXT: static mut global_mixed: Mixed = Mixed {
 // CHECK-NEXT:     tag: (3 as i32) as i8,

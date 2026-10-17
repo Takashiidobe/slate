@@ -57,6 +57,27 @@ impl WideInt {
         )
     }
 
+    fn from_bytes(self, bytes: &[u8]) -> Expr {
+        Expr::Call {
+            func: Box::new(Expr::Var(
+                format!(
+                    "<{}>::from_le_bytes::<{}, {}>",
+                    crate::backend::codegen::type_to_string(&self.rust_type()),
+                    bytes.len() * 8,
+                    bytes.len()
+                )
+                .into(),
+            )),
+            args: vec![Expr::ArrayLit(
+                bytes
+                    .iter()
+                    .map(|byte| Expr::Value(rust::RustValue::I64(i64::from(*byte))))
+                    .collect(),
+            )],
+            binding: CallBinding::Generated,
+        }
+    }
+
     fn call(self, name: &str, args: Vec<Expr>) -> Expr {
         Expr::Call {
             func: Box::new(self.function(name)),
@@ -100,14 +121,14 @@ impl FunctionLowerer<'_, '_> {
             Number::Integer(value) => match u128::try_from(value) {
                 Ok(value) => ("from_u128", rust::RustValue::U128(value)),
                 Err(_) => {
-                    return Ok(wide.call("from_decimal_str", vec![Expr::Str(value.to_string())]));
+                    let mut bytes = value.to_bytes_le();
+                    bytes.push(0);
+                    return Ok(wide.from_bytes(&bytes));
                 }
             },
             Number::SignedInteger(value) => match i128::try_from(value) {
                 Ok(value) => ("from_i128", rust::RustValue::I128(value)),
-                Err(_) => {
-                    return Ok(wide.call("from_decimal_str", vec![Expr::Str(value.to_string())]));
-                }
+                Err(_) => return Ok(wide.from_bytes(&value.to_signed_bytes_le())),
             },
             _ => return Err(unsupported_constant(number)),
         };

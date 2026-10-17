@@ -58,9 +58,13 @@ int main() {
 // CHECK-NEXT:                                     4,
 // CHECK-NEXT:                                     32,
 // CHECK-NEXT:                                     bitint::A8,
-// CHECK-NEXT:                                 >>::from_decimal_str(
-// CHECK-NEXT:                                     "123456789012345678901234567890123456789012345",
-// CHECK-NEXT:                                 )
+// CHECK-NEXT:                                 >>::from_le_bytes::<
+// CHECK-NEXT:                                     160,
+// CHECK-NEXT:                                     20,
+// CHECK-NEXT:                                 >([
+// CHECK-NEXT:                                     121, 223, 226, 241, 116, 124, 91, 239, 146, 170, 195, 158,
+// CHECK-NEXT:                                     103, 173, 39, 229, 54, 137, 5, 0,
+// CHECK-NEXT:                                 ])
 // CHECK-NEXT:                             {
 // CHECK-NEXT:                                 break '[[JOIN_0]];
 // CHECK-NEXT:                             } else {
@@ -96,8 +100,9 @@ int main() {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{}", classify(< bitint::BInt < 200, 4, 32, bitint::A8 >>::from_bint(<
-// CHECK-NEXT:         bitint::BInt < 148, 3, 24, bitint::A8
-// CHECK-NEXT:         >>::from_decimal_str("123456789012345678901234567890123456789012345")))
+// CHECK-NEXT:         bitint::BInt < 148, 3, 24, bitint::A8 >>::from_le_bytes::< 160, 20 > ([121, 223,
+// CHECK-NEXT:         226, 241, 116, 124, 91, 239, 146, 170, 195, 158, 103, 173, 39, 229, 54, 137, 5,
+// CHECK-NEXT:         0])))
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{}", classify(< bitint::BInt < 200, 4, 32, bitint::A8 >>::from_i128(4 as i128))

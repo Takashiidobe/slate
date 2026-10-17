@@ -672,6 +672,19 @@ impl FunctionLowerer<'_, '_> {
                 .lower_atomic_rmw(value)?
                 .ok_or_else(|| unsupported_value(value))?,
             ValueKind::Read {
+                place:
+                    ir::Place {
+                        kind: PlaceKind::Binding(id),
+                        ..
+                    },
+                ordering: None,
+            } if let Some(initializer) = self.tables.constexprs.get(id)
+                && self.in_static_initializer =>
+            {
+                self.dependencies.long_const_eval = true;
+                self.lower_value(initializer)?
+            }
+            ValueKind::Read {
                 place,
                 ordering: Some(ordering),
             } => self.lower_atomic_access(place, ordering, None)?,
