@@ -2,6 +2,7 @@ mod arena;
 mod prelude;
 mod printf_format;
 mod rules;
+mod shadow;
 
 use arena::{Arena, FunctionOptimizer, NodeId, NodeKindTag};
 use std::collections::{BTreeSet, HashMap};
@@ -133,8 +134,10 @@ fn run_function(
     return_type: Option<&crate::backend::rust_ast::Type>,
     passes: &[RuleRegistry],
 ) {
-    let taken = std::mem::take(body);
+    let mut taken = std::mem::take(body);
+    let shadowed = shadow::uniquify(&mut taken, params);
     let mut function = arena::build(taken, params, return_type);
+    function.set_shadowed(shadowed.clone());
     let root = function.root;
     for registry in passes {
         run_worklist(&mut function, registry);
@@ -142,6 +145,7 @@ fn run_function(
     rules::demote_params(&mut function);
     *body = arena::reify(&function, root);
     *params = function.params().to_vec();
+    shadow::restore(body, params, &shadowed);
 }
 
 fn enqueue_subtree(arena: &Arena, id: NodeId, worklist: &mut BTreeSet<u32>) {

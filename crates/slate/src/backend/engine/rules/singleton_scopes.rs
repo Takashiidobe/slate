@@ -9,7 +9,7 @@ fn later_siblings(arena: &Arena, id: NodeId) -> Option<(NodeId, Vec<NodeId>)> {
     Some((parent, list[pos + 1..].to_vec()))
 }
 
-fn shadow_outlives_scope(arena: &Arena, id: NodeId) -> bool {
+fn shadow_outlives_scope(arena: &FunctionOptimizer, id: NodeId) -> bool {
     let Some(NodeKind::Scope { body }) = arena.get(id) else {
         return false;
     };
@@ -21,6 +21,7 @@ fn shadow_outlives_scope(arena: &Arena, id: NodeId) -> bool {
             NodeKind::For { .. } => None,
             kind => kind.declared_name(),
         })
+        .flat_map(|name| arena.source_name_bindings(name))
         .any(|name| {
             arena.def_use_neighbors(name).iter().any(|&reader| {
                 if reader == parent {

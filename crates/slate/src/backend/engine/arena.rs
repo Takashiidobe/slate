@@ -661,11 +661,32 @@ pub(in crate::backend) struct FunctionOptimizer {
     params: Vec<FnParam>,
     param_types: HashMap<Ident, Type>,
     return_type: Option<Type>,
+    shadowed: Vec<(Ident, Ident)>,
 }
 
 impl FunctionOptimizer {
     pub(in crate::backend) fn params(&self) -> &[FnParam] {
         &self.params
+    }
+
+    pub(in crate::backend) fn set_shadowed(&mut self, shadowed: Vec<(Ident, Ident)>) {
+        self.shadowed = shadowed;
+    }
+
+    pub(in crate::backend) fn source_name_bindings(&self, name: Ident) -> Vec<Ident> {
+        let original = self
+            .shadowed
+            .iter()
+            .find(|&&(fresh, _)| fresh == name)
+            .map_or(name, |&(_, original)| original);
+        std::iter::once(original)
+            .chain(
+                self.shadowed
+                    .iter()
+                    .filter(|&&(_, base)| base == original)
+                    .map(|&(fresh, _)| fresh),
+            )
+            .collect()
     }
 
     pub(in crate::backend) fn return_type(&self) -> Option<&Type> {
@@ -762,6 +783,7 @@ pub(in crate::backend) fn build(
             .map(|param| (Ident::new(&param.name), param.ty.clone()))
             .collect(),
         return_type: return_type.cloned(),
+        shadowed: Vec::new(),
     }
 }
 
