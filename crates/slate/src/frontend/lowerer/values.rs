@@ -679,6 +679,12 @@ impl FunctionLowerer<'_, '_> {
                 }),
             },
             ValueKind::Convert { operand, .. }
+                if self.tables.wide_int(&operand.ty).is_some()
+                    || self.tables.wide_int(&value.ty).is_some() =>
+            {
+                self.lower_wide_int_conversion(value, operand)?
+            }
+            ValueKind::Convert { operand, .. }
                 if self.tables.is_long_double(&operand.ty)
                     || self.tables.is_long_double(&value.ty) =>
             {
@@ -699,12 +705,6 @@ impl FunctionLowerer<'_, '_> {
                 if matches!(self.tables.resolve_type(&value.ty), ir::Type::Vector { .. }) =>
             {
                 self.lower_vector_unary(value, *op, operand)?
-            }
-            ValueKind::Convert { operand, .. }
-                if self.tables.wide_int(&operand.ty).is_some()
-                    || self.tables.wide_int(&value.ty).is_some() =>
-            {
-                self.lower_wide_int_conversion(value, operand)?
             }
             ValueKind::Convert { operand, .. } => {
                 let from = match odd_width(self.tables.resolve_type(&operand.ty)) {

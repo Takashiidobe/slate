@@ -86,6 +86,16 @@ macro_rules! byte_traits {
 byte_traits!(BUint);
 byte_traits!(BInt);
 
+const fn f80_bytes_to_bits(bytes: [u8; 10]) -> u128 {
+    let mut wide = [0u8; 16];
+    let mut i = 0;
+    while i < 10 {
+        wide[i] = bytes[i];
+        i += 1;
+    }
+    u128::from_le_bytes(wide)
+}
+
 const fn bytes_to_limbs<const LIMBS: usize, const BYTES: usize>(
     bytes: &[u8; BYTES],
 ) -> [u64; LIMBS] {
@@ -206,6 +216,54 @@ impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> BU
 
     pub const fn to_le_bytes<const DBYTES: usize>(self) -> [u8; DBYTES] {
         cast_bytes::<BITS, DBYTES, BITS, BYTES>(&self.bytes, false)
+    }
+
+    pub const fn to_ieee_bits(self, frac_bits: u32, exp_bits: u32, explicit: bool) -> u128 {
+        self.to_limbs()
+            .magnitude_to_ieee(false, frac_bits, exp_bits, explicit)
+    }
+
+    pub const fn from_ieee_bits(bits: u128, frac_bits: u32, exp_bits: u32, explicit: bool) -> Self {
+        let (negative, magnitude) =
+            BUintLimbs::<BITS, LIMBS>::magnitude_from_ieee(bits, frac_bits, exp_bits, explicit);
+        Self::from_limbs(if negative {
+            magnitude.wrapping_neg()
+        } else {
+            magnitude
+        })
+    }
+
+    pub const fn to_f80_bytes(self) -> [u8; 10] {
+        let bits = self.to_ieee_bits(63, 15, true).to_le_bytes();
+        [
+            bits[0], bits[1], bits[2], bits[3], bits[4], bits[5], bits[6], bits[7], bits[8],
+            bits[9],
+        ]
+    }
+
+    pub const fn from_f80_bytes(bytes: [u8; 10]) -> Self {
+        Self::from_ieee_bits(f80_bytes_to_bits(bytes), 63, 15, true)
+    }
+
+    pub const fn to_f64(self) -> f64 {
+        self.to_limbs().magnitude_to_f64()
+    }
+
+    pub const fn to_f32(self) -> f32 {
+        self.to_limbs().magnitude_to_f32()
+    }
+
+    pub const fn from_f64(d: f64) -> Self {
+        let magnitude = BUintLimbs::<BITS, LIMBS>::magnitude_from_f64(d);
+        Self::from_limbs(if d.is_sign_negative() {
+            magnitude.wrapping_neg()
+        } else {
+            magnitude
+        })
+    }
+
+    pub const fn from_f32(f: f32) -> Self {
+        Self::from_f64(f as f64)
     }
 
     pub const fn to_u128(self) -> u128 {
@@ -566,6 +624,44 @@ impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> BI
 
     pub const fn to_i128(self) -> i128 {
         self.to_limbs().to_i128()
+    }
+
+    pub const fn to_ieee_bits(self, frac_bits: u32, exp_bits: u32, explicit: bool) -> u128 {
+        self.to_limbs().to_ieee(frac_bits, exp_bits, explicit)
+    }
+
+    pub const fn from_ieee_bits(bits: u128, frac_bits: u32, exp_bits: u32, explicit: bool) -> Self {
+        Self::from_limbs(BIntLimbs::<BITS, LIMBS>::from_ieee(
+            bits, frac_bits, exp_bits, explicit,
+        ))
+    }
+
+    pub const fn to_f80_bytes(self) -> [u8; 10] {
+        let bits = self.to_ieee_bits(63, 15, true).to_le_bytes();
+        [
+            bits[0], bits[1], bits[2], bits[3], bits[4], bits[5], bits[6], bits[7], bits[8],
+            bits[9],
+        ]
+    }
+
+    pub const fn from_f80_bytes(bytes: [u8; 10]) -> Self {
+        Self::from_ieee_bits(f80_bytes_to_bits(bytes), 63, 15, true)
+    }
+
+    pub const fn to_f64(self) -> f64 {
+        self.to_limbs().to_f64()
+    }
+
+    pub const fn to_f32(self) -> f32 {
+        self.to_limbs().to_f32()
+    }
+
+    pub const fn from_f64(d: f64) -> Self {
+        Self::from_limbs(BIntLimbs::<BITS, LIMBS>::from_f64(d))
+    }
+
+    pub const fn from_f32(f: f32) -> Self {
+        Self::from_f64(f as f64)
     }
 
     pub const fn to_u128(self) -> u128 {
@@ -1040,6 +1136,153 @@ impl<const BITS: usize, const LIMBS: usize> BUintLimbs<BITS, LIMBS> {
         true
     }
 
+    const fn has_bits_below(&self, count: usize) -> bool {
+        let mut i = 0;
+        while i < LIMBS && i * 64 < count {
+            let remaining = count - i * 64;
+            let mask = if remaining >= 64 {
+                u64::MAX
+            } else {
+                (1u64 << remaining) - 1
+            };
+            if self.limbs[i] & mask != 0 {
+                return true;
+            }
+            i += 1;
+        }
+        false
+    }
+
+    const fn top64_sticky(&self) -> (u64, usize) {
+        let len = self.bit_len();
+        if len <= 64 {
+            return (if LIMBS > 0 { self.limbs[0] } else { 0 }, 0);
+        }
+        let shift = len - 64;
+        let top = self.shr_bits(shift).limbs[0];
+        (top | self.has_bits_below(shift) as u64, shift)
+    }
+
+    const fn magnitude_to_f64(&self) -> f64 {
+        let (top, shift) = self.top64_sticky();
+        let scale = if shift > 1023 {
+            f64::INFINITY
+        } else {
+            f64::from_bits((1023 + shift as u64) << 52)
+        };
+        top as f64 * scale
+    }
+
+    const fn magnitude_to_f32(&self) -> f32 {
+        let (top, shift) = self.top64_sticky();
+        let scale = if shift > 127 {
+            f32::INFINITY
+        } else {
+            f32::from_bits((127 + shift as u32) << 23)
+        };
+        top as f32 * scale
+    }
+
+    const fn magnitude_from_f64(d: f64) -> Self {
+        let bits = d.to_bits();
+        let exponent = ((bits >> 52) & 0x7ff) as i64;
+        if exponent < 1023 || exponent == 0x7ff {
+            return Self::ZERO;
+        }
+        let mantissa = (bits & ((1u64 << 52) - 1)) | (1u64 << 52);
+        let scale = exponent - 1075;
+        if scale >= 0 {
+            Self::from_low_limb(mantissa).shl_trunc(scale as usize)
+        } else {
+            Self::from_low_limb(mantissa >> (-scale) as u32)
+        }
+    }
+
+    const fn top128_sticky(&self) -> (u128, usize) {
+        let len = self.bit_len();
+        if len <= 128 {
+            return (self.to_u128(), 0);
+        }
+        let shift = len - 128;
+        let top = self.shr_bits(shift).to_u128();
+        (top | self.has_bits_below(shift) as u128, shift)
+    }
+
+    const fn magnitude_to_ieee(
+        &self,
+        negative: bool,
+        frac_bits: u32,
+        exp_bits: u32,
+        explicit: bool,
+    ) -> u128 {
+        let explicit_bit = explicit as u32;
+        let sign = (negative as u128) << (exp_bits + frac_bits + explicit_bit);
+        let (top, shift) = self.top128_sticky();
+        if top == 0 {
+            return sign;
+        }
+        let len = 128 - top.leading_zeros();
+        let keep = frac_bits + 1;
+        let mut exponent = len as i64 - 1 + shift as i64;
+        let mut mantissa;
+        if len <= keep {
+            mantissa = top << (keep - len);
+        } else {
+            let drop = len - keep;
+            mantissa = top >> drop;
+            let remainder = top & ((1u128 << drop) - 1);
+            let half = 1u128 << (drop - 1);
+            if remainder > half || (remainder == half && mantissa & 1 == 1) {
+                mantissa += 1;
+                if mantissa == 1u128 << keep {
+                    mantissa >>= 1;
+                    exponent += 1;
+                }
+            }
+        }
+        let biased = exponent + (1i64 << (exp_bits - 1)) - 1;
+        let max = (1i64 << exp_bits) - 1;
+        if biased >= max {
+            let fraction = if explicit { 1u128 << frac_bits } else { 0 };
+            return sign | ((max as u128) << (frac_bits + explicit_bit)) | fraction;
+        }
+        let fraction = if explicit {
+            mantissa
+        } else {
+            mantissa & ((1u128 << frac_bits) - 1)
+        };
+        sign | ((biased as u128) << (frac_bits + explicit_bit)) | fraction
+    }
+
+    const fn magnitude_from_ieee(
+        bits: u128,
+        frac_bits: u32,
+        exp_bits: u32,
+        explicit: bool,
+    ) -> (bool, Self) {
+        let explicit_bit = explicit as u32;
+        let negative = (bits >> (exp_bits + frac_bits + explicit_bit)) & 1 == 1;
+        let exponent = ((bits >> (frac_bits + explicit_bit)) & ((1u128 << exp_bits) - 1)) as i64;
+        let fraction = bits & ((1u128 << (frac_bits + explicit_bit)) - 1);
+        let max = (1i64 << exp_bits) - 1;
+        let unbiased = exponent - ((1i64 << (exp_bits - 1)) - 1);
+        if exponent == 0 || exponent == max || unbiased < 0 {
+            return (negative, Self::ZERO);
+        }
+        let mantissa = if explicit {
+            fraction
+        } else {
+            fraction | (1u128 << frac_bits)
+        };
+        let shift = unbiased - frac_bits as i64;
+        let magnitude = if shift >= 0 {
+            Self::from_u128(mantissa).shl_trunc(shift as usize)
+        } else {
+            Self::from_u128(mantissa >> (-shift) as u32)
+        };
+        (negative, magnitude)
+    }
+
     const fn bit_len(&self) -> usize {
         let mut i = LIMBS;
 
@@ -1322,6 +1565,55 @@ impl<const BITS: usize, const LIMBS: usize> BIntLimbs<BITS, LIMBS> {
 
     const fn is_negative(&self) -> bool {
         (self.bits.limbs[Self::SIGN_LIMB] >> Self::SIGN_BIT) & 1 == 1
+    }
+
+    const fn to_f64(self) -> f64 {
+        if self.is_negative() {
+            -self.wrapping_neg().bits.magnitude_to_f64()
+        } else {
+            self.bits.magnitude_to_f64()
+        }
+    }
+
+    const fn to_f32(self) -> f32 {
+        if self.is_negative() {
+            -self.wrapping_neg().bits.magnitude_to_f32()
+        } else {
+            self.bits.magnitude_to_f32()
+        }
+    }
+
+    const fn to_ieee(self, frac_bits: u32, exp_bits: u32, explicit: bool) -> u128 {
+        if self.is_negative() {
+            self.wrapping_neg()
+                .bits
+                .magnitude_to_ieee(true, frac_bits, exp_bits, explicit)
+        } else {
+            self.bits
+                .magnitude_to_ieee(false, frac_bits, exp_bits, explicit)
+        }
+    }
+
+    const fn from_ieee(bits: u128, frac_bits: u32, exp_bits: u32, explicit: bool) -> Self {
+        let (negative, magnitude) =
+            BUintLimbs::magnitude_from_ieee(bits, frac_bits, exp_bits, explicit);
+        let value = Self { bits: magnitude };
+        if negative {
+            value.wrapping_neg()
+        } else {
+            value
+        }
+    }
+
+    const fn from_f64(d: f64) -> Self {
+        let magnitude = Self {
+            bits: BUintLimbs::magnitude_from_f64(d),
+        };
+        if d.is_sign_negative() {
+            magnitude.wrapping_neg()
+        } else {
+            magnitude
+        }
     }
 
     const fn wrapping_add(self, rhs: Self) -> Self {

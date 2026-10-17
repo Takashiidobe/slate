@@ -110,6 +110,95 @@ impl FunctionLowerer<'_, '_> {
         Ok(wide.call(name, vec![Expr::Value(value)]))
     }
 
+    fn float_kind(&self, ty: &ir::Type) -> Option<ir::FloatType> {
+        match self.tables.resolve_type(ty) {
+            ir::Type::Numeric(ir::NumericType::Float(
+                kind @ (ir::FloatType::F16
+                | ir::FloatType::F32
+                | ir::FloatType::F64
+                | ir::FloatType::F80
+                | ir::FloatType::F128),
+            )) => Some(*kind),
+            _ => None,
+        }
+    }
+
+    fn wide_int_to_float(&self, kind: ir::FloatType, expr: Expr) -> Expr {
+        let method = |recv: Expr, name: &str, args: Vec<Expr>| Expr::MethodCall {
+            recv: Box::new(recv),
+            method: name.into(),
+            args,
+        };
+        let ieee = |expr: Expr, frac: i64, exp: i64| {
+            method(
+                expr,
+                "to_ieee_bits",
+                vec![
+                    Expr::Value(rust::RustValue::I64(frac)),
+                    Expr::Value(rust::RustValue::I64(exp)),
+                    Expr::Value(rust::RustValue::Bool(false)),
+                ],
+            )
+        };
+        let from_bits = |prim: &str, bits: Expr| Expr::Call {
+            func: Box::new(Expr::Var(format!("{prim}::from_bits").into())),
+            args: vec![bits],
+            binding: CallBinding::Generated,
+        };
+        match kind {
+            ir::FloatType::F32 => method(expr, "to_f32", Vec::new()),
+            ir::FloatType::F64 => method(expr, "to_f64", Vec::new()),
+            ir::FloatType::F16 => from_bits(
+                "f16",
+                Expr::Cast {
+                    expr: Box::new(ieee(expr, 10, 5)),
+                    ty: rust::Type::Prim(Prim::U16),
+                },
+            ),
+            ir::FloatType::F128 => from_bits("f128", ieee(expr, 112, 15)),
+            _ => Expr::Call {
+                func: Box::new(Expr::Var(long_double::LONG_DOUBLE_TY.into())),
+                args: vec![method(expr, "to_f80_bytes", Vec::new())],
+                binding: CallBinding::Generated,
+            },
+        }
+    }
+
+    fn float_to_wide_int(&self, wide: WideInt, kind: ir::FloatType, expr: Expr) -> Expr {
+        let ieee = |frac: i64, exp: i64| {
+            let bits = Expr::Cast {
+                expr: Box::new(Expr::MethodCall {
+                    recv: Box::new(expr.clone()),
+                    method: "to_bits".into(),
+                    args: Vec::new(),
+                }),
+                ty: rust::Type::Prim(Prim::U128),
+            };
+            wide.call(
+                "from_ieee_bits",
+                vec![
+                    bits,
+                    Expr::Value(rust::RustValue::I64(frac)),
+                    Expr::Value(rust::RustValue::I64(exp)),
+                    Expr::Value(rust::RustValue::Bool(false)),
+                ],
+            )
+        };
+        match kind {
+            ir::FloatType::F32 => wide.call("from_f32", vec![expr]),
+            ir::FloatType::F64 => wide.call("from_f64", vec![expr]),
+            ir::FloatType::F16 => ieee(10, 5),
+            ir::FloatType::F128 => ieee(112, 15),
+            _ => wide.call(
+                "from_f80_bytes",
+                vec![Expr::TupleField {
+                    base: Box::new(expr),
+                    index: 0,
+                }],
+            ),
+        }
+    }
+
     pub(super) fn lower_wide_int_conversion(
         &mut self,
         value: &ir::Value,
@@ -118,6 +207,16 @@ impl FunctionLowerer<'_, '_> {
         let source = self.tables.wide_int(&operand.ty);
         let target = self.tables.wide_int(&value.ty);
         let lowered = self.lower_value(operand)?;
+        if source.is_some()
+            && let Some(kind) = self.float_kind(&value.ty)
+        {
+            return Ok(self.wide_int_to_float(kind, lowered));
+        }
+        if let Some(target) = target
+            && let Some(kind) = self.float_kind(&operand.ty)
+        {
+            return Ok(self.float_to_wide_int(target, kind, lowered));
+        }
         match (source, target) {
             (Some(source), Some(target)) => Ok(target.call(
                 if source.signed {
