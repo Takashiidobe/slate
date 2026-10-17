@@ -435,21 +435,25 @@ pub(crate) fn f80_shim_decls() -> Vec<ExternFnDecl> {
         ],
         Some(Type::Prim(Prim::Bool)),
     ));
+    let cf80 = || Type::Complex(Box::new(f80()));
+    for (shim, ret) in [
+        ("__slate_cf80_add", cf80()),
+        ("__slate_cf80_sub", cf80()),
+        ("__slate_cf80_mul", cf80()),
+        ("__slate_cf80_div", cf80()),
+        ("__slate_cf80_mul_basic", cf80()),
+        ("__slate_cf80_div_basic", cf80()),
+    ] {
+        decls.push(f80_extern_decl(
+            shim,
+            vec![f80_param("a", cf80()), f80_param("b", cf80())],
+            Some(ret),
+        ));
+    }
     decls.push(f80_extern_decl(
-        "__slate_cf80_mul",
-        vec![
-            f80_param("a", Type::Complex(Box::new(f80()))),
-            f80_param("b", Type::Complex(Box::new(f80()))),
-        ],
-        Some(Type::Complex(Box::new(f80()))),
-    ));
-    decls.push(f80_extern_decl(
-        "__slate_cf80_div",
-        vec![
-            f80_param("a", Type::Complex(Box::new(f80()))),
-            f80_param("b", Type::Complex(Box::new(f80()))),
-        ],
-        Some(Type::Complex(Box::new(f80()))),
+        "__slate_cf80_neg",
+        vec![f80_param("a", cf80())],
+        Some(cf80()),
     ));
     decls.push(f80_extern_decl(
         "__slate_f80_fma",

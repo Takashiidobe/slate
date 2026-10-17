@@ -109,6 +109,11 @@ impl Tables<'_> {
             ValueKind::PointerOffset {
                 pointer, amount, ..
             } => self.is_constant_initializer(pointer) && self.is_constant_initializer(amount),
+            ValueKind::Convert {
+                kind: ir::ConversionKind::RealToComplex,
+                operand,
+                ..
+            } => self.is_constant_initializer(operand),
             ValueKind::Convert { operand, .. } => {
                 !self.is_long_double(&operand.ty)
                     && !self.is_long_double(&value.ty)

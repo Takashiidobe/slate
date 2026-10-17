@@ -65,6 +65,21 @@ __slate_cf80 __slate_cf80_div(__slate_cf80 a, __slate_cf80 b) {
   return __slate_cf80_store(__slate_cf80_load(a) / __slate_cf80_load(b));
 }
 
+__slate_cf80 __slate_cf80_mul_basic(__slate_cf80 a, __slate_cf80 b) {
+  long double ar = __slate_f80_load(a.re), ai = __slate_f80_load(a.im);
+  long double br = __slate_f80_load(b.re), bi = __slate_f80_load(b.im);
+  return __slate_cf80_make(__slate_f80_store(ar * br - ai * bi),
+                           __slate_f80_store(ar * bi + ai * br));
+}
+
+__slate_cf80 __slate_cf80_div_basic(__slate_cf80 a, __slate_cf80 b) {
+  long double ar = __slate_f80_load(a.re), ai = __slate_f80_load(a.im);
+  long double br = __slate_f80_load(b.re), bi = __slate_f80_load(b.im);
+  long double denom = br * br + bi * bi;
+  return __slate_cf80_make(__slate_f80_store((ar * br + ai * bi) / denom),
+                           __slate_f80_store((ai * br - ar * bi) / denom));
+}
+
 __slate_cf80 __slate_cf80_add_assign(__slate_cf80 *a, __slate_cf80 b) {
   *a = __slate_cf80_add(*a, b);
   return *a;

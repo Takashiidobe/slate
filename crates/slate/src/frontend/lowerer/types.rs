@@ -536,10 +536,14 @@ impl FunctionLowerer<'_, '_> {
                             ir::FloatType::F16
                                 | ir::FloatType::F32
                                 | ir::FloatType::F64
+                                | ir::FloatType::F80
                                 | ir::FloatType::F128
                         )
                 ) =>
             {
+                if matches!(component, ir::NumericType::Float(ir::FloatType::F80)) {
+                    self.dependencies.complex_long_double = true;
+                }
                 return Ok(rust::Type::Complex(Box::new(
                     self.lower_type(&ir::Type::Numeric(*component))?,
                 )));

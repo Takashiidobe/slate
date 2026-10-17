@@ -19,12 +19,163 @@ fn method(recv: Expr, name: &str, args: Vec<Expr>) -> Expr {
 
 fn component_zero(component: ir::NumericType) -> Expr {
     match component {
+        ir::NumericType::Float(ir::FloatType::F80) => long_double_literal(0),
         ir::NumericType::Float(_) => Expr::Value(rust::RustValue::Float(0.0.into())),
         _ => Expr::Value(rust::RustValue::I64(0)),
     }
 }
 
+fn is_f80(component: ir::NumericType) -> bool {
+    matches!(component, ir::NumericType::Float(ir::FloatType::F80))
+}
+
+fn part(base: &Expr, field: &str) -> Expr {
+    Expr::Field {
+        base: Box::new(base.clone()),
+        field: field.into(),
+    }
+}
+
+fn shim(name: &str, args: Vec<Expr>) -> Expr {
+    Expr::Call {
+        func: Box::new(Expr::Var(name.into())),
+        args,
+        binding: CallBinding::Generated,
+    }
+}
+
+fn binary(op: BinOp, lhs: Expr, rhs: Expr) -> Expr {
+    Expr::Binary {
+        op,
+        lhs: Box::new(lhs),
+        rhs: Box::new(rhs),
+    }
+}
+
+fn negate(expr: Expr) -> Expr {
+    Expr::Unary {
+        op: rust::UnaryOp::Neg,
+        expr: Box::new(expr),
+    }
+}
+
+fn parts_block(stmts: Vec<Stmt>, re: Expr, im: Expr) -> Expr {
+    Expr::Block(Box::new(rust::Block {
+        stmts,
+        tail: Some(Box::new(complex_literal(re, im))),
+    }))
+}
+
 impl FunctionLowerer<'_, '_> {
+    fn bind(&mut self, stmts: &mut Vec<Stmt>, init: Expr) -> Expr {
+        let temp = self.next_temp();
+        stmts.push(Stmt::Let {
+            name: temp.clone(),
+            mutable: false,
+            ty: None,
+            init: Some(init),
+        });
+        Expr::Var(temp.as_str().into())
+    }
+
+    fn conjugate(&mut self, operand: Expr) -> Expr {
+        let mut stmts = Vec::new();
+        let z = self.bind(&mut stmts, operand);
+        parts_block(stmts, part(&z, "re"), negate(part(&z, "im")))
+    }
+
+    fn convert_component(
+        &mut self,
+        expr: Expr,
+        from: ir::NumericType,
+        to: ir::NumericType,
+    ) -> Result<Expr> {
+        let target = self.lower_type(&ir::Type::Numeric(to))?;
+        let source = self.lower_type(&ir::Type::Numeric(from))?;
+        let name = match (is_f80(from), is_f80(to)) {
+            (true, true) => return Ok(expr),
+            (false, false) => {
+                return Ok(Expr::Cast {
+                    expr: Box::new(expr),
+                    ty: target,
+                });
+            }
+            (false, true) => long_double::f80_cast_from_name(&source),
+            (true, false) => long_double::f80_cast_to_name(&target),
+        };
+        let name = name.ok_or_else(|| {
+            Failure::from(Construct::LongDouble {
+                detail: format!("complex conversion {from} -> {to}"),
+            })
+        })?;
+        Ok(shim(name, vec![expr]))
+    }
+
+    fn lower_complex_long_double_arith(
+        &mut self,
+        op: ir::ArithOp,
+        (lhs, left_complex): (Expr, bool),
+        (rhs, right_complex): (Expr, bool),
+        basic: bool,
+    ) -> Option<Expr> {
+        let mul = if basic {
+            "__slate_cf80_mul_basic"
+        } else {
+            "__slate_cf80_mul"
+        };
+        let div = if basic {
+            "__slate_cf80_div_basic"
+        } else {
+            "__slate_cf80_div"
+        };
+        let mut stmts = Vec::new();
+        Some(match (op, left_complex, right_complex) {
+            (ir::ArithOp::Add, true, true) => shim("__slate_cf80_add", vec![lhs, rhs]),
+            (ir::ArithOp::Sub, true, true) => shim("__slate_cf80_sub", vec![lhs, rhs]),
+            (ir::ArithOp::Mul, true, true) => shim(mul, vec![lhs, rhs]),
+            (ir::ArithOp::Div, true, true) => shim(div, vec![lhs, rhs]),
+            (ir::ArithOp::Div, false, true) => {
+                shim(div, vec![complex_literal(lhs, long_double_literal(0)), rhs])
+            }
+            (op, true, false) => {
+                let z = self.bind(&mut stmts, lhs);
+                let r = self.bind(&mut stmts, rhs);
+                let (re, im) = match op {
+                    ir::ArithOp::Add => (binary(BinOp::Add, part(&z, "re"), r), part(&z, "im")),
+                    ir::ArithOp::Sub => (binary(BinOp::Sub, part(&z, "re"), r), part(&z, "im")),
+                    ir::ArithOp::Mul => (
+                        binary(BinOp::Mul, part(&z, "re"), r.clone()),
+                        binary(BinOp::Mul, part(&z, "im"), r),
+                    ),
+                    ir::ArithOp::Div => (
+                        binary(BinOp::Div, part(&z, "re"), r.clone()),
+                        binary(BinOp::Div, part(&z, "im"), r),
+                    ),
+                    _ => return None,
+                };
+                parts_block(stmts, re, im)
+            }
+            (op, false, true) => {
+                let r = self.bind(&mut stmts, lhs);
+                let z = self.bind(&mut stmts, rhs);
+                let (re, im) = match op {
+                    ir::ArithOp::Add => (binary(BinOp::Add, r, part(&z, "re")), part(&z, "im")),
+                    ir::ArithOp::Sub => (
+                        binary(BinOp::Sub, r, part(&z, "re")),
+                        negate(part(&z, "im")),
+                    ),
+                    ir::ArithOp::Mul => (
+                        binary(BinOp::Mul, r.clone(), part(&z, "re")),
+                        binary(BinOp::Mul, r, part(&z, "im")),
+                    ),
+                    _ => return None,
+                };
+                parts_block(stmts, re, im)
+            }
+            _ => return None,
+        })
+    }
+
     fn complex_component(&self, ty: &ir::Type) -> Option<ir::NumericType> {
         match self.tables.resolve_type(ty) {
             ir::Type::Complex(component) => Some(*component),
@@ -84,30 +235,17 @@ impl FunctionLowerer<'_, '_> {
                 kind: ir::ConversionKind::ComplexConvert,
                 operand,
                 ..
-            } if self.complex_component(&operand.ty).is_some() => {
-                let target = self.lower_type(&ir::Type::Numeric(
-                    self.complex_component(&value.ty)
-                        .ok_or_else(|| unsupported_value(value))?,
-                ))?;
+            } if let Some(from) = self.complex_component(&operand.ty) => {
+                let to = self
+                    .complex_component(&value.ty)
+                    .ok_or_else(|| unsupported_value(value))?;
                 self.lower_type(&operand.ty)?;
-                let temp = self.next_temp();
-                let part = |field: &str| Expr::Cast {
-                    expr: Box::new(Expr::Field {
-                        base: Box::new(Expr::Var(temp.as_str().into())),
-                        field: field.into(),
-                    }),
-                    ty: target.clone(),
-                };
-                let literal = complex_literal(part("re"), part("im"));
-                Ok(Some(Expr::Block(Box::new(rust::Block {
-                    stmts: vec![Stmt::Let {
-                        name: temp.clone(),
-                        mutable: false,
-                        ty: None,
-                        init: Some(self.lower_value(operand)?),
-                    }],
-                    tail: Some(Box::new(literal)),
-                }))))
+                let lowered = self.lower_value(operand)?;
+                let mut stmts = Vec::new();
+                let z = self.bind(&mut stmts, lowered);
+                let re = self.convert_component(part(&z, "re"), from, to)?;
+                let im = self.convert_component(part(&z, "im"), from, to)?;
+                Ok(Some(parts_block(stmts, re, im)))
             }
             ValueKind::Arith {
                 op,
@@ -127,6 +265,17 @@ impl FunctionLowerer<'_, '_> {
                 let right_complex = self.complex_component(&right.ty).is_some();
                 let lhs = self.lower_value(left)?;
                 let rhs = self.lower_value(right)?;
+                if self.complex_component(&value.ty).is_some_and(is_f80) {
+                    return self
+                        .lower_complex_long_double_arith(
+                            *op,
+                            (lhs, left_complex),
+                            (rhs, right_complex),
+                            basic,
+                        )
+                        .map(Some)
+                        .ok_or_else(|| unsupported_value(value));
+                }
                 let binary = |op| Expr::Binary {
                     op,
                     lhs: Box::new(lhs.clone()),
@@ -167,11 +316,11 @@ impl FunctionLowerer<'_, '_> {
             } if self.complex_component(&value.ty).is_some() => {
                 self.lower_type(&value.ty)?;
                 let operand = self.lower_value(operand)?;
+                let long_double = self.complex_component(&value.ty).is_some_and(is_f80);
                 Ok(Some(match op {
-                    ir::UnaryArithOp::Neg => Expr::Unary {
-                        op: rust::UnaryOp::Neg,
-                        expr: Box::new(operand),
-                    },
+                    ir::UnaryArithOp::Neg if long_double => shim("__slate_cf80_neg", vec![operand]),
+                    ir::UnaryArithOp::Neg => negate(operand),
+                    _ if long_double => self.conjugate(operand),
                     _ => method(operand, "conj", Vec::new()),
                 }))
             }
@@ -217,6 +366,9 @@ impl FunctionLowerer<'_, '_> {
                 self.lower_type(&argument.ty)?;
                 let operand = self.lower_value(argument)?;
                 Ok(Some(match part {
+                    "conj" if self.complex_component(&argument.ty).is_some_and(is_f80) => {
+                        self.conjugate(operand)
+                    }
                     "conj" => method(operand, "conj", Vec::new()),
                     field => Expr::Field {
                         base: Box::new(operand),

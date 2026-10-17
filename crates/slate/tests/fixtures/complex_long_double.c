@@ -2,6 +2,8 @@
 
 typedef _Complex long double cl;
 
+static cl global_cl = 1.25L;
+
 static cl make(long double re, long double im) {
   cl z = re;
   __imag__ z = im;
@@ -33,6 +35,31 @@ int main(void) {
   show("tinydiv", div(tiny, tiny));
   long double precise = __real__ mul(make(1.0L + 0x1p-100L, 0), make(1.0L - 0x1p-100L, 0));
   printf("%d %d %d\n", a == a, a == 1.5L, precise == 1.0L);
+  cl negzero = make(1.0L, -0.0L);
+  show("radd", 2.0L + negzero);
+  show("rsub", 2.0L - negzero);
+  show("rmul", negzero * 3.0L);
+  show("rdivz", negzero / 4.0L);
+  double _Complex narrowed = a;
+  printf("narrow %a %a\n", __real__ narrowed, __imag__ narrowed);
+  float _Complex f = 0.25f;
+  __imag__ f = 8.0f;
+  show("widen", f);
+  show("int", 7);
+  cl acc = a;
+  acc += b;
+  acc *= b;
+  acc -= 1;
+  acc /= 2.0L;
+  show("acc", acc);
+  cl *p = &acc;
+  __real__ *p = 9.0L;
+  show("place", *p);
+  show("global", global_cl);
+  printf("%d %d %d\n", !make(0, 0), !!a, a ? 1 : 0);
+  long double re = a;
+  int truncated = a;
+  printf("%a %d\n", (double)re, truncated);
   return 0;
 }
 
@@ -50,6 +77,10 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-NEXT: static mut global_cl: num_complex::Complex<f128> = num_complex::Complex {
+// CHECK-NEXT:     re: 1.25f128,
+// CHECK-NEXT:     im: 0.0,
+// CHECK-NEXT: };
 // CHECK-NEXT: fn make(re: f128, im: f128) -> num_complex::Complex<f128> {
 // CHECK-NEXT:     let mut z: num_complex::Complex<f128> = num_complex::Complex {
 // CHECK-NEXT:         re: re,
@@ -122,6 +153,68 @@ int main(void) {
 // CHECK-NEXT:         "{} {} {}", (a == a) as i32, (a == num_complex::Complex { re : 1.5f128, im : 0.0
 // CHECK-NEXT:         }) as i32, (precise == 1f128) as i32
 // CHECK-NEXT:     );
+// CHECK-NEXT:     let negzero: num_complex::Complex<f128> = make(1f128, -0f128);
+// CHECK-NEXT:     show(c"radd".as_ptr(), 2f128 + negzero);
+// CHECK-NEXT:     show(c"rsub".as_ptr(), 2f128 - negzero);
+// CHECK-NEXT:     show(c"rmul".as_ptr(), negzero * 3f128);
+// CHECK-NEXT:     show(c"rdivz".as_ptr(), negzero / 4f128);
+// CHECK-NEXT:     let narrowed: num_complex::Complex<f64> = {
+// CHECK-NEXT:         let [[T_0:__t[0-9]+]] = a;
+// CHECK-NEXT:         num_complex::Complex {
+// CHECK-NEXT:             re: [[T_0]].re as f64,
+// CHECK-NEXT:             im: [[T_0]].im as f64,
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:     unsafe { printf(c"narrow %a %a\n".as_ptr(), narrowed.re, narrowed.im) };
+// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     let mut f: num_complex::Complex<f32> = num_complex::Complex {
+// CHECK-NEXT:         re: 0.25f32,
+// CHECK-NEXT:         im: 0.0,
+// CHECK-NEXT:     };
+// CHECK-NEXT:     f.im = 8.0f32;
+// CHECK-NEXT:     show(
+// CHECK-NEXT:         c"widen".as_ptr(),
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let [[T_1:__t[0-9]+]] = f;
+// CHECK-NEXT:             num_complex::Complex {
+// CHECK-NEXT:                 re: [[T_1]].re as f128,
+// CHECK-NEXT:                 im: [[T_1]].im as f128,
+// CHECK-NEXT:             }
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     show(
+// CHECK-NEXT:         c"int".as_ptr(),
+// CHECK-NEXT:         num_complex::Complex {
+// CHECK-NEXT:             re: (7 as i32) as f128,
+// CHECK-NEXT:             im: 0.0,
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let mut acc: num_complex::Complex<f128> = a;
+// CHECK-NEXT:     acc += b;
+// CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: num_complex::Complex<f128> = acc;
+// CHECK-NEXT:     acc = [[V_0]].c_mul(b, false);
+// CHECK-NEXT:     acc -= (1 as i32) as f128;
+// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: num_complex::Complex<f128> = acc / 2f128;
+// CHECK-NEXT:     acc = [[V_1]];
+// CHECK-NEXT:     show(c"acc".as_ptr(), acc);
+// CHECK-NEXT:     let p: *mut num_complex::Complex<f128> = std::ptr::addr_of_mut!(acc);
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         (*p).re = 9f128;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     show(c"place".as_ptr(), unsafe { *p });
+// CHECK-NEXT:     show(c"global".as_ptr(), unsafe { global_cl });
+// CHECK-NEXT:     println!(
+// CHECK-NEXT:         "{} {} {}", ! (make((0 as i32) as f128, (0 as i32) as f128) !=
+// CHECK-NEXT:         num_complex::Complex { re : 0f128, im : 0.0 }) as i32, ! (! (a !=
+// CHECK-NEXT:         num_complex::Complex { re : 0f128, im : 0.0 })) as i32, if (a !=
+// CHECK-NEXT:         num_complex::Complex { re : 0f128, im : 0.0 }) { 1 as i32 } else { 0 as i32 }
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let re: f128 = a.re;
+// CHECK-NEXT:     let truncated: i32 = a.re as i32;
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:     unsafe { printf(c"%a %d\n".as_ptr(), re as f64, truncated) };
+// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

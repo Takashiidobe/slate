@@ -91,6 +91,7 @@ struct Dependencies {
     asm_strings: BTreeMap<u32, Item>,
     atomic128: bool,
     long_double: bool,
+    complex_long_double: bool,
     f16: bool,
     f128: bool,
     libgcc: bool,
@@ -679,7 +680,9 @@ impl<'m> ModuleLowerer<'m> {
                 long_double::f80_shim_decls()
                     .into_iter()
                     .filter(|decl| {
-                        decl.name.starts_with("__slate_f80_")
+                        (decl.name.starts_with("__slate_f80_")
+                            || (dependencies.complex_long_double
+                                && decl.name.starts_with("__slate_cf80_")))
                             && (dependencies.f128 || !decl.name.ends_with("_f128"))
                     })
                     .map(rust::ExternDecl::Fn),
