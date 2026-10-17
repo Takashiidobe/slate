@@ -797,6 +797,16 @@ impl FunctionLowerer<'_, '_> {
                 op: ir::UnaryArithOp::Neg,
                 operand,
                 ..
+            } if let ValueKind::Constant(ir::Number::FloatBits(bits)) = operand.node.value
+                && self.tables.is_long_double(&value.ty) =>
+            {
+                self.lower_type(&value.ty)?;
+                long_double_literal(bits ^ (1 << 79))
+            }
+            ValueKind::Unary {
+                op: ir::UnaryArithOp::Neg,
+                operand,
+                ..
             } if matches!(
                 value.ty,
                 ir::Type::Numeric(ir::NumericType::Float(

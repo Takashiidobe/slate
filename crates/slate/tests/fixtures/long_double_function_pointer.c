@@ -281,7 +281,7 @@ int main(void) {
 // CHECK-NEXT:             >(__slate_ldfp__twice as *const ())
 // CHECK-NEXT:         },
 // CHECK-NEXT:     ]);
-// CHECK-NEXT:     let mut x: LongDouble = -LongDouble([0, 0, 0, 0, 0, 0, 0, 216, 3, 64]);
+// CHECK-NEXT:     let mut x: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 216, 3, 192]);
 // CHECK-NEXT:     for i in 0 as i32..5 as i32 {
 // CHECK-NEXT:         x = apply(table.0[i as usize], x);
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());

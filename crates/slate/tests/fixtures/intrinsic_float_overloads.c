@@ -195,7 +195,7 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let small: f32 = -2.5f32;
 // CHECK-NEXT:     let large: f64 = -3.75f64;
-// CHECK-NEXT:     let extended: LongDouble = -LongDouble([0, 0, 0, 0, 0, 0, 0, 132, 1, 64]);
+// CHECK-NEXT:     let extended: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 132, 1, 192]);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(

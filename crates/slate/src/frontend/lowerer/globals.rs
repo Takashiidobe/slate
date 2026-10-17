@@ -117,8 +117,16 @@ impl Tables<'_> {
             ValueKind::Aggregate { members, .. } => members
                 .iter()
                 .all(|member| self.is_constant_initializer(&member.value)),
-            ValueKind::Unary { operand, .. } => {
-                !self.is_long_double(&value.ty) && self.is_constant_initializer(operand)
+            ValueKind::Unary { op, operand, .. } => {
+                if self.is_long_double(&value.ty) {
+                    *op == ir::UnaryArithOp::Neg
+                        && matches!(
+                            operand.node.value,
+                            ValueKind::Constant(ir::Number::FloatBits(_))
+                        )
+                } else {
+                    self.is_constant_initializer(operand)
+                }
             }
             ValueKind::Arith { left, right, .. } => {
                 !self.is_long_double(&value.ty)

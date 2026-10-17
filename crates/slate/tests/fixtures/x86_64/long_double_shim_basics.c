@@ -273,7 +273,7 @@ int main(void) {
 // CHECK-NEXT:         LongDouble([255, 255, 255, 255, 255, 255, 255, 255, 62, 64]),
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let neg: i64 = __slate_f80_to_i64(
-// CHECK-NEXT:         -LongDouble([0, 0, 0, 0, 0, 62, 180, 150, 19, 64]),
+// CHECK-NEXT:         LongDouble([0, 0, 0, 0, 0, 62, 180, 150, 19, 192]),
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let d: f64 = __slate_f80_to_f64(x);
 // CHECK-NEXT:     let f: f32 = __slate_f80_to_f32(y);

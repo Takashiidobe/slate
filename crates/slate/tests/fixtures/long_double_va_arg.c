@@ -347,7 +347,7 @@ int main(void) {
 // CHECK-NEXT:                     3 as i32,
 // CHECK-NEXT:                     LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 255, 63]),
 // CHECK-NEXT:                     LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 0, 64]),
-// CHECK-NEXT:                     -LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 254, 63]),
+// CHECK-NEXT:                     LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 254, 191]),
 // CHECK-NEXT:                 )
 // CHECK-NEXT:             },
 // CHECK-NEXT:         )

@@ -379,22 +379,22 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let values: [LongDouble; 14] = [
 // CHECK-NEXT:         LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-// CHECK-NEXT:         -LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// CHECK-NEXT:         LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]),
 // CHECK-NEXT:         LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 63]),
-// CHECK-NEXT:         -LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 0, 64]),
+// CHECK-NEXT:         LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 0, 192]),
 // CHECK-NEXT:         LongDouble([255, 255, 255, 255, 255, 255, 255, 255, 254, 127]),
-// CHECK-NEXT:         -LongDouble([255, 255, 255, 255, 255, 255, 255, 255, 254, 127]),
+// CHECK-NEXT:         LongDouble([255, 255, 255, 255, 255, 255, 255, 255, 254, 255]),
 // CHECK-NEXT:         LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 0]),
 // CHECK-NEXT:         LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 0])
 // CHECK-NEXT:             / LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 64]),
-// CHECK-NEXT:         -LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 0])
+// CHECK-NEXT:         LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 128])
 // CHECK-NEXT:             / LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 9, 64]),
 // CHECK-NEXT:         LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]),
-// CHECK-NEXT:         -LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]),
+// CHECK-NEXT:         LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 255]),
 // CHECK-NEXT:         LongDouble([255, 255, 255, 255, 255, 255, 255, 255, 254, 127])
 // CHECK-NEXT:             * LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 64]),
 // CHECK-NEXT:         LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]),
-// CHECK-NEXT:         -LongDouble([7, 0, 0, 0, 0, 0, 0, 192, 255, 127]),
+// CHECK-NEXT:         LongDouble([7, 0, 0, 0, 0, 0, 0, 192, 255, 255]),
 // CHECK-NEXT:     ];
 // CHECK-NEXT:     for i in 0..((224 as u64) / (16 as u64)) {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -410,7 +410,7 @@ int main(void) {
 // CHECK-NEXT:         c"".as_ptr(),
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     for i in 0..((48 as u64) / (8 as u64)) {
-// CHECK-NEXT:         let mut d: LongDouble = -LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// CHECK-NEXT:         let mut d: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 191]);
 // CHECK-NEXT:         let ok: i32 = string2ld(
 // CHECK-NEXT:             inputs.0[i as usize],
 // CHECK-NEXT:             unsafe { strlen(inputs.0[i as usize]) },
@@ -435,7 +435,7 @@ int main(void) {
 // CHECK-NEXT:         LongDouble([255, 255, 255, 255, 255, 255, 255, 255, 254, 127]),
 // CHECK-NEXT:         LongDouble([255, 255, 255, 255, 255, 255, 255, 255, 254, 127]),
 // CHECK-NEXT:         LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]),
-// CHECK-NEXT:         -LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]),
+// CHECK-NEXT:         LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 255]),
 // CHECK-NEXT:     ];
 // CHECK-NEXT:     let mut accepted: i32 = 0;
 // CHECK-NEXT:     for i in 0..((80 as u64) / (16 as u64)) {
