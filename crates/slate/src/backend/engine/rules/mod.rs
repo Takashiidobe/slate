@@ -56,6 +56,7 @@ pub(super) fn registry(target: &slate_parser::target_info::TargetInfo) -> Vec<Bo
         Box::new(return_cleanup::UnreachableAfterReturn),
         Box::new(return_cleanup::ReturnSlotFold),
         Box::new(bool_ternary::BoolTernaryFold),
+        Box::new(bool_ternary::BoolIntTernaryFold),
         Box::new(inline_temps::LateInlineTemps),
         Box::new(inline_temps::EffectfulTempForward),
         Box::new(inline_temps::InlineConstArgTemps),
