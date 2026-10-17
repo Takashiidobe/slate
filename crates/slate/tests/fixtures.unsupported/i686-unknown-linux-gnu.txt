@@ -1,5 +1,6 @@
 asm_barriers
 bitint_float
+bitint_va_wide
 builtin_generic_bit_counts
 flexible_array_records
 int128_arith

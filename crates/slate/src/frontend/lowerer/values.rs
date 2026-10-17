@@ -482,6 +482,44 @@ impl FunctionLowerer<'_, '_> {
                     })),
                 }))
             }
+            ValueKind::VaArg { list, .. } if let Some(wide) = self.tables.wide_int(&value.ty) => {
+                let (module, function, extra) = match self.tables.target.family {
+                    TargetFamily::X86_64 => {
+                        self.dependencies.sysv_va = true;
+                        let classes = if wide.fits_registers() { 0b0101 } else { 0 };
+                        (
+                            "__slate_sysv_va",
+                            "arg",
+                            vec![Expr::Value(rust::RustValue::TypedUInt(classes, Prim::U32))],
+                        )
+                    }
+                    TargetFamily::X86 => {
+                        self.dependencies.i386_va = true;
+                        ("__slate_i386_va", "arg", Vec::new())
+                    }
+                    TargetFamily::AArch64 => {
+                        self.dependencies.aapcs_va = true;
+                        ("__slate_aapcs_va", "gp", Vec::new())
+                    }
+                    _ => return Err(unsupported_value(value)),
+                };
+                let mut args = vec![Expr::AddrOf {
+                    mutable: true,
+                    expr: Box::new(self.lower_place(list)?),
+                }];
+                args.extend(extra);
+                Expr::Unsafe(Box::new(rust::Block {
+                    stmts: Vec::new(),
+                    tail: Some(Box::new(Expr::Call {
+                        func: Box::new(Expr::GenericPath {
+                            path: rust::Path::new([module, function].map(rust::Ident::from)),
+                            type_args: vec![rust::Type::Custom("_".into()), wide.rust_type()],
+                        }),
+                        args,
+                        binding: CallBinding::Generated,
+                    })),
+                }))
+            }
             ValueKind::VaArg { list, .. } if self.tables.is_long_double(&value.ty) => {
                 self.dependencies.long_double = true;
                 Expr::Unsafe(Box::new(rust::Block {
@@ -560,8 +598,8 @@ impl FunctionLowerer<'_, '_> {
                     rust::Type::Prim(Prim::F16 | Prim::F128) => {
                         return Err(unsupported_value(value));
                     }
-                    rust::Type::Prim(Prim::I8) => rust::Type::Prim(Prim::I32),
-                    rust::Type::Prim(Prim::U8) => rust::Type::Prim(Prim::U32),
+                    rust::Type::Prim(Prim::I8 | Prim::I16) => rust::Type::Prim(Prim::I32),
+                    rust::Type::Prim(Prim::U8 | Prim::U16) => rust::Type::Prim(Prim::U32),
                     _ => ty.clone(),
                 };
                 let read = if matches!(self.tables.resolve_type(&list.ty), ir::Type::Pointer { .. })
@@ -614,10 +652,7 @@ impl FunctionLowerer<'_, '_> {
                             binding: CallBinding::Generated,
                         }
                     } else if matches!(ty, rust::Type::Prim(_)) {
-                        Expr::Cast {
-                            expr: Box::new(read),
-                            ty,
-                        }
+                        self.narrow_integer(read, &value.ty)?
                     } else {
                         convert_function_pointer(read_ty, ty, Box::new(read))
                     })),

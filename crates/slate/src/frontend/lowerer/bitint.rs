@@ -9,6 +9,10 @@ pub(super) struct WideInt {
 }
 
 impl WideInt {
+    pub(super) fn fits_registers(self) -> bool {
+        self.bytes <= 16
+    }
+
     pub(super) fn rust_type(self) -> rust::Type {
         rust::Type::Custom(format!(
             "bitint::{}<{}, {}, {}, bitint::A{}>",
