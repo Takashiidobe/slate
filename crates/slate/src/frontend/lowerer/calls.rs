@@ -23,7 +23,7 @@ impl FunctionLowerer<'_, '_> {
                 let name = names.get(id).ok_or(Invariant::UnknownCallee(*id))?;
                 if name.is_extern
                     && (name.codegen_builtin || name.rust.starts_with("__builtin_"))
-                    && builtin_library_name(&name.rust).is_none()
+                    && name.library.is_none()
                 {
                     return Err(Construct::Function {
                         name: name.rust.clone(),

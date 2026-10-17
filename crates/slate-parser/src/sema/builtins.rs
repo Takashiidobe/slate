@@ -206,6 +206,13 @@ impl ClangBuiltin {
             self.header
                 .map(|header| ("c_builtin_header".into(), header.into())),
         );
+        metadata.extend(
+            self.name
+                .strip_prefix("__builtin_")
+                .and_then(|library| registered_builtin(CLANG_BUILTINS, library))
+                .filter(|library| library.kind == ClangBuiltinKind::Library)
+                .map(|library| ("c_builtin_library".into(), library.name.into())),
+        );
         metadata
     }
 

@@ -201,7 +201,10 @@ come from `clang_aarch64_builtins.rs`, selected in `target_builtin`.
   supported `__builtin_ia32_*` calls
 
 `sema/builtins.rs` resolves signatures from `sema/clang_builtins.rs` and
-`sema/expression.rs` emits calls with `c_builtin` metadata. Slate maps library
+`sema/expression.rs` emits calls with `c_builtin` metadata. A `__builtin_X`
+declaration whose `X` is a registered library builtin also carries
+`c_builtin_library="X"`, the symbol clang calls when it does not open-code the
+builtin; Slate declares the extern with that `link_name`. Slate maps library
 symbols through `lowerer/names.rs` and intrinsic aliases through
 `lowerer/intrinsics.rs` plus `lowerer/intrinsics_table.rs`.
 `__rdtsc` expands in `sema/vector_builtins.rs`. See

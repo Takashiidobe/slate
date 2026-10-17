@@ -50,6 +50,7 @@ type Result<T> = std::result::Result<T, Failure>;
 struct FunctionName {
     rust: String,
     builtin: Option<String>,
+    library: Option<String>,
     codegen_builtin: bool,
     is_extern: bool,
     is_unsafe: bool,
@@ -323,6 +324,11 @@ impl<'m> ModuleLowerer<'m> {
                                 (key == "c_builtin").then(|| value.clone())
                             })
                         }),
+                        library: module.metadata.get(&function.id).and_then(|entries| {
+                            entries.iter().find_map(|(key, value)| {
+                                (key == "c_builtin_library").then(|| value.clone())
+                            })
+                        }),
                         codegen_builtin: module
                             .metadata
                             .get(&function.id)
@@ -515,7 +521,7 @@ impl<'m> ModuleLowerer<'m> {
                 || self
                     .tables
                     .builtin_name(function.value.id)
-                    .is_some_and(|name| values::bit_count_method(name).is_some())
+                    .is_some_and(values::open_coded_builtin)
             {
                 continue;
             }

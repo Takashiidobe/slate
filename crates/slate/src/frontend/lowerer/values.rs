@@ -37,6 +37,17 @@ pub(super) fn bit_count_method(builtin: &str) -> Option<&'static str> {
     }
 }
 
+pub(super) fn is_find_first_set(builtin: &str) -> bool {
+    matches!(
+        builtin,
+        "__builtin_ffs" | "__builtin_ffsl" | "__builtin_ffsll"
+    )
+}
+
+pub(super) fn open_coded_builtin(builtin: &str) -> bool {
+    bit_count_method(builtin).is_some() || is_find_first_set(builtin)
+}
+
 fn rotate_method(builtin: &str) -> Option<&'static str> {
     match builtin {
         "__builtin_rotateleft8"
@@ -159,6 +170,43 @@ impl FunctionLowerer<'_, '_> {
                 }),
                 then_expr: Box::new(var(&otherwise)),
                 else_expr: Box::new(count(var(&bits))),
+            })),
+        })))
+    }
+
+    fn lower_find_first_set(&mut self, value: &ir::Value, arguments: &[ir::Value]) -> Result<Expr> {
+        let [operand] = arguments else {
+            return Err(unsupported_value(value));
+        };
+        let bits = self.next_temp();
+        let var = || Expr::Var(bits.as_str().into());
+        let result = self.lower_type(&value.ty)?;
+        Ok(Expr::Block(Box::new(rust::Block {
+            stmts: vec![Stmt::Let {
+                name: bits.clone(),
+                mutable: false,
+                ty: None,
+                init: Some(self.lower_value(operand)?),
+            }],
+            tail: Some(Box::new(Expr::If {
+                cond: Box::new(Expr::Binary {
+                    op: BinOp::Eq,
+                    lhs: Box::new(var()),
+                    rhs: Box::new(self.lower_number(&Number::Integer(0u32.into()), &operand.ty)?),
+                }),
+                then_expr: Box::new(self.lower_number(&Number::Integer(0u32.into()), &value.ty)?),
+                else_expr: Box::new(Expr::Binary {
+                    op: BinOp::Add,
+                    lhs: Box::new(Expr::Cast {
+                        expr: Box::new(Expr::MethodCall {
+                            recv: Box::new(var()),
+                            method: "trailing_zeros".into(),
+                            args: Vec::new(),
+                        }),
+                        ty: result,
+                    }),
+                    rhs: Box::new(self.lower_number(&Number::Integer(1u32.into()), &value.ty)?),
+                }),
             })),
         })))
     }
@@ -901,6 +949,13 @@ impl FunctionLowerer<'_, '_> {
                     return Err(unsupported_value(value));
                 };
                 self.lower_bit_count(value, method, arguments)?
+            }
+            ValueKind::Call {
+                callee: ir::Callee::Direct(id),
+                arguments,
+                ..
+            } if self.tables.builtin_name(*id).is_some_and(is_find_first_set) => {
+                self.lower_find_first_set(value, arguments)?
             }
             ValueKind::Call {
                 callee: ir::Callee::Direct(id),

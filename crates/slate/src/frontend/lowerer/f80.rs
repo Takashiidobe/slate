@@ -246,8 +246,7 @@ impl FunctionLowerer<'_, '_> {
         let link_name = if name.is_extern || name.exported {
             Some(
                 self.tables
-                    .builtin_name(id)
-                    .and_then(builtin_library_name)
+                    .builtin_library(id)
                     .map_or_else(|| name.rust.clone(), str::to_string),
             )
         } else {

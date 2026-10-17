@@ -1,20 +1,6 @@
 use super::*;
 use slate_parser::target_info::TargetFamily;
 
-pub(super) fn builtin_library_name(builtin: &str) -> Option<&'static str> {
-    Some(match builtin {
-        "__builtin_abort" => "abort",
-        "__builtin_nan" => "nan",
-        "__builtin_nanf" => "nanf",
-        "__builtin_nanl" => "nanl",
-        "__builtin_memcpy" => "memcpy",
-        "__builtin_memmove" => "memmove",
-        "__builtin_memset" => "memset",
-        "__builtin_memcmp" => "memcmp",
-        _ => return None,
-    })
-}
-
 pub(super) fn codegen_builtin(metadata: &[(String, String)]) -> bool {
     let entry = |name: &str| {
         metadata
@@ -76,6 +62,10 @@ pub(super) fn main_wrapper(arity: usize) -> Item {
 impl Tables<'_> {
     pub(super) fn builtin_name(&self, id: BindingId) -> Option<&str> {
         self.names.get(&id)?.builtin.as_deref()
+    }
+
+    pub(super) fn builtin_library(&self, id: BindingId) -> Option<&str> {
+        self.names.get(&id)?.library.as_deref()
     }
 
     pub(super) fn convention_abi(&self, convention: ir::CallConv) -> Option<rust::Abi> {
@@ -145,8 +135,7 @@ impl FunctionLowerer<'_, '_> {
         let ret = self.lower_return(function)?;
         let attrs = self
             .tables
-            .builtin_name(function.value.id)
-            .and_then(builtin_library_name)
+            .builtin_library(function.value.id)
             .map(|name| Attr::LinkName(name.into()))
             .into_iter()
             .collect();

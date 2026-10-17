@@ -260,6 +260,7 @@ int main(void) {
 // CHECK-NEXT:     fn sysconf(__name: i32) -> i64;
 // CHECK-NEXT:     fn syscall(__sysno: i64, ...) -> i64;
 // CHECK-NEXT:     fn gettid() -> i32;
+// CHECK-NEXT:     #[link_name = "alloca"]
 // CHECK-NEXT:     fn __builtin_alloca([[V_0:__v[0-9]+]]: u64) -> *mut ();
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]

@@ -56,8 +56,10 @@
 - Null-based field-address differences use parser layout offsets, avoiding Rust
   null dereferences and pointer arithmetic.
 - Leading-zero counts preserve the C operand width; zero input is undefined in C.
+- `__builtin_ffs`/`ffsl`/`ffsll` open-code as `trailing_zeros() + 1`, or 0
+  for a zero operand.
 - A call to an extern codegen-only builtin with neither a lowering nor a
-  library name is a barrier: clang expands those in codegen, so the symbol
+  `c_builtin_library` name is a barrier: clang expands those in codegen, so the symbol
   never links (and `lowering-barriers` would otherwise report the function as
   ok). Codegen-only means any `__builtin_*` name, a `c_builtin_kind` other than
   `library`, or a `c_builtin_header` ending in `intrin.h` (`_mm_pause`,

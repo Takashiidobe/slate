@@ -79,7 +79,7 @@ void copy(void *to, const void *from) { __builtin_memcpy(to, from, 4); }
 // HOSTED-NEXT:     fn %[[VALUE_stop:[0-9]+]] @stop() -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(void)"] {
 // HOSTED-NEXT:         call<void>(%[[VALUE_abort]]);
 // HOSTED-NEXT:     }
-// HOSTED-NEXT:     fn %[[VALUE___builtin_memcpy:[0-9]+]] @__builtin_memcpy(%[[VALUE1:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE2:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE3:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external] [c_builtin="__builtin_memcpy"] [c_builtin_kind="builtin"] [c_builtin_header="string.h"];
+// HOSTED-NEXT:     fn %[[VALUE___builtin_memcpy:[0-9]+]] @__builtin_memcpy(%[[VALUE1:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE2:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE3:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external] [c_builtin="__builtin_memcpy"] [c_builtin_kind="builtin"] [c_builtin_header="string.h"] [c_builtin_library="memcpy"];
 // HOSTED-NEXT:     fn %[[VALUE_copy:[0-9]+]] @copy(%[[VALUE_to:[0-9]+]] to: ptr<void> [c="void *"], %[[VALUE_from:[0-9]+]] from: ptr<const void> [c="const void *"]) -> void [linkage=external] [fallthrough=ret_void] [c_storage="none"] [c_return="void"] [c="void(void *, const void *)"] {
 // HOSTED-NEXT:         call<ptr<void>>(%[[VALUE___builtin_memcpy]], read<ptr<void>>(%[[VALUE_to]]), read<ptr<const void>>(%[[VALUE_from]]), reinterpret<u64>(widen<i64>(const<i32>(4))));
 // HOSTED-NEXT:     }
@@ -119,7 +119,7 @@ void copy(void *to, const void *from) { __builtin_memcpy(to, from, 4); }
 // FREE-NEXT:     fn %[[VALUE_stop:[0-9]+]] @stop() -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(void)"] {
 // FREE-NEXT:         call<void>(%[[VALUE_abort]]);
 // FREE-NEXT:     }
-// FREE-NEXT:     fn %[[VALUE___builtin_memcpy:[0-9]+]] @__builtin_memcpy(%[[VALUE1:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE2:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE3:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external] [c_builtin="__builtin_memcpy"] [c_builtin_kind="builtin"] [c_builtin_header="string.h"];
+// FREE-NEXT:     fn %[[VALUE___builtin_memcpy:[0-9]+]] @__builtin_memcpy(%[[VALUE1:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE2:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE3:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external] [c_builtin="__builtin_memcpy"] [c_builtin_kind="builtin"] [c_builtin_header="string.h"] [c_builtin_library="memcpy"];
 // FREE-NEXT:     fn %[[VALUE_copy:[0-9]+]] @copy(%[[VALUE_to:[0-9]+]] to: ptr<void> [c="void *"], %[[VALUE_from:[0-9]+]] from: ptr<const void> [c="const void *"]) -> void [linkage=external] [fallthrough=ret_void] [c_storage="none"] [c_return="void"] [c="void(void *, const void *)"] {
 // FREE-NEXT:         call<ptr<void>>(%[[VALUE___builtin_memcpy]], read<ptr<void>>(%[[VALUE_to]]), read<ptr<const void>>(%[[VALUE_from]]), reinterpret<u64>(widen<i64>(const<i32>(4))));
 // FREE-NEXT:     }
@@ -159,7 +159,7 @@ void copy(void *to, const void *from) { __builtin_memcpy(to, from, 4); }
 // REHOSTED-NEXT:     fn %[[VALUE_stop:[0-9]+]] @stop() -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(void)"] {
 // REHOSTED-NEXT:         call<void>(%[[VALUE_abort]]);
 // REHOSTED-NEXT:     }
-// REHOSTED-NEXT:     fn %[[VALUE___builtin_memcpy:[0-9]+]] @__builtin_memcpy(%[[VALUE1:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE2:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE3:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external] [c_builtin="__builtin_memcpy"] [c_builtin_kind="builtin"] [c_builtin_header="string.h"];
+// REHOSTED-NEXT:     fn %[[VALUE___builtin_memcpy:[0-9]+]] @__builtin_memcpy(%[[VALUE1:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE2:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE3:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external] [c_builtin="__builtin_memcpy"] [c_builtin_kind="builtin"] [c_builtin_header="string.h"] [c_builtin_library="memcpy"];
 // REHOSTED-NEXT:     fn %[[VALUE_copy:[0-9]+]] @copy(%[[VALUE_to:[0-9]+]] to: ptr<void> [c="void *"], %[[VALUE_from:[0-9]+]] from: ptr<const void> [c="const void *"]) -> void [linkage=external] [fallthrough=ret_void] [c_storage="none"] [c_return="void"] [c="void(void *, const void *)"] {
 // REHOSTED-NEXT:         call<ptr<void>>(%[[VALUE___builtin_memcpy]], read<ptr<void>>(%[[VALUE_to]]), read<ptr<const void>>(%[[VALUE_from]]), reinterpret<u64>(widen<i64>(const<i32>(4))));
 // REHOSTED-NEXT:     }
@@ -199,7 +199,7 @@ void copy(void *to, const void *from) { __builtin_memcpy(to, from, 4); }
 // NOBUILTIN-NEXT:     fn %[[VALUE_stop:[0-9]+]] @stop() -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(void)"] {
 // NOBUILTIN-NEXT:         call<void>(%[[VALUE_abort]]);
 // NOBUILTIN-NEXT:     }
-// NOBUILTIN-NEXT:     fn %[[VALUE___builtin_memcpy:[0-9]+]] @__builtin_memcpy(%[[VALUE1:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE2:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE3:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external] [c_builtin="__builtin_memcpy"] [c_builtin_kind="builtin"] [c_builtin_header="string.h"];
+// NOBUILTIN-NEXT:     fn %[[VALUE___builtin_memcpy:[0-9]+]] @__builtin_memcpy(%[[VALUE1:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE2:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE3:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external] [c_builtin="__builtin_memcpy"] [c_builtin_kind="builtin"] [c_builtin_header="string.h"] [c_builtin_library="memcpy"];
 // NOBUILTIN-NEXT:     fn %[[VALUE_copy:[0-9]+]] @copy(%[[VALUE_to:[0-9]+]] to: ptr<void> [c="void *"], %[[VALUE_from:[0-9]+]] from: ptr<const void> [c="const void *"]) -> void [linkage=external] [fallthrough=ret_void] [c_storage="none"] [c_return="void"] [c="void(void *, const void *)"] {
 // NOBUILTIN-NEXT:         call<ptr<void>>(%[[VALUE___builtin_memcpy]], read<ptr<void>>(%[[VALUE_to]]), read<ptr<const void>>(%[[VALUE_from]]), reinterpret<u64>(widen<i64>(const<i32>(4))));
 // NOBUILTIN-NEXT:     }
@@ -239,7 +239,7 @@ void copy(void *to, const void *from) { __builtin_memcpy(to, from, 4); }
 // REBUILTIN-NEXT:     fn %[[VALUE_stop:[0-9]+]] @stop() -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(void)"] {
 // REBUILTIN-NEXT:         call<void>(%[[VALUE_abort]]);
 // REBUILTIN-NEXT:     }
-// REBUILTIN-NEXT:     fn %[[VALUE___builtin_memcpy:[0-9]+]] @__builtin_memcpy(%[[VALUE1:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE2:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE3:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external] [c_builtin="__builtin_memcpy"] [c_builtin_kind="builtin"] [c_builtin_header="string.h"];
+// REBUILTIN-NEXT:     fn %[[VALUE___builtin_memcpy:[0-9]+]] @__builtin_memcpy(%[[VALUE1:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE2:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE3:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external] [c_builtin="__builtin_memcpy"] [c_builtin_kind="builtin"] [c_builtin_header="string.h"] [c_builtin_library="memcpy"];
 // REBUILTIN-NEXT:     fn %[[VALUE_copy:[0-9]+]] @copy(%[[VALUE_to:[0-9]+]] to: ptr<void> [c="void *"], %[[VALUE_from:[0-9]+]] from: ptr<const void> [c="const void *"]) -> void [linkage=external] [fallthrough=ret_void] [c_storage="none"] [c_return="void"] [c="void(void *, const void *)"] {
 // REBUILTIN-NEXT:         call<ptr<void>>(%[[VALUE___builtin_memcpy]], read<ptr<void>>(%[[VALUE_to]]), read<ptr<const void>>(%[[VALUE_from]]), reinterpret<u64>(widen<i64>(const<i32>(4))));
 // REBUILTIN-NEXT:     }
@@ -279,7 +279,7 @@ void copy(void *to, const void *from) { __builtin_memcpy(to, from, 4); }
 // FREEBUILTIN-NEXT:     fn %[[VALUE_stop:[0-9]+]] @stop() -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(void)"] {
 // FREEBUILTIN-NEXT:         call<void>(%[[VALUE_abort]]);
 // FREEBUILTIN-NEXT:     }
-// FREEBUILTIN-NEXT:     fn %[[VALUE___builtin_memcpy:[0-9]+]] @__builtin_memcpy(%[[VALUE1:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE2:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE3:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external] [c_builtin="__builtin_memcpy"] [c_builtin_kind="builtin"] [c_builtin_header="string.h"];
+// FREEBUILTIN-NEXT:     fn %[[VALUE___builtin_memcpy:[0-9]+]] @__builtin_memcpy(%[[VALUE1:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE2:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE3:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external] [c_builtin="__builtin_memcpy"] [c_builtin_kind="builtin"] [c_builtin_header="string.h"] [c_builtin_library="memcpy"];
 // FREEBUILTIN-NEXT:     fn %[[VALUE_copy:[0-9]+]] @copy(%[[VALUE_to:[0-9]+]] to: ptr<void> [c="void *"], %[[VALUE_from:[0-9]+]] from: ptr<const void> [c="const void *"]) -> void [linkage=external] [fallthrough=ret_void] [c_storage="none"] [c_return="void"] [c="void(void *, const void *)"] {
 // FREEBUILTIN-NEXT:         call<ptr<void>>(%[[VALUE___builtin_memcpy]], read<ptr<void>>(%[[VALUE_to]]), read<ptr<const void>>(%[[VALUE_from]]), reinterpret<u64>(widen<i64>(const<i32>(4))));
 // FREEBUILTIN-NEXT:     }
@@ -319,7 +319,7 @@ void copy(void *to, const void *from) { __builtin_memcpy(to, from, 4); }
 // NOEXIT-NEXT:     fn %[[VALUE_stop:[0-9]+]] @stop() -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(void)"] {
 // NOEXIT-NEXT:         call<void>(%[[VALUE_abort]]);
 // NOEXIT-NEXT:     }
-// NOEXIT-NEXT:     fn %[[VALUE___builtin_memcpy:[0-9]+]] @__builtin_memcpy(%[[VALUE1:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE2:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE3:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external] [c_builtin="__builtin_memcpy"] [c_builtin_kind="builtin"] [c_builtin_header="string.h"];
+// NOEXIT-NEXT:     fn %[[VALUE___builtin_memcpy:[0-9]+]] @__builtin_memcpy(%[[VALUE1:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE2:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE3:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external] [c_builtin="__builtin_memcpy"] [c_builtin_kind="builtin"] [c_builtin_header="string.h"] [c_builtin_library="memcpy"];
 // NOEXIT-NEXT:     fn %[[VALUE_copy:[0-9]+]] @copy(%[[VALUE_to:[0-9]+]] to: ptr<void> [c="void *"], %[[VALUE_from:[0-9]+]] from: ptr<const void> [c="const void *"]) -> void [linkage=external] [fallthrough=ret_void] [c_storage="none"] [c_return="void"] [c="void(void *, const void *)"] {
 // NOEXIT-NEXT:         call<ptr<void>>(%[[VALUE___builtin_memcpy]], read<ptr<void>>(%[[VALUE_to]]), read<ptr<const void>>(%[[VALUE_from]]), reinterpret<u64>(widen<i64>(const<i32>(4))));
 // NOEXIT-NEXT:     }
@@ -359,7 +359,7 @@ void copy(void *to, const void *from) { __builtin_memcpy(to, from, 4); }
 // NOSTDINC-NEXT:     fn %[[VALUE_stop:[0-9]+]] @stop() -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(void)"] {
 // NOSTDINC-NEXT:         call<void>(%[[VALUE_abort]]);
 // NOSTDINC-NEXT:     }
-// NOSTDINC-NEXT:     fn %[[VALUE___builtin_memcpy:[0-9]+]] @__builtin_memcpy(%[[VALUE1:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE2:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE3:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external] [c_builtin="__builtin_memcpy"] [c_builtin_kind="builtin"] [c_builtin_header="string.h"];
+// NOSTDINC-NEXT:     fn %[[VALUE___builtin_memcpy:[0-9]+]] @__builtin_memcpy(%[[VALUE1:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE2:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE3:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external] [c_builtin="__builtin_memcpy"] [c_builtin_kind="builtin"] [c_builtin_header="string.h"] [c_builtin_library="memcpy"];
 // NOSTDINC-NEXT:     fn %[[VALUE_copy:[0-9]+]] @copy(%[[VALUE_to:[0-9]+]] to: ptr<void> [c="void *"], %[[VALUE_from:[0-9]+]] from: ptr<const void> [c="const void *"]) -> void [linkage=external] [fallthrough=ret_void] [c_storage="none"] [c_return="void"] [c="void(void *, const void *)"] {
 // NOSTDINC-NEXT:         call<ptr<void>>(%[[VALUE___builtin_memcpy]], read<ptr<void>>(%[[VALUE_to]]), read<ptr<const void>>(%[[VALUE_from]]), reinterpret<u64>(widen<i64>(const<i32>(4))));
 // NOSTDINC-NEXT:     }
@@ -399,7 +399,7 @@ void copy(void *to, const void *from) { __builtin_memcpy(to, from, 4); }
 // UNWIND-NEXT:     fn %[[VALUE_stop:[0-9]+]] @stop() -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(void)"] {
 // UNWIND-NEXT:         call<void>(%[[VALUE_abort]]);
 // UNWIND-NEXT:     }
-// UNWIND-NEXT:     fn %[[VALUE___builtin_memcpy:[0-9]+]] @__builtin_memcpy(%[[VALUE1:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE2:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE3:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external] [c_builtin="__builtin_memcpy"] [c_builtin_kind="builtin"] [c_builtin_header="string.h"];
+// UNWIND-NEXT:     fn %[[VALUE___builtin_memcpy:[0-9]+]] @__builtin_memcpy(%[[VALUE1:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE2:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE3:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external] [c_builtin="__builtin_memcpy"] [c_builtin_kind="builtin"] [c_builtin_header="string.h"] [c_builtin_library="memcpy"];
 // UNWIND-NEXT:     fn %[[VALUE_copy:[0-9]+]] @copy(%[[VALUE_to:[0-9]+]] to: ptr<void> [c="void *"], %[[VALUE_from:[0-9]+]] from: ptr<const void> [c="const void *"]) -> void [linkage=external] [fallthrough=ret_void] [c_storage="none"] [c_return="void"] [c="void(void *, const void *)"] {
 // UNWIND-NEXT:         call<ptr<void>>(%[[VALUE___builtin_memcpy]], read<ptr<void>>(%[[VALUE_to]]), read<ptr<const void>>(%[[VALUE_from]]), reinterpret<u64>(widen<i64>(const<i32>(4))));
 // UNWIND-NEXT:     }
@@ -439,7 +439,7 @@ void copy(void *to, const void *from) { __builtin_memcpy(to, from, 4); }
 // NOUNWIND-NEXT:     fn %[[VALUE_stop:[0-9]+]] @stop() -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(void)"] {
 // NOUNWIND-NEXT:         call<void>(%[[VALUE_abort]]);
 // NOUNWIND-NEXT:     }
-// NOUNWIND-NEXT:     fn %[[VALUE___builtin_memcpy:[0-9]+]] @__builtin_memcpy(%[[VALUE1:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE2:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE3:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external] [c_builtin="__builtin_memcpy"] [c_builtin_kind="builtin"] [c_builtin_header="string.h"];
+// NOUNWIND-NEXT:     fn %[[VALUE___builtin_memcpy:[0-9]+]] @__builtin_memcpy(%[[VALUE1:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE2:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE3:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external] [c_builtin="__builtin_memcpy"] [c_builtin_kind="builtin"] [c_builtin_header="string.h"] [c_builtin_library="memcpy"];
 // NOUNWIND-NEXT:     fn %[[VALUE_copy:[0-9]+]] @copy(%[[VALUE_to:[0-9]+]] to: ptr<void> [c="void *"], %[[VALUE_from:[0-9]+]] from: ptr<const void> [c="const void *"]) -> void [linkage=external] [fallthrough=ret_void] [c_storage="none"] [c_return="void"] [c="void(void *, const void *)"] {
 // NOUNWIND-NEXT:         call<ptr<void>>(%[[VALUE___builtin_memcpy]], read<ptr<void>>(%[[VALUE_to]]), read<ptr<const void>>(%[[VALUE_from]]), reinterpret<u64>(widen<i64>(const<i32>(4))));
 // NOUNWIND-NEXT:     }
