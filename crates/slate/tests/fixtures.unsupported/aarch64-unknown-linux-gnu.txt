@@ -1,4 +1,5 @@
 asm_barriers
+bitint_arith
 bitint_ops
 bitint_shift
 bitint_shift_widths
@@ -9,3 +10,5 @@ intrinsic_float_overloads
 main_process_argv
 object_alignment
 stdlib_fp_contract
+switch_case_wide_bitint
+switch_case_wide_bitint_range

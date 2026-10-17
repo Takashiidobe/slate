@@ -170,6 +170,13 @@ impl FunctionLowerer<'_, '_> {
             }
         }
         let arms = merge_empty_arms(arms);
+        if self
+            .tables
+            .wide_int(&discriminant.ty)
+            .is_some_and(|wide| wide.exceeds_i128())
+        {
+            return self.lower_indexed_switch(id, discriminant, &arms);
+        }
         if arms[..arms.len().saturating_sub(1)]
             .iter()
             .any(falls_through)
@@ -209,7 +216,6 @@ impl FunctionLowerer<'_, '_> {
         arms: &[SwitchArm],
     ) -> Result<Stmt> {
         let case = self.next_temp();
-        let label = break_label(id);
         let case_index = |index: usize| Expr::Value(rust::RustValue::I64(index as i64));
         let mut dispatch = Vec::new();
         for (index, arm) in arms.iter().enumerate().filter(|(_, arm)| !arm.default) {
@@ -227,6 +233,95 @@ impl FunctionLowerer<'_, '_> {
                 None => Expr::Value(rust::RustValue::I64(-1)),
             },
         });
+        let init = Expr::Match {
+            expr: Box::new(self.lower_match_scrutinee(discriminant)?),
+            arms: dispatch,
+        };
+        self.lower_case_loop(id, case, init, arms, Vec::new())
+    }
+
+    fn lower_indexed_switch(
+        &mut self,
+        id: BindingId,
+        discriminant: &ir::Value,
+        arms: &[SwitchArm],
+    ) -> Result<Stmt> {
+        let selector = self.next_temp();
+        let case = self.next_temp();
+        let selector_type = self.lower_type(&discriminant.ty)?;
+        let selector_init = self.lower_value(discriminant)?;
+        let case_index = |index: usize| Expr::Value(rust::RustValue::I64(index as i64));
+        let mut init = match arms.iter().position(|arm| arm.default) {
+            Some(index) => case_index(index),
+            None => Expr::Value(rust::RustValue::I64(-1)),
+        };
+        for (index, arm) in arms
+            .iter()
+            .enumerate()
+            .rev()
+            .filter(|(_, arm)| !arm.default)
+        {
+            let mut condition = None;
+            for value in &arm.values {
+                let matches = self.lower_case_condition(&selector, *value)?;
+                condition = Some(match condition {
+                    None => matches,
+                    Some(previous) => Expr::Binary {
+                        op: BinOp::Or,
+                        lhs: Box::new(previous),
+                        rhs: Box::new(matches),
+                    },
+                });
+            }
+            if let Some(cond) = condition {
+                init = Expr::If {
+                    cond: Box::new(cond),
+                    then_expr: Box::new(case_index(index)),
+                    else_expr: Box::new(init),
+                };
+            }
+        }
+        let prelude = vec![Stmt::Let {
+            name: selector,
+            mutable: false,
+            ty: Some(selector_type),
+            init: Some(selector_init),
+        }];
+        self.lower_case_loop(id, case, init, arms, prelude)
+    }
+
+    fn lower_case_condition(&mut self, selector: &str, value: CaseValue) -> Result<Expr> {
+        let compare = |this: &mut Self, bound: &ir::Value, op: BinOp| -> Result<Expr> {
+            Ok(Expr::Binary {
+                op,
+                lhs: Box::new(Expr::MethodCall {
+                    recv: Box::new(Expr::Var(selector.into())),
+                    method: "compare".into(),
+                    args: vec![this.lower_value(bound)?],
+                }),
+                rhs: Box::new(Expr::Value(rust::RustValue::I64(0))),
+            })
+        };
+        match value.end {
+            None => compare(self, value.start, BinOp::Eq),
+            Some(end) => Ok(Expr::Binary {
+                op: BinOp::And,
+                lhs: Box::new(compare(self, value.start, BinOp::Ge)?),
+                rhs: Box::new(compare(self, end, BinOp::Le)?),
+            }),
+        }
+    }
+
+    fn lower_case_loop(
+        &mut self,
+        id: BindingId,
+        case: String,
+        init: Expr,
+        arms: &[SwitchArm],
+        mut body_prefix: Vec<Stmt>,
+    ) -> Result<Stmt> {
+        let label = break_label(id);
+        let case_index = |index: usize| Expr::Value(rust::RustValue::I64(index as i64));
         let mut match_arms = Vec::new();
         for (index, arm) in arms.iter().enumerate() {
             let mut body = self.lower_switch_arm(arm)?;
@@ -250,26 +345,20 @@ impl FunctionLowerer<'_, '_> {
             pattern: rust::Pattern::Wildcard,
             body: vec![Stmt::Break(Some(label.clone()))],
         });
-        Ok(Stmt::Scope {
-            body: vec![
-                Stmt::Let {
-                    name: case.clone(),
-                    mutable: true,
-                    ty: Some(rust::Type::Prim(Prim::I64)),
-                    init: Some(Expr::Match {
-                        expr: Box::new(self.lower_match_scrutinee(discriminant)?),
-                        arms: dispatch,
-                    }),
-                },
-                Stmt::Loop {
-                    label: Some(label),
-                    body: vec![Stmt::Match {
-                        expr: Expr::Var(case.into()),
-                        arms: match_arms,
-                    }],
-                },
-            ],
-        })
+        body_prefix.push(Stmt::Let {
+            name: case.clone(),
+            mutable: true,
+            ty: Some(rust::Type::Prim(Prim::I64)),
+            init: Some(init),
+        });
+        body_prefix.push(Stmt::Loop {
+            label: Some(label),
+            body: vec![Stmt::Match {
+                expr: Expr::Var(case.into()),
+                arms: match_arms,
+            }],
+        });
+        Ok(Stmt::Scope { body: body_prefix })
     }
 
     pub(super) fn lower_switch_operand(&mut self, value: &ir::Value) -> Result<(Expr, rust::Type)> {
@@ -281,13 +370,6 @@ impl FunctionLowerer<'_, '_> {
     }
 
     fn lower_match_scrutinee(&mut self, discriminant: &ir::Value) -> Result<Expr> {
-        if self
-            .tables
-            .wide_int(&discriminant.ty)
-            .is_some_and(|wide| wide.exceeds_i128())
-        {
-            return Err(unsupported_switch("_BitInt wider than 128 bits"));
-        }
         Ok(self.lower_switch_operand(discriminant)?.0)
     }
 
