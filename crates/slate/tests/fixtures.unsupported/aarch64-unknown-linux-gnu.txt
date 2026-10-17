@@ -2,8 +2,6 @@ asm_barriers
 c23_stdlib_memory_management
 float128
 intrinsic_float_overloads
-long_double_va_arg
-long_double_variadic_libc_name
 main_process_argv
 object_alignment
 stdlib_fp_contract

@@ -150,7 +150,13 @@ Slate lowers it to `__slate_sysv_va::arg`, which takes the pieces from the
 register save area while enough GP and SSE registers remain and from the
 overflow area otherwise. On i386 cdecl every record is `memory`: the
 `char *` list advances in 4-byte slots, and slate lowers every `va_arg` on
-that list, scalar or record, through `__slate_i386_va::arg`. On AAPCS64 a
+that list, scalar or record, through `__slate_i386_va::arg`. A 16-aligned
+type (`__float128`) first rounds the cursor up to 16, as gcc's caller and
+`va_arg` do; clang's i386 `va_arg` reads it at 4-byte alignment and
+disagrees with its own caller, so `i686/float128_va_arg.c` checks against a
+gcc-recorded `.expected`. On AAPCS64 a scalar binary128 (`long double`)
+takes one vector register slot, lowered as a one-member
+`__slate_aapcs_va::hfa`. On AAPCS64 a
 homogeneous float aggregate is `hfa=<count>x<bytes>` (one 16-byte vector
 register per member), another record over 16 bytes is `indirect` (a
 pointer in one GP slot), and the rest are `regs=[int, ...]`; slate lowers

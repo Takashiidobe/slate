@@ -406,6 +406,38 @@ impl FunctionLowerer<'_, '_> {
                     })),
                 }))
             }
+            ValueKind::VaArg { list, .. }
+                if self.tables.target.family == TargetFamily::AArch64
+                    && matches!(
+                        self.tables.resolve_type(&value.ty),
+                        ir::Type::Numeric(ir::NumericType::Float(ir::FloatType::F128))
+                    ) =>
+            {
+                self.dependencies.aapcs_va = true;
+                Expr::Unsafe(Box::new(rust::Block {
+                    stmts: Vec::new(),
+                    tail: Some(Box::new(Expr::Call {
+                        func: Box::new(Expr::GenericPath {
+                            path: rust::Path::new(
+                                ["__slate_aapcs_va", "hfa"].map(rust::Ident::from),
+                            ),
+                            type_args: vec![
+                                rust::Type::Custom("_".into()),
+                                self.lower_type(&value.ty)?,
+                            ],
+                        }),
+                        args: vec![
+                            Expr::AddrOf {
+                                mutable: true,
+                                expr: Box::new(self.lower_place(list)?),
+                            },
+                            Expr::Value(rust::RustValue::Usize(1)),
+                            Expr::Value(rust::RustValue::Usize(16)),
+                        ],
+                        binding: CallBinding::Generated,
+                    })),
+                }))
+            }
             ValueKind::VaArg { list, .. } => {
                 if let ir::Type::Defined(id) = *self.tables.resolve_type(&value.ty)
                     && matches!(
@@ -430,7 +462,7 @@ impl FunctionLowerer<'_, '_> {
                     {
                         rust::Type::Prim(Prim::F64)
                     }
-                    rust::Type::Prim(Prim::F16)
+                    rust::Type::Prim(Prim::F16 | Prim::F128)
                         if self.tables.target.family == TargetFamily::X86 =>
                     {
                         ty.clone()
