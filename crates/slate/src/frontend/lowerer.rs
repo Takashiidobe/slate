@@ -35,7 +35,7 @@ mod vectors;
 mod vla;
 
 use arithmetic::*;
-use bitint::bit_count_expr;
+use bitint::{bit_count_expr, is_stdc_bit};
 use calls::*;
 pub use errors::{Barrier, Construct, Context, InvalidIr, Invariant, Site};
 use errors::{Failure, variant_name};
@@ -91,6 +91,7 @@ struct Dependencies {
     atomic_volatile: bool,
     asm_unwind: bool,
     long_const_eval: bool,
+    huge_stack: bool,
     asm_goto_with_outputs: bool,
     asm_strings: BTreeMap<u32, Item>,
     atomic128: bool,
@@ -869,7 +870,7 @@ impl<'m> ModuleLowerer<'m> {
             };
             if matches!(arity, 0 | 2 | 3) {
                 features.push(rust::CrateAttr::NoMain);
-                items.push(main_wrapper(arity));
+                items.push(main_wrapper(arity, dependencies.huge_stack));
             }
         }
         items.insert(0, Item::CrateAttrs(features));

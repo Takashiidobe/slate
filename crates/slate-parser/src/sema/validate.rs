@@ -537,7 +537,7 @@ pub(super) fn error(provenance: Provenance, loc: Loc, message: impl Into<String>
     }
 }
 
-pub(super) const BIT_INT_MAX_WIDTH: u32 = 65535;
+pub(super) const BIT_INT_MAX_WIDTH: u32 = 8_388_608;
 
 pub(super) const ERROR_LIMIT: usize = 20;
 

@@ -1,4 +1,4 @@
-use super::builtins::BitBuiltin;
+use super::builtins::{BitBuiltin, StdcBit};
 use crate::compiler_args::CompilerFlavor;
 use crate::ir::{
     AggregateTarget, ArithOp, ArithSema, BindingId, CompareOp, ConversionKind, FloatType,
@@ -83,7 +83,15 @@ pub(super) fn bit_builtin(
             false,
         ));
     }
-    let (width, _) = integer_type(&argument.ty).filter(|(width, _)| *width <= 128)?;
+    let (width, signed) = integer_type(&argument.ty).filter(|(width, _)| *width <= 128)?;
+    if let BitBuiltin::Stdc(operation) = builtin {
+        if signed {
+            return None;
+        }
+        let bits =
+            u128::try_from(normalize(integer_constant(argument, target)?, width, false)).ok()?;
+        return Some(stdc_bit(operation, bits, width));
+    }
     let bits = u128::try_from(normalize(integer_constant(argument, target)?, width, false)).ok()?;
     let unused = 128 - width;
     let count = match builtin {
@@ -111,9 +119,43 @@ pub(super) fn bit_builtin(
         }
         BitBuiltin::Bswap => return Some((bits.swap_bytes() >> unused).into()),
         BitBuiltin::Bitreverse => return Some((bits.reverse_bits() >> unused).into()),
-        BitBuiltin::RotateLeft | BitBuiltin::RotateRight => return None,
+        BitBuiltin::RotateLeft | BitBuiltin::RotateRight | BitBuiltin::Stdc(_) => return None,
     };
     Some(count.into())
+}
+
+fn stdc_bit(operation: StdcBit, bits: u128, width: u32) -> BigInt {
+    let mask = u128::MAX >> (128 - width);
+    let unused = 128 - width;
+    let leading_zeros = |bits: u128| bits.leading_zeros() - unused;
+    let trailing_zeros = |bits: u128| bits.trailing_zeros().min(width);
+    let first = |count: u32, bits: u128| if bits == 0 { 0 } else { count + 1 };
+    let flipped = !bits & mask;
+    match operation {
+        StdcBit::LeadingZeros => leading_zeros(bits).into(),
+        StdcBit::LeadingOnes => leading_zeros(flipped).into(),
+        StdcBit::TrailingZeros => trailing_zeros(bits).into(),
+        StdcBit::TrailingOnes => trailing_zeros(flipped).into(),
+        StdcBit::FirstLeadingZero => first(leading_zeros(flipped), flipped).into(),
+        StdcBit::FirstLeadingOne => first(leading_zeros(bits), bits).into(),
+        StdcBit::FirstTrailingZero => first(trailing_zeros(flipped), flipped).into(),
+        StdcBit::FirstTrailingOne => first(trailing_zeros(bits), bits).into(),
+        StdcBit::CountZeros => flipped.count_ones().into(),
+        StdcBit::CountOnes => bits.count_ones().into(),
+        StdcBit::HasSingleBit => u32::from(bits.count_ones() == 1).into(),
+        StdcBit::BitWidth => (width - leading_zeros(bits)).into(),
+        StdcBit::BitFloor if bits == 0 => 0.into(),
+        StdcBit::BitFloor => (1u128 << (width - 1 - leading_zeros(bits))).into(),
+        StdcBit::BitCeil if bits <= 1 => 1.into(),
+        StdcBit::BitCeil => {
+            let shift = width - leading_zeros(bits - 1);
+            if shift >= width {
+                0.into()
+            } else {
+                (1u128 << shift).into()
+            }
+        }
+    }
 }
 
 pub(super) fn integer_number(ty: &Type, value: BigInt) -> Number {

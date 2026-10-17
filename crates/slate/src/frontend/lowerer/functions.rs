@@ -11,7 +11,7 @@ pub(super) fn codegen_builtin(metadata: &[(String, String)]) -> bool {
         || entry("c_builtin_header").is_some_and(|header| header.ends_with("intrin.h"))
 }
 
-pub(super) fn main_wrapper(arity: usize) -> Item {
+pub(super) fn main_wrapper(arity: usize, huge_stack: bool) -> Item {
     let c_strings = || rust::Type::Ptr {
         mutable: true,
         inner: Box::new(rust::Type::Ptr {
@@ -39,6 +39,68 @@ pub(super) fn main_wrapper(arity: usize) -> Item {
             ty: rust::Type::Custom("_".into()),
         })
         .collect();
+    let call = Expr::Unsafe(Box::new(rust::Block {
+        stmts: Vec::new(),
+        tail: Some(Box::new(Expr::Call {
+            func: Box::new(Expr::Var("__slate_main".into())),
+            args,
+            binding: CallBinding::Generated,
+        })),
+    }));
+    let mut body = Vec::new();
+    let call = if huge_stack {
+        for name in &params[1..arity.max(1)] {
+            body.push(Stmt::Let {
+                name: name.name.clone(),
+                mutable: false,
+                ty: None,
+                init: Some(Expr::Cast {
+                    expr: Box::new(Expr::Var(name.name.as_str().into())),
+                    ty: rust::Type::Prim(rust::Prim::Usize),
+                }),
+            });
+        }
+        let method = |recv: Expr, method: &str, args: Vec<Expr>| Expr::MethodCall {
+            recv: Box::new(recv),
+            method: method.into(),
+            args,
+        };
+        let builder = method(
+            Expr::Call {
+                func: Box::new(Expr::Var("std::thread::Builder::new".into())),
+                args: Vec::new(),
+                binding: CallBinding::Generated,
+            },
+            "stack_size",
+            vec![Expr::Value(rust::RustValue::Usize(1 << 30))],
+        );
+        let spawned = method(
+            builder,
+            "spawn_scoped",
+            vec![
+                Expr::Var("s".into()),
+                Expr::Closure {
+                    params: Vec::new(),
+                    body: Box::new(call),
+                },
+            ],
+        );
+        Expr::Call {
+            func: Box::new(Expr::Var("std::thread::scope".into())),
+            args: vec![Expr::Closure {
+                params: vec!["s".into()],
+                body: Box::new(method(
+                    method(method(spawned, "unwrap", Vec::new()), "join", Vec::new()),
+                    "unwrap",
+                    Vec::new(),
+                )),
+            }],
+            binding: CallBinding::Generated,
+        }
+    } else {
+        call
+    };
+    body.push(Stmt::Return(Some(call)));
     Item::Fn(FnDef {
         comments: Vec::new(),
         attrs: vec![Attr::NoMangle],
@@ -48,14 +110,7 @@ pub(super) fn main_wrapper(arity: usize) -> Item {
         name: "main".into(),
         params,
         ret: Some(rust::Type::Prim(rust::Prim::I32)),
-        body: vec![Stmt::Return(Some(Expr::Unsafe(Box::new(rust::Block {
-            stmts: Vec::new(),
-            tail: Some(Box::new(Expr::Call {
-                func: Box::new(Expr::Var("__slate_main".into())),
-                args,
-                binding: CallBinding::Generated,
-            })),
-        }))))],
+        body,
     })
 }
 

@@ -27,6 +27,67 @@ pub(super) enum BitBuiltin {
     Bitreverse,
     RotateLeft,
     RotateRight,
+    Stdc(StdcBit),
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(super) enum StdcBit {
+    LeadingZeros,
+    LeadingOnes,
+    TrailingZeros,
+    TrailingOnes,
+    FirstLeadingZero,
+    FirstLeadingOne,
+    FirstTrailingZero,
+    FirstTrailingOne,
+    CountZeros,
+    CountOnes,
+    HasSingleBit,
+    BitWidth,
+    BitFloor,
+    BitCeil,
+}
+
+impl StdcBit {
+    fn of_name(name: &str) -> Option<Self> {
+        Some(match name.strip_prefix("__builtin_stdc_")? {
+            "leading_zeros" => Self::LeadingZeros,
+            "leading_ones" => Self::LeadingOnes,
+            "trailing_zeros" => Self::TrailingZeros,
+            "trailing_ones" => Self::TrailingOnes,
+            "first_leading_zero" => Self::FirstLeadingZero,
+            "first_leading_one" => Self::FirstLeadingOne,
+            "first_trailing_zero" => Self::FirstTrailingZero,
+            "first_trailing_one" => Self::FirstTrailingOne,
+            "count_zeros" => Self::CountZeros,
+            "count_ones" => Self::CountOnes,
+            "has_single_bit" => Self::HasSingleBit,
+            "bit_width" => Self::BitWidth,
+            "bit_floor" => Self::BitFloor,
+            "bit_ceil" => Self::BitCeil,
+            _ => return None,
+        })
+    }
+
+    fn of_record(record: &str) -> Option<Self> {
+        Some(match record {
+            "StdcLeadingZeros" => Self::LeadingZeros,
+            "StdcLeadingOnes" => Self::LeadingOnes,
+            "StdcTrailingZeros" => Self::TrailingZeros,
+            "StdcTrailingOnes" => Self::TrailingOnes,
+            "StdcFirstLeadingZero" => Self::FirstLeadingZero,
+            "StdcFirstLeadingOne" => Self::FirstLeadingOne,
+            "StdcFirstTrailingZero" => Self::FirstTrailingZero,
+            "StdcFirstTrailingOne" => Self::FirstTrailingOne,
+            "StdcCountZeros" => Self::CountZeros,
+            "StdcCountOnes" => Self::CountOnes,
+            "StdcHasSingleBit" => Self::HasSingleBit,
+            "StdcBitWidth" => Self::BitWidth,
+            "StdcBitFloor" => Self::BitFloor,
+            "StdcBitCeil" => Self::BitCeil,
+            _ => return None,
+        })
+    }
 }
 
 impl BitBuiltin {
@@ -53,7 +114,7 @@ impl BitBuiltin {
             | "__builtin_bitreverse64" => Self::Bitreverse,
             "__builtin_stdc_rotate_left" => Self::RotateLeft,
             "__builtin_stdc_rotate_right" => Self::RotateRight,
-            _ => return None,
+            _ => Self::Stdc(StdcBit::of_name(name)?),
         };
         let generic = name.ends_with('g');
         if matches!(builtin, Self::RotateLeft | Self::RotateRight) {
@@ -456,6 +517,7 @@ pub(super) enum DerivedSignature {
     },
     Scaled,
     Rotate,
+    Stdc(StdcBit),
     BitCount {
         fallback: bool,
     },
@@ -466,6 +528,9 @@ pub(super) enum DerivedSignature {
 pub(super) fn derived_signature(builtin: &ClangBuiltin) -> Option<DerivedSignature> {
     if let Some(operation) = builtin.record.strip_prefix("Elementwise") {
         return elementwise_signature(operation);
+    }
+    if let Some(operation) = StdcBit::of_record(builtin.record) {
+        return Some(DerivedSignature::Stdc(operation));
     }
     Some(match builtin.record {
         "BuiltinAssumeAligned" => DerivedSignature::Declared,
@@ -796,6 +861,25 @@ impl TypeResolver {
                 }
                 Ok(self.function_type(first, vec![first, second]))
             }
+            (DerivedSignature::Stdc(operation), Some(first)) if arity == 1 => {
+                if !matches!(
+                    self.ctypes.canonical_kind(first),
+                    CTypeKind::UChar
+                        | CTypeKind::Int { signed: false, .. }
+                        | CTypeKind::BitInt { signed: false, .. }
+                ) {
+                    return Err(ResolveError::Rejected("stdc builtin operand type"));
+                }
+                let result = match operation {
+                    StdcBit::BitFloor | StdcBit::BitCeil => first,
+                    StdcBit::HasSingleBit => self.ctypes.qual(CTypeKind::Bool),
+                    _ => self.ctypes.qual(CTypeKind::Int {
+                        rank: IntRank::Int,
+                        signed: false,
+                    }),
+                };
+                Ok(self.function_type(result, vec![first]))
+            }
             (DerivedSignature::BitCount { fallback }, Some(first))
                 if arity <= 1 + usize::from(fallback) =>
             {
@@ -824,6 +908,7 @@ impl TypeResolver {
                 Err(ResolveError::Rejected("bit-counting builtin arity"))
             }
             (DerivedSignature::Rotate, _) => Err(ResolveError::Rejected("rotate builtin arity")),
+            (DerivedSignature::Stdc(_), _) => Err(ResolveError::Rejected("stdc builtin arity")),
         }
     }
 

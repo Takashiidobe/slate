@@ -73,6 +73,7 @@ pub(super) fn open_coded_builtin(builtin: &str) -> bool {
         || is_find_first_set(builtin)
         || is_parity_or_clrsb(builtin)
         || stdc_rotate_method(builtin).is_some()
+        || is_stdc_bit(builtin)
         || matches!(
             builtin,
             "__builtin_elementwise_add_sat" | "__builtin_elementwise_sub_sat"
@@ -1226,6 +1227,16 @@ impl FunctionLowerer<'_, '_> {
                 ))),
                 ty: self.lower_type(&value.ty)?,
             },
+            ValueKind::Call {
+                callee: ir::Callee::Direct(id),
+                arguments,
+                ..
+            } if self.tables.builtin_name(*id).is_some_and(is_stdc_bit) => {
+                let Some(builtin) = self.tables.builtin_name(*id) else {
+                    return Err(unsupported_value(value));
+                };
+                self.lower_stdc_bit(value, builtin, arguments)?
+            }
             ValueKind::Call {
                 callee: ir::Callee::Direct(id),
                 arguments,

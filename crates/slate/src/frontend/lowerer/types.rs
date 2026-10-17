@@ -585,6 +585,7 @@ impl FunctionLowerer<'_, '_> {
             ir::Type::Numeric(ir::NumericType::Integer { .. })
                 if let Some(wide) = self.tables.wide_int(ty) =>
             {
+                self.dependencies.huge_stack |= wide.is_huge();
                 return Ok(wide.rust_type());
             }
             ir::Type::Numeric(ir::NumericType::Integer {

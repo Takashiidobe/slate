@@ -13,6 +13,10 @@ impl WideInt {
         self.bytes <= 16
     }
 
+    pub(super) fn is_huge(self) -> bool {
+        self.bytes >= 1 << 16
+    }
+
     pub(super) fn rust_type(self) -> rust::Type {
         rust::Type::Custom(format!(
             "bitint::{}<{}, {}, {}, bitint::A{}>",
@@ -115,7 +119,181 @@ impl Tables<'_> {
     }
 }
 
+pub(super) fn is_stdc_bit(builtin: &str) -> bool {
+    matches!(
+        builtin,
+        "__builtin_stdc_leading_zeros"
+            | "__builtin_stdc_leading_ones"
+            | "__builtin_stdc_trailing_zeros"
+            | "__builtin_stdc_trailing_ones"
+            | "__builtin_stdc_first_leading_zero"
+            | "__builtin_stdc_first_leading_one"
+            | "__builtin_stdc_first_trailing_zero"
+            | "__builtin_stdc_first_trailing_one"
+            | "__builtin_stdc_count_zeros"
+            | "__builtin_stdc_count_ones"
+            | "__builtin_stdc_has_single_bit"
+            | "__builtin_stdc_bit_width"
+            | "__builtin_stdc_bit_floor"
+            | "__builtin_stdc_bit_ceil"
+    )
+}
+
 impl FunctionLowerer<'_, '_> {
+    pub(super) fn lower_stdc_bit(
+        &mut self,
+        value: &ir::Value,
+        builtin: &str,
+        arguments: &[ir::Value],
+    ) -> Result<Expr> {
+        let [operand] = arguments else {
+            return Err(unsupported_value(value));
+        };
+        let wide = self.tables.wide_int(&operand.ty);
+        let (shape, width) = match (wide, self.tables.bit_shape(&operand.ty)) {
+            (Some(wide), _) => (BitShape::Plain, wide.width),
+            (None, Some(BitShape::Small { width, container })) => {
+                (BitShape::Small { width, container }, width)
+            }
+            (None, Some(BitShape::Plain)) => match self.lower_type(&operand.ty)? {
+                rust::Type::Prim(prim) => (BitShape::Plain, prim_width(prim)),
+                _ => return Err(unsupported_value(value)),
+            },
+            (None, None) => return Err(unsupported_value(value)),
+        };
+        let operation = builtin.trim_start_matches("__builtin_stdc_");
+        let bits = self.next_temp();
+        let var = |name: &str| Expr::Var(name.into());
+        let u32_literal = |value: u32| Expr::Cast {
+            expr: Box::new(Expr::Value(rust::RustValue::U128(u128::from(value)))),
+            ty: rust::Type::Prim(Prim::U32),
+        };
+        let binary = |op: BinOp, lhs: Expr, rhs: Expr| Expr::Binary {
+            op,
+            lhs: Box::new(lhs),
+            rhs: Box::new(rhs),
+        };
+        let conditional = |cond: Expr, then_expr: Expr, else_expr: Expr| Expr::If {
+            cond: Box::new(cond),
+            then_expr: Box::new(then_expr),
+            else_expr: Box::new(else_expr),
+        };
+        let bind = |name: &str, init: Expr| Stmt::Let {
+            name: name.to_string(),
+            mutable: false,
+            ty: None,
+            init: Some(init),
+        };
+        let inverse = if operation.ends_with("_ones")
+            || operation == "first_leading_zero"
+            || operation == "first_trailing_zero"
+        {
+            let flipped = Expr::Unary {
+                op: rust::UnaryOp::Not,
+                expr: Box::new(var(&bits)),
+            };
+            Some(if wide.is_some() {
+                flipped
+            } else {
+                self.narrow_integer(flipped, &operand.ty)?
+            })
+        } else {
+            None
+        };
+        let inverse_expr = inverse.unwrap_or_else(|| var(&bits));
+        let operand_value = self.lower_value(operand)?;
+        let result = self.lower_type(&value.ty)?;
+        let counted = |recv: Expr, method: &str| bit_count_expr(shape, recv, method);
+        let finish = |expr: Expr| Expr::Cast {
+            expr: Box::new(expr),
+            ty: result.clone(),
+        };
+        let first = |this: &mut Self, source: Expr, method: &str| -> Expr {
+            let count = this.next_temp();
+            Expr::Block(Box::new(rust::Block {
+                stmts: vec![bind(&count, counted(source, method))],
+                tail: Some(Box::new(conditional(
+                    binary(BinOp::Eq, var(&count), u32_literal(width)),
+                    u32_literal(0),
+                    binary(BinOp::Add, var(&count), u32_literal(1)),
+                ))),
+            }))
+        };
+        let shifted = |this: &mut Self, amount: Expr| -> Result<Expr> {
+            let one = this.lower_number(&Number::Integer(1u32.into()), &operand.ty)?;
+            if wide.is_some() {
+                return Ok(Expr::MethodCall {
+                    recv: Box::new(one),
+                    method: "shl_bits".into(),
+                    args: vec![Expr::Cast {
+                        expr: Box::new(amount),
+                        ty: rust::Type::Prim(Prim::Usize),
+                    }],
+                });
+            }
+            let zero = this.lower_number(&Number::Integer(0u32.into()), &operand.ty)?;
+            let shifted = Expr::MethodCall {
+                recv: Box::new(Expr::MethodCall {
+                    recv: Box::new(one),
+                    method: "checked_shl".into(),
+                    args: vec![amount],
+                }),
+                method: "unwrap_or".into(),
+                args: vec![zero],
+            };
+            this.narrow_integer(shifted, &operand.ty)
+        };
+        let leading = || counted(var(&bits), "leading_zeros");
+        let tail = match operation {
+            "leading_zeros" => finish(leading()),
+            "leading_ones" => finish(counted(inverse_expr.clone(), "leading_zeros")),
+            "trailing_zeros" => finish(counted(var(&bits), "trailing_zeros")),
+            "trailing_ones" => finish(counted(inverse_expr.clone(), "trailing_zeros")),
+            "first_leading_one" => finish(first(self, var(&bits), "leading_zeros")),
+            "first_trailing_one" => finish(first(self, var(&bits), "trailing_zeros")),
+            "first_leading_zero" => finish(first(self, inverse_expr.clone(), "leading_zeros")),
+            "first_trailing_zero" => finish(first(self, inverse_expr.clone(), "trailing_zeros")),
+            "count_ones" => finish(counted(var(&bits), "count_ones")),
+            "count_zeros" => finish(binary(
+                BinOp::Sub,
+                u32_literal(width),
+                counted(var(&bits), "count_ones"),
+            )),
+            "has_single_bit" => {
+                binary(BinOp::Eq, counted(var(&bits), "count_ones"), u32_literal(1))
+            }
+            "bit_width" => finish(binary(BinOp::Sub, u32_literal(width), leading())),
+            "bit_floor" => {
+                let zero = self.lower_number(&Number::Integer(0u32.into()), &operand.ty)?;
+                let amount = binary(BinOp::Sub, u32_literal(width - 1), leading());
+                conditional(
+                    binary(BinOp::Eq, leading(), u32_literal(width)),
+                    zero,
+                    shifted(self, amount)?,
+                )
+            }
+            "bit_ceil" => {
+                let one = self.lower_number(&Number::Integer(1u32.into()), &operand.ty)?;
+                let amount = binary(BinOp::Sub, u32_literal(width), leading());
+                let count = counted(var(&bits), "count_ones");
+                conditional(
+                    binary(BinOp::Eq, count.clone(), u32_literal(0)),
+                    one,
+                    conditional(
+                        binary(BinOp::Eq, count, u32_literal(1)),
+                        var(&bits),
+                        shifted(self, amount)?,
+                    ),
+                )
+            }
+            _ => return Err(unsupported_value(value)),
+        };
+        Ok(Expr::Block(Box::new(rust::Block {
+            stmts: vec![bind(&bits, operand_value)],
+            tail: Some(Box::new(tail)),
+        })))
+    }
+
     pub(super) fn lower_stdc_rotate(
         &mut self,
         value: &ir::Value,
