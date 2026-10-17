@@ -1,7 +1,62 @@
 use super::*;
 
 impl Tables<'_> {
+    pub(super) fn array_subscript<'p>(
+        &self,
+        place: &'p ir::Place,
+    ) -> Option<(&'p ir::Place, &'p ir::Value)> {
+        let PlaceKind::Deref(pointer) = &place.kind else {
+            return None;
+        };
+        let ValueKind::PointerOffset {
+            pointer,
+            amount,
+            subtract: false,
+            element,
+            ..
+        } = &pointer.node.value
+        else {
+            return None;
+        };
+        let ValueKind::ArrayDecay {
+            place: array,
+            length: Some(_),
+        } = &pointer.node.value
+        else {
+            return None;
+        };
+        let ir::Type::Array {
+            element: array_element,
+            length: Some(1..),
+        } = self.resolve_type(&array.ty)
+        else {
+            return None;
+        };
+        (**array_element == *element && self.indexable_array(array)).then_some((array, amount))
+    }
+
+    fn indexable_array(&self, place: &ir::Place) -> bool {
+        if self.variably_modified(&place.ty) {
+            return false;
+        }
+        match &place.kind {
+            PlaceKind::Binding(id) => {
+                !self.strings.contains_key(id) && !self.register_globals.contains_key(id)
+            }
+            PlaceKind::Field {
+                base, bits: None, ..
+            } => self.indexable_array(base),
+            PlaceKind::Deref(_) => self
+                .array_subscript(place)
+                .is_some_and(|(array, _)| self.indexable_array(array)),
+            _ => false,
+        }
+    }
+
     pub(super) fn place_is_unsafe(&self, place: &ir::Place) -> bool {
+        if let Some((array, _)) = self.array_subscript(place) {
+            return self.place_is_unsafe(array);
+        }
         match &place.kind {
             PlaceKind::Deref(_) | PlaceKind::CompoundLiteral { .. } => true,
             PlaceKind::Binding(_) if self.variably_modified(&place.ty) => true,
@@ -12,6 +67,9 @@ impl Tables<'_> {
     }
 
     pub(super) fn place_is_static(&self, place: &ir::Place) -> bool {
+        if let Some((array, _)) = self.array_subscript(place) {
+            return self.place_is_static(array);
+        }
         match &place.kind {
             PlaceKind::Binding(id) => self.statics.contains(id),
             PlaceKind::CompoundLiteral { storage, .. } => {
@@ -51,6 +109,15 @@ impl FunctionLowerer<'_, '_> {
             return Ok(Expr::Unary {
                 op: rust::UnaryOp::Deref,
                 expr: Box::new(address),
+            });
+        }
+        if let Some((array, index)) = tables.array_subscript(place) {
+            return Ok(Expr::Index {
+                base: Box::new(self.lower_place(array)?),
+                index: Box::new(Expr::Cast {
+                    expr: Box::new(self.lower_value(index)?),
+                    ty: rust::Type::Prim(Prim::Usize),
+                }),
             });
         }
         match place.kind {

@@ -1,15 +1,8 @@
+use super::for_range::{int_value, subtree_ids};
+use super::remove_mut::invariant_within;
 use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{Arena, FunctionOptimizer, NodeId, NodeKind, NodeKindTag};
-use crate::backend::rust_ast::{Expr, Ident, RustValue, Type};
-
-fn int_value(expr: &Expr) -> Option<i128> {
-    match expr {
-        Expr::Value(RustValue::I64(n)) => Some(*n as i128),
-        Expr::Value(RustValue::I128(n)) => Some(*n),
-        Expr::Value(RustValue::TypedInt(n, _)) => Some(*n),
-        _ => None,
-    }
-}
+use crate::backend::rust_ast::{Expr, Ident, Type};
 
 fn is_var(expr: &Expr, name: Ident) -> bool {
     matches!(expr, Expr::Var(v) if *v == name)
@@ -22,9 +15,10 @@ fn is_ind_var_chain(expr: &Expr, ind_var: Ident) -> bool {
     }
 }
 
-fn direct_index_match(expr: &Expr, ind_var: Ident) -> Option<Ident> {
-    match expr {
-        Expr::Index { base, index } if is_ind_var_chain(index, ind_var) => match base.as_ref() {
+fn array_var(base: &Expr) -> Option<Ident> {
+    match base {
+        Expr::Var(arr) => Some(*arr),
+        Expr::TupleField { base, index: 0 } => match base.as_ref() {
             Expr::Var(arr) => Some(*arr),
             _ => None,
         },
@@ -32,14 +26,42 @@ fn direct_index_match(expr: &Expr, ind_var: Ident) -> Option<Ident> {
     }
 }
 
+fn slate_aligned(ty: &Type) -> Option<&Type> {
+    match ty {
+        Type::Generic { name, args } if name.as_str().starts_with("__SlateAlign") => {
+            match &args[..] {
+                [inner] => Some(inner),
+                _ => None,
+            }
+        }
+        _ => None,
+    }
+}
+
+fn array_base(arena: &FunctionOptimizer, arr: Ident) -> Expr {
+    if arena.var_type(arr).and_then(slate_aligned).is_some() {
+        Expr::TupleField {
+            base: Box::new(Expr::Var(arr)),
+            index: 0,
+        }
+    } else {
+        Expr::Var(arr)
+    }
+}
+
+fn direct_index_match(expr: &Expr, ind_var: Ident) -> Option<Ident> {
+    match expr {
+        Expr::Index { base, index } if is_ind_var_chain(index, ind_var) => array_var(base),
+        _ => None,
+    }
+}
+
 fn index_search_children(expr: &Expr) -> Vec<&Expr> {
     match expr {
         Expr::Binary { lhs, rhs, .. } => vec![lhs, rhs],
-        Expr::Unary { expr, .. }
-        | Expr::Cast { expr, .. }
-        | Expr::Ref { expr, .. }
-        | Expr::AddrOf { expr, .. }
-        | Expr::Transmute { expr, .. } => vec![expr],
+        Expr::Unary { expr, .. } | Expr::Cast { expr, .. } | Expr::Transmute { expr, .. } => {
+            vec![expr]
+        }
         Expr::Call { func, args, .. } => {
             let mut out = vec![func.as_ref()];
             out.extend(args.iter());
@@ -59,11 +81,9 @@ fn index_search_children(expr: &Expr) -> Vec<&Expr> {
 fn index_search_children_mut(expr: &mut Expr) -> Vec<&mut Expr> {
     match expr {
         Expr::Binary { lhs, rhs, .. } => vec![lhs, rhs],
-        Expr::Unary { expr, .. }
-        | Expr::Cast { expr, .. }
-        | Expr::Ref { expr, .. }
-        | Expr::AddrOf { expr, .. }
-        | Expr::Transmute { expr, .. } => vec![expr],
+        Expr::Unary { expr, .. } | Expr::Cast { expr, .. } | Expr::Transmute { expr, .. } => {
+            vec![expr]
+        }
         Expr::Call { func, args, .. } => {
             let mut out = vec![func.as_mut()];
             out.extend(args.iter_mut());
@@ -102,8 +122,8 @@ fn count_var(arena: &Arena, id: NodeId, name: Ident) -> usize {
 }
 
 fn array_len(arena: &FunctionOptimizer, name: Ident) -> Option<u64> {
-    let ty = arena.var_type(name)?.peel_aligned();
-    match ty {
+    let ty = arena.var_type(name)?;
+    match slate_aligned(ty).unwrap_or(ty).peel_aligned() {
         Type::Array { elem, len } if matches!(elem.as_ref(), Type::Prim(_)) => Some(*len),
         _ => None,
     }
@@ -166,7 +186,10 @@ fn find_target(
         let found = match kind {
             NodeKind::Let { init: Some(e), .. } => array_index_target(e, ind_var),
             NodeKind::Assign { target, value } | NodeKind::CompoundAssign { target, value, .. } => {
-                array_index_target(target, ind_var).or_else(|| array_index_target(value, ind_var))
+                if array_index_target(target, ind_var).is_some() {
+                    return None;
+                }
+                array_index_target(value, ind_var)
             }
             NodeKind::Expr(e) => array_index_target(e, ind_var),
             NodeKind::Return(Some(e)) => array_index_target(e, ind_var),
@@ -192,6 +215,13 @@ fn find_target(
     }
     let arr_uses: usize = body.iter().map(|&id| count_var(arena, id, arr)).sum();
     if arr_uses != 1 {
+        return None;
+    }
+    let mut region = Vec::new();
+    for &id in body {
+        subtree_ids(arena, id, &mut region);
+    }
+    if !invariant_within(arena, arr, &region) {
         return None;
     }
 
@@ -235,6 +265,7 @@ impl NodeRule for ForArrayIterRecover {
             return false;
         };
         let body = body.clone();
+        let base = array_base(arena, arr);
 
         if !body
             .iter()
@@ -248,7 +279,7 @@ impl NodeRule for ForArrayIterRecover {
         };
         *iter = Expr::MethodCall {
             recv: Box::new(Expr::MethodCall {
-                recv: Box::new(Expr::Var(arr)),
+                recv: Box::new(base),
                 method: "iter".to_string(),
                 args: Vec::new(),
             }),

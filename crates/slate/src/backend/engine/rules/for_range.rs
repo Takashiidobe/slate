@@ -15,7 +15,7 @@ struct RecoveredFor {
     increment_id: NodeId,
 }
 
-fn int_value(expr: &Expr) -> Option<i128> {
+pub(super) fn int_value(expr: &Expr) -> Option<i128> {
     match expr {
         Expr::Value(RustValue::I64(n)) => Some(*n as i128),
         Expr::Value(RustValue::I128(n)) => Some(*n),
@@ -82,7 +82,7 @@ fn continues_here(arena: &Arena, id: NodeId) -> bool {
     }
 }
 
-fn subtree_ids(arena: &Arena, id: NodeId, out: &mut Vec<NodeId>) {
+pub(super) fn subtree_ids(arena: &Arena, id: NodeId, out: &mut Vec<NodeId>) {
     out.push(id);
     let Some(kind) = arena.get(id) else { return };
     for &child in kind.child_lists().into_iter().flatten() {

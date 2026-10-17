@@ -89,11 +89,7 @@ int main(void) {
 // CHECK-NEXT:         6 as i32,
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let r3: i32 = mix(big.0.as_mut_ptr() as *mut i32);
-// CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {} {}", r, unsafe { * unsafe { (a.as_mut_ptr() as * mut i32).offset((0
-// CHECK-NEXT:         as i32) as isize) } }, unsafe { * unsafe { (a.as_mut_ptr() as * mut i32)
-// CHECK-NEXT:         .offset((2 as i32) as isize) } }, r2, r3
-// CHECK-NEXT:     );
+// CHECK-NEXT:     println!("{} {} {} {} {}", r, a[0], a[2], r2, r3);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     0 as i32
 // CHECK: {{^}}}

@@ -19,7 +19,7 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut error_log: __SlateAlign16<[[[SLATERECORD_0:__SlateRecord[0-9]+]]; 3]> = __SlateAlign16([
+// CHECK-NEXT:     let error_log: __SlateAlign16<[[[SLATERECORD_0:__SlateRecord[0-9]+]]; 3]> = __SlateAlign16([
 // CHECK-NEXT:         [[SLATERECORD_0]] {
 // CHECK-NEXT:             code: 404 as i32,
 // CHECK-NEXT:             message: c"Not Found".as_ptr() as *const i8,
@@ -36,10 +36,7 @@ int main(void) {
 // CHECK-NEXT:             confidence: 1.0f64,
 // CHECK-NEXT:         },
 // CHECK-NEXT:     ]);
-// CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{}", unsafe { (* unsafe { (error_log.0.as_mut_ptr() as * mut [[SLATERECORD_0]])
-// CHECK-NEXT:         .offset((0 as i32) as isize) }).code }
-// CHECK-NEXT:     );
+// CHECK-NEXT:     println!("{}", error_log.0[0].code);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     0 as i32
 // CHECK: {{^}}}

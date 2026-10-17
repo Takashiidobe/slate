@@ -1233,7 +1233,7 @@ impl<W: Write> Codegen<W> {
             Expr::Index { base, index } => {
                 self.expr_prec(base, Precedence::Call.level())?;
                 self.out.write_char('[')?;
-                self.expr_prec(index, Precedence::Call.level())?;
+                self.expr(index)?;
                 self.out.write_char(']')
             }
             Expr::StructLit { name, fields } => {

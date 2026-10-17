@@ -37,6 +37,7 @@ fn literal_value(expr: &Expr) -> Option<i128> {
     match expr {
         Expr::Value(RustValue::I64(value)) if *value >= 0 => Some(*value as i128),
         Expr::Value(RustValue::I128(value)) if *value >= 0 => Some(*value),
+        Expr::Value(RustValue::U128(value)) => i128::try_from(*value).ok(),
         _ => None,
     }
 }

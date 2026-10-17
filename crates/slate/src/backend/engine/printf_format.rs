@@ -172,13 +172,6 @@ fn fflush_all_stmt() -> Stmt {
     })))
 }
 
-fn is_call_expr(expr: &Expr) -> bool {
-    matches!(
-        expr,
-        Expr::Call { .. } | Expr::MethodCall { .. } | Expr::MethodCallGeneric { .. }
-    )
-}
-
 fn contains_mut_borrow(expr: &Expr) -> bool {
     match expr {
         Expr::Ref { mutable: true, .. } => true,
@@ -190,6 +183,7 @@ fn contains_mut_borrow(expr: &Expr) -> bool {
         Expr::Call { func, args, .. } => {
             contains_mut_borrow(func) || args.iter().any(contains_mut_borrow)
         }
+        Expr::MethodCall { method, .. } if method.as_str() == "as_mut_ptr" => true,
         Expr::MethodCall { recv, args, .. } | Expr::MethodCallGeneric { recv, args, .. } => {
             contains_mut_borrow(recv) || args.iter().any(contains_mut_borrow)
         }
@@ -201,7 +195,7 @@ fn contains_mut_borrow(expr: &Expr) -> bool {
 }
 
 fn needs_hoist(expr: &Expr) -> bool {
-    is_call_expr(expr) && contains_mut_borrow(expr)
+    !matches!(expr, Expr::Ref { .. }) && contains_mut_borrow(expr)
 }
 
 fn try_convert(stmt: &Stmt) -> Option<Vec<Stmt>> {

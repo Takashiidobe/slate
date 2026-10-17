@@ -71,7 +71,7 @@ int main(void) {
 // CHECK-NEXT:         ((7 as i32) as i8) as u8,
 // CHECK-NEXT:         ((8 as i32) as i8) as u8,
 // CHECK-NEXT:     ];
-// CHECK-NEXT:     unsafe { dst_a[(0usize..4usize)].copy_from_slice(&src_a[(0usize..4usize)]) };
+// CHECK-NEXT:     unsafe { dst_a[0usize..4usize].copy_from_slice(&src_a[0usize..4usize]) };
 // CHECK-NEXT:     let mut dst_b: [u8; 8] = [
 // CHECK-NEXT:         ((9 as i32) as i8) as u8,
 // CHECK-NEXT:         ((9 as i32) as i8) as u8,
@@ -92,7 +92,7 @@ int main(void) {
 // CHECK-NEXT:         ((7 as i32) as i8) as u8,
 // CHECK-NEXT:         ((8 as i32) as i8) as u8,
 // CHECK-NEXT:     ];
-// CHECK-NEXT:     unsafe { dst_b[(0usize..5usize)].copy_from_slice(&src_b[(0usize..5usize)]) };
+// CHECK-NEXT:     unsafe { dst_b[0usize..5usize].copy_from_slice(&src_b[0usize..5usize]) };
 // CHECK-NEXT:     let mut self_c: [u8; 8] = [
 // CHECK-NEXT:         ((1 as i32) as i8) as u8,
 // CHECK-NEXT:         ((2 as i32) as i8) as u8,
@@ -114,7 +114,7 @@ int main(void) {
 // CHECK-NEXT:         ((7 as i32) as i8) as u8,
 // CHECK-NEXT:         ((8 as i32) as i8) as u8,
 // CHECK-NEXT:     ];
-// CHECK-NEXT:     unsafe { dst_d[(0usize..5usize)].fill((65 as i32) as u8) };
+// CHECK-NEXT:     unsafe { dst_d[0usize..5usize].fill((65 as i32) as u8) };
 // CHECK-NEXT:     let mut dst_e: [u8; 8] = [
 // CHECK-NEXT:         ((1 as i32) as i8) as u8,
 // CHECK-NEXT:         ((2 as i32) as i8) as u8,
@@ -196,10 +196,7 @@ int main(void) {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let mut i: i32 = 0 as i32;
 // CHECK-NEXT:         while i < (8 as i32) {
-// CHECK-NEXT:             print!(
-// CHECK-NEXT:                 "{} ", ((unsafe { * unsafe { (dst_a.as_mut_ptr() as * mut u8).offset(i as
-// CHECK-NEXT:                 isize) } }) as u32) as i32
-// CHECK-NEXT:             );
+// CHECK-NEXT:             print!("{} ", (dst_a[i as usize] as u32) as i32);
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             i += 1 as i32;
 // CHECK-NEXT:         }
@@ -207,10 +204,7 @@ int main(void) {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let mut i: i32 = 0 as i32;
 // CHECK-NEXT:         while i < (8 as i32) {
-// CHECK-NEXT:             print!(
-// CHECK-NEXT:                 "{} ", ((unsafe { * unsafe { (dst_b.as_mut_ptr() as * mut u8).offset(i as
-// CHECK-NEXT:                 isize) } }) as u32) as i32
-// CHECK-NEXT:             );
+// CHECK-NEXT:             print!("{} ", (dst_b[i as usize] as u32) as i32);
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             i += 1 as i32;
 // CHECK-NEXT:         }
@@ -218,10 +212,7 @@ int main(void) {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let mut i: i32 = 0 as i32;
 // CHECK-NEXT:         while i < (8 as i32) {
-// CHECK-NEXT:             print!(
-// CHECK-NEXT:                 "{} ", ((unsafe { * unsafe { (self_c.as_mut_ptr() as * mut u8).offset(i
-// CHECK-NEXT:                 as isize) } }) as u32) as i32
-// CHECK-NEXT:             );
+// CHECK-NEXT:             print!("{} ", (self_c[i as usize] as u32) as i32);
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             i += 1 as i32;
 // CHECK-NEXT:         }
@@ -229,10 +220,7 @@ int main(void) {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let mut i: i32 = 0 as i32;
 // CHECK-NEXT:         while i < (8 as i32) {
-// CHECK-NEXT:             print!(
-// CHECK-NEXT:                 "{} ", ((unsafe { * unsafe { (dst_d.as_mut_ptr() as * mut u8).offset(i as
-// CHECK-NEXT:                 isize) } }) as u32) as i32
-// CHECK-NEXT:             );
+// CHECK-NEXT:             print!("{} ", (dst_d[i as usize] as u32) as i32);
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             i += 1 as i32;
 // CHECK-NEXT:         }
@@ -240,10 +228,7 @@ int main(void) {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let mut i: i32 = 0 as i32;
 // CHECK-NEXT:         while i < (8 as i32) {
-// CHECK-NEXT:             print!(
-// CHECK-NEXT:                 "{} ", ((unsafe { * unsafe { (dst_e.as_mut_ptr() as * mut u8).offset(i as
-// CHECK-NEXT:                 isize) } }) as u32) as i32
-// CHECK-NEXT:             );
+// CHECK-NEXT:             print!("{} ", (dst_e[i as usize] as u32) as i32);
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             i += 1 as i32;
 // CHECK-NEXT:         }
@@ -251,20 +236,14 @@ int main(void) {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let mut i: i32 = 0 as i32;
 // CHECK-NEXT:         while i < (8 as i32) {
-// CHECK-NEXT:             print!(
-// CHECK-NEXT:                 "{} ", ((unsafe { * unsafe { (dst_f.as_mut_ptr() as * mut u8).offset(i as
-// CHECK-NEXT:                 isize) } }) as u32) as i32
-// CHECK-NEXT:             );
+// CHECK-NEXT:             print!("{} ", (dst_f[i as usize] as u32) as i32);
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             i += 1 as i32;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut i: i32 = 0 as i32;
 // CHECK-NEXT:     while i < (4 as i32) {
-// CHECK-NEXT:         print!(
-// CHECK-NEXT:             "{} ", ((unsafe { * unsafe { (dst_g.as_mut_ptr() as * mut u8).offset(i as
-// CHECK-NEXT:             isize) } }) as u32) as i32
-// CHECK-NEXT:         );
+// CHECK-NEXT:         print!("{} ", (dst_g[i as usize] as u32) as i32);
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         i += 1 as i32;
 // CHECK-NEXT:     }

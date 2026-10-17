@@ -76,7 +76,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     for i in 0 as i32..len {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             __values_view[(i as usize)] = (unsafe { __values_view[(i as usize)] })
+// CHECK-NEXT:             __values_view[i as usize] = (unsafe { __values_view[i as usize] })
 // CHECK-NEXT:                 + (1 as i32);
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }

@@ -14,18 +14,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%s %s\n".as_ptr() as *const i8,
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 *unsafe {
-// CHECK-NEXT:                     unsafe { std::ptr::addr_of_mut!(names.0) as *mut *mut i8 }
-// CHECK-NEXT:                         .offset((0 as i32) as isize)
-// CHECK-NEXT:                 }
-// CHECK-NEXT:             },
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 *unsafe {
-// CHECK-NEXT:                     unsafe { std::ptr::addr_of_mut!(names.0) as *mut *mut i8 }
-// CHECK-NEXT:                         .offset((1 as i32) as isize)
-// CHECK-NEXT:                 }
-// CHECK-NEXT:             },
+// CHECK-NEXT:             unsafe { names.0[0] },
+// CHECK-NEXT:             unsafe { names.0[1] },
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

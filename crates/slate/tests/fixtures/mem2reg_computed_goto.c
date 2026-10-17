@@ -41,12 +41,7 @@ int main(void) {
 // CHECK-NEXT:                         unsafe { (*[[SLATE_SLOT_1]]).offset((1 as i32) as isize) },
 // CHECK-NEXT:                     );
 // CHECK-NEXT:                     position = *[[SLATE_SLOT_0]];
-// CHECK-NEXT:                     match (unsafe {
-// CHECK-NEXT:                         *unsafe {
-// CHECK-NEXT:                             unsafe { std::ptr::addr_of_mut!(labels.0) as *mut *mut () }
-// CHECK-NEXT:                                 .offset((unsafe { *position }) as isize)
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                     }) as usize
+// CHECK-NEXT:                     match (unsafe { labels.0[(unsafe { *position }) as usize] }) as usize
 // CHECK-NEXT:                     {
 // CHECK-NEXT:                         4 => {
 // CHECK-NEXT:                             __slate_state = 1usize;
@@ -62,12 +57,7 @@ int main(void) {
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 2 => {
-// CHECK-NEXT:                     match (unsafe {
-// CHECK-NEXT:                         *unsafe {
-// CHECK-NEXT:                             unsafe { std::ptr::addr_of_mut!(labels.0) as *mut *mut () }
-// CHECK-NEXT:                                 .offset((unsafe { *position }) as isize)
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                     }) as usize
+// CHECK-NEXT:                     match (unsafe { labels.0[(unsafe { *position }) as usize] }) as usize
 // CHECK-NEXT:                     {
 // CHECK-NEXT:                         4 => {
 // CHECK-NEXT:                             __slate_state = 1usize;

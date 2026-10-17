@@ -41,18 +41,7 @@ int main(void) {
 // CHECK-NEXT:     [[V_0]] = exchange_value;
 // CHECK-NEXT:     old = [[V_0]];
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%ld %ld %d\n".as_ptr() as *const i8,
-// CHECK-NEXT:             old,
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 *unsafe {
-// CHECK-NEXT:                     (values.0.as_mut_ptr() as *mut i64).offset((0 as i32) as isize)
-// CHECK-NEXT:                 }
-// CHECK-NEXT:             },
-// CHECK-NEXT:             index,
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { printf(c"%ld %ld %d\n".as_ptr() as *const i8, old, values.0[0], index) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0 as i32
 // CHECK: {{^}}}

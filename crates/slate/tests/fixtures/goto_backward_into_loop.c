@@ -175,13 +175,7 @@ int main(void) {
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 13 => {
-// CHECK-NEXT:                     if (unsafe {
-// CHECK-NEXT:                         *unsafe {
-// CHECK-NEXT:                             unsafe { std::ptr::addr_of_mut!(c) as *mut i8 }
-// CHECK-NEXT:                                 .offset(((unsafe { b }) as i32) as isize)
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                     }) != (0 as i8)
-// CHECK-NEXT:                     {
+// CHECK-NEXT:                     if (unsafe { c[((unsafe { b }) as i32) as usize] }) != (0 as i8) {
 // CHECK-NEXT:                         __slate_state = 11;
 // CHECK-NEXT:                         continue;
 // CHECK-NEXT:                     } else {
