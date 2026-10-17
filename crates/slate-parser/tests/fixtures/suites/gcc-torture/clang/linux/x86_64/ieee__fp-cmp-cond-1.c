@@ -100,7 +100,6 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_v4si:[0-9]+]] v4si = vector<i32, 1>;
 // DEFAULT-NEXT:     type @type[[TYPE_v4sf:[0-9]+]] v4sf = vector<f32, 1>;
-// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_a:[0-9]+]] a: i32, %[[VALUE_b:[0-9]+]] b: i32, %[[VALUE_fa:[0-9]+]] fa: f32, %[[VALUE_fb:[0-9]+]] fb: f32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: bool [storage=automatic] [const] = lt<f32, exceptions=ignore>(read<f32>(%[[VALUE_fa]]), read<f32>(%[[VALUE_fb]]));
 // DEFAULT-NEXT:         let %[[VALUE_c1:[0-9]+]] c1: bool [storage=automatic] [const] = ge<f32, exceptions=ignore>(read<f32>(%[[VALUE_fa]]), read<f32>(%[[VALUE_fb]]));
@@ -116,10 +115,9 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_c1_3:[0-9]+]] c1: vector<i32, 1> [storage=automatic] [const] = ge<vector<f32, 1>, result=vector<i32, 1>, exceptions=ignore>(read<vector<f32, 1>>(%[[VALUE_fa_3]]), read<vector<f32, 1>>(%[[VALUE_fb_3]]));
 // DEFAULT-NEXT:         return or<vector<i32, 1>, elementwise=true>(and<vector<i32, 1>, elementwise=true>(read<vector<i32, 1>>(%[[VALUE_c_3]]), read<vector<i32, 1>>(%[[VALUE_a_3]])), and<vector<i32, 1>, elementwise=true>(read<vector<i32, 1>>(%[[VALUE_c1_3]]), read<vector<i32, 1>>(%[[VALUE_b_3]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE___builtin_nan:[0-9]+]] @__builtin_nan(%[[VALUE0:[0-9]+]] <unnamed>: ptr<const i8>) -> f64 [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_a_4:[0-9]+]] a: f32 [storage=automatic] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(call<f64, signature=fn(ptr<const i8>) -> f64>(%[[VALUE___builtin_nan]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%[[VALUE_str]]))));
+// DEFAULT-NEXT:         let %[[VALUE_a_4:[0-9]+]] a: f32 [storage=automatic] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(bits=0x7ff8000000000000));
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32, f32, f32) -> i32>(%[[VALUE_f]], neg<i32, overflow=ub>(const<i32>(1)), neg<i32, overflow=ub>(const<i32>(1)), read<f32>(%[[VALUE_a_4]]), read<f32>(%[[VALUE_a_4]])), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32, f32, f32) -> i32>(%[[VALUE_f]], neg<i32, overflow=ub>(const<i32>(1)), neg<i32, overflow=ub>(const<i32>(1)), read<f32>(%[[VALUE_a_4]]), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(0))), const<i32>(0))

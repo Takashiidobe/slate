@@ -164,7 +164,6 @@ int main(void) {
 // CHECK-NEXT:     safe fn __slate_f80_to_f32(__a: LongDouble) -> f32;
 // CHECK-NEXT:     safe fn __slate_f80_to_f64(__a: LongDouble) -> f64;
 // CHECK-NEXT:     safe fn __slate_f80_to_bool(__a: LongDouble) -> bool;
-// CHECK-NEXT:     fn __slate_nanl__rf80_pi8(_0: *const i8) -> LongDouble;
 // CHECK-NEXT:     fn __slate_snprintf__ri32_pi8_u64_pi8_f80(
 // CHECK-NEXT:         _0: *mut i8,
 // CHECK-NEXT:         _1: u64,
@@ -394,8 +393,8 @@ int main(void) {
 // CHECK-NEXT:         -LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]),
 // CHECK-NEXT:         LongDouble([255, 255, 255, 255, 255, 255, 255, 255, 254, 127])
 // CHECK-NEXT:             * LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 64]),
-// CHECK-NEXT:         unsafe { __slate_nanl__rf80_pi8(c"".as_ptr()) },
-// CHECK-NEXT:         -unsafe { __slate_nanl__rf80_pi8(c"7".as_ptr()) },
+// CHECK-NEXT:         LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]),
+// CHECK-NEXT:         -LongDouble([7, 0, 0, 0, 0, 0, 0, 192, 255, 127]),
 // CHECK-NEXT:     ];
 // CHECK-NEXT:     for i in 0..((224 as u64) / (16 as u64)) {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());

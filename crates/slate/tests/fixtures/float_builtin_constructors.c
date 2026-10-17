@@ -20,10 +20,8 @@ int main(void) {
 // CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
 // CHECK-NEXT:     fn __builtin_inff() -> f32;
 // CHECK-NEXT:     fn __builtin_inf() -> f64;
-// CHECK-NEXT:     #[link_name = "nanf"]
-// CHECK-NEXT:     fn __builtin_nanf([[V_0:__v[0-9]+]]: *const i8) -> f32;
 // CHECK-NEXT:     #[link_name = "nan"]
-// CHECK-NEXT:     fn __builtin_nan([[V_1:__v[0-9]+]]: *const i8) -> f64;
+// CHECK-NEXT:     fn __builtin_nan([[V_0:__v[0-9]+]]: *const i8) -> f64;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
@@ -50,10 +48,10 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let infinity: f32 = f32::INFINITY;
 // CHECK-NEXT:     let huge: f64 = f64::INFINITY;
-// CHECK-NEXT:     let nan: f32 = unsafe { __builtin_nanf(c"".as_ptr()) };
+// CHECK-NEXT:     let nan: f32 = f32::from_bits(0x7fc00000);
 // CHECK-NEXT:     let f: [[SLATERECORD_0]] = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [[SLATERECORD_0]] = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]].value = unsafe { __builtin_nanf(c"0x123".as_ptr()) };
+// CHECK-NEXT:         [[T_0]].value = f32::from_bits(0x7fc00123);
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let d: [[SLATERECORD_1]] = {

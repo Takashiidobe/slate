@@ -548,35 +548,21 @@ f0 (void)
 // IR-NEXT:     }
 // IR-NEXT:     global %[[VALUE_fi:[0-9]+]] fi: f32 [storage=static] [const] [constexpr] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(call<f64, signature=fn() -> f64>(%[[VALUE___builtin_inf:[0-9]+]])) [linkage=internal];
 // IR-NEXT:     global %[[VALUE_di:[0-9]+]] di: f64 [storage=static] [const] [constexpr] = float_widen<f64, reason=assign>(call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff:[0-9]+]])) [linkage=internal];
-// IR-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
-// IR-NEXT:     global %[[VALUE_fn:[0-9]+]] fn: f32 [storage=static] [const] [constexpr] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(call<f64, signature=fn(ptr<const i8>) -> f64>(%[[VALUE___builtin_nan:[0-9]+]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%[[VALUE_str]])))) [linkage=internal];
-// IR-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
-// IR-NEXT:     global %[[VALUE_dn:[0-9]+]] dn: f64 [storage=static] [const] [constexpr] = float_widen<f64, reason=assign>(call<f32, signature=fn(ptr<const i8>) -> f32>(%[[VALUE___builtin_nanf:[0-9]+]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%[[VALUE_str_2]])))) [linkage=internal];
-// IR-NEXT:     global %[[VALUE_str_3:[0-9]+]] .str[[VALUE_str_3]]: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
-// IR-NEXT:     global %[[VALUE_fns:[0-9]+]] fns: f32 [storage=static] [const] [constexpr] = call<f32, signature=fn(ptr<const i8>) -> f32>(%[[VALUE___builtin_nansf:[0-9]+]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%[[VALUE_str_3]]))) [linkage=internal];
-// IR-NEXT:     global %[[VALUE_str_4:[0-9]+]] .str[[VALUE_str_4]]: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
-// IR-NEXT:     global %[[VALUE_dns:[0-9]+]] dns: f64 [storage=static] [const] [constexpr] = call<f64, signature=fn(ptr<const i8>) -> f64>(%[[VALUE___builtin_nans:[0-9]+]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%[[VALUE_str_4]]))) [linkage=internal];
-// IR-NEXT:     global %[[VALUE_str_5:[0-9]+]] .str[[VALUE_str_5]]: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
-// IR-NEXT:     global %[[VALUE_cdns:[0-9]+]] cdns: complex<f64> [storage=static] [const] [constexpr] = real_to_complex<complex<f64>, reason=assign>(call<f64, signature=fn(ptr<const i8>) -> f64>(%[[VALUE___builtin_nans]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%[[VALUE_str_5]])))) [linkage=internal];
-// IR-NEXT:     global %[[VALUE_str_6:[0-9]+]] .str[[VALUE_str_6]]: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
-// IR-NEXT:     global %[[VALUE_str_7:[0-9]+]] .str[[VALUE_str_7]]: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
-// IR-NEXT:     global %[[VALUE_str_8:[0-9]+]] .str[[VALUE_str_8]]: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
-// IR-NEXT:     global %[[VALUE_str_9:[0-9]+]] .str[[VALUE_str_9]]: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
-// IR-NEXT:     global %[[VALUE_str_10:[0-9]+]] .str[[VALUE_str_10]]: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
+// IR-NEXT:     global %[[VALUE_fn:[0-9]+]] fn: f32 [storage=static] [const] [constexpr] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(bits=0x7ff8000000000000)) [linkage=internal];
+// IR-NEXT:     global %[[VALUE_dn:[0-9]+]] dn: f64 [storage=static] [const] [constexpr] = float_widen<f64, reason=assign>(const<f32>(bits=0x7fc00000)) [linkage=internal];
+// IR-NEXT:     global %[[VALUE_fns:[0-9]+]] fns: f32 [storage=static] [const] [constexpr] = const<f32>(bits=0x7fa00000) [linkage=internal];
+// IR-NEXT:     global %[[VALUE_dns:[0-9]+]] dns: f64 [storage=static] [const] [constexpr] = const<f64>(bits=0x7ff4000000000000) [linkage=internal];
+// IR-NEXT:     global %[[VALUE_cdns:[0-9]+]] cdns: complex<f64> [storage=static] [const] [constexpr] = real_to_complex<complex<f64>, reason=assign>(const<f64>(bits=0x7ff4000000000000)) [linkage=internal];
 // IR-NEXT:     fn %[[VALUE___builtin_inf]] @__builtin_inf() -> f64 [linkage=external] [memory=none];
 // IR-NEXT:     fn %[[VALUE___builtin_inff]] @__builtin_inff() -> f32 [linkage=external] [memory=none];
-// IR-NEXT:     fn %[[VALUE___builtin_nan]] @__builtin_nan(%[[VALUE0:[0-9]+]] <unnamed>: ptr<const i8>) -> f64 [linkage=external] [memory=read];
-// IR-NEXT:     fn %[[VALUE___builtin_nanf]] @__builtin_nanf(%[[VALUE1:[0-9]+]] <unnamed>: ptr<const i8>) -> f32 [linkage=external] [memory=read];
-// IR-NEXT:     fn %[[VALUE___builtin_nansf]] @__builtin_nansf(%[[VALUE2:[0-9]+]] <unnamed>: ptr<const i8>) -> f32 [linkage=external] [memory=read];
-// IR-NEXT:     fn %[[VALUE___builtin_nans]] @__builtin_nans(%[[VALUE3:[0-9]+]] <unnamed>: ptr<const i8>) -> f64 [linkage=external] [memory=read];
 // IR-NEXT:     fn %[[VALUE_f0:[0-9]+]] @f0() -> void [linkage=external] [fallthrough=ret_void] {
-// IR-NEXT:         read<f32>(compound_literal %[[VALUE4:[0-9]+]] [storage=automatic] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(call<f64, signature=fn() -> f64>(%[[VALUE___builtin_inf]])));
-// IR-NEXT:         read<f64>(compound_literal %[[VALUE5:[0-9]+]] [storage=automatic] = float_widen<f64, reason=assign>(call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]])));
-// IR-NEXT:         read<f32>(compound_literal %[[VALUE6:[0-9]+]] [storage=automatic] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(call<f64, signature=fn(ptr<const i8>) -> f64>(%[[VALUE___builtin_nan]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%[[VALUE_str_6]])))));
-// IR-NEXT:         read<f64>(compound_literal %[[VALUE7:[0-9]+]] [storage=automatic] = float_widen<f64, reason=assign>(call<f32, signature=fn(ptr<const i8>) -> f32>(%[[VALUE___builtin_nanf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%[[VALUE_str_7]])))));
-// IR-NEXT:         read<f32>(compound_literal %[[VALUE8:[0-9]+]] [storage=automatic] = call<f32, signature=fn(ptr<const i8>) -> f32>(%[[VALUE___builtin_nansf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%[[VALUE_str_8]]))));
-// IR-NEXT:         read<f64>(compound_literal %[[VALUE9:[0-9]+]] [storage=automatic] = call<f64, signature=fn(ptr<const i8>) -> f64>(%[[VALUE___builtin_nans]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%[[VALUE_str_9]]))));
-// IR-NEXT:         read<complex<f64>>(compound_literal %[[VALUE10:[0-9]+]] [storage=automatic] = real_to_complex<complex<f64>, reason=assign>(call<f64, signature=fn(ptr<const i8>) -> f64>(%[[VALUE___builtin_nans]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%[[VALUE_str_10]])))));
+// IR-NEXT:         read<f32>(compound_literal %[[VALUE0:[0-9]+]] [storage=automatic] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(call<f64, signature=fn() -> f64>(%[[VALUE___builtin_inf]])));
+// IR-NEXT:         read<f64>(compound_literal %[[VALUE1:[0-9]+]] [storage=automatic] = float_widen<f64, reason=assign>(call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]])));
+// IR-NEXT:         read<f32>(compound_literal %[[VALUE2:[0-9]+]] [storage=automatic] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(bits=0x7ff8000000000000)));
+// IR-NEXT:         read<f64>(compound_literal %[[VALUE3:[0-9]+]] [storage=automatic] = float_widen<f64, reason=assign>(const<f32>(bits=0x7fc00000)));
+// IR-NEXT:         read<f32>(compound_literal %[[VALUE4:[0-9]+]] [storage=automatic] = const<f32>(bits=0x7fa00000));
+// IR-NEXT:         read<f64>(compound_literal %[[VALUE5:[0-9]+]] [storage=automatic] = const<f64>(bits=0x7ff4000000000000));
+// IR-NEXT:         read<complex<f64>>(compound_literal %[[VALUE6:[0-9]+]] [storage=automatic] = real_to_complex<complex<f64>, reason=assign>(const<f64>(bits=0x7ff4000000000000)));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

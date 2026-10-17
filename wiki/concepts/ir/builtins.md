@@ -75,6 +75,10 @@ overflow, `lowerer/values.rs` handles rotations and scalar bit counts, and
   `__builtin_islessequal`, `__builtin_isunordered`, `__builtin_islessgreater`
 - `__builtin_complex`
 - `__builtin_inf`, `__builtin_huge_val`, with `f` and `l` forms
+- `__builtin_nan`, `__builtin_nans` and their `f`, `l`, `f16`, `f128` forms: a plain
+  string literal argument (decimal, `0x` or leading-`0` octal payload, or empty) folds to a
+  `Number::FloatBits` constant with that payload; `nans` leaves the quiet bit clear. Any other
+  argument stays a call to the library function.
 - `__builtin_flt_rounds`
 - `__builtin_{inf,nan,nans,fabs}d{32,64,128,64x}` (gcc only): decimal float values
   that clang lacks, so they come from `GCC_DECIMAL_BUILTINS` in

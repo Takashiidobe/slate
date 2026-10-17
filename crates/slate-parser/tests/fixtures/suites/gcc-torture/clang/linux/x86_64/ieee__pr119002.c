@@ -45,7 +45,6 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: ptr<void>, %[[VALUE_y:[0-9]+]] y: f32, %[[VALUE_z:[0-9]+]] z: f32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: u32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: u32 [storage=automatic];
@@ -63,10 +62,9 @@ int main() {
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a]], read<u32>(%[[VALUE1]]));
 // DEFAULT-NEXT:         return read<u32>(%[[VALUE_a]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE___builtin_nanf:[0-9]+]] @__builtin_nanf(%[[VALUE2:[0-9]+]] <unnamed>: ptr<const i8>) -> f32 [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(ptr<void>, f32, f32) -> u32>(%[[VALUE_foo]], null<ptr<void>>, const<f32>(0.0), call<f32, signature=fn(ptr<const i8>) -> f32>(%[[VALUE___builtin_nanf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%[[VALUE_str]])))), const<u32>(0))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(ptr<void>, f32, f32) -> u32>(%[[VALUE_foo]], null<ptr<void>>, const<f32>(0.0), const<f32>(bits=0x7fc00000)), const<u32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

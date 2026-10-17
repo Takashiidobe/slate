@@ -10,6 +10,10 @@ use crate::ast::{Expr, ExprKind, NodeId, Span, StmtKind};
 use crate::const_expr::{AssignOp, BinaryOp, PostfixOp, UnaryOp};
 use crate::diagnostics::Warning;
 use crate::ir::*;
+use rustc_apfloat::{
+    Float,
+    ieee::{Double, Half, Quad, Single, X87DoubleExtended},
+};
 use std::collections::{HashMap, HashSet};
 
 enum Projection {
@@ -234,6 +238,11 @@ impl Lowerer {
         let Some(signature) = signature else {
             return Ok(None);
         };
+        if let Some(value) = self.folded_nan(e, builtin, signature, arguments) {
+            self.module
+                .annotate(&value.value.node, [("c_builtin".into(), name)]);
+            return Ok(Some(value));
+        }
         let mut lowered = None;
         if let Some(expansion) = super::builtins::expansion(builtin) {
             let parts = self.call_arguments(e, signature, arguments)?;
@@ -270,6 +279,44 @@ impl Lowerer {
             };
         }
         Ok(Some(value))
+    }
+
+    fn folded_nan(
+        &mut self,
+        e: &Expr,
+        builtin: &ClangBuiltin,
+        signature: QualType,
+        arguments: &[Expr],
+    ) -> Option<Operand> {
+        let signaling = match builtin.record {
+            "Nan" | "NanF128" | "NanF16" => false,
+            "Nans" => true,
+            _ => return None,
+        };
+        let [argument] = arguments else {
+            return None;
+        };
+        let mut argument = argument;
+        while let ExprKind::Paren(inner) = &argument.value {
+            argument = inner;
+        }
+        let ExprKind::StringLiteral(literal) = &argument.value else {
+            return None;
+        };
+        let payload = nan_payload(&literal.code_units)?;
+        let (returned, ..) = self.types.ctypes.function_parts(signature)?;
+        let ty = self.types.ir_type(returned);
+        let Type::Numeric(NumericType::Float(format)) = &ty else {
+            return None;
+        };
+        let bits = nan_bits(*format, signaling, payload)?;
+        Some(Operand {
+            c: returned,
+            value: Value {
+                ty,
+                node: e.derive(ValueKind::Constant(Number::FloatBits(bits))),
+            },
+        })
     }
 
     fn custom_builtin(
@@ -3083,6 +3130,48 @@ fn type_class(ctypes: &CTypes, q: QualType) -> Option<i32> {
         CTypeKind::Record { union: true, .. } => 13,
         CTypeKind::BitInt { .. } => 18,
         CTypeKind::Vector { .. } => 19,
+        _ => return None,
+    })
+}
+
+fn nan_payload(code_units: &[u32]) -> Option<u128> {
+    let digits = code_units
+        .iter()
+        .map(|&unit| u8::try_from(unit).ok().map(char::from))
+        .collect::<Option<String>>()?;
+    let digits = digits.strip_suffix('\0').unwrap_or(&digits);
+    if digits.is_empty() {
+        return Some(0);
+    }
+    let (radix, body) = match digits
+        .strip_prefix("0x")
+        .or_else(|| digits.strip_prefix("0X"))
+    {
+        Some(body) => (16, body),
+        None if digits.len() > 1 && digits.starts_with('0') => (8, &digits[1..]),
+        None => (10, digits),
+    };
+    if !body.starts_with(|c: char| c.is_ascii_alphanumeric()) {
+        return None;
+    }
+    u128::from_str_radix(body, radix).ok()
+}
+
+fn nan_bits(format: FloatType, signaling: bool, payload: u128) -> Option<u128> {
+    fn bits<F: Float>(signaling: bool, payload: u128) -> u128 {
+        let nan = if signaling {
+            F::snan(Some(payload))
+        } else {
+            F::qnan(Some(payload))
+        };
+        nan.to_bits()
+    }
+    Some(match format {
+        FloatType::F16 => bits::<Half>(signaling, payload),
+        FloatType::F32 => bits::<Single>(signaling, payload),
+        FloatType::F64 => bits::<Double>(signaling, payload),
+        FloatType::F80 => bits::<X87DoubleExtended>(signaling, payload),
+        FloatType::F128 => bits::<Quad>(signaling, payload),
         _ => return None,
     })
 }

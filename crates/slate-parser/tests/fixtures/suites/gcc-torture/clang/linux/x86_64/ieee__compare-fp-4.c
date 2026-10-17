@@ -212,7 +212,6 @@ int main() {
 // DEFAULT-NEXT:     global %[[VALUE_pinf:[0-9]+]] pinf: f32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_ninf:[0-9]+]] ninf: f32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_NaN:[0-9]+]] NaN: f32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_iuneq:[0-9]+]] @iuneq(%[[VALUE_x:[0-9]+]] x: f32, %[[VALUE_y:[0-9]+]] y: f32, %[[VALUE_ok:[0-9]+]] ok: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(not<bool>(logical_or<bool>(lt<f32, exceptions=ignore>(read<f32>(%[[VALUE_x]]), read<f32>(%[[VALUE_y]])), gt<f32, exceptions=ignore>(read<f32>(%[[VALUE_x]]), read<f32>(%[[VALUE_y]]))))), read<i32>(%[[VALUE_ok]]))
@@ -350,11 +349,10 @@ int main() {
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_inf:[0-9]+]] @__builtin_inf() -> f64 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %[[VALUE___builtin_nan:[0-9]+]] @__builtin_nan(%[[VALUE0:[0-9]+]] <unnamed>: ptr<const i8>) -> f64 [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<f32>(%[[VALUE_pinf]], float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(call<f64, signature=fn() -> f64>(%[[VALUE___builtin_inf]])));
 // DEFAULT-NEXT:         write<f32>(%[[VALUE_ninf]], float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(neg<f64>(call<f64, signature=fn() -> f64>(%[[VALUE___builtin_inf]]))));
-// DEFAULT-NEXT:         write<f32>(%[[VALUE_NaN]], float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(call<f64, signature=fn(ptr<const i8>) -> f64>(%[[VALUE___builtin_nan]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%[[VALUE_str]])))));
+// DEFAULT-NEXT:         write<f32>(%[[VALUE_NaN]], float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(bits=0x7ff8000000000000)));
 // DEFAULT-NEXT:         call<i32, signature=fn(f32, f32, i32) -> i32>(%[[VALUE_iuneq]], read<f32>(%[[VALUE_ninf]]), read<f32>(%[[VALUE_pinf]]), const<i32>(0));
 // DEFAULT-NEXT:         call<i32, signature=fn(f32, f32, i32) -> i32>(%[[VALUE_iuneq]], read<f32>(%[[VALUE_NaN]]), read<f32>(%[[VALUE_NaN]]), const<i32>(1));
 // DEFAULT-NEXT:         call<i32, signature=fn(f32, f32, i32) -> i32>(%[[VALUE_iuneq]], read<f32>(%[[VALUE_pinf]]), read<f32>(%[[VALUE_ninf]]), const<i32>(0));
