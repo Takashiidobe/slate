@@ -16,6 +16,7 @@ intrinsic_float_overloads
 long_double
 main_process_argv
 object_alignment
+saturating_arith
 stdlib_fp_contract
 switch_case_wide_bitint
 switch_case_wide_bitint_range

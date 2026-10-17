@@ -1350,10 +1350,10 @@ impl FunctionLowerer<'_, '_> {
             } if matches!(
                 self.tables.builtin_name(*id),
                 Some("__builtin_elementwise_add_sat" | "__builtin_elementwise_sub_sat")
-            ) && matches!(
+            ) && (matches!(
                 self.tables.resolve_type(&value.ty),
                 ir::Type::Numeric(ir::NumericType::Integer { .. })
-            ) =>
+            ) || self.tables.vector_element(&value.ty).is_some()) =>
             {
                 let method = match self.tables.builtin_name(*id) {
                     Some("__builtin_elementwise_add_sat") => "saturating_add",

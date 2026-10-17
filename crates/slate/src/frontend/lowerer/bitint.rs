@@ -580,6 +580,21 @@ impl FunctionLowerer<'_, '_> {
         let [left, right] = arguments else {
             return Err(unsupported_value(value));
         };
+        if let Some(ir::NumericType::Integer { signed, .. }) = self.tables.vector_element(&value.ty)
+        {
+            self.lower_type(&value.ty)?;
+            return Ok(Expr::Call {
+                func: Box::new(Expr::Var(
+                    format!(
+                        "std::simd::num::{}::{method}",
+                        if signed { "SimdInt" } else { "SimdUint" }
+                    )
+                    .into(),
+                )),
+                args: vec![self.lower_value(left)?, self.lower_value(right)?],
+                binding: CallBinding::Generated,
+            });
+        }
         let ir::Type::Numeric(ir::NumericType::Integer { signed, .. }) =
             *self.tables.resolve_type(&value.ty)
         else {
