@@ -84,6 +84,11 @@ pub enum VaPassing {
     Scalar,
     Memory,
     Registers(Vec<VaClass>),
+    Homogeneous {
+        count: u8,
+        width: u8,
+    },
+    Indirect,
 }
 
 impl fmt::Display for VaPassing {
@@ -105,6 +110,8 @@ impl fmt::Display for VaPassing {
                 }
                 f.write_str("]")
             }
+            Self::Homogeneous { count, width } => write!(f, ", hfa={count}x{width}"),
+            Self::Indirect => f.write_str(", indirect"),
         }
     }
 }

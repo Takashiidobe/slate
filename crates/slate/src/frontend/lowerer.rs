@@ -83,6 +83,8 @@ struct Dependencies {
     alloca: bool,
     win64_va: bool,
     sysv_va: bool,
+    i386_va: bool,
+    aapcs_va: bool,
     atomic_volatile: bool,
     asm_unwind: bool,
     asm_goto_with_outputs: bool,
@@ -742,15 +744,33 @@ impl<'m> ModuleLowerer<'m> {
                 }),
             );
         }
-        if dependencies.sysv_va {
-            items.insert(
-                0,
-                Item::SupportModule(rust::SupportModule {
-                    name: "__slate_sysv_va".into(),
-                    source: include_str!("support/sysv_va.rs").into(),
-                    exports: Vec::new(),
-                }),
-            );
+        for (used, name, source) in [
+            (
+                dependencies.sysv_va,
+                "__slate_sysv_va",
+                include_str!("support/sysv_va.rs"),
+            ),
+            (
+                dependencies.i386_va,
+                "__slate_i386_va",
+                include_str!("support/i386_va.rs"),
+            ),
+            (
+                dependencies.aapcs_va,
+                "__slate_aapcs_va",
+                include_str!("support/aapcs_va.rs"),
+            ),
+        ] {
+            if used {
+                items.insert(
+                    0,
+                    Item::SupportModule(rust::SupportModule {
+                        name: name.into(),
+                        source: source.into(),
+                        exports: Vec::new(),
+                    }),
+                );
+            }
         }
         if dependencies.win64_va {
             items.insert(

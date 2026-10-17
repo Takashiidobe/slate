@@ -148,7 +148,16 @@ neither in a function with fixed args. gcc accepts all three.
 `memory` when it is over 16 bytes or classified memory. Scalars print nothing.
 Slate lowers it to `__slate_sysv_va::arg`, which takes the pieces from the
 register save area while enough GP and SSE registers remain and from the
-overflow area otherwise. Other targets leave aggregate `va_arg` as a barrier.
+overflow area otherwise. On i386 cdecl every record is `memory`: the
+`char *` list advances in 4-byte slots, and slate lowers every `va_arg` on
+that list, scalar or record, through `__slate_i386_va::arg`. On AAPCS64 a
+homogeneous float aggregate is `hfa=<count>x<bytes>` (one 16-byte vector
+register per member), another record over 16 bytes is `indirect` (a
+pointer in one GP slot), and the rest are `regs=[int, ...]`; slate lowers
+them to `__slate_aapcs_va::{hfa, indirect, gp}`, following clang's
+`EmitAAPCSVAArg` (offset bumped before the stack fallback, 16-byte
+alignment for over-aligned types). Records containing vectors stay a
+barrier on i386 and AAPCS64, as do other conventions.
 Slate lowers `win64` `va_arg` on x86-64 to `__slate_win64_va::arg`
 (8-byte slots; larger or non-power-of-two types by reference), `va_copy`
 to a pointer copy, and `va_end` to nothing. `va_start<win64>` only

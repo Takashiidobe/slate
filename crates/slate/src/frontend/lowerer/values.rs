@@ -325,45 +325,69 @@ impl FunctionLowerer<'_, '_> {
                 }))
             }
             ValueKind::VaArg { list, passing, .. } if *passing != ir::VaPassing::Scalar => {
-                if self.tables.target.family != TargetFamily::X86_64 {
-                    return Err(unsupported_value(value));
-                }
-                self.dependencies.sysv_va = true;
-                let classes = match passing {
-                    ir::VaPassing::Registers(classes) => {
-                        classes
-                            .iter()
-                            .enumerate()
-                            .fold(0u128, |code, (index, class)| {
-                                let bits = match class {
-                                    ir::VaClass::Integer => 1,
-                                    ir::VaClass::Sse => 2,
-                                    ir::VaClass::SseWide => 3,
-                                };
-                                code | (bits << (2 * index))
-                            })
+                let usize_arg = |n: u8| Expr::Value(rust::RustValue::Usize(usize::from(n)));
+                let (module, function, extra) = match (self.tables.target.family, passing) {
+                    (TargetFamily::X86_64, ir::VaPassing::Registers(_) | ir::VaPassing::Memory) => {
+                        self.dependencies.sysv_va = true;
+                        let classes =
+                            match passing {
+                                ir::VaPassing::Registers(classes) => classes
+                                    .iter()
+                                    .enumerate()
+                                    .fold(0u128, |code, (index, class)| {
+                                        let bits = match class {
+                                            ir::VaClass::Integer => 1,
+                                            ir::VaClass::Sse => 2,
+                                            ir::VaClass::SseWide => 3,
+                                        };
+                                        code | (bits << (2 * index))
+                                    }),
+                                _ => 0,
+                            };
+                        (
+                            "__slate_sysv_va",
+                            "arg",
+                            vec![Expr::Value(rust::RustValue::TypedUInt(classes, Prim::U32))],
+                        )
                     }
-                    _ => 0,
+                    (TargetFamily::X86, ir::VaPassing::Memory) => {
+                        self.dependencies.i386_va = true;
+                        ("__slate_i386_va", "arg", Vec::new())
+                    }
+                    (TargetFamily::AArch64, ir::VaPassing::Registers(_)) => {
+                        self.dependencies.aapcs_va = true;
+                        ("__slate_aapcs_va", "gp", Vec::new())
+                    }
+                    (TargetFamily::AArch64, ir::VaPassing::Homogeneous { count, width }) => {
+                        self.dependencies.aapcs_va = true;
+                        (
+                            "__slate_aapcs_va",
+                            "hfa",
+                            vec![usize_arg(*count), usize_arg(*width)],
+                        )
+                    }
+                    (TargetFamily::AArch64, ir::VaPassing::Indirect) => {
+                        self.dependencies.aapcs_va = true;
+                        ("__slate_aapcs_va", "indirect", Vec::new())
+                    }
+                    _ => return Err(unsupported_value(value)),
                 };
+                let mut args = vec![Expr::AddrOf {
+                    mutable: true,
+                    expr: Box::new(self.lower_place(list)?),
+                }];
+                args.extend(extra);
                 Expr::Unsafe(Box::new(rust::Block {
                     stmts: Vec::new(),
                     tail: Some(Box::new(Expr::Call {
                         func: Box::new(Expr::GenericPath {
-                            path: rust::Path::new(
-                                ["__slate_sysv_va", "arg"].map(rust::Ident::from),
-                            ),
+                            path: rust::Path::new([module, function].map(rust::Ident::from)),
                             type_args: vec![
                                 rust::Type::Custom("_".into()),
                                 self.lower_type(&value.ty)?,
                             ],
                         }),
-                        args: vec![
-                            Expr::AddrOf {
-                                mutable: true,
-                                expr: Box::new(self.lower_place(list)?),
-                            },
-                            Expr::Value(rust::RustValue::TypedUInt(classes, Prim::U32)),
-                        ],
+                        args,
                         binding: CallBinding::Generated,
                     })),
                 }))
@@ -413,16 +437,37 @@ impl FunctionLowerer<'_, '_> {
                     rust::Type::Prim(Prim::U8) => rust::Type::Prim(Prim::U32),
                     _ => ty.clone(),
                 };
-                let recv = if self.tables.place_is_unsafe(list) {
-                    through_raw_pointer(self.lower_place(list)?)
+                let read = if matches!(self.tables.resolve_type(&list.ty), ir::Type::Pointer { .. })
+                {
+                    if self.tables.target.family != TargetFamily::X86 {
+                        return Err(unsupported_value(value));
+                    }
+                    self.dependencies.i386_va = true;
+                    Expr::Call {
+                        func: Box::new(Expr::GenericPath {
+                            path: rust::Path::new(
+                                ["__slate_i386_va", "arg"].map(rust::Ident::from),
+                            ),
+                            type_args: vec![rust::Type::Custom("_".into()), read_ty.clone()],
+                        }),
+                        args: vec![Expr::AddrOf {
+                            mutable: true,
+                            expr: Box::new(self.lower_place(list)?),
+                        }],
+                        binding: CallBinding::Generated,
+                    }
                 } else {
-                    self.lower_place(list)?
-                };
-                let read = Expr::MethodCallGeneric {
-                    recv: Box::new(recv),
-                    method: "next_arg".into(),
-                    type_args: vec![read_ty.clone()],
-                    args: Vec::new(),
+                    let recv = if self.tables.place_is_unsafe(list) {
+                        through_raw_pointer(self.lower_place(list)?)
+                    } else {
+                        self.lower_place(list)?
+                    };
+                    Expr::MethodCallGeneric {
+                        recv: Box::new(recv),
+                        method: "next_arg".into(),
+                        type_args: vec![read_ty.clone()],
+                        args: Vec::new(),
+                    }
                 };
                 Expr::Unsafe(Box::new(rust::Block {
                     stmts: Vec::new(),

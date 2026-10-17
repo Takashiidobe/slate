@@ -86,13 +86,45 @@ impl<'a> AbiClassifier<'a> {
             ty: ty.clone(),
             atomic: false,
         };
-        if self.abi_convention(true, CallConv::C) != AbiConvention::SysV64
-            || !self.is_record_or_complex(ty)
+        let convention = self.abi_convention(true, CallConv::C);
+        if !matches!(
+            convention,
+            AbiConvention::SysV64 | AbiConvention::X86Cdecl | AbiConvention::Aapcs64
+        ) || !self.is_record_or_complex(ty)
             || matches!(self.types.unaliased(ty), Type::Complex(_))
+            || (convention != AbiConvention::SysV64 && self.contains_vector(ty))
         {
             return Ok(VaPassing::Scalar);
         }
         let layout = self.layout(&operand)?;
+        if convention == AbiConvention::X86Cdecl {
+            return Ok(VaPassing::Memory);
+        }
+        if convention == AbiConvention::Aapcs64 {
+            let homogeneous = self
+                .homogeneous_type(ty, HfaView::c_compiler(convention))
+                .and_then(|members| Some((members.format?, members.count)));
+            return Ok(match homogeneous {
+                Some((format, count)) => VaPassing::Homogeneous {
+                    count: u8::try_from(count).map_err(|_| {
+                        ResolveError::Internal("homogeneous aggregate has more than 4 members")
+                    })?,
+                    width: u8::try_from(
+                        self.types
+                            .qualified_storage(Type::Numeric(NumericType::Float(format)), false)?
+                            .size_bytes,
+                    )
+                    .map_err(|_| {
+                        ResolveError::Internal("homogeneous aggregate member wider than 255 bytes")
+                    })?,
+                },
+                None if layout.size_bytes > 16 => VaPassing::Indirect,
+                None => VaPassing::Registers(vec![
+                    VaClass::Integer;
+                    layout.size_bytes.div_ceil(8) as usize
+                ]),
+            });
+        }
         let mut leaves = Vec::new();
         if layout.size_bytes > 16 || !self.sysv_leaves(ty, 0, false, &mut leaves)? {
             return Ok(VaPassing::Memory);
@@ -372,6 +404,22 @@ impl<'a> AbiClassifier<'a> {
             },
             _ => false,
         })
+    }
+
+    fn contains_vector(&self, ty: &Type) -> bool {
+        match ty {
+            Type::Vector { .. } => true,
+            Type::Array { element, .. } => self.contains_vector(element),
+            Type::Defined(id) => match &self.types.definitions[id.0 as usize].kind {
+                TypeDefinitionKind::Alias(inner) => self.contains_vector(inner),
+                TypeDefinitionKind::Record {
+                    fields: Some(fields),
+                    ..
+                } => fields.iter().any(|field| self.contains_vector(&field.ty)),
+                _ => false,
+            },
+            _ => false,
+        }
     }
 
     fn is_vector(&self, ty: &Type) -> bool {

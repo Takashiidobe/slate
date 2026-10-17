@@ -520,6 +520,8 @@ member     = ( "field" digits | "index" digits | "index" digits "..=" digits )
 exchange_form = "write_back" | "success" | "old" ;
 va_passing  = ", memory"
             | ", regs=[" va_class { ", " va_class } "]"
+            | ", hfa=" integer "x" integer
+            | ", indirect"
 va_class    = "int" | "sse" | "sse_wide"
 reason     = "return" | "assign" | "arg" | "vararg" | "promotion"
            | "usual_arith" | "explicit" ;

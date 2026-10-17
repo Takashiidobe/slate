@@ -131,7 +131,10 @@ impl FunctionLowerer<'_, '_> {
                 ValueKind::VaStart {
                     list,
                     convention: ir::VaConvention::Target,
-                } => self.lower_assignment(list, static_va_list(Expr::Var(VA_ARGS.into())))?,
+                } => {
+                    let target = self.lower_type(&list.ty)?;
+                    self.lower_assignment(list, static_va_list(Expr::Var(VA_ARGS.into()), target))?
+                }
                 ValueKind::VaCopy {
                     destination,
                     source,
