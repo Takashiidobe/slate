@@ -484,6 +484,7 @@ pub enum ImplItem {
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Method {
     pub name: String,
+    pub is_const: bool,
     pub self_kind: SelfKind,
     pub params: Vec<FnParam>,
     pub ret: Option<Type>,

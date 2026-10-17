@@ -732,7 +732,11 @@ impl<W: Write> Codegen<W> {
     }
 
     fn method(&mut self, m: &Method) -> fmt::Result {
-        write!(self.out, "{INDENT}fn ")?;
+        write!(
+            self.out,
+            "{INDENT}{}fn ",
+            if m.is_const { "const " } else { "" }
+        )?;
         self.ident(&m.name)?;
         self.out.write_char('(')?;
         let mut first = true;

@@ -109,6 +109,7 @@ struct Dependencies {
     native_entries: BTreeMap<String, rust::ExternFnDecl>,
     long_double_exports: BTreeMap<String, String>,
     bit_units: Vec<Item>,
+    bit_unit_impls: Vec<Item>,
 }
 
 enum Record {
@@ -650,7 +651,13 @@ impl<'m> ModuleLowerer<'m> {
             name: rust::Ident::new(BIT_UNIT_MODULE),
             items: dependencies.bit_units,
         });
-        items.splice(0..0, records.chain(wrappers).chain(bit_units));
+        items.splice(
+            0..0,
+            records
+                .chain(wrappers)
+                .chain(bit_units)
+                .chain(dependencies.bit_unit_impls),
+        );
         items.extend(dependencies.compound_literals);
         items.extend(dependencies.asm_strings.into_values());
         for item in &mut items {

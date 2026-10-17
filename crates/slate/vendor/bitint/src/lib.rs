@@ -86,6 +86,72 @@ macro_rules! byte_traits {
 byte_traits!(BUint);
 byte_traits!(BInt);
 
+const fn read_bit(bytes: &[u8], index: usize) -> bool {
+    bytes[index / 8] >> (index % 8) & 1 == 1
+}
+
+const fn write_bit(bytes: &mut [u8], index: usize, value: bool) {
+    let mask = 1u8 << (index % 8);
+    if value {
+        bytes[index / 8] |= mask;
+    } else {
+        bytes[index / 8] &= !mask;
+    }
+}
+
+pub const fn load_bits(bytes: &[u8], start: usize, width: usize) -> u128 {
+    let mut value = 0u128;
+    let mut offset = 0;
+    while offset < width {
+        if read_bit(bytes, start + offset) {
+            value |= 1u128 << offset;
+        }
+        offset += 1;
+    }
+    value
+}
+
+pub const fn load_bits_signed(bytes: &[u8], start: usize, width: usize) -> i128 {
+    let value = load_bits(bytes, start, width);
+    if width < 128 && width > 0 && value >> (width - 1) & 1 == 1 {
+        (value | (u128::MAX << width)) as i128
+    } else {
+        value as i128
+    }
+}
+
+pub const fn store_bits(bytes: &mut [u8], start: usize, width: usize, value: u128) {
+    let mut offset = 0;
+    while offset < width {
+        write_bit(bytes, start + offset, value >> offset & 1 == 1);
+        offset += 1;
+    }
+}
+
+const fn load_wide<const BYTES: usize>(bytes: &[u8], start: usize, width: usize, signed: bool) -> [u8; BYTES] {
+    let mut out = [0u8; BYTES];
+    let mut offset = 0;
+    while offset < width {
+        write_bit(&mut out, offset, read_bit(bytes, start + offset));
+        offset += 1;
+    }
+    if signed && width > 0 && read_bit(bytes, start + width - 1) {
+        while offset < BYTES * 8 {
+            write_bit(&mut out, offset, true);
+            offset += 1;
+        }
+    }
+    out
+}
+
+const fn store_wide(value: &[u8], bytes: &mut [u8], start: usize, width: usize) {
+    let mut offset = 0;
+    while offset < width {
+        write_bit(bytes, start + offset, read_bit(value, offset));
+        offset += 1;
+    }
+}
+
 const fn f80_bytes_to_bits(bytes: [u8; 10]) -> u128 {
     let mut wide = [0u8; 16];
     let mut i = 0;
@@ -216,6 +282,17 @@ impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> BU
 
     pub const fn to_le_bytes<const DBYTES: usize>(self) -> [u8; DBYTES] {
         cast_bytes::<BITS, DBYTES, BITS, BYTES>(&self.bytes, false)
+    }
+
+    pub const fn from_bit_range(bytes: &[u8], start: usize, width: usize) -> Self {
+        Self {
+            _align: [],
+            bytes: load_wide::<BYTES>(bytes, start, width, false),
+        }
+    }
+
+    pub const fn write_bit_range(self, bytes: &mut [u8], start: usize, width: usize) {
+        store_wide(&self.bytes, bytes, start, width);
     }
 
     pub const fn count_ones(self) -> u32 {
@@ -636,6 +713,17 @@ impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> BI
 
     pub const fn to_i128(self) -> i128 {
         self.to_limbs().to_i128()
+    }
+
+    pub const fn from_bit_range(bytes: &[u8], start: usize, width: usize) -> Self {
+        Self {
+            _align: [],
+            bytes: load_wide::<BYTES>(bytes, start, width, true),
+        }
+    }
+
+    pub const fn write_bit_range(self, bytes: &mut [u8], start: usize, width: usize) {
+        store_wide(&self.bytes, bytes, start, width);
     }
 
     pub const fn count_ones(self) -> u32 {

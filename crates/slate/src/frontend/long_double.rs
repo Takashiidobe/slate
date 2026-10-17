@@ -43,6 +43,7 @@ fn f80_assign_impl(trait_: StdTrait, shim: &str) -> Item {
         expr: Box::new(Expr::Var("self".into())),
     };
     let method = Method {
+        is_const: false,
         name: trait_.method().into(),
         self_kind: SelfKind::RefMut,
         params: vec![FnParam {
@@ -70,6 +71,7 @@ fn f80_assign_impl(trait_: StdTrait, shim: &str) -> Item {
 
 fn f80_binop_impl(trait_: StdTrait, shim: &str) -> Item {
     let method = Method {
+        is_const: false,
         name: trait_.method().into(),
         self_kind: SelfKind::Value,
         params: vec![FnParam {
@@ -100,6 +102,7 @@ fn f80_binop_impl(trait_: StdTrait, shim: &str) -> Item {
 
 fn f80_neg_impl() -> Item {
     let method = Method {
+        is_const: false,
         name: StdTrait::Neg.method().into(),
         self_kind: SelfKind::Value,
         params: vec![],
@@ -122,6 +125,7 @@ fn f80_neg_impl() -> Item {
 
 fn f80_partial_eq_impl() -> Item {
     let method = Method {
+        is_const: false,
         name: StdTrait::PartialEq.method().into(),
         self_kind: SelfKind::Ref,
         params: vec![FnParam {
@@ -197,6 +201,7 @@ fn f80_partial_ord_impl() -> Item {
         }),
     };
     let method = Method {
+        is_const: false,
         name: StdTrait::PartialOrd.method().into(),
         self_kind: SelfKind::Ref,
         params: vec![FnParam {

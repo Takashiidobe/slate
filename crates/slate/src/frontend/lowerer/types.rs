@@ -332,6 +332,14 @@ impl FunctionLowerer<'_, '_> {
             return Err(unsupported_record(name, "big-endian bit-fields"));
         }
         let storage = &layout.bit_units[unit];
+        let has_wide_member = fields.iter().enumerate().any(|(index, field)| {
+            layout.field_units[index] == Some(unit)
+                && field.name.is_some()
+                && self.tables.wide_int(&field.ty).is_some()
+        });
+        if has_wide_member {
+            return self.lower_wide_bit_unit(id, name, fields, layout, unit);
+        }
         let (backing, unit_align) = match storage.size {
             1 | 2 | 4 | 8 | 16
                 if storage.offset.is_multiple_of(storage.size) && storage.size <= layout.align =>
@@ -357,9 +365,6 @@ impl FunctionLowerer<'_, '_> {
             else {
                 continue;
             };
-            if self.tables.wide_int(&field.ty).is_some() {
-                return Err(unsupported_record(name, "wide _BitInt bit-field").at(Site::of(field)));
-            }
             let start = bit_offset - storage.offset * 8;
             push_bit_padding(&mut members, start - cursor);
             members.push(rust::StructField {
@@ -409,6 +414,152 @@ impl FunctionLowerer<'_, '_> {
             rust::Type::Custom(format!("{BIT_UNIT_MODULE}::{wrapper}")),
             unit_align,
         ))
+    }
+
+    fn lower_wide_bit_unit(
+        &mut self,
+        id: TypeId,
+        name: &str,
+        fields: &[slate_parser::ast::Span<ir::Field>],
+        layout: &ir::RecordLayout,
+        unit: usize,
+    ) -> Result<(rust::Type, u64)> {
+        let storage = &layout.bit_units[unit];
+        let wrapper = format!("__SlateBits{}U{unit}", id.0);
+        let unit_type = rust::Type::Custom(format!("{BIT_UNIT_MODULE}::{wrapper}"));
+        let literal = |value: u64| Expr::Value(rust::RustValue::U128(u128::from(value)));
+        let bytes = |mutable: bool| Expr::Ref {
+            mutable,
+            expr: Box::new(Expr::Field {
+                base: Box::new(Expr::Var("self".into())),
+                field: "bytes".into(),
+            }),
+        };
+        let mut methods = Vec::new();
+        for (index, field) in fields.iter().enumerate() {
+            if layout.field_units[index] != Some(unit) || field.name.is_none() {
+                continue;
+            }
+            let (Some(width), Some(bit_offset)) = (field.bit_width, layout.bit_offsets[index])
+            else {
+                continue;
+            };
+            let start = bit_offset - storage.offset * 8;
+            let member_type = self
+                .lower_type(&field.ty)
+                .map_err(|error| error.at(Site::of(field)))?;
+            let member = field_name(field, index);
+            let range = [literal(start), literal(u64::from(width))];
+            let call = |function: &str, mut args: Vec<Expr>| Expr::Call {
+                func: Box::new(Expr::Var(function.into())),
+                args: {
+                    args.extend(range.clone());
+                    args
+                },
+                binding: CallBinding::Generated,
+            };
+            let value = || Expr::Var("value".into());
+            let (getter, setter) = if self.tables.wide_int(&field.ty).is_some() {
+                let type_name = crate::backend::codegen::type_to_string(&member_type);
+                (
+                    call(
+                        &format!("<{type_name}>::from_bit_range"),
+                        vec![bytes(false)],
+                    ),
+                    Expr::MethodCall {
+                        recv: Box::new(value()),
+                        method: "write_bit_range".into(),
+                        args: [bytes(true)].into_iter().chain(range).collect(),
+                    },
+                )
+            } else {
+                let rust::Type::Prim(prim) = member_type else {
+                    return Err(unsupported_record(name, "bit-field type").at(Site::of(field)));
+                };
+                let signed = matches!(
+                    prim,
+                    Prim::I8 | Prim::I16 | Prim::I32 | Prim::I64 | Prim::I128 | Prim::Isize
+                );
+                let loaded = call(
+                    if signed {
+                        "bitint::load_bits_signed"
+                    } else {
+                        "bitint::load_bits"
+                    },
+                    vec![bytes(false)],
+                );
+                let getter = if prim == Prim::Bool {
+                    Expr::Binary {
+                        op: BinOp::Ne,
+                        lhs: Box::new(loaded),
+                        rhs: Box::new(literal(0)),
+                    }
+                } else {
+                    Expr::Cast {
+                        expr: Box::new(loaded),
+                        ty: rust::Type::Prim(prim),
+                    }
+                };
+                let setter = Expr::Call {
+                    func: Box::new(Expr::Var("bitint::store_bits".into())),
+                    args: vec![
+                        bytes(true),
+                        literal(start),
+                        literal(u64::from(width)),
+                        Expr::Cast {
+                            expr: Box::new(value()),
+                            ty: rust::Type::Prim(Prim::U128),
+                        },
+                    ],
+                    binding: CallBinding::Generated,
+                };
+                (getter, setter)
+            };
+            methods.push(rust::ImplItem::Method(rust::Method {
+                is_const: true,
+                name: format!("__get_{member}"),
+                self_kind: rust::SelfKind::Ref,
+                params: Vec::new(),
+                ret: Some(self.lower_type(&field.ty)?),
+                body: getter,
+            }));
+            methods.push(rust::ImplItem::Method(rust::Method {
+                is_const: true,
+                name: format!("__set_{member}"),
+                self_kind: rust::SelfKind::RefMut,
+                params: vec![rust::FnParam {
+                    comments: Vec::new(),
+                    name: "value".into(),
+                    mutable: false,
+                    ty: self.lower_type(&field.ty)?,
+                }],
+                ret: None,
+                body: setter,
+            }));
+        }
+        self.dependencies
+            .bit_units
+            .push(Item::Struct(rust::StructDef {
+                attrs: vec![Attr::Derive(vec![rust::Derive::Clone, rust::Derive::Copy])],
+                vis: rust::Visibility::Pub,
+                field_vis: rust::Visibility::Pub,
+                generics: Vec::new(),
+                name: wrapper.clone(),
+                fields: rust::StructFields::Named(vec![rust::StructField {
+                    attrs: Vec::new(),
+                    name: "bytes".into(),
+                    ty: byte_array(storage.size),
+                }]),
+            }));
+        self.dependencies
+            .bit_unit_impls
+            .push(Item::Impl(rust::ImplBlock {
+                generics: Vec::new(),
+                trait_: None,
+                self_ty: unit_type.clone(),
+                items: methods,
+            }));
+        Ok((unit_type, 1))
     }
 
     pub(super) fn lower_type(&mut self, ty: &ir::Type) -> Result<rust::Type> {

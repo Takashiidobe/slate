@@ -285,16 +285,12 @@ int main(void) {
 // CHECK-NEXT:         (*flags).__slate_bits_2.__set_wide([[V_1]] + 1);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*flags)
-// CHECK-NEXT:             .__slate_bits_1
-// CHECK-NEXT:             .__set__flags2((unsafe { (*flags).__slate_bits_1.__get__flags2() }) * 2);
+// CHECK-NEXT:         let [[T_0]] = (unsafe { (*flags).__slate_bits_1.__get__flags2() }) * 2;
+// CHECK-NEXT:         (*flags).__slate_bits_1.__set__flags2([[T_0]]);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*flags)
-// CHECK-NEXT:             .__slate_bits_0
-// CHECK-NEXT:             .__set_ready(
-// CHECK-NEXT:                 !(((unsafe { (*flags).__slate_bits_0.__get_ready() }) as i32) != 0),
-// CHECK-NEXT:             );
+// CHECK-NEXT:         let [[T_1:__t[0-9]+]] = !(((unsafe { (*flags).__slate_bits_0.__get_ready() }) as i32) != 0);
+// CHECK-NEXT:         (*flags).__slate_bits_0.__set_ready([[T_1]]);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
@@ -308,11 +304,13 @@ int main(void) {
 // CHECK-NEXT:     local.__slate_bits_0.__set_a(-(8 as i32));
 // CHECK-NEXT:     local.__slate_bits_0.__set_A(15 as u32);
 // CHECK-NEXT:     local.__slate_bits_0.__set_type(15 as i32);
-// CHECK-NEXT:     local.__slate_bits_0.__set_ready((1 as i32) != (0 as i32));
+// CHECK-NEXT:     let [[T_1]] = (1 as i32) != (0 as i32);
+// CHECK-NEXT:     local.__slate_bits_0.__set_ready([[T_1]]);
 // CHECK-NEXT:     local.tag = 116;
 // CHECK-NEXT:     local.__slate_bits_1.__set__flags2(8388607 as i32);
 // CHECK-NEXT:     local.__slate_bits_2.__set_wide(549755813887 as i64);
-// CHECK-NEXT:     local.__slate_bits_2.__set_last((1 as i32) != (0 as i32));
+// CHECK-NEXT:     let [[T_2:__t[0-9]+]] = (1 as i32) != (0 as i32);
+// CHECK-NEXT:     local.__slate_bits_2.__set_last([[T_2]]);
 // CHECK-NEXT:     local.after = -2;
 // CHECK-NEXT:     let assigned: i32 = (((12 as u8) & (7 as u8)) as u32) as i32;
 // CHECK-NEXT:     local.__slate_bits_0.__set_x(12 as u32);

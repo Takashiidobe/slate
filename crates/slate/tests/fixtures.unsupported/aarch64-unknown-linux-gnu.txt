@@ -1,5 +1,6 @@
 asm_barriers
 bitint_arith
+bitint_bitfield
 bitint_builtins
 bitint_float
 bitint_float_ext

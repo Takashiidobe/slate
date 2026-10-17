@@ -21,11 +21,29 @@ impl FunctionLowerer<'_, '_> {
             }))));
         }
         let assignment = match self.bit_field_accessor(place, "set")? {
-            Some((storage, setter)) => Stmt::Expr(Expr::MethodCall {
+            Some((storage, setter)) if is_trivial_operand(&value) => Stmt::Expr(Expr::MethodCall {
                 recv: Box::new(storage),
                 method: setter,
                 args: vec![value],
             }),
+            Some((storage, setter)) => {
+                let operand = self.next_temp();
+                Stmt::Scope {
+                    body: vec![
+                        Stmt::Let {
+                            name: operand.clone(),
+                            mutable: false,
+                            ty: None,
+                            init: Some(value),
+                        },
+                        Stmt::Expr(Expr::MethodCall {
+                            recv: Box::new(storage),
+                            method: setter,
+                            args: vec![Expr::Var(operand.into())],
+                        }),
+                    ],
+                }
+            }
             None => Stmt::Assign {
                 target: self.lower_place(place)?,
                 value,
@@ -318,5 +336,13 @@ impl FunctionLowerer<'_, '_> {
     ) -> Result<Stmt> {
         self.lower_statement_node(statement)
             .map_err(|error| error.used_at(Site::of(statement)))
+    }
+}
+
+fn is_trivial_operand(value: &Expr) -> bool {
+    match value {
+        Expr::Value(_) | Expr::Var(_) => true,
+        Expr::Cast { expr, .. } | Expr::Unary { expr, .. } => is_trivial_operand(expr),
+        _ => false,
     }
 }
