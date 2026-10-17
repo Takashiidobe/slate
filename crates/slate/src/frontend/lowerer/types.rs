@@ -1,5 +1,5 @@
 use super::*;
-use slate_parser::target_info::Endian;
+use slate_parser::target_info::{Endian, TargetEnvironment};
 
 pub(super) const BIT_UNIT_MODULE: &str = "__slate_bits";
 
@@ -449,6 +449,12 @@ impl FunctionLowerer<'_, '_> {
             }
             ir::Type::Numeric(ir::NumericType::Float(ir::FloatType::F128)) => {
                 self.dependencies.f128 = true;
+                self.dependencies.libgcc |= matches!(
+                    self.tables.target.environment,
+                    TargetEnvironment::Gnu
+                        | TargetEnvironment::GnuEabi
+                        | TargetEnvironment::GnuEabiHf
+                );
                 Prim::F128
             }
             ir::Type::Numeric(ir::NumericType::Float(ir::FloatType::F32)) => Prim::F32,

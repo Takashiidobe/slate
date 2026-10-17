@@ -91,6 +91,7 @@ struct Dependencies {
     long_double: bool,
     f16: bool,
     f128: bool,
+    libgcc: bool,
     simd: bool,
     intrinsics: BTreeMap<String, rust::ExternFnDecl>,
     bridges: BTreeMap<String, rust::ExternFnDecl>,
@@ -720,6 +721,16 @@ impl<'m> ModuleLowerer<'m> {
         }
         if dependencies.asm_goto_with_outputs {
             features.push(rust::CrateAttr::Feature(rust::Feature::AsmGotoWithOutputs));
+        }
+        if dependencies.libgcc {
+            items.insert(
+                0,
+                Item::SupportModule(rust::SupportModule {
+                    name: "__slate_libgcc".into(),
+                    source: include_str!("support/libgcc.rs").into(),
+                    exports: Vec::new(),
+                }),
+            );
         }
         if dependencies.atomic128 {
             items.insert(

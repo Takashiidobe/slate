@@ -25,6 +25,10 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![feature(f128)]
 // CHECK-NEXT: #![no_main]
+// CHECK-NEXT: mod __slate_libgcc {
+// CHECK-NEXT:     #[link(name = "gcc", kind = "static")]
+// CHECK-NEXT:     unsafe extern "C" {}
+// CHECK-NEXT: }
 // CHECK-NEXT: fn add(a: f128, b: f128) -> f128 {
 // CHECK-NEXT:     a + b
 // CHECK-NEXT: }
