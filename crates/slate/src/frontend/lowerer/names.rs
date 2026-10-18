@@ -15,7 +15,9 @@ pub(super) fn rust_binding_name(name: &str) -> String {
         "static", "struct", "trait", "true", "type", "unsafe", "use", "where", "while", "async",
         "await", "dyn",
     ];
-    if KEYWORDS.contains(&name) {
+    if let Some(synthetic) = name.strip_prefix('.') {
+        format!("__slate_{}", synthetic.replace('.', "_"))
+    } else if KEYWORDS.contains(&name) {
         format!("r#{name}")
     } else {
         path_keyword_free(name)

@@ -8,6 +8,13 @@ pub(super) fn lower_string_global(global: &ir::Global) -> Option<Result<Vec<u8>>
     let ir::ValueKind::CodeUnits(units) = &global.variable.initializer.as_ref()?.node.value else {
         return None;
     };
+    if !matches!(
+        &global.variable.ty,
+        ir::Type::Array { element, .. }
+            if matches!(**element, ir::Type::Numeric(ir::NumericType::Integer { width: 8, .. }))
+    ) {
+        return None;
+    }
     Some(
         units
             .iter()
