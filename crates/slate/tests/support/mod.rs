@@ -272,6 +272,7 @@ pub fn compile_c_with_args_for_target(
             .arg(temporary)
             .arg(src)
             .arg("-lm")
+            .arg("-latomic")
             .output()
             .map_err(|e| format!("spawn {cc_bin}: {e}"))
     })

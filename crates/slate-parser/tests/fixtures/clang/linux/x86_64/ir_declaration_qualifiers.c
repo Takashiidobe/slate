@@ -45,7 +45,7 @@ void untouched(void) {
 // IR-NEXT:     type @type[[TYPE_odd3:[0-9]+]] odd3 = struct {
 // IR-NEXT:         field0 a: array<i8, 3>;
 // IR-NEXT:     } [size=3, align=1, offsets=[0]];
-// IR-NEXT:     global %[[VALUE_atomic_record:[0-9]+]] atomic_record: atomic @type[[TYPE_odd3]] [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_atomic_record:[0-9]+]] atomic_record: atomic @type[[TYPE_odd3]] [storage=static] [align=4] [linkage=external];
 // IR-NEXT:     global %[[VALUE_atomic_scalar:[0-9]+]] atomic_scalar: atomic i32 [storage=static] [linkage=external];
 // IR-NEXT:     global %[[VALUE_volatile_scalar:[0-9]+]] volatile_scalar: volatile i32 [storage=static] [linkage=external];
 // IR-NEXT:     global %[[VALUE_both:[0-9]+]] both: volatile atomic i32 [storage=static] [linkage=external];

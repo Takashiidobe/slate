@@ -3459,6 +3459,9 @@ impl TypeResolver {
     }
 
     pub(super) fn atomic_object_alignment(&self, ty: &Type) -> Result<Option<u64>, ResolveError> {
+        if matches!(ty, Type::Void) {
+            return Ok(None);
+        }
         let natural = self.qualified_storage(ty.clone(), false)?;
         let atomic = self.qualified_storage(ty.clone(), true)?;
         let alignment = u64::from(atomic.alignment_bytes);
