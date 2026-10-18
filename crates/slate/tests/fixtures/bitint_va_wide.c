@@ -151,7 +151,6 @@ int main(void) {
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     {}
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C-unwind" fn vwide(n: i32, mut __va_args: ...) -> i64 {
@@ -191,7 +190,6 @@ int main(void) {
 // CHECK-NEXT:                     )
 // CHECK-NEXT:                     .to_u128() as u64) as i64));
 // CHECK-NEXT:     }
-// CHECK-NEXT:     {}
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {

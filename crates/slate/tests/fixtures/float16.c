@@ -53,7 +53,6 @@ int main(void) {
 // CHECK-NEXT:             + ((unsafe { f16::from_bits(ap.next_arg::<f64>().to_bits() as u16) })
 // CHECK-NEXT:                 as f32)) as f16;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     {}
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {

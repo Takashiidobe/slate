@@ -56,16 +56,13 @@ int main(void) {
 // CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: {
 // CHECK-NEXT:         match x {
 // CHECK-NEXT:             1 | 2 => {
-// CHECK-NEXT:                 {}
 // CHECK-NEXT:                 return 10;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             3..=5 => {
-// CHECK-NEXT:                 {}
 // CHECK-NEXT:                 return 20;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             -7 => {}
 // CHECK-NEXT:             _ => {
-// CHECK-NEXT:                 {}
 // CHECK-NEXT:                 return 30;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }

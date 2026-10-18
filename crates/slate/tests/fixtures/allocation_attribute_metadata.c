@@ -40,7 +40,6 @@ int main(void) {
 // CHECK-NEXT:     fn free(__ptr: *mut ());
 // CHECK-NEXT: }
 // CHECK-NEXT: fn allocate(size: u64, alignment: u64) -> *mut () {
-// CHECK-NEXT:     alignment;
 // CHECK-NEXT:     unsafe { malloc(size) }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn allocate_array(count: u64, size: u64) -> *mut () {

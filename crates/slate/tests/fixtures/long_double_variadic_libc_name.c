@@ -214,7 +214,6 @@ int main(void) {
 // CHECK-NEXT:         };
 // CHECK-NEXT:         total += [[V_0]];
 // CHECK-NEXT:     }
-// CHECK-NEXT:     {}
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {

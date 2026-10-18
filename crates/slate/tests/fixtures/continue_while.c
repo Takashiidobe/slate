@@ -30,7 +30,7 @@ int main(void) {
 // CHECK-NEXT:     let mut i: i32 = 0;
 // CHECK-NEXT:     while i < n {
 // CHECK-NEXT:         i += 1;
-// CHECK-NEXT:         if i % 3 == 0 {} else {
+// CHECK-NEXT:         if i % 3 != 0 {
 // CHECK-NEXT:             total += i;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }

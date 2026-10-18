@@ -67,14 +67,12 @@ int main(void) {
 // CHECK-NEXT:     let mut value: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     let mut result: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         '[[JOIN_0:__join_[0-9]+]]: {
-// CHECK-NEXT:             result = mark(1 as i32);
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 saved = std::ptr::addr_of_mut!(result);
-// CHECK-NEXT:             }
-// CHECK-NEXT:             if skip != 0 {} else {
-// CHECK-NEXT:                 value = mark(2 as i32);
-// CHECK-NEXT:             }
+// CHECK-NEXT:         result = mark(1 as i32);
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             saved = std::ptr::addr_of_mut!(result);
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if skip == 0 {
+// CHECK-NEXT:             value = mark(2 as i32);
 // CHECK-NEXT:         }
 // CHECK-NEXT:         value = mark(3 as i32);
 // CHECK-NEXT:         result += value;

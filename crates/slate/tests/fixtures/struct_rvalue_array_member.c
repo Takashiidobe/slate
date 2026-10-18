@@ -74,7 +74,6 @@ int main(void) {
 // CHECK-NEXT:     for i in 0..count {
 // CHECK-NEXT:         b.a[i as usize] = unsafe { ap.next_arg::<i32>() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     {}
 // CHECK-NEXT:     return b;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {

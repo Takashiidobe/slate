@@ -48,7 +48,6 @@ int main(void) {
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = unsafe { ap.next_arg::<i32>() };
 // CHECK-NEXT:         total += [[V_0]];
 // CHECK-NEXT:     }
-// CHECK-NEXT:     {}
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C-unwind" fn pick_second(marker: i32, mut __va_args: ...) -> i32 {
@@ -61,7 +60,6 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let first: i32 = unsafe { ap.next_arg::<i32>() };
 // CHECK-NEXT:     let second: i32 = unsafe { ap.next_arg::<i32>() };
-// CHECK-NEXT:     {}
 // CHECK-NEXT:     marker + first * 10 + second
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {

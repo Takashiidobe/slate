@@ -66,14 +66,12 @@ int main(void) {
 // CHECK-NEXT:     let mut checks: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     let mut sum: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         '[[JOIN_0:__join_[0-9]+]]: {
-// CHECK-NEXT:             sum = 0;
-// CHECK-NEXT:             checks = 0;
-// CHECK-NEXT:             steps = 0;
-// CHECK-NEXT:             i = 0;
-// CHECK-NEXT:             if mode != 0 {} else {
-// CHECK-NEXT:                 value = initialize();
-// CHECK-NEXT:             }
+// CHECK-NEXT:         sum = 0;
+// CHECK-NEXT:         checks = 0;
+// CHECK-NEXT:         steps = 0;
+// CHECK-NEXT:         i = 0;
+// CHECK-NEXT:         if mode == 0 {
+// CHECK-NEXT:             value = initialize();
 // CHECK-NEXT:         }
 // CHECK-NEXT:         value = 3;
 // CHECK-NEXT:         sum += value;
@@ -89,7 +87,7 @@ int main(void) {
 // CHECK-NEXT:                         break;
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                 }
-// CHECK-NEXT:                 if i == 2 {} else {
+// CHECK-NEXT:                 if i != 2 {
 // CHECK-NEXT:                     sum += i;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 steps += 1;
@@ -110,14 +108,14 @@ int main(void) {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
-// CHECK-NEXT:         '[[JOIN_1:__join_[0-9]+]]: {
+// CHECK-NEXT:         '[[JOIN_0:__join_[0-9]+]]: {
 // CHECK-NEXT:             let [[T_0:__t[0-9]+]]: i32 = mode;
 // CHECK-NEXT:             if [[T_0]] == 1 {
 // CHECK-NEXT:                 sum += 2;
 // CHECK-NEXT:             } else {
-// CHECK-NEXT:                 if [[T_0]] >= 2 && [[T_0]] <= 4 {} else {
+// CHECK-NEXT:                 if !([[T_0]] >= 2 && [[T_0]] <= 4) {
 // CHECK-NEXT:                     sum += 4;
-// CHECK-NEXT:                     break '[[JOIN_1]];
+// CHECK-NEXT:                     break '[[JOIN_0]];
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
 // CHECK-NEXT:             sum += 3;

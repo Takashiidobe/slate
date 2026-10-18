@@ -55,14 +55,14 @@ int main(void) {
 // CHECK-NEXT:             let [[V_2:_v[0-9]+]]: i32 = out;
 // CHECK-NEXT:             let [[V_3:_v[0-9]+]]: i32 = [[V_2]] + 2;
 // CHECK-NEXT:             out = [[V_3]];
-// CHECK-NEXT:             if out > 50 {} else {
+// CHECK-NEXT:             if !(out > 50) {
 // CHECK-NEXT:                 let [[V_4:_v[0-9]+]]: i32 = out;
 // CHECK-NEXT:                 let [[V_5:_v[0-9]+]]: i32 = [[V_4]] + 3;
 // CHECK-NEXT:                 out = [[V_5]];
 // CHECK-NEXT:                 let [[V_6:_v[0-9]+]]: i32 = out;
 // CHECK-NEXT:                 let [[V_7:_v[0-9]+]]: i32 = [[V_6]] + 4;
 // CHECK-NEXT:                 out = [[V_7]];
-// CHECK-NEXT:                 if x % 2 == 0 {} else {
+// CHECK-NEXT:                 if x % 2 != 0 {
 // CHECK-NEXT:                     let [[V_8:_v[0-9]+]]: i32 = out;
 // CHECK-NEXT:                     let [[V_9:_v[0-9]+]]: i32 = [[V_8]] + 5;
 // CHECK-NEXT:                     out = [[V_9]];
@@ -77,14 +77,14 @@ int main(void) {
 // CHECK-NEXT:             let [[V_12:_v[0-9]+]]: i32 = out;
 // CHECK-NEXT:             let [[V_13:_v[0-9]+]]: i32 = [[V_12]] + 2;
 // CHECK-NEXT:             out = [[V_13]];
-// CHECK-NEXT:             if out > 50 {} else {
+// CHECK-NEXT:             if !(out > 50) {
 // CHECK-NEXT:                 let [[V_14:_v[0-9]+]]: i32 = out;
 // CHECK-NEXT:                 let [[V_15:_v[0-9]+]]: i32 = [[V_14]] + 3;
 // CHECK-NEXT:                 out = [[V_15]];
 // CHECK-NEXT:                 let [[V_16:_v[0-9]+]]: i32 = out;
 // CHECK-NEXT:                 let [[V_17:_v[0-9]+]]: i32 = [[V_16]] + 4;
 // CHECK-NEXT:                 out = [[V_17]];
-// CHECK-NEXT:                 if x % 2 == 0 {} else {
+// CHECK-NEXT:                 if x % 2 != 0 {
 // CHECK-NEXT:                     let [[V_18:_v[0-9]+]]: i32 = out;
 // CHECK-NEXT:                     let [[V_19:_v[0-9]+]]: i32 = [[V_18]] + 5;
 // CHECK-NEXT:                     out = [[V_19]];
@@ -96,12 +96,12 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:         2..=100 => {
 // CHECK-NEXT:             out += 2;
-// CHECK-NEXT:             if out > 50 {} else {
+// CHECK-NEXT:             if !(out > 50) {
 // CHECK-NEXT:                 out += 3;
 // CHECK-NEXT:                 let [[V_22:_v[0-9]+]]: i32 = out;
 // CHECK-NEXT:                 let [[V_23:_v[0-9]+]]: i32 = [[V_22]] + 4;
 // CHECK-NEXT:                 out = [[V_23]];
-// CHECK-NEXT:                 if x % 2 == 0 {} else {
+// CHECK-NEXT:                 if x % 2 != 0 {
 // CHECK-NEXT:                     let [[V_24:_v[0-9]+]]: i32 = out;
 // CHECK-NEXT:                     let [[V_25:_v[0-9]+]]: i32 = [[V_24]] + 5;
 // CHECK-NEXT:                     out = [[V_25]];
@@ -113,7 +113,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:         101 => {
 // CHECK-NEXT:             out += 4;
-// CHECK-NEXT:             if x % 2 == 0 {} else {
+// CHECK-NEXT:             if x % 2 != 0 {
 // CHECK-NEXT:                 let [[V_28:_v[0-9]+]]: i32 = out;
 // CHECK-NEXT:                 let [[V_29:_v[0-9]+]]: i32 = [[V_28]] + 5;
 // CHECK-NEXT:                 out = [[V_29]];

@@ -30,7 +30,6 @@ int main(void) {
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             match __slate_state {
 // CHECK-NEXT:                 0 => {
-// CHECK-NEXT:                     {}
 // CHECK-NEXT:                     println!("{} {}", [[V_0]], result);
 // CHECK-NEXT:                     return 0;
 // CHECK-NEXT:                 }
@@ -45,7 +44,6 @@ int main(void) {
 // CHECK-NEXT:                     continue;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 3 => {
-// CHECK-NEXT:                     {}
 // CHECK-NEXT:                     [[V_0]] = [[RESULT_0]];
 // CHECK-NEXT:                     result = 0;
 // CHECK-NEXT:                     __slate_state = 2usize;

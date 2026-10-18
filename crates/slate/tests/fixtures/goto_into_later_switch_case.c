@@ -48,8 +48,8 @@ int main() {
 // CHECK-NEXT:             '[[JOIN_1:__join_[0-9]+]]: {
 // CHECK-NEXT:                 '[[JOIN_2:__join_[0-9]+]]: {
 // CHECK-NEXT:                     let [[T_0:__t[0-9]+]]: i32 = c;
-// CHECK-NEXT:                     if [[T_0]] == 1 {} else {
-// CHECK-NEXT:                         if [[T_0]] == 2 {} else {
+// CHECK-NEXT:                     if [[T_0]] != 1 {
+// CHECK-NEXT:                         if [[T_0]] != 2 {
 // CHECK-NEXT:                             if [[T_0]] == 3 {
 // CHECK-NEXT:                                 break '[[JOIN_0]];
 // CHECK-NEXT:                             } else {
@@ -66,7 +66,7 @@ int main() {
 // CHECK-NEXT:                 if [[T_1]] == 5 {
 // CHECK-NEXT:                     break '[[JOIN_0]];
 // CHECK-NEXT:                 } else {
-// CHECK-NEXT:                     if [[T_1]] == 6 {} else {
+// CHECK-NEXT:                     if [[T_1]] != 6 {
 // CHECK-NEXT:                         return -2;
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                 }

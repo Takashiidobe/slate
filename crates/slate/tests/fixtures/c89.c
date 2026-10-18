@@ -440,7 +440,6 @@ int main(void) {
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = unsafe { arguments.next_arg::<i32>() };
 // CHECK-NEXT:         total += [[V_0]];
 // CHECK-NEXT:     }
-// CHECK-NEXT:     {}
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: fn c89_static_local() -> i32 {
@@ -484,7 +483,7 @@ int main(void) {
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             result = 0;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if result == 16 {} else {
+// CHECK-NEXT:         if result != 16 {
 // CHECK-NEXT:             result = -1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         return result;

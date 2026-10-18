@@ -28,7 +28,6 @@ int main(void) {
 // CHECK-NEXT:         >(__va_args.clone())
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let value: i32 = consume(arguments.clone());
-// CHECK-NEXT:     {}
 // CHECK-NEXT:     value
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

@@ -5,7 +5,7 @@ use crate::backend::rust_ast::{Expr, UnaryOp};
 
 pub(in crate::backend::engine) struct LoopToWhile;
 
-fn negate(cond: &Expr) -> Expr {
+pub(super) fn negate(cond: &Expr) -> Expr {
     match cond {
         Expr::Unary {
             op: UnaryOp::Not,

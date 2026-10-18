@@ -236,7 +236,6 @@ int main(void) {
 // CHECK-NEXT:             std::sync::atomic::Ordering::Release,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     {};
 // CHECK-NEXT:     std::sync::atomic::fence(std::sync::atomic::Ordering::Acquire);
 // CHECK-NEXT:     std::sync::atomic::fence(std::sync::atomic::Ordering::Release);
 // CHECK-NEXT:     std::sync::atomic::fence(std::sync::atomic::Ordering::AcqRel);

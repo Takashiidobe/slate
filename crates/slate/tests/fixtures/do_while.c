@@ -72,7 +72,7 @@ int main(void) {
 // CHECK-NEXT:     let mut i: i32 = 0;
 // CHECK-NEXT:     loop {
 // CHECK-NEXT:         i += 1;
-// CHECK-NEXT:         if i % 2 == 0 {} else {
+// CHECK-NEXT:         if i % 2 != 0 {
 // CHECK-NEXT:             total += i;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         if !(i < n) {

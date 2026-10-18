@@ -83,7 +83,7 @@ int main(void) {
 // CHECK-NEXT:                             *total = (unsafe { *total }) + 5;
 // CHECK-NEXT:                         }
 // CHECK-NEXT:                     } else {
-// CHECK-NEXT:                         if [[T_0]] == 2 {} else {
+// CHECK-NEXT:                         if [[T_0]] != 2 {
 // CHECK-NEXT:                             unsafe {
 // CHECK-NEXT:                                 *total = (unsafe { *total }) - 2;
 // CHECK-NEXT:                             }

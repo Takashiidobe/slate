@@ -39,7 +39,6 @@ int main(void) {
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             [[RESULT_0]] = 17;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         {}
 // CHECK-NEXT:         first = [[RESULT_0]];
 // CHECK-NEXT:         let [[V_1:__v[0-9]+]]: i32 = value + 1;
 // CHECK-NEXT:         value = [[V_1]];
@@ -48,7 +47,6 @@ int main(void) {
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             result = 17;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         {}
 // CHECK-NEXT:         let second: i32 = result;
 // CHECK-NEXT:         println!("{} {} {}", first, second, value);
 // CHECK-NEXT:         return 0;

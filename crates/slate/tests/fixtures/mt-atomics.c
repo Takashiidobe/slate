@@ -47,7 +47,6 @@ int main(void) {
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: static mut counter: i32 = 0 as i32;
 // CHECK-NEXT: extern "C-unwind" fn worker(arg: *mut ()) -> *mut () {
-// CHECK-NEXT:     arg;
 // CHECK-NEXT:     let mut i: i32 = 0;
 // CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: while i < 100000 {
 // CHECK-NEXT:         unsafe {

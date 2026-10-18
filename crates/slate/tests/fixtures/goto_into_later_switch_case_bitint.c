@@ -48,10 +48,8 @@ int main() {
 // CHECK-NEXT:             '[[JOIN_1:__join_[0-9]+]]: {
 // CHECK-NEXT:                 '[[JOIN_2:__join_[0-9]+]]: {
 // CHECK-NEXT:                     let [[T_0:__t[0-9]+]]: bitint::BInt<200, 4, 32, bitint::A8> = c;
-// CHECK-NEXT:                     if [[T_0]] == <bitint::BInt<200, 4, 32, bitint::A8>>::from_u128(1)
-// CHECK-NEXT:                     {} else {
-// CHECK-NEXT:                         if [[T_0]] == <bitint::BInt<200, 4, 32, bitint::A8>>::from_u128(2)
-// CHECK-NEXT:                         {} else {
+// CHECK-NEXT:                     if [[T_0]] != <bitint::BInt<200, 4, 32, bitint::A8>>::from_u128(1) {
+// CHECK-NEXT:                         if [[T_0]] != <bitint::BInt<200, 4, 32, bitint::A8>>::from_u128(2) {
 // CHECK-NEXT:                             if [[T_0]]
 // CHECK-NEXT:                                 == <bitint::BInt<
 // CHECK-NEXT:                                     200,
@@ -83,8 +81,7 @@ int main() {
 // CHECK-NEXT:                 if [[T_1]] == <bitint::BInt<200, 4, 32, bitint::A8>>::from_u128(5) {
 // CHECK-NEXT:                     break '[[JOIN_0]];
 // CHECK-NEXT:                 } else {
-// CHECK-NEXT:                     if [[T_1]] == <bitint::BInt<200, 4, 32, bitint::A8>>::from_u128(6)
-// CHECK-NEXT:                     {} else {
+// CHECK-NEXT:                     if [[T_1]] != <bitint::BInt<200, 4, 32, bitint::A8>>::from_u128(6) {
 // CHECK-NEXT:                         return -2;
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                 }

@@ -59,10 +59,8 @@ int main(void) {
 // CHECK-NEXT: fn weigh(words: *const u64, count: i32) -> i64 {
 // CHECK-NEXT:     let mut total: i64 = 0;
 // CHECK-NEXT:     for i in 0..count {
-// CHECK-NEXT:         {};
-// CHECK-NEXT:         {};
 // CHECK-NEXT:         let word: u64 = unsafe { *unsafe { words.offset(i as isize) } };
-// CHECK-NEXT:         if (!(!(word == 0)) as i64) != 0 {} else {
+// CHECK-NEXT:         if (!(!(word == 0)) as i64) == 0 {
 // CHECK-NEXT:             total
 // CHECK-NEXT:                 += ((word.count_ones() as i32) * 100 + (word.trailing_zeros() as i32))
 // CHECK-NEXT:                     as i64;

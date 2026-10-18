@@ -205,7 +205,6 @@ int main(void) {
 // CHECK-NEXT:         unsafe { printf(c"round %d: %ld\n".as_ptr(), i, total) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     {}
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C-unwind" fn copied(n: i32, mut __va_args: ...) {
 // CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { std::mem::zeroed() };
@@ -227,8 +226,6 @@ int main(void) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%ld %ld %ld %ld\n".as_ptr(), first.a, first.b, again.a, again.b) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     {}
-// CHECK-NEXT:     {}
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let t: tiny = tiny { c: 1 };

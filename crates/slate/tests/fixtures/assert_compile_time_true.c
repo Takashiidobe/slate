@@ -23,10 +23,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!("before");
-// CHECK-NEXT:     1 as u64;
-// CHECK-NEXT:     if (5 as i32) == (5 as i32) {
-// CHECK-NEXT:         0 as i32;
-// CHECK-NEXT:     } else {
+// CHECK-NEXT:     if (5 as i32) != (5 as i32) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             __assert_fail(
 // CHECK-NEXT:                 c"5 == 5".as_ptr(),

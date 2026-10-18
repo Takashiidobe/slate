@@ -615,7 +615,6 @@ int main(void) {
 // CHECK-NEXT:     Some(add_scalar)
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     {};
 // CHECK-NEXT:     let mut words: __SlateAlign16<[u64; 37]> = __SlateAlign16([0 as u64; 37]);
 // CHECK-NEXT:     for i in 0 as u64..37 as u64 {
 // CHECK-NEXT:         words.0[i as usize] = (11400714819323198485 as u64)

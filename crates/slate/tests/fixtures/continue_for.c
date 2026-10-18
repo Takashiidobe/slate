@@ -28,7 +28,7 @@ int main(void) {
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     let mut i: i32 = 0;
 // CHECK-NEXT:     while i <= n {
-// CHECK-NEXT:         if i % 2 == 0 {} else {
+// CHECK-NEXT:         if i % 2 != 0 {
 // CHECK-NEXT:             total += i;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         i += 1;

@@ -14,6 +14,7 @@ mod loop_to_while;
 mod param_spills;
 mod pattern_range;
 mod peel_casts;
+mod pure_stmts;
 mod raw_ptr_alias;
 mod remove_mut;
 mod return_cleanup;
@@ -74,6 +75,9 @@ pub(super) fn registry(target: &slate_parser::target_info::TargetInfo) -> Vec<Bo
         Box::new(getenv_var::GetenvVar),
         Box::new(compound_assign::CompoundAssignRecover),
         Box::new(dead_store::DeadStore),
+        Box::new(pure_stmts::PureStmtDrop),
+        Box::new(pure_stmts::EmptyElseDrop),
+        Box::new(pure_stmts::EmptyThenInvert),
         Box::new(return_cleanup::FinalReturnTail),
     ]);
     rules.extend(libc_call::rules(target));

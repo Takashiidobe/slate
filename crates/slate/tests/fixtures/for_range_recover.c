@@ -123,7 +123,7 @@ int main(void) {
 // CHECK-NEXT:         if j == 7 {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if j % 2 != 0 {} else {
+// CHECK-NEXT:         if j % 2 == 0 {
 // CHECK-NEXT:             t += j;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }

@@ -256,15 +256,12 @@ int main(void) {
 // CHECK-NEXT:         return result;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
-// CHECK-NEXT: fn c23_label_before_brace() {
-// CHECK-NEXT:     unsafe { {} }
-// CHECK-NEXT: }
+// CHECK-NEXT: fn c23_label_before_brace() {}
 // CHECK-NEXT: fn c23_switch_fallthrough(value: i32) -> i32 {
 // CHECK-NEXT:     let mut result: i32 = 0;
 // CHECK-NEXT:     match value {
 // CHECK-NEXT:         1 => {
 // CHECK-NEXT:             result += 3;
-// CHECK-NEXT:             {}
 // CHECK-NEXT:             let [[V_1:_v[0-9]+]]: i32 = result;
 // CHECK-NEXT:             let [[V_2:_v[0-9]+]]: i32 = [[V_1]] + 5;
 // CHECK-NEXT:             result = [[V_2]];
@@ -288,7 +285,6 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     first = unsafe { arguments.next_arg::<i32>() };
 // CHECK-NEXT:     second = unsafe { arguments.next_arg::<i32>() };
-// CHECK-NEXT:     {}
 // CHECK-NEXT:     first + second
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {

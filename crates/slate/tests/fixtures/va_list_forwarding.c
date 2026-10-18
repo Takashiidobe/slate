@@ -127,7 +127,6 @@ int main(void) {
 // CHECK-NEXT:         >(__va_args.clone())
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let written: i32 = unsafe { vprintf(fmt, ap.clone()) };
-// CHECK-NEXT:     {}
 // CHECK-NEXT:     written
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C-unwind" fn render(
@@ -144,7 +143,6 @@ int main(void) {
 // CHECK-NEXT:         >(__va_args.clone())
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let written: i32 = format_into(buffer, size, fmt, ap.clone());
-// CHECK-NEXT:     {}
 // CHECK-NEXT:     written
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C-unwind" fn sum_ints(count: i32, mut __va_args: ...) -> i64 {
@@ -160,7 +158,6 @@ int main(void) {
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = unsafe { ap.next_arg::<i32>() };
 // CHECK-NEXT:         total += [[V_0]] as i64;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     {}
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C-unwind" fn mixed(count: i32, mut __va_args: ...) -> f64 {
@@ -194,7 +191,6 @@ int main(void) {
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     {}
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C-unwind" fn sum_twice(count: i32, mut __va_args: ...) -> i32 {
@@ -217,8 +213,6 @@ int main(void) {
 // CHECK-NEXT:         let [[V_5:__v[0-9]+]]: i32 = (unsafe { copy.next_arg::<i32>() }) * 2;
 // CHECK-NEXT:         second += [[V_5]];
 // CHECK-NEXT:     }
-// CHECK-NEXT:     {}
-// CHECK-NEXT:     {}
 // CHECK-NEXT:     ap = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
 // CHECK-NEXT:             core::ffi::VaList<'_>,
@@ -226,7 +220,6 @@ int main(void) {
 // CHECK-NEXT:         >(__va_args.clone())
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let restarted: i32 = unsafe { ap.next_arg::<i32>() };
-// CHECK-NEXT:     {}
 // CHECK-NEXT:     first + second + restarted
 // CHECK-NEXT: }
 // CHECK-NEXT: fn take_unsigned(mut ap: core::ffi::VaList<'static>) -> u32 {
@@ -241,7 +234,6 @@ int main(void) {
 // CHECK-NEXT:         >(__va_args.clone())
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let high: u32 = take_unsigned(ap.clone());
-// CHECK-NEXT:     {}
 // CHECK-NEXT:     high
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {

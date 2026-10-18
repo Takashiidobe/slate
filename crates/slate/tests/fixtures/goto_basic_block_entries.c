@@ -127,7 +127,7 @@ int main(void) {
 // CHECK-NEXT:             let [[V_0:__v[0-9]+]]: i32 = checks + 1;
 // CHECK-NEXT:             checks = [[V_0]];
 // CHECK-NEXT:             if [[V_0]] != 0 && i < 4 {
-// CHECK-NEXT:                 if i == 1 {} else {
+// CHECK-NEXT:                 if i != 1 {
 // CHECK-NEXT:                     '[[JOIN_1:__join_[0-9]+]]: {
 // CHECK-NEXT:                         let [[T_0:__t[0-9]+]]: i32 = i;
 // CHECK-NEXT:                         if [[T_0]] == 0 {

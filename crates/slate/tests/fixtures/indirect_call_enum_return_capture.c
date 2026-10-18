@@ -45,12 +45,10 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.handle_ok")]
 // CHECK-NEXT: extern "C-unwind" fn handle_ok(x: i32) -> u32 {
-// CHECK-NEXT:     x;
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.handle_fail")]
 // CHECK-NEXT: extern "C-unwind" fn handle_fail(x: i32) -> u32 {
-// CHECK-NEXT:     x;
 // CHECK-NEXT:     1
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {

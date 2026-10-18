@@ -96,8 +96,7 @@ int main(void) {
 // CHECK-NEXT:                             if i * j > limit {
 // CHECK-NEXT:                                 break '__loop_1;
 // CHECK-NEXT:                             } else {
-// CHECK-NEXT:                                 if (i + j) % 3 == 0 {
-// CHECK-NEXT:                                 } else {
+// CHECK-NEXT:                                 if (i + j) % 3 != 0 {
 // CHECK-NEXT:                                     hits += i * 10 + j;
 // CHECK-NEXT:                                 }
 // CHECK-NEXT:                                 j += 1;
@@ -157,8 +156,7 @@ int main(void) {
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             n -= 1;
 // CHECK-NEXT:             steps += 1;
-// CHECK-NEXT:             if n % 2 != 0 {
-// CHECK-NEXT:             } else {
+// CHECK-NEXT:             if n % 2 == 0 {
 // CHECK-NEXT:                 if n < 3 {
 // CHECK-NEXT:                     break;
 // CHECK-NEXT:                 } else {

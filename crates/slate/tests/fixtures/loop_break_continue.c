@@ -35,7 +35,7 @@ int main(void) {
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     for r in 0..rows {
 // CHECK-NEXT:         for c in 0..cols {
-// CHECK-NEXT:             if c == r {} else {
+// CHECK-NEXT:             if c != r {
 // CHECK-NEXT:                 if c > 4 {
 // CHECK-NEXT:                     break;
 // CHECK-NEXT:                 }

@@ -21,10 +21,7 @@ int main(int argc, char **argv) {
 // CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main(argc: i32, argv: *mut *mut i8) -> i32 {
-// CHECK-NEXT:     1 as u64;
-// CHECK-NEXT:     if argc == 2 {
-// CHECK-NEXT:         0 as i32;
-// CHECK-NEXT:     } else {
+// CHECK-NEXT:     if argc != 2 {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             __assert_fail(
 // CHECK-NEXT:                 c"argc == 2".as_ptr(),

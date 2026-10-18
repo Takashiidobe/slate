@@ -236,7 +236,6 @@ int main(void) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *[[V_17]] = 0;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         0 as i32;
 // CHECK-NEXT:         let mut [[V_18:__v[0-9]+]]: *mut ();
 // CHECK-NEXT:         let __o1: *mut obstack = __h;
 // CHECK-NEXT:         let __value: *mut () = (unsafe { (*__o1).object_base }) as *mut ();
@@ -317,7 +316,6 @@ int main(void) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *[[V_21]] = 0;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         0 as i32;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut [[V_22:__v[0-9]+]]: *mut ();
 // CHECK-NEXT:     let __o1: *mut obstack = __h;

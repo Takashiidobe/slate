@@ -521,6 +521,29 @@ impl Arena {
         }
     }
 
+    pub(in crate::backend) fn move_comments_after(&mut self, comments: &[NodeId], anchor: NodeId) {
+        if self.locate(anchor).is_none() {
+            return;
+        }
+        for &comment in comments {
+            if let Some((parent, list_index, pos)) = self.locate(comment)
+                && let Some(list) = self.list_mut(parent, list_index)
+            {
+                list.remove(pos);
+            }
+            self.set_attach(comment, CommentAttach::Leading);
+        }
+        let Some((parent, list_index, pos)) = self.locate(anchor) else {
+            return;
+        };
+        if let Some(list) = self.list_mut(parent, list_index) {
+            list.splice(pos + 1..pos + 1, comments.iter().copied());
+        }
+        for &comment in comments {
+            self.set_parent(comment, Some(parent));
+        }
+    }
+
     fn descendant_comments(&self, id: NodeId) -> Vec<NodeId> {
         let mut found = Vec::new();
         let Some(kind) = self.get(id) else {

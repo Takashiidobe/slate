@@ -1289,7 +1289,6 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     {};
 // CHECK-NEXT:     generic();
 // CHECK-NEXT:     if std::arch::is_x86_feature_detected!("avx2")
 // CHECK-NEXT:         && std::arch::is_x86_feature_detected!("fma")

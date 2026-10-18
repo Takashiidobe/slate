@@ -114,7 +114,6 @@ int main(void) {
 // CHECK-NEXT:     ok = [[V_0]] as i32;
 // CHECK-NEXT:     std::sync::atomic::fence(std::sync::atomic::Ordering::Release);
 // CHECK-NEXT:     std::sync::atomic::fence(std::sync::atomic::Ordering::Acquire);
-// CHECK-NEXT:     {};
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {} {} {} {} {} {}", relaxed_load, acquire_load, consume_load, old_add,
 // CHECK-NEXT:         old_or, old_xchg, ok, expected, unsafe {

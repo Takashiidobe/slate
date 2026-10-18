@@ -287,7 +287,6 @@ int main(void) {
 // CHECK-NEXT:         };
 // CHECK-NEXT:         total += [[V_0]];
 // CHECK-NEXT:     }
-// CHECK-NEXT:     {}
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C-unwind" fn mixed(count: i32, mut __va_args: ...) -> LongDouble {
@@ -318,7 +317,6 @@ int main(void) {
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     {}
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C-unwind" fn first_twice(unused: i32, mut __va_args: ...) -> LongDouble {
@@ -334,8 +332,6 @@ int main(void) {
 // CHECK-NEXT:     let first: LongDouble = unsafe { __slate_f80_va_arg(std::ptr::addr_of_mut!(ap)) };
 // CHECK-NEXT:     let second: LongDouble = unsafe { __slate_f80_va_arg(std::ptr::addr_of_mut!(ap)) };
 // CHECK-NEXT:     let again: LongDouble = unsafe { __slate_f80_va_arg(std::ptr::addr_of_mut!(copy)) };
-// CHECK-NEXT:     {}
-// CHECK-NEXT:     {}
 // CHECK-NEXT:     first * LongDouble([0, 0, 0, 0, 0, 0, 0, 200, 5, 64])
 // CHECK-NEXT:         + second * LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 2, 64]) + again
 // CHECK-NEXT: }

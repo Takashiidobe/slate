@@ -114,7 +114,6 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let letter: i32 = unsafe { ap.next_arg::<i32>() };
 // CHECK-NEXT:     let small: i32 = unsafe { ap.next_arg::<i32>() };
-// CHECK-NEXT:     {}
 // CHECK-NEXT:     total + (letter as f64) + (small as f64)
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C-unwind" fn pick(index: i32, mut __va_args: ...) -> *const i8 {
@@ -131,7 +130,6 @@ int main(void) {
 // CHECK-NEXT:         chosen = unsafe { ap.next_arg::<*const i8>() };
 // CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     {}
 // CHECK-NEXT:     chosen
 // CHECK-NEXT: }
 // CHECK-NEXT: fn next_pair(ap: &mut core::ffi::VaList<'static>) -> i32 {
@@ -158,7 +156,6 @@ int main(void) {
 // CHECK-NEXT:         let [[V_1:__v[0-9]+]]: i32 = next_pair(unsafe { &mut (*std::ptr::addr_of_mut!(ap)) });
 // CHECK-NEXT:         total += [[V_1]];
 // CHECK-NEXT:     }
-// CHECK-NEXT:     {}
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C-unwind" fn sum_longs(mut count: i32, mut __va_args: ...) -> i64 {
@@ -179,7 +176,6 @@ int main(void) {
 // CHECK-NEXT:         let [[V_3:__v[0-9]+]]: i64 = unsafe { ap.next_arg::<i64>() };
 // CHECK-NEXT:         total += [[V_3]];
 // CHECK-NEXT:     }
-// CHECK-NEXT:     {}
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C-unwind" fn chain(seed: i32, mut __va_args: ...) -> i64 {
@@ -192,7 +188,6 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let extra: i64 = unsafe { ap.next_arg::<i64>() };
 // CHECK-NEXT:     let mask: u64 = unsafe { ap.next_arg::<u64>() };
-// CHECK-NEXT:     {}
 // CHECK-NEXT:     (unsafe { sum_longs(3 as i32, seed as i64, extra, (mask & 255) as i64) })
 // CHECK-NEXT:         + ((unsafe { ignore_rest(seed, 1 as i32, 2.0f64, c"three".as_ptr() as *mut i8) })
 // CHECK-NEXT:             as i64)
@@ -206,7 +201,6 @@ int main(void) {
 // CHECK-NEXT:         >(__va_args.clone())
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let second: *mut () = unsafe { ap.next_arg::<*mut ()>() };
-// CHECK-NEXT:     {}
 // CHECK-NEXT:     if second == first { first } else { second }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {

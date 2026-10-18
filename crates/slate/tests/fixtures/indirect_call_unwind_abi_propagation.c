@@ -105,7 +105,6 @@ int main(void) {
 // CHECK-NEXT:     println!("panicky {}", x);
 // CHECK-NEXT: }
 // CHECK-NEXT: extern "C-unwind" fn dispatcher(x: i32, y: i32) {
-// CHECK-NEXT:     y;
 // CHECK-NEXT:     unsafe { unsafe { g_callback }.unwrap()(x) };
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
