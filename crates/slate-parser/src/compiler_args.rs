@@ -288,6 +288,7 @@ struct ParsedCompilerArgs {
     char_signed: Option<bool>,
     short_wchar: Option<bool>,
     short_enums: Option<bool>,
+    exceptions: Option<bool>,
     ms_anonymous_structs: Option<bool>,
     strict_flex_arrays: Option<u8>,
     pthread: bool,
@@ -379,6 +380,7 @@ enum Opt {
     SignedChar,
     ShortWchar,
     ShortEnums,
+    Exceptions,
     MsAnonymousStructs,
     StrictFlexArrays,
     GccStrictFlexArrays,
@@ -482,6 +484,7 @@ impl std::fmt::Display for Opt {
             Self::SignedChar => "fsigned-char",
             Self::ShortWchar => "fshort-wchar",
             Self::ShortEnums => "fshort-enums",
+            Self::Exceptions => "fexceptions",
             Self::MsAnonymousStructs => "fms-anonymous-structs",
             Self::StrictFlexArrays => "fstrict-flex-arrays=",
             Self::GccStrictFlexArrays => "fstrict-flex-arrays",
@@ -612,6 +615,7 @@ impl Opt {
             | Self::SignedChar
             | Self::ShortWchar
             | Self::ShortEnums
+            | Self::Exceptions
             | Self::StrictFlexArrays
             | Self::AsynchronousUnwindTables
             | Self::SmallPic
@@ -692,6 +696,7 @@ impl Opt {
             Self::SignedChar => "-fsigned-char",
             Self::ShortWchar => "-fshort-wchar",
             Self::ShortEnums => "-fshort-enums",
+            Self::Exceptions => "-fexceptions",
             Self::MsAnonymousStructs => "-fms-anonymous-structs",
             Self::GccStrictFlexArrays => "-fstrict-flex-arrays",
             Self::LateParseAttributes => "-fexperimental-late-parse-attributes",
@@ -944,7 +949,7 @@ fn ignored_option(argument: &str) -> Option<IgnoredOption> {
         .then_some(IgnoredOption::Alone)
 }
 
-const SWITCH_OPTS: [Opt; 43] = [
+const SWITCH_OPTS: [Opt; 44] = [
     Opt::ClangTrigraphs,
     Opt::ClangDigraphs,
     Opt::DeleteNullPointerChecks,
@@ -966,6 +971,7 @@ const SWITCH_OPTS: [Opt; 43] = [
     Opt::SignedChar,
     Opt::ShortWchar,
     Opt::ShortEnums,
+    Opt::Exceptions,
     Opt::MsAnonymousStructs,
     Opt::LateParseAttributes,
     Opt::AsynchronousUnwindTables,
@@ -1184,6 +1190,7 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                 Opt::SignedChar => parsed.char_signed = Some(value),
                 Opt::ShortWchar => parsed.short_wchar = Some(value),
                 Opt::ShortEnums => parsed.short_enums = Some(value),
+                Opt::Exceptions => parsed.exceptions = Some(value),
                 Opt::MsAnonymousStructs => parsed.ms_anonymous_structs = Some(value),
                 Opt::LateParseAttributes => parsed.late_parsed_attributes = Some(value),
                 Opt::AsynchronousUnwindTables => parsed.asynchronous_unwind_tables = Some(value),
@@ -1513,6 +1520,12 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                     .map(|name| MacroOption::Define(name.into())),
             ),
         );
+    }
+    if parsed.exceptions == Some(true) {
+        parsed
+            .preprocessor_inputs
+            .macros
+            .insert(0, MacroOption::Define("__EXCEPTIONS".into()));
     }
     if parsed.pthread {
         parsed

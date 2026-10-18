@@ -61,12 +61,7 @@ fn run_cases(group: &str, dir: &Path) -> Vec<(String, Result<(), String>)> {
     let translated = support::parallel_map_with_jobs(&cases, jobs, |(name, path)| {
         let generated = work.join(format!("{name}.generated.rs"));
         let options = support::gnu_dg_option_flags(path);
-        let translate_options: Vec<String> = options
-            .iter()
-            .filter(|flag| !support::is_oracle_only_dg_flag(flag))
-            .cloned()
-            .collect();
-        support::translate_slate(path, &generated, &translate_options).map(|()| support::Case {
+        support::translate_slate(path, &generated, &options).map(|()| support::Case {
             name: name.clone(),
             c_src: path.clone(),
             rs_src: generated,

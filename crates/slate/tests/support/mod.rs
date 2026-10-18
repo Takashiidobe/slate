@@ -1103,10 +1103,6 @@ fn dg_target_clause_applies(clause: &str) -> bool {
     clause.contains("x86_64") || clause.contains("i?86") || clause.contains("i386")
 }
 
-pub fn is_oracle_only_dg_flag(flag: &str) -> bool {
-    flag == "-fexceptions"
-}
-
 fn is_semantic_dg_flag(flag: &str) -> bool {
     matches!(
         flag,
