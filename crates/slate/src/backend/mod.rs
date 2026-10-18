@@ -8,6 +8,7 @@ pub mod codegen;
 mod engine;
 mod format;
 mod interproc;
+mod link;
 /// The Rust AST transformed by the backend.
 pub mod rust_ast;
 
@@ -30,9 +31,11 @@ pub fn apply_with_target(
     program
 }
 
-pub fn apply_interprocedural(programs: &mut [Program], exports: &Exports) {
-    interproc::run(programs, exports);
+pub fn apply_interprocedural(programs: &mut [Program], exports: &Exports) -> Option<Program> {
+    interproc::run(programs, exports)
 }
+
+pub const SHARED_TYPES_MODULE: &str = link::SHARED_MODULE;
 
 pub fn apply_local(program: Program, target: &slate_parser::target_info::TargetInfo) -> Program {
     let mut program = program;

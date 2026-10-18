@@ -5,7 +5,10 @@ pub(in crate::backend) mod string_params;
 use std::collections::{BTreeMap, BTreeSet, VecDeque};
 use std::fmt;
 
-use crate::backend::rust_ast::{Abi, Attr, ExternDecl, ExternFnDecl, FnDef, Item, Program, Type};
+use crate::backend::link;
+use crate::backend::rust_ast::{
+    Abi, Attr, ExternDecl, ExternFnDecl, FnDef, Item, Path, Program, Type,
+};
 use crate::function_identity::Known;
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -31,12 +34,29 @@ impl fmt::Display for FnKey {
 
 pub enum Exports {
     Fixed,
-    Liftable { address_taken: BTreeSet<String> },
+    Liftable {
+        address_taken: BTreeSet<String>,
+        modules: Vec<Path>,
+    },
 }
 
-pub(in crate::backend) fn run(programs: &mut [Program], exports: &Exports) {
-    string_params::run(programs);
-    pointer_lattice::apply(programs, exports);
+pub(in crate::backend) fn run(programs: &mut [Program], exports: &Exports) -> Option<Program> {
+    let Exports::Liftable {
+        address_taken,
+        modules,
+    } = exports
+    else {
+        string_params::run(programs, &BTreeSet::new());
+        pointer_lattice::apply(programs, &BTreeSet::new(), &BTreeSet::new());
+        return None;
+    };
+    let types = link::SharedTypes::plan(programs);
+    let liftable = liftable_exports(programs, address_taken);
+    let rust_bound = link::rust_bound(programs, &liftable, &types);
+    string_params::run(programs, &rust_bound);
+    pointer_lattice::apply(programs, &liftable, &rust_bound);
+    link::bind_calls(programs, &rust_bound, modules);
+    types.hoist(programs)
 }
 
 pub(in crate::backend) struct Symbols {
@@ -138,13 +158,7 @@ pub(in crate::backend) fn for_each_extern_fn<'a>(
     }
 }
 
-pub(in crate::backend) fn liftable_exports(
-    programs: &[Program],
-    exports: &Exports,
-) -> BTreeSet<FnKey> {
-    let Exports::Liftable { address_taken } = exports else {
-        return BTreeSet::new();
-    };
+fn liftable_exports(programs: &[Program], address_taken: &BTreeSet<String>) -> BTreeSet<FnKey> {
     let defs = fn_defs(programs);
     let exported = exported_symbols(&defs);
     let mut pinned: BTreeSet<&str> = address_taken.iter().map(String::as_str).collect();

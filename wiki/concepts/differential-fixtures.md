@@ -132,7 +132,8 @@ runtime parity only.
 `tests/fixtures.release/` blocks are optional. A unit's `.c` file that has
 one is checked by `release_build_differential` against that unit's generated
 file (`src/main.rs` for the unit that defines `main` and for single-file
-projects, otherwise `src/<stem>.rs`).
+projects, otherwise `src/<stem>.rs`). The shared `src/__slate_types.rs` of an
+executable project has no block; the release build checks it.
 
 Generate the block from the workspace root:
 

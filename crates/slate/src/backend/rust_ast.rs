@@ -55,7 +55,9 @@ pub enum Item {
         items: Vec<Item>,
     },
     Use {
+        vis: Visibility,
         path: Path,
+        alias: Option<Ident>,
     },
     Static {
         comments: Vec<Comment>,
@@ -541,6 +543,7 @@ pub struct RecordDef {
     pub fields: Vec<RecordField>,
     pub packed: Option<u32>,
     pub align: Option<u32>,
+    pub opaque: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]

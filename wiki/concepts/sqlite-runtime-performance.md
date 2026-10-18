@@ -158,6 +158,11 @@ taskset -c 4 python3 tools/benchmark/sqlite.py \
 ```
 
 - `--skip-build` reuses artifacts; `--compare-only` reports saved measurements.
+- The shell is translated as an executable project (`rust/`). `libsqlite3.so`
+  comes from a separate library translation of `sqlite3.c` alone with
+  `--crate-type cdylib` (`rust-library/`), because the executable project
+  binds lifted functions by Rust path and drops their C symbols. Building an
+  older `--slate-root` requires a `translate-project` that accepts `--crate-type`.
 - To rebuild the intermediate stage, create a worktree at `07f1b47d4` and pass it through `--slate-root`.
 
 ```bash

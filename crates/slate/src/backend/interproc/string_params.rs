@@ -20,13 +20,13 @@ struct AliasInfo {
     established: BTreeSet<String>,
 }
 
-pub(in crate::backend) fn run(programs: &mut [Program]) {
+pub(in crate::backend) fn run(programs: &mut [Program], rust_bound: &BTreeSet<FnKey>) {
     let symbols = Symbols::new(programs);
     let fn_defs = interproc::fn_defs(programs);
 
     let candidates: BTreeMap<FnKey, CandidateFn> = fn_defs
         .iter()
-        .filter_map(|(key, f)| candidate_for(f).map(|c| (key.clone(), c)))
+        .filter_map(|(key, f)| candidate_for(f, rust_bound.contains(key)).map(|c| (key.clone(), c)))
         .collect();
     if candidates.is_empty() {
         return;
@@ -145,8 +145,10 @@ pub(in crate::backend) fn run(programs: &mut [Program]) {
     }
 }
 
-fn candidate_for(f: &FnDef) -> Option<CandidateFn> {
-    if f.name == "main" || f.unsafe_ || f.abi.is_some() || !matches!(f.vis, Visibility::Private) {
+fn candidate_for(f: &FnDef, rust_bound: bool) -> Option<CandidateFn> {
+    let private =
+        f.name != "main" && !f.unsafe_ && f.abi.is_none() && matches!(f.vis, Visibility::Private);
+    if !private && !rust_bound {
         return None;
     }
     let param_indices: Vec<usize> = f

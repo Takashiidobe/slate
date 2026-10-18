@@ -894,13 +894,25 @@ fn translate_slate_project(
         .collect();
     let protected = frontend::distinct_functions::mergeable_address_taken(&address_taken);
     let exports = match &root {
-        Some(_) => slate::backend::Exports::Liftable {
+        Some(root) => slate::backend::Exports::Liftable {
             address_taken: frontend::distinct_functions::address_taken_symbols(&address_taken),
+            modules: units
+                .iter()
+                .map(|unit| {
+                    let module =
+                        (unit.stem != *root).then(|| format!("__slate_unit_{}", unit.stem));
+                    rust_ast::Path::new(
+                        std::iter::once("crate".to_string())
+                            .chain(module)
+                            .map(rust_ast::Ident::new),
+                    )
+                })
+                .collect(),
         },
         None => slate::backend::Exports::Fixed,
     };
     let mut programs: Vec<_> = lowered.into_iter().map(|lowered| lowered.program).collect();
-    slate::backend::apply_interprocedural(&mut programs, &exports);
+    let shared_types = slate::backend::apply_interprocedural(&mut programs, &exports);
     let programs: Vec<_> = slate_worker_pool()?.install(|| {
         units
             .par_iter()
@@ -920,15 +932,31 @@ fn translate_slate_project(
         .map_err(|e| format!("create {}: {e}", crate_src.display()))?;
     let mut cargo_features = BTreeSet::new();
     let mut shim_names = BTreeSet::new();
-    let children: Vec<rust_ast::Item> = programs
-        .iter()
-        .filter(|(stem, _)| root.as_ref() != Some(stem))
-        .map(|(stem, _)| rust_ast::Item::Mod {
-            name: rust_ast::Ident::new(format!("__slate_unit_{stem}")),
-            path: Some(format!("{}.rs", unit_file_stem(stem))),
-        })
+    let shared_module = shared_types.as_ref().map(|_| rust_ast::Item::Mod {
+        name: rust_ast::Ident::new(slate::backend::SHARED_TYPES_MODULE),
+        path: None,
+    });
+    let children: Vec<rust_ast::Item> = shared_module
+        .into_iter()
+        .chain(
+            programs
+                .iter()
+                .filter(|(stem, _)| root.as_ref() != Some(stem))
+                .map(|(stem, _)| rust_ast::Item::Mod {
+                    name: rust_ast::Ident::new(format!("__slate_unit_{stem}")),
+                    path: Some(format!("{}.rs", unit_file_stem(stem))),
+                }),
+        )
         .collect();
     let mut outputs = Vec::new();
+    if let Some(program) = shared_types {
+        outputs.push((
+            crate_src
+                .join(slate::backend::SHARED_TYPES_MODULE)
+                .with_extension("rs"),
+            program,
+        ));
+    }
     let mut rust_features = BTreeSet::new();
     for (_, program) in &programs {
         for item in &program.items {

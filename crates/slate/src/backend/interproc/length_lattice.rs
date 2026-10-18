@@ -48,6 +48,7 @@ pub(in crate::backend) fn compute(
 pub(in crate::backend) fn apply(
     programs: &mut [Program],
     facts: &BTreeMap<PointerBinding, PointerFact>,
+    rust_bound: &BTreeSet<FnKey>,
 ) {
     let symbols = Symbols::new(programs);
     let pairings = compute(programs, facts);
@@ -62,7 +63,7 @@ pub(in crate::backend) fn apply(
         }
     }
     apply_const_length(programs, &symbols, facts);
-    apply_return_buffers(programs, &symbols);
+    apply_return_buffers(programs, &symbols, rust_bound);
 }
 
 #[derive(Clone)]
@@ -2779,10 +2780,10 @@ struct ReturnRetentionPlan {
     base_aliases: BTreeSet<String>,
 }
 
-fn apply_return_buffers(programs: &mut [Program], symbols: &Symbols) {
+fn apply_return_buffers(programs: &mut [Program], symbols: &Symbols, rust_bound: &BTreeSet<FnKey>) {
     let lifts = {
         let fn_defs = interproc::fn_defs(programs);
-        return_buffer_candidates(&fn_defs)
+        return_buffer_candidates(&fn_defs, rust_bound)
     };
     if lifts.is_empty() {
         return;
@@ -3407,10 +3408,14 @@ fn retained_deref_root(
     }
 }
 
-fn return_buffer_candidates(fn_defs: &BTreeMap<FnKey, &FnDef>) -> Vec<ReturnBufferLift> {
+fn return_buffer_candidates(
+    fn_defs: &BTreeMap<FnKey, &FnDef>,
+    rust_bound: &BTreeSet<FnKey>,
+) -> Vec<ReturnBufferLift> {
     let mut out = Vec::new();
     for (name, f) in fn_defs {
-        if f.unsafe_ || f.abi.is_some() || !matches!(f.vis, Visibility::Private) {
+        let private = !f.unsafe_ && f.abi.is_none() && matches!(f.vis, Visibility::Private);
+        if !private && !rust_bound.contains(name) {
             continue;
         }
         let Some(Type::Ptr { inner, .. }) = &f.ret else {

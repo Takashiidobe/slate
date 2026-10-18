@@ -84,6 +84,7 @@ def build(args, directory):
     (directory / "source.patch").write_text(capture(["git", "diff", "HEAD", "--", "crates/slate", "crates/slate-parser"], args.slate_root) + "\n")
     native = directory / "clang"
     generated = directory / "rust"
+    library = directory / "rust-library"
     native.mkdir(exist_ok=True)
     timings = {}
     timings["slate"] = run(["cargo", "build", "--release", "--bin", "slate"], directory / "slate-build.log", cwd=args.slate_root)
@@ -97,6 +98,14 @@ def build(args, directory):
         "--compile-commands", str(database), str(args.corpus), str(generated),
     ], directory / "translation.log", cwd=args.slate_root)
     core, shell = units["sqlite3.c"], units["shell.c"]
+    library_database = directory / "compile_commands.library.json"
+    library_database.write_text(json.dumps([command for command in commands
+                                            if command["file"] == core["source"]], indent=2) + "\n")
+    timings["translation_library"] = run([
+        str(args.slate_root / "target/test-cache/release/slate"), "translate-project",
+        "--compile-commands", str(library_database), "--crate-type", "cdylib",
+        str(args.corpus), str(library),
+    ], directory / "translation-library.log", cwd=args.slate_root)
     timings["clang_core"] = run([
         args.clang, *core["flags"], "-fPIC", "-c", core["source"],
         "-o", str(native / "sqlite3.o"),
@@ -110,23 +119,18 @@ def build(args, directory):
         "-lz", "-lreadline", "-lncurses", "-lm", "-ldl", "-pthread",
         "-o", str(native / "sqlite3"),
     ], directory / "clang-shell.log")
-    manifest = generated / "Cargo.toml"
-    manifest.write_text(manifest.read_text() + '\n[lib]\nname = "sqlite_generated"\ncrate-type = ["cdylib"]\n')
-    main = (generated / "src/main.rs").read_text()
-    features = "\n".join(re.findall(r"^#!\[feature\([^\n]+\)\]", main, re.MULTILINE))
-    (generated / "src/lib.rs").write_text(features + '\n#[path = "sqlite3.rs"]\nmod __slate_unit_sqlite3;\n')
-    cargo_env = dict(os.environ, CARGO_TARGET_DIR=str(generated / "target"))
     timings["rust_library"] = run([
-        "cargo", "rustc", "--manifest-path", str(manifest), "--release", "--lib",
+        "cargo", "rustc", "--manifest-path", str(library / "Cargo.toml"), "--release", "--lib",
         "--", "-A", "warnings", "-l", "m", "-l", "z", "-l", "dl",
-    ], directory / "rust-library.log", cargo_env)
+    ], directory / "rust-library.log", dict(os.environ, CARGO_TARGET_DIR=str(library / "target")))
     timings["rust_shell"] = run([
-        "cargo", "rustc", "--manifest-path", str(manifest), "--release", "--bin", generated.name,
+        "cargo", "rustc", "--manifest-path", str(generated / "Cargo.toml"), "--release", "--bin", generated.name,
         "--", "-A", "warnings", "-l", "z", "-l", "readline", "-l", "ncurses", "-l", "m", "-l", "dl",
-    ], directory / "rust-shell.log", cargo_env)
-    shutil.copy2(generated / "target/release/libsqlite_generated.so", generated / "libsqlite3.so")
+    ], directory / "rust-shell.log", dict(os.environ, CARGO_TARGET_DIR=str(generated / "target")))
+    [shared_object] = (library / "target/release").glob("lib*.so")
+    shutil.copy2(shared_object, generated / "libsqlite3.so")
     shutil.copy2(generated / "target/release" / generated.name, generated / "sqlite3")
-    source = (generated / "src/sqlite3.rs").read_text()
+    source = (library / "src/sqlite3.rs").read_text()
     vdbe = re.search(r'\bfn sqlite3VdbeExec\(', source)
     next_function = re.search(r'^.*\bfn \w+\(', source[vdbe.end():], re.MULTILINE) if vdbe else None
     body = source[vdbe.start():vdbe.end() + next_function.start()] if next_function else ""

@@ -26,23 +26,17 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![no_main]
 // CHECK-EMPTY:
+// CHECK-NEXT: mod __slate_types;
 // CHECK-NEXT: #[path = "counter.rs"]
 // CHECK-NEXT: mod __slate_unit_counter;
 // CHECK-EMPTY:
+// CHECK-NEXT: use crate::__slate_types::counter;
+// CHECK-NEXT: use crate::__slate_unit_counter::counter_add;
+// CHECK-NEXT: use crate::__slate_unit_counter::counter_apply;
+// CHECK-NEXT: use crate::__slate_unit_counter::counter_get;
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn counter_add(c: &mut counter, by: i32);
-// CHECK-NEXT:     fn counter_get(c: &counter) -> i32;
-// CHECK-NEXT:     fn counter_apply(
-// CHECK-NEXT:         r#fn: Option<unsafe extern "C-unwind" fn(*mut counter) -> i32>,
-// CHECK-NEXT:         c: *mut counter,
-// CHECK-NEXT:     ) -> i32;
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[repr(C)]
-// CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct counter {
-// CHECK-NEXT:     value: i32,
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
@@ -51,8 +45,7 @@ int main(void) {
 // CHECK-NEXT:     (unsafe { (*c).value }) * 2
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: extern "C-unwind" fn add_twice(c: &mut counter, by: i32) {
+// CHECK-NEXT: fn add_twice(c: &mut counter, by: i32) {
 // CHECK-NEXT:     unsafe { counter_add(c, by) };
 // CHECK-NEXT:     unsafe { counter_add(c, by) };
 // CHECK-NEXT: }

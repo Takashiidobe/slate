@@ -77,7 +77,7 @@ fn attempt_translate(name: &str, dir: &Path, work: &Path) -> Attempt {
                 name: name.to_string(),
                 main_rs: out_dir.join("src/main.rs"),
                 common_rs: out_dir.join("src/common.rs"),
-                types_rs: None,
+                types_rs: Some(out_dir.join("src/__slate_types.rs")).filter(|path| path.exists()),
             }),
             translate_error: None,
         },

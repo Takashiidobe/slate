@@ -853,7 +853,7 @@ pub fn build_multi_bin_batch(cases: &[MultiBinCase], project: &Path) -> Result<B
             .map_err(|e| format!("create {}: {e}", case_dir.display()))?;
         let mut files = vec![(&case.main_rs, "main.rs"), (&case.common_rs, "common.rs")];
         if let Some(types_rs) = &case.types_rs {
-            files.push((types_rs, "types.rs"));
+            files.push((types_rs, "__slate_types.rs"));
         }
         for (src, file) in files {
             let dest = case_dir.join(file);

@@ -187,9 +187,16 @@ impl<W: Write> Codegen<W> {
                 }
                 self.out.write_str("}\n")?;
             }
-            Item::Use { path } => {
+            Item::Use { vis, path, alias } => {
+                if let Some(vis) = vis.keyword() {
+                    write!(self.out, "{vis} ")?;
+                }
                 self.out.write_str("use ")?;
                 self.path(path)?;
+                if let Some(alias) = alias {
+                    self.out.write_str(" as ")?;
+                    self.ident(alias.as_str())?;
+                }
                 self.out.write_str(";\n")?;
             }
             Item::Static {

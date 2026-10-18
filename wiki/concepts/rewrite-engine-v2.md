@@ -58,6 +58,19 @@ conversions and layout remain slate-parser responsibilities.
   per unit in parallel. Executable projects may lift non-root exported functions to
   pointer-ABI-identical types and retype callers' extern decls; library projects
   only touch `static` functions, so exported C signatures are kept.
+- Executable projects also link units in Rust (`backend/link/`). Before the
+  interproc solve, partition refinement groups each unit's records and structs
+  by shape and by the groups of the types they reference. Generated
+  `__SlateRecordN` names match by shape alone, a type's bit-unit wrappers count
+  as part of its shape, and an opaque `struct T {}` joins the only complete
+  group named `T`. Types named in an `impl` header, along with `LongDouble` and
+  `VaList`, stay unit-local. Each group that spans more than one unit moves to
+  `src/__slate_types.rs`, and units import it as `use crate::__slate_types::S as
+  local;`, so their bodies are unchanged. A liftable export whose every
+  cross-unit decl matches its definition type for type under those groups is
+  bound by path: it loses `no_mangle` and `extern "C-unwind"`, callers'
+  decls become `use crate::__slate_unit_<stem>::f;`, and string_params and
+  length_lattice treat it as a candidate like a `static` function.
   Rewrites are always on: there is no raw lowering mode.
 - Function identity: lowering records every function whose address it emits;
   `frontend/distinct_functions.rs` marks the address-taken definitions that

@@ -194,11 +194,15 @@ impl FunctionLowerer<'_, '_> {
             fields,
             packed: packed.map(|packed| packed as u32),
             align: align.map(|align| align as u32),
+            opaque: false,
         };
         let fields = fields.as_deref().unwrap_or_default();
         let Some(layout) = layout else {
             return match fields {
-                [] => Ok(record(Vec::new(), None, None)),
+                [] => Ok(rust::RecordDef {
+                    opaque: true,
+                    ..record(Vec::new(), None, None)
+                }),
                 _ => Err(unsupported_record(name, "layout")),
             };
         };

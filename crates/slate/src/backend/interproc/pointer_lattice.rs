@@ -1,6 +1,6 @@
 use std::collections::{BTreeMap, BTreeSet};
 
-use crate::backend::interproc::{self, CallGraph, Exports, FnKey, Symbols};
+use crate::backend::interproc::{self, CallGraph, FnKey, Symbols};
 use crate::backend::rust_ast::{
     BinOp, Block, CLibType, Expr, ExternDecl, ExternFnDecl, FnDef, Ident, Item, Path, Prim,
     Program, RustValue, Stmt, StructDef, StructFields, Type, UnaryOp, Visibility, is_temp_name,
@@ -1353,20 +1353,26 @@ fn type_for(base: ResolvedPtrType, inner: &Type) -> Type {
     }
 }
 
-pub(in crate::backend) fn apply(programs: &mut [Program], exports: &Exports) {
+pub(in crate::backend) fn apply(
+    programs: &mut [Program],
+    liftable_exports: &BTreeSet<FnKey>,
+    rust_bound: &BTreeSet<FnKey>,
+) {
     let symbols = Symbols::new(programs);
-    let liftable_exports = interproc::liftable_exports(programs, exports);
-    let facts = solve(programs, &symbols, &liftable_exports);
+    let facts = solve(programs, &symbols, liftable_exports);
 
-    if liftable_exports.is_empty() {
-        crate::backend::interproc::length_lattice::apply(programs, &facts);
+    if liftable_exports.len() == rust_bound.len() {
+        crate::backend::interproc::length_lattice::apply(programs, &facts, rust_bound);
     } else {
-        let private_facts: BTreeMap<PointerBinding, PointerFact> = facts
+        let fat_liftable_facts: BTreeMap<PointerBinding, PointerFact> = facts
             .iter()
-            .filter(|(binding, _)| !liftable_exports.contains(&binding.function))
+            .filter(|(binding, _)| {
+                !liftable_exports.contains(&binding.function)
+                    || rust_bound.contains(&binding.function)
+            })
             .map(|(binding, fact)| (binding.clone(), fact.clone()))
             .collect();
-        crate::backend::interproc::length_lattice::apply(programs, &private_facts);
+        crate::backend::interproc::length_lattice::apply(programs, &fat_liftable_facts, rust_bound);
     }
 
     let mut plans: BTreeMap<FnKey, BTreeMap<String, LiftPlan>> = BTreeMap::new();
