@@ -42,12 +42,8 @@ int main(void) {
 // CHECK-NEXT:     fn __builtin_printf([[V_15:__v[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT:     #[link_name = "strcmp"]
 // CHECK-NEXT:     fn __builtin_strcmp([[V_16:__v[0-9]+]]: *const i8, [[V_17:__v[0-9]+]]: *const i8) -> i32;
-// CHECK-NEXT:     #[link_name = "abs"]
-// CHECK-NEXT:     fn __builtin_abs([[V_18:__v[0-9]+]]: i32) -> i32;
-// CHECK-NEXT:     #[link_name = "labs"]
-// CHECK-NEXT:     fn __builtin_labs([[V_19:__v[0-9]+]]: i64) -> i64;
 // CHECK-NEXT:     #[link_name = "free"]
-// CHECK-NEXT:     fn __builtin_free([[V_20:__v[0-9]+]]: *mut ());
+// CHECK-NEXT:     fn __builtin_free([[V_18:__v[0-9]+]]: *mut ());
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
@@ -112,8 +108,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __builtin_printf(
 // CHECK-NEXT:             c"%d %ld\n".as_ptr(),
-// CHECK-NEXT:             unsafe { __builtin_abs(-(7 as i32)) },
-// CHECK-NEXT:             unsafe { __builtin_labs(-(9 as i64)) },
+// CHECK-NEXT:             (-(7 as i32)).wrapping_abs(),
+// CHECK-NEXT:             (-(9 as i64)).wrapping_abs(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

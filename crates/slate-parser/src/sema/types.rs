@@ -775,6 +775,17 @@ impl TypeResolver {
                         },
                     });
                 }
+                if self.ctypes.is_function(ty) {
+                    let n = self.function_alignment(operand);
+                    let c = self.ctypes.size_type(self.dialect.target());
+                    return Ok(Operand {
+                        c,
+                        value: Value {
+                            ty: self.ir_type(c),
+                            node: e.derive(ValueKind::Constant(Number::Integer(n.into()))),
+                        },
+                    });
+                }
                 let layout = self
                     .measured_storage(
                         &self.ir_type(ty),
@@ -1424,6 +1435,14 @@ impl TypeResolver {
             return natural;
         };
         self.declared_alignment(requested, natural)
+    }
+
+    pub(super) fn function_alignment(&mut self, e: &crate::ast::Expr) -> u64 {
+        let natural = match self.dialect.flavor() {
+            CompilerFlavor::Clang => 4,
+            _ => 1,
+        };
+        self.object_alignment(e, natural)
     }
 
     pub(super) fn object(&self, e: &crate::ast::Expr) -> Option<QualType> {

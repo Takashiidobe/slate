@@ -551,7 +551,9 @@ impl<'m> ModuleLowerer<'m> {
     fn declare(&mut self) -> std::result::Result<(), InvalidIr> {
         let module = self.module;
         for global in &module.globals {
-            if !self.tables.statics.contains(&global.variable.id) {
+            if !self.tables.statics.contains(&global.variable.id)
+                || alias_target(module, global).is_some()
+            {
                 continue;
             }
             let name = binding_name(global.variable.id, &self.tables.bindings);
@@ -1005,7 +1007,7 @@ impl<'m> ModuleLowerer<'m> {
                 ir::Parameters::Prototype { fixed, .. } => fixed.len(),
                 _ => 0,
             };
-            if matches!(arity, 0 | 2 | 3) {
+            if arity <= 3 {
                 features.push(rust::CrateAttr::NoMain);
                 items.push(main_wrapper(arity, dependencies.huge_stack));
             }

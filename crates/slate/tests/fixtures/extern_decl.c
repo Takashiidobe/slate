@@ -16,7 +16,6 @@ int main(void) {
 // CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
 // CHECK-NEXT:     fn toupper(c: i32) -> i32;
 // CHECK-NEXT:     fn tolower(c: i32) -> i32;
-// CHECK-NEXT:     fn abs(n: i32) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
@@ -28,7 +27,7 @@ int main(void) {
 // CHECK-NEXT:             c"%c%c %d\n".as_ptr(),
 // CHECK-NEXT:             unsafe { toupper(97 as i32) },
 // CHECK-NEXT:             unsafe { tolower(90 as i32) },
-// CHECK-NEXT:             unsafe { abs(-(42 as i32)) },
+// CHECK-NEXT:             (-(42 as i32)).wrapping_abs(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

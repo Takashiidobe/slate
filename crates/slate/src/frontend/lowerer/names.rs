@@ -34,6 +34,23 @@ pub(super) fn local_binding_name(name: &str, id: BindingId, statics: &HashSet<St
     }
 }
 
+pub(super) fn alias_target<'m>(
+    module: &'m ir::Module,
+    global: &ir::Global,
+) -> Option<&'m ir::Global> {
+    let target = global.symbol.alias.as_deref()?;
+    module
+        .globals
+        .iter()
+        .map(|candidate| &**candidate)
+        .find(|candidate| {
+            candidate.definition
+                && candidate.variable.name == target
+                && candidate.variable.ty == global.variable.ty
+                && candidate.symbol.alias.is_none()
+        })
+}
+
 pub(super) fn global_names<'a>(
     module: &ir::Module,
     function_names: impl IntoIterator<Item = &'a str>,
@@ -51,19 +68,20 @@ pub(super) fn global_names<'a>(
             .or_default()
             .insert(Some(global.variable.id));
     }
+    let name_of = |global: &ir::Global| {
+        let name = rust_binding_name(&global.variable.name);
+        if matches!(global.linkage, ir::Linkage::Internal) && owners[&name].len() > 1 {
+            format!("{}_{}", name.trim_start_matches("r#"), global.variable.id.0)
+        } else {
+            name
+        }
+    };
     module
         .globals
         .iter()
         .map(|global| {
-            let id = global.variable.id;
-            let name = rust_binding_name(&global.variable.name);
-            let name = if matches!(global.linkage, ir::Linkage::Internal) && owners[&name].len() > 1
-            {
-                format!("{}_{}", name.trim_start_matches("r#"), id.0)
-            } else {
-                name
-            };
-            (id, name)
+            let name = name_of(alias_target(module, global).unwrap_or(global));
+            (global.variable.id, name)
         })
         .collect()
 }

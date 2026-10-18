@@ -2710,6 +2710,10 @@ impl Lowerer {
                 if matches!(e.value, ExprKind::SizeOfExpr(_)) && self.types.ctypes.is_function(c) {
                     return Ok(self.layout_constant(e, 1, "size_of", ty.to_string()));
                 }
+                if self.types.ctypes.is_function(c) {
+                    let amount = self.types.function_alignment(operand);
+                    return Ok(self.layout_constant(e, amount, "align_of", ty.to_string()));
+                }
                 let access = self.types.access_of(c);
                 if matches!(e.value, ExprKind::SizeOfExpr(_))
                     && matches!(ty, Type::VariableArray { .. })

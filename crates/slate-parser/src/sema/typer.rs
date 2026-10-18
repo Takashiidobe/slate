@@ -2109,7 +2109,7 @@ impl TypeResolver {
             }
         };
         let ty = self.ir_type(c);
-        if sizeof && (self.ctypes.is_function(c) || matches!(ty, Type::VariableArray { .. })) {
+        if self.ctypes.is_function(c) || (sizeof && matches!(ty, Type::VariableArray { .. })) {
             return Ok(());
         }
         if self.failed_definition(c) {

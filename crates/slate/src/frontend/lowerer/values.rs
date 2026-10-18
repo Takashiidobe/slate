@@ -65,12 +65,30 @@ pub(super) fn is_find_first_set(builtin: &str) -> bool {
 }
 
 pub(super) fn is_parity_or_clrsb(builtin: &str) -> bool {
-    matches!(builtin, "__builtin_parityg" | "__builtin_clrsbg")
+    matches!(
+        builtin,
+        "__builtin_parity"
+            | "__builtin_parityl"
+            | "__builtin_parityll"
+            | "__builtin_parityg"
+            | "__builtin_clrsb"
+            | "__builtin_clrsbl"
+            | "__builtin_clrsbll"
+            | "__builtin_clrsbg"
+    )
+}
+
+pub(super) fn is_integer_abs(builtin: &str) -> bool {
+    matches!(
+        builtin,
+        "abs" | "labs" | "llabs" | "__builtin_abs" | "__builtin_labs" | "__builtin_llabs"
+    )
 }
 
 pub(super) fn open_coded_builtin(builtin: &str) -> bool {
     bit_count_method(builtin).is_some()
         || is_find_first_set(builtin)
+        || is_integer_abs(builtin)
         || is_parity_or_clrsb(builtin)
         || stdc_rotate_method(builtin).is_some()
         || is_stdc_bit(builtin)
@@ -241,7 +259,7 @@ impl FunctionLowerer<'_, '_> {
             expr: Box::new(Expr::Value(rust::RustValue::U128(1))),
             ty: rust::Type::Prim(Prim::U32),
         };
-        let tail = if builtin == "__builtin_parityg" {
+        let tail = if builtin.starts_with("__builtin_parity") {
             Expr::Binary {
                 op: BinOp::BitAnd,
                 lhs: Box::new(bit_count_expr(shape, var(), "count_ones")),
@@ -1471,6 +1489,20 @@ impl FunctionLowerer<'_, '_> {
                 ..
             } if self.tables.builtin_name(*id).is_some_and(is_find_first_set) => {
                 self.lower_find_first_set(value, arguments)?
+            }
+            ValueKind::Call {
+                callee: ir::Callee::Direct(id),
+                arguments,
+                ..
+            } if self.tables.builtin_name(*id).is_some_and(is_integer_abs) => {
+                let [operand] = arguments.as_slice() else {
+                    return Err(unsupported_value(value));
+                };
+                Expr::MethodCall {
+                    recv: Box::new(self.lower_value(operand)?),
+                    method: "wrapping_abs".into(),
+                    args: Vec::new(),
+                }
             }
             ValueKind::Call {
                 callee: ir::Callee::Direct(id),

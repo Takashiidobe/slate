@@ -144,6 +144,15 @@ impl Lowerer {
                 });
             }
         }
+        let alignment =
+            super::types::requested_alignment(&mut self.types, attributes.iter().copied())?;
+        let _ = self.types.entities.merge_request(
+            id,
+            super::entity::ObjectRequest {
+                alignment,
+                common: None,
+            },
+        );
         let state = self.function_declarations.entry(id).or_default();
         for deallocator in deallocators {
             if !state.deallocators.contains(&deallocator) {
