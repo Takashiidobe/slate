@@ -167,6 +167,14 @@ impl Tables<'_> {
     }
 }
 
+pub(super) fn ifunc_symbol(function: &ir::Function) -> Option<String> {
+    function.symbol.ifunc.as_ref()?;
+    Some(match function.linkage {
+        ir::Linkage::External => function.name.clone(),
+        _ => format!("__slate_ifunc_{}", function.name),
+    })
+}
+
 impl FunctionLowerer<'_, '_> {
     pub(super) fn lower_extern(
         &mut self,
@@ -191,7 +199,9 @@ impl FunctionLowerer<'_, '_> {
         let attrs = self
             .tables
             .builtin_library(function.value.id)
-            .map(|name| Attr::LinkName(name.into()))
+            .map(str::to_owned)
+            .or_else(|| ifunc_symbol(function))
+            .map(Attr::LinkName)
             .into_iter()
             .collect();
         let decl = rust::ExternDecl::Fn(rust::ExternFnDecl {

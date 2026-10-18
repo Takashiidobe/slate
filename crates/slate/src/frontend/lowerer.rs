@@ -301,6 +301,53 @@ struct ModuleLowerer<'m> {
 }
 
 impl<'m> ModuleLowerer<'m> {
+    fn lower_ifunc(&mut self, function: &ir::Function) -> Result<()> {
+        let (Some(resolver), Some(symbol)) = (
+            function.symbol.ifunc.as_ref(),
+            functions::ifunc_symbol(function),
+        ) else {
+            return Ok(());
+        };
+        if !matches!(
+            self.tables.target.os,
+            slate_parser::target_info::TargetOs::Linux
+                | slate_parser::target_info::TargetOs::Android
+                | slate_parser::target_info::TargetOs::FreeBsd
+        ) {
+            return Err(Construct::Function {
+                name: function.name.clone(),
+                detail: "ifunc needs an ELF target".into(),
+            }
+            .into());
+        }
+        let resolver = self
+            .module
+            .functions
+            .iter()
+            .find(|candidate| candidate.name == *resolver && candidate.body.is_some())
+            .and_then(|candidate| self.tables.names.get(&candidate.value.id))
+            .ok_or_else(|| Construct::Function {
+                name: function.name.clone(),
+                detail: format!("ifunc resolver `{resolver}` is not defined here"),
+            })?;
+        let hidden = match (&function.linkage, &function.symbol.visibility) {
+            (ir::Linkage::External, Some(ir::Visibility::Hidden | ir::Visibility::Internal)) => {
+                format!("\n.hidden {symbol}")
+            }
+            (ir::Linkage::External, _) => String::new(),
+            _ => format!("\n.hidden {symbol}"),
+        };
+        self.items.push(Item::GlobalAsm(rust::InlineAsm {
+            template: format!(
+                ".globl {symbol}{hidden}\n.type {symbol}, @gnu_indirect_function\n.set {symbol}, {{}}"
+            ),
+            operands: vec![rust::AsmOperand::Sym(Expr::Var(resolver.rust.as_str().into()))],
+            options: Vec::new(),
+            kind: rust::AsmKind::Global,
+        }));
+        Ok(())
+    }
+
     fn new(
         module: &'m ir::Module,
         files: &Files,
@@ -563,6 +610,15 @@ impl<'m> ModuleLowerer<'m> {
                         )
                         .into_public(Some(&function.name), Site::of(function))?,
                 ),
+            }
+        }
+        for function in &module.functions {
+            if let Err(error) = self.lower_ifunc(function) {
+                self.barriers.push(
+                    error
+                        .within(Site::of(function), format!("in ifunc `{}`", function.name))
+                        .into_public(Some(&function.name), Site::of(function))?,
+                );
             }
         }
         if let Some(first) = module.asm.first() {
