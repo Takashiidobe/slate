@@ -90,7 +90,7 @@ int main(void) {
 // CHECK-NEXT:                     rest >>= 2;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             } else {
-// CHECK-NEXT:                 let align = if core::mem::align_of::<T>() > 8 { 16 } else { 8 };
+// CHECK-NEXT:                 let align = core::mem::align_of::<T>().max(8);
 // CHECK-NEXT:                 let slot = ((tag.overflow as usize + align - 1) & !(align - 1))
 // CHECK-NEXT:                     as *const u8;
 // CHECK-NEXT:                 core::ptr::copy_nonoverlapping(slot, dst, size);

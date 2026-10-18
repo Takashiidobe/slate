@@ -95,6 +95,7 @@ struct Dependencies {
     sysv_va: bool,
     i386_va: bool,
     aapcs_va: bool,
+    builtin_setjmp: bool,
     atomic_volatile: bool,
     asm_unwind: bool,
     long_const_eval: bool,
@@ -903,6 +904,11 @@ impl<'m> ModuleLowerer<'m> {
                 dependencies.aapcs_va,
                 "__slate_aapcs_va",
                 include_str!("support/aapcs_va.rs"),
+            ),
+            (
+                dependencies.builtin_setjmp,
+                "__slate_builtin_setjmp",
+                include_str!("support/builtin_setjmp.rs"),
             ),
         ] {
             if used {

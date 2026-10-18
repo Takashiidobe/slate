@@ -117,6 +117,22 @@ impl Tables<'_> {
             align: layout.alignment_bytes,
         })
     }
+
+    pub(super) fn wide_va_arg(&self, ty: &ir::Type) -> Option<(bool, rust::Type)> {
+        if let Some(wide) = self.wide_int(ty) {
+            return Some((wide.fits_registers(), wide.rust_type()));
+        }
+        let ir::Type::Numeric(ir::NumericType::Integer {
+            width: 128, signed, ..
+        }) = *self.resolve_type(ty)
+        else {
+            return None;
+        };
+        Some((
+            true,
+            rust::Type::Prim(if signed { Prim::I128 } else { Prim::U128 }),
+        ))
+    }
 }
 
 pub(super) fn is_stdc_bit(builtin: &str) -> bool {

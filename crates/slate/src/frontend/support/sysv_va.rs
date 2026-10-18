@@ -46,7 +46,7 @@ mod __slate_sysv_va {
                     rest >>= 2;
                 }
             } else {
-                let align = if core::mem::align_of::<T>() > 8 { 16 } else { 8 };
+                let align = core::mem::align_of::<T>().max(8);
                 let slot = ((tag.overflow as usize + align - 1) & !(align - 1)) as *const u8;
                 core::ptr::copy_nonoverlapping(slot, dst, size);
                 tag.overflow = slot.add((size + 7) & !7);

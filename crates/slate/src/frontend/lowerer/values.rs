@@ -554,11 +554,13 @@ impl FunctionLowerer<'_, '_> {
                     })),
                 }))
             }
-            ValueKind::VaArg { list, .. } if let Some(wide) = self.tables.wide_int(&value.ty) => {
+            ValueKind::VaArg { list, .. }
+                if let Some((fits_registers, read_ty)) = self.tables.wide_va_arg(&value.ty) =>
+            {
                 let (module, function, extra) = match self.tables.target.family {
                     TargetFamily::X86_64 => {
                         self.dependencies.sysv_va = true;
-                        let classes = if wide.fits_registers() { 0b0101 } else { 0 };
+                        let classes = if fits_registers { 0b0101 } else { 0 };
                         (
                             "__slate_sysv_va",
                             "arg",
@@ -585,7 +587,7 @@ impl FunctionLowerer<'_, '_> {
                     tail: Some(Box::new(Expr::Call {
                         func: Box::new(Expr::GenericPath {
                             path: rust::Path::new([module, function].map(rust::Ident::from)),
-                            type_args: vec![rust::Type::Custom("_".into()), wide.rust_type()],
+                            type_args: vec![rust::Type::Custom("_".into()), read_ty],
                         }),
                         args,
                         binding: CallBinding::Generated,
@@ -1470,6 +1472,77 @@ impl FunctionLowerer<'_, '_> {
                         binding: CallBinding::Generated,
                     }),
                     ty: self.lower_type(&value.ty)?,
+                }
+            }
+            ValueKind::Call {
+                callee: ir::Callee::Direct(id),
+                arguments,
+                ..
+            } if matches!(
+                self.tables.builtin_name(*id),
+                Some("__builtin_setjmp" | "__builtin_longjmp")
+            ) =>
+            {
+                self.dependencies.builtin_setjmp = true;
+                let buffer_type = rust::Type::Custom("__slate_builtin_setjmp::Buffer".into());
+                let slot = |buf| Expr::Unary {
+                    op: rust::UnaryOp::Deref,
+                    expr: Box::new(Expr::Cast {
+                        expr: Box::new(buf),
+                        ty: rust::Type::Ptr {
+                            mutable: true,
+                            inner: Box::new(rust::Type::Ptr {
+                                mutable: true,
+                                inner: Box::new(buffer_type.clone()),
+                            }),
+                        },
+                    }),
+                };
+                let call = |function: &str, args| Expr::Call {
+                    func: Box::new(Expr::Var(
+                        format!("__slate_builtin_setjmp::{function}").into(),
+                    )),
+                    args,
+                    binding: CallBinding::Generated,
+                };
+                match arguments.as_slice() {
+                    [buf] => {
+                        let env = self.next_temp();
+                        self.hoisted.push(Stmt::Let {
+                            name: env.clone(),
+                            mutable: true,
+                            ty: Some(buffer_type.clone()),
+                            init: Some(zeroed()),
+                        });
+                        let env_ptr = || Expr::AddrOf {
+                            mutable: true,
+                            expr: Box::new(Expr::Var(env.as_str().into())),
+                        };
+                        Expr::Unsafe(Box::new(rust::Block {
+                            stmts: vec![Stmt::Assign {
+                                target: slot(self.lower_value(buf)?),
+                                value: env_ptr(),
+                            }],
+                            tail: Some(Box::new(Expr::Cast {
+                                expr: Box::new(call("_setjmp", vec![env_ptr()])),
+                                ty: self.lower_type(&value.ty)?,
+                            })),
+                        }))
+                    }
+                    [buf, result] => Expr::Unsafe(Box::new(rust::Block {
+                        stmts: Vec::new(),
+                        tail: Some(Box::new(call(
+                            "_longjmp",
+                            vec![
+                                slot(self.lower_value(buf)?),
+                                Expr::Cast {
+                                    expr: Box::new(self.lower_value(result)?),
+                                    ty: rust::Type::Prim(Prim::I32),
+                                },
+                            ],
+                        ))),
+                    })),
+                    _ => return Err(unsupported_value(value)),
                 }
             }
             ValueKind::Call {
