@@ -184,12 +184,12 @@ impl FunctionLowerer<'_, '_> {
             return Err(unsupported_record(name, "kind"));
         };
         let is_union = matches!(record_kind, ir::RecordKind::Union);
-        let record = |fields, packed: Option<u64>, align: Option<u64>| rust::RecordDef {
+        let record = |fields: Vec<_>, packed: Option<u64>, align: Option<u64>| rust::RecordDef {
             comments: Vec::new(),
             trailing_comments: Vec::new(),
             vis: rust::Visibility::Private,
             field_vis: rust::Visibility::Private,
-            is_union,
+            is_union: is_union && !fields.is_empty(),
             name: name.to_owned(),
             fields,
             packed: packed.map(|packed| packed as u32),
@@ -241,9 +241,15 @@ impl FunctionLowerer<'_, '_> {
                 let ty = self
                     .lower_type(&field.ty)
                     .map_err(|error| error.at(Site::of(field)))?;
-                if pack.is_some() && self.contains_raised_align(&field.ty) {
-                    return Err(unsupported_record(name, "layout").at(Site::of(field)));
-                }
+                let ty = if pack.is_some() && self.contains_raised_align(&field.ty) {
+                    self.dependencies.erased_fields.insert((id.0, index));
+                    rust::Type::Generic {
+                        name: "std::mem::MaybeUninit".into(),
+                        args: vec![byte_array(size)],
+                    }
+                } else {
+                    ty
+                };
                 (
                     field_name(field, index),
                     ty,
@@ -320,6 +326,7 @@ impl FunctionLowerer<'_, '_> {
     fn contains_raised_align(&self, ty: &ir::Type) -> bool {
         match self.tables.resolve_type(ty) {
             ir::Type::Array { element, .. } => self.contains_raised_align(element),
+            ir::Type::Numeric(ir::NumericType::Float(ir::FloatType::F80)) => true,
             ir::Type::Defined(id) => {
                 let raised = matches!(
                     self.dependencies.records.get(&id.0),

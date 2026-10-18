@@ -113,6 +113,7 @@ struct Dependencies {
     bridges: BTreeMap<String, rust::ExternFnDecl>,
     align_wrappers: BTreeSet<u32>,
     records: BTreeMap<u32, Record>,
+    erased_fields: BTreeSet<(u32, usize)>,
     flexible_records: Vec<Item>,
     compound_literals: Vec<Item>,
     address_taken: BTreeSet<String>,

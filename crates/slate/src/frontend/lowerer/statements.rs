@@ -26,6 +26,18 @@ impl FunctionLowerer<'_, '_> {
         if let Some(lane) = self.lower_lane_write(place, &value)? {
             return Ok(lane);
         }
+        if let Some(address) = self.erased_field_address(place, true)? {
+            return Ok(Stmt::Unsafe {
+                body: rust::Block {
+                    stmts: vec![Stmt::Expr(Expr::MethodCall {
+                        recv: Box::new(address),
+                        method: "write_unaligned".into(),
+                        args: vec![value],
+                    })],
+                    tail: None,
+                },
+            });
+        }
         if let Some(unaligned) = self.lower_unaligned_write(place, &value)? {
             return Ok(unaligned);
         }

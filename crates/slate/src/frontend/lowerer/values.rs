@@ -747,6 +747,16 @@ impl FunctionLowerer<'_, '_> {
                 if let Some(lane) = self.lower_lane_read(place)? {
                     return Ok(lane);
                 }
+                if let Some(address) = self.erased_field_address(place, false)? {
+                    return Ok(Expr::Unsafe(Box::new(rust::Block {
+                        stmts: Vec::new(),
+                        tail: Some(Box::new(Expr::MethodCall {
+                            recv: Box::new(address),
+                            method: "read_unaligned".into(),
+                            args: Vec::new(),
+                        })),
+                    })));
+                }
                 if let Some(unaligned) = self.lower_unaligned_read(place)? {
                     return Ok(unaligned);
                 }
@@ -788,6 +798,17 @@ impl FunctionLowerer<'_, '_> {
                     expr: Box::new(address),
                     ty: self.lower_type(&value.ty)?,
                 }
+            }
+            ValueKind::AddressOf(place) | ValueKind::ArrayDecay { place, .. }
+                if let Some(address) = self.erased_field_address(place, true)? =>
+            {
+                Expr::Unsafe(Box::new(rust::Block {
+                    stmts: Vec::new(),
+                    tail: Some(Box::new(Expr::Cast {
+                        expr: Box::new(address),
+                        ty: self.lower_type(&value.ty)?,
+                    })),
+                }))
             }
             ValueKind::AddressOf(place) => match place.kind {
                 PlaceKind::Deref(ref pointer) => self.lower_value(pointer)?,
@@ -1639,7 +1660,16 @@ impl FunctionLowerer<'_, '_> {
                 .map(|field| field_name(field, index))
                 .ok_or_else(unsupported)
         };
-        let complete = !forced_storage && !zero_fill && !self.tables.has_padding(ty) && fields.is_none_or(|fields| fields.len() == members.len()) && !self.tables.is_union(ty) && !self.tables.has_bit_fields(ty) && members.iter().enumerate().all(|(position, member)| {
+        let erased: BTreeSet<usize> = match resolved {
+            ir::Type::Defined(id) => self
+                .dependencies
+                .erased_fields
+                .range((id.0, 0)..=(id.0, usize::MAX))
+                .map(|&(_, index)| index)
+                .collect(),
+            _ => BTreeSet::new(),
+        };
+        let complete = erased.is_empty() && !forced_storage && !zero_fill && !self.tables.has_padding(ty) && fields.is_none_or(|fields| fields.len() == members.len()) && !self.tables.is_union(ty) && !self.tables.has_bit_fields(ty) && members.iter().enumerate().all(|(position, member)| {
             matches!(
                 (&member.target, fields),
                 (ir::AggregateTarget::Field(index), Some(_)) if *index == position
@@ -1694,6 +1724,34 @@ impl FunctionLowerer<'_, '_> {
                     }
                 } else {
                     setter
+                });
+                continue;
+            }
+            if let ir::AggregateTarget::Field(index) = member.target
+                && erased.contains(&index)
+            {
+                let member_ty = self.lower_type(&member.value.ty)?;
+                stmts.push(Stmt::Unsafe {
+                    body: rust::Block {
+                        stmts: vec![Stmt::Expr(Expr::MethodCall {
+                            recv: Box::new(Expr::Cast {
+                                expr: Box::new(Expr::AddrOf {
+                                    mutable: true,
+                                    expr: Box::new(Expr::Field {
+                                        base: Box::new(Expr::Var(target.as_str().into())),
+                                        field: field_name(index)?,
+                                    }),
+                                }),
+                                ty: rust::Type::Ptr {
+                                    mutable: true,
+                                    inner: Box::new(member_ty),
+                                },
+                            }),
+                            method: "write_unaligned".into(),
+                            args: vec![self.lower_value(&member.value)?],
+                        })],
+                        tail: None,
+                    },
                 });
                 continue;
             }

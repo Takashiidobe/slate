@@ -282,8 +282,53 @@ impl FunctionLowerer<'_, '_> {
         }))
     }
 
+    pub(super) fn erased_field_address(
+        &mut self,
+        place: &ir::Place,
+        mutable: bool,
+    ) -> Result<Option<Expr>> {
+        let PlaceKind::Field {
+            ref base,
+            index,
+            bits: None,
+        } = place.kind
+        else {
+            return Ok(None);
+        };
+        let tables = self.tables;
+        self.lower_type(&base.ty)?;
+        let ir::Type::Defined(id) = tables.resolve_type(&base.ty) else {
+            return Ok(None);
+        };
+        let Some(field) = tables
+            .record_fields(&base.ty)
+            .and_then(|fields| fields.get(index))
+        else {
+            return Ok(None);
+        };
+        if !self.dependencies.erased_fields.contains(&(id.0, index)) {
+            return Ok(None);
+        }
+        Ok(Some(Expr::Cast {
+            expr: Box::new(Expr::AddrOf {
+                mutable,
+                expr: Box::new(Expr::Field {
+                    base: Box::new(self.lower_place(base)?),
+                    field: field_name(field, index),
+                }),
+            }),
+            ty: rust::Type::Ptr {
+                mutable,
+                inner: Box::new(self.lower_type(&place.ty)?),
+            },
+        }))
+    }
+
     pub(super) fn lower_address(&mut self, place: &ir::Place, mutable: bool) -> Result<Expr> {
         if let Some(address) = self.vla_address(place)? {
+            return Ok(address);
+        }
+        if let Some(address) = self.erased_field_address(place, mutable)? {
             return Ok(address);
         }
         match &place.kind {
@@ -352,6 +397,13 @@ impl FunctionLowerer<'_, '_> {
                 .and_then(|fields| fields.get(index)) =>
             {
                 self.lower_type(&base.ty)?;
+                if matches!(tables.resolve_type(&base.ty), ir::Type::Defined(id) if self.dependencies.erased_fields.contains(&(id.0, index)))
+                {
+                    return Err(Construct::Place {
+                        ir: place.to_string(),
+                    }
+                    .into());
+                }
                 Ok(Expr::Field {
                     base: Box::new(self.lower_place(base)?),
                     field: field_name(field, index),
