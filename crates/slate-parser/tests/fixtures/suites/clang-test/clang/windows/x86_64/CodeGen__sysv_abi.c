@@ -93,10 +93,10 @@ void use_target_attr_vectors(void) {
 // DEFAULT-NEXT:         call<void, signature=fn sysv_abi(vector<f32, 16>) -> void, abi=sysv64 sysv_abi(byval<align=64>) -> void>(%[[VALUE_take_m512]], read<vector<f32, 16>>(%[[VALUE_v2]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_get_avx_m256:[0-9]+]] @get_avx_m256() -> vector<f32, 8> [linkage=external] [target=+avx] [abi=sysv64 sysv_abi() -> direct];
-// DEFAULT-NEXT:     fn %[[VALUE_take_avx_m256:[0-9]+]] @take_avx_m256(%[[VALUE2:[0-9]+]] <unnamed>: vector<f32, 8>) -> void [linkage=external] [target=+avx] [abi=sysv64 sysv_abi(byval<align=32>) -> void];
+// DEFAULT-NEXT:     fn %[[VALUE_take_avx_m256:[0-9]+]] @take_avx_m256(%[[VALUE2:[0-9]+]] <unnamed>: vector<f32, 8>) -> void [linkage=external] [target=+avx] [abi=sysv64 sysv_abi(direct) -> void];
 // DEFAULT-NEXT:     fn %[[VALUE_use_target_attr_vectors:[0-9]+]] @use_target_attr_vectors() -> void [linkage=external] [target=+avx] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_v:[0-9]+]] v: vector<f32, 8> [storage=automatic] = call<vector<f32, 8>, signature=fn sysv_abi() -> vector<f32, 8>, abi=sysv64 sysv_abi() -> direct>(%[[VALUE_get_avx_m256]]);
-// DEFAULT-NEXT:         call<void, signature=fn sysv_abi(vector<f32, 8>) -> void, abi=sysv64 sysv_abi(byval<align=32>) -> void>(%[[VALUE_take_avx_m256]], read<vector<f32, 8>>(%[[VALUE_v]]));
+// DEFAULT-NEXT:         call<void, signature=fn sysv_abi(vector<f32, 8>) -> void, abi=sysv64 sysv_abi(direct) -> void>(%[[VALUE_take_avx_m256]], read<vector<f32, 8>>(%[[VALUE_v]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

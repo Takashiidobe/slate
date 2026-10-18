@@ -36,6 +36,7 @@ pub(super) struct Lowerer {
     pub jump_targets: HashMap<NodeId, BindingId>,
     pub switches: Vec<BindingId>,
     pub in_function: bool,
+    pub function_target: Vec<TargetFeature>,
     pub in_naked_function: bool,
     pub files: crate::files::Files,
     pub return_type: Option<QualType>,
@@ -66,7 +67,18 @@ impl Lowerer {
         signature: QualType,
         (returned, ty, lowered): (QualType, Type, Vec<Value>),
     ) -> Result<Operand, ResolveError> {
-        let abi = self.c_abi_signature(signature, &ty, Some(&lowered))?;
+        let features = match &callee {
+            Callee::Direct(id)
+                if self
+                    .builtin_declarations
+                    .values()
+                    .any(|builtin| builtin == id) =>
+            {
+                &[]
+            }
+            _ => self.function_target.as_slice(),
+        };
+        let abi = self.c_abi_signature(signature, &ty, Some(&lowered), features)?;
         Ok(self.operand(
             e,
             returned,

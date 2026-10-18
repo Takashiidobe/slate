@@ -202,6 +202,12 @@ impl Lowerer {
         Ok(())
     }
 
+    pub(super) fn declared_target(&self, id: BindingId) -> Vec<TargetFeature> {
+        self.function_declarations
+            .get(&id)
+            .map_or_else(Vec::new, |state| state.target.clone())
+    }
+
     pub(super) fn is_naked(&self, id: BindingId) -> bool {
         self.function_declarations
             .get(&id)

@@ -116,6 +116,10 @@ Classification follows the effective x86 ISA (`TargetInfo.x86_isa`), the
 same value that drives ISA predefines. On `sysv64` "> 16 bytes" means wider
 than the widest vector register (16 baseline, 32 with AVX, 64 with
 AVX-512F): no wider is `direct`, wider is `byval` (clang's `-Wpsabi`).
+`__attribute__((target("avx")))` (or `avx512f`, or an `arch=` implying them)
+raises that width for the function's own declaration or definition, and for
+calls made from inside it, as clang's per-function AVX ABI does; it never
+lowers the translation-unit level. Calls to builtin declarations ignore it.
 
 | Convention               | < 8 bytes         | 8 bytes                  | 16 bytes | > 16 bytes                             |
 | ------------------------ | ----------------- | ------------------------ | -------- | -------------------------------------- |

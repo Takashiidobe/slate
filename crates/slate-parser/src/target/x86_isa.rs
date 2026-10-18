@@ -3,6 +3,7 @@ use super::x86_isa_tables::{
     ALL_FEATURES, CPUS, PENTIUM4, X86_64, X86_64_V2, X86_64_V3, X86_64_V4, X86Cpu,
 };
 use crate::compiler_args::CompilerFlavor;
+use crate::ir::TargetFeature;
 use crate::target_info::TargetFamily;
 use std::str::FromStr;
 
@@ -318,6 +319,36 @@ impl X86Isa {
         } else {
             16
         }
+    }
+
+    pub fn function_vector_register_bytes(
+        self,
+        family: TargetFamily,
+        flavor: CompilerFlavor,
+        features: &[TargetFeature],
+    ) -> u64 {
+        let mut arch = None;
+        let mut request = X86IsaRequest::default();
+        for feature in features {
+            let (name, enabled) = match feature {
+                TargetFeature::Arch(name) => {
+                    arch = name.parse().ok();
+                    continue;
+                }
+                TargetFeature::Enable(name) => (name, true),
+                TargetFeature::Disable(name) => (name, false),
+                TargetFeature::Tune(_) | TargetFeature::BranchProtection(_) => continue,
+            };
+            if let Some(feature) = ALL_FEATURES
+                .into_iter()
+                .find(|feature| feature.spelling() == name)
+            {
+                request.set(feature, enabled);
+            }
+        }
+        let function = Self::resolve(family, arch, &request, flavor);
+        self.vector_register_bytes()
+            .max(function.vector_register_bytes())
     }
 
     pub fn predefines(self, family: TargetFamily, flavor: CompilerFlavor) -> Vec<String> {

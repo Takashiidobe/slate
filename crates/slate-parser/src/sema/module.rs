@@ -51,6 +51,7 @@ fn resolve_module(
         module: Module::new(context.target.clone()),
         names,
         function_declarations: HashMap::new(),
+        function_target: Vec::new(),
         builtin_declarations: HashMap::new(),
         alias_annotations: HashMap::new(),
         next_id,
@@ -388,7 +389,10 @@ impl Lowerer {
                 .ty(&function.id)
                 .ok_or(ResolveError::Internal("missing function type"))?;
             let ty = self.types.ir_type(signature);
-            self.module.functions[index].value.abi = self.declaration_abi(signature, &ty)?;
+            let id = self.module.functions[index].value.id;
+            let features = self.declared_target(id);
+            self.module.functions[index].value.abi =
+                self.declaration_abi(signature, &ty, &features)?;
         }
         Ok(())
     }
@@ -415,7 +419,7 @@ impl Lowerer {
             .clone();
         let resolved = self.types.ctypes.implicit_function();
         let ty = self.types.ir_type(resolved);
-        let abi = Some(self.c_abi_signature(resolved, &ty, None)?);
+        let abi = Some(self.c_abi_signature(resolved, &ty, None, &[])?);
         self.types.entities.declare(id, resolved, false);
         self.record_implicit_function(id);
         let mut symbol = SymbolAttributes::default();
@@ -523,7 +527,8 @@ fn lower_item(
                 return Err(ResolveError::Internal("function definition declarator"));
             };
             let return_type = return_type.as_ref().map(|ty| (**ty).clone());
-            let abi = Some(lower.c_abi_signature(resolved, &ty, None)?);
+            let target = lower.declared_target(id);
+            let abi = Some(lower.c_abi_signature(resolved, &ty, None, &target)?);
             lower.redeclared(declaration.id, id)?;
             let mut metadata = vec![
                 (
@@ -546,6 +551,7 @@ fn lower_item(
             }
             let mut prologue = Vec::new();
             lower.in_function = true;
+            lower.function_target = target;
             lower.in_naked_function = lower.is_naked(id);
             lower.types.function_names = Some(lower.types.function_names(resolved, name));
             lower.return_type = return_type.as_ref().map(|_| return_c);
@@ -559,6 +565,7 @@ fn lower_item(
                     Ok((parameters, prologue))
                 });
             lower.in_function = false;
+            lower.function_target = Vec::new();
             lower.in_naked_function = false;
             lower.types.function_names = None;
             lower.return_type = None;
@@ -1367,7 +1374,8 @@ impl Lowerer {
                         variadic: *variadic,
                     },
                 };
-                let abi = self.declaration_abi(resolved, &ty)?;
+                let features = self.declared_target(id);
+                let abi = self.declaration_abi(resolved, &ty, &features)?;
                 let lowered = declarator.derive(Function {
                     id,
                     name: name.into(),

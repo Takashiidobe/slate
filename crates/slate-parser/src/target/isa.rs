@@ -1,4 +1,5 @@
 use crate::compiler_args::CompilerFlavor;
+use crate::ir::TargetFeature;
 use crate::target::aarch64_isa::{AArch64Isa, ArmMarch, ArmVersion, SveVectorBits};
 use crate::target::arm_isa::{ArmFloatAbi, ArmFpu, ArmIsa};
 use crate::target::x86_isa::{X86Arch, X86Isa, X86IsaRequest};
@@ -137,6 +138,18 @@ impl TargetIsa {
         match self {
             Self::X86(isa) => isa.vector_register_bytes(),
             Self::AArch64(_) | Self::Arm(_) => 16,
+        }
+    }
+
+    pub fn function_vector_register_bytes(
+        self,
+        family: TargetFamily,
+        flavor: CompilerFlavor,
+        features: &[TargetFeature],
+    ) -> u64 {
+        match self {
+            Self::X86(isa) => isa.function_vector_register_bytes(family, flavor, features),
+            Self::AArch64(_) | Self::Arm(_) => self.vector_register_bytes(),
         }
     }
 

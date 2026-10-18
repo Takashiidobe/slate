@@ -5,7 +5,7 @@ use crate::ast::Span;
 use crate::compiler_args::CompilerFlavor;
 use crate::ir::{
     AbiChunk, AbiConvention, AbiPass, AbiSignature, CallConv, Field, FloatType, NumericType,
-    RecordKind, Type, TypeDefinitionKind, VaClass, VaPassing, Value,
+    RecordKind, TargetFeature, Type, TypeDefinitionKind, VaClass, VaPassing, Value,
 };
 use crate::target_info::{TargetInfo, TargetOs};
 
@@ -31,8 +31,9 @@ impl Lowerer {
         signature: crate::sema::ctype::QualType,
         ir: &Type,
         actual_arguments: Option<&[Value]>,
+        features: &[TargetFeature],
     ) -> Result<AbiSignature, ResolveError> {
-        AbiClassifier::new(&self.types, &self.context.target).signature(
+        AbiClassifier::with_features(&self.types, &self.context.target, features).signature(
             ir,
             Some(signature),
             actual_arguments,
@@ -43,8 +44,9 @@ impl Lowerer {
         &self,
         signature: crate::sema::ctype::QualType,
         ir: &Type,
+        features: &[TargetFeature],
     ) -> Result<Option<AbiSignature>, ResolveError> {
-        let classifier = AbiClassifier::new(&self.types, &self.context.target);
+        let classifier = AbiClassifier::with_features(&self.types, &self.context.target, features);
         let Type::Function {
             return_type,
             parameters,
@@ -74,11 +76,24 @@ pub(super) struct AbiOperand {
 pub(super) struct AbiClassifier<'a> {
     types: &'a TypeResolver,
     target: &'a TargetInfo,
+    features: &'a [TargetFeature],
 }
 
 impl<'a> AbiClassifier<'a> {
     pub(super) fn new(types: &'a TypeResolver, target: &'a TargetInfo) -> Self {
-        Self { types, target }
+        Self::with_features(types, target, &[])
+    }
+
+    pub(super) fn with_features(
+        types: &'a TypeResolver,
+        target: &'a TargetInfo,
+        features: &'a [TargetFeature],
+    ) -> Self {
+        Self {
+            types,
+            target,
+            features,
+        }
     }
 
     fn va_passing(&self, ty: &Type) -> Result<VaPassing, ResolveError> {
@@ -894,7 +909,11 @@ impl<'a> AbiClassifier<'a> {
         let layout = self.layout(operand)?;
         let size = layout.size_bytes;
         let align = layout.alignment_bytes;
-        let register_bytes = self.target.isa.vector_register_bytes();
+        let register_bytes = self.target.isa.function_vector_register_bytes(
+            self.target.family,
+            self.types.flavor(),
+            self.features,
+        );
         let pass = match convention {
             AbiConvention::Win64 => AbiPass::Direct,
             AbiConvention::SysV64 if size < 8 => {
