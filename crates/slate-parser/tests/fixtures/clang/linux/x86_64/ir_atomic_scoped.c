@@ -68,54 +68,60 @@ void generic(void) {
 // IR-NEXT:     global %[[VALUE_desired:[0-9]+]] desired: i32 [storage=static] [linkage=external];
 // IR-NEXT:     fn %[[VALUE_scopes:[0-9]+]] @scopes() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         let %[[VALUE_a:[0-9]+]] a: i32 [storage=automatic] = read<i32, atomic=acquire, sync_scope=device>(deref(addr_of<ptr<i32>>(%[[VALUE_shared]])));
-// IR-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_a]]);
-// IR-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = update<i32, result=old, atomic=relaxed, sync_scope=workgroup>(deref(addr_of<ptr<i32>>(%[[VALUE_shared]])), add<i32, overflow=wrap>(old<i32>, const<i32>(1)));
-// IR-NEXT:         let %[[VALUE2:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE0]]), read<i32>(%[[VALUE1]]));
-// IR-NEXT:         write<i32>(%[[VALUE_a]], read<i32>(%[[VALUE2]]));
-// IR-NEXT:         let %[[VALUE3:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_a]]);
+// IR-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic] = update<i32, result=old, atomic=relaxed, sync_scope=workgroup>(deref(addr_of<ptr<i32>>(%[[VALUE_shared]])), add<i32, overflow=wrap>(old<i32>, const<i32>(1)));
+// IR-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE0]]);
+// IR-NEXT:         let %[[VALUE2:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_a]]);
+// IR-NEXT:         let %[[VALUE3:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE2]]), read<i32>(%[[VALUE1]]));
+// IR-NEXT:         write<i32>(%[[VALUE_a]], read<i32>(%[[VALUE3]]));
 // IR-NEXT:         let %[[VALUE4:[0-9]+]]: i32 [synthetic] = update<i32, result=new, atomic=seq_cst, sync_scope=wavefront>(deref(addr_of<ptr<i32>>(%[[VALUE_shared]])), sub<i32, overflow=wrap>(old<i32>, const<i32>(1)));
-// IR-NEXT:         let %[[VALUE5:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE3]]), read<i32>(%[[VALUE4]]));
-// IR-NEXT:         write<i32>(%[[VALUE_a]], read<i32>(%[[VALUE5]]));
+// IR-NEXT:         let %[[VALUE5:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE4]]);
 // IR-NEXT:         let %[[VALUE6:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_a]]);
-// IR-NEXT:         let %[[VALUE7:[0-9]+]]: i32 [synthetic] = update<i32, result=old, atomic=seq_cst, sync_scope=single>(deref(addr_of<ptr<i32>>(%[[VALUE_shared]])), const<i32>(2));
-// IR-NEXT:         let %[[VALUE8:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE6]]), read<i32>(%[[VALUE7]]));
-// IR-NEXT:         write<i32>(%[[VALUE_a]], read<i32>(%[[VALUE8]]));
-// IR-NEXT:         let %[[VALUE9:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_a]]);
-// IR-NEXT:         let %[[VALUE10:[0-9]+]]: i32 [synthetic] = update<i32, result=old, atomic=seq_cst, sync_scope=cluster>(deref(addr_of<ptr<i32>>(%[[VALUE_shared]])), or<i32>(old<i32>, const<i32>(4)));
-// IR-NEXT:         let %[[VALUE11:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE9]]), read<i32>(%[[VALUE10]]));
+// IR-NEXT:         let %[[VALUE7:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE6]]), read<i32>(%[[VALUE5]]));
+// IR-NEXT:         write<i32>(%[[VALUE_a]], read<i32>(%[[VALUE7]]));
+// IR-NEXT:         let %[[VALUE8:[0-9]+]]: i32 [synthetic] = update<i32, result=old, atomic=seq_cst, sync_scope=single>(deref(addr_of<ptr<i32>>(%[[VALUE_shared]])), const<i32>(2));
+// IR-NEXT:         let %[[VALUE9:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE8]]);
+// IR-NEXT:         let %[[VALUE10:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_a]]);
+// IR-NEXT:         let %[[VALUE11:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE10]]), read<i32>(%[[VALUE9]]));
 // IR-NEXT:         write<i32>(%[[VALUE_a]], read<i32>(%[[VALUE11]]));
+// IR-NEXT:         let %[[VALUE12:[0-9]+]]: i32 [synthetic] = update<i32, result=old, atomic=seq_cst, sync_scope=cluster>(deref(addr_of<ptr<i32>>(%[[VALUE_shared]])), or<i32>(old<i32>, const<i32>(4)));
+// IR-NEXT:         let %[[VALUE13:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE12]]);
+// IR-NEXT:         let %[[VALUE14:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_a]]);
+// IR-NEXT:         let %[[VALUE15:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE14]]), read<i32>(%[[VALUE13]]));
+// IR-NEXT:         write<i32>(%[[VALUE_a]], read<i32>(%[[VALUE15]]));
 // IR-NEXT:         write<i32, atomic=release, sync_scope=device>(deref(addr_of<ptr<i32>>(%[[VALUE_shared]])), read<i32>(%[[VALUE_a]]));
 // IR-NEXT:         return read<i32>(%[[VALUE_a]]);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_system_scope:[0-9]+]] @system_scope() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %[[VALUE12:[0-9]+]]: i32 [synthetic] = update<i32, result=old, atomic=seq_cst>(deref(addr_of<ptr<i32>>(%[[VALUE_shared]])), add<i32, overflow=wrap>(old<i32>, const<i32>(1)));
-// IR-NEXT:         return read<i32>(%[[VALUE12]]);
+// IR-NEXT:         let %[[VALUE16:[0-9]+]]: i32 [synthetic] = update<i32, result=old, atomic=seq_cst>(deref(addr_of<ptr<i32>>(%[[VALUE_shared]])), add<i32, overflow=wrap>(old<i32>, const<i32>(1)));
+// IR-NEXT:         return read<i32>(%[[VALUE16]]);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_dynamic_scope:[0-9]+]] @dynamic_scope(%[[VALUE_scope:[0-9]+]] scope: i32, %[[VALUE_order:[0-9]+]] order: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         let %[[VALUE_a_2:[0-9]+]] a: i32 [storage=automatic];
-// IR-NEXT:         let %[[VALUE13:[0-9]+]]: i32 [synthetic] = update<i32, result=old, atomic=seq_cst, sync_scope=dynamic(read<i32>(%[[VALUE_scope]]))>(deref(addr_of<ptr<i32>>(%[[VALUE_shared]])), add<i32, overflow=wrap>(old<i32>, const<i32>(1)));
-// IR-NEXT:         write<i32>(%[[VALUE_a_2]], read<i32>(%[[VALUE13]]));
-// IR-NEXT:         let %[[VALUE14:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_a_2]]);
-// IR-NEXT:         let %[[VALUE15:[0-9]+]]: i32 [synthetic] = update<i32, result=old, atomic=dynamic(read<i32>(%[[VALUE_order]])), sync_scope=dynamic(read<i32>(%[[VALUE_scope]]))>(deref(addr_of<ptr<i32>>(%[[VALUE_shared]])), add<i32, overflow=wrap>(old<i32>, const<i32>(1)));
-// IR-NEXT:         let %[[VALUE16:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE14]]), read<i32>(%[[VALUE15]]));
-// IR-NEXT:         write<i32>(%[[VALUE_a_2]], read<i32>(%[[VALUE16]]));
+// IR-NEXT:         let %[[VALUE17:[0-9]+]]: i32 [synthetic] = update<i32, result=old, atomic=seq_cst, sync_scope=dynamic(read<i32>(%[[VALUE_scope]]))>(deref(addr_of<ptr<i32>>(%[[VALUE_shared]])), add<i32, overflow=wrap>(old<i32>, const<i32>(1)));
+// IR-NEXT:         write<i32>(%[[VALUE_a_2]], read<i32>(%[[VALUE17]]));
+// IR-NEXT:         let %[[VALUE18:[0-9]+]]: i32 [synthetic] = update<i32, result=old, atomic=dynamic(read<i32>(%[[VALUE_order]])), sync_scope=dynamic(read<i32>(%[[VALUE_scope]]))>(deref(addr_of<ptr<i32>>(%[[VALUE_shared]])), add<i32, overflow=wrap>(old<i32>, const<i32>(1)));
+// IR-NEXT:         let %[[VALUE19:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE18]]);
+// IR-NEXT:         let %[[VALUE20:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_a_2]]);
+// IR-NEXT:         let %[[VALUE21:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE20]]), read<i32>(%[[VALUE19]]));
+// IR-NEXT:         write<i32>(%[[VALUE_a_2]], read<i32>(%[[VALUE21]]));
 // IR-NEXT:         return read<i32>(%[[VALUE_a_2]]);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_exchanges:[0-9]+]] @exchanges() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         let %[[VALUE_a_3:[0-9]+]] a: i32 [storage=automatic];
-// IR-NEXT:         let %[[VALUE17:[0-9]+]]: bool [synthetic] = compare_exchange<i32, form=write_back, weak=false, success=seq_cst, failure=relaxed, sync_scope=device>(deref(addr_of<ptr<i32>>(%[[VALUE_shared]])), addr_of<ptr<i32>>(%[[VALUE_expected]]), const<i32>(3));
-// IR-NEXT:         write<i32>(%[[VALUE_a_3]], from_bool<i32, reason=assign>(read<bool>(%[[VALUE17]])));
-// IR-NEXT:         let %[[VALUE18:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_a_3]]);
-// IR-NEXT:         let %[[VALUE19:[0-9]+]]: bool [synthetic] = compare_exchange<i32, form=write_back, weak=true, success=acq_rel, failure=acquire, sync_scope=workgroup>(deref(addr_of<ptr<i32>>(%[[VALUE_shared]])), addr_of<ptr<i32>>(%[[VALUE_expected]]), read<i32>(deref(addr_of<ptr<i32>>(%[[VALUE_desired]]))));
-// IR-NEXT:         let %[[VALUE20:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE18]]), from_bool<i32, reason=promotion>(read<bool>(%[[VALUE19]])));
-// IR-NEXT:         write<i32>(%[[VALUE_a_3]], read<i32>(%[[VALUE20]]));
+// IR-NEXT:         let %[[VALUE22:[0-9]+]]: bool [synthetic] = compare_exchange<i32, form=write_back, weak=false, success=seq_cst, failure=relaxed, sync_scope=device>(deref(addr_of<ptr<i32>>(%[[VALUE_shared]])), addr_of<ptr<i32>>(%[[VALUE_expected]]), const<i32>(3));
+// IR-NEXT:         write<i32>(%[[VALUE_a_3]], from_bool<i32, reason=assign>(read<bool>(%[[VALUE22]])));
+// IR-NEXT:         let %[[VALUE23:[0-9]+]]: bool [synthetic] = compare_exchange<i32, form=write_back, weak=true, success=acq_rel, failure=acquire, sync_scope=workgroup>(deref(addr_of<ptr<i32>>(%[[VALUE_shared]])), addr_of<ptr<i32>>(%[[VALUE_expected]]), read<i32>(deref(addr_of<ptr<i32>>(%[[VALUE_desired]]))));
+// IR-NEXT:         let %[[VALUE24:[0-9]+]]: bool [synthetic] = read<bool>(%[[VALUE23]]);
+// IR-NEXT:         let %[[VALUE25:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_a_3]]);
+// IR-NEXT:         let %[[VALUE26:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE25]]), from_bool<i32, reason=promotion>(read<bool>(%[[VALUE24]])));
+// IR-NEXT:         write<i32>(%[[VALUE_a_3]], read<i32>(%[[VALUE26]]));
 // IR-NEXT:         return read<i32>(%[[VALUE_a_3]]);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_generic:[0-9]+]] @generic() -> void [linkage=external] [fallthrough=ret_void] {
 // IR-NEXT:         write<i32>(deref(addr_of<ptr<i32>>(%[[VALUE_desired]])), read<i32, atomic=acquire, sync_scope=wavefront>(deref(addr_of<ptr<i32>>(%[[VALUE_shared]]))));
 // IR-NEXT:         write<i32, atomic=release, sync_scope=wavefront>(deref(addr_of<ptr<i32>>(%[[VALUE_shared]])), read<i32>(deref(addr_of<ptr<i32>>(%[[VALUE_desired]]))));
-// IR-NEXT:         let %[[VALUE21:[0-9]+]]: i32 [synthetic] = update<i32, result=old, atomic=seq_cst, sync_scope=single>(deref(addr_of<ptr<i32>>(%[[VALUE_shared]])), read<i32>(deref(addr_of<ptr<i32>>(%[[VALUE_desired]]))));
-// IR-NEXT:         write<i32>(deref(addr_of<ptr<i32>>(%[[VALUE_expected]])), read<i32>(%[[VALUE21]]));
+// IR-NEXT:         let %[[VALUE27:[0-9]+]]: i32 [synthetic] = update<i32, result=old, atomic=seq_cst, sync_scope=single>(deref(addr_of<ptr<i32>>(%[[VALUE_shared]])), read<i32>(deref(addr_of<ptr<i32>>(%[[VALUE_desired]]))));
+// IR-NEXT:         write<i32>(deref(addr_of<ptr<i32>>(%[[VALUE_expected]])), read<i32>(%[[VALUE27]]));
 // IR-NEXT:         fence<scope=thread, order=seq_cst, sync_scope=workgroup>;
 // IR-NEXT:     }
 // IR-NEXT: }

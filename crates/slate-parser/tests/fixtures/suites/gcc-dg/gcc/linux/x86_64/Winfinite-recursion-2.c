@@ -382,36 +382,39 @@ static int fi_v (void)        // { dg-warning "-Winfinite-recursion" }
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_nowarn_noret_call_abort_r]], sub<i32, overflow=ub>(read<i32>(%[[VALUE_n_2]]), const<i32>(1)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_warn_call_abort_r:[0-9]+]] @warn_call_abort_r(%[[VALUE_n_3:[0-9]+]] n: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE9:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_n_3]]);
-// DEFAULT-NEXT:         let %[[VALUE10:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE9]]), call<i32, signature=fn(i32) -> i32>(%[[VALUE_warn_call_abort_r]], sub<i32, overflow=ub>(read<i32>(%[[VALUE_n_3]]), const<i32>(1))));
-// DEFAULT-NEXT:         write<i32>(%[[VALUE_n_3]], read<i32>(%[[VALUE10]]));
+// DEFAULT-NEXT:         let %[[VALUE9:[0-9]+]]: i32 [synthetic] = call<i32, signature=fn(i32) -> i32>(%[[VALUE_warn_call_abort_r]], sub<i32, overflow=ub>(read<i32>(%[[VALUE_n_3]]), const<i32>(1)));
+// DEFAULT-NEXT:         let %[[VALUE10:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_n_3]]);
+// DEFAULT-NEXT:         let %[[VALUE11:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE10]]), read<i32>(%[[VALUE9]]));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_n_3]], read<i32>(%[[VALUE11]]));
 // DEFAULT-NEXT:         if gt<i32>(read<i32>(%[[VALUE_n_3]]), const<i32>(7))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_n_3]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_warn_call_exit_r:[0-9]+]] @warn_call_exit_r(%[[VALUE_n_4:[0-9]+]] n: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE11:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_n_4]]);
-// DEFAULT-NEXT:         let %[[VALUE12:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE11]]), call<i32, signature=fn(i32) -> i32>(%[[VALUE_warn_call_exit_r]], sub<i32, overflow=ub>(read<i32>(%[[VALUE_n_4]]), const<i32>(1))));
-// DEFAULT-NEXT:         write<i32>(%[[VALUE_n_4]], read<i32>(%[[VALUE12]]));
+// DEFAULT-NEXT:         let %[[VALUE12:[0-9]+]]: i32 [synthetic] = call<i32, signature=fn(i32) -> i32>(%[[VALUE_warn_call_exit_r]], sub<i32, overflow=ub>(read<i32>(%[[VALUE_n_4]]), const<i32>(1)));
+// DEFAULT-NEXT:         let %[[VALUE13:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_n_4]]);
+// DEFAULT-NEXT:         let %[[VALUE14:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE13]]), read<i32>(%[[VALUE12]]));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_n_4]], read<i32>(%[[VALUE14]]));
 // DEFAULT-NEXT:         if gt<i32>(read<i32>(%[[VALUE_n_4]]), const<i32>(7))
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_n_4]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE___builtin_longjmp:[0-9]+]] @__builtin_longjmp(%[[VALUE13:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE14:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_longjmp:[0-9]+]] @__builtin_longjmp(%[[VALUE15:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE16:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_nowarn_call_longjmp_r:[0-9]+]] @nowarn_call_longjmp_r(%[[VALUE_n_5:[0-9]+]] n: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if gt<i32>(read<i32>(%[[VALUE_n_5]]), const<i32>(7))
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>, i32) -> void>(%[[VALUE___builtin_longjmp]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<@type[[TYPE___jmp_buf_tag]]>, length=Some(1)>(%[[VALUE_jmpbuf]])), const<i32>(1));
 // DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%[[VALUE_n_5]]), call<i32, signature=fn(i32) -> i32>(%[[VALUE_nowarn_call_longjmp_r]], sub<i32, overflow=ub>(read<i32>(%[[VALUE_n_5]]), const<i32>(1))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_warn_call_longjmp_r:[0-9]+]] @warn_call_longjmp_r(%[[VALUE_n_6:[0-9]+]] n: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE15:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_n_6]]);
-// DEFAULT-NEXT:         let %[[VALUE16:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE15]]), call<i32, signature=fn(i32) -> i32>(%[[VALUE_warn_call_longjmp_r]], sub<i32, overflow=ub>(read<i32>(%[[VALUE_n_6]]), const<i32>(1))));
-// DEFAULT-NEXT:         write<i32>(%[[VALUE_n_6]], read<i32>(%[[VALUE16]]));
+// DEFAULT-NEXT:         let %[[VALUE17:[0-9]+]]: i32 [synthetic] = call<i32, signature=fn(i32) -> i32>(%[[VALUE_warn_call_longjmp_r]], sub<i32, overflow=ub>(read<i32>(%[[VALUE_n_6]]), const<i32>(1)));
+// DEFAULT-NEXT:         let %[[VALUE18:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_n_6]]);
+// DEFAULT-NEXT:         let %[[VALUE19:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE18]]), read<i32>(%[[VALUE17]]));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_n_6]], read<i32>(%[[VALUE19]]));
 // DEFAULT-NEXT:         if gt<i32>(read<i32>(%[[VALUE_n_6]]), const<i32>(7))
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>, i32) -> void>(%[[VALUE___builtin_longjmp]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<@type[[TYPE___jmp_buf_tag]]>, length=Some(1)>(%[[VALUE_jmpbuf]])), const<i32>(1));
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_n_6]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_siglongjmp:[0-9]+]] @siglongjmp(%[[VALUE17:[0-9]+]] <unnamed>: ptr<@type[[TYPE___sigjmp_buf_tag]]> [array=1], %[[VALUE18:[0-9]+]] <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_siglongjmp:[0-9]+]] @siglongjmp(%[[VALUE20:[0-9]+]] <unnamed>: ptr<@type[[TYPE___sigjmp_buf_tag]]> [array=1], %[[VALUE21:[0-9]+]] <unnamed>: i32) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_nowarn_call_siglongjmp_r:[0-9]+]] @nowarn_call_siglongjmp_r(%[[VALUE_n_7:[0-9]+]] n: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if gt<i32>(read<i32>(%[[VALUE_n_7]]), const<i32>(7))
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<@type[[TYPE___sigjmp_buf_tag]]>, i32) -> void>(%[[VALUE_siglongjmp]], array_decay<ptr<@type[[TYPE___sigjmp_buf_tag]]>, length=Some(1)>(%[[VALUE_sigjmpbuf]]), const<i32>(1));
@@ -419,42 +422,44 @@ static int fi_v (void)        // { dg-warning "-Winfinite-recursion" }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_nowarn_while_do_call_r:[0-9]+]] @nowarn_while_do_call_r(%[[VALUE_n_8:[0-9]+]] n: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_z:[0-9]+]] z: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         while %[[VALUE19:[0-9]+]] ne<i32>(read<i32>(%[[VALUE_n_8]]), const<i32>(0))
-// DEFAULT-NEXT:             let %[[VALUE20:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_z]]);
-// DEFAULT-NEXT:             let %[[VALUE21:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_n_8]]);
-// DEFAULT-NEXT:             let %[[VALUE22:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE21]]), const<i32>(1));
-// DEFAULT-NEXT:             write<i32>(%[[VALUE_n_8]], read<i32>(%[[VALUE22]]));
-// DEFAULT-NEXT:             let %[[VALUE23:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE20]]), call<i32, signature=fn(i32) -> i32>(%[[VALUE_nowarn_while_do_call_r]], read<i32>(%[[VALUE21]])));
-// DEFAULT-NEXT:             write<i32>(%[[VALUE_z]], read<i32>(%[[VALUE23]]));
+// DEFAULT-NEXT:         while %[[VALUE22:[0-9]+]] ne<i32>(read<i32>(%[[VALUE_n_8]]), const<i32>(0))
+// DEFAULT-NEXT:             let %[[VALUE23:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_n_8]]);
+// DEFAULT-NEXT:             let %[[VALUE24:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE23]]), const<i32>(1));
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_n_8]], read<i32>(%[[VALUE24]]));
+// DEFAULT-NEXT:             let %[[VALUE25:[0-9]+]]: i32 [synthetic] = call<i32, signature=fn(i32) -> i32>(%[[VALUE_nowarn_while_do_call_r]], read<i32>(%[[VALUE23]]));
+// DEFAULT-NEXT:             let %[[VALUE26:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_z]]);
+// DEFAULT-NEXT:             let %[[VALUE27:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE26]]), read<i32>(%[[VALUE25]]));
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_z]], read<i32>(%[[VALUE27]]));
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_z]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_warn_do_while_call_r:[0-9]+]] @warn_do_while_call_r(%[[VALUE_n_9:[0-9]+]] n: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_z_2:[0-9]+]] z: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         do %[[VALUE24:[0-9]+]]
-// DEFAULT-NEXT:             let %[[VALUE25:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_z_2]]);
-// DEFAULT-NEXT:             let %[[VALUE26:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE25]]), call<i32, signature=fn(i32) -> i32>(%[[VALUE_warn_do_while_call_r]], read<i32>(%[[VALUE_n_9]])));
-// DEFAULT-NEXT:             write<i32>(%[[VALUE_z_2]], read<i32>(%[[VALUE26]]));
+// DEFAULT-NEXT:         do %[[VALUE28:[0-9]+]]
+// DEFAULT-NEXT:             let %[[VALUE29:[0-9]+]]: i32 [synthetic] = call<i32, signature=fn(i32) -> i32>(%[[VALUE_warn_do_while_call_r]], read<i32>(%[[VALUE_n_9]]));
+// DEFAULT-NEXT:             let %[[VALUE30:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_z_2]]);
+// DEFAULT-NEXT:             let %[[VALUE31:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE30]]), read<i32>(%[[VALUE29]]));
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_z_2]], read<i32>(%[[VALUE31]]));
 // DEFAULT-NEXT:         while {
-// DEFAULT-NEXT:             let %[[VALUE27:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_n_9]]);
-// DEFAULT-NEXT:             let %[[VALUE28:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE27]]), const<i32>(1));
-// DEFAULT-NEXT:             write<i32>(%[[VALUE_n_9]], read<i32>(%[[VALUE28]]));
-// DEFAULT-NEXT:             yield ne<i32>(read<i32>(%[[VALUE28]]), const<i32>(0));
+// DEFAULT-NEXT:             let %[[VALUE32:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_n_9]]);
+// DEFAULT-NEXT:             let %[[VALUE33:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE32]]), const<i32>(1));
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_n_9]], read<i32>(%[[VALUE33]]));
+// DEFAULT-NEXT:             yield ne<i32>(read<i32>(%[[VALUE33]]), const<i32>(0));
 // DEFAULT-NEXT:         };
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_z_2]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE___builtin_malloc:[0-9]+]] @__builtin_malloc(%[[VALUE29:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_malloc:[0-9]+]] @__builtin_malloc(%[[VALUE34:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_malloc:[0-9]+]] @malloc(%[[VALUE_n_10:[0-9]+]] n: u64) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<u64> [storage=automatic] = pointer_cast<ptr<u64>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_malloc]], add<u64, overflow=wrap>(read<u64>(%[[VALUE_n_10]]), const<u64>(8))));
 // DEFAULT-NEXT:         write<u64>(deref(read<ptr<u64>>(%[[VALUE_p]])), read<u64>(%[[VALUE_n_10]]));
 // DEFAULT-NEXT:         return pointer_cast<ptr<void>, reason=return>(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(read<ptr<u64>>(%[[VALUE_p]]), const<i32>(1)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_nowarn_fact:[0-9]+]] @nowarn_fact(%[[VALUE_n_11:[0-9]+]] n: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE30:[0-9]+]]: i32 [synthetic];
+// DEFAULT-NEXT:         let %[[VALUE35:[0-9]+]]: i32 [synthetic];
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_n_11]]), const<i32>(0))
-// DEFAULT-NEXT:             write<i32>(%[[VALUE30]], mul<i32, overflow=ub>(read<i32>(%[[VALUE_n_11]]), call<i32, signature=fn(i32) -> i32>(%[[VALUE_nowarn_fact]], sub<i32, overflow=ub>(read<i32>(%[[VALUE_n_11]]), const<i32>(1)))));
+// DEFAULT-NEXT:             write<i32>(%[[VALUE35]], mul<i32, overflow=ub>(read<i32>(%[[VALUE_n_11]]), call<i32, signature=fn(i32) -> i32>(%[[VALUE_nowarn_fact]], sub<i32, overflow=ub>(read<i32>(%[[VALUE_n_11]]), const<i32>(1)))));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<i32>(%[[VALUE30]], const<i32>(1));
-// DEFAULT-NEXT:         return read<i32>(%[[VALUE30]]);
+// DEFAULT-NEXT:             write<i32>(%[[VALUE35]], const<i32>(1));
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE35]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fi_v:[0-9]+]] @fi_v() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return call<i32, signature=fn() -> i32>(%[[VALUE_warn_call_fi_v:[0-9]+]]);

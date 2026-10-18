@@ -153,18 +153,19 @@ int nested_labels(int x) { return ({ outer: inner: x + 1; }); }
 // IR-NEXT:             }
 // IR-NEXT:             yield gt<i32>(read<i32>(%[[VALUE8]]), const<i32>(0));
 // IR-NEXT:         }
-// IR-NEXT:             let %[[VALUE11:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_total]]);
-// IR-NEXT:             let %[[VALUE12:[0-9]+]]: i32 [synthetic];
+// IR-NEXT:             let %[[VALUE11:[0-9]+]]: i32 [synthetic];
 // IR-NEXT:             {
 // IR-NEXT:                 let %[[VALUE_k:[0-9]+]] k: i32 [storage=automatic] = read<i32>(%[[VALUE_n]]);
-// IR-NEXT:                 write<i32>(%[[VALUE12]], mul<i32, overflow=ub>(read<i32>(%[[VALUE_k]]), read<i32>(%[[VALUE_k]])));
+// IR-NEXT:                 write<i32>(%[[VALUE11]], mul<i32, overflow=ub>(read<i32>(%[[VALUE_k]]), read<i32>(%[[VALUE_k]])));
 // IR-NEXT:             }
-// IR-NEXT:             let %[[VALUE13:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE11]]), read<i32>(%[[VALUE12]]));
-// IR-NEXT:             write<i32>(%[[VALUE_total]], read<i32>(%[[VALUE13]]));
+// IR-NEXT:             let %[[VALUE12:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE11]]);
+// IR-NEXT:             let %[[VALUE13:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_total]]);
+// IR-NEXT:             let %[[VALUE14:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE13]]), read<i32>(%[[VALUE12]]));
+// IR-NEXT:             write<i32>(%[[VALUE_total]], read<i32>(%[[VALUE14]]));
 // IR-NEXT:         return read<i32>(%[[VALUE_total]]);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_labeled_result:[0-9]+]] @labeled_result(%[[VALUE_x_6:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %[[VALUE14:[0-9]+]]: i32 [synthetic];
+// IR-NEXT:         let %[[VALUE15:[0-9]+]]: i32 [synthetic];
 // IR-NEXT:         {
 // IR-NEXT:             let %[[VALUE_result:[0-9]+]] result: i32 [storage=automatic];
 // IR-NEXT:             if not<bool>(ne<i32>(read<i32>(%[[VALUE_x_6]]), const<i32>(0)))
@@ -175,19 +176,19 @@ int nested_labels(int x) { return ({ outer: inner: x + 1; }); }
 // IR-NEXT:                 write<i32>(%[[VALUE_result]], neg<i32, overflow=ub>(const<i32>(5)));
 // IR-NEXT:             label %[[VALUE_done]] done:
 // IR-NEXT:                 ;
-// IR-NEXT:             write<i32>(%[[VALUE14]], read<i32>(%[[VALUE_result]]));
+// IR-NEXT:             write<i32>(%[[VALUE15]], read<i32>(%[[VALUE_result]]));
 // IR-NEXT:         }
-// IR-NEXT:         return read<i32>(%[[VALUE14]]);
+// IR-NEXT:         return read<i32>(%[[VALUE15]]);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_nested_labels:[0-9]+]] @nested_labels(%[[VALUE_x_7:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %[[VALUE15:[0-9]+]]: i32 [synthetic];
+// IR-NEXT:         let %[[VALUE16:[0-9]+]]: i32 [synthetic];
 // IR-NEXT:         {
 // IR-NEXT:             label %[[VALUE_outer:[0-9]+]] outer:
 // IR-NEXT:                 label %[[VALUE_inner:[0-9]+]] inner:
 // IR-NEXT:                     ;
-// IR-NEXT:             write<i32>(%[[VALUE15]], add<i32, overflow=ub>(read<i32>(%[[VALUE_x_7]]), const<i32>(1)));
+// IR-NEXT:             write<i32>(%[[VALUE16]], add<i32, overflow=ub>(read<i32>(%[[VALUE_x_7]]), const<i32>(1)));
 // IR-NEXT:         }
-// IR-NEXT:         return read<i32>(%[[VALUE15]]);
+// IR-NEXT:         return read<i32>(%[[VALUE16]]);
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

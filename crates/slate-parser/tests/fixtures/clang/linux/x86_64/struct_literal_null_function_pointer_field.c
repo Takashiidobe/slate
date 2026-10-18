@@ -66,15 +66,16 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_total:[0-9]+]] total: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         if ne<ptr<fn(i32) -> i32>>(read<ptr<fn(i32) -> i32>>(field1(%[[VALUE_h]])), null<ptr<fn(i32) -> i32>>)
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %[[VALUE0:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_total]]);
-// DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE0]]), call<i32, signature=fn(i32) -> i32>(read<ptr<fn(i32) -> i32>>(field1(%[[VALUE_h]])), const<i32>(1)));
-// DEFAULT-NEXT:                 write<i32>(%[[VALUE_total]], read<i32>(%[[VALUE1]]));
+// DEFAULT-NEXT:                 let %[[VALUE0:[0-9]+]]: i32 [synthetic] = call<i32, signature=fn(i32) -> i32>(read<ptr<fn(i32) -> i32>>(field1(%[[VALUE_h]])), const<i32>(1));
+// DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_total]]);
+// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE1]]), read<i32>(%[[VALUE0]]));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_total]], read<i32>(%[[VALUE2]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         if ne<ptr<i32>>(read<ptr<i32>>(field2(%[[VALUE_h]])), null<ptr<i32>>)
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_total]]);
-// DEFAULT-NEXT:                 let %[[VALUE3:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE2]]), read<i32>(deref(read<ptr<i32>>(field2(%[[VALUE_h]])))));
-// DEFAULT-NEXT:                 write<i32>(%[[VALUE_total]], read<i32>(%[[VALUE3]]));
+// DEFAULT-NEXT:                 let %[[VALUE3:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_total]]);
+// DEFAULT-NEXT:                 let %[[VALUE4:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE3]]), read<i32>(deref(read<ptr<i32>>(field2(%[[VALUE_h]])))));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_total]], read<i32>(%[[VALUE4]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_total]]);
 // DEFAULT-NEXT:     }

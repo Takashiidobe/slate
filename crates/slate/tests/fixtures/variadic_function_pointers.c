@@ -58,10 +58,10 @@ int main(void) {
 // CHECK-NEXT:         >(__va_args.clone())
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut result: i32 = unsafe { args.next_arg::<i32>() };
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = result;
-// CHECK-NEXT:     result = [[V_0]] + ((unsafe { args.next_arg::<f64>() }) as i32);
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i32 = result;
-// CHECK-NEXT:     result = [[V_1]] + unsafe { args.next_arg::<i32>() };
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = (unsafe { args.next_arg::<f64>() }) as i32;
+// CHECK-NEXT:     result += [[V_0]];
+// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i32 = unsafe { args.next_arg::<i32>() };
+// CHECK-NEXT:     result += [[V_1]];
 // CHECK-NEXT:     {}
 // CHECK-NEXT:     count + result
 // CHECK-NEXT: }

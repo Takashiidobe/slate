@@ -112,11 +112,19 @@ impl FunctionLowerer<'_, '_> {
                 if variable.register.is_some() {
                     self.register_locals.insert(variable.id);
                 }
+                let alignment = self.tables.over_alignment(&variable.ty, variable.alignment);
+                if alignment.is_some() {
+                    self.aligned_locals.insert(variable.id);
+                }
+                let outer = self.declaring.replace(Some((variable.id, false)));
                 let init = variable
                     .initializer
                     .as_ref()
                     .map(|value| self.lower_value(value))
-                    .transpose()?;
+                    .transpose();
+                let self_referential = matches!(self.declaring.replace(outer), Some((_, true)));
+                let mut init = init?;
+                let self_initializer = init.take_if(|_| self_referential);
                 let init = match (init, &variable.ty) {
                     (Some(init), _) => Some(init),
                     (
@@ -147,17 +155,21 @@ impl FunctionLowerer<'_, '_> {
                     }),
                 };
                 let ty = self.lower_type(&variable.ty)?;
-                let (ty, init) = match self.tables.over_alignment(&variable.ty, variable.alignment)
-                {
-                    Some(alignment) => {
-                        self.aligned_locals.insert(variable.id);
-                        (
-                            self.align_wrapped(&variable.name, alignment, ty)?,
-                            init.map(|init| align_wrap(alignment, init)),
-                        )
-                    }
+                let (ty, init) = match alignment {
+                    Some(alignment) => (
+                        self.align_wrapped(&variable.name, alignment, ty)?,
+                        init.map(|init| align_wrap(alignment, init)),
+                    ),
                     None => (ty, init),
                 };
+                if let Some(value) = self_initializer {
+                    let place = ir::Place {
+                        ty: variable.ty.clone(),
+                        kind: PlaceKind::Binding(variable.id),
+                        access: variable.access,
+                    };
+                    self.self_initializer = Some(self.lower_assignment(&place, value)?);
+                }
                 Stmt::Let {
                     name: binding_name(variable.id, &self.tables.bindings),
                     mutable: true,
@@ -347,7 +359,7 @@ impl FunctionLowerer<'_, '_> {
     ) -> Result<Vec<Stmt>> {
         let mut lowered = Vec::with_capacity(statements.len());
         for statement in statements {
-            lowered.push(self.lower_statement(statement)?);
+            lowered.extend(self.lower_statement(statement)?);
             if let ir::Statement::Let(variable) = &statement.value
                 && let Some(cleanup) = variable.cleanup
             {
@@ -417,9 +429,13 @@ impl FunctionLowerer<'_, '_> {
     pub(super) fn lower_statement(
         &mut self,
         statement: &slate_parser::ast::Span<ir::Statement>,
-    ) -> Result<Stmt> {
-        self.lower_statement_node(statement)
-            .map_err(|error| error.used_at(Site::of(statement)))
+    ) -> Result<Vec<Stmt>> {
+        let lowered = self
+            .lower_statement_node(statement)
+            .map_err(|error| error.used_at(Site::of(statement)))?;
+        Ok(std::iter::once(lowered)
+            .chain(self.self_initializer.take())
+            .collect())
     }
 }
 

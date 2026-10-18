@@ -79,35 +79,37 @@ int main() {
 // DEFAULT-NEXT:     global %[[VALUE_w:[0-9]+]] w: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_c_2:[0-9]+]] c: u16) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: u16 [synthetic] = read<u16>(%[[VALUE_c_2]]);
-// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: u16 [synthetic] = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE0]]))), from_bool<i32, reason=promotion>(overflow_add<bool>(neg<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_c_2]])))), neg<i32, overflow=ub>(const<i32>(1)), deref(addr_of<ptr<u16>>(%[[VALUE_b]])))))));
-// DEFAULT-NEXT:         write<u16>(%[[VALUE_c_2]], read<u16>(%[[VALUE1]]));
-// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: u16 [synthetic] = read<u16>(%[[VALUE_c_2]]);
-// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: u16 [synthetic] = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE2]]))), const<i32>(1))));
-// DEFAULT-NEXT:         write<u16>(%[[VALUE_c_2]], read<u16>(%[[VALUE3]]));
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: bool [synthetic] = overflow_add<bool>(neg<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_c_2]])))), neg<i32, overflow=ub>(const<i32>(1)), deref(addr_of<ptr<u16>>(%[[VALUE_b]])));
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: u16 [synthetic] = read<u16>(%[[VALUE_c_2]]);
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: u16 [synthetic] = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE1]]))), from_bool<i32, reason=promotion>(read<bool>(%[[VALUE0]])))));
+// DEFAULT-NEXT:         write<u16>(%[[VALUE_c_2]], read<u16>(%[[VALUE2]]));
+// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: u16 [synthetic] = read<u16>(%[[VALUE_c_2]]);
+// DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: u16 [synthetic] = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE3]]))), const<i32>(1))));
+// DEFAULT-NEXT:         write<u16>(%[[VALUE_c_2]], read<u16>(%[[VALUE4]]));
 // DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(widen<u32, reason=return>(read<u16>(%[[VALUE_c_2]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_b_2:[0-9]+]] b: u16) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: u16 [synthetic] = read<u16>(%[[VALUE_b_2]]);
-// DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: u16 [synthetic] = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE4]]))), and<i32>(neg<i32, overflow=ub>(const<i32>(14)), const<i32>(15)))));
-// DEFAULT-NEXT:         write<u16>(%[[VALUE_b_2]], read<u16>(%[[VALUE5]]));
+// DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: u16 [synthetic] = read<u16>(%[[VALUE_b_2]]);
+// DEFAULT-NEXT:         let %[[VALUE6:[0-9]+]]: u16 [synthetic] = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE5]]))), and<i32>(neg<i32, overflow=ub>(const<i32>(14)), const<i32>(15)))));
+// DEFAULT-NEXT:         write<u16>(%[[VALUE_b_2]], read<u16>(%[[VALUE6]]));
 // DEFAULT-NEXT:         write<u16>(%[[VALUE_b_2]], reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_b_2]]))), neg<i32, overflow=ub>(not<i32>(const<i32>(1)))))));
 // DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(widen<u32, reason=return>(read<u16>(%[[VALUE_b_2]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_baz:[0-9]+]] @baz(%[[VALUE_e:[0-9]+]] e: u16) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE6:[0-9]+]]: u16 [synthetic] = read<u16>(%[[VALUE_e]]);
-// DEFAULT-NEXT:         let %[[VALUE7:[0-9]+]]: u16 [synthetic] = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE6]]))), const<i32>(1))));
-// DEFAULT-NEXT:         write<u16>(%[[VALUE_e]], read<u16>(%[[VALUE7]]));
-// DEFAULT-NEXT:         let %[[VALUE8:[0-9]+]]: u16 [synthetic] = read<u16>(%[[VALUE_e]]);
-// DEFAULT-NEXT:         let %[[VALUE9:[0-9]+]]: u16 [synthetic] = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE8]]))), from_bool<i32, reason=promotion>(overflow_add<bool>(const<i64>(8719476735), read<i32>(%[[VALUE_u]]), deref(addr_of<ptr<i32>>(%[[VALUE_v]])))))));
-// DEFAULT-NEXT:         write<u16>(%[[VALUE_e]], read<u16>(%[[VALUE9]]));
+// DEFAULT-NEXT:         let %[[VALUE7:[0-9]+]]: u16 [synthetic] = read<u16>(%[[VALUE_e]]);
+// DEFAULT-NEXT:         let %[[VALUE8:[0-9]+]]: u16 [synthetic] = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE7]]))), const<i32>(1))));
+// DEFAULT-NEXT:         write<u16>(%[[VALUE_e]], read<u16>(%[[VALUE8]]));
+// DEFAULT-NEXT:         let %[[VALUE9:[0-9]+]]: bool [synthetic] = overflow_add<bool>(const<i64>(8719476735), read<i32>(%[[VALUE_u]]), deref(addr_of<ptr<i32>>(%[[VALUE_v]])));
+// DEFAULT-NEXT:         let %[[VALUE10:[0-9]+]]: u16 [synthetic] = read<u16>(%[[VALUE_e]]);
+// DEFAULT-NEXT:         let %[[VALUE11:[0-9]+]]: u16 [synthetic] = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE10]]))), from_bool<i32, reason=promotion>(read<bool>(%[[VALUE9]])))));
+// DEFAULT-NEXT:         write<u16>(%[[VALUE_e]], read<u16>(%[[VALUE11]]));
 // DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(widen<u32, reason=return>(read<u16>(%[[VALUE_e]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_qux:[0-9]+]] @qux(%[[VALUE_e_2:[0-9]+]] e: u32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         write<u16>(%[[VALUE_c]], reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(not<i32>(const<i32>(1)))));
-// DEFAULT-NEXT:         let %[[VALUE10:[0-9]+]]: u16 [synthetic] = read<u16>(%[[VALUE_c]]);
-// DEFAULT-NEXT:         let %[[VALUE11:[0-9]+]]: u16 [synthetic] = truncate<u16, reason=assign, fits=unknown>(mul<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE10]])))), read<u32>(%[[VALUE_e_2]])));
-// DEFAULT-NEXT:         write<u16>(%[[VALUE_c]], read<u16>(%[[VALUE11]]));
+// DEFAULT-NEXT:         let %[[VALUE12:[0-9]+]]: u16 [synthetic] = read<u16>(%[[VALUE_c]]);
+// DEFAULT-NEXT:         let %[[VALUE13:[0-9]+]]: u16 [synthetic] = truncate<u16, reason=assign, fits=unknown>(mul<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE12]])))), read<u32>(%[[VALUE_e_2]])));
+// DEFAULT-NEXT:         write<u16>(%[[VALUE_c]], read<u16>(%[[VALUE13]]));
 // DEFAULT-NEXT:         write<u16>(%[[VALUE_c]], reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_c]]))), and<i32>(neg<i32, overflow=ub>(const<i32>(15)), const<i32>(5))))));
 // DEFAULT-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_c]]))), read<i32>(%[[VALUE_w]])), read<i32>(%[[VALUE_x]]));
 // DEFAULT-NEXT:     }

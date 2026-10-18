@@ -437,8 +437,8 @@ int main(void) {
 // CHECK-NEXT:         >(__va_args.clone())
 // CHECK-NEXT:     };
 // CHECK-NEXT:     for index in 0..count {
-// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:         total = [[V_0]] + unsafe { arguments.next_arg::<i32>() };
+// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = unsafe { arguments.next_arg::<i32>() };
+// CHECK-NEXT:         total += [[V_0]];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     {}
 // CHECK-NEXT:     total

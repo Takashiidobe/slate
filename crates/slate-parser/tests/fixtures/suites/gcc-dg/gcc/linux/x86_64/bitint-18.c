@@ -92,26 +92,31 @@ main ()
 // DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: i575b [synthetic] = update<i575b, result=new, atomic=seq_cst>(%[[VALUE_e]], sub<i575b, overflow=ub>(old<i575b>, widen<i575b, reason=usual_arith>(const<i4b>(5))));
 // DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_e]])), add<i575b, overflow=wrap>(old<i575b>, widen<i575b, reason=arg>(const<i197b>(54342985743985743985743895743834298574985734895743895734895))));
 // DEFAULT-NEXT:         write<u575b>(%[[VALUE_f]], reinterpret<u575b, reason=assign, fits=unknown>(read<i575b>(%[[VALUE5]])));
-// DEFAULT-NEXT:         let %[[VALUE6:[0-9]+]]: u575b [synthetic] = read<u575b>(%[[VALUE_f]]);
-// DEFAULT-NEXT:         let %[[VALUE7:[0-9]+]]: i575b [synthetic] = update<i575b, result=new, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_e]])), sub<i575b, overflow=wrap>(old<i575b>, widen<i575b, reason=arg>(const<i573b>(13110356772307144130089534440127211568864891923061809853784155727841516341877716905506658630804426134644404380556711020290072702485839594283061059349912463486203837251238365))));
-// DEFAULT-NEXT:         let %[[VALUE8:[0-9]+]]: u575b [synthetic] = add<u575b, overflow=wrap>(read<u575b>(%[[VALUE6]]), reinterpret<u575b, reason=usual_arith, fits=unknown>(read<i575b>(%[[VALUE7]])));
-// DEFAULT-NEXT:         write<u575b>(%[[VALUE_f]], read<u575b>(%[[VALUE8]]));
-// DEFAULT-NEXT:         let %[[VALUE9:[0-9]+]]: u575b [synthetic] = read<u575b>(%[[VALUE_f]]);
+// DEFAULT-NEXT:         let %[[VALUE6:[0-9]+]]: i575b [synthetic] = update<i575b, result=new, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_e]])), sub<i575b, overflow=wrap>(old<i575b>, widen<i575b, reason=arg>(const<i573b>(13110356772307144130089534440127211568864891923061809853784155727841516341877716905506658630804426134644404380556711020290072702485839594283061059349912463486203837251238365))));
+// DEFAULT-NEXT:         let %[[VALUE7:[0-9]+]]: i575b [synthetic] = read<i575b>(%[[VALUE6]]);
+// DEFAULT-NEXT:         let %[[VALUE8:[0-9]+]]: u575b [synthetic] = read<u575b>(%[[VALUE_f]]);
+// DEFAULT-NEXT:         let %[[VALUE9:[0-9]+]]: u575b [synthetic] = add<u575b, overflow=wrap>(read<u575b>(%[[VALUE8]]), reinterpret<u575b, reason=usual_arith, fits=unknown>(read<i575b>(%[[VALUE7]])));
+// DEFAULT-NEXT:         write<u575b>(%[[VALUE_f]], read<u575b>(%[[VALUE9]]));
 // DEFAULT-NEXT:         let %[[VALUE10:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=relaxed>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_e]])), and<i575b>(old<i575b>, neg<i575b, overflow=ub>(const<i575b>(33740418462630594385361724744395454079240140931656245750192534103967695265126850678980088699287669565365078793986191778469857714756111026776864987769580622009237241167211461))));
-// DEFAULT-NEXT:         let %[[VALUE11:[0-9]+]]: u575b [synthetic] = add<u575b, overflow=wrap>(read<u575b>(%[[VALUE9]]), reinterpret<u575b, reason=usual_arith, fits=unknown>(read<i575b>(%[[VALUE10]])));
-// DEFAULT-NEXT:         write<u575b>(%[[VALUE_f]], read<u575b>(%[[VALUE11]]));
+// DEFAULT-NEXT:         let %[[VALUE11:[0-9]+]]: i575b [synthetic] = read<i575b>(%[[VALUE10]]);
 // DEFAULT-NEXT:         let %[[VALUE12:[0-9]+]]: u575b [synthetic] = read<u575b>(%[[VALUE_f]]);
-// DEFAULT-NEXT:         let %[[VALUE13:[0-9]+]]: i575b [synthetic] = update<i575b, result=new, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_e]])), xor<i575b>(old<i575b>, widen<i575b, reason=arg>(const<i574b>(30799001892772360282132495459823194445423296347702377756575214695893559890977912003055702776548378201752339680602420936304294728688029412276600086349055079523071860836114234))));
-// DEFAULT-NEXT:         let %[[VALUE14:[0-9]+]]: u575b [synthetic] = add<u575b, overflow=wrap>(read<u575b>(%[[VALUE12]]), reinterpret<u575b, reason=usual_arith, fits=unknown>(read<i575b>(%[[VALUE13]])));
-// DEFAULT-NEXT:         write<u575b>(%[[VALUE_f]], read<u575b>(%[[VALUE14]]));
-// DEFAULT-NEXT:         let %[[VALUE15:[0-9]+]]: u575b [synthetic] = read<u575b>(%[[VALUE_f]]);
-// DEFAULT-NEXT:         let %[[VALUE16:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=dynamic(call<i32, signature=fn(i32) -> i32>(%[[VALUE_bar]], const<i32>(0)))>(deref(call<ptr<atomic i575b>, signature=fn(ptr<atomic i575b>) -> ptr<atomic i575b>>(%[[VALUE_baz]], addr_of<ptr<atomic i575b>>(%[[VALUE_e]]))), or<i575b>(old<i575b>, call<i575b, signature=fn(i575b) -> i575b>(%[[VALUE_foo]], widen<i575b, reason=arg>(neg<i572b, overflow=ub>(const<i572b>(6581969867283727911005990155704642154324773504588160884865628865547696324844988049982401783508268917375066790729408659617189350524019843499435572226770089390885472550659255))))));
-// DEFAULT-NEXT:         let %[[VALUE17:[0-9]+]]: u575b [synthetic] = add<u575b, overflow=wrap>(read<u575b>(%[[VALUE15]]), reinterpret<u575b, reason=usual_arith, fits=unknown>(read<i575b>(%[[VALUE16]])));
+// DEFAULT-NEXT:         let %[[VALUE13:[0-9]+]]: u575b [synthetic] = add<u575b, overflow=wrap>(read<u575b>(%[[VALUE12]]), reinterpret<u575b, reason=usual_arith, fits=unknown>(read<i575b>(%[[VALUE11]])));
+// DEFAULT-NEXT:         write<u575b>(%[[VALUE_f]], read<u575b>(%[[VALUE13]]));
+// DEFAULT-NEXT:         let %[[VALUE14:[0-9]+]]: i575b [synthetic] = update<i575b, result=new, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_e]])), xor<i575b>(old<i575b>, widen<i575b, reason=arg>(const<i574b>(30799001892772360282132495459823194445423296347702377756575214695893559890977912003055702776548378201752339680602420936304294728688029412276600086349055079523071860836114234))));
+// DEFAULT-NEXT:         let %[[VALUE15:[0-9]+]]: i575b [synthetic] = read<i575b>(%[[VALUE14]]);
+// DEFAULT-NEXT:         let %[[VALUE16:[0-9]+]]: u575b [synthetic] = read<u575b>(%[[VALUE_f]]);
+// DEFAULT-NEXT:         let %[[VALUE17:[0-9]+]]: u575b [synthetic] = add<u575b, overflow=wrap>(read<u575b>(%[[VALUE16]]), reinterpret<u575b, reason=usual_arith, fits=unknown>(read<i575b>(%[[VALUE15]])));
 // DEFAULT-NEXT:         write<u575b>(%[[VALUE_f]], read<u575b>(%[[VALUE17]]));
-// DEFAULT-NEXT:         let %[[VALUE18:[0-9]+]]: u575b [synthetic] = read<u575b>(%[[VALUE_f]]);
-// DEFAULT-NEXT:         let %[[VALUE19:[0-9]+]]: i575b [synthetic] = update<i575b, result=new, atomic=acq_rel>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_e]])), not<i575b>(and<i575b>(old<i575b>, const<i575b>(55047840194947228224723671648125013926111290688378416557548660662319034233151051252215595447712248992759177463741832904590457754423713378627482465906620631734790561114905369))));
-// DEFAULT-NEXT:         let %[[VALUE20:[0-9]+]]: u575b [synthetic] = add<u575b, overflow=wrap>(read<u575b>(%[[VALUE18]]), reinterpret<u575b, reason=usual_arith, fits=unknown>(read<i575b>(%[[VALUE19]])));
-// DEFAULT-NEXT:         write<u575b>(%[[VALUE_f]], read<u575b>(%[[VALUE20]]));
+// DEFAULT-NEXT:         let %[[VALUE18:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=dynamic(call<i32, signature=fn(i32) -> i32>(%[[VALUE_bar]], const<i32>(0)))>(deref(call<ptr<atomic i575b>, signature=fn(ptr<atomic i575b>) -> ptr<atomic i575b>>(%[[VALUE_baz]], addr_of<ptr<atomic i575b>>(%[[VALUE_e]]))), or<i575b>(old<i575b>, call<i575b, signature=fn(i575b) -> i575b>(%[[VALUE_foo]], widen<i575b, reason=arg>(neg<i572b, overflow=ub>(const<i572b>(6581969867283727911005990155704642154324773504588160884865628865547696324844988049982401783508268917375066790729408659617189350524019843499435572226770089390885472550659255))))));
+// DEFAULT-NEXT:         let %[[VALUE19:[0-9]+]]: i575b [synthetic] = read<i575b>(%[[VALUE18]]);
+// DEFAULT-NEXT:         let %[[VALUE20:[0-9]+]]: u575b [synthetic] = read<u575b>(%[[VALUE_f]]);
+// DEFAULT-NEXT:         let %[[VALUE21:[0-9]+]]: u575b [synthetic] = add<u575b, overflow=wrap>(read<u575b>(%[[VALUE20]]), reinterpret<u575b, reason=usual_arith, fits=unknown>(read<i575b>(%[[VALUE19]])));
+// DEFAULT-NEXT:         write<u575b>(%[[VALUE_f]], read<u575b>(%[[VALUE21]]));
+// DEFAULT-NEXT:         let %[[VALUE22:[0-9]+]]: i575b [synthetic] = update<i575b, result=new, atomic=acq_rel>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_e]])), not<i575b>(and<i575b>(old<i575b>, const<i575b>(55047840194947228224723671648125013926111290688378416557548660662319034233151051252215595447712248992759177463741832904590457754423713378627482465906620631734790561114905369))));
+// DEFAULT-NEXT:         let %[[VALUE23:[0-9]+]]: i575b [synthetic] = read<i575b>(%[[VALUE22]]);
+// DEFAULT-NEXT:         let %[[VALUE24:[0-9]+]]: u575b [synthetic] = read<u575b>(%[[VALUE_f]]);
+// DEFAULT-NEXT:         let %[[VALUE25:[0-9]+]]: u575b [synthetic] = add<u575b, overflow=wrap>(read<u575b>(%[[VALUE24]]), reinterpret<u575b, reason=usual_arith, fits=unknown>(read<i575b>(%[[VALUE23]])));
+// DEFAULT-NEXT:         write<u575b>(%[[VALUE_f]], read<u575b>(%[[VALUE25]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

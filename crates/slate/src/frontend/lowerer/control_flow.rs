@@ -622,7 +622,7 @@ impl FunctionLowerer<'_, '_> {
                             })],
                             Some((_, None)) => Vec::new(),
                             None if diverted => Vec::new(),
-                            None => vec![self.lower_statement(statement)?],
+                            None => self.lower_statement(statement)?,
                         };
                         if let Some(next) = next.filter(|_| terminal) {
                             body.extend(jump(next));

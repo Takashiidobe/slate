@@ -39,11 +39,12 @@ int main() {
 // DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: i64 [storage=static] = const<i64>(0) [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i64 [synthetic] = read<i64>(%[[VALUE_c]]);
 // DEFAULT-NEXT:         write<i64>(%[[VALUE_b]], const<i64>(1));
-// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i64 [synthetic] = xor<i64>(read<i64>(%[[VALUE0]]), const<i64>(1));
-// DEFAULT-NEXT:         write<i64>(%[[VALUE_c]], read<i64>(%[[VALUE1]]));
-// DEFAULT-NEXT:         if gt<i64>(const<i64>(3), widen<i64, reason=usual_arith>(widen<i32, reason=promotion>(truncate<i16, reason=explicit, fits=unknown>(mul<i64, overflow=ub>(read<i64>(%[[VALUE1]]), const<i64>(3))))))
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i64 [synthetic] = const<i64>(1);
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i64 [synthetic] = read<i64>(%[[VALUE_c]]);
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: i64 [synthetic] = xor<i64>(read<i64>(%[[VALUE1]]), read<i64>(%[[VALUE0]]));
+// DEFAULT-NEXT:         write<i64>(%[[VALUE_c]], read<i64>(%[[VALUE2]]));
+// DEFAULT-NEXT:         if gt<i64>(const<i64>(3), widen<i64, reason=usual_arith>(widen<i32, reason=promotion>(truncate<i16, reason=explicit, fits=unknown>(mul<i64, overflow=ub>(read<i64>(%[[VALUE2]]), const<i64>(3))))))
 // DEFAULT-NEXT:             return const<i32>(0);
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:     }

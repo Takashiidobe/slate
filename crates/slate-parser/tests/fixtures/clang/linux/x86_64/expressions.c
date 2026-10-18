@@ -68,19 +68,20 @@ done:
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_operators:[0-9]+]] @operators(%[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_point]]>, %[[VALUE_values:[0-9]+]] values: ptr<i32> [array=4]) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic, unsequenced] = read<i32>(%[[VALUE_i]]);
-// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: i32 [synthetic, unsequenced] = read<i32>(%[[VALUE_i]]);
-// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: i32 [synthetic, unsequenced] = add<i32, overflow=ub>(read<i32>(%[[VALUE2]]), const<i32>(1));
-// DEFAULT-NEXT:         write<i32, unsequenced>(%[[VALUE_i]], read<i32>(%[[VALUE3]]));
-// DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: i32 [synthetic, unsequenced] = add<i32, overflow=ub>(read<i32>(%[[VALUE1]]), mul<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(field0(deref(read<ptr<@type[[TYPE_point]]>>(%[[VALUE_p]])))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_values]]), read<i32>(%[[VALUE2]]))))), neg<i32, overflow=ub>(read<i32>(field1(deref(ptr_offset<ptr<@type[[TYPE_point]]>, subtract=false, element=@type[[TYPE_point]], overflow=ub>(read<ptr<@type[[TYPE_point]]>>(%[[VALUE_p]]), const<i32>(0))))))));
-// DEFAULT-NEXT:         write<i32, unsequenced>(%[[VALUE_i]], read<i32>(%[[VALUE4]]));
-// DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
-// DEFAULT-NEXT:         write<i32>(%[[VALUE_i]], conditional<i32>(ne<i32>(read<i32>(%[[VALUE5]]), const<i32>(0)), read<i32>(%[[VALUE5]]), from_bool<i32, reason=promotion>(not<bool>(ne<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0))))));
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE1]]), const<i32>(1));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE2]]));
+// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: i32 [synthetic] = mul<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(field0(deref(read<ptr<@type[[TYPE_point]]>>(%[[VALUE_p]])))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_values]]), read<i32>(%[[VALUE1]]))))), neg<i32, overflow=ub>(read<i32>(field1(deref(ptr_offset<ptr<@type[[TYPE_point]]>, subtract=false, element=@type[[TYPE_point]], overflow=ub>(read<ptr<@type[[TYPE_point]]>>(%[[VALUE_p]]), const<i32>(0)))))));
+// DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
+// DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE4]]), read<i32>(%[[VALUE3]]));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE5]]));
+// DEFAULT-NEXT:         let %[[VALUE6:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_i]], conditional<i32>(ne<i32>(read<i32>(%[[VALUE6]]), const<i32>(0)), read<i32>(%[[VALUE6]]), from_bool<i32, reason=promotion>(not<bool>(ne<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0))))));
 // DEFAULT-NEXT:         read<i32>(%[[VALUE_i]]);
-// DEFAULT-NEXT:         let %[[VALUE6:[0-9]+]]: i32 [synthetic, unsequenced] = read<i32>(%[[VALUE_i]]);
-// DEFAULT-NEXT:         let %[[VALUE7:[0-9]+]]: i32 [synthetic, unsequenced] = sub<i32, overflow=ub>(read<i32>(%[[VALUE6]]), const<i32>(1));
-// DEFAULT-NEXT:         write<i32, unsequenced>(%[[VALUE_i]], read<i32>(%[[VALUE7]]));
-// DEFAULT-NEXT:         write<i32, unsequenced>(%[[VALUE_i]], read<i32>(%[[VALUE7]]));
+// DEFAULT-NEXT:         let %[[VALUE7:[0-9]+]]: i32 [synthetic, unsequenced] = read<i32>(%[[VALUE_i]]);
+// DEFAULT-NEXT:         let %[[VALUE8:[0-9]+]]: i32 [synthetic, unsequenced] = sub<i32, overflow=ub>(read<i32>(%[[VALUE7]]), const<i32>(1));
+// DEFAULT-NEXT:         write<i32, unsequenced>(%[[VALUE_i]], read<i32>(%[[VALUE8]]));
+// DEFAULT-NEXT:         write<i32, unsequenced>(%[[VALUE_i]], read<i32>(%[[VALUE8]]));
 // DEFAULT-NEXT:         return conditional<i32>(gt<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0)), read<i32>(%[[VALUE_i]]), not<i32>(read<i32>(%[[VALUE_i]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_address_of_label:[0-9]+]] @address_of_label() -> i32 [linkage=external] [fallthrough=ub_if_used] {

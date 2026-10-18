@@ -119,37 +119,34 @@ int main(void) {
 // CHECK-NEXT:         '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: {
 // CHECK-NEXT:             match i % 3 {
 // CHECK-NEXT:                 0 => {
-// CHECK-NEXT:                     let [[V_0:__v[0-9]+]]: i64 = total;
-// CHECK-NEXT:                     total = [[V_0]]
-// CHECK-NEXT:                         + (unsafe {
-// CHECK-NEXT:                             __slate_sysv_va::arg::<
-// CHECK-NEXT:                                 _,
-// CHECK-NEXT:                                 bitint::BInt<100, 2, 16, bitint::A8>,
-// CHECK-NEXT:                             >(std::ptr::addr_of_mut!(ap), 5u32)
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                             .to_i128() as i64);
+// CHECK-NEXT:                     let [[V_0:__v[0-9]+]]: i64 = unsafe {
+// CHECK-NEXT:                         __slate_sysv_va::arg::<
+// CHECK-NEXT:                             _,
+// CHECK-NEXT:                             bitint::BInt<100, 2, 16, bitint::A8>,
+// CHECK-NEXT:                         >(std::ptr::addr_of_mut!(ap), 5u32)
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                         .to_i128() as i64;
+// CHECK-NEXT:                     total += [[V_0]];
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 1 => {
-// CHECK-NEXT:                     let [[V_1:__v[0-9]+]]: i64 = total;
-// CHECK-NEXT:                     total = [[V_1]]
-// CHECK-NEXT:                         + (unsafe {
-// CHECK-NEXT:                             __slate_sysv_va::arg::<
-// CHECK-NEXT:                                 _,
-// CHECK-NEXT:                                 bitint::BInt<128, 2, 16, bitint::A8>,
-// CHECK-NEXT:                             >(std::ptr::addr_of_mut!(ap), 5u32)
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                             .to_i128() as i64);
+// CHECK-NEXT:                     let [[V_1:__v[0-9]+]]: i64 = unsafe {
+// CHECK-NEXT:                         __slate_sysv_va::arg::<
+// CHECK-NEXT:                             _,
+// CHECK-NEXT:                             bitint::BInt<128, 2, 16, bitint::A8>,
+// CHECK-NEXT:                         >(std::ptr::addr_of_mut!(ap), 5u32)
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                         .to_i128() as i64;
+// CHECK-NEXT:                     total += [[V_1]];
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 _ => {
-// CHECK-NEXT:                     let [[V_2:__v[0-9]+]]: i64 = total;
-// CHECK-NEXT:                     total = [[V_2]]
-// CHECK-NEXT:                         + (unsafe {
-// CHECK-NEXT:                             __slate_sysv_va::arg::<
-// CHECK-NEXT:                                 _,
-// CHECK-NEXT:                                 bitint::BInt<200, 4, 32, bitint::A8>,
-// CHECK-NEXT:                             >(std::ptr::addr_of_mut!(ap), 0u32)
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                             .to_i128() as i64);
+// CHECK-NEXT:                     let [[V_2:__v[0-9]+]]: i64 = unsafe {
+// CHECK-NEXT:                         __slate_sysv_va::arg::<
+// CHECK-NEXT:                             _,
+// CHECK-NEXT:                             bitint::BInt<200, 4, 32, bitint::A8>,
+// CHECK-NEXT:                         >(std::ptr::addr_of_mut!(ap), 0u32)
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                         .to_i128() as i64;
+// CHECK-NEXT:                     total += [[V_2]];
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }

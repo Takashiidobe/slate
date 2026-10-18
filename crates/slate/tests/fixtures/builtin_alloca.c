@@ -419,8 +419,8 @@ int main(void) {
 // CHECK-NEXT: fn repeated_large() -> i64 {
 // CHECK-NEXT:     let mut total: i64 = 0;
 // CHECK-NEXT:     for i in 0 as i32..4 as i32 {
-// CHECK-NEXT:         let [[V_3:__v[0-9]+]]: i64 = total;
-// CHECK-NEXT:         total = [[V_3]] + large_alloca(1 as i32);
+// CHECK-NEXT:         let [[V_3:__v[0-9]+]]: i64 = large_alloca(1 as i32);
+// CHECK-NEXT:         total += [[V_3]];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }

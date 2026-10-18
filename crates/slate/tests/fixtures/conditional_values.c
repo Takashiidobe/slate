@@ -76,10 +76,9 @@ int main(void) {
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     for i in 0 as i32..4 as i32 {
-// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:         total = [[V_0]]
-// CHECK-NEXT:             + (sign(values.0[i as usize]) * 100
-// CHECK-NEXT:                 + if values.0[i as usize] % 2 != 0 { 7 } else { 3 });
+// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = sign(values.0[i as usize]) * 100
+// CHECK-NEXT:             + if values.0[i as usize] % 2 != 0 { 7 } else { 3 };
+// CHECK-NEXT:         total += [[V_0]];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let first: Pair = Pair { a: 1, b: 2 };
 // CHECK-NEXT:     let second: Pair = Pair { a: 3, b: 4 };

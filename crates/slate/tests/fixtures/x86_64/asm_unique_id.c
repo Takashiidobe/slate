@@ -103,9 +103,8 @@ int main(void) {
 // CHECK-NEXT: fn clamp_sum(limit: u32) -> u32 {
 // CHECK-NEXT:     let mut sum: u32 = 0;
 // CHECK-NEXT:     for i in 0..limit {
-// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: u32 = sum;
-// CHECK-NEXT:         sum = [[V_0]]
-// CHECK-NEXT:             .wrapping_add(clamp_ten(i).wrapping_add(clamp_ten(i.wrapping_mul(3))));
+// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: u32 = clamp_ten(i).wrapping_add(clamp_ten(i.wrapping_mul(3)));
+// CHECK-NEXT:         sum = sum.wrapping_add([[V_0]]);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     sum
 // CHECK-NEXT: }

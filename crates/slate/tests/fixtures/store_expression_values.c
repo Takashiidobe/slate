@@ -188,12 +188,12 @@ int main(void) {
 // CHECK-NEXT:         if !([[V_9]] != std::ptr::null_mut::<Node>()) {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         let [[V_10:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:         let [[V_11:__v[0-9]+]]: i32 = (unsafe { (*node).value }) * 5;
+// CHECK-NEXT:         let [[V_10:__v[0-9]+]]: i32 = (unsafe { (*node).value }) * 5;
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             (*node).value = [[V_11]];
+// CHECK-NEXT:             (*node).value = [[V_10]];
 // CHECK-NEXT:         }
-// CHECK-NEXT:         total = [[V_10]] + [[V_11]];
+// CHECK-NEXT:         let [[V_11:__v[0-9]+]]: i32 = [[V_10]];
+// CHECK-NEXT:         total += [[V_11]];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut flag: i32 = 0;
 // CHECK-NEXT:     let mut picked: i32 = 0;

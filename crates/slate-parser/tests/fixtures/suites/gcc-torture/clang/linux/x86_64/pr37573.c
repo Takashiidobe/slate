@@ -155,15 +155,16 @@ int main(void) {
 // DEFAULT-NEXT:             write<u32>(%[[VALUE_q_2]], read<u32>(%[[VALUE22]]));
 // DEFAULT-NEXT:             yield ne<u32>(read<u32>(%[[VALUE21]]), const<u32>(0));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:             let %[[VALUE23:[0-9]+]]: ptr<u8> [synthetic] = read<ptr<u8>>(%[[VALUE_p_2]]);
-// DEFAULT-NEXT:             let %[[VALUE24:[0-9]+]]: ptr<u8> [synthetic] = ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%[[VALUE23]]), const<i32>(1));
-// DEFAULT-NEXT:             write<ptr<u8>>(%[[VALUE_p_2]], read<ptr<u8>>(%[[VALUE24]]));
-// DEFAULT-NEXT:             let %[[VALUE25:[0-9]+]]: ptr<u8> [synthetic] = read<ptr<u8>>(%[[VALUE23]]);
-// DEFAULT-NEXT:             let %[[VALUE26:[0-9]+]]: u8 [synthetic] = read<u8>(deref(read<ptr<u8>>(%[[VALUE25]])));
-// DEFAULT-NEXT:             let %[[VALUE27:[0-9]+]]: u8 [synthetic] = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(xor<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE26]]))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u8, signature=fn(ptr<@type[[TYPE_S]]>) -> u8>(%[[VALUE_foo]], addr_of<ptr<@type[[TYPE_S]]>>(%[[VALUE_s_2]])))))));
-// DEFAULT-NEXT:             write<u8>(deref(read<ptr<u8>>(%[[VALUE25]])), read<u8>(%[[VALUE27]]));
+// DEFAULT-NEXT:             let %[[VALUE23:[0-9]+]]: u8 [synthetic] = call<u8, signature=fn(ptr<@type[[TYPE_S]]>) -> u8>(%[[VALUE_foo]], addr_of<ptr<@type[[TYPE_S]]>>(%[[VALUE_s_2]]));
+// DEFAULT-NEXT:             let %[[VALUE24:[0-9]+]]: ptr<u8> [synthetic] = read<ptr<u8>>(%[[VALUE_p_2]]);
+// DEFAULT-NEXT:             let %[[VALUE25:[0-9]+]]: ptr<u8> [synthetic] = ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%[[VALUE24]]), const<i32>(1));
+// DEFAULT-NEXT:             write<ptr<u8>>(%[[VALUE_p_2]], read<ptr<u8>>(%[[VALUE25]]));
+// DEFAULT-NEXT:             let %[[VALUE26:[0-9]+]]: ptr<u8> [synthetic] = read<ptr<u8>>(%[[VALUE24]]);
+// DEFAULT-NEXT:             let %[[VALUE27:[0-9]+]]: u8 [synthetic] = read<u8>(deref(read<ptr<u8>>(%[[VALUE26]])));
+// DEFAULT-NEXT:             let %[[VALUE28:[0-9]+]]: u8 [synthetic] = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(xor<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE27]]))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE23]]))))));
+// DEFAULT-NEXT:             write<u8>(deref(read<ptr<u8>>(%[[VALUE26]])), read<u8>(%[[VALUE28]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE___builtin_memcmp:[0-9]+]] @__builtin_memcmp(%[[VALUE28:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE29:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE30:[0-9]+]] <unnamed>: u64) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_memcmp:[0-9]+]] @__builtin_memcmp(%[[VALUE29:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE30:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE31:[0-9]+]] <unnamed>: u64) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_s_3:[0-9]+]] s: u32 [storage=automatic];

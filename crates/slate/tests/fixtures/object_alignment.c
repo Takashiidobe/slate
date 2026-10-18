@@ -199,19 +199,16 @@ int main(void) {
 // CHECK-NEXT:             if !(aligned((*[[SLATE_SLOT_0]]).as_mut_ptr() as *const (), 16 as u64) != 0) {
 // CHECK-NEXT:                 return -1;
 // CHECK-NEXT:             } else {
-// CHECK-NEXT:                 let [[V_5:__v[0-9]+]]: *mut u64 = unsafe {
+// CHECK-NEXT:                 let [[V_5:__v[0-9]+]]: u64 = sum_vectors(
+// CHECK-NEXT:                     (*[[SLATE_SLOT_0]]).as_mut_ptr() as *const u64,
+// CHECK-NEXT:                     2 as i32,
+// CHECK-NEXT:                 );
+// CHECK-NEXT:                 let [[V_6:__v[0-9]+]]: *mut u64 = unsafe {
 // CHECK-NEXT:                     ((*[[SLATE_SLOT_0]]).as_mut_ptr() as *mut u64).offset(0 as isize)
 // CHECK-NEXT:                 };
-// CHECK-NEXT:                 let [[V_6:__v[0-9]+]]: u64 = unsafe { *[[V_5]] };
-// CHECK-NEXT:                 let [[V_7:__v[0-9]+]]: u64 = [[V_6]]
-// CHECK-NEXT:                     .wrapping_add(
-// CHECK-NEXT:                         sum_vectors(
-// CHECK-NEXT:                             (*[[SLATE_SLOT_0]]).as_mut_ptr() as *const u64,
-// CHECK-NEXT:                             2 as i32,
-// CHECK-NEXT:                         ),
-// CHECK-NEXT:                     );
+// CHECK-NEXT:                 let [[V_7:__v[0-9]+]]: u64 = unsafe { *[[V_6]] };
 // CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     *[[V_5]] = [[V_7]];
+// CHECK-NEXT:                     *[[V_6]] = [[V_7]].wrapping_add([[V_5]]);
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 let [[V_8:__v[0-9]+]]: i32 = count + 1;
 // CHECK-NEXT:                 count = [[V_8]];

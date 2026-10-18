@@ -72,6 +72,7 @@ pub(super) struct Hoister {
     unsequenced: bool,
     pub(super) access: HashMap<BindingId, Access>,
     effect_free: HashSet<BindingId>,
+    inlined: HashMap<BindingId, Value>,
 }
 
 impl Hoister {
@@ -87,6 +88,7 @@ impl Hoister {
             unsequenced: false,
             access,
             effect_free,
+            inlined: HashMap::new(),
         }
     }
 
@@ -535,6 +537,13 @@ impl Hoister {
                 self.discard(*left, None, out)?;
                 return self.value(*right, out);
             }
+            ValueKind::Capture { id, extent, value }
+                if matches!(value.node.value, ValueKind::Update { .. })
+                    && !self.effects(&extent) =>
+            {
+                self.inlined.insert(id, *extent);
+                return self.value(*value, out);
+            }
             ValueKind::Capture { id, extent, value } => {
                 let extent = self.value(*extent, out)?;
                 out.push(source.derive(Statement::Temporary {
@@ -753,6 +762,20 @@ impl Hoister {
                     members: lowered,
                     zero_fill,
                 }
+            }
+            ValueKind::Read {
+                place:
+                    Place {
+                        kind: PlaceKind::Binding(id),
+                        ..
+                    },
+                ..
+            } if self.inlined.contains_key(&id) => {
+                let inlined = self
+                    .inlined
+                    .remove(&id)
+                    .ok_or(ResolveError::Internal("inlined capture read twice"))?;
+                return self.value(inlined, out);
             }
             ValueKind::Read { place, ordering } => ValueKind::Read {
                 place: self.place(place, out)?,

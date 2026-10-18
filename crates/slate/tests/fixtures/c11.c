@@ -837,12 +837,12 @@ int main(void) {
 // CHECK-NEXT:         + (((unsafe { *unsafe { __errno_location() } }) == 0) as i32);
 // CHECK-NEXT:     if (unsafe { mtx_init(std::ptr::addr_of_mut!(mutex), 0 as i32) }) == 0 {
 // CHECK-NEXT:         concurrency_total += 1;
-// CHECK-NEXT:         let [[V_1:__v[0-9]+]]: i32 = concurrency_total;
-// CHECK-NEXT:         concurrency_total = [[V_1]]
-// CHECK-NEXT:             + (((unsafe { mtx_lock(std::ptr::addr_of_mut!(mutex)) }) == 0) as i32);
-// CHECK-NEXT:         let [[V_2:__v[0-9]+]]: i32 = concurrency_total;
-// CHECK-NEXT:         concurrency_total = [[V_2]]
-// CHECK-NEXT:             + (((unsafe { mtx_unlock(std::ptr::addr_of_mut!(mutex)) }) == 0) as i32);
+// CHECK-NEXT:         let [[V_1:__v[0-9]+]]: i32 = ((unsafe { mtx_lock(std::ptr::addr_of_mut!(mutex)) }) == 0)
+// CHECK-NEXT:             as i32;
+// CHECK-NEXT:         concurrency_total += [[V_1]];
+// CHECK-NEXT:         let [[V_2:__v[0-9]+]]: i32 = ((unsafe { mtx_unlock(std::ptr::addr_of_mut!(mutex)) }) == 0)
+// CHECK-NEXT:             as i32;
+// CHECK-NEXT:         concurrency_total += [[V_2]];
 // CHECK-NEXT:         unsafe { mtx_destroy(std::ptr::addr_of_mut!(mutex)) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if (unsafe { cnd_init(std::ptr::addr_of_mut!(condition)) }) == 0 {
@@ -857,15 +857,13 @@ int main(void) {
 // CHECK-NEXT:     concurrency_total += unsafe { c11_once_total };
 // CHECK-NEXT:     if (unsafe { tss_create(std::ptr::addr_of_mut!(thread_key), None) }) == 0 {
 // CHECK-NEXT:         concurrency_total += 1;
-// CHECK-NEXT:         let [[V_3:__v[0-9]+]]: i32 = concurrency_total;
-// CHECK-NEXT:         concurrency_total = [[V_3]]
-// CHECK-NEXT:             + (((unsafe {
-// CHECK-NEXT:                 tss_set(thread_key, std::ptr::addr_of_mut!(thread_increment) as *mut ())
-// CHECK-NEXT:             }) == 0) as i32);
-// CHECK-NEXT:         let [[V_4:__v[0-9]+]]: i32 = concurrency_total;
-// CHECK-NEXT:         concurrency_total = [[V_4]]
-// CHECK-NEXT:             + (((unsafe { tss_get(thread_key) })
-// CHECK-NEXT:                 == (std::ptr::addr_of_mut!(thread_increment) as *mut ())) as i32);
+// CHECK-NEXT:         let [[V_3:__v[0-9]+]]: i32 = ((unsafe {
+// CHECK-NEXT:             tss_set(thread_key, std::ptr::addr_of_mut!(thread_increment) as *mut ())
+// CHECK-NEXT:         }) == 0) as i32;
+// CHECK-NEXT:         concurrency_total += [[V_3]];
+// CHECK-NEXT:         let [[V_4:__v[0-9]+]]: i32 = ((unsafe { tss_get(thread_key) })
+// CHECK-NEXT:             == (std::ptr::addr_of_mut!(thread_increment) as *mut ())) as i32;
+// CHECK-NEXT:         concurrency_total += [[V_4]];
 // CHECK-NEXT:         unsafe { tss_delete(thread_key) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     concurrency_total += ((4 as i32) >= (1 as i32)) as i32;

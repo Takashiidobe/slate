@@ -95,13 +95,12 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_0]] + ((stream != std::ptr::null_mut::<_IO_FILE>()) as i32);
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_1]]
-// CHECK-NEXT:         + (((unsafe {
-// CHECK-NEXT:             fprintf(stream, c"%s:%d".as_ptr(), c"cookie".as_ptr() as *mut i8, 7 as i32)
-// CHECK-NEXT:         }) == 8) as i32);
-// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_2]] + (((unsafe { fclose(stream) }) == 0) as i32);
+// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i32 = ((unsafe {
+// CHECK-NEXT:         fprintf(stream, c"%s:%d".as_ptr(), c"cookie".as_ptr() as *mut i8, 7 as i32)
+// CHECK-NEXT:     }) == 8) as i32;
+// CHECK-NEXT:     total += [[V_1]];
+// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: i32 = ((unsafe { fclose(stream) }) == 0) as i32;
+// CHECK-NEXT:     total += [[V_2]];
 // CHECK-NEXT:     total += (cookie.closed == 1) as i32;
 // CHECK-NEXT:     total += (cookie.length == 8) as i32;
 // CHECK-NEXT:     let [[V_3:__v[0-9]+]]: i32 = total;

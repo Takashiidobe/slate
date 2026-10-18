@@ -51,9 +51,10 @@ int sum(int count, ...) {
 // IR-NEXT:                 yield void;
 // IR-NEXT:             }
 // IR-NEXT:             body:
-// IR-NEXT:                 let %[[VALUE3:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_total]]);
-// IR-NEXT:                 let %[[VALUE4:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE3]]), va_arg<i32>(%[[VALUE_ap]]));
-// IR-NEXT:                 write<i32>(%[[VALUE_total]], read<i32>(%[[VALUE4]]));
+// IR-NEXT:                 let %[[VALUE3:[0-9]+]]: i32 [synthetic] = va_arg<i32>(%[[VALUE_ap]]);
+// IR-NEXT:                 let %[[VALUE4:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_total]]);
+// IR-NEXT:                 let %[[VALUE5:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE4]]), read<i32>(%[[VALUE3]]));
+// IR-NEXT:                 write<i32>(%[[VALUE_total]], read<i32>(%[[VALUE5]]));
 // IR-NEXT:         va_end(%[[VALUE_ap]]);
 // IR-NEXT:         return read<i32>(%[[VALUE_total]]);
 // IR-NEXT:     }

@@ -208,12 +208,12 @@ int main(void) {
 // CHECK-NEXT: fn loop_scoped() -> i32 {
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     for i in 0 as i32..3 as i32 {
-// CHECK-NEXT:         let [[V_5:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:         let [[V_6:__v[0-9]+]]: i32 = unsafe { seen };
+// CHECK-NEXT:         let [[V_5:__v[0-9]+]]: i32 = unsafe { seen };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             seen = [[V_6]] + 1;
+// CHECK-NEXT:             seen = [[V_5]] + 1;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         total = [[V_5]] + [[V_6]];
+// CHECK-NEXT:         let [[V_6:__v[0-9]+]]: i32 = [[V_5]];
+// CHECK-NEXT:         total += [[V_6]];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }

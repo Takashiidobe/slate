@@ -437,6 +437,11 @@ impl FunctionLowerer<'_, '_> {
     }
 
     pub(super) fn lower_binding(&self, id: BindingId) -> Expr {
+        if let Some((declaring, false)) = self.declaring.get()
+            && declaring == id
+        {
+            self.declaring.set(Some((id, true)));
+        }
         if self.dispatch_bindings.contains(&id) {
             return Expr::Unary {
                 op: rust::UnaryOp::Deref,

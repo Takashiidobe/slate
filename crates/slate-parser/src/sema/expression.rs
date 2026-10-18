@@ -2012,9 +2012,32 @@ impl Lowerer {
         e: &Expr,
         target: &Expr,
         op: BinaryOp,
-        rhs: Operand,
+        mut rhs: Operand,
         postfix: bool,
     ) -> Result<Operand, ResolveError> {
+        let captured = if super::effects::has_effects(&rhs.value) {
+            if rhs.value.ty == Type::Bool && self.types.ir_type(rhs.c) != Type::Bool {
+                rhs.value = self.emit_convert_to(rhs.value, rhs.c, ConversionReason::Promotion)?;
+            }
+            let id = self.fresh();
+            self.types.entities.declare(id, rhs.c, false);
+            let place = Place {
+                ty: rhs.value.ty.clone(),
+                kind: PlaceKind::Binding(id),
+                access: self.types.access_of(rhs.c),
+            };
+            let read = self.operand(
+                e,
+                rhs.c,
+                ValueKind::Read {
+                    place,
+                    ordering: None,
+                },
+            );
+            Some((id, std::mem::replace(&mut rhs, read).value))
+        } else {
+            None
+        };
         let place = self.place(target)?;
         self.types.require_modifiable_lvalue(place.c)?;
         if temporary_rooted(&place.place) {
@@ -2026,7 +2049,7 @@ impl Lowerer {
         let rhs = self.converted(e, Slot::Right, rhs)?;
         let computation = self.binary(e, op, old, rhs)?;
         let computation = self.converted(e, Slot::Result, computation)?;
-        Ok(self.operand(
+        let update = self.operand(
             e,
             c,
             ValueKind::Update {
@@ -2034,6 +2057,18 @@ impl Lowerer {
                 place: place.place,
                 computation: Box::new(computation.value),
                 postfix,
+            },
+        );
+        let Some((id, extent)) = captured else {
+            return Ok(update);
+        };
+        Ok(self.operand(
+            e,
+            c,
+            ValueKind::Capture {
+                id,
+                extent: Box::new(extent),
+                value: Box::new(update.value),
             },
         ))
     }

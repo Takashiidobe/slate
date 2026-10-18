@@ -181,20 +181,20 @@ int main(void) {
 // CHECK-NEXT:         ((n as i64) as u64) as usize,
 // CHECK-NEXT:         (32768 as usize) / 8usize,
 // CHECK-NEXT:     ) as *mut ()) as *mut i8;
-// CHECK-NEXT:     let [[V_5:__v[0-9]+]]: i32 = ok;
-// CHECK-NEXT:     let mut [[V_6:__v[0-9]+]]: bool;
+// CHECK-NEXT:     let mut [[V_5:__v[0-9]+]]: bool;
 // CHECK-NEXT:     if aligned_to(a as *mut (), 8 as u64) != 0 {
-// CHECK-NEXT:         [[V_6]] = aligned_to(b as *mut (), 64 as u64) != 0;
+// CHECK-NEXT:         [[V_5]] = aligned_to(b as *mut (), 64 as u64) != 0;
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         [[V_5]] = false as bool;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     let mut [[V_6:__v[0-9]+]]: bool;
+// CHECK-NEXT:     if [[V_5]] {
+// CHECK-NEXT:         [[V_6]] = aligned_to(c as *mut (), 4096 as u64) != 0;
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         [[V_6]] = false as bool;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut [[V_7:__v[0-9]+]]: bool;
-// CHECK-NEXT:     if [[V_6]] {
-// CHECK-NEXT:         [[V_7]] = aligned_to(c as *mut (), 4096 as u64) != 0;
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         [[V_7]] = false as bool;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     ok = [[V_5]] & ([[V_7]] as i32);
+// CHECK-NEXT:     let [[V_7:__v[0-9]+]]: i32 = [[V_6]] as i32;
+// CHECK-NEXT:     ok &= [[V_7]];
 // CHECK-NEXT:     unsafe { std::ptr::write_bytes(small as *mut u8, 1 as u8, 3 as usize) };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::write_bytes(a as *mut u8, 2 as u8, ((n as i64) as u64) as usize)
@@ -237,11 +237,9 @@ int main(void) {
 // CHECK-NEXT:             (2048 as usize) / 8usize,
 // CHECK-NEXT:         ) as *mut ()) as *mut u8;
 // CHECK-NEXT:         unsafe { std::ptr::write_bytes(p as *mut u8, 5 as u8, 1100000 as usize) };
-// CHECK-NEXT:         let [[V_8:__v[0-9]+]]: i64 = total;
-// CHECK-NEXT:         total = [[V_8]]
-// CHECK-NEXT:             + ((aligned_to(p as *mut (), 256 as u64)
-// CHECK-NEXT:                 * (((unsafe { *unsafe { p.offset(1099999 as isize) } }) as u32) as i32))
-// CHECK-NEXT:                 as i64);
+// CHECK-NEXT:         let [[V_8:__v[0-9]+]]: i32 = aligned_to(p as *mut (), 256 as u64)
+// CHECK-NEXT:             * (((unsafe { *unsafe { p.offset(1099999 as isize) } }) as u32) as i32);
+// CHECK-NEXT:         total += [[V_8]] as i64;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }

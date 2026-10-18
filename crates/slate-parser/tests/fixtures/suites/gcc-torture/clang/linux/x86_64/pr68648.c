@@ -43,9 +43,10 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: i32 [storage=automatic] = const<i32>(1);
-// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_c]]);
-// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = truncate<i32, reason=assign, fits=unknown>(or<i64>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE0]])), xor<i64>(const<i64>(4294967295), or<i64>(widen<i64, reason=usual_arith>(call<i32, signature=fn() -> i32>(%[[VALUE_foo]])), const<i64>(4073709551608)))));
-// DEFAULT-NEXT:         write<i32>(%[[VALUE_c]], read<i32>(%[[VALUE1]]));
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i64 [synthetic] = xor<i64>(const<i64>(4294967295), or<i64>(widen<i64, reason=usual_arith>(call<i32, signature=fn() -> i32>(%[[VALUE_foo]])), const<i64>(4073709551608)));
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_c]]);
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: i32 [synthetic] = truncate<i32, reason=assign, fits=unknown>(or<i64>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE1]])), read<i64>(%[[VALUE0]])));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_c]], read<i32>(%[[VALUE2]]));
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_c]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];

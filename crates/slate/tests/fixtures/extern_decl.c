@@ -16,6 +16,7 @@ int main(void) {
 // CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
 // CHECK-NEXT:     fn toupper(c: i32) -> i32;
 // CHECK-NEXT:     fn tolower(c: i32) -> i32;
+// CHECK-NEXT:     fn abs(n: i32) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;

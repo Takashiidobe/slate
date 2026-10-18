@@ -53,9 +53,10 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: i32 [storage=automatic] = const<i32>(2);
-// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_c]]);
-// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = and<i32>(read<i32>(%[[VALUE0]]), from_bool<i32, reason=promotion>(gt<i64>(call<i64, signature=fn(i32, i32) -> i64>(%[[VALUE_foo]], const<i32>(1), read<i32>(%[[VALUE_b]])), widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_b]])))));
-// DEFAULT-NEXT:         write<i32>(%[[VALUE_c]], read<i32>(%[[VALUE1]]));
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic] = from_bool<i32, reason=promotion>(gt<i64>(call<i64, signature=fn(i32, i32) -> i64>(%[[VALUE_foo]], const<i32>(1), read<i32>(%[[VALUE_b]])), widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_b]]))));
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_c]]);
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: i32 [synthetic] = and<i32>(read<i32>(%[[VALUE1]]), read<i32>(%[[VALUE0]]));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_c]], read<i32>(%[[VALUE2]]));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_b]], or<i32>(from_bool<i32, reason=promotion>(ne<i32>(read<i32>(%[[VALUE_a]]), const<i32>(0))), read<i32>(%[[VALUE_c]])));
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_c]]);
 // DEFAULT-NEXT:     }

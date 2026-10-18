@@ -145,14 +145,15 @@ int main(void) {
 // DEFAULT-NEXT:                                     yield void;
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                                 body:
-// DEFAULT-NEXT:                                     let %[[VALUE11:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_LOCAL_CHECKSUM]]);
-// DEFAULT-NEXT:                                     let %[[VALUE12:[0-9]+]]: ptr<i64> [synthetic] = read<ptr<i64>>(%[[VALUE_g_565]]);
-// DEFAULT-NEXT:                                     let %[[VALUE13:[0-9]+]]: i64 [synthetic] = read<i64>(deref(read<ptr<i64>>(%[[VALUE12]])));
-// DEFAULT-NEXT:                                     let %[[VALUE14:[0-9]+]]: i64 [synthetic] = or<i64>(read<i64>(%[[VALUE13]]), widen<i64, reason=usual_arith>(widen<i32, reason=promotion>(read<i16, volatile>(field0(deref(ptr_offset<ptr<volatile @type[[TYPE_U0]]>, subtract=false, element=@type[[TYPE_U0]], overflow=ub>(array_decay<ptr<volatile @type[[TYPE_U0]]>, length=Some(1)>(%[[VALUE_g_121]]), const<i32>(0))))))));
-// DEFAULT-NEXT:                                     write<i64>(deref(read<ptr<i64>>(%[[VALUE12]])), read<i64>(%[[VALUE14]]));
-// DEFAULT-NEXT:                                     let %[[VALUE15:[0-9]+]]: u64 [synthetic] = xor<u64>(read<u64>(%[[VALUE11]]), shr<u64, amount_out_of_range=ub, fill=zero_extend>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(add<i64, overflow=ub>(read<i64>(lane(%[[VALUE_BS_VAR_3]], read<u32>(%[[VALUE_BS_TEMP_371]]))), widen<i64, reason=usual_arith>(const<i32>(9)))), shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%[[VALUE_LOCAL_CHECKSUM]]), const<i32>(6))), read<u64>(%[[VALUE_LOCAL_CHECKSUM]])), read<i64>(%[[VALUE14]])));
-// DEFAULT-NEXT:                                     write<u64>(%[[VALUE_LOCAL_CHECKSUM]], read<u64>(%[[VALUE15]]));
-// DEFAULT-NEXT:                             write<vector<i64, 16>>(%[[VALUE_BS_VAR_3]], read<vector<i64, 16>>(compound_literal %[[VALUE16:[0-9]+]] [storage=automatic] = aggregate<vector<i64, 16>, zero_fill=true>()));
+// DEFAULT-NEXT:                                     let %[[VALUE11:[0-9]+]]: ptr<i64> [synthetic] = read<ptr<i64>>(%[[VALUE_g_565]]);
+// DEFAULT-NEXT:                                     let %[[VALUE12:[0-9]+]]: i64 [synthetic] = read<i64>(deref(read<ptr<i64>>(%[[VALUE11]])));
+// DEFAULT-NEXT:                                     let %[[VALUE13:[0-9]+]]: i64 [synthetic] = or<i64>(read<i64>(%[[VALUE12]]), widen<i64, reason=usual_arith>(widen<i32, reason=promotion>(read<i16, volatile>(field0(deref(ptr_offset<ptr<volatile @type[[TYPE_U0]]>, subtract=false, element=@type[[TYPE_U0]], overflow=ub>(array_decay<ptr<volatile @type[[TYPE_U0]]>, length=Some(1)>(%[[VALUE_g_121]]), const<i32>(0))))))));
+// DEFAULT-NEXT:                                     write<i64>(deref(read<ptr<i64>>(%[[VALUE11]])), read<i64>(%[[VALUE13]]));
+// DEFAULT-NEXT:                                     let %[[VALUE14:[0-9]+]]: u64 [synthetic] = shr<u64, amount_out_of_range=ub, fill=zero_extend>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(add<i64, overflow=ub>(read<i64>(lane(%[[VALUE_BS_VAR_3]], read<u32>(%[[VALUE_BS_TEMP_371]]))), widen<i64, reason=usual_arith>(const<i32>(9)))), shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%[[VALUE_LOCAL_CHECKSUM]]), const<i32>(6))), read<u64>(%[[VALUE_LOCAL_CHECKSUM]])), read<i64>(%[[VALUE13]]));
+// DEFAULT-NEXT:                                     let %[[VALUE15:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_LOCAL_CHECKSUM]]);
+// DEFAULT-NEXT:                                     let %[[VALUE16:[0-9]+]]: u64 [synthetic] = xor<u64>(read<u64>(%[[VALUE15]]), read<u64>(%[[VALUE14]]));
+// DEFAULT-NEXT:                                     write<u64>(%[[VALUE_LOCAL_CHECKSUM]], read<u64>(%[[VALUE16]]));
+// DEFAULT-NEXT:                             write<vector<i64, 16>>(%[[VALUE_BS_VAR_3]], read<vector<i64, 16>>(compound_literal %[[VALUE17:[0-9]+]] [storage=automatic] = aggregate<vector<i64, 16>, zero_fill=true>()));
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:         write<u64>(%[[VALUE_BS_CHECKSUM]], read<u64>(%[[VALUE_LOCAL_CHECKSUM]]));
 // DEFAULT-NEXT:         if ne<u64>(read<u64>(%[[VALUE_BS_CHECKSUM]]), const<u64>(8230085817501184567))

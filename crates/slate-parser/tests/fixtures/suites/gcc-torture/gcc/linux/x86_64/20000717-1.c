@@ -49,15 +49,16 @@ inner_product (short *a, short *b)
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
-// DEFAULT-NEXT:                 let %[[VALUE3:[0-9]+]]: i16 [synthetic] = read<i16>(%[[VALUE_sum]]);
-// DEFAULT-NEXT:                 let %[[VALUE4:[0-9]+]]: ptr<i16> [synthetic] = read<ptr<i16>>(%[[VALUE_a]]);
-// DEFAULT-NEXT:                 let %[[VALUE5:[0-9]+]]: ptr<i16> [synthetic] = ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(read<ptr<i16>>(%[[VALUE4]]), const<i32>(1));
-// DEFAULT-NEXT:                 write<ptr<i16>>(%[[VALUE_a]], read<ptr<i16>>(%[[VALUE5]]));
-// DEFAULT-NEXT:                 let %[[VALUE6:[0-9]+]]: ptr<i16> [synthetic] = read<ptr<i16>>(%[[VALUE_b]]);
-// DEFAULT-NEXT:                 let %[[VALUE7:[0-9]+]]: ptr<i16> [synthetic] = ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(read<ptr<i16>>(%[[VALUE6]]), const<i32>(1));
-// DEFAULT-NEXT:                 write<ptr<i16>>(%[[VALUE_b]], read<ptr<i16>>(%[[VALUE7]]));
-// DEFAULT-NEXT:                 let %[[VALUE8:[0-9]+]]: i16 [synthetic] = truncate<i16, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%[[VALUE3]])), mul<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(deref(read<ptr<i16>>(%[[VALUE4]])))), widen<i32, reason=promotion>(read<i16>(deref(read<ptr<i16>>(%[[VALUE6]])))))));
-// DEFAULT-NEXT:                 write<i16>(%[[VALUE_sum]], read<i16>(%[[VALUE8]]));
+// DEFAULT-NEXT:                 let %[[VALUE3:[0-9]+]]: ptr<i16> [synthetic] = read<ptr<i16>>(%[[VALUE_a]]);
+// DEFAULT-NEXT:                 let %[[VALUE4:[0-9]+]]: ptr<i16> [synthetic] = ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(read<ptr<i16>>(%[[VALUE3]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<ptr<i16>>(%[[VALUE_a]], read<ptr<i16>>(%[[VALUE4]]));
+// DEFAULT-NEXT:                 let %[[VALUE5:[0-9]+]]: ptr<i16> [synthetic] = read<ptr<i16>>(%[[VALUE_b]]);
+// DEFAULT-NEXT:                 let %[[VALUE6:[0-9]+]]: ptr<i16> [synthetic] = ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(read<ptr<i16>>(%[[VALUE5]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<ptr<i16>>(%[[VALUE_b]], read<ptr<i16>>(%[[VALUE6]]));
+// DEFAULT-NEXT:                 let %[[VALUE7:[0-9]+]]: i32 [synthetic] = mul<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(deref(read<ptr<i16>>(%[[VALUE3]])))), widen<i32, reason=promotion>(read<i16>(deref(read<ptr<i16>>(%[[VALUE5]])))));
+// DEFAULT-NEXT:                 let %[[VALUE8:[0-9]+]]: i16 [synthetic] = read<i16>(%[[VALUE_sum]]);
+// DEFAULT-NEXT:                 let %[[VALUE9:[0-9]+]]: i16 [synthetic] = truncate<i16, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%[[VALUE8]])), read<i32>(%[[VALUE7]])));
+// DEFAULT-NEXT:                 write<i16>(%[[VALUE_sum]], read<i16>(%[[VALUE9]]));
 // DEFAULT-NEXT:         return read<i16>(%[[VALUE_sum]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

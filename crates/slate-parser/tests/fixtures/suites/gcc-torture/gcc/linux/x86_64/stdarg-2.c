@@ -197,24 +197,28 @@ int main(void) {
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(5):
 // DEFAULT-NEXT:                     write<i32>(%[[VALUE_foo_arg]], va_arg<i32>(%[[VALUE_ap]]));
-// DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_foo_arg]]);
-// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: i32 [synthetic] = float_to_int<i32, reason=assign, out_of_range=ub, exceptions=observable>(add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(read<i32>(%[[VALUE1]])), va_arg<f64>(%[[VALUE_ap]])));
-// DEFAULT-NEXT:                 write<i32>(%[[VALUE_foo_arg]], read<i32>(%[[VALUE2]]));
-// DEFAULT-NEXT:                 let %[[VALUE3:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_foo_arg]]);
-// DEFAULT-NEXT:                 let %[[VALUE4:[0-9]+]]: i32 [synthetic] = truncate<i32, reason=assign, fits=unknown>(add<i64, overflow=ub>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE3]])), va_arg<i64>(%[[VALUE_ap]])));
-// DEFAULT-NEXT:                 write<i32>(%[[VALUE_foo_arg]], read<i32>(%[[VALUE4]]));
+// DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: f64 [synthetic] = va_arg<f64>(%[[VALUE_ap]]);
+// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_foo_arg]]);
+// DEFAULT-NEXT:                 let %[[VALUE3:[0-9]+]]: i32 [synthetic] = float_to_int<i32, reason=assign, out_of_range=ub, exceptions=observable>(add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(read<i32>(%[[VALUE2]])), read<f64>(%[[VALUE1]])));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_foo_arg]], read<i32>(%[[VALUE3]]));
+// DEFAULT-NEXT:                 let %[[VALUE4:[0-9]+]]: i64 [synthetic] = va_arg<i64>(%[[VALUE_ap]]);
+// DEFAULT-NEXT:                 let %[[VALUE5:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_foo_arg]]);
+// DEFAULT-NEXT:                 let %[[VALUE6:[0-9]+]]: i32 [synthetic] = truncate<i32, reason=assign, fits=unknown>(add<i64, overflow=ub>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE5]])), read<i64>(%[[VALUE4]])));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_foo_arg]], read<i32>(%[[VALUE6]]));
 // DEFAULT-NEXT:                 break %[[VALUE0]];
 // DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(8):
 // DEFAULT-NEXT:                     write<i32>(%[[VALUE_foo_arg]], truncate<i32, reason=assign, fits=unknown>(va_arg<i64>(%[[VALUE_ap]])));
-// DEFAULT-NEXT:                 let %[[VALUE5:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_foo_arg]]);
-// DEFAULT-NEXT:                 let %[[VALUE6:[0-9]+]]: i32 [synthetic] = float_to_int<i32, reason=assign, out_of_range=ub, exceptions=observable>(add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(read<i32>(%[[VALUE5]])), va_arg<f64>(%[[VALUE_ap]])));
-// DEFAULT-NEXT:                 write<i32>(%[[VALUE_foo_arg]], read<i32>(%[[VALUE6]]));
+// DEFAULT-NEXT:                 let %[[VALUE7:[0-9]+]]: f64 [synthetic] = va_arg<f64>(%[[VALUE_ap]]);
+// DEFAULT-NEXT:                 let %[[VALUE8:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_foo_arg]]);
+// DEFAULT-NEXT:                 let %[[VALUE9:[0-9]+]]: i32 [synthetic] = float_to_int<i32, reason=assign, out_of_range=ub, exceptions=observable>(add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(read<i32>(%[[VALUE8]])), read<f64>(%[[VALUE7]])));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_foo_arg]], read<i32>(%[[VALUE9]]));
 // DEFAULT-NEXT:                 break %[[VALUE0]];
 // DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(11):
 // DEFAULT-NEXT:                     write<i32>(%[[VALUE_foo_arg]], va_arg<i32>(%[[VALUE_ap]]));
-// DEFAULT-NEXT:                 let %[[VALUE7:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_foo_arg]]);
-// DEFAULT-NEXT:                 let %[[VALUE8:[0-9]+]]: i32 [synthetic] = float_to_int<i32, reason=assign, out_of_range=ub, exceptions=observable>(add<f80, rounding=nearest_even, exceptions=observable, contract=fast>(int_to_float<f80, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(read<i32>(%[[VALUE7]])), va_arg<f80>(%[[VALUE_ap]])));
-// DEFAULT-NEXT:                 write<i32>(%[[VALUE_foo_arg]], read<i32>(%[[VALUE8]]));
+// DEFAULT-NEXT:                 let %[[VALUE10:[0-9]+]]: f80 [synthetic] = va_arg<f80>(%[[VALUE_ap]]);
+// DEFAULT-NEXT:                 let %[[VALUE11:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_foo_arg]]);
+// DEFAULT-NEXT:                 let %[[VALUE12:[0-9]+]]: i32 [synthetic] = float_to_int<i32, reason=assign, out_of_range=ub, exceptions=observable>(add<f80, rounding=nearest_even, exceptions=observable, contract=fast>(int_to_float<f80, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(read<i32>(%[[VALUE11]])), read<f80>(%[[VALUE10]])));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_foo_arg]], read<i32>(%[[VALUE12]]));
 // DEFAULT-NEXT:                 break %[[VALUE0]];
 // DEFAULT-NEXT:                 default %[[VALUE0]]:
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
@@ -223,12 +227,12 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_v_2:[0-9]+]] v: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if eq<i32>(read<i32>(%[[VALUE_v_2]]), const<i32>(16386))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %[[VALUE9:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:                 let %[[VALUE13:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:                 if ne<i32>(va_arg<i32>(%[[VALUE_gap]]), const<i32>(13))
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE9]], const<bool>(true));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE13]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE9]], ne<f64, exceptions=observable>(va_arg<f64>(%[[VALUE_gap]]), neg<f64>(const<f64>(14.0))));
-// DEFAULT-NEXT:                 if read<bool>(%[[VALUE9]])
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE13]], ne<f64, exceptions=observable>(va_arg<f64>(%[[VALUE_gap]]), neg<f64>(const<f64>(14.0))));
+// DEFAULT-NEXT:                 if read<bool>(%[[VALUE13]])
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_bar_arg]], read<i32>(%[[VALUE_v_2]]));

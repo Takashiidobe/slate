@@ -78,13 +78,15 @@ int main(void) {
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>, u64) -> i32>(%[[VALUE_strncmp]], pointer_cast<ptr<const i8>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_x]]), read<u64>(%[[VALUE_j]]))), read<ptr<const i8>>(deref(ptr_offset<ptr<ptr<const i8>>, subtract=false, element=ptr<const i8>, overflow=ub>(array_decay<ptr<ptr<const i8>>, length=Some(16)>(%[[VALUE_a]]), read<u64>(%[[VALUE_i]])))), call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(deref(ptr_offset<ptr<ptr<const i8>>, subtract=false, element=ptr<const i8>, overflow=ub>(array_decay<ptr<ptr<const i8>>, length=Some(16)>(%[[VALUE_a]]), read<u64>(%[[VALUE_i]])))))), const<i32>(0))
 // DEFAULT-NEXT:                         return const<i32>(2);
-// DEFAULT-NEXT:                     let %[[VALUE3:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_j]]);
-// DEFAULT-NEXT:                     let %[[VALUE4:[0-9]+]]: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE3]]), call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(deref(ptr_offset<ptr<ptr<const i8>>, subtract=false, element=ptr<const i8>, overflow=ub>(array_decay<ptr<ptr<const i8>>, length=Some(16)>(%[[VALUE_a]]), read<u64>(%[[VALUE_i]]))))));
-// DEFAULT-NEXT:                     write<u64>(%[[VALUE_j]], read<u64>(%[[VALUE4]]));
+// DEFAULT-NEXT:                     let %[[VALUE3:[0-9]+]]: u64 [synthetic] = call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(deref(ptr_offset<ptr<ptr<const i8>>, subtract=false, element=ptr<const i8>, overflow=ub>(array_decay<ptr<ptr<const i8>>, length=Some(16)>(%[[VALUE_a]]), read<u64>(%[[VALUE_i]])))));
+// DEFAULT-NEXT:                     let %[[VALUE4:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_j]]);
+// DEFAULT-NEXT:                     let %[[VALUE5:[0-9]+]]: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE4]]), read<u64>(%[[VALUE3]]));
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_j]], read<u64>(%[[VALUE5]]));
 // DEFAULT-NEXT:                     if ne<ptr<const i8>>(read<ptr<const i8>>(%[[VALUE_y]]), null<ptr<const i8>>)
-// DEFAULT-NEXT:                         let %[[VALUE5:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_j]]);
-// DEFAULT-NEXT:                         let %[[VALUE6:[0-9]+]]: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE5]]), call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE_y]])));
-// DEFAULT-NEXT:                         write<u64>(%[[VALUE_j]], read<u64>(%[[VALUE6]]));
+// DEFAULT-NEXT:                         let %[[VALUE6:[0-9]+]]: u64 [synthetic] = call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE_y]]));
+// DEFAULT-NEXT:                         let %[[VALUE7:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_j]]);
+// DEFAULT-NEXT:                         let %[[VALUE8:[0-9]+]]: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE7]]), read<u64>(%[[VALUE6]]));
+// DEFAULT-NEXT:                         write<u64>(%[[VALUE_j]], read<u64>(%[[VALUE8]]));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

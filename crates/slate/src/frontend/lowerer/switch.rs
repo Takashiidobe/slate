@@ -374,10 +374,11 @@ impl FunctionLowerer<'_, '_> {
     }
 
     fn lower_switch_arm(&mut self, arm: &SwitchArm) -> Result<Vec<Stmt>> {
-        arm.body
-            .iter()
-            .map(|statement| self.lower_statement(statement))
-            .collect()
+        let mut lowered = Vec::new();
+        for statement in &arm.body {
+            lowered.extend(self.lower_statement(statement)?);
+        }
+        Ok(lowered)
     }
 }
 

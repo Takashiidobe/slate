@@ -243,16 +243,15 @@ int main(void) {
 // CHECK-NEXT:     let mut stream_data: *mut i8 = std::ptr::null_mut::<i8>();
 // CHECK-NEXT:     let mut stream_size: u64 = 0;
 // CHECK-NEXT:     let mut total: i32 = 0;
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_1]]
-// CHECK-NEXT:         + (((unsafe {
-// CHECK-NEXT:             asprintf(
-// CHECK-NEXT:                 std::ptr::addr_of_mut!(formatted),
-// CHECK-NEXT:                 c"%s:%d".as_ptr(),
-// CHECK-NEXT:                 c"gnu".as_ptr() as *mut i8,
-// CHECK-NEXT:                 23 as i32,
-// CHECK-NEXT:             )
-// CHECK-NEXT:         }) == 6) as i32);
+// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i32 = ((unsafe {
+// CHECK-NEXT:         asprintf(
+// CHECK-NEXT:             std::ptr::addr_of_mut!(formatted),
+// CHECK-NEXT:             c"%s:%d".as_ptr(),
+// CHECK-NEXT:             c"gnu".as_ptr() as *mut i8,
+// CHECK-NEXT:             23 as i32,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     }) == 6) as i32;
+// CHECK-NEXT:     total += [[V_1]];
 // CHECK-NEXT:     let [[V_2:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_2]]
 // CHECK-NEXT:         + (((unsafe { strcmp(formatted as *const i8, c"gnu:23".as_ptr()) }) == 0)
@@ -266,24 +265,23 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let [[V_3:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_3]] + ((stream != std::ptr::null_mut::<_IO_FILE>()) as i32);
-// CHECK-NEXT:     let [[V_4:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_4]]
-// CHECK-NEXT:         + (((unsafe {
-// CHECK-NEXT:             fprintf(stream, c"%s-%d".as_ptr(), c"slate".as_ptr() as *mut i8, 24 as i32)
-// CHECK-NEXT:         }) == 8) as i32);
-// CHECK-NEXT:     let [[V_5:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_5]] + (((unsafe { __fwriting(stream) }) != 0) as i32);
-// CHECK-NEXT:     let [[V_6:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_6]] + (((unsafe { __fpending(stream) }) > 0) as i32);
-// CHECK-NEXT:     let [[V_7:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_7]] + (((unsafe { fflush(stream) }) == 0) as i32);
+// CHECK-NEXT:     let [[V_4:__v[0-9]+]]: i32 = ((unsafe {
+// CHECK-NEXT:         fprintf(stream, c"%s-%d".as_ptr(), c"slate".as_ptr() as *mut i8, 24 as i32)
+// CHECK-NEXT:     }) == 8) as i32;
+// CHECK-NEXT:     total += [[V_4]];
+// CHECK-NEXT:     let [[V_5:__v[0-9]+]]: i32 = ((unsafe { __fwriting(stream) }) != 0) as i32;
+// CHECK-NEXT:     total += [[V_5]];
+// CHECK-NEXT:     let [[V_6:__v[0-9]+]]: i32 = ((unsafe { __fpending(stream) }) > 0) as i32;
+// CHECK-NEXT:     total += [[V_6]];
+// CHECK-NEXT:     let [[V_7:__v[0-9]+]]: i32 = ((unsafe { fflush(stream) }) == 0) as i32;
+// CHECK-NEXT:     total += [[V_7]];
 // CHECK-NEXT:     total += (stream_size == 8) as i32;
 // CHECK-NEXT:     let [[V_8:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_8]]
 // CHECK-NEXT:         + (((unsafe { strcmp(stream_data as *const i8, c"slate-24".as_ptr()) }) == 0)
 // CHECK-NEXT:             as i32);
-// CHECK-NEXT:     let [[V_9:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_9]] + (((unsafe { fclose(stream) }) == 0) as i32);
+// CHECK-NEXT:     let [[V_9:__v[0-9]+]]: i32 = ((unsafe { fclose(stream) }) == 0) as i32;
+// CHECK-NEXT:     total += [[V_9]];
 // CHECK-NEXT:     unsafe { free(stream_data as *mut ()) };
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
@@ -301,37 +299,31 @@ int main(void) {
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     let [[V_10:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_10]] + ((stream != std::ptr::null_mut::<_IO_FILE>()) as i32);
-// CHECK-NEXT:     let [[V_11:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_11]]
-// CHECK-NEXT:         + (((unsafe {
-// CHECK-NEXT:             getdelim(
-// CHECK-NEXT:                 std::ptr::addr_of_mut!(line),
-// CHECK-NEXT:                 std::ptr::addr_of_mut!(capacity),
-// CHECK-NEXT:                 124 as i32,
-// CHECK-NEXT:                 stream,
-// CHECK-NEXT:             )
-// CHECK-NEXT:         }) == 6) as i32);
+// CHECK-NEXT:     let [[V_11:__v[0-9]+]]: i32 = ((unsafe {
+// CHECK-NEXT:         getdelim(
+// CHECK-NEXT:             std::ptr::addr_of_mut!(line),
+// CHECK-NEXT:             std::ptr::addr_of_mut!(capacity),
+// CHECK-NEXT:             124 as i32,
+// CHECK-NEXT:             stream,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     }) == 6) as i32;
+// CHECK-NEXT:     total += [[V_11]];
 // CHECK-NEXT:     let [[V_12:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_12]]
 // CHECK-NEXT:         + (((unsafe { strcmp(line as *const i8, c"alpha|".as_ptr()) }) == 0) as i32);
-// CHECK-NEXT:     let [[V_13:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_13]]
-// CHECK-NEXT:         + (((unsafe {
-// CHECK-NEXT:             getline(
-// CHECK-NEXT:                 std::ptr::addr_of_mut!(line),
-// CHECK-NEXT:                 std::ptr::addr_of_mut!(capacity),
-// CHECK-NEXT:                 stream,
-// CHECK-NEXT:             )
-// CHECK-NEXT:         }) == 5) as i32);
+// CHECK-NEXT:     let [[V_13:__v[0-9]+]]: i32 = ((unsafe {
+// CHECK-NEXT:         getline(std::ptr::addr_of_mut!(line), std::ptr::addr_of_mut!(capacity), stream)
+// CHECK-NEXT:     }) == 5) as i32;
+// CHECK-NEXT:     total += [[V_13]];
 // CHECK-NEXT:     let [[V_14:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_14]]
 // CHECK-NEXT:         + (((unsafe { strcmp(line as *const i8, c"beta\n".as_ptr()) }) == 0) as i32);
-// CHECK-NEXT:     let [[V_15:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_15]] + (((unsafe { __freading(stream) }) != 0) as i32);
-// CHECK-NEXT:     let [[V_16:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_16]] + (((unsafe { __fbufsize(stream) }) > 0) as i32);
-// CHECK-NEXT:     let [[V_17:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_17]] + (((unsafe { fclose(stream) }) == 0) as i32);
+// CHECK-NEXT:     let [[V_15:__v[0-9]+]]: i32 = ((unsafe { __freading(stream) }) != 0) as i32;
+// CHECK-NEXT:     total += [[V_15]];
+// CHECK-NEXT:     let [[V_16:__v[0-9]+]]: i32 = ((unsafe { __fbufsize(stream) }) > 0) as i32;
+// CHECK-NEXT:     total += [[V_16]];
+// CHECK-NEXT:     let [[V_17:__v[0-9]+]]: i32 = ((unsafe { fclose(stream) }) == 0) as i32;
+// CHECK-NEXT:     total += [[V_17]];
 // CHECK-NEXT:     unsafe { free(line as *mut ()) };
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
@@ -352,13 +344,12 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let [[V_18:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_18]] + ((stream != std::ptr::null_mut::<_IO_FILE>()) as i32);
-// CHECK-NEXT:     let [[V_19:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_19]]
-// CHECK-NEXT:         + (((unsafe {
-// CHECK-NEXT:             fprintf(stream, c"%s:%d".as_ptr(), c"cookie".as_ptr() as *mut i8, 7 as i32)
-// CHECK-NEXT:         }) == 8) as i32);
-// CHECK-NEXT:     let [[V_20:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_20]] + (((unsafe { fclose(stream) }) == 0) as i32);
+// CHECK-NEXT:     let [[V_19:__v[0-9]+]]: i32 = ((unsafe {
+// CHECK-NEXT:         fprintf(stream, c"%s:%d".as_ptr(), c"cookie".as_ptr() as *mut i8, 7 as i32)
+// CHECK-NEXT:     }) == 8) as i32;
+// CHECK-NEXT:     total += [[V_19]];
+// CHECK-NEXT:     let [[V_20:__v[0-9]+]]: i32 = ((unsafe { fclose(stream) }) == 0) as i32;
+// CHECK-NEXT:     total += [[V_20]];
 // CHECK-NEXT:     total += (cookie.closed == 1) as i32;
 // CHECK-NEXT:     total += (cookie.length == 8) as i32;
 // CHECK-NEXT:     let [[V_21:__v[0-9]+]]: i32 = total;

@@ -154,10 +154,9 @@ int main(void) {
 // CHECK-NEXT:             + unsafe { *unsafe { values.offset(1 as isize) } }
 // CHECK-NEXT:             + unsafe { *unsafe { values.offset(2 as isize) } }
 // CHECK-NEXT:             + unsafe { *unsafe { values.offset(3 as isize) } };
-// CHECK-NEXT:     let [[V_9:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_9]]
-// CHECK-NEXT:         + (((unsafe { malloc_usable_size(values as *mut ()) })
-// CHECK-NEXT:             >= (4 as u64).wrapping_mul(4 as u64)) as i32);
+// CHECK-NEXT:     let [[V_9:__v[0-9]+]]: i32 = ((unsafe { malloc_usable_size(values as *mut ()) })
+// CHECK-NEXT:         >= (4 as u64).wrapping_mul(4 as u64)) as i32;
+// CHECK-NEXT:     total += [[V_9]];
 // CHECK-NEXT:     let [[V_10:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_10]]
 // CHECK-NEXT:         + ((aligned != std::ptr::null_mut::<()>() && (aligned as u64) % 64 == 0) as i32);
@@ -169,11 +168,11 @@ int main(void) {
 // CHECK-NEXT:     total = [[V_12]]
 // CHECK-NEXT:         + ((rounded != std::ptr::null_mut::<()>()
 // CHECK-NEXT:             && (rounded as u64) % (page_size as u64) == 0) as i32);
-// CHECK-NEXT:     let [[V_13:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_13]]
-// CHECK-NEXT:         + (((unsafe { malloc_usable_size(rounded) }) >= (page_size as u64)) as i32);
-// CHECK-NEXT:     let [[V_14:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_14]] + (((unsafe { mallopt(-(5 as i32), 1 as i32) }) != 0) as i32);
+// CHECK-NEXT:     let [[V_13:__v[0-9]+]]: i32 = ((unsafe { malloc_usable_size(rounded) }) >= (page_size as u64))
+// CHECK-NEXT:         as i32;
+// CHECK-NEXT:     total += [[V_13]];
+// CHECK-NEXT:     let [[V_14:__v[0-9]+]]: i32 = ((unsafe { mallopt(-(5 as i32), 1 as i32) }) != 0) as i32;
+// CHECK-NEXT:     total += [[V_14]];
 // CHECK-NEXT:     unsafe { free(values as *mut ()) };
 // CHECK-NEXT:     unsafe { free(aligned) };
 // CHECK-NEXT:     unsafe { free(page) };
@@ -374,27 +373,26 @@ int main(void) {
 // CHECK-NEXT:     let [[V_24:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_24]]
 // CHECK-NEXT:         + (((unsafe { strcmp(second as *const i8, c"libc".as_ptr()) }) == 0) as i32);
-// CHECK-NEXT:     let [[V_25:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     let mut [[V_26:__v[0-9]+]]: u32;
+// CHECK-NEXT:     let mut [[V_25:__v[0-9]+]]: u32;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let __o: *const obstack = std::ptr::addr_of_mut!(storage) as *const obstack;
-// CHECK-NEXT:         [[V_26]] = (((unsafe {
+// CHECK-NEXT:         [[V_25]] = (((unsafe {
 // CHECK-NEXT:             unsafe { (*__o).next_free }
 // CHECK-NEXT:                 .offset_from((unsafe { (*__o).object_base }) as *mut i8)
 // CHECK-NEXT:         }) as i64) as i32) as u32;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     total = [[V_25]] + (([[V_26]] == 0) as i32);
+// CHECK-NEXT:     total += ([[V_25]] == 0) as i32;
 // CHECK-NEXT:     let __o: *mut obstack = std::ptr::addr_of_mut!(storage);
 // CHECK-NEXT:     let __obj: *mut () = std::ptr::null_mut::<()>();
 // CHECK-NEXT:     if __obj > ((unsafe { (*__o).chunk }) as *mut ())
 // CHECK-NEXT:         && __obj < ((unsafe { (*__o).chunk_limit }) as *mut ())
 // CHECK-NEXT:     {
-// CHECK-NEXT:         let [[V_27:__v[0-9]+]]: *mut i8 = __obj as *mut i8;
+// CHECK-NEXT:         let [[V_26:__v[0-9]+]]: *mut i8 = __obj as *mut i8;
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             (*__o).object_base = [[V_27]];
+// CHECK-NEXT:             (*__o).object_base = [[V_26]];
 // CHECK-NEXT:         }
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             (*__o).next_free = [[V_27]];
+// CHECK-NEXT:             (*__o).next_free = [[V_26]];
 // CHECK-NEXT:         }
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         unsafe { obstack_free(__o, __obj) };

@@ -85,10 +85,42 @@ pub(super) fn is_integer_abs(builtin: &str) -> bool {
     )
 }
 
+fn effect_free_value(value: &ir::Value) -> bool {
+    match &value.node.value {
+        ValueKind::Constant(_) | ValueKind::Null => true,
+        ValueKind::Read {
+            place,
+            ordering: None,
+        } => !place.access.volatile && effect_free_place(place),
+        ValueKind::AddressOf(place)
+        | ValueKind::ArrayDecay { place, .. }
+        | ValueKind::FunctionDecay { place } => effect_free_place(place),
+        ValueKind::Convert { operand, .. } => effect_free_value(operand),
+        ValueKind::PointerOffset {
+            pointer: left,
+            amount: right,
+            ..
+        }
+        | ValueKind::Arith { left, right, .. } => {
+            effect_free_value(left) && effect_free_value(right)
+        }
+        _ => false,
+    }
+}
+
+fn effect_free_place(place: &ir::Place) -> bool {
+    match &place.kind {
+        PlaceKind::Binding(_) => true,
+        PlaceKind::Deref(pointer) => effect_free_value(pointer),
+        PlaceKind::Field { base, .. } => effect_free_place(base),
+        PlaceKind::Index { base, index } => effect_free_value(base) && effect_free_value(index),
+        _ => false,
+    }
+}
+
 pub(super) fn open_coded_builtin(builtin: &str) -> bool {
     bit_count_method(builtin).is_some()
         || is_find_first_set(builtin)
-        || is_integer_abs(builtin)
         || is_parity_or_clrsb(builtin)
         || stdc_rotate_method(builtin).is_some()
         || is_stdc_bit(builtin)
@@ -1592,7 +1624,22 @@ impl FunctionLowerer<'_, '_> {
             ) =>
             {
                 match (self.tables.builtin_name(*id), arguments.first()) {
-                    (Some("__builtin_prefetch"), _) => Expr::Block(Box::default()),
+                    (Some("__builtin_prefetch"), address)
+                        if address.is_none_or(effect_free_value) =>
+                    {
+                        Expr::Block(Box::default())
+                    }
+                    (Some("__builtin_prefetch"), Some(address)) => {
+                        Expr::Block(Box::new(rust::Block {
+                            stmts: vec![Stmt::Let {
+                                name: "_".into(),
+                                mutable: false,
+                                ty: None,
+                                init: Some(self.lower_value(address)?),
+                            }],
+                            tail: None,
+                        }))
+                    }
                     (_, Some(operand)) => self.lower_value(operand)?,
                     (_, None) => return Err(unsupported_value(value)),
                 }

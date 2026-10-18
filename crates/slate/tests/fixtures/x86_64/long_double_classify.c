@@ -436,12 +436,11 @@ int main(void) {
 // CHECK-NEXT:     ];
 // CHECK-NEXT:     let mut accepted: i32 = 0;
 // CHECK-NEXT:     for i in 0..((80 as u64) / (16 as u64)) {
-// CHECK-NEXT:         let [[V_1:__v[0-9]+]]: i32 = accepted;
-// CHECK-NEXT:         accepted = [[V_1]]
-// CHECK-NEXT:             + arOpAccumulate(
-// CHECK-NEXT:                 unsafe { &mut (*std::ptr::addr_of_mut!(acc)) },
-// CHECK-NEXT:                 addends[i as usize],
-// CHECK-NEXT:             );
+// CHECK-NEXT:         let [[V_1:__v[0-9]+]]: i32 = arOpAccumulate(
+// CHECK-NEXT:             unsafe { &mut (*std::ptr::addr_of_mut!(acc)) },
+// CHECK-NEXT:             addends[i as usize],
+// CHECK-NEXT:         );
+// CHECK-NEXT:         accepted += [[V_1]];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut out: __SlateAlign16<[i8; 64]> = __SlateAlign16([0 as i8; 64]);
 // CHECK-NEXT:     let n: i32 = ld2string(out.0.as_mut_ptr() as *mut i8, 64 as u64, acc);

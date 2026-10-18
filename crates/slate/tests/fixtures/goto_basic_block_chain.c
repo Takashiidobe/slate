@@ -78,14 +78,12 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:         value = mark(3 as i32);
 // CHECK-NEXT:         result += value;
-// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: *mut i32 = unsafe { saved };
-// CHECK-NEXT:         let [[V_1:__v[0-9]+]]: i32 = unsafe { *[[V_0]] };
-// CHECK-NEXT:         let [[V_2:__v[0-9]+]]: i32 = [[V_1]] + mark(4 as i32);
+// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = mark(4 as i32);
+// CHECK-NEXT:         let [[V_1:__v[0-9]+]]: *mut i32 = unsafe { saved };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *[[V_0]] = [[V_2]];
+// CHECK-NEXT:             *[[V_1]] = (unsafe { *[[V_1]] }) + [[V_0]];
 // CHECK-NEXT:         }
-// CHECK-NEXT:         let [[V_3:__v[0-9]+]]: i32 = result;
-// CHECK-NEXT:         result = [[V_3]] + mark(5 as i32);
+// CHECK-NEXT:         result += mark(5 as i32);
 // CHECK-NEXT:         println!("{} {}", result, unsafe { trace });
 // CHECK-NEXT:         return result;
 // CHECK-NEXT:     }
@@ -94,10 +92,8 @@ int main(void) {
 // CHECK-NEXT:     let mut result: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         result = mark(6 as i32);
-// CHECK-NEXT:         let [[V_4:__v[0-9]+]]: i32 = result;
-// CHECK-NEXT:         result = [[V_4]] + mark(7 as i32);
-// CHECK-NEXT:         let [[V_5:__v[0-9]+]]: i32 = result;
-// CHECK-NEXT:         result = [[V_5]] + mark(8 as i32);
+// CHECK-NEXT:         result += mark(7 as i32);
+// CHECK-NEXT:         result += mark(8 as i32);
 // CHECK-NEXT:         return result;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }

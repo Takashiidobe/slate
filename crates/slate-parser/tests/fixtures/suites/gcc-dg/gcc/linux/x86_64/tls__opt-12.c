@@ -111,9 +111,10 @@ main (void)
 // DEFAULT-NEXT:                             yield void;
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:                         body:
-// DEFAULT-NEXT:                             let %[[VALUE6:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_tot]]);
-// DEFAULT-NEXT:                             let %[[VALUE7:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE6]]), call<i32, signature=fn(i32, i32, i32, i32) -> i32>(%[[VALUE_f2]], read<i32>(%[[VALUE_a1]]), read<i32>(%[[VALUE_a2]]), read<i32>(%[[VALUE_i]]), read<i32>(%[[VALUE_j]])));
-// DEFAULT-NEXT:                             write<i32>(%[[VALUE_tot]], read<i32>(%[[VALUE7]]));
+// DEFAULT-NEXT:                             let %[[VALUE6:[0-9]+]]: i32 [synthetic] = call<i32, signature=fn(i32, i32, i32, i32) -> i32>(%[[VALUE_f2]], read<i32>(%[[VALUE_a1]]), read<i32>(%[[VALUE_a2]]), read<i32>(%[[VALUE_i]]), read<i32>(%[[VALUE_j]]));
+// DEFAULT-NEXT:                             let %[[VALUE7:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_tot]]);
+// DEFAULT-NEXT:                             let %[[VALUE8:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE7]]), read<i32>(%[[VALUE6]]));
+// DEFAULT-NEXT:                             write<i32>(%[[VALUE_tot]], read<i32>(%[[VALUE8]]));
 // DEFAULT-NEXT:                     write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(addr_of<ptr<i8>>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(4)>(field0(deref(ptr_offset<ptr<@type[[TYPE_s]]>, subtract=false, element=@type[[TYPE_s]], overflow=ub>(array_decay<ptr<@type[[TYPE_s]]>, length=Some(2)>(%[[VALUE_thra]]), const<i32>(0))))), const<i32>(0)))), read<i32>(%[[VALUE_i]]))), truncate<i8, reason=assign, fits=unknown>(read<i32>(%[[VALUE_tot]])));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }

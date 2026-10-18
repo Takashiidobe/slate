@@ -109,8 +109,8 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut total: f64 = (0 as i32) as f64;
 // CHECK-NEXT:     for i in 0..count {
-// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: f64 = total;
-// CHECK-NEXT:         total = [[V_0]] + unsafe { ap.next_arg::<f64>() };
+// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: f64 = unsafe { ap.next_arg::<f64>() };
+// CHECK-NEXT:         total += [[V_0]];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let letter: i32 = unsafe { ap.next_arg::<i32>() };
 // CHECK-NEXT:     let small: i32 = unsafe { ap.next_arg::<i32>() };
@@ -155,8 +155,8 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     for i in 0..pairs {
-// CHECK-NEXT:         let [[V_1:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:         total = [[V_1]] + next_pair(unsafe { &mut (*std::ptr::addr_of_mut!(ap)) });
+// CHECK-NEXT:         let [[V_1:__v[0-9]+]]: i32 = next_pair(unsafe { &mut (*std::ptr::addr_of_mut!(ap)) });
+// CHECK-NEXT:         total += [[V_1]];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     {}
 // CHECK-NEXT:     total
@@ -176,8 +176,8 @@ int main(void) {
 // CHECK-NEXT:         if !([[V_2]] > 0) {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         let [[V_3:__v[0-9]+]]: i64 = total;
-// CHECK-NEXT:         total = [[V_3]] + unsafe { ap.next_arg::<i64>() };
+// CHECK-NEXT:         let [[V_3:__v[0-9]+]]: i64 = unsafe { ap.next_arg::<i64>() };
+// CHECK-NEXT:         total += [[V_3]];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     {}
 // CHECK-NEXT:     total

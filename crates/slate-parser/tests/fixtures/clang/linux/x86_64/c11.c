@@ -596,50 +596,54 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE8:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_concurrency_total]]);
 // DEFAULT-NEXT:                 let %[[VALUE9:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE8]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_concurrency_total]], read<i32>(%[[VALUE9]]));
-// DEFAULT-NEXT:                 let %[[VALUE10:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_concurrency_total]]);
-// DEFAULT-NEXT:                 let %[[VALUE11:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE10]]), from_bool<i32, reason=promotion>(eq<i32>(call<i32, signature=fn(ptr<@type[[TYPE5]]>) -> i32>(%[[VALUE_mtx_lock]], addr_of<ptr<@type[[TYPE5]]>>(%[[VALUE_mutex]])), const<i32>(0))));
-// DEFAULT-NEXT:                 write<i32>(%[[VALUE_concurrency_total]], read<i32>(%[[VALUE11]]));
-// DEFAULT-NEXT:                 let %[[VALUE12:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_concurrency_total]]);
-// DEFAULT-NEXT:                 let %[[VALUE13:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE12]]), from_bool<i32, reason=promotion>(eq<i32>(call<i32, signature=fn(ptr<@type[[TYPE5]]>) -> i32>(%[[VALUE_mtx_unlock]], addr_of<ptr<@type[[TYPE5]]>>(%[[VALUE_mutex]])), const<i32>(0))));
-// DEFAULT-NEXT:                 write<i32>(%[[VALUE_concurrency_total]], read<i32>(%[[VALUE13]]));
+// DEFAULT-NEXT:                 let %[[VALUE10:[0-9]+]]: i32 [synthetic] = from_bool<i32, reason=promotion>(eq<i32>(call<i32, signature=fn(ptr<@type[[TYPE5]]>) -> i32>(%[[VALUE_mtx_lock]], addr_of<ptr<@type[[TYPE5]]>>(%[[VALUE_mutex]])), const<i32>(0)));
+// DEFAULT-NEXT:                 let %[[VALUE11:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_concurrency_total]]);
+// DEFAULT-NEXT:                 let %[[VALUE12:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE11]]), read<i32>(%[[VALUE10]]));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_concurrency_total]], read<i32>(%[[VALUE12]]));
+// DEFAULT-NEXT:                 let %[[VALUE13:[0-9]+]]: i32 [synthetic] = from_bool<i32, reason=promotion>(eq<i32>(call<i32, signature=fn(ptr<@type[[TYPE5]]>) -> i32>(%[[VALUE_mtx_unlock]], addr_of<ptr<@type[[TYPE5]]>>(%[[VALUE_mutex]])), const<i32>(0)));
+// DEFAULT-NEXT:                 let %[[VALUE14:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_concurrency_total]]);
+// DEFAULT-NEXT:                 let %[[VALUE15:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE14]]), read<i32>(%[[VALUE13]]));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_concurrency_total]], read<i32>(%[[VALUE15]]));
 // DEFAULT-NEXT:                 call<void, signature=fn(ptr<@type[[TYPE5]]>) -> void>(%[[VALUE_mtx_destroy]], addr_of<ptr<@type[[TYPE5]]>>(%[[VALUE_mutex]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         if eq<i32>(call<i32, signature=fn(ptr<@type[[TYPE6]]>) -> i32>(%[[VALUE_cnd_init]], addr_of<ptr<@type[[TYPE6]]>>(%[[VALUE_condition]])), const<i32>(0))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %[[VALUE14:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_concurrency_total]]);
-// DEFAULT-NEXT:                 let %[[VALUE15:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE14]]), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%[[VALUE_concurrency_total]], read<i32>(%[[VALUE15]]));
+// DEFAULT-NEXT:                 let %[[VALUE16:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_concurrency_total]]);
+// DEFAULT-NEXT:                 let %[[VALUE17:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE16]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_concurrency_total]], read<i32>(%[[VALUE17]]));
 // DEFAULT-NEXT:                 call<void, signature=fn(ptr<@type[[TYPE6]]>) -> void>(%[[VALUE_cnd_destroy]], addr_of<ptr<@type[[TYPE6]]>>(%[[VALUE_condition]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_c11_once_total]], const<i32>(0));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE2]]>, ptr<fn() -> void>) -> void>(%[[VALUE_call_once]], addr_of<ptr<@type[[TYPE2]]>>(%[[VALUE_once_control]]), function_decay<ptr<fn() -> void>>(%[[VALUE_c11_once_handler]]));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE2]]>, ptr<fn() -> void>) -> void>(%[[VALUE_call_once]], addr_of<ptr<@type[[TYPE2]]>>(%[[VALUE_once_control]]), function_decay<ptr<fn() -> void>>(%[[VALUE_c11_once_handler]]));
-// DEFAULT-NEXT:         let %[[VALUE16:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_concurrency_total]]);
-// DEFAULT-NEXT:         let %[[VALUE17:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE16]]), read<i32>(%[[VALUE_c11_once_total]]));
-// DEFAULT-NEXT:         write<i32>(%[[VALUE_concurrency_total]], read<i32>(%[[VALUE17]]));
+// DEFAULT-NEXT:         let %[[VALUE18:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_concurrency_total]]);
+// DEFAULT-NEXT:         let %[[VALUE19:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE18]]), read<i32>(%[[VALUE_c11_once_total]]));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_concurrency_total]], read<i32>(%[[VALUE19]]));
 // DEFAULT-NEXT:         if eq<i32>(call<i32, signature=fn(ptr<u32>, ptr<fn(ptr<void>) -> void>) -> i32>(%[[VALUE_tss_create]], addr_of<ptr<u32>>(%[[VALUE_thread_key]]), null<ptr<fn(ptr<void>) -> void>>), const<i32>(0))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %[[VALUE18:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_concurrency_total]]);
-// DEFAULT-NEXT:                 let %[[VALUE19:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE18]]), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%[[VALUE_concurrency_total]], read<i32>(%[[VALUE19]]));
 // DEFAULT-NEXT:                 let %[[VALUE20:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_concurrency_total]]);
-// DEFAULT-NEXT:                 let %[[VALUE21:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE20]]), from_bool<i32, reason=promotion>(eq<i32>(call<i32, signature=fn(u32, ptr<void>) -> i32>(%[[VALUE_tss_set]], read<u32>(%[[VALUE_thread_key]]), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i32>>(%[[VALUE_thread_increment]]))), const<i32>(0))));
+// DEFAULT-NEXT:                 let %[[VALUE21:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE20]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_concurrency_total]], read<i32>(%[[VALUE21]]));
-// DEFAULT-NEXT:                 let %[[VALUE22:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_concurrency_total]]);
-// DEFAULT-NEXT:                 let %[[VALUE23:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE22]]), from_bool<i32, reason=promotion>(eq<ptr<void>>(call<ptr<void>, signature=fn(u32) -> ptr<void>>(%[[VALUE_tss_get]], read<u32>(%[[VALUE_thread_key]])), pointer_cast<ptr<void>, reason=usual_arith>(addr_of<ptr<i32>>(%[[VALUE_thread_increment]])))));
-// DEFAULT-NEXT:                 write<i32>(%[[VALUE_concurrency_total]], read<i32>(%[[VALUE23]]));
+// DEFAULT-NEXT:                 let %[[VALUE22:[0-9]+]]: i32 [synthetic] = from_bool<i32, reason=promotion>(eq<i32>(call<i32, signature=fn(u32, ptr<void>) -> i32>(%[[VALUE_tss_set]], read<u32>(%[[VALUE_thread_key]]), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i32>>(%[[VALUE_thread_increment]]))), const<i32>(0)));
+// DEFAULT-NEXT:                 let %[[VALUE23:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_concurrency_total]]);
+// DEFAULT-NEXT:                 let %[[VALUE24:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE23]]), read<i32>(%[[VALUE22]]));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_concurrency_total]], read<i32>(%[[VALUE24]]));
+// DEFAULT-NEXT:                 let %[[VALUE25:[0-9]+]]: i32 [synthetic] = from_bool<i32, reason=promotion>(eq<ptr<void>>(call<ptr<void>, signature=fn(u32) -> ptr<void>>(%[[VALUE_tss_get]], read<u32>(%[[VALUE_thread_key]])), pointer_cast<ptr<void>, reason=usual_arith>(addr_of<ptr<i32>>(%[[VALUE_thread_increment]]))));
+// DEFAULT-NEXT:                 let %[[VALUE26:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_concurrency_total]]);
+// DEFAULT-NEXT:                 let %[[VALUE27:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE26]]), read<i32>(%[[VALUE25]]));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_concurrency_total]], read<i32>(%[[VALUE27]]));
 // DEFAULT-NEXT:                 call<void, signature=fn(u32) -> void>(%[[VALUE_tss_delete]], read<u32>(%[[VALUE_thread_key]]));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         let %[[VALUE24:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_concurrency_total]]);
-// DEFAULT-NEXT:         let %[[VALUE25:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE24]]), from_bool<i32, reason=promotion>(ge<i32>(const<i32>(4), const<i32>(1))));
-// DEFAULT-NEXT:         write<i32>(%[[VALUE_concurrency_total]], read<i32>(%[[VALUE25]]));
+// DEFAULT-NEXT:         let %[[VALUE28:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_concurrency_total]]);
+// DEFAULT-NEXT:         let %[[VALUE29:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE28]]), from_bool<i32, reason=promotion>(ge<i32>(const<i32>(4), const<i32>(1))));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_concurrency_total]], read<i32>(%[[VALUE29]]));
 // DEFAULT-NEXT:         write<u16>(%[[VALUE_converted16]], reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(0))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_converted32]], reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_conversion_total]], add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=unknown>(call<u64, signature=fn(ptr<u16>, ptr<const i8>, u64, ptr<@type[[TYPE0]]>) -> u64>(%[[VALUE_mbrtoc16]], addr_of<ptr<u16>>(%[[VALUE_converted16]]), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_2]])), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))), addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_utf16_state]])))), reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=unknown>(call<u64, signature=fn(ptr<i8>, u16, ptr<@type[[TYPE0]]>) -> u64>(%[[VALUE_c16rtomb]], array_decay<ptr<i8>, length=Some(16)>(%[[VALUE_multibyte16]]), const<u16>(65), addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_utf16_state]]))))), reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=unknown>(call<u64, signature=fn(ptr<u32>, ptr<const i8>, u64, ptr<@type[[TYPE0]]>) -> u64>(%[[VALUE_mbrtoc32]], addr_of<ptr<u32>>(%[[VALUE_converted32]]), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_3]])), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))), addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_utf32_state]]))))), reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=unknown>(call<u64, signature=fn(ptr<i8>, u32, ptr<@type[[TYPE0]]>) -> u64>(%[[VALUE_c32rtomb]], array_decay<ptr<i8>, length=Some(16)>(%[[VALUE_multibyte32]]), const<u32>(66), addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_utf32_state]]))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_converted16]])))), reinterpret<i32, reason=explicit, fits=unknown>(read<u32>(%[[VALUE_converted32]]))), widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(16)>(%[[VALUE_multibyte16]]), const<i32>(0)))))), widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(16)>(%[[VALUE_multibyte32]]), const<i32>(0)))))));
 // DEFAULT-NEXT:         write<ptr<void>>(%[[VALUE_aligned_memory]], call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%[[VALUE_aligned_alloc]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(64))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(64)))));
-// DEFAULT-NEXT:         let %[[VALUE26:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_alignment_total]]);
-// DEFAULT-NEXT:         let %[[VALUE27:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE26]]), from_bool<i32, reason=promotion>(logical_and<bool>(ne<ptr<void>>(read<ptr<void>>(%[[VALUE_aligned_memory]]), null<ptr<void>>), eq<u64>(rem<u64, by_zero=ub>(ptr_to_int<u64, reason=explicit>(read<ptr<void>>(%[[VALUE_aligned_memory]])), widen<u64, reason=usual_arith>(const<u32>(64))), widen<u64, reason=usual_arith>(const<u32>(0))))));
-// DEFAULT-NEXT:         write<i32>(%[[VALUE_alignment_total]], read<i32>(%[[VALUE27]]));
+// DEFAULT-NEXT:         let %[[VALUE30:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_alignment_total]]);
+// DEFAULT-NEXT:         let %[[VALUE31:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE30]]), from_bool<i32, reason=promotion>(logical_and<bool>(ne<ptr<void>>(read<ptr<void>>(%[[VALUE_aligned_memory]]), null<ptr<void>>), eq<u64>(rem<u64, by_zero=ub>(ptr_to_int<u64, reason=explicit>(read<ptr<void>>(%[[VALUE_aligned_memory]])), widen<u64, reason=usual_arith>(const<u32>(64))), widen<u64, reason=usual_arith>(const<u32>(0))))));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_alignment_total]], read<i32>(%[[VALUE31]]));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_free]], read<ptr<void>>(%[[VALUE_aligned_memory]]));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_quick_total]], from_bool<i32, reason=assign>(eq<i32>(call<i32, signature=fn(ptr<fn() -> void>) -> i32>(%[[VALUE_at_quick_exit]], function_decay<ptr<fn() -> void>>(%[[VALUE_c11_quick_handler]])), const<i32>(0))));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>) -> i32>(%[[VALUE_remove]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(24)>(%[[VALUE_str_4]])));
@@ -659,9 +663,9 @@ int main(void) {
 // DEFAULT-NEXT:         write<complex<f64>>(%[[VALUE_complex_value]], aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(2.0), index1 = const<f64>(3.0)));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_complex_total]], add<i32, overflow=ub>(from_bool<i32, reason=promotion>(eq<f64, exceptions=ignore>(call<f64, signature=fn(complex<f64>) -> f64, abi=sysv64(native_c) -> scalar>(%[[VALUE_memory_order_release]], read<complex<f64>>(%[[VALUE_complex_value]])), const<f64>(2.0))), from_bool<i32, reason=promotion>(eq<f64, exceptions=ignore>(call<f64, signature=fn(complex<f64>) -> f64, abi=sysv64(native_c) -> scalar>(%[[VALUE_memory_order_consume]], read<complex<f64>>(%[[VALUE_complex_value]])), const<f64>(3.0)))));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_limits_total]], add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(from_bool<i32, reason=promotion>(ge<i32>(const<i32>(9), const<i32>(6))), from_bool<i32, reason=promotion>(ge<i32>(const<i32>(17), const<i32>(10)))), from_bool<i32, reason=promotion>(ge<i32>(const<i32>(21), const<i32>(10)))), from_bool<i32, reason=promotion>(gt<f32, exceptions=ignore>(const<f32>(1e-45), const<f32>(0.0)))), from_bool<i32, reason=promotion>(gt<f64, exceptions=ignore>(const<f64>(5e-324), const<f64>(0.0)))), from_bool<i32, reason=promotion>(gt<f80, exceptions=ignore>(const<f80>(3.64519953188247460253E-4951), const<f80>(0)))), from_bool<i32, reason=promotion>(ge<i32>(const<i32>(1), neg<i32, overflow=ub>(const<i32>(1))))), from_bool<i32, reason=promotion>(ge<i32>(const<i32>(1), neg<i32, overflow=ub>(const<i32>(1))))), from_bool<i32, reason=promotion>(ge<i32>(const<i32>(1), neg<i32, overflow=ub>(const<i32>(1))))));
-// DEFAULT-NEXT:         let %[[VALUE28:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_limits_total]]);
-// DEFAULT-NEXT:         let %[[VALUE29:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE28]]), const<i32>(0));
-// DEFAULT-NEXT:         write<i32>(%[[VALUE_limits_total]], read<i32>(%[[VALUE29]]));
+// DEFAULT-NEXT:         let %[[VALUE32:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_limits_total]]);
+// DEFAULT-NEXT:         let %[[VALUE33:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE32]]), const<i32>(0));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_limits_total]], read<i32>(%[[VALUE33]]));
 // DEFAULT-NEXT:         if ne<i32>(read<i32, volatile>(%[[VALUE_c11_never_flag]]), const<i32>(0))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 call<void, signature=fn(i32) -> void>(%[[VALUE_c11_never_return]], const<i32>(99));

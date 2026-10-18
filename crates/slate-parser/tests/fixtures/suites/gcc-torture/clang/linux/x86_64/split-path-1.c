@@ -168,12 +168,13 @@ int main() {
 // DEFAULT-NEXT:                     let %[[VALUE19:[0-9]+]]: ptr<u8> [synthetic] = ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%[[VALUE18]]), const<i32>(1));
 // DEFAULT-NEXT:                     write<ptr<u8>>(%[[VALUE_EritePtr]], read<ptr<u8>>(%[[VALUE19]]));
 // DEFAULT-NEXT:                     write<u8>(deref(read<ptr<u8>>(%[[VALUE18]])), read<u8>(%[[VALUE_xk]]));
-// DEFAULT-NEXT:                     let %[[VALUE20:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_sum]]);
-// DEFAULT-NEXT:                     let %[[VALUE21:[0-9]+]]: ptr<u8> [synthetic] = read<ptr<u8>>(%[[VALUE_EritePtr]]);
-// DEFAULT-NEXT:                     let %[[VALUE22:[0-9]+]]: ptr<u8> [synthetic] = ptr_offset<ptr<u8>, subtract=true, element=u8, overflow=ub>(read<ptr<u8>>(%[[VALUE21]]), const<i32>(1));
-// DEFAULT-NEXT:                     write<ptr<u8>>(%[[VALUE_EritePtr]], read<ptr<u8>>(%[[VALUE22]]));
-// DEFAULT-NEXT:                     let %[[VALUE23:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE20]]), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(read<ptr<u8>>(%[[VALUE22]]))))));
-// DEFAULT-NEXT:                     write<i32>(%[[VALUE_sum]], read<i32>(%[[VALUE23]]));
+// DEFAULT-NEXT:                     let %[[VALUE20:[0-9]+]]: ptr<u8> [synthetic] = read<ptr<u8>>(%[[VALUE_EritePtr]]);
+// DEFAULT-NEXT:                     let %[[VALUE21:[0-9]+]]: ptr<u8> [synthetic] = ptr_offset<ptr<u8>, subtract=true, element=u8, overflow=ub>(read<ptr<u8>>(%[[VALUE20]]), const<i32>(1));
+// DEFAULT-NEXT:                     write<ptr<u8>>(%[[VALUE_EritePtr]], read<ptr<u8>>(%[[VALUE21]]));
+// DEFAULT-NEXT:                     let %[[VALUE22:[0-9]+]]: u8 [synthetic] = read<u8>(deref(read<ptr<u8>>(%[[VALUE21]])));
+// DEFAULT-NEXT:                     let %[[VALUE23:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_sum]]);
+// DEFAULT-NEXT:                     let %[[VALUE24:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE23]]), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE22]]))));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_sum]], read<i32>(%[[VALUE24]]));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         return reinterpret<u8, reason=return, fits=unknown>(truncate<i8, reason=return, fits=unknown>(read<i32>(%[[VALUE_sum]])));
 // DEFAULT-NEXT:     }
