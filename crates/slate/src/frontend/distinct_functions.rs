@@ -136,6 +136,20 @@ pub fn mergeable_address_taken(units: &[Unit]) -> Vec<BTreeSet<String>> {
     protected
 }
 
+pub fn address_taken_symbols(units: &[Unit]) -> BTreeSet<String> {
+    units
+        .iter()
+        .flat_map(|unit| {
+            unit.module.functions.iter().filter_map(|function| {
+                let function = &function.value;
+                (matches!(function.linkage, ir::Linkage::External)
+                    && unit.address_taken.contains(&function.id))
+                .then(|| symbol(function).to_string())
+            })
+        })
+        .collect()
+}
+
 fn symbol(function: &ir::Function) -> &str {
     function
         .symbol

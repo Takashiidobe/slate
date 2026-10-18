@@ -879,35 +879,40 @@ fn translate_slate_project(
         jobs.into_par_iter()
             .map(|(unit, options)| {
                 frontend::lower_module(&unit.module, &unit.files, &options)
-                    .map(|mut lowered| {
-                        lowered.program =
-                            slate::backend::apply_with_target(lowered.program, &unit.module.target);
-                        lowered
-                    })
                     .map_err(|error| format!("{}: {error}", unit.path.display()))
             })
             .collect()
     });
     let lowered = collect_all_errors(results)?;
-    let protected = frontend::distinct_functions::mergeable_address_taken(
-        &units
-            .iter()
-            .zip(&lowered)
-            .map(|(unit, lowered)| frontend::distinct_functions::Unit {
-                module: &unit.module,
-                address_taken: &lowered.address_taken,
-            })
-            .collect::<Vec<_>>(),
-    );
-    let programs: Vec<_> = units
+    let address_taken: Vec<_> = units
         .iter()
-        .zip(lowered)
-        .zip(&protected)
-        .map(|((unit, mut lowered), functions)| {
-            slate::backend::place_in_distinct_sections(&mut lowered.program, &unit.stem, functions);
-            (unit.stem.clone(), lowered.program)
+        .zip(&lowered)
+        .map(|(unit, lowered)| frontend::distinct_functions::Unit {
+            module: &unit.module,
+            address_taken: &lowered.address_taken,
         })
         .collect();
+    let protected = frontend::distinct_functions::mergeable_address_taken(&address_taken);
+    let exports = match &root {
+        Some(_) => slate::backend::Exports::Liftable {
+            address_taken: frontend::distinct_functions::address_taken_symbols(&address_taken),
+        },
+        None => slate::backend::Exports::Fixed,
+    };
+    let mut programs: Vec<_> = lowered.into_iter().map(|lowered| lowered.program).collect();
+    slate::backend::apply_interprocedural(&mut programs, &exports);
+    let programs: Vec<_> = slate_worker_pool()?.install(|| {
+        units
+            .par_iter()
+            .zip(programs)
+            .zip(&protected)
+            .map(|((unit, program), functions)| {
+                let mut program = slate::backend::apply_local(program, &unit.module.target);
+                slate::backend::place_in_distinct_sections(&mut program, &unit.stem, functions);
+                (unit.stem.clone(), program)
+            })
+            .collect()
+    });
 
     init_crate(crate_dir, lib_crate_types.as_deref())?;
     let crate_src = crate_dir.join("src");

@@ -33,13 +33,19 @@ C -> slate-parser (preprocess, parse, sema) -> ir::Module
 
 The frontend consumes slate-parser IR exclusively. `src/backend/` holds
 rewrites and code generation. Rewrites are always on: `translate` and
-`translate-project` both run the full backend, the latter once per unit.
-Interprocedural rewrites stay within a unit and only change `static`
-functions, so exported signatures never change.
+`translate-project` both run the full backend. A project runs the
+interprocedural rewrites once over all units, then the per-function rules per
+unit. Executable projects (one unit defines `main`) may also lift exported
+functions to pointer-ABI-identical types (`&T`, `&mut T`, `Box<T>`) and retype
+other units' extern decls; address-taken, `main`, libc-named, and
+specially-linked symbols keep their C signature. Library projects only change
+`static` functions, so exported signatures never change.
 `tests/fixtures.release/` fixtures go through `translate-project` and a
 `cargo build --release` (`release_build_differential`), for behavior that only
 shows up after LLVM optimization or across translation units: a `.c` file is a
-one-unit project, a directory of `.c` files is a multi-unit project.
+one-unit project, a directory of `.c` files is a multi-unit project. A unit's
+`.c` file may carry a `SLATE-FILECHECK` block, checked against that unit's
+generated file; `update_filecheck.py` accepts these paths too.
 `tests/fixtures.library/<name>/src/` projects have no `main`: `library_differential`
 translates them as a `staticlib`, links each `tests/*.c` driver against the
 archive, and compares it with an all-native build.

@@ -129,6 +129,11 @@ passes. A mismatch, or a fixture with no block, fails
 `generated_differential`. A run for a target the header does not list checks
 runtime parity only.
 
+`tests/fixtures.release/` blocks are optional. A unit's `.c` file that has
+one is checked by `release_build_differential` against that unit's generated
+file (`src/main.rs` for the unit that defines `main` and for single-file
+projects, otherwise `src/<stem>.rs`).
+
 Generate the block from the workspace root:
 
 ```bash

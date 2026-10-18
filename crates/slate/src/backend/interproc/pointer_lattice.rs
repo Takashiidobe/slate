@@ -1,9 +1,9 @@
 use std::collections::{BTreeMap, BTreeSet};
 
-use crate::backend::interproc::{self, CallGraph, FnKey, Symbols};
+use crate::backend::interproc::{self, CallGraph, Exports, FnKey, Symbols};
 use crate::backend::rust_ast::{
-    BinOp, Block, CLibType, Expr, FnDef, Ident, Item, Path, Prim, Program, RustValue, Stmt,
-    StructDef, StructFields, Type, UnaryOp, Visibility, is_temp_name,
+    BinOp, Block, CLibType, Expr, ExternDecl, ExternFnDecl, FnDef, Ident, Item, Path, Prim,
+    Program, RustValue, Stmt, StructDef, StructFields, Type, UnaryOp, Visibility, is_temp_name,
 };
 use crate::function_identity::{CallBinding, FunctionIdentity, Known};
 
@@ -254,12 +254,17 @@ impl ReturnAliases<'_> {
     }
 }
 
-pub(in crate::backend) fn solve(programs: &[Program]) -> BTreeMap<PointerBinding, PointerFact> {
-    let symbols = Symbols::new(programs);
+pub(in crate::backend) fn solve(
+    programs: &[Program],
+    symbols: &Symbols,
+    liftable_exports: &BTreeSet<FnKey>,
+) -> BTreeMap<PointerBinding, PointerFact> {
     let fn_defs = interproc::fn_defs(programs);
     let candidates: BTreeMap<FnKey, Candidate> = fn_defs
         .iter()
-        .filter_map(|(key, f)| candidate_for(f).map(|c| (key.clone(), c)))
+        .filter_map(|(key, f)| {
+            candidate_for(f, liftable_exports.contains(key)).map(|c| (key.clone(), c))
+        })
         .collect();
     if candidates.is_empty() {
         return BTreeMap::new();
@@ -269,7 +274,7 @@ pub(in crate::backend) fn solve(programs: &[Program]) -> BTreeMap<PointerBinding
         .iter()
         .map(|program| collect_global_ptr_mutability(&program.items))
         .collect();
-    let return_aliases = collect_return_aliases(&symbols, &fn_defs, &candidates);
+    let return_aliases = collect_return_aliases(symbols, &fn_defs, &candidates);
 
     let mut facts: BTreeMap<PointerBinding, PointerFact> = BTreeMap::new();
     let mut call_sites: Vec<CallSite> = Vec::new();
@@ -278,7 +283,7 @@ pub(in crate::backend) fn solve(programs: &[Program]) -> BTreeMap<PointerBinding
         let (local, sites, local_return_sites) = classify_function(
             key,
             f,
-            &symbols,
+            symbols,
             &candidates,
             &return_aliases,
             &global_ptr_mutability[key.unit],
@@ -404,8 +409,10 @@ fn callee_param_name(
         .unwrap_or_default()
 }
 
-fn candidate_for(f: &FnDef) -> Option<Candidate> {
-    if f.name == "main" || f.unsafe_ || f.abi.is_some() || !matches!(f.vis, Visibility::Private) {
+fn candidate_for(f: &FnDef, liftable_export: bool) -> Option<Candidate> {
+    let private =
+        f.name != "main" && !f.unsafe_ && f.abi.is_none() && matches!(f.vis, Visibility::Private);
+    if !private && !liftable_export {
         return None;
     }
     let param_indices: Vec<usize> = f
@@ -1346,12 +1353,22 @@ fn type_for(base: ResolvedPtrType, inner: &Type) -> Type {
     }
 }
 
-pub(in crate::backend) fn apply(programs: &mut [Program]) {
-    let facts = solve(programs);
-
-    crate::backend::interproc::length_lattice::apply(programs, &facts);
-
+pub(in crate::backend) fn apply(programs: &mut [Program], exports: &Exports) {
     let symbols = Symbols::new(programs);
+    let liftable_exports = interproc::liftable_exports(programs, exports);
+    let facts = solve(programs, &symbols, &liftable_exports);
+
+    if liftable_exports.is_empty() {
+        crate::backend::interproc::length_lattice::apply(programs, &facts);
+    } else {
+        let private_facts: BTreeMap<PointerBinding, PointerFact> = facts
+            .iter()
+            .filter(|(binding, _)| !liftable_exports.contains(&binding.function))
+            .map(|(binding, fact)| (binding.clone(), fact.clone()))
+            .collect();
+        crate::backend::interproc::length_lattice::apply(programs, &private_facts);
+    }
+
     let mut plans: BTreeMap<FnKey, BTreeMap<String, LiftPlan>> = BTreeMap::new();
     let mut param_names: BTreeMap<FnKey, Vec<String>> = BTreeMap::new();
     let mut param_mutability: BTreeMap<FnKey, Vec<Option<bool>>> = BTreeMap::new();
@@ -1661,9 +1678,46 @@ fn apply_plans(items: &mut [Item], scope: &Scope) {
                 };
                 rewrite_stmts(&mut f.body, &ctx);
             }
+            Item::ExternBlock { decls, .. } => {
+                for decl in decls {
+                    if let ExternDecl::Fn(decl) = decl {
+                        retype_extern_decl(decl, scope);
+                    }
+                }
+            }
             Item::InlineMod { items, .. } => apply_plans(items, scope),
             _ => {}
         }
+    }
+}
+
+fn retype_extern_decl(decl: &mut ExternFnDecl, scope: &Scope) {
+    let Some(callee) = scope.resolve(&decl.name) else {
+        return;
+    };
+    let (Some(plans), Some(names)) = (scope.plans.get(&callee), scope.param_names.get(&callee))
+    else {
+        return;
+    };
+    for (param, name) in decl.params.iter_mut().zip(names) {
+        let Some(plan) = plans.get(name) else {
+            continue;
+        };
+        let Type::Ptr { inner, .. } = &param.ty else {
+            continue;
+        };
+        let inner = (**inner).clone();
+        param.ty = match &plan.ty {
+            Type::Ref { mutable, .. } => Type::Ref {
+                mutable: *mutable,
+                inner: Box::new(inner),
+            },
+            Type::Generic { name, .. } => Type::Generic {
+                name: name.clone(),
+                args: vec![inner],
+            },
+            other => other.clone(),
+        };
     }
 }
 

@@ -53,8 +53,11 @@ conversions and layout remain slate-parser responsibilities.
   and irreducible-SCC handling. `structure_dispatch.rs` handles switch recovery.
 - Reuse the retained algorithms and registry; the removed frontend was CIR-specific,
   but these passes consume Rust AST. See [pass porting](pass-porting-workflow.md).
-- Project translation runs the full backend once per unit. Interprocedural rewrites
-  stay unit-local and only touch `static` functions, so exported C signatures are kept.
+- Project translation runs the interprocedural rewrites once over all units
+  (extern decls link to the defining unit by symbol), then the per-function rules
+  per unit in parallel. Executable projects may lift non-root exported functions to
+  pointer-ABI-identical types and retype callers' extern decls; library projects
+  only touch `static` functions, so exported C signatures are kept.
   Rewrites are always on: there is no raw lowering mode.
 - Function identity: lowering records every function whose address it emits;
   `frontend/distinct_functions.rs` marks the address-taken definitions that

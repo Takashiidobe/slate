@@ -12,6 +12,7 @@ CRATE = Path(__file__).resolve().parent.parent
 WORKSPACE = CRATE.parent.parent
 TESTS = CRATE / "tests"
 FIXTURES = TESTS / "fixtures"
+RELEASE = TESTS / "fixtures.release"
 WORK = CRATE / "target" / "difftest-generated"
 
 DEFAULT_TARGET = "x86_64-unknown-linux-gnu"
@@ -21,6 +22,7 @@ ARCH_TARGETS = {
     "aarch64": "aarch64-unknown-linux-gnu",
 }
 TEST_COMMAND = ["--test", "differential", "-E", "test(=generated_differential)"]
+RELEASE_TEST_COMMAND = ["--test", "differential", "-E", "test(=release_build_differential)"]
 
 BEGIN = "// SLATE-FILECHECK-BEGIN"
 END = "// SLATE-FILECHECK-END"
@@ -75,6 +77,8 @@ class FixtureError(Exception):
 
 
 def fixture_arch(path):
+    if is_release(path):
+        return None
     relative = path.resolve().relative_to(FIXTURES)
     if len(relative.parts) == 1:
         return None
@@ -89,11 +93,25 @@ def check_target(path, target):
         raise FixtureError(f"{path.relative_to(TESTS)}: {arch} fixtures only run for {arch} targets, not {target}")
 
 
+def is_release(path):
+    return RELEASE in path.resolve().parents
+
+
+def release_project(path):
+    return path.stem if path.resolve().parent == RELEASE else path.resolve().parent.name
+
+
 def generated_rust(target, path):
+    if is_release(path):
+        src = WORK / "release" / release_project(path) / "src"
+        unit = src / f"{'__slate_unit_main' if path.stem == 'main' else path.stem}.rs"
+        return unit if unit.is_file() else src / "main.rs"
     return WORK / target / f"{path.stem}.generated.rs"
 
 
 def runtime_ok(rust):
+    if rust.parent.name == "src":
+        return rust.parent.parent / "runtime-ok"
     return rust.with_name(rust.name.removesuffix(".generated.rs") + ".runtime-ok")
 
 
@@ -325,13 +343,20 @@ def update_source(source, outputs):
 
 
 def run_harness(targets, fixtures):
-    environment = os.environ.copy()
-    environment["SLATE_TEST_TARGETS"] = ",".join(targets)
-    names = {path.stem for path in fixtures}
-    if len(names) == 1:
-        environment["SLATE_DIFF_FIXTURE"] = next(iter(names))
-    command = ["cargo", "nextest", "r", "--release", "--profile", "slate", "--no-fail-fast", *TEST_COMMAND]
-    subprocess.run(command, cwd=WORKSPACE, env=environment, capture_output=True, check=False)
+    generated = [path for path in fixtures if not is_release(path)]
+    release = [path for path in fixtures if is_release(path)]
+    for names, test_command in (
+        ({path.stem for path in generated}, TEST_COMMAND),
+        ({release_project(path) for path in release}, RELEASE_TEST_COMMAND),
+    ):
+        if not names:
+            continue
+        environment = os.environ.copy()
+        environment["SLATE_TEST_TARGETS"] = ",".join(targets)
+        if len(names) == 1:
+            environment["SLATE_DIFF_FIXTURE"] = next(iter(names))
+        command = ["cargo", "nextest", "r", "--release", "--profile", "slate", "--no-fail-fast", *test_command]
+        subprocess.run(command, cwd=WORKSPACE, env=environment, capture_output=True, check=False)
 
 
 def all_fixtures():

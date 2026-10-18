@@ -14,6 +14,7 @@ pub mod rust_ast;
 use crate::backend::rust_ast::Program;
 
 pub use format::{format_rust, pretty_rust, write_pretty_rust, write_rust};
+pub use interproc::Exports;
 
 /// Applies the backend rewrite pipeline to a generated Rust program.
 pub fn apply(program: Program) -> Program {
@@ -26,6 +27,16 @@ pub fn apply_with_target(
 ) -> Program {
     let mut program = program;
     engine::apply(&mut program, target);
+    program
+}
+
+pub fn apply_interprocedural(programs: &mut [Program], exports: &Exports) {
+    interproc::run(programs, exports);
+}
+
+pub fn apply_local(program: Program, target: &slate_parser::target_info::TargetInfo) -> Program {
+    let mut program = program;
+    engine::apply_local(&mut program, target);
     program
 }
 

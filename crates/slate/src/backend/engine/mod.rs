@@ -83,9 +83,17 @@ pub(in crate::backend) fn apply(
     program: &mut Program,
     target: &slate_parser::target_info::TargetInfo,
 ) {
-    crate::backend::interproc::string_params::run(std::slice::from_mut(program));
-    crate::backend::interproc::pointer_lattice::apply(std::slice::from_mut(program));
+    crate::backend::interproc::run(
+        std::slice::from_mut(program),
+        &crate::backend::interproc::Exports::Fixed,
+    );
+    apply_local(program, target);
+}
 
+pub(in crate::backend) fn apply_local(
+    program: &mut Program,
+    target: &slate_parser::target_info::TargetInfo,
+) {
     let passes = [
         RuleRegistry::build(rules::registry(target)),
         RuleRegistry::build(rules::late_registry()),

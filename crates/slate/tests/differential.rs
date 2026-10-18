@@ -287,13 +287,12 @@ fn release_build_differential() {
     projects.sort();
     let failures: Vec<_> = support::parallel_map(&projects, |(name, sources)| {
         let crate_dir = work.join(name);
+        let runtime_ok = crate_dir.join("runtime-ok");
+        let _ = std::fs::remove_file(&runtime_ok);
         let result = (|| {
-            translate_fixture_project(
-                sources,
-                &crate_dir,
-                support::fixture_dg_options(&sources[0]),
-                &[],
-            )?;
+            let options = support::fixture_dg_options(&sources[0]);
+            let target = support::translation_target(&options);
+            translate_fixture_project(sources, &crate_dir, options, &[])?;
             let rs_bin = support::build_project_release(&crate_dir)?;
             let c_bin = work.join(format!("{name}_c"));
             support::compile_c_multi_with_std_include_and_args(
@@ -306,7 +305,28 @@ fn release_build_differential() {
             let config = support::RunConfig::default();
             let c = support::run_with_config(&c_bin, &config, &work)?;
             let r = support::run_with_config(&rs_bin, &config, &work)?;
-            support::compare_runs(&c, &r, false)
+            support::compare_runs(&c, &r, false)?;
+            std::fs::write(&runtime_ok, b"")
+                .map_err(|e| format!("write {}: {e}", runtime_ok.display()))?;
+            for source in sources {
+                let fixture = std::fs::read_to_string(source)
+                    .map_err(|e| format!("read {}: {e}", source.display()))?;
+                if !fixture.contains("SLATE-FILECHECK-BEGIN") {
+                    continue;
+                }
+                let generated = release_unit_output(&crate_dir, source);
+                let rust = std::fs::read_to_string(&generated)
+                    .map_err(|e| format!("read {}: {e}", generated.display()))?;
+                let stem = source.file_stem().unwrap().to_string_lossy();
+                support::filecheck::check_generated_rust(
+                    &fixture,
+                    &rust,
+                    &target,
+                    &crate_dir.join("filecheck").join(stem.as_ref()),
+                )
+                .map_err(|e| format!("{}: {e}", source.display()))?;
+            }
+            Ok::<(), String>(())
         })();
         result.err().map(|error| format!("[{name}] {error}"))
     })
@@ -314,6 +334,21 @@ fn release_build_differential() {
     .flatten()
     .collect();
     assert!(failures.is_empty(), "{}", failures.join("\n\n"));
+}
+
+fn release_unit_output(crate_dir: &Path, source: &Path) -> PathBuf {
+    let stem = source.file_stem().unwrap().to_string_lossy();
+    let unit = if stem == "main" {
+        "__slate_unit_main".to_string()
+    } else {
+        stem.into_owned()
+    };
+    let path = crate_dir.join("src").join(format!("{unit}.rs"));
+    if path.is_file() {
+        path
+    } else {
+        crate_dir.join("src/main.rs")
+    }
 }
 
 fn c_sources_in(dir: &Path) -> Vec<PathBuf> {
