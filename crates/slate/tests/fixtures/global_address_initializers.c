@@ -229,7 +229,7 @@ int main(void) {
 // CHECK-NEXT:             *cursors.0[0].value,
 // CHECK-NEXT:             (*cursors.0[0].pair).right,
 // CHECK-NEXT:             cursors.0[1].label,
-// CHECK-NEXT:             (cursors.0[1].pair == std::ptr::null_mut::<Pair>()) as i32,
+// CHECK-NEXT:             unsafe { cursors.0[1].pair }.is_null() as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

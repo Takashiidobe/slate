@@ -377,17 +377,17 @@ int main(void) {
 // CHECK-NEXT:     let directory: *mut i8 = unsafe { get_current_dir_name() };
 // CHECK-NEXT:     let canonical: *mut i8 = unsafe { canonicalize_file_name(c".".as_ptr()) };
 // CHECK-NEXT:     total
-// CHECK-NEXT:         += ((unsafe { getcwd(current.0.as_mut_ptr() as *mut i8, 4096 as u64) })
-// CHECK-NEXT:             != std::ptr::null_mut::<i8>()) as i32;
+// CHECK-NEXT:         += !unsafe { getcwd(current.0.as_mut_ptr() as *mut i8, 4096 as u64) }.is_null()
+// CHECK-NEXT:             as i32;
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_1]]
-// CHECK-NEXT:         + ((directory != std::ptr::null_mut::<i8>()
+// CHECK-NEXT:         + ((!directory.is_null()
 // CHECK-NEXT:             && (unsafe {
 // CHECK-NEXT:                 strcmp(directory as *const i8, current.0.as_mut_ptr() as *const i8)
 // CHECK-NEXT:             }) == 0) as i32);
 // CHECK-NEXT:     let [[V_2:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_2]]
-// CHECK-NEXT:         + ((canonical != std::ptr::null_mut::<i8>()
+// CHECK-NEXT:         + ((!canonical.is_null()
 // CHECK-NEXT:             && (unsafe {
 // CHECK-NEXT:                 strcmp(canonical as *const i8, current.0.as_mut_ptr() as *const i8)
 // CHECK-NEXT:             }) == 0) as i32);
@@ -517,7 +517,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let [[V_8:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_8]] + ((error == std::ptr::null::<i8>()) as i32);
+// CHECK-NEXT:     total = [[V_8]] + (error.is_null() as i32);
 // CHECK-NEXT:     let [[V_9:__v[0-9]+]]: i32 = ((unsafe {
 // CHECK-NEXT:         re_match(
 // CHECK-NEXT:             std::ptr::addr_of_mut!(expression),
@@ -600,17 +600,14 @@ int main(void) {
 // CHECK-NEXT:     }) != 0) as i32;
 // CHECK-NEXT:     total += [[V_20]];
 // CHECK-NEXT:     let [[V_21:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_21]] + ((information.dli_fname != std::ptr::null::<i8>()) as i32);
+// CHECK-NEXT:     total = [[V_21]] + (!information.dli_fname.is_null() as i32);
 // CHECK-NEXT:     let [[V_22:__v[0-9]+]]: i32 = (((unsafe { *gnu_get_libc_version().offset(0 as isize) }) as i32)
 // CHECK-NEXT:         != 0) as i32;
 // CHECK-NEXT:     total += [[V_22]];
 // CHECK-NEXT:     let [[V_23:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_23]]
-// CHECK-NEXT:         + (((unsafe { program_invocation_name }) != std::ptr::null_mut::<i8>()) as i32);
+// CHECK-NEXT:     total = [[V_23]] + (!unsafe { program_invocation_name }.is_null() as i32);
 // CHECK-NEXT:     let [[V_24:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_24]]
-// CHECK-NEXT:         + (((unsafe { program_invocation_short_name }) != std::ptr::null_mut::<i8>())
-// CHECK-NEXT:             as i32);
+// CHECK-NEXT:     total = [[V_24]] + (!unsafe { program_invocation_short_name }.is_null() as i32);
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {

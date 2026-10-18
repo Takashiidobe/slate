@@ -36,7 +36,7 @@ int main(void) {
 // CHECK-NEXT:     if flag != 0 {
 // CHECK-NEXT:         p = (unsafe { malloc((4 as u64).wrapping_mul(4 as u64)) }) as *mut i32;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if p != std::ptr::null_mut::<i32>() {
+// CHECK-NEXT:     if !p.is_null() {
 // CHECK-NEXT:         p = unsafe { p.offset(1 as isize) };
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *p = 41;

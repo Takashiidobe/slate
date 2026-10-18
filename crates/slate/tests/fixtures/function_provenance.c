@@ -227,7 +227,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn realloc(ptr: *mut (), size: u64) -> *mut () {
-// CHECK-NEXT:     if ptr != std::ptr::null_mut::<()>() && size != 0 {
+// CHECK-NEXT:     if !ptr.is_null() && size != 0 {
 // CHECK-NEXT:         (16 as i32) as *mut ()
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         std::ptr::null_mut::<()>()
@@ -235,28 +235,20 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn free(ptr: *mut ()) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         project_state = if ptr != std::ptr::null_mut::<()>() { 77 } else { 0 };
+// CHECK-NEXT:         project_state = if !ptr.is_null() { 77 } else { 0 };
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn memcpy(dst: *mut (), src: *const (), count: u64) -> *mut () {
-// CHECK-NEXT:     if count != 0 && src != std::ptr::null::<()>() {
-// CHECK-NEXT:         dst
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         std::ptr::null_mut::<()>()
-// CHECK-NEXT:     }
+// CHECK-NEXT:     if count != 0 && !src.is_null() { dst } else { std::ptr::null_mut::<()>() }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn memmove(dst: *mut (), src: *const (), count: u64) -> *mut () {
-// CHECK-NEXT:     if count != 0 && src != std::ptr::null::<()>() {
-// CHECK-NEXT:         dst
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         std::ptr::null_mut::<()>()
-// CHECK-NEXT:     }
+// CHECK-NEXT:     if count != 0 && !src.is_null() { dst } else { std::ptr::null_mut::<()>() }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn memset(dst: *mut (), value: i32, count: u64) -> *mut () {
 // CHECK-NEXT:     if value != 0 && count != 0 { dst } else { std::ptr::null_mut::<()>() }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn memchr(ptr: *const (), value: i32, count: u64) -> *mut () {
-// CHECK-NEXT:     if ptr != std::ptr::null::<()>() && value != 0 && count != 0 {
+// CHECK-NEXT:     if !ptr.is_null() && value != 0 && count != 0 {
 // CHECK-NEXT:         (24 as i32) as *mut ()
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         std::ptr::null_mut::<()>()
@@ -264,173 +256,127 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.strlen")]
 // CHECK-NEXT: extern "C-unwind" fn strlen(s: *const i8) -> u64 {
-// CHECK-NEXT:     ((if s != std::ptr::null::<i8>() { 5 as i32 } else { 0 as i32 }) as i64) as u64
+// CHECK-NEXT:     ((if !s.is_null() { 5 as i32 } else { 0 as i32 }) as i64) as u64
 // CHECK-NEXT: }
 // CHECK-NEXT: fn strcpy(dst: *mut i8, src: *const i8) -> *mut i8 {
-// CHECK-NEXT:     if src != std::ptr::null::<i8>() { dst } else { std::ptr::null_mut::<i8>() }
+// CHECK-NEXT:     if !src.is_null() { dst } else { std::ptr::null_mut::<i8>() }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn strcat(dst: *mut i8, src: *const i8) -> *mut i8 {
-// CHECK-NEXT:     if src != std::ptr::null::<i8>() { dst } else { std::ptr::null_mut::<i8>() }
+// CHECK-NEXT:     if !src.is_null() { dst } else { std::ptr::null_mut::<i8>() }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn strncpy(dst: *mut i8, src: *const i8, count: u64) -> *mut i8 {
-// CHECK-NEXT:     if src != std::ptr::null::<i8>() && count != 0 {
-// CHECK-NEXT:         dst
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         std::ptr::null_mut::<i8>()
-// CHECK-NEXT:     }
+// CHECK-NEXT:     if !src.is_null() && count != 0 { dst } else { std::ptr::null_mut::<i8>() }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn strncat(dst: *mut i8, src: *const i8, count: u64) -> *mut i8 {
-// CHECK-NEXT:     if src != std::ptr::null::<i8>() && count != 0 {
-// CHECK-NEXT:         dst
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         std::ptr::null_mut::<i8>()
-// CHECK-NEXT:     }
+// CHECK-NEXT:     if !src.is_null() && count != 0 { dst } else { std::ptr::null_mut::<i8>() }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn strcmp(lhs: *const i8, rhs: *const i8) -> i32 {
-// CHECK-NEXT:     if lhs != std::ptr::null::<i8>() && rhs != std::ptr::null::<i8>() { 11 } else { 0 }
+// CHECK-NEXT:     if !lhs.is_null() && !rhs.is_null() { 11 } else { 0 }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn strncmp(lhs: *const i8, rhs: *const i8, count: u64) -> i32 {
-// CHECK-NEXT:     if lhs != std::ptr::null::<i8>() && rhs != std::ptr::null::<i8>() && count != 0 {
-// CHECK-NEXT:         12
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0
-// CHECK-NEXT:     }
+// CHECK-NEXT:     if !lhs.is_null() && !rhs.is_null() && count != 0 { 12 } else { 0 }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn memcmp(lhs: *const (), rhs: *const (), count: u64) -> i32 {
-// CHECK-NEXT:     if lhs != std::ptr::null::<()>() && rhs != std::ptr::null::<()>() && count != 0 {
-// CHECK-NEXT:         13
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0
-// CHECK-NEXT:     }
+// CHECK-NEXT:     if !lhs.is_null() && !rhs.is_null() && count != 0 { 13 } else { 0 }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn strchr(s: *const i8, value: i32) -> *mut i8 {
-// CHECK-NEXT:     if s != std::ptr::null::<i8>() && value != 0 {
+// CHECK-NEXT:     if !s.is_null() && value != 0 {
 // CHECK-NEXT:         (32 as i32) as *mut i8
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         std::ptr::null_mut::<i8>()
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn strrchr(s: *const i8, value: i32) -> *mut i8 {
-// CHECK-NEXT:     if s != std::ptr::null::<i8>() && value != 0 {
+// CHECK-NEXT:     if !s.is_null() && value != 0 {
 // CHECK-NEXT:         (32 as i32) as *mut i8
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         std::ptr::null_mut::<i8>()
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn strstr(s: *const i8, needle: *const i8) -> *mut i8 {
-// CHECK-NEXT:     if s != std::ptr::null::<i8>() && needle != std::ptr::null::<i8>() {
+// CHECK-NEXT:     if !s.is_null() && !needle.is_null() {
 // CHECK-NEXT:         (32 as i32) as *mut i8
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         std::ptr::null_mut::<i8>()
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn strpbrk(s: *const i8, accept: *const i8) -> *mut i8 {
-// CHECK-NEXT:     if s != std::ptr::null::<i8>() && accept != std::ptr::null::<i8>() {
+// CHECK-NEXT:     if !s.is_null() && !accept.is_null() {
 // CHECK-NEXT:         (32 as i32) as *mut i8
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         std::ptr::null_mut::<i8>()
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn strspn(s: *const i8, accept: *const i8) -> u64 {
-// CHECK-NEXT:     ((if s != std::ptr::null::<i8>() && accept != std::ptr::null::<i8>() {
-// CHECK-NEXT:         31 as i32
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0 as i32
-// CHECK-NEXT:     }) as i64) as u64
+// CHECK-NEXT:     ((if !s.is_null() && !accept.is_null() { 31 as i32 } else { 0 as i32 }) as i64)
+// CHECK-NEXT:         as u64
 // CHECK-NEXT: }
 // CHECK-NEXT: fn strcspn(s: *const i8, reject: *const i8) -> u64 {
-// CHECK-NEXT:     ((if s != std::ptr::null::<i8>() && reject != std::ptr::null::<i8>() {
-// CHECK-NEXT:         32 as i32
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0 as i32
-// CHECK-NEXT:     }) as i64) as u64
+// CHECK-NEXT:     ((if !s.is_null() && !reject.is_null() { 32 as i32 } else { 0 as i32 }) as i64)
+// CHECK-NEXT:         as u64
 // CHECK-NEXT: }
 // CHECK-NEXT: fn atoi(s: *const i8) -> i32 {
-// CHECK-NEXT:     if s != std::ptr::null::<i8>() { 41 } else { 0 }
+// CHECK-NEXT:     if !s.is_null() { 41 } else { 0 }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn atol(s: *const i8) -> i64 {
-// CHECK-NEXT:     (if s != std::ptr::null::<i8>() { 42 as i32 } else { 0 as i32 }) as i64
+// CHECK-NEXT:     (if !s.is_null() { 42 as i32 } else { 0 as i32 }) as i64
 // CHECK-NEXT: }
 // CHECK-NEXT: fn strtol(s: *const i8, end: *mut *mut i8, base: i32) -> i64 {
-// CHECK-NEXT:     (if s != std::ptr::null::<i8>() && end != std::ptr::null_mut::<*mut i8>()
-// CHECK-NEXT:         && base != 0
-// CHECK-NEXT:     {
-// CHECK-NEXT:         43 as i32
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0 as i32
-// CHECK-NEXT:     }) as i64
+// CHECK-NEXT:     (if !s.is_null() && !end.is_null() && base != 0 { 43 as i32 } else { 0 as i32 })
+// CHECK-NEXT:         as i64
 // CHECK-NEXT: }
 // CHECK-NEXT: fn strtoul(s: *const i8, end: *mut *mut i8, base: i32) -> u64 {
-// CHECK-NEXT:     ((if s != std::ptr::null::<i8>() && end != std::ptr::null_mut::<*mut i8>()
-// CHECK-NEXT:         && base != 0
-// CHECK-NEXT:     {
-// CHECK-NEXT:         44 as i32
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0 as i32
-// CHECK-NEXT:     }) as i64) as u64
+// CHECK-NEXT:     ((if !s.is_null() && !end.is_null() && base != 0 { 44 as i32 } else { 0 as i32 })
+// CHECK-NEXT:         as i64) as u64
 // CHECK-NEXT: }
 // CHECK-NEXT: fn strtod(s: *const i8, end: *mut *mut i8) -> f64 {
-// CHECK-NEXT:     if s != std::ptr::null::<i8>() && end != std::ptr::null_mut::<*mut i8>() {
-// CHECK-NEXT:         45.0f64
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0.0f64
-// CHECK-NEXT:     }
+// CHECK-NEXT:     if !s.is_null() && !end.is_null() { 45.0f64 } else { 0.0f64 }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn printf(format: *const i8) -> i32 {
-// CHECK-NEXT:     if format != std::ptr::null::<i8>() { 51 } else { 0 }
+// CHECK-NEXT:     if !format.is_null() { 51 } else { 0 }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn puts(s: *const i8) -> i32 {
-// CHECK-NEXT:     if s != std::ptr::null::<i8>() { 52 } else { 0 }
+// CHECK-NEXT:     if !s.is_null() { 52 } else { 0 }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn fopen(path: *const i8, mode: *const i8) -> *mut () {
-// CHECK-NEXT:     if path != std::ptr::null::<i8>() && mode != std::ptr::null::<i8>() {
+// CHECK-NEXT:     if !path.is_null() && !mode.is_null() {
 // CHECK-NEXT:         (48 as i32) as *mut ()
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         std::ptr::null_mut::<()>()
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn fputs(s: *const i8, stream: *mut ()) -> i32 {
-// CHECK-NEXT:     if s != std::ptr::null::<i8>() && stream != std::ptr::null_mut::<()>() {
-// CHECK-NEXT:         54
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0
-// CHECK-NEXT:     }
+// CHECK-NEXT:     if !s.is_null() && !stream.is_null() { 54 } else { 0 }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn fgets(s: *mut i8, count: i32, stream: *mut ()) -> *mut i8 {
-// CHECK-NEXT:     if s != std::ptr::null_mut::<i8>() && count != 0
-// CHECK-NEXT:         && stream != std::ptr::null_mut::<()>()
-// CHECK-NEXT:     {
+// CHECK-NEXT:     if !s.is_null() && count != 0 && !stream.is_null() {
 // CHECK-NEXT:         (40 as i32) as *mut i8
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         std::ptr::null_mut::<i8>()
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn fread(ptr: *mut (), size: u64, count: u64, stream: *mut ()) -> u64 {
-// CHECK-NEXT:     ((if ptr != std::ptr::null_mut::<()>() && size != 0 && count != 0
-// CHECK-NEXT:         && stream != std::ptr::null_mut::<()>()
-// CHECK-NEXT:     {
+// CHECK-NEXT:     ((if !ptr.is_null() && size != 0 && count != 0 && !stream.is_null() {
 // CHECK-NEXT:         56 as i32
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         0 as i32
 // CHECK-NEXT:     }) as i64) as u64
 // CHECK-NEXT: }
 // CHECK-NEXT: fn fwrite(ptr: *const (), size: u64, count: u64, stream: *mut ()) -> u64 {
-// CHECK-NEXT:     ((if ptr != std::ptr::null::<()>() && size != 0 && count != 0
-// CHECK-NEXT:         && stream != std::ptr::null_mut::<()>()
-// CHECK-NEXT:     {
+// CHECK-NEXT:     ((if !ptr.is_null() && size != 0 && count != 0 && !stream.is_null() {
 // CHECK-NEXT:         57 as i32
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         0 as i32
 // CHECK-NEXT:     }) as i64) as u64
 // CHECK-NEXT: }
 // CHECK-NEXT: fn fclose(stream: *mut ()) -> i32 {
-// CHECK-NEXT:     if stream != std::ptr::null_mut::<()>() { 58 } else { 0 }
+// CHECK-NEXT:     if !stream.is_null() { 58 } else { 0 }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn fflush(stream: *mut ()) -> i32 {
-// CHECK-NEXT:     if stream != std::ptr::null_mut::<()>() { 59 } else { 0 }
+// CHECK-NEXT:     if !stream.is_null() { 59 } else { 0 }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn remove(path: *const i8) -> i32 {
-// CHECK-NEXT:     if path != std::ptr::null::<i8>() { 60 } else { 0 }
+// CHECK-NEXT:     if !path.is_null() { 60 } else { 0 }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn toupper(value: i32) -> i32 {
 // CHECK-NEXT:     if value != 0 { 61 } else { 0 }
@@ -483,16 +429,14 @@ int main(void) {
 // CHECK-NEXT:     start: Option<unsafe extern "C-unwind" fn(*mut ()) -> *mut ()>,
 // CHECK-NEXT:     arg: *mut (),
 // CHECK-NEXT: ) -> i32 {
-// CHECK-NEXT:     if thread != std::ptr::null_mut::<u64>() && !(attr != std::ptr::null::<()>())
-// CHECK-NEXT:         && start != None && arg != std::ptr::null_mut::<()>()
-// CHECK-NEXT:     {
+// CHECK-NEXT:     if !thread.is_null() && attr.is_null() && start != None && !arg.is_null() {
 // CHECK-NEXT:         78
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         0
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn pthread_join(thread: u64, result: *mut *mut ()) -> i32 {
-// CHECK-NEXT:     if thread != 0 && result != std::ptr::null_mut::<*mut ()>() { 79 } else { 0 }
+// CHECK-NEXT:     if thread != 0 && !result.is_null() { 79 } else { 0 }
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.compare")]
 // CHECK-NEXT: extern "C-unwind" fn compare(lhs: *const (), rhs: *const ()) -> i32 {
@@ -508,8 +452,7 @@ int main(void) {
 // CHECK-NEXT:     callback: Option<unsafe extern "C-unwind" fn(*const (), *const ()) -> i32>,
 // CHECK-NEXT: ) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         project_state = if base != std::ptr::null_mut::<()>() && count != 0 && size != 0
-// CHECK-NEXT:             && callback != None
+// CHECK-NEXT:         project_state = if !base.is_null() && count != 0 && size != 0 && callback != None
 // CHECK-NEXT:         {
 // CHECK-NEXT:             76
 // CHECK-NEXT:         } else {
@@ -524,9 +467,7 @@ int main(void) {
 // CHECK-NEXT:     size: u64,
 // CHECK-NEXT:     callback: Option<unsafe extern "C-unwind" fn(*const (), *const ()) -> i32>,
 // CHECK-NEXT: ) -> *mut () {
-// CHECK-NEXT:     if key != std::ptr::null::<()>() && base != std::ptr::null::<()>() && count != 0
-// CHECK-NEXT:         && size != 0 && callback != None
-// CHECK-NEXT:     {
+// CHECK-NEXT:     if !key.is_null() && !base.is_null() && count != 0 && size != 0 && callback != None {
 // CHECK-NEXT:         (56 as i32) as *mut ()
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         std::ptr::null_mut::<()>()

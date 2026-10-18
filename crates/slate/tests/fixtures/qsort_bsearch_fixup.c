@@ -107,9 +107,9 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) as *mut Item;
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {}", nums.0[0], nums.0[4], if hit != std::ptr::null_mut::< i32 > () {
-// CHECK-NEXT:         unsafe { * hit } } else { - (1 as i32) }, if found != std::ptr::null_mut::< Item
-// CHECK-NEXT:         > () { unsafe { (* found).value } } else { - (1 as i32) }
+// CHECK-NEXT:         "{} {} {} {}", nums.0[0], nums.0[4], if ! hit.is_null() { unsafe { * hit } } else
+// CHECK-NEXT:         { - (1 as i32) }, if ! found.is_null() { unsafe { (* found).value } } else { - (1
+// CHECK-NEXT:         as i32) }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

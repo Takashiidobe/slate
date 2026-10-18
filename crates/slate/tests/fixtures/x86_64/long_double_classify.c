@@ -283,7 +283,7 @@ int main(void) {
 // CHECK-NEXT:     if ((unsafe { *eptr }) as i32) != 0 || __slate_f80_is_fp_class(value, 3) {
 // CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if dp != std::ptr::null_mut::<LongDouble>() {
+// CHECK-NEXT:     if !dp.is_null() {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *dp = value;
 // CHECK-NEXT:         }

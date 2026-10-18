@@ -181,7 +181,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     ((unsafe { group.nested[1].value }) != std::ptr::null::<i32>()) as i32
+// CHECK-NEXT:     !unsafe { group.nested[1].value }.is_null() as i32
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut flag: i32 = 7 as i32;
 // CHECK-NEXT: static mut addresses: __SlateAlign16<[*mut (); 2]> = __SlateAlign16([

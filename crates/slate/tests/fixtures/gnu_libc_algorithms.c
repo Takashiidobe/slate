@@ -583,7 +583,7 @@ int main(void) {
 // CHECK-NEXT:         }) != 0) as i32;
 // CHECK-NEXT:     let [[V_3:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_3]]
-// CHECK-NEXT:         + ((found != std::ptr::null_mut::<entry>()
+// CHECK-NEXT:         + ((!found.is_null()
 // CHECK-NEXT:             && (unsafe { strcmp((*found).data as *const i8, c"24".as_ptr()) }) == 0)
 // CHECK-NEXT:             as i32);
 // CHECK-NEXT:     unsafe { hdestroy_r(std::ptr::addr_of_mut!(table)) };
@@ -600,13 +600,14 @@ int main(void) {
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_4:__v[0-9]+]]: i32 = ((unsafe {
+// CHECK-NEXT:     let [[V_4:__v[0-9]+]]: i32 = !unsafe {
 // CHECK-NEXT:         tfind(
 // CHECK-NEXT:             (values.0.as_mut_ptr() as *mut i32).offset(2 as isize) as *const (),
 // CHECK-NEXT:             std::ptr::addr_of_mut!(tree) as *const *mut (),
 // CHECK-NEXT:             Some(gnu_compare_entries),
 // CHECK-NEXT:         )
-// CHECK-NEXT:     }) != std::ptr::null_mut::<()>()) as i32;
+// CHECK-NEXT:     }
+// CHECK-NEXT:         .is_null() as i32;
 // CHECK-NEXT:     total += [[V_4]];
 // CHECK-NEXT:     unsafe { tdestroy(tree, Some(gnu_free_entry)) };
 // CHECK-NEXT:     total

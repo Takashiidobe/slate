@@ -21,9 +21,8 @@ int main(void) {
 // CHECK-NEXT:     let null_value: *mut () = std::ptr::null_mut::<()>();
 // CHECK-NEXT:     let null_pointer: *mut i32 = std::ptr::null_mut::<i32>();
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {}", ((unsafe { std::ptr::read_volatile(std::ptr::addr_of!(null_value)) }) ==
-// CHECK-NEXT:         std::ptr::null_mut::< () > ()) as i32, (null_pointer == std::ptr::null_mut::< i32
-// CHECK-NEXT:         > ()) as i32
+// CHECK-NEXT:         "{} {}", unsafe { std::ptr::read_volatile(std::ptr::addr_of!(null_value)) }
+// CHECK-NEXT:         .is_null() as i32, null_pointer.is_null() as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

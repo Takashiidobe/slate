@@ -51,7 +51,7 @@ int main(void) {
 // CHECK-NEXT:     let flexible: *mut FlexibleArray = (unsafe {
 // CHECK-NEXT:         malloc((8 as u64).wrapping_add((3 as u64).wrapping_mul(4 as u64)))
 // CHECK-NEXT:     }) as *mut FlexibleArray;
-// CHECK-NEXT:     if flexible == std::ptr::null_mut::<FlexibleArray>() {
+// CHECK-NEXT:     if flexible.is_null() {
 // CHECK-NEXT:         return 2;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {

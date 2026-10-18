@@ -37,7 +37,7 @@ int main(void) {
 // CHECK-NEXT:         "{} {} {} {} {}",
 // CHECK-NEXT:         copy,
 // CHECK-NEXT:         unsafe { std::ptr::read_volatile(std::ptr::addr_of!(preserved)) },
-// CHECK-NEXT:         (pointer == std::ptr::null_mut::<i32>()) as i32,
+// CHECK-NEXT:         pointer.is_null() as i32,
 // CHECK-NEXT:         (narrow as u32) as i32,
 // CHECK-NEXT:         unqualified + still_qualified
 // CHECK-NEXT:     );

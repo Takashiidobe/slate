@@ -26,7 +26,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn combine(left: &i32, scale: i32, right: &i32, optional: *mut i32) -> i32 {
 // CHECK-NEXT:     (unsafe { *(left as *const i32) }) + scale * unsafe { *(right as *const i32) }
-// CHECK-NEXT:         + if optional != std::ptr::null_mut::<i32>() { unsafe { *optional } } else { 0 }
+// CHECK-NEXT:         + if !optional.is_null() { unsafe { *optional } } else { 0 }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn difference(left: &i32, scale: i32, right: &i32) -> i32 {
 // CHECK-NEXT:     (unsafe { *(left as *const i32) }) - scale * unsafe { *(right as *const i32) }

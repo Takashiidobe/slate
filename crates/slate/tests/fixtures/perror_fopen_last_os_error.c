@@ -84,7 +84,7 @@ int main(void) {
 // CHECK-NEXT:     let fp: *mut _IO_FILE = unsafe {
 // CHECK-NEXT:         fopen(c"slate_perror_fopen_missing.tmp".as_ptr(), c"r".as_ptr())
 // CHECK-NEXT:     };
-// CHECK-NEXT:     if fp == std::ptr::null_mut::<_IO_FILE>() {
+// CHECK-NEXT:     if fp.is_null() {
 // CHECK-NEXT:         unsafe { perror(c"open failed".as_ptr()) };
 // CHECK-NEXT:         return 1;
 // CHECK-NEXT:     }

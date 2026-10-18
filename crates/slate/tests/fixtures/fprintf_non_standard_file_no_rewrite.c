@@ -89,7 +89,7 @@ int main(void) {
 // CHECK-NEXT:     let f: *mut _IO_FILE = unsafe {
 // CHECK-NEXT:         fopen(c"slate_fprintf_non_standard.tmp".as_ptr(), c"w".as_ptr())
 // CHECK-NEXT:     };
-// CHECK-NEXT:     if f == std::ptr::null_mut::<_IO_FILE>() {
+// CHECK-NEXT:     if f.is_null() {
 // CHECK-NEXT:         return 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());

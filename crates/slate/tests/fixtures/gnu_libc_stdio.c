@@ -263,7 +263,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let [[V_3:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_3]] + ((stream != std::ptr::null_mut::<_IO_FILE>()) as i32);
+// CHECK-NEXT:     total = [[V_3]] + (!stream.is_null() as i32);
 // CHECK-NEXT:     let [[V_4:__v[0-9]+]]: i32 = ((unsafe {
 // CHECK-NEXT:         fprintf(stream, c"%s-%d".as_ptr(), c"slate".as_ptr() as *mut i8, 24 as i32)
 // CHECK-NEXT:     }) == 8) as i32;
@@ -297,7 +297,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     let [[V_10:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_10]] + ((stream != std::ptr::null_mut::<_IO_FILE>()) as i32);
+// CHECK-NEXT:     total = [[V_10]] + (!stream.is_null() as i32);
 // CHECK-NEXT:     let [[V_11:__v[0-9]+]]: i32 = ((unsafe {
 // CHECK-NEXT:         getdelim(
 // CHECK-NEXT:             std::ptr::addr_of_mut!(line),
@@ -342,7 +342,7 @@ int main(void) {
 // CHECK-NEXT:         fopencookie(std::ptr::addr_of_mut!(cookie) as *mut (), c"w".as_ptr(), functions)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let [[V_18:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_18]] + ((stream != std::ptr::null_mut::<_IO_FILE>()) as i32);
+// CHECK-NEXT:     total = [[V_18]] + (!stream.is_null() as i32);
 // CHECK-NEXT:     let [[V_19:__v[0-9]+]]: i32 = ((unsafe {
 // CHECK-NEXT:         fprintf(stream, c"%s:%d".as_ptr(), c"cookie".as_ptr() as *mut i8, 7 as i32)
 // CHECK-NEXT:     }) == 8) as i32;

@@ -32,7 +32,7 @@ int main(void) {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%ld %d\n".as_ptr(),
 // CHECK-NEXT:             hit.offset_from(buf.as_mut_ptr() as *mut u8) as i64,
-// CHECK-NEXT:             (miss == std::ptr::null_mut::<u8>()) as i32,
+// CHECK-NEXT:             miss.is_null() as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

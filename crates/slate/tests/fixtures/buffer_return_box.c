@@ -85,13 +85,12 @@ int main(void) {
 // CHECK-NEXT:     let raw2: *mut i32 = make_raw(2 as i32);
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {} {} {}", unsafe { * q.offset(3 as isize) }, unsafe { * r.offset(7 as
-// CHECK-NEXT:         isize) }, (m != std::ptr::null_mut::< i32 > ()) as i32, (a !=
-// CHECK-NEXT:         std::ptr::null_mut::< i32 > ()) as i32, read_first(raw), unsafe { * raw2.offset(1
-// CHECK-NEXT:         as isize) }
+// CHECK-NEXT:         isize) }, ! m.is_null() as i32, ! a.is_null() as i32, read_first(raw), unsafe { *
+// CHECK-NEXT:         raw2.offset(1 as isize) }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe { free(q as *mut ()) };
 // CHECK-NEXT:     unsafe { free(r as *mut ()) };
-// CHECK-NEXT:     if m != std::ptr::null_mut::<i32>() {
+// CHECK-NEXT:     if !m.is_null() {
 // CHECK-NEXT:         unsafe { free(m as *mut ()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { free(a as *mut ()) };

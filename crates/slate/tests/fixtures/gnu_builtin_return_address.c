@@ -32,8 +32,7 @@ int main(void) {
 // CHECK-NEXT:     let frame_address: *mut () = unsafe {
 // CHECK-NEXT:         __slate_intrinsic_2d7c29df8fdf6378(const { ((0 as i32) as u32) as i32 })
 // CHECK-NEXT:     };
-// CHECK-NEXT:     ((return_address != std::ptr::null_mut::<()>()) as i32)
-// CHECK-NEXT:         + ((frame_address != std::ptr::null_mut::<()>()) as i32)
+// CHECK-NEXT:     (!return_address.is_null() as i32) + (!frame_address.is_null() as i32)
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!("{}", address_probe());

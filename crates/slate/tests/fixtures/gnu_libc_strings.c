@@ -148,7 +148,7 @@ int main(void) {
 // CHECK-NEXT:             strsep(std::ptr::addr_of_mut!(cursor), c":".as_ptr())
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let token: *mut i8 = [[V_0]];
-// CHECK-NEXT:         if !([[V_0]] != std::ptr::null_mut::<i8>()) {
+// CHECK-NEXT:         if [[V_0]].is_null() {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         token_score = token_score * 10
@@ -173,16 +173,15 @@ int main(void) {
 // CHECK-NEXT:             strchrnul(c"abc".as_ptr(), 122 as i32)
 // CHECK-NEXT:                 .offset_from(c"abc".as_ptr() as *mut i8)
 // CHECK-NEXT:         }) as i64)
-// CHECK-NEXT:         + ((((unsafe { strcasestr(c"GNU Library".as_ptr(), c"library".as_ptr()) })
-// CHECK-NEXT:             != std::ptr::null_mut::<i8>()) as i32) as i64)
+// CHECK-NEXT:         + ((!unsafe { strcasestr(c"GNU Library".as_ptr(), c"library".as_ptr()) }
+// CHECK-NEXT:             .is_null() as i32) as i64)
 // CHECK-NEXT:         + ((((unsafe { strverscmp(c"release-2".as_ptr(), c"release-10".as_ptr()) }) < 0)
 // CHECK-NEXT:             as i32) as i64)
 // CHECK-NEXT:         + ((((unsafe { strcmp(obscured.as_mut_ptr() as *const i8, c"gnu".as_ptr()) })
 // CHECK-NEXT:             == 0) as i32) as i64) + (token_score as i64)
 // CHECK-NEXT:         + ((((unsafe { strcmp(strerrorname_np(22 as i32), c"EINVAL".as_ptr()) }) == 0)
 // CHECK-NEXT:             as i32) as i64)
-// CHECK-NEXT:         + ((((unsafe { strerrordesc_np(22 as i32) }) != std::ptr::null::<i8>()) as i32)
-// CHECK-NEXT:             as i64)) as i32
+// CHECK-NEXT:         + ((!unsafe { strerrordesc_np(22 as i32) }.is_null() as i32) as i64)) as i32
 // CHECK-NEXT: }
 // CHECK-NEXT: fn gnu_argz_extensions() -> i32 {
 // CHECK-NEXT:     let mut argz: *mut i8 = std::ptr::null_mut::<i8>();
@@ -269,8 +268,8 @@ int main(void) {
 // CHECK-NEXT:         }) == 0) as i32);
 // CHECK-NEXT:     let [[V_11:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_11]]
-// CHECK-NEXT:         + (((unsafe { envz_entry(envz as *const i8, length, c"BETA".as_ptr()) })
-// CHECK-NEXT:             != std::ptr::null_mut::<i8>()) as i32);
+// CHECK-NEXT:         + (!unsafe { envz_entry(envz as *const i8, length, c"BETA".as_ptr()) }.is_null()
+// CHECK-NEXT:             as i32);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         envz_remove(
 // CHECK-NEXT:             std::ptr::addr_of_mut!(envz),
@@ -280,8 +279,8 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let [[V_12:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_12]]
-// CHECK-NEXT:         + (((unsafe { envz_get(envz as *const i8, length, c"ALPHA".as_ptr()) })
-// CHECK-NEXT:             == std::ptr::null_mut::<i8>()) as i32);
+// CHECK-NEXT:         + (unsafe { envz_get(envz as *const i8, length, c"ALPHA".as_ptr()) }.is_null()
+// CHECK-NEXT:             as i32);
 // CHECK-NEXT:     unsafe { envz_strip(std::ptr::addr_of_mut!(envz), std::ptr::addr_of_mut!(length)) };
 // CHECK-NEXT:     total += (length == 0) as i32;
 // CHECK-NEXT:     unsafe { free(envz as *mut ()) };

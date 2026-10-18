@@ -38,10 +38,7 @@ int main(void) {
 // CHECK-NEXT:             (buffer.0.as_mut_ptr() as *mut i8).offset(16 as isize) as *mut (),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {}", (first != std::ptr::null_mut::< () > ()) as i32, (first == second) as
-// CHECK-NEXT:         i32
-// CHECK-NEXT:     );
+// CHECK-NEXT:     println!("{} {}", ! first.is_null() as i32, (first == second) as i32);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

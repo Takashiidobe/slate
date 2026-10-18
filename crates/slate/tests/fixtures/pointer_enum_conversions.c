@@ -129,12 +129,12 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let null: *mut () = std::ptr::null_mut::<()>();
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", (null == std::ptr::null_mut::< () > ()) as i32, ! (null !=
-// CHECK-NEXT:         std::ptr::null_mut::< () > ()) as i32, ((null as i64) == 0) as i32
+// CHECK-NEXT:         "{} {} {}", null.is_null() as i32, null.is_null() as i32, ((null as i64) == 0) as
+// CHECK-NEXT:         i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let from_zero: *mut i32 = std::ptr::null_mut::<i32>();
-// CHECK-NEXT:     println!("{}", (from_zero == std::ptr::null_mut::< i32 > ()) as i32);
-// CHECK-NEXT:     println!("{}", (p != std::ptr::null_mut::< i32 > ()) as i32);
+// CHECK-NEXT:     println!("{}", from_zero.is_null() as i32);
+// CHECK-NEXT:     println!("{}", ! p.is_null() as i32);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

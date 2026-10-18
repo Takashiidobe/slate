@@ -93,7 +93,7 @@ int main(void) {
 // CHECK-NEXT:         fopencookie(std::ptr::addr_of_mut!(cookie) as *mut (), c"w".as_ptr(), functions)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_0]] + ((stream != std::ptr::null_mut::<_IO_FILE>()) as i32);
+// CHECK-NEXT:     total = [[V_0]] + (!stream.is_null() as i32);
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i32 = ((unsafe {
 // CHECK-NEXT:         fprintf(stream, c"%s:%d".as_ptr(), c"cookie".as_ptr() as *mut i8, 7 as i32)
 // CHECK-NEXT:     }) == 8) as i32;

@@ -70,9 +70,9 @@ int main(int argc, char **argv, char **envp) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "environ after argv {}", ((unsafe { * unsafe { environ } .offset(0 as isize) })
-// CHECK-NEXT:         == std::ptr::null_mut::< i8 > () || (unsafe { * unsafe { environ } .offset(0 as
-// CHECK-NEXT:         isize) }) > unsafe { * argv.offset((argc - 1) as isize) }) as i32
+// CHECK-NEXT:         "environ after argv {}", (unsafe { * unsafe { environ } .offset(0 as isize) }
+// CHECK-NEXT:         .is_null() || (unsafe { * unsafe { environ } .offset(0 as isize) }) > unsafe { *
+// CHECK-NEXT:         argv.offset((argc - 1) as isize) }) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

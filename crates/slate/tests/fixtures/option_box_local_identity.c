@@ -52,14 +52,14 @@ int main(void) {
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         println!("diff");
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if p != std::ptr::null_mut::<i32>() {
+// CHECK-NEXT:     if !p.is_null() {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *p = 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         println!("{}", unsafe { * p });
 // CHECK-NEXT:         unsafe { free(p as *mut ()) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if q != std::ptr::null_mut::<i32>() {
+// CHECK-NEXT:     if !q.is_null() {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *q = 2;
 // CHECK-NEXT:         }

@@ -185,7 +185,7 @@ int main(void) {
 // CHECK-NEXT:     loop {
 // CHECK-NEXT:         let [[V_9:__v[0-9]+]]: *mut Node = unsafe { (*node).next };
 // CHECK-NEXT:         node = [[V_9]];
-// CHECK-NEXT:         if !([[V_9]] != std::ptr::null_mut::<Node>()) {
+// CHECK-NEXT:         if [[V_9]].is_null() {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         let [[V_10:__v[0-9]+]]: i32 = (unsafe { (*node).value }) * 5;

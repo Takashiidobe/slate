@@ -12,6 +12,7 @@ mod libc_call;
 mod literal_casts;
 mod loop_to_while;
 mod nested_unsafe;
+mod null_compare;
 mod param_spills;
 mod pattern_range;
 mod peel_casts;
@@ -65,6 +66,7 @@ pub(super) fn registry(target: &slate_parser::target_info::TargetInfo) -> Vec<Bo
         Box::new(inline_temps::AsmOutputTempFold),
         Box::new(peel_casts::PeelCasts),
         Box::new(constant_index_casts::ConstantIndexCasts),
+        Box::new(null_compare::NullCompare),
         Box::new(pattern_range::MatchRangeFold),
         Box::new(cstr_literal::CStrLiteral {
             c_char: if target.char_signed {

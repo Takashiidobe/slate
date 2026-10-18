@@ -97,7 +97,7 @@ int main(void) {
 // CHECK-NEXT:         thread_index = 42;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *out.offset(1 as isize) = (reusable_buffer == std::ptr::null_mut::<i8>()) as i64;
+// CHECK-NEXT:         *out.offset(1 as isize) = unsafe { reusable_buffer }.is_null() as i64;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *out.offset(2 as isize) = reusable_used as i64;

@@ -108,9 +108,7 @@ int main(void) {
 // CHECK-NEXT:             *mut (),
 // CHECK-NEXT:         >(none)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {}", (none == None) as i32, (gone == std::ptr::null_mut::< () > ()) as i32
-// CHECK-NEXT:     );
+// CHECK-NEXT:     println!("{} {}", (none == None) as i32, gone.is_null() as i32);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

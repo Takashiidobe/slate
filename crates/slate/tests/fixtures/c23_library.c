@@ -613,12 +613,12 @@ int main(void) {
 // CHECK-NEXT:     let second_copy: *mut i8 = unsafe { strndup(c"library".as_ptr(), 3 as u64) };
 // CHECK-NEXT:     let [[V_4:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_4]]
-// CHECK-NEXT:         + ((first_copy != std::ptr::null_mut::<i8>()
+// CHECK-NEXT:         + ((!first_copy.is_null()
 // CHECK-NEXT:             && (unsafe { strcmp(first_copy as *const i8, c"c23".as_ptr()) }) == 0)
 // CHECK-NEXT:             as i32);
 // CHECK-NEXT:     let [[V_5:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_5]]
-// CHECK-NEXT:         + ((second_copy != std::ptr::null_mut::<i8>()
+// CHECK-NEXT:         + ((!second_copy.is_null()
 // CHECK-NEXT:             && (unsafe { strcmp(second_copy as *const i8, c"lib".as_ptr()) }) == 0)
 // CHECK-NEXT:             as i32);
 // CHECK-NEXT:     unsafe { free(first_copy as *mut ()) };
@@ -628,27 +628,28 @@ int main(void) {
 // CHECK-NEXT:         strchr(mutable_phrase.as_mut_ptr() as *const i8, 119 as i32)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let [[V_6:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_6]]
-// CHECK-NEXT:         + ((const_hit != std::ptr::null::<i8>() && mut_hit != std::ptr::null_mut::<i8>())
-// CHECK-NEXT:             as i32);
+// CHECK-NEXT:     total = [[V_6]] + ((!const_hit.is_null() && !mut_hit.is_null()) as i32);
 // CHECK-NEXT:     let [[V_7:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_7]]
-// CHECK-NEXT:         + ((((unsafe { memchr(phrase as *const (), 111 as i32, 11 as u64) })
-// CHECK-NEXT:             as *const ()) != std::ptr::null::<()>()) as i32);
+// CHECK-NEXT:         + (!((unsafe { memchr(phrase as *const (), 111 as i32, 11 as u64) })
+// CHECK-NEXT:             as *const ())
+// CHECK-NEXT:             .is_null() as i32);
 // CHECK-NEXT:     let [[V_8:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_8]]
-// CHECK-NEXT:         + (((unsafe {
+// CHECK-NEXT:         + (!unsafe {
 // CHECK-NEXT:             memchr(mutable_phrase.as_mut_ptr() as *const (), 111 as i32, 11 as u64)
-// CHECK-NEXT:         }) != std::ptr::null_mut::<()>()) as i32);
+// CHECK-NEXT:         }
+// CHECK-NEXT:             .is_null() as i32);
 // CHECK-NEXT:     let [[V_9:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_9]]
-// CHECK-NEXT:         + ((((unsafe { strstr(phrase, c"world".as_ptr()) }) as *const i8)
-// CHECK-NEXT:             != std::ptr::null::<i8>()) as i32);
+// CHECK-NEXT:         + (!((unsafe { strstr(phrase, c"world".as_ptr()) }) as *const i8).is_null()
+// CHECK-NEXT:             as i32);
 // CHECK-NEXT:     let [[V_10:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_10]]
-// CHECK-NEXT:         + (((unsafe {
+// CHECK-NEXT:         + (!unsafe {
 // CHECK-NEXT:             strstr(mutable_phrase.as_mut_ptr() as *const i8, c"world".as_ptr())
-// CHECK-NEXT:         }) != std::ptr::null_mut::<i8>()) as i32);
+// CHECK-NEXT:         }
+// CHECK-NEXT:             .is_null() as i32);
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: fn c23_time() -> i32 {
@@ -726,28 +727,30 @@ int main(void) {
 // CHECK-NEXT:     let const_month: *const i32 = wide_month.0.as_mut_ptr() as *const i32;
 // CHECK-NEXT:     let [[V_18:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_18]]
-// CHECK-NEXT:         + ((((unsafe { wcschr(const_month, 110 as i32) }) as *const i32)
-// CHECK-NEXT:             != std::ptr::null::<i32>()) as i32);
+// CHECK-NEXT:         + (!((unsafe { wcschr(const_month, 110 as i32) }) as *const i32).is_null()
+// CHECK-NEXT:             as i32);
 // CHECK-NEXT:     let [[V_19:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_19]]
-// CHECK-NEXT:         + (((unsafe { wcschr(wide_month.0.as_mut_ptr() as *const i32, 110 as i32) })
-// CHECK-NEXT:             != std::ptr::null_mut::<i32>()) as i32);
+// CHECK-NEXT:         + (!unsafe { wcschr(wide_month.0.as_mut_ptr() as *const i32, 110 as i32) }
+// CHECK-NEXT:             .is_null() as i32);
 // CHECK-NEXT:     let [[V_20:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_20]]
-// CHECK-NEXT:         + ((((unsafe {
+// CHECK-NEXT:         + (!((unsafe {
 // CHECK-NEXT:             wcsstr(
 // CHECK-NEXT:                 const_month,
 // CHECK-NEXT:                 (std::ptr::addr_of_mut!(__slate_str287) as *mut i32) as *const i32,
 // CHECK-NEXT:             )
-// CHECK-NEXT:         }) as *const i32) != std::ptr::null::<i32>()) as i32);
+// CHECK-NEXT:         }) as *const i32)
+// CHECK-NEXT:             .is_null() as i32);
 // CHECK-NEXT:     let [[V_21:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_21]]
-// CHECK-NEXT:         + (((unsafe {
+// CHECK-NEXT:         + (!unsafe {
 // CHECK-NEXT:             wcsstr(
 // CHECK-NEXT:                 wide_month.0.as_mut_ptr() as *const i32,
 // CHECK-NEXT:                 (std::ptr::addr_of_mut!(__slate_str289) as *mut i32) as *const i32,
 // CHECK-NEXT:             )
-// CHECK-NEXT:         }) != std::ptr::null_mut::<i32>()) as i32);
+// CHECK-NEXT:         }
+// CHECK-NEXT:             .is_null() as i32);
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut __slate_str281: [i32; 4] = [37 as i32, 79 as i32, 66 as i32, 0 as i32];

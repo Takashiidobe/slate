@@ -158,16 +158,13 @@ int main(void) {
 // CHECK-NEXT:         >= (4 as u64).wrapping_mul(4 as u64)) as i32;
 // CHECK-NEXT:     total += [[V_9]];
 // CHECK-NEXT:     let [[V_10:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_10]]
-// CHECK-NEXT:         + ((aligned != std::ptr::null_mut::<()>() && (aligned as u64) % 64 == 0) as i32);
+// CHECK-NEXT:     total = [[V_10]] + ((!aligned.is_null() && (aligned as u64) % 64 == 0) as i32);
 // CHECK-NEXT:     let [[V_11:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_11]]
-// CHECK-NEXT:         + ((page != std::ptr::null_mut::<()>()
-// CHECK-NEXT:             && (page as u64) % (page_size as u64) == 0) as i32);
+// CHECK-NEXT:         + ((!page.is_null() && (page as u64) % (page_size as u64) == 0) as i32);
 // CHECK-NEXT:     let [[V_12:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_12]]
-// CHECK-NEXT:         + ((rounded != std::ptr::null_mut::<()>()
-// CHECK-NEXT:             && (rounded as u64) % (page_size as u64) == 0) as i32);
+// CHECK-NEXT:         + ((!rounded.is_null() && (rounded as u64) % (page_size as u64) == 0) as i32);
 // CHECK-NEXT:     let [[V_13:__v[0-9]+]]: i32 = ((unsafe { malloc_usable_size(rounded) }) >= (page_size as u64))
 // CHECK-NEXT:         as i32;
 // CHECK-NEXT:     total += [[V_13]];

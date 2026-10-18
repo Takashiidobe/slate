@@ -341,9 +341,8 @@ int main(void) {
 // CHECK-NEXT:         + (((unsafe { c23_embedded[0] }) as u32) as i32)
 // CHECK-NEXT:         + (((unsafe { c23_embedded[1] }) as u32) as i32)
 // CHECK-NEXT:         + (((unsafe { c23_embedded[2] }) as u32) as i32);
-// CHECK-NEXT:     let type_total: i32 = ((null_value == std::ptr::null_mut::<()>()) as i32)
-// CHECK-NEXT:         + ((null_pointer == std::ptr::null_mut::<i32>()) as i32) + (boolean_value as i32)
-// CHECK-NEXT:         + (!false_value as i32) + unsafe { c23_thread_value };
+// CHECK-NEXT:     let type_total: i32 = (null_value.is_null() as i32) + (null_pointer.is_null() as i32)
+// CHECK-NEXT:         + (boolean_value as i32) + (!false_value as i32) + unsafe { c23_thread_value };
 // CHECK-NEXT:     let control_total: i32 = c23_unnamed_parameter(89 as i32, 97 as i32)
 // CHECK-NEXT:         + c23_label_declaration(101 as i32) + c23_switch_fallthrough(1 as i32)
 // CHECK-NEXT:         + unsafe { c23_relaxed_variadic(103 as i32, 107 as i32) };

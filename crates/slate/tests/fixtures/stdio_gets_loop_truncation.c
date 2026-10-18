@@ -107,7 +107,7 @@ int main(void) {
 // CHECK-NEXT:     let f: *mut _IO_FILE = unsafe {
 // CHECK-NEXT:         fopen(c"slate_stdio_gets_loop_truncation.tmp".as_ptr(), c"w".as_ptr())
 // CHECK-NEXT:     };
-// CHECK-NEXT:     if !(f != std::ptr::null_mut::<_IO_FILE>()) {
+// CHECK-NEXT:     if f.is_null() {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { puts(c"open-fail".as_ptr()) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
@@ -123,16 +123,14 @@ int main(void) {
 // CHECK-NEXT:     let g: *mut _IO_FILE = unsafe {
 // CHECK-NEXT:         fopen(c"slate_stdio_gets_loop_truncation.tmp".as_ptr(), c"r".as_ptr())
 // CHECK-NEXT:     };
-// CHECK-NEXT:     if !(g != std::ptr::null_mut::<_IO_FILE>()) {
+// CHECK-NEXT:     if g.is_null() {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { puts(c"reopen-fail".as_ptr()) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut line: [i8; 8] = [0 as i8; 8];
-// CHECK-NEXT:     while (unsafe { fgets(line.as_mut_ptr() as *mut i8, 8 as i32, g) })
-// CHECK-NEXT:         != std::ptr::null_mut::<i8>()
-// CHECK-NEXT:     {
+// CHECK-NEXT:     while !unsafe { fgets(line.as_mut_ptr() as *mut i8, 8 as i32, g) }.is_null() {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { fputs(line.as_mut_ptr() as *const i8, stdout) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };

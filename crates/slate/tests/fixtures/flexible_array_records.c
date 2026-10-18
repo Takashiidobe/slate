@@ -256,10 +256,7 @@ int main(void) {
 // CHECK-NEXT:     let wide: *mut Wide = (unsafe {
 // CHECK-NEXT:         malloc((16 as u64).wrapping_add((3 as u64).wrapping_mul(16 as u64)))
 // CHECK-NEXT:     }) as *mut Wide;
-// CHECK-NEXT:     if !(list != std::ptr::null_mut::<List>())
-// CHECK-NEXT:         || !(bytes != std::ptr::null_mut::<Bytes>())
-// CHECK-NEXT:         || !(wide != std::ptr::null_mut::<Wide>())
-// CHECK-NEXT:     {
+// CHECK-NEXT:     if list.is_null() || bytes.is_null() || wide.is_null() {
 // CHECK-NEXT:         return 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if (((unsafe {

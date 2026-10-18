@@ -341,7 +341,7 @@ int main(void) {
 // CHECK-NEXT: fn ternary_alloca(scratch: *mut i8, n: i32) -> i32 {
 // CHECK-NEXT:     let __slate_alloca_mark = __slate_alloca::Mark::new();
 // CHECK-NEXT:     let mut [[V_2:__v[0-9]+]]: *mut ();
-// CHECK-NEXT:     if scratch != std::ptr::null_mut::<i8>() {
+// CHECK-NEXT:     if !scratch.is_null() {
 // CHECK-NEXT:         [[V_2]] = scratch as *mut ();
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         [[V_2]] = __slate_alloca::alloca(((n as i64) as u64) as usize, 16usize)
@@ -366,8 +366,7 @@ int main(void) {
 // CHECK-NEXT:             4 as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     (a != std::ptr::null_mut::<i8>()
-// CHECK-NEXT:         && (unsafe { strcmp(b as *const i8, c"abc".as_ptr()) }) == 0) as i32
+// CHECK-NEXT:     (!a.is_null() && (unsafe { strcmp(b as *const i8, c"abc".as_ptr()) }) == 0) as i32
 // CHECK-NEXT: }
 // CHECK-NEXT: fn aligned_alloca() -> i32 {
 // CHECK-NEXT:     let __slate_alloca_mark = __slate_alloca::Mark::new();

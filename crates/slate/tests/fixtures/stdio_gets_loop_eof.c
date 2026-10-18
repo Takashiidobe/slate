@@ -128,7 +128,7 @@ int main(void) {
 // CHECK-NEXT:     let f: *mut _IO_FILE = unsafe {
 // CHECK-NEXT:         fopen(c"slate_stdio_gets_loop_eof.tmp".as_ptr(), c"w".as_ptr())
 // CHECK-NEXT:     };
-// CHECK-NEXT:     if !(f != std::ptr::null_mut::<_IO_FILE>()) {
+// CHECK-NEXT:     if f.is_null() {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { puts(c"open-fail".as_ptr()) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
@@ -141,16 +141,14 @@ int main(void) {
 // CHECK-NEXT:     let g: *mut _IO_FILE = unsafe {
 // CHECK-NEXT:         fopen(c"slate_stdio_gets_loop_eof.tmp".as_ptr(), c"r".as_ptr())
 // CHECK-NEXT:     };
-// CHECK-NEXT:     if !(g != std::ptr::null_mut::<_IO_FILE>()) {
+// CHECK-NEXT:     if g.is_null() {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { puts(c"reopen-fail".as_ptr()) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut line: __SlateAlign16<[i8; 64]> = __SlateAlign16([0 as i8; 64]);
-// CHECK-NEXT:     while (unsafe { fgets(line.0.as_mut_ptr() as *mut i8, 64 as i32, g) })
-// CHECK-NEXT:         != std::ptr::null_mut::<i8>()
-// CHECK-NEXT:     {
+// CHECK-NEXT:     while !unsafe { fgets(line.0.as_mut_ptr() as *mut i8, 64 as i32, g) }.is_null() {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { fputs(line.0.as_mut_ptr() as *const i8, stdout) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
@@ -162,7 +160,7 @@ int main(void) {
 // CHECK-NEXT:     let h: *mut _IO_FILE = unsafe {
 // CHECK-NEXT:         fopen(c"slate_stdio_gets_loop_eof.tmp".as_ptr(), c"w".as_ptr())
 // CHECK-NEXT:     };
-// CHECK-NEXT:     if !(h != std::ptr::null_mut::<_IO_FILE>()) {
+// CHECK-NEXT:     if h.is_null() {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { puts(c"open-fail".as_ptr()) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
@@ -172,15 +170,14 @@ int main(void) {
 // CHECK-NEXT:     let e: *mut _IO_FILE = unsafe {
 // CHECK-NEXT:         fopen(c"slate_stdio_gets_loop_eof.tmp".as_ptr(), c"r".as_ptr())
 // CHECK-NEXT:     };
-// CHECK-NEXT:     if !(e != std::ptr::null_mut::<_IO_FILE>()) {
+// CHECK-NEXT:     if e.is_null() {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { puts(c"reopen-fail".as_ptr()) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut empty_line: __SlateAlign16<[i8; 64]> = __SlateAlign16([0 as i8; 64]);
-// CHECK-NEXT:     while (unsafe { fgets(empty_line.0.as_mut_ptr() as *mut i8, 64 as i32, e) })
-// CHECK-NEXT:         != std::ptr::null_mut::<i8>()
+// CHECK-NEXT:     while !unsafe { fgets(empty_line.0.as_mut_ptr() as *mut i8, 64 as i32, e) }.is_null()
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { fputs(empty_line.0.as_mut_ptr() as *const i8, stdout) };

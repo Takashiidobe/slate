@@ -897,8 +897,7 @@ int main(void) {
 // CHECK-NEXT:     let aligned_memory: *mut () = unsafe { aligned_alloc(64 as u64, 64 as u64) };
 // CHECK-NEXT:     let [[V_5:__v[0-9]+]]: i32 = alignment_total;
 // CHECK-NEXT:     alignment_total = [[V_5]]
-// CHECK-NEXT:         + ((aligned_memory != std::ptr::null_mut::<()>()
-// CHECK-NEXT:             && (aligned_memory as u64) % 64 == 0) as i32);
+// CHECK-NEXT:         + ((!aligned_memory.is_null() && (aligned_memory as u64) % 64 == 0) as i32);
 // CHECK-NEXT:     unsafe { free(aligned_memory) };
 // CHECK-NEXT:     quick_total = ((unsafe { at_quick_exit(Some(c11_quick_handler)) }) == 0) as i32;
 // CHECK-NEXT:     unsafe { remove(c"slate-c11-exclusive.tmp".as_ptr()) };
@@ -908,12 +907,11 @@ int main(void) {
 // CHECK-NEXT:     let exclusive_second: *mut _IO_FILE = c11_open_exclusive(
 // CHECK-NEXT:         c"slate-c11-exclusive.tmp".as_ptr(),
 // CHECK-NEXT:     );
-// CHECK-NEXT:     exclusive_total = (exclusive_first != std::ptr::null_mut::<_IO_FILE>()
-// CHECK-NEXT:         && exclusive_second == std::ptr::null_mut::<_IO_FILE>()) as i32;
-// CHECK-NEXT:     if exclusive_first != std::ptr::null_mut::<_IO_FILE>() {
+// CHECK-NEXT:     exclusive_total = (!exclusive_first.is_null() && exclusive_second.is_null()) as i32;
+// CHECK-NEXT:     if !exclusive_first.is_null() {
 // CHECK-NEXT:         unsafe { fclose(exclusive_first) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if exclusive_second != std::ptr::null_mut::<_IO_FILE>() {
+// CHECK-NEXT:     if !exclusive_second.is_null() {
 // CHECK-NEXT:         unsafe { fclose(exclusive_second) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { remove(c"slate-c11-exclusive.tmp".as_ptr()) };

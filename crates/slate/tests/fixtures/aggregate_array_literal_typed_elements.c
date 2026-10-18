@@ -57,9 +57,7 @@ int main(void) {
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     for i in 0 as i32..1 as i32 {
-// CHECK-NEXT:         if pairs.0[i as usize].name == std::ptr::null::<i8>()
-// CHECK-NEXT:             && pairs.0[i as usize].value == std::ptr::null::<i8>()
-// CHECK-NEXT:         {
+// CHECK-NEXT:         if pairs.0[i as usize].name.is_null() && pairs.0[i as usize].value.is_null() {
 // CHECK-NEXT:             total += 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
