@@ -3,22 +3,6 @@ use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{FunctionOptimizer, NodeId, NodeKindTag};
 use crate::backend::rust_ast::{Expr, Prim, RustValue, Type};
 
-const KINDS: &[NodeKindTag] = &[
-    NodeKindTag::Let,
-    NodeKindTag::LetIf,
-    NodeKindTag::Assign,
-    NodeKindTag::CompoundAssign,
-    NodeKindTag::InlineAsm,
-    NodeKindTag::Expr,
-    NodeKindTag::Return,
-    NodeKindTag::Unsafe,
-    NodeKindTag::If,
-    NodeKindTag::For,
-    NodeKindTag::Match,
-    NodeKindTag::While,
-    NodeKindTag::Block,
-];
-
 fn nonnegative_bound(prim: Prim) -> Option<i128> {
     match prim {
         Prim::I8 => Some(i8::MAX as i128),
@@ -96,7 +80,7 @@ impl NodeRule for ConstantIndexCasts {
     }
 
     fn kinds(&self) -> &'static [NodeKindTag] {
-        KINDS
+        NodeKindTag::ALL_EXPRS
     }
 
     fn matches(&self, arena: &FunctionOptimizer, id: NodeId) -> bool {

@@ -7,22 +7,6 @@ use crate::backend::rust_ast::{Expr, Ident, Prim, RustValue, Type};
 
 type VarTypes = HashMap<Ident, Type>;
 
-const KINDS: &[NodeKindTag] = &[
-    NodeKindTag::Let,
-    NodeKindTag::LetIf,
-    NodeKindTag::Assign,
-    NodeKindTag::CompoundAssign,
-    NodeKindTag::InlineAsm,
-    NodeKindTag::Expr,
-    NodeKindTag::Return,
-    NodeKindTag::Unsafe,
-    NodeKindTag::If,
-    NodeKindTag::For,
-    NodeKindTag::Match,
-    NodeKindTag::While,
-    NodeKindTag::Block,
-];
-
 fn is_sized_pointee(ty: &Type) -> bool {
     !matches!(
         ty,
@@ -122,7 +106,7 @@ impl NodeRule for PeelCasts {
     }
 
     fn kinds(&self) -> &'static [NodeKindTag] {
-        KINDS
+        NodeKindTag::ALL_EXPRS
     }
 
     fn matches(&self, arena: &FunctionOptimizer, id: NodeId) -> bool {

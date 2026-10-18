@@ -3,21 +3,6 @@ use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{FunctionOptimizer, NodeId, NodeKindTag};
 use crate::backend::rust_ast::{CLibType, Expr, Prim, Type};
 
-const KINDS: &[NodeKindTag] = &[
-    NodeKindTag::Let,
-    NodeKindTag::LetIf,
-    NodeKindTag::Assign,
-    NodeKindTag::CompoundAssign,
-    NodeKindTag::Expr,
-    NodeKindTag::Return,
-    NodeKindTag::Unsafe,
-    NodeKindTag::If,
-    NodeKindTag::For,
-    NodeKindTag::Match,
-    NodeKindTag::While,
-    NodeKindTag::Block,
-];
-
 fn is_const_c_char_ptr(ty: &Type, c_char: Prim) -> bool {
     matches!(ty, Type::Ptr { mutable: false, inner } if **inner == Type::CLib(CLibType::CHAR) || **inner == Type::Prim(c_char))
 }
@@ -105,7 +90,7 @@ impl NodeRule for CStrLiteral {
     }
 
     fn kinds(&self) -> &'static [NodeKindTag] {
-        KINDS
+        NodeKindTag::ALL_EXPRS
     }
 
     fn matches(&self, arena: &FunctionOptimizer, id: NodeId) -> bool {

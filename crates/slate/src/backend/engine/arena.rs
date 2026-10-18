@@ -22,8 +22,20 @@ pub(in crate::backend) struct MatchArmNode {
     pub(in crate::backend) body: Vec<NodeId>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub(in crate::backend) enum NodeKindTag {
+macro_rules! node_kind_tags {
+    ($($tag:ident),* $(,)?) => {
+        #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+        pub(in crate::backend) enum NodeKindTag {
+            $($tag),*
+        }
+
+        impl NodeKindTag {
+            pub(in crate::backend) const ALL: &'static [NodeKindTag] = &[$(NodeKindTag::$tag),*];
+        }
+    };
+}
+
+node_kind_tags! {
     Comment,
     Let,
     LetIf,
@@ -45,8 +57,47 @@ pub(in crate::backend) enum NodeKindTag {
     Block,
 }
 
+const EXPRS_LEN: usize = NodeKindTag::count_carrying_exprs();
+
 impl NodeKindTag {
-    pub(in crate::backend) const COUNT: usize = 19;
+    pub(in crate::backend) const COUNT: usize = Self::ALL.len();
+    pub(in crate::backend) const ALL_EXPRS: &'static [NodeKindTag] =
+        &Self::select_carrying_exprs::<EXPRS_LEN>();
+
+    const fn carries_exprs(self) -> bool {
+        use NodeKindTag::*;
+        match self {
+            Let | LetIf | Assign | CompoundAssign | InlineAsm | Expr | Return | Unsafe | If
+            | For | Match | While | Block => true,
+            Comment | Loop | Scope | LabeledBlock | Break | Continue => false,
+        }
+    }
+
+    const fn count_carrying_exprs() -> usize {
+        let mut count = 0;
+        let mut index = 0;
+        while index < Self::ALL.len() {
+            if Self::ALL[index].carries_exprs() {
+                count += 1;
+            }
+            index += 1;
+        }
+        count
+    }
+
+    const fn select_carrying_exprs<const N: usize>() -> [NodeKindTag; N] {
+        let mut out = [NodeKindTag::Comment; N];
+        let mut filled = 0;
+        let mut index = 0;
+        while index < Self::ALL.len() {
+            if Self::ALL[index].carries_exprs() {
+                out[filled] = Self::ALL[index];
+                filled += 1;
+            }
+            index += 1;
+        }
+        out
+    }
 }
 
 pub(in crate::backend) enum NodeKind {
