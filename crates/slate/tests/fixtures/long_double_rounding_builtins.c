@@ -206,9 +206,9 @@ int main(void) {
 // CHECK-NEXT:     ];
 // CHECK-NEXT:     for i in 0 as i32..5 as i32 {
 // CHECK-NEXT:         let x: LongDouble = unsafe {
-// CHECK-NEXT:             std::ptr::read_volatile(unsafe {
-// CHECK-NEXT:                 (values.as_mut_ptr() as *mut LongDouble).offset(i as isize)
-// CHECK-NEXT:             })
+// CHECK-NEXT:             std::ptr::read_volatile(
+// CHECK-NEXT:                 (values.as_mut_ptr() as *mut LongDouble).offset(i as isize),
+// CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
@@ -216,12 +216,12 @@ int main(void) {
 // CHECK-NEXT:                 c"%Lg: ceil=%Lg floor=%Lg trunc=%Lg round=%Lg rint=%Lg nearbyint=%Lg\n"
 // CHECK-NEXT:                     .as_ptr(),
 // CHECK-NEXT:                 x,
-// CHECK-NEXT:                 unsafe { __slate_f80_ceil(x) },
-// CHECK-NEXT:                 unsafe { __slate_f80_floor(x) },
-// CHECK-NEXT:                 unsafe { __slate_f80_trunc(x) },
-// CHECK-NEXT:                 unsafe { __slate_f80_round(x) },
-// CHECK-NEXT:                 unsafe { __slate_f80_rint(x) },
-// CHECK-NEXT:                 unsafe { __slate_f80_nearbyint(x) },
+// CHECK-NEXT:                 __slate_f80_ceil(x),
+// CHECK-NEXT:                 __slate_f80_floor(x),
+// CHECK-NEXT:                 __slate_f80_trunc(x),
+// CHECK-NEXT:                 __slate_f80_round(x),
+// CHECK-NEXT:                 __slate_f80_rint(x),
+// CHECK-NEXT:                 __slate_f80_nearbyint(x),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };

@@ -47,25 +47,25 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         small = add_char(unsafe { small }, 3 as i8);
+// CHECK-NEXT:         small = add_char(small, 3 as i8);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         byte = (((((unsafe { byte }) as u32) as i32) + 1) as i8) as u8;
+// CHECK-NEXT:         byte = ((((byte as u32) as i32) + 1) as i8) as u8;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         ratio = scale(unsafe { ratio }, 2.0f32);
+// CHECK-NEXT:         ratio = scale(ratio, 2.0f32);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         total = add_double(unsafe { total }, (unsafe { ratio }) as f64);
+// CHECK-NEXT:         total = add_double(total, ratio as f64);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("{}", (unsafe { small }) as i32);
-// CHECK-NEXT:     unsafe { printf(c"%u\n".as_ptr(), ((unsafe { byte }) as u32) as i32) };
+// CHECK-NEXT:     unsafe { printf(c"%u\n".as_ptr(), (byte as u32) as i32) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%f\n".as_ptr(), (unsafe { ratio }) as f64) };
+// CHECK-NEXT:     unsafe { printf(c"%f\n".as_ptr(), ratio as f64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%f\n".as_ptr(), unsafe { total }) };
+// CHECK-NEXT:     unsafe { printf(c"%f\n".as_ptr(), total) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

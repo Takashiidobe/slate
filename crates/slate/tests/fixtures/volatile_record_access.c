@@ -65,7 +65,7 @@ int main(void) {
 // CHECK-NEXT: static mut calls: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT: fn once(state: &State) -> *mut State {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         calls = (unsafe { calls }) + 1;
+// CHECK-NEXT:         calls = calls + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     (state as *const State) as *mut State
 // CHECK-NEXT: }
@@ -85,15 +85,14 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::write_volatile(
 // CHECK-NEXT:             std::ptr::addr_of_mut!(
-// CHECK-NEXT:                 (* once(unsafe { & (* std::ptr::addr_of_mut!(state)) })).[[SLATE_ANON_0]]
-// CHECK-NEXT:                 .interrupted
+// CHECK-NEXT:                 (* once(& (* std::ptr::addr_of_mut!(state)))).[[SLATE_ANON_0]].interrupted
 // CHECK-NEXT:             ),
 // CHECK-NEXT:             17 as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::write_volatile(
-// CHECK-NEXT:             unsafe { (state.counters.as_mut_ptr() as *mut u16).offset(2 as isize) },
+// CHECK-NEXT:             (state.counters.as_mut_ptr() as *mut u16).offset(2 as isize),
 // CHECK-NEXT:             100 as u16,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -112,18 +111,16 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::write_volatile(
 // CHECK-NEXT:             std::ptr::addr_of_mut!(global),
-// CHECK-NEXT:             (unsafe { std::ptr::read_volatile(std::ptr::addr_of!((* view).flag)) })
-// CHECK-NEXT:                 + unsafe {
-// CHECK-NEXT:                     std::ptr::read_volatile(
-// CHECK-NEXT:                         std::ptr::addr_of!(state.[[SLATE_ANON_0]].interrupted),
-// CHECK-NEXT:                     )
-// CHECK-NEXT:                 },
+// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!((* view).flag))
+// CHECK-NEXT:                 + std::ptr::read_volatile(
+// CHECK-NEXT:                     std::ptr::addr_of!(state.[[SLATE_ANON_0]].interrupted),
+// CHECK-NEXT:                 ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     if (((unsafe {
-// CHECK-NEXT:         std::ptr::read_volatile(unsafe {
-// CHECK-NEXT:             (state.counters.as_mut_ptr() as *mut u16).offset(2 as isize)
-// CHECK-NEXT:         })
+// CHECK-NEXT:         std::ptr::read_volatile(
+// CHECK-NEXT:             (state.counters.as_mut_ptr() as *mut u16).offset(2 as isize),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     }) as u32) as i32) != 123 || target != 11
 // CHECK-NEXT:         || (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(global)) }) != 26
 // CHECK-NEXT:         || (unsafe { calls }) != 1
@@ -141,14 +138,12 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%d %u %d %d\n".as_ptr(),
-// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(global)) },
-// CHECK-NEXT:             ((unsafe {
-// CHECK-NEXT:                 std::ptr::read_volatile(unsafe {
-// CHECK-NEXT:                     (state.counters.as_mut_ptr() as *mut u16).offset(2 as isize)
-// CHECK-NEXT:                 })
-// CHECK-NEXT:             }) as u32) as i32,
+// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(global)),
+// CHECK-NEXT:             (std::ptr::read_volatile(
+// CHECK-NEXT:                 (state.counters.as_mut_ptr() as *mut u16).offset(2 as isize),
+// CHECK-NEXT:             ) as u32) as i32,
 // CHECK-NEXT:             target,
-// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!((* all).before)) },
+// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!((* all).before)),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

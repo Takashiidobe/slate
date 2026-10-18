@@ -26,7 +26,7 @@ int main(void) {
 // CHECK-NEXT:         as *mut i32;
 // CHECK-NEXT:     for i in 0..n {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *unsafe { p.offset(i as isize) } = i * i;
+// CHECK-NEXT:             *p.offset(i as isize) = i * i;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     p
@@ -34,8 +34,7 @@ int main(void) {
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let q: *mut i32 = make(4 as i32);
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {}", unsafe { * unsafe { q.offset(0 as isize) } }, unsafe { * unsafe { q
-// CHECK-NEXT:         .offset(3 as isize) } }
+// CHECK-NEXT:         "{} {}", unsafe { * q.offset(0 as isize) }, unsafe { * q.offset(3 as isize) }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe { free(q as *mut ()) };
 // CHECK-NEXT:     0

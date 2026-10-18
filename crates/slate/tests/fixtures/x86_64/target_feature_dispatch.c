@@ -433,7 +433,7 @@ int main(void) {
 // CHECK-NEXT: fn popcount_scalar(words: *const u64, count: u64) -> i64 {
 // CHECK-NEXT:     let mut bits: i64 = 0;
 // CHECK-NEXT:     for i in 0..count {
-// CHECK-NEXT:         let mut word: u64 = unsafe { *unsafe { words.offset(i as isize) } };
+// CHECK-NEXT:         let mut word: u64 = unsafe { *words.offset(i as isize) };
 // CHECK-NEXT:         while word != 0 {
 // CHECK-NEXT:             word &= word.wrapping_sub(1);
 // CHECK-NEXT:             bits += 1;
@@ -445,9 +445,7 @@ int main(void) {
 // CHECK-NEXT: unsafe fn popcount_hw(words: *const u64, count: u64) -> i64 {
 // CHECK-NEXT:     let mut bits: i64 = 0;
 // CHECK-NEXT:     for i in 0..count {
-// CHECK-NEXT:         bits
-// CHECK-NEXT:             += (unsafe { *unsafe { words.offset(i as isize) } }.count_ones() as i32)
-// CHECK-NEXT:                 as i64;
+// CHECK-NEXT:         bits += (unsafe { *words.offset(i as isize) }.count_ones() as i32) as i64;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     bits
 // CHECK-NEXT: }
@@ -460,9 +458,7 @@ int main(void) {
 // CHECK-NEXT: ) {
 // CHECK-NEXT:     for i in 0..count {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *unsafe { out.offset(i as isize) } = (unsafe {
-// CHECK-NEXT:                 *unsafe { a.offset(i as isize) }
-// CHECK-NEXT:             }) + unsafe { *unsafe { b.offset(i as isize) } };
+// CHECK-NEXT:             *out.offset(i as isize) = *a.offset(i as isize) + *b.offset(i as isize);
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
@@ -477,28 +473,22 @@ int main(void) {
 // CHECK-NEXT:     let mut i: u64 = 0;
 // CHECK-NEXT:     while i.wrapping_add(8) <= count {
 // CHECK-NEXT:         let va: std::simd::Simd<i64, 4> = unsafe {
-// CHECK-NEXT:             _mm256_loadu_si256(
-// CHECK-NEXT:                 (unsafe { a.offset(i as isize) }) as *const std::simd::Simd<i64, 4>,
-// CHECK-NEXT:             )
+// CHECK-NEXT:             _mm256_loadu_si256(a.offset(i as isize) as *const std::simd::Simd<i64, 4>)
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let vb: std::simd::Simd<i64, 4> = unsafe {
-// CHECK-NEXT:             _mm256_loadu_si256(
-// CHECK-NEXT:                 (unsafe { b.offset(i as isize) }) as *const std::simd::Simd<i64, 4>,
-// CHECK-NEXT:             )
+// CHECK-NEXT:             _mm256_loadu_si256(b.offset(i as isize) as *const std::simd::Simd<i64, 4>)
 // CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             _mm256_storeu_si256(
-// CHECK-NEXT:                 (unsafe { out.offset(i as isize) }) as *mut std::simd::Simd<i64, 4>,
-// CHECK-NEXT:                 unsafe { _mm256_add_epi32(va, vb) },
+// CHECK-NEXT:                 out.offset(i as isize) as *mut std::simd::Simd<i64, 4>,
+// CHECK-NEXT:                 _mm256_add_epi32(va, vb),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         i = i.wrapping_add(8);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     while i < count {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *unsafe { out.offset(i as isize) } = (unsafe {
-// CHECK-NEXT:                 *unsafe { a.offset(i as isize) }
-// CHECK-NEXT:             }) + unsafe { *unsafe { b.offset(i as isize) } };
+// CHECK-NEXT:             *out.offset(i as isize) = *a.offset(i as isize) + *b.offset(i as isize);
 // CHECK-NEXT:         }
 // CHECK-NEXT:         i = i.wrapping_add(1);
 // CHECK-NEXT:     }
@@ -547,7 +537,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         _mm256_storeu_si256(
 // CHECK-NEXT:             bytes as *mut std::simd::Simd<i64, 4>,
-// CHECK-NEXT:             unsafe { _mm256_shuffle_epi8(v, mask) },
+// CHECK-NEXT:             _mm256_shuffle_epi8(v, mask),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -555,14 +545,13 @@ int main(void) {
 // CHECK-NEXT:     let mut lane: i32 = 0;
 // CHECK-NEXT:     while lane < 32 {
 // CHECK-NEXT:         for i in 0 as i32..8 as i32 {
-// CHECK-NEXT:             let t: u8 = unsafe { *unsafe { bytes.offset((lane + i) as isize) } };
+// CHECK-NEXT:             let t: u8 = unsafe { *bytes.offset((lane + i) as isize) };
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 *unsafe { bytes.offset((lane + i) as isize) } = unsafe {
-// CHECK-NEXT:                     *unsafe { bytes.offset((lane + 15 - i) as isize) }
-// CHECK-NEXT:                 };
+// CHECK-NEXT:                 *bytes.offset((lane + i) as isize) = *bytes
+// CHECK-NEXT:                     .offset((lane + 15 - i) as isize);
 // CHECK-NEXT:             }
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 *unsafe { bytes.offset((lane + 15 - i) as isize) } = t;
+// CHECK-NEXT:                 *bytes.offset((lane + 15 - i) as isize) = t;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:         lane += 16;
@@ -579,24 +568,22 @@ int main(void) {
 // CHECK-NEXT:     let mut i: u64 = 0;
 // CHECK-NEXT:     while i.wrapping_add(16) <= count {
 // CHECK-NEXT:         let va: std::simd::Simd<i64, 8> = unsafe {
-// CHECK-NEXT:             _mm512_loadu_si512((unsafe { a.offset(i as isize) }) as *const ())
+// CHECK-NEXT:             _mm512_loadu_si512(a.offset(i as isize) as *const ())
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let vb: std::simd::Simd<i64, 8> = unsafe {
-// CHECK-NEXT:             _mm512_loadu_si512((unsafe { b.offset(i as isize) }) as *const ())
+// CHECK-NEXT:             _mm512_loadu_si512(b.offset(i as isize) as *const ())
 // CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             _mm512_storeu_si512(
-// CHECK-NEXT:                 (unsafe { out.offset(i as isize) }) as *mut (),
-// CHECK-NEXT:                 unsafe { _mm512_add_epi32(va, vb) },
+// CHECK-NEXT:                 out.offset(i as isize) as *mut (),
+// CHECK-NEXT:                 _mm512_add_epi32(va, vb),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         i = i.wrapping_add(16);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     while i < count {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *unsafe { out.offset(i as isize) } = (unsafe {
-// CHECK-NEXT:                 *unsafe { a.offset(i as isize) }
-// CHECK-NEXT:             }) + unsafe { *unsafe { b.offset(i as isize) } };
+// CHECK-NEXT:             *out.offset(i as isize) = *a.offset(i as isize) + *b.offset(i as isize);
 // CHECK-NEXT:         }
 // CHECK-NEXT:         i = i.wrapping_add(1);
 // CHECK-NEXT:     }

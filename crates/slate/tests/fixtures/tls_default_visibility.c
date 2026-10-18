@@ -81,7 +81,7 @@ int main(void) {
 // CHECK-NEXT: fn detect() -> i32 {
 // CHECK-NEXT:     if (unsafe { supported }) == -1 {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             supported = ((unsafe { strlen(unsafe { malloc_conf }) }) as u32) as i32;
+// CHECK-NEXT:             supported = (strlen(malloc_conf) as u32) as i32;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { supported }
@@ -91,20 +91,19 @@ int main(void) {
 // CHECK-NEXT: extern "C-unwind" fn worker(argument: *mut ()) -> *mut () {
 // CHECK-NEXT:     let out: *mut i64 = argument as *mut i64;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *unsafe { out.offset(0 as isize) } = unsafe { thread_index };
+// CHECK-NEXT:         *out.offset(0 as isize) = thread_index;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         thread_index = 42;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *unsafe { out.offset(1 as isize) } = ((unsafe { reusable_buffer })
-// CHECK-NEXT:             == std::ptr::null_mut::<i8>()) as i64;
+// CHECK-NEXT:         *out.offset(1 as isize) = (reusable_buffer == std::ptr::null_mut::<i8>()) as i64;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *unsafe { out.offset(2 as isize) } = (unsafe { reusable_used }) as i64;
+// CHECK-NEXT:         *out.offset(2 as isize) = reusable_used as i64;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *unsafe { out.offset(3 as isize) } = detect() as i64;
+// CHECK-NEXT:         *out.offset(3 as isize) = detect() as i64;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     std::ptr::null_mut::<()>()
 // CHECK-NEXT: }
@@ -113,7 +112,7 @@ int main(void) {
 // CHECK-NEXT:         thread_index = 7;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         reusable_buffer = unsafe { std::ptr::addr_of_mut!(storage) as *mut i8 };
+// CHECK-NEXT:         reusable_buffer = std::ptr::addr_of_mut!(storage) as *mut i8;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         reusable_used = 5;
@@ -137,10 +136,10 @@ int main(void) {
 // CHECK-NEXT:             seen.0[1],
 // CHECK-NEXT:             seen.0[2],
 // CHECK-NEXT:             seen.0[3],
-// CHECK-NEXT:             unsafe { thread_index },
-// CHECK-NEXT:             unsafe { reusable_used },
+// CHECK-NEXT:             thread_index,
+// CHECK-NEXT:             reusable_used,
 // CHECK-NEXT:             detect(),
-// CHECK-NEXT:             unsafe { exported_count },
+// CHECK-NEXT:             exported_count,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

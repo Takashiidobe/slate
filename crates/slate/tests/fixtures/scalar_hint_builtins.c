@@ -59,7 +59,7 @@ int main(void) {
 // CHECK-NEXT: fn weigh(words: *const u64, count: i32) -> i64 {
 // CHECK-NEXT:     let mut total: i64 = 0;
 // CHECK-NEXT:     for i in 0..count {
-// CHECK-NEXT:         let word: u64 = unsafe { *unsafe { words.offset(i as isize) } };
+// CHECK-NEXT:         let word: u64 = unsafe { *words.offset(i as isize) };
 // CHECK-NEXT:         if (!(!(word == 0)) as i64) == 0 {
 // CHECK-NEXT:             total
 // CHECK-NEXT:                 += ((word.count_ones() as i32) * 100 + (word.trailing_zeros() as i32))
@@ -97,7 +97,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let e: i64 = (next() as i64) + ((next() * 10) as i64);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%ld %d\n".as_ptr(), e, unsafe { calls }) };
+// CHECK-NEXT:     unsafe { printf(c"%ld %d\n".as_ptr(), e, calls) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     if (((unsafe { calls }) == 2) as i64) != 0 {
 // CHECK-NEXT:         println!("probable");

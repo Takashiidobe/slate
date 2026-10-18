@@ -109,10 +109,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%lld\n".as_ptr(),
-// CHECK-NEXT:             sum(
-// CHECK-NEXT:                 (unsafe { (buffer.0.as_mut_ptr() as *mut i8).offset(3 as isize) })
-// CHECK-NEXT:                     as *mut S,
-// CHECK-NEXT:             ),
+// CHECK-NEXT:             sum((buffer.0.as_mut_ptr() as *mut i8).offset(3 as isize) as *mut S),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -131,13 +128,11 @@ int main(void) {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%lld %lld\n".as_ptr(),
 // CHECK-NEXT:             lane(
-// CHECK-NEXT:                 (unsafe { (buffer.0.as_mut_ptr() as *mut i8).offset(17 as isize) })
-// CHECK-NEXT:                     as *mut W,
+// CHECK-NEXT:                 (buffer.0.as_mut_ptr() as *mut i8).offset(17 as isize) as *mut W,
 // CHECK-NEXT:                 0 as i32,
 // CHECK-NEXT:             ),
 // CHECK-NEXT:             lane(
-// CHECK-NEXT:                 (unsafe { (buffer.0.as_mut_ptr() as *mut i8).offset(17 as isize) })
-// CHECK-NEXT:                     as *mut W,
+// CHECK-NEXT:                 (buffer.0.as_mut_ptr() as *mut i8).offset(17 as isize) as *mut W,
 // CHECK-NEXT:                 1 as i32,
 // CHECK-NEXT:             ),
 // CHECK-NEXT:         )

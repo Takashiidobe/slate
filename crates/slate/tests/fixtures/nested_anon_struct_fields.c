@@ -69,12 +69,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%d %s%s\n".as_ptr(),
-// CHECK-NEXT:             e.r#type,
-// CHECK-NEXT:             unsafe { e.data.tag.handle },
-// CHECK-NEXT:             unsafe { e.data.tag.suffix },
-// CHECK-NEXT:         )
+// CHECK-NEXT:         printf(c"%d %s%s\n".as_ptr(), e.r#type, e.data.tag.handle, e.data.tag.suffix)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0

@@ -28,10 +28,7 @@ int main(void) {
 // CHECK-NEXT:     let mut sum: i32 = 0;
 // CHECK-NEXT:     for i in 0 as i32..5 as i32 {
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = sum;
-// CHECK-NEXT:         sum = [[V_0]]
-// CHECK-NEXT:             + unsafe {
-// CHECK-NEXT:                 *unsafe { unsafe { (*p).as_mut_ptr() as *mut i32 }.offset(i as isize) }
-// CHECK-NEXT:             };
+// CHECK-NEXT:         sum = [[V_0]] + unsafe { *((*p).as_mut_ptr() as *mut i32).offset(i as isize) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("{}", sum);
 // CHECK-NEXT:     0

@@ -76,18 +76,12 @@ int main(void) {
 // CHECK-NEXT:     buf.pointer = unsafe { [[V_1]].offset(1 as isize) };
 // CHECK-NEXT:     println!("{} {}", storage.0[0], storage.0[1]);
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%ld\n".as_ptr(),
-// CHECK-NEXT:             (unsafe { buf.pointer.offset_from(buf.start as *mut i32) }) as i64,
-// CHECK-NEXT:         )
+// CHECK-NEXT:         printf(c"%ld\n".as_ptr(), buf.pointer.offset_from(buf.start as *mut i32) as i64)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%ld\n".as_ptr(),
-// CHECK-NEXT:             (unsafe { buf.end.offset_from(buf.start as *mut i32) }) as i64,
-// CHECK-NEXT:         )
+// CHECK-NEXT:         printf(c"%ld\n".as_ptr(), buf.end.offset_from(buf.start as *mut i32) as i64)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0

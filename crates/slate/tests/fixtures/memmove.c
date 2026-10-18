@@ -32,16 +32,16 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::copy(
 // CHECK-NEXT:             forward_buf.as_mut_ptr() as *const u8,
-// CHECK-NEXT:             ((unsafe { (forward_buf.as_mut_ptr() as *mut u8).offset(1 as isize) })
-// CHECK-NEXT:                 as *mut ()) as *mut u8,
+// CHECK-NEXT:             ((forward_buf.as_mut_ptr() as *mut u8).offset(1 as isize) as *mut ())
+// CHECK-NEXT:                 as *mut u8,
 // CHECK-NEXT:             5 as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut backward_buf: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::copy(
-// CHECK-NEXT:             ((unsafe { (backward_buf.as_mut_ptr() as *mut u8).offset(1 as isize) })
-// CHECK-NEXT:                 as *const ()) as *const u8,
+// CHECK-NEXT:             ((backward_buf.as_mut_ptr() as *mut u8).offset(1 as isize) as *const ())
+// CHECK-NEXT:                 as *const u8,
 // CHECK-NEXT:             backward_buf.as_mut_ptr() as *mut u8,
 // CHECK-NEXT:             5 as usize,
 // CHECK-NEXT:         )
@@ -50,8 +50,8 @@ int main(void) {
 // CHECK-NEXT:     let n: i32 = get_count();
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::copy(
-// CHECK-NEXT:             ((unsafe { (dyn_buf.as_mut_ptr() as *mut u8).offset(1 as isize) })
-// CHECK-NEXT:                 as *const ()) as *const u8,
+// CHECK-NEXT:             ((dyn_buf.as_mut_ptr() as *mut u8).offset(1 as isize) as *const ())
+// CHECK-NEXT:                 as *const u8,
 // CHECK-NEXT:             dyn_buf.as_mut_ptr() as *mut u8,
 // CHECK-NEXT:             ((n as i64) as u64) as usize,
 // CHECK-NEXT:         )

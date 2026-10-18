@@ -81,10 +81,10 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { fprintf(unsafe { stdout }, c"value: %d\n".as_ptr(), 7 as i32) };
+// CHECK-NEXT:     unsafe { fprintf(stdout, c"value: %d\n".as_ptr(), 7 as i32) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { fputs(c"done\n".as_ptr(), unsafe { stdout }) };
+// CHECK-NEXT:     unsafe { fputs(c"done\n".as_ptr(), stdout) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

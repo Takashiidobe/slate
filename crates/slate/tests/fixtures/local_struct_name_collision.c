@@ -115,8 +115,8 @@ int main(void) {
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     for i in 0 as i32..3 as i32 {
 // CHECK-NEXT:         total
-// CHECK-NEXT:             += ((unsafe { *unsafe { cases.0[i as usize].doc.offset(0 as isize) } })
-// CHECK-NEXT:                 as i32) * cases.0[i as usize].expectedStatus;
+// CHECK-NEXT:             += ((unsafe { *cases.0[i as usize].doc.offset(0 as isize) }) as i32)
+// CHECK-NEXT:                 * cases.0[i as usize].expectedStatus;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
@@ -166,8 +166,7 @@ int main(void) {
 // CHECK-NEXT:     for i in 0 as i32..3 as i32 {
 // CHECK-NEXT:         total
 // CHECK-NEXT:             += cases.0[i as usize].expectedMovementInChars
-// CHECK-NEXT:                 + ((unsafe { *unsafe { cases.0[i as usize].input.offset(0 as isize) } })
-// CHECK-NEXT:                     as i32);
+// CHECK-NEXT:                 + ((unsafe { *cases.0[i as usize].input.offset(0 as isize) }) as i32);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }

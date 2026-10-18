@@ -40,7 +40,7 @@ int main(void) {
 // CHECK-NEXT:     for i in 0..n {
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: *mut i32 = unsafe { arr.offset(i as isize) };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *[[V_0]] = (unsafe { *[[V_0]] }) * 2;
+// CHECK-NEXT:             *[[V_0]] = *[[V_0]] * 2;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }

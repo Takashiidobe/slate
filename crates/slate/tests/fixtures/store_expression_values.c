@@ -84,19 +84,19 @@ int main(void) {
 // CHECK-NEXT: });
 // CHECK-NEXT: fn idx() -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         calls = (unsafe { calls }) + 1;
+// CHECK-NEXT:         calls = calls + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     (unsafe { calls }) % 6
 // CHECK-NEXT: }
 // CHECK-NEXT: fn slot() -> *mut i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         calls = (unsafe { calls }) + 10;
+// CHECK-NEXT:         calls = calls + 10;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { unsafe { std::ptr::addr_of_mut!(slots.0) as *mut i32 }.offset(2 as isize) }
+// CHECK-NEXT:     unsafe { (std::ptr::addr_of_mut!(slots.0) as *mut i32).offset(2 as isize) }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn produce() -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         calls = (unsafe { calls }) + 100;
+// CHECK-NEXT:         calls = calls + 100;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     7
 // CHECK-NEXT: }
@@ -120,13 +120,13 @@ int main(void) {
 // CHECK-NEXT:     b = 11;
 // CHECK-NEXT:     e = twice(11 as i32);
 // CHECK-NEXT:     let [[V_3:__v[0-9]+]]: *mut i32 = unsafe {
-// CHECK-NEXT:         unsafe { std::ptr::addr_of_mut!(slots.0) as *mut i32 }.offset(idx() as isize)
+// CHECK-NEXT:         (std::ptr::addr_of_mut!(slots.0) as *mut i32).offset(idx() as isize)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_3]] = (unsafe { *[[V_3]] }) + 5;
+// CHECK-NEXT:         *[[V_3]] = *[[V_3]] + 5;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         slots.0[idx() as usize] = (unsafe { slots.0[0] }) + 1;
+// CHECK-NEXT:         slots.0[idx() as usize] = slots.0[0] + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let f: i32 = 40 + 2;
 // CHECK-NEXT:     unsafe {

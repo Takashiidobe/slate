@@ -91,26 +91,22 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u32;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "addl $2, {0:e}", inlateout(reg) (unsafe { * [[V_0]] }) as u32 => [[T_0]],
-// CHECK-NEXT:             options(nostack, att_syntax)
+// CHECK-NEXT:             "addl $2, {0:e}", inlateout(reg) * [[V_0]] as u32 => [[T_0]], options(nostack,
+// CHECK-NEXT:             att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *[[V_0]] = unsafe { std::mem::transmute::<u32, i32>([[T_0]] as u32) };
-// CHECK-NEXT:         }
+// CHECK-NEXT:         *[[V_0]] = unsafe { std::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_1]]: u32;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "addl $3, {0:e}", inlateout(reg) (unsafe {
-// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(y)) }) as u32 => [[T_1]],
+// CHECK-NEXT:             "addl $3, {0:e}", inlateout(reg)
+// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(y)) as u32 => [[T_1]],
 // CHECK-NEXT:             options(nostack, att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             std::ptr::write_volatile(
-// CHECK-NEXT:                 std::ptr::addr_of_mut!(y),
-// CHECK-NEXT:                 unsafe { std::mem::transmute::<u32, i32>([[T_1]] as u32) },
-// CHECK-NEXT:             )
-// CHECK-NEXT:         };
+// CHECK-NEXT:         std::ptr::write_volatile(
+// CHECK-NEXT:             std::ptr::addr_of_mut!(y),
+// CHECK-NEXT:             unsafe { std::mem::transmute::<u32, i32>([[T_1]] as u32) },
+// CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_2]]: u32;
@@ -144,9 +140,9 @@ int main(void) {
 // CHECK-NEXT:             c"%d %d %d %d %ld\n".as_ptr(),
 // CHECK-NEXT:             core(7 as i32, 2 as i32),
 // CHECK-NEXT:             x,
-// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(y)) },
+// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(y)),
 // CHECK-NEXT:             constant,
-// CHECK-NEXT:             (unsafe { p.offset_from(std::ptr::addr_of_mut!(x) as *mut i32) }) as i64,
+// CHECK-NEXT:             p.offset_from(std::ptr::addr_of_mut!(x) as *mut i32) as i64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

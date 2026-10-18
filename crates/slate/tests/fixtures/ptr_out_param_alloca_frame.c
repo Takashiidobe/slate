@@ -42,7 +42,7 @@ int main(void) {
 // CHECK-NEXT:         return 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: {
-// CHECK-NEXT:         match (unsafe { *unsafe { ptr.offset(0 as isize) } }) as i32 {
+// CHECK-NEXT:         match (unsafe { *ptr.offset(0 as isize) }) as i32 {
 // CHECK-NEXT:             120 => {}
 // CHECK-NEXT:             88 => {
 // CHECK-NEXT:                 upper = 1;

@@ -83,7 +83,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let rc: i32 = unsafe { remove(c"slate_perror_intervening_missing.tmp".as_ptr()) };
-// CHECK-NEXT:     unsafe { fflush(unsafe { stdout }) };
+// CHECK-NEXT:     unsafe { fflush(stdout) };
 // CHECK-NEXT:     if rc < 0 {
 // CHECK-NEXT:         unsafe { perror(c"remove failed".as_ptr()) };
 // CHECK-NEXT:         return 1;

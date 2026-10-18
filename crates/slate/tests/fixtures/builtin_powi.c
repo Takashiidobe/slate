@@ -213,24 +213,18 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%g %g %g\n".as_ptr(),
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 __slate_intrinsic_8234b76a75b4587f(
-// CHECK-NEXT:                     unsafe { std::ptr::read_volatile(std::ptr::addr_of!(d)) },
-// CHECK-NEXT:                     unsafe { std::ptr::read_volatile(std::ptr::addr_of!(n)) },
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 __slate_intrinsic_8234b76a75b4587f(
-// CHECK-NEXT:                     unsafe { std::ptr::read_volatile(std::ptr::addr_of!(d)) },
-// CHECK-NEXT:                     -unsafe { std::ptr::read_volatile(std::ptr::addr_of!(n)) },
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 __slate_intrinsic_8234b76a75b4587f(
-// CHECK-NEXT:                     unsafe { std::ptr::read_volatile(std::ptr::addr_of!(d)) },
-// CHECK-NEXT:                     0 as i32,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
+// CHECK-NEXT:             __slate_intrinsic_8234b76a75b4587f(
+// CHECK-NEXT:                 std::ptr::read_volatile(std::ptr::addr_of!(d)),
+// CHECK-NEXT:                 std::ptr::read_volatile(std::ptr::addr_of!(n)),
+// CHECK-NEXT:             ),
+// CHECK-NEXT:             __slate_intrinsic_8234b76a75b4587f(
+// CHECK-NEXT:                 std::ptr::read_volatile(std::ptr::addr_of!(d)),
+// CHECK-NEXT:                 -std::ptr::read_volatile(std::ptr::addr_of!(n)),
+// CHECK-NEXT:             ),
+// CHECK-NEXT:             __slate_intrinsic_8234b76a75b4587f(
+// CHECK-NEXT:                 std::ptr::read_volatile(std::ptr::addr_of!(d)),
+// CHECK-NEXT:                 0 as i32,
+// CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -238,18 +232,14 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%g %g\n".as_ptr(),
-// CHECK-NEXT:             (unsafe {
-// CHECK-NEXT:                 __slate_intrinsic_59fd1cf70b191186(
-// CHECK-NEXT:                     unsafe { std::ptr::read_volatile(std::ptr::addr_of!(f)) },
-// CHECK-NEXT:                     unsafe { std::ptr::read_volatile(std::ptr::addr_of!(n)) },
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             }) as f64,
-// CHECK-NEXT:             (unsafe {
-// CHECK-NEXT:                 __slate_intrinsic_59fd1cf70b191186(
-// CHECK-NEXT:                     unsafe { std::ptr::read_volatile(std::ptr::addr_of!(f)) },
-// CHECK-NEXT:                     -unsafe { std::ptr::read_volatile(std::ptr::addr_of!(n)) } - 1,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             }) as f64,
+// CHECK-NEXT:             __slate_intrinsic_59fd1cf70b191186(
+// CHECK-NEXT:                 std::ptr::read_volatile(std::ptr::addr_of!(f)),
+// CHECK-NEXT:                 std::ptr::read_volatile(std::ptr::addr_of!(n)),
+// CHECK-NEXT:             ) as f64,
+// CHECK-NEXT:             __slate_intrinsic_59fd1cf70b191186(
+// CHECK-NEXT:                 std::ptr::read_volatile(std::ptr::addr_of!(f)),
+// CHECK-NEXT:                 -std::ptr::read_volatile(std::ptr::addr_of!(n)) - 1,
+// CHECK-NEXT:             ) as f64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -257,18 +247,14 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __slate_printf__ri32_pi8_f80_f80(
 // CHECK-NEXT:             c"%Lg %Lg\n".as_ptr(),
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 __slate_f80_powi(
-// CHECK-NEXT:                     unsafe { std::ptr::read_volatile(std::ptr::addr_of!(l)) },
-// CHECK-NEXT:                     unsafe { std::ptr::read_volatile(std::ptr::addr_of!(n)) },
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 __slate_f80_powi(
-// CHECK-NEXT:                     unsafe { std::ptr::read_volatile(std::ptr::addr_of!(l)) },
-// CHECK-NEXT:                     -unsafe { std::ptr::read_volatile(std::ptr::addr_of!(n)) },
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
+// CHECK-NEXT:             __slate_f80_powi(
+// CHECK-NEXT:                 std::ptr::read_volatile(std::ptr::addr_of!(l)),
+// CHECK-NEXT:                 std::ptr::read_volatile(std::ptr::addr_of!(n)),
+// CHECK-NEXT:             ),
+// CHECK-NEXT:             __slate_f80_powi(
+// CHECK-NEXT:                 std::ptr::read_volatile(std::ptr::addr_of!(l)),
+// CHECK-NEXT:                 -std::ptr::read_volatile(std::ptr::addr_of!(n)),
+// CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -277,8 +263,8 @@ int main(void) {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%g\n".as_ptr(),
 // CHECK-NEXT:             powi(
-// CHECK-NEXT:                 unsafe { std::ptr::read_volatile(std::ptr::addr_of!(d)) },
-// CHECK-NEXT:                 unsafe { std::ptr::read_volatile(std::ptr::addr_of!(n)) },
+// CHECK-NEXT:                 std::ptr::read_volatile(std::ptr::addr_of!(d)),
+// CHECK-NEXT:                 std::ptr::read_volatile(std::ptr::addr_of!(n)),
 // CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };

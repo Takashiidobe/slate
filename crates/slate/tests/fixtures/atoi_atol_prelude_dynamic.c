@@ -39,12 +39,10 @@ int main(void) {
 // CHECK-NEXT:     unsafe { strcpy(c.0.as_mut_ptr() as *mut i8, c"9000000000000".as_ptr()) };
 // CHECK-NEXT:     let __slate_printf_arg0 = unsafe { atoi(a.0.as_mut_ptr() as *const i8) };
 // CHECK-NEXT:     println!("{}", __slate_printf_arg0);
-// CHECK-NEXT:     unsafe { printf(c"%ld\n".as_ptr(), unsafe { atol(b.0.as_mut_ptr() as *const i8) }) };
+// CHECK-NEXT:     unsafe { printf(c"%ld\n".as_ptr(), atol(b.0.as_mut_ptr() as *const i8)) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(c"%lld\n".as_ptr(), unsafe { atoll(c.0.as_mut_ptr() as *const i8) })
-// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { printf(c"%lld\n".as_ptr(), atoll(c.0.as_mut_ptr() as *const i8)) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

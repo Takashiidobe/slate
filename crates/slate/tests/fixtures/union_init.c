@@ -39,7 +39,7 @@ int main(void) {
 // CHECK-NEXT:         v.f = 1.5f32;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%.1f\n".as_ptr(), (unsafe { v.f }) as f64) };
+// CHECK-NEXT:     unsafe { printf(c"%.1f\n".as_ptr(), v.f as f64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

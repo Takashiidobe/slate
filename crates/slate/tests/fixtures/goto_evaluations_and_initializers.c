@@ -55,7 +55,7 @@ int main(void) {
 // CHECK-NEXT: static mut initializers: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT: fn initialize() -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         initializers = (unsafe { initializers }) + 1;
+// CHECK-NEXT:         initializers = initializers + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     19
 // CHECK-NEXT: }

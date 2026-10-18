@@ -51,7 +51,7 @@ done:
 // CHECK-NEXT:             pick_b = 0;
 // CHECK-NEXT:             x = 0;
 // CHECK-NEXT:             y = 0;
-// CHECK-NEXT:             if (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(pick_a)) }) != 0 {
+// CHECK-NEXT:             if std::ptr::read_volatile(std::ptr::addr_of!(pick_a)) != 0 {
 // CHECK-NEXT:                 __slate_state = 4;
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 __slate_state = 5;
@@ -77,7 +77,7 @@ done:
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(pick_b)) }) != 0 {
+// CHECK-NEXT:         if std::ptr::read_volatile(std::ptr::addr_of!(pick_b)) != 0 {
 // CHECK-NEXT:             __slate_state = 1;
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             __slate_state = 2;

@@ -35,8 +35,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __slate_intrinsic_7eb885185d29c159(
 // CHECK-NEXT:             buffer.0.as_mut_ptr() as *mut (),
-// CHECK-NEXT:             (unsafe { (buffer.0.as_mut_ptr() as *mut i8).offset(16 as isize) })
-// CHECK-NEXT:                 as *mut (),
+// CHECK-NEXT:             (buffer.0.as_mut_ptr() as *mut i8).offset(16 as isize) as *mut (),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     println!(

@@ -25,7 +25,7 @@ int main(void) {
 // CHECK-NEXT: fn sum4(arr: *mut i32) -> i32 {
 // CHECK-NEXT:     let mut s: i32 = 0;
 // CHECK-NEXT:     for i in 0 as i32..4 as i32 {
-// CHECK-NEXT:         s += unsafe { *unsafe { arr.offset(i as isize) } };
+// CHECK-NEXT:         s += unsafe { *arr.offset(i as isize) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     s
 // CHECK-NEXT: }

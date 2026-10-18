@@ -162,17 +162,15 @@ int main(void) {
 // CHECK-NEXT:             strcmp(destination.0.as_mut_ptr() as *const i8, c"slate".as_ptr())
 // CHECK-NEXT:         }) == 0) as i32)) as i64)
 // CHECK-NEXT:         + ((unsafe {
-// CHECK-NEXT:             ((unsafe { memrchr(repeated.as_ptr() as *const (), 97 as i32, 4 as u64) })
-// CHECK-NEXT:                 as *const i8)
+// CHECK-NEXT:             (memrchr(repeated.as_ptr() as *const (), 97 as i32, 4 as u64) as *const i8)
 // CHECK-NEXT:                 .offset_from(repeated.as_ptr() as *const i8)
 // CHECK-NEXT:         }) as i64)
 // CHECK-NEXT:         + ((unsafe {
-// CHECK-NEXT:             ((unsafe { rawmemchr(repeated.as_ptr() as *const (), 99 as i32) })
-// CHECK-NEXT:                 as *const i8)
+// CHECK-NEXT:             (rawmemchr(repeated.as_ptr() as *const (), 99 as i32) as *const i8)
 // CHECK-NEXT:                 .offset_from(repeated.as_ptr() as *const i8)
 // CHECK-NEXT:         }) as i64)
 // CHECK-NEXT:         + ((unsafe {
-// CHECK-NEXT:             unsafe { strchrnul(c"abc".as_ptr(), 122 as i32) }
+// CHECK-NEXT:             strchrnul(c"abc".as_ptr(), 122 as i32)
 // CHECK-NEXT:                 .offset_from(c"abc".as_ptr() as *mut i8)
 // CHECK-NEXT:         }) as i64)
 // CHECK-NEXT:         + ((((unsafe { strcasestr(c"GNU Library".as_ptr(), c"library".as_ptr()) })
@@ -181,9 +179,8 @@ int main(void) {
 // CHECK-NEXT:             as i32) as i64)
 // CHECK-NEXT:         + ((((unsafe { strcmp(obscured.as_mut_ptr() as *const i8, c"gnu".as_ptr()) })
 // CHECK-NEXT:             == 0) as i32) as i64) + (token_score as i64)
-// CHECK-NEXT:         + ((((unsafe {
-// CHECK-NEXT:             strcmp(unsafe { strerrorname_np(22 as i32) }, c"EINVAL".as_ptr())
-// CHECK-NEXT:         }) == 0) as i32) as i64)
+// CHECK-NEXT:         + ((((unsafe { strcmp(strerrorname_np(22 as i32), c"EINVAL".as_ptr()) }) == 0)
+// CHECK-NEXT:             as i32) as i64)
 // CHECK-NEXT:         + ((((unsafe { strerrordesc_np(22 as i32) }) != std::ptr::null::<i8>()) as i32)
 // CHECK-NEXT:             as i64)) as i32
 // CHECK-NEXT: }
@@ -266,8 +263,7 @@ int main(void) {
 // CHECK-NEXT:     total = [[V_10]]
 // CHECK-NEXT:         + (((unsafe {
 // CHECK-NEXT:             strcmp(
-// CHECK-NEXT:                 (unsafe { envz_get(envz as *const i8, length, c"ALPHA".as_ptr()) })
-// CHECK-NEXT:                     as *const i8,
+// CHECK-NEXT:                 envz_get(envz as *const i8, length, c"ALPHA".as_ptr()) as *const i8,
 // CHECK-NEXT:                 c"one".as_ptr(),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         }) == 0) as i32);

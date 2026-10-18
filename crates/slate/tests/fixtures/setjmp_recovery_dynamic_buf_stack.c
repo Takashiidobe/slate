@@ -66,10 +66,8 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             longjmp(
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     (*unsafe { unsafe { jb_stack }.offset([[V_0]] as isize) }).as_mut_ptr()
-// CHECK-NEXT:                         as *mut __jmp_buf_tag
-// CHECK-NEXT:                 },
+// CHECK-NEXT:                 (*unsafe { jb_stack }.offset([[V_0]] as isize)).as_mut_ptr()
+// CHECK-NEXT:                     as *mut __jmp_buf_tag,
 // CHECK-NEXT:                 42 as i32,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
@@ -81,10 +79,10 @@ int main(void) {
 // CHECK-NEXT:         jb_top = [[V_1]] + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if (unsafe {
-// CHECK-NEXT:         _setjmp(unsafe {
-// CHECK-NEXT:             (*unsafe { unsafe { jb_stack }.offset([[V_1]] as isize) }).as_mut_ptr()
-// CHECK-NEXT:                 as *mut __jmp_buf_tag
-// CHECK-NEXT:         })
+// CHECK-NEXT:         _setjmp(
+// CHECK-NEXT:             (*unsafe { jb_stack }.offset([[V_1]] as isize)).as_mut_ptr()
+// CHECK-NEXT:                 as *mut __jmp_buf_tag,
+// CHECK-NEXT:         )
 // CHECK-NEXT:     }) == 0
 // CHECK-NEXT:     {
 // CHECK-NEXT:         inner(fail);
@@ -95,13 +93,13 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         jb_stack = (unsafe { malloc((200 as u64).wrapping_mul(8 as u64)) })
+// CHECK-NEXT:         jb_stack = malloc((200 as u64).wrapping_mul(8 as u64))
 // CHECK-NEXT:             as *mut [__jmp_buf_tag; 1];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     run_case(0 as i32, 0 as i32);
 // CHECK-NEXT:     run_case(1 as i32, 1 as i32);
 // CHECK-NEXT:     run_case(2 as i32, 0 as i32);
-// CHECK-NEXT:     unsafe { free((unsafe { jb_stack }) as *mut ()) };
+// CHECK-NEXT:     unsafe { free(jb_stack as *mut ()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

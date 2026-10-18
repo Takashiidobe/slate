@@ -298,10 +298,10 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%u %u %d %d\n".as_ptr(),
-// CHECK-NEXT:             ((unsafe { gs.x.re }) as u32) as i32,
-// CHECK-NEXT:             ((unsafe { gs.x.im }) as u32) as i32,
-// CHECK-NEXT:             (unsafe { gs.y.re }) as i32,
-// CHECK-NEXT:             (unsafe { gs.y.im }) as i32,
+// CHECK-NEXT:             (gs.x.re as u32) as i32,
+// CHECK-NEXT:             (gs.x.im as u32) as i32,
+// CHECK-NEXT:             gs.y.re as i32,
+// CHECK-NEXT:             gs.y.im as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -312,9 +312,9 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __slate_printf__ri32_pi8_f80_f80_f80(
 // CHECK-NEXT:             c"%.2Lf %.2Lf %.4Lf\n".as_ptr(),
-// CHECK-NEXT:             unsafe { __slate_fmaxl__rf80_f80_f80(a, b) },
-// CHECK-NEXT:             unsafe { __slate_fminl__rf80_f80_f80(a, b) },
-// CHECK-NEXT:             unsafe { __slate_sqrtl__rf80_f80(a) },
+// CHECK-NEXT:             __slate_fmaxl__rf80_f80_f80(a, b),
+// CHECK-NEXT:             __slate_fminl__rf80_f80_f80(a, b),
+// CHECK-NEXT:             __slate_sqrtl__rf80_f80(a),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

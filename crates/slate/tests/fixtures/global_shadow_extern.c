@@ -63,7 +63,7 @@ int late = 99;
 // CHECK-NEXT: };
 // CHECK-NEXT: fn bump([[V_0:__v[0-9]+]]: *mut i32, by: i32) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_0]] = (unsafe { *[[V_0]] }) + by;
+// CHECK-NEXT:         *[[V_0]] = *[[V_0]] + by;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn shadow_param([[TOTAL_0:total_[0-9]+]]: i32) -> i32 {
@@ -71,10 +71,10 @@ int late = 99;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn record(t: *mut Tally, weight: i64) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*t).hits = (unsafe { (*t).hits }) + 1;
+// CHECK-NEXT:         (*t).hits = (*t).hits + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*t).weight = (unsafe { (*t).weight }) + weight;
+// CHECK-NEXT:         (*t).weight = (*t).weight + weight;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
@@ -89,9 +89,7 @@ int late = 99;
 // CHECK-NEXT:     record(unsafe { std::ptr::addr_of_mut!(tally) }, unsafe { scale });
 // CHECK-NEXT:     record(unsafe { std::ptr::addr_of_mut!(tally) }, (unsafe { scale }) * 2);
 // CHECK-NEXT:     println!("{} {} {}", before, unsafe { total }, shadow_param(unsafe { total }));
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(c"%d %ld\n".as_ptr(), unsafe { tally.hits }, unsafe { tally.weight })
-// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { printf(c"%d %ld\n".as_ptr(), tally.hits, tally.weight) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!("late {}", unsafe { late });
 // CHECK-NEXT:     0

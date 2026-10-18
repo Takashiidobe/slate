@@ -132,11 +132,11 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let buf: *mut i8 = (unsafe { malloc(16 as u64) }) as *mut i8;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *unsafe { buf.offset(0 as isize) } = 0;
+// CHECK-NEXT:         *buf.offset(0 as isize) = 0;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let n: u64 = unsafe { fread(buf as *mut (), 1 as u64, 10 as u64, g) };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *unsafe { buf.offset(n as isize) } = 0;
+// CHECK-NEXT:         *buf.offset(n as isize) = 0;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%zu %s\n".as_ptr(), n, buf) };

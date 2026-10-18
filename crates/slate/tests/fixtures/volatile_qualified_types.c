@@ -62,7 +62,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::write_volatile(
 // CHECK-NEXT:             std::ptr::addr_of_mut!(fields.ratio),
-// CHECK-NEXT:             input + unsafe { std::ptr::read_volatile(std::ptr::addr_of!(gain)) },
+// CHECK-NEXT:             input + std::ptr::read_volatile(std::ptr::addr_of!(gain)),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(fields.ratio)) })
@@ -72,32 +72,26 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::write_volatile(
 // CHECK-NEXT:             std::ptr::addr_of_mut!(marker),
-// CHECK-NEXT:             (((unsafe { std::ptr::read_volatile(std::ptr::addr_of!(marker)) }) as i32)
-// CHECK-NEXT:                 + 1) as i8,
+// CHECK-NEXT:             ((std::ptr::read_volatile(std::ptr::addr_of!(marker)) as i32) + 1) as i8,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::write_volatile(
 // CHECK-NEXT:             std::ptr::addr_of_mut!(gain),
-// CHECK-NEXT:             read_volatile_param(unsafe {
-// CHECK-NEXT:                 std::ptr::read_volatile(std::ptr::addr_of!(gain))
-// CHECK-NEXT:             }),
+// CHECK-NEXT:             read_volatile_param(std::ptr::read_volatile(std::ptr::addr_of!(gain))),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%c\n".as_ptr(),
-// CHECK-NEXT:             (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(marker)) }) as i32,
+// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(marker)) as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%f\n".as_ptr(),
-// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(gain)) },
-// CHECK-NEXT:         )
+// CHECK-NEXT:         printf(c"%f\n".as_ptr(), std::ptr::read_volatile(std::ptr::addr_of!(gain)))
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());

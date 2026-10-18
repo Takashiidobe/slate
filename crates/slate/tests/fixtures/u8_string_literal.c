@@ -26,9 +26,9 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%u %u %u %zu %d %d\n".as_ptr(),
-// CHECK-NEXT:             (((unsafe { text[0] }) as u8) as u32) as i32,
-// CHECK-NEXT:             (((unsafe { text[1] }) as u8) as u32) as i32,
-// CHECK-NEXT:             (((unsafe { text[2] }) as u8) as u32) as i32,
+// CHECK-NEXT:             ((text[0] as u8) as u32) as i32,
+// CHECK-NEXT:             ((text[1] as u8) as u32) as i32,
+// CHECK-NEXT:             ((text[2] as u8) as u32) as i32,
 // CHECK-NEXT:             3 as u64,
 // CHECK-NEXT:             alignment,
 // CHECK-NEXT:             repeated,

@@ -241,13 +241,7 @@ int main(void) {
 // CHECK-NEXT:         partial = unsafe { std::mem::transmute::<u32, partial>([[T_8]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%u %u\n".as_ptr(),
-// CHECK-NEXT:             ((unsafe { partial.byte }) as u32) as i32,
-// CHECK-NEXT:             unsafe { partial.word },
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { printf(c"%u %u\n".as_ptr(), (partial.byte as u32) as i32, partial.word) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let mut nested: nested = nested {
 // CHECK-NEXT:         inner: flags {

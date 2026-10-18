@@ -254,7 +254,7 @@ int main(void) {
 // CHECK-NEXT:     let mut r: LongDouble = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: LongDouble = x;
-// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: LongDouble = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: LongDouble = std::mem::zeroed();
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "fldt ({0:r})\nfsqrt\nfstpt ({1:r})", in (reg) std::ptr::addr_of!([[T_0]]), in
 // CHECK-NEXT:             (reg) std::ptr::addr_of_mut!([[T_1]]), lateout("st(0)") _, lateout("st(1)") _,
@@ -269,7 +269,7 @@ int main(void) {
 // CHECK-NEXT:     let mut r: LongDouble = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: LongDouble = x;
-// CHECK-NEXT:         let mut [[T_1]]: LongDouble = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_1]]: LongDouble = std::mem::zeroed();
 // CHECK-NEXT:         let [[T_2:__t[0-9]+]]: LongDouble = y;
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "fldt ({2:r})\nfldt ({0:r})\nfpatan\nfstpt ({1:r})", in (reg)
@@ -285,8 +285,8 @@ int main(void) {
 // CHECK-NEXT: fn sincos(x: f64, s: &mut f64, c: &mut f64) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: f64 = x;
-// CHECK-NEXT:         let mut [[T_1]]: f64 = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         let mut [[T_2]]: f64 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_1]]: f64 = std::mem::zeroed();
+// CHECK-NEXT:         let mut [[T_2]]: f64 = std::mem::zeroed();
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "fldl ({0:r})\nfsincos\nfstpl ({1:r})\nfstpl ({2:r})", in (reg)
 // CHECK-NEXT:             std::ptr::addr_of!([[T_0]]), in (reg) std::ptr::addr_of_mut!([[T_1]]), in (reg)
@@ -294,12 +294,8 @@ int main(void) {
 // CHECK-NEXT:             lateout("st(2)") _, lateout("st(3)") _, lateout("st(4)") _, lateout("st(5)")
 // CHECK-NEXT:             _, lateout("st(6)") _, lateout("st(7)") _, options(nostack, att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *(c as *mut f64) = [[T_1]];
-// CHECK-NEXT:         }
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *(s as *mut f64) = [[T_2]];
-// CHECK-NEXT:         }
+// CHECK-NEXT:         *(c as *mut f64) = [[T_1]];
+// CHECK-NEXT:         *(s as *mut f64) = [[T_2]];
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn below(a: LongDouble, b: LongDouble) -> i32 {
@@ -323,7 +319,7 @@ int main(void) {
 // CHECK-NEXT: fn square(x: f32) -> f32 {
 // CHECK-NEXT:     let mut r: f32 = 0 as f32;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let mut [[T_0]]: f32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0]]: f32 = std::mem::zeroed();
 // CHECK-NEXT:         let [[T_1]]: f32 = x;
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "flds ({1:r})\nfld %st\n\tfmul %st(0), %st\nfstps ({0:r})\nfstp %st(0)", in
@@ -340,7 +336,7 @@ int main(void) {
 // CHECK-NEXT:     let mut r: LongDouble = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: LongDouble = a;
-// CHECK-NEXT:         let mut [[T_1]]: LongDouble = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_1]]: LongDouble = std::mem::zeroed();
 // CHECK-NEXT:         let [[T_2]]: LongDouble = c;
 // CHECK-NEXT:         let [[T_3:__t[0-9]+]]: LongDouble = b;
 // CHECK-NEXT:         core::arch::asm!(
@@ -358,7 +354,7 @@ int main(void) {
 // CHECK-NEXT: fn from_int(mut i: i32) -> f64 {
 // CHECK-NEXT:     let mut r: f64 = 0 as f64;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let mut [[T_0]]: f64 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0]]: f64 = std::mem::zeroed();
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "fildl ({1:r})\nfstpl ({0:r})", in (reg) std::ptr::addr_of_mut!([[T_0]]), in
 // CHECK-NEXT:             (reg) std::ptr::addr_of!(i), lateout("st(0)") _, lateout("st(1)") _,
@@ -372,7 +368,7 @@ int main(void) {
 // CHECK-NEXT: fn scale(mut x: LongDouble) -> LongDouble {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: LongDouble = x;
-// CHECK-NEXT:         let mut [[T_1]]: LongDouble = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_1]]: LongDouble = std::mem::zeroed();
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "fldt ({0:r})\nfadd %st(0), %st\nfstpt ({1:r})", in (reg)
 // CHECK-NEXT:             std::ptr::addr_of!([[T_0]]), in (reg) std::ptr::addr_of_mut!([[T_1]]),
@@ -387,7 +383,7 @@ int main(void) {
 // CHECK-NEXT: fn add_words(mut a: u64, b: u64) -> u64 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u64 = a;
-// CHECK-NEXT:         let mut [[T_1]]: u64 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_1]]: u64 = std::mem::zeroed();
 // CHECK-NEXT:         let [[T_2]]: u64 = b;
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "movq ({0:r}), %mm0\nmovq ({2:r}), %mm1\npaddw %mm1, %mm0\nmovq %mm0, ({1:r})",
@@ -405,7 +401,7 @@ int main(void) {
 // CHECK-NEXT: fn add_dwords(mut a: i32, b: i32) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: i32 = a;
-// CHECK-NEXT:         let mut [[T_1]]: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_1]]: i32 = std::mem::zeroed();
 // CHECK-NEXT:         let [[T_2]]: i32 = b;
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "movd ({0:r}), %mm0\nmovd ({2:r}), %mm1\npaddd %mm1, %mm0\nmovd %mm0, ({1:r})",

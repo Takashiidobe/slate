@@ -101,11 +101,11 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%s %s %s %s %s %s\n".as_ptr(),
-// CHECK-NEXT:             unsafe { std::ptr::addr_of_mut!(greeting) as *mut i8 },
-// CHECK-NEXT:             unsafe { std::ptr::addr_of_mut!(padded) as *mut i8 },
-// CHECK-NEXT:             unsafe { std::ptr::addr_of!(label) as *const i8 },
-// CHECK-NEXT:             unsafe { std::ptr::addr_of_mut!(grid[0]) as *mut i8 },
-// CHECK-NEXT:             unsafe { std::ptr::addr_of_mut!(grid[1]) as *mut i8 },
+// CHECK-NEXT:             std::ptr::addr_of_mut!(greeting) as *mut i8,
+// CHECK-NEXT:             std::ptr::addr_of_mut!(padded) as *mut i8,
+// CHECK-NEXT:             std::ptr::addr_of!(label) as *const i8,
+// CHECK-NEXT:             std::ptr::addr_of_mut!(grid[0]) as *mut i8,
+// CHECK-NEXT:             std::ptr::addr_of_mut!(grid[1]) as *mut i8,
 // CHECK-NEXT:             local.as_mut_ptr() as *mut i8,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -117,7 +117,7 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     for i in 0 as i32..3 as i32 {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe { printf(c"%s\n".as_ptr(), unsafe { words.0[i as usize] }) };
+// CHECK-NEXT:         unsafe { printf(c"%s\n".as_ptr(), words.0[i as usize]) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total((unsafe { std::ptr::addr_of_mut!(greeting) as *mut i8 }) as *const i8) % 256

@@ -217,11 +217,7 @@ int main(void) {
 // CHECK-NEXT:     let x: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
 // CHECK-NEXT:     dump80(
 // CHECK-NEXT:         c"sinl".as_ptr(),
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             __slate_sinl__rf80_f80(unsafe {
-// CHECK-NEXT:                 std::ptr::read_volatile(std::ptr::addr_of!(x))
-// CHECK-NEXT:             })
-// CHECK-NEXT:         },
+// CHECK-NEXT:         unsafe { __slate_sinl__rf80_f80(std::ptr::read_volatile(std::ptr::addr_of!(x))) },
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

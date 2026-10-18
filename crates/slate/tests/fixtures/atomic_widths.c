@@ -78,26 +78,14 @@ int main(void) {
 // CHECK-NEXT:             old_i8 as i32,
 // CHECK-NEXT:             old_u32,
 // CHECK-NEXT:             old_i64,
-// CHECK-NEXT:             ((unsafe {
-// CHECK-NEXT:                 std::sync::atomic::AtomicU8::from_ptr(std::ptr::addr_of!(u8) as *mut u8)
-// CHECK-NEXT:                     .load(std::sync::atomic::Ordering::SeqCst)
-// CHECK-NEXT:             }) as u32) as i32,
-// CHECK-NEXT:             (unsafe {
-// CHECK-NEXT:                 std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of!(i8) as *mut i8)
-// CHECK-NEXT:                     .load(std::sync::atomic::Ordering::SeqCst)
-// CHECK-NEXT:             }) as i32,
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 std::sync::atomic::AtomicU32::from_ptr(
-// CHECK-NEXT:                         std::ptr::addr_of!(u32) as *mut u32,
-// CHECK-NEXT:                     )
-// CHECK-NEXT:                     .load(std::sync::atomic::Ordering::SeqCst)
-// CHECK-NEXT:             },
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 std::sync::atomic::AtomicI64::from_ptr(
-// CHECK-NEXT:                         std::ptr::addr_of!(i64) as *mut i64,
-// CHECK-NEXT:                     )
-// CHECK-NEXT:                     .load(std::sync::atomic::Ordering::SeqCst)
-// CHECK-NEXT:             },
+// CHECK-NEXT:             (std::sync::atomic::AtomicU8::from_ptr(std::ptr::addr_of!(u8) as *mut u8)
+// CHECK-NEXT:                 .load(std::sync::atomic::Ordering::SeqCst) as u32) as i32,
+// CHECK-NEXT:             std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of!(i8) as *mut i8)
+// CHECK-NEXT:                 .load(std::sync::atomic::Ordering::SeqCst) as i32,
+// CHECK-NEXT:             std::sync::atomic::AtomicU32::from_ptr(std::ptr::addr_of!(u32) as *mut u32)
+// CHECK-NEXT:                 .load(std::sync::atomic::Ordering::SeqCst),
+// CHECK-NEXT:             std::sync::atomic::AtomicI64::from_ptr(std::ptr::addr_of!(i64) as *mut i64)
+// CHECK-NEXT:                 .load(std::sync::atomic::Ordering::SeqCst),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

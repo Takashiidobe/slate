@@ -29,7 +29,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { strlen(buf as *const i8) };
 // CHECK-NEXT:     let mut score: i32 = 0;
 // CHECK-NEXT:     for i in 0..len {
-// CHECK-NEXT:         score += (((unsafe { *unsafe { buf.offset(i as isize) } }) as u8) as u32) as i32;
+// CHECK-NEXT:         score += (((unsafe { *buf.offset(i as isize) }) as u8) as u32) as i32;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { free(buf as *mut ()) };
 // CHECK-NEXT:     score

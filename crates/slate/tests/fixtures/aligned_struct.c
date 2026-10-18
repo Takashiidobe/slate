@@ -95,7 +95,7 @@ int main(void) {
 // CHECK-NEXT: static mut counter: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT: fn touch() {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         counter = (unsafe { counter }) + 1;
+// CHECK-NEXT:         counter = counter + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn interrupted_case() -> i32 {

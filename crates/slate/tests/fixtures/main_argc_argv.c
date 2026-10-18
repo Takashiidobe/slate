@@ -22,19 +22,15 @@ int main(int argc, char **argv) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main(argc: i32, argv: *mut *mut i8) -> i32 {
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", argc, ((unsafe { * unsafe { argv.offset(0 as isize) } }) !=
-// CHECK-NEXT:         std::ptr::null_mut::< i8 > ()) as i32, ((unsafe { * unsafe { argv.offset(argc as
-// CHECK-NEXT:         isize) } }) == std::ptr::null_mut::< i8 > ()) as i32
+// CHECK-NEXT:         "{} {} {}", argc, ((unsafe { * argv.offset(0 as isize) }) !=
+// CHECK-NEXT:         std::ptr::null_mut::< i8 > ()) as i32, ((unsafe { * argv.offset(argc as isize) })
+// CHECK-NEXT:         == std::ptr::null_mut::< i8 > ()) as i32
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let length: u64 = unsafe {
-// CHECK-NEXT:         strlen((unsafe { *unsafe { argv.offset(0 as isize) } }) as *const i8)
-// CHECK-NEXT:     };
+// CHECK-NEXT:     let length: u64 = unsafe { strlen(*argv.offset(0 as isize) as *const i8) };
 // CHECK-NEXT:     println!("{}", (length > 0) as i32);
 // CHECK-NEXT:     for i in 1..argc {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             printf(c"%s\n".as_ptr(), unsafe { *unsafe { argv.offset(i as isize) } })
-// CHECK-NEXT:         };
+// CHECK-NEXT:         unsafe { printf(c"%s\n".as_ptr(), *argv.offset(i as isize)) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     argc - 1

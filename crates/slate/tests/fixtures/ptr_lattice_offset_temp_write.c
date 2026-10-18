@@ -24,7 +24,7 @@ int main(void) {
 // CHECK-NEXT: fn fill(p: *mut i32, n: i32, val: i32) {
 // CHECK-NEXT:     for i in 0..n {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *unsafe { p.offset(i as isize) } = val;
+// CHECK-NEXT:             *p.offset(i as isize) = val;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }

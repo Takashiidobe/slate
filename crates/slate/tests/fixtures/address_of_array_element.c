@@ -41,8 +41,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%d %ld %d\n".as_ptr(),
-// CHECK-NEXT:             (unsafe { *p }) + unsafe { *q },
-// CHECK-NEXT:             (unsafe { q.offset_from(p as *mut i32) }) as i64,
+// CHECK-NEXT:             *p + *q,
+// CHECK-NEXT:             q.offset_from(p as *mut i32) as i64,
 // CHECK-NEXT:             read_array_element_through_call(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };

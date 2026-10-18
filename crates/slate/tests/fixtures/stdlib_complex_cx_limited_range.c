@@ -55,10 +55,10 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%.4f %.4f %.4f %.4f\n".as_ptr(),
-// CHECK-NEXT:             unsafe { creal(product) },
-// CHECK-NEXT:             unsafe { cimag(product) },
-// CHECK-NEXT:             unsafe { creal(quotient) },
-// CHECK-NEXT:             unsafe { cimag(quotient) },
+// CHECK-NEXT:             creal(product),
+// CHECK-NEXT:             cimag(product),
+// CHECK-NEXT:             creal(quotient),
+// CHECK-NEXT:             cimag(quotient),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

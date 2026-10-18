@@ -710,8 +710,7 @@ int main(void) {
 // CHECK-NEXT:         wcsftime(
 // CHECK-NEXT:             wide_month.0.as_mut_ptr() as *mut i32,
 // CHECK-NEXT:             32 as u64,
-// CHECK-NEXT:             (unsafe { std::ptr::addr_of_mut!(__slate_str281) as *mut i32 })
-// CHECK-NEXT:                 as *const i32,
+// CHECK-NEXT:             (std::ptr::addr_of_mut!(__slate_str281) as *mut i32) as *const i32,
 // CHECK-NEXT:             std::ptr::addr_of_mut!(utc) as *const tm,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) == 7) as i32;
@@ -721,8 +720,7 @@ int main(void) {
 // CHECK-NEXT:         + (((unsafe {
 // CHECK-NEXT:             wcscmp(
 // CHECK-NEXT:                 wide_month.0.as_mut_ptr() as *const i32,
-// CHECK-NEXT:                 (unsafe { std::ptr::addr_of_mut!(__slate_str283) as *mut i32 })
-// CHECK-NEXT:                     as *const i32,
+// CHECK-NEXT:                 (std::ptr::addr_of_mut!(__slate_str283) as *mut i32) as *const i32,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         }) == 0) as i32);
 // CHECK-NEXT:     let const_month: *const i32 = wide_month.0.as_mut_ptr() as *const i32;
@@ -739,8 +737,7 @@ int main(void) {
 // CHECK-NEXT:         + ((((unsafe {
 // CHECK-NEXT:             wcsstr(
 // CHECK-NEXT:                 const_month,
-// CHECK-NEXT:                 (unsafe { std::ptr::addr_of_mut!(__slate_str287) as *mut i32 })
-// CHECK-NEXT:                     as *const i32,
+// CHECK-NEXT:                 (std::ptr::addr_of_mut!(__slate_str287) as *mut i32) as *const i32,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         }) as *const i32) != std::ptr::null::<i32>()) as i32);
 // CHECK-NEXT:     let [[V_21:__v[0-9]+]]: i32 = total;
@@ -748,8 +745,7 @@ int main(void) {
 // CHECK-NEXT:         + (((unsafe {
 // CHECK-NEXT:             wcsstr(
 // CHECK-NEXT:                 wide_month.0.as_mut_ptr() as *const i32,
-// CHECK-NEXT:                 (unsafe { std::ptr::addr_of_mut!(__slate_str289) as *mut i32 })
-// CHECK-NEXT:                     as *const i32,
+// CHECK-NEXT:                 (std::ptr::addr_of_mut!(__slate_str289) as *mut i32) as *const i32,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         }) != std::ptr::null_mut::<i32>()) as i32);
 // CHECK-NEXT:     total

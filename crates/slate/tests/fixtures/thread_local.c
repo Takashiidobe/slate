@@ -59,8 +59,8 @@ int main(void) {
 // CHECK-NEXT: extern "C-unwind" fn worker(argument: *mut ()) -> i32 {
 // CHECK-NEXT:     let values: *mut i32 = argument as *mut i32;
 // CHECK-NEXT:     update_values(
-// CHECK-NEXT:         unsafe { *unsafe { values.offset(0 as isize) } },
-// CHECK-NEXT:         unsafe { *unsafe { values.offset(1 as isize) } },
+// CHECK-NEXT:         unsafe { *values.offset(0 as isize) },
+// CHECK-NEXT:         unsafe { *values.offset(1 as isize) },
 // CHECK-NEXT:     )
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {

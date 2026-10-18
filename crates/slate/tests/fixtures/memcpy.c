@@ -53,8 +53,8 @@ int main(void) {
 // CHECK-NEXT:     let mut alias_buf: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             ((unsafe { (alias_buf.as_mut_ptr() as *mut u8).offset(4 as isize) })
-// CHECK-NEXT:                 as *const ()) as *const u8,
+// CHECK-NEXT:             ((alias_buf.as_mut_ptr() as *mut u8).offset(4 as isize) as *const ())
+// CHECK-NEXT:                 as *const u8,
 // CHECK-NEXT:             alias_buf.as_mut_ptr() as *mut u8,
 // CHECK-NEXT:             4 as usize,
 // CHECK-NEXT:         )

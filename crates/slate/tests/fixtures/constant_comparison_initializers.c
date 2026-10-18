@@ -63,9 +63,8 @@ int main(void) {
 // CHECK-NEXT:         unsafe { either }, unsafe { float_order }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {}", unsafe { (* unsafe { uchar }).kind }, (unsafe { (* unsafe { uchar
-// CHECK-NEXT:         }).is_unsigned }) as i32, unsafe { plain.size }, (unsafe { plain.is_unsigned })
-// CHECK-NEXT:         as i32
+// CHECK-NEXT:         "{} {} {} {}", unsafe { (* uchar).kind }, (unsafe { (* uchar).is_unsigned }) as
+// CHECK-NEXT:         i32, unsafe { plain.size }, (unsafe { plain.is_unsigned }) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

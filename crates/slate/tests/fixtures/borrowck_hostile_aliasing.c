@@ -144,7 +144,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn add_in_place(a: &mut i32, b: &i32) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *a = (unsafe { *a }) + unsafe { *(b as *const i32) };
+// CHECK-NEXT:         *a = *a + *(b as *const i32);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn alias_same_object() -> i32 {
@@ -174,10 +174,10 @@ int main(void) {
 // CHECK-NEXT:     let lo: *mut i32 = pair_lo(unsafe { &mut (*std::ptr::addr_of_mut!(pair)) });
 // CHECK-NEXT:     let hi: *mut i32 = pair_hi(unsafe { &mut (*std::ptr::addr_of_mut!(pair)) });
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *lo = (unsafe { *lo }) + unsafe { *hi };
+// CHECK-NEXT:         *lo = *lo + *hi;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *hi = (unsafe { *hi }) + unsafe { *lo };
+// CHECK-NEXT:         *hi = *hi + *lo;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     pair.lo + pair.hi
 // CHECK-NEXT: }
@@ -224,7 +224,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut Node = unsafe { (*cur).prev };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*[[V_0]]).val = (unsafe { (*[[V_0]]).val }) + 10;
+// CHECK-NEXT:         (*[[V_0]]).val = (*[[V_0]]).val + 10;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     sum + a.val + b.val + c.val
 // CHECK-NEXT: }
@@ -265,11 +265,11 @@ int main(void) {
 // CHECK-NEXT:     root.right = std::ptr::addr_of_mut!(right);
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: *mut Tree = left.parent;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*[[V_1]]).val = (unsafe { (*[[V_1]]).val }) + left.val;
+// CHECK-NEXT:         (*[[V_1]]).val = (*[[V_1]]).val + left.val;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let [[V_2:__v[0-9]+]]: *mut Tree = right.parent;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*[[V_2]]).val = (unsafe { (*[[V_2]]).val }) + right.val;
+// CHECK-NEXT:         (*[[V_2]]).val = (*[[V_2]]).val + right.val;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     root.val + left.val + right.val
 // CHECK-NEXT: }
@@ -287,16 +287,15 @@ int main(void) {
 // CHECK-NEXT:     buf.cursor = unsafe { (buf.data.as_mut_ptr() as *mut i8).offset(3 as isize) };
 // CHECK-NEXT:     let [[V_3:__v[0-9]+]]: *mut i8 = buf.cursor;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_3]] = (((unsafe { *[[V_3]] }) as i32) + 1) as i8;
+// CHECK-NEXT:         *[[V_3]] = ((*[[V_3]] as i32) + 1) as i8;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     (buf.data[3] as i32)
-// CHECK-NEXT:         + ((unsafe { *unsafe { buf.cursor.offset(0 as isize) } }) as i32) - 2 * 97
+// CHECK-NEXT:     (buf.data[3] as i32) + ((unsafe { *buf.cursor.offset(0 as isize) }) as i32) - 2 * 97
 // CHECK-NEXT: }
 // CHECK-NEXT: fn reverse_in_place(mut lo: *mut i32, mut hi: *mut i32) {
 // CHECK-NEXT:     while lo < hi {
 // CHECK-NEXT:         let t: i32 = unsafe { *lo };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *lo = unsafe { *hi };
+// CHECK-NEXT:             *lo = *hi;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *hi = t;
@@ -333,10 +332,10 @@ int main(void) {
 // CHECK-NEXT:     capture_global(std::ptr::addr_of_mut!(x));
 // CHECK-NEXT:     let [[V_6:__v[0-9]+]]: *mut i32 = unsafe { g_ptr };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_6]] = (unsafe { *[[V_6]] }) + 1;
+// CHECK-NEXT:         *[[V_6]] = *[[V_6]] + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x += 1;
-// CHECK-NEXT:     x + unsafe { *unsafe { g_ptr } }
+// CHECK-NEXT:     x + unsafe { *g_ptr }
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
@@ -351,7 +350,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let bits: i32 = unsafe { u.i };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         u.i = (unsafe { u.i }) + 1;
+// CHECK-NEXT:         u.i = u.i + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if bits == unsafe { u.i } { -1 } else { (unsafe { u.f }) as i32 }
 // CHECK-NEXT: }

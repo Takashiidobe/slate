@@ -58,7 +58,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fgets(buf.0.as_mut_ptr() as *mut i8, 16 as i32, g) };
 // CHECK-NEXT:     unsafe { fclose(g) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { fputs(buf.0.as_mut_ptr() as *const i8, unsafe { stdout }) };
+// CHECK-NEXT:     unsafe { fputs(buf.0.as_mut_ptr() as *const i8, stdout) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     unsafe { remove(c"slate_stdio_file_write.tmp".as_ptr()) };
 // CHECK-NEXT:     0

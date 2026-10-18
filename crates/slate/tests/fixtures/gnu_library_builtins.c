@@ -67,7 +67,7 @@ int main(void) {
 // CHECK-NEXT:             formatted.0.as_mut_ptr() as *mut i8,
 // CHECK-NEXT:             c"%s-%d".as_ptr(),
 // CHECK-NEXT:             copy.as_mut_ptr() as *mut i8,
-// CHECK-NEXT:             ((unsafe { __builtin_strlen(buffer as *const i8) }) as u32) as i32,
+// CHECK-NEXT:             (__builtin_strlen(buffer as *const i8) as u32) as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut bounded: [i8; 4] = [0 as i8; 4];
@@ -83,7 +83,7 @@ int main(void) {
 // CHECK-NEXT:         __builtin_memchr(
 // CHECK-NEXT:             formatted.0.as_mut_ptr() as *const (),
 // CHECK-NEXT:             45 as i32,
-// CHECK-NEXT:             unsafe { __builtin_strlen(formatted.0.as_mut_ptr() as *const i8) },
+// CHECK-NEXT:             __builtin_strlen(formatted.0.as_mut_ptr() as *const i8),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) as *const i8;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -93,8 +93,8 @@ int main(void) {
 // CHECK-NEXT:             formatted.0.as_mut_ptr() as *mut i8,
 // CHECK-NEXT:             bounded.as_mut_ptr() as *mut i8,
 // CHECK-NEXT:             wanted,
-// CHECK-NEXT:             unsafe { __builtin_strcmp(buffer as *const i8, c"slate".as_ptr()) },
-// CHECK-NEXT:             (unsafe { found.offset_from(formatted.0.as_mut_ptr() as *const i8) }) as i64,
+// CHECK-NEXT:             __builtin_strcmp(buffer as *const i8, c"slate".as_ptr()),
+// CHECK-NEXT:             found.offset_from(formatted.0.as_mut_ptr() as *const i8) as i64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

@@ -76,7 +76,7 @@ int main(void) {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%d %d %d %d %zu\n".as_ptr(),
 // CHECK-NEXT:             value.prefix,
-// CHECK-NEXT:             unsafe { value.[[SLATE_ANON_0]].integer },
+// CHECK-NEXT:             value.[[SLATE_ANON_0]].integer,
 // CHECK-NEXT:             value.[[SLATE_ANON_1]].x,
 // CHECK-NEXT:             value.[[SLATE_ANON_1]].y,
 // CHECK-NEXT:             16 as u64,

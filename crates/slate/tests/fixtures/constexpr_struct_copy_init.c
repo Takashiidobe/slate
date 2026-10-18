@@ -68,17 +68,17 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         copied.a = (unsafe { copied.a }) + 10;
+// CHECK-NEXT:         copied.a = copied.a + 10;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%d %g %d %d %d\n".as_ptr(),
-// CHECK-NEXT:             unsafe { copied.a },
-// CHECK-NEXT:             (unsafe { copied.b }) as f64,
-// CHECK-NEXT:             unsafe { copied.c[0] },
-// CHECK-NEXT:             unsafe { copied.c[1] },
-// CHECK-NEXT:             unsafe { copied.c[2] },
+// CHECK-NEXT:             copied.a,
+// CHECK-NEXT:             copied.b as f64,
+// CHECK-NEXT:             copied.c[0],
+// CHECK-NEXT:             copied.c[1],
+// CHECK-NEXT:             copied.c[2],
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -86,9 +86,9 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%d %g %d\n".as_ptr(),
-// CHECK-NEXT:             unsafe { exported.a },
-// CHECK-NEXT:             (unsafe { exported.b }) as f64,
-// CHECK-NEXT:             unsafe { exported.c[2] },
+// CHECK-NEXT:             exported.a,
+// CHECK-NEXT:             exported.b as f64,
+// CHECK-NEXT:             exported.c[2],
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

@@ -27,7 +27,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { strlen(bytes as *const i8) };
 // CHECK-NEXT:     let mut value: i32 = 0;
 // CHECK-NEXT:     for i in 0..len {
-// CHECK-NEXT:         value += ((unsafe { *unsafe { bytes.offset(i as isize) } }) as u32) as i32;
+// CHECK-NEXT:         value += ((unsafe { *bytes.offset(i as isize) }) as u32) as i32;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     value
 // CHECK-NEXT: }

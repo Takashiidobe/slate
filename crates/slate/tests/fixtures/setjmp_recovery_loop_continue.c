@@ -60,29 +60,24 @@ int main(void) {
 // CHECK-NEXT: fn run_test(i: i32) {
 // CHECK-NEXT:     if i == 2 {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             longjmp(
-// CHECK-NEXT:                 unsafe { std::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag },
-// CHECK-NEXT:                 1 as i32,
-// CHECK-NEXT:             )
+// CHECK-NEXT:             longjmp(std::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag, 1 as i32)
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("ran {}", i);
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     for i in 0 as i32..5 as i32 {
-// CHECK-NEXT:         if (unsafe {
-// CHECK-NEXT:             _setjmp(unsafe { std::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag })
-// CHECK-NEXT:         }) != 0
+// CHECK-NEXT:         if (unsafe { _setjmp(std::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag) }) != 0
 // CHECK-NEXT:         {
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 failures = (unsafe { failures }) + 1;
+// CHECK-NEXT:                 failures = failures + 1;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             println!("recovered {}", i);
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             run_test(i);
 // CHECK-NEXT:             if i == 3 {
 // CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     teardown_failures = (unsafe { teardown_failures }) + 1;
+// CHECK-NEXT:                     teardown_failures = teardown_failures + 1;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 println!("teardown ok {}", i);

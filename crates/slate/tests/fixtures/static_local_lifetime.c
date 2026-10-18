@@ -158,10 +158,10 @@ int main(void) {
 // CHECK-NEXT: static mut next: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT: fn moved(dx: i32) -> *mut Point {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         point.x = (unsafe { point.x }) + dx;
+// CHECK-NEXT:         point.x = point.x + dx;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         point.y = (unsafe { point.y }) * 2;
+// CHECK-NEXT:         point.y = point.y * 2;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { std::ptr::addr_of_mut!(point) }
 // CHECK-NEXT: }
@@ -187,7 +187,7 @@ int main(void) {
 // CHECK-NEXT: static mut deepest: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT: fn running_mean(sample: f64) -> f64 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         sum = (unsafe { sum }) + sample;
+// CHECK-NEXT:         sum = sum + sample;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let [[V_4:__v[0-9]+]]: i32 = (unsafe { samples }) + 1;
 // CHECK-NEXT:     unsafe {
@@ -243,9 +243,9 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let [[SLOTS_0:slots_[0-9]+]]: *mut i32 = history(70 as i32);
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {}", unsafe { * unsafe { [[SLOTS_0]].offset(0 as isize) } }, unsafe { *
-// CHECK-NEXT:         unsafe { [[SLOTS_0]].offset(1 as isize) } }, unsafe { * unsafe { [[SLOTS_0]].offset(2
-// CHECK-NEXT:         as isize) } }, unsafe { * unsafe { [[SLOTS_0]].offset(3 as isize) } }
+// CHECK-NEXT:         "{} {} {} {}", unsafe { * [[SLOTS_0]].offset(0 as isize) }, unsafe { * [[SLOTS_0]]
+// CHECK-NEXT:         .offset(1 as isize) }, unsafe { * [[SLOTS_0]].offset(2 as isize) }, unsafe { *
+// CHECK-NEXT:         [[SLOTS_0]].offset(3 as isize) }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     moved(3 as i32);
 // CHECK-NEXT:     let [[POINT_0:point_[0-9]+]]: *mut Point = moved(4 as i32);
@@ -256,7 +256,7 @@ int main(void) {
 // CHECK-NEXT:     println!("{}", unsafe { (* moved(1 as i32)).x });
 // CHECK-NEXT:     let [[V_8:__v[0-9]+]]: *mut i32 = base_pointer();
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_8]] = (unsafe { *[[V_8]] }) + 5;
+// CHECK-NEXT:         *[[V_8]] = *[[V_8]] + 5;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let through: i32 = unsafe { *base_pointer() };
 // CHECK-NEXT:     println!("{} {}", unsafe { global_base }, through);

@@ -263,7 +263,7 @@ int main(void) {
 // CHECK-NEXT:         __slate_printf__ri32_pi8_f80_f80(
 // CHECK-NEXT:             c"%.18Lf %.18Lf\n".as_ptr(),
 // CHECK-NEXT:             average(x, y),
-// CHECK-NEXT:             unsafe { zeroed_global },
+// CHECK-NEXT:             zeroed_global,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -301,7 +301,7 @@ int main(void) {
 // CHECK-NEXT:         __slate_printf__ri32_pi8_f80_f80(
 // CHECK-NEXT:             c"%.18Lf %.18Lf\n".as_ptr(),
 // CHECK-NEXT:             root,
-// CHECK-NEXT:             unsafe { __slate_fabsl__rf80_f80(-root) },
+// CHECK-NEXT:             __slate_fabsl__rf80_f80(-root),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

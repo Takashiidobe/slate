@@ -111,13 +111,13 @@ int main(void) {
 // CHECK-NEXT: fn total(items: *const u32, count: i32) -> u32 {
 // CHECK-NEXT:     let mut sum: u32 = 0;
 // CHECK-NEXT:     for i in 0..count {
-// CHECK-NEXT:         sum = sum.wrapping_add(unsafe { *unsafe { items.offset(i as isize) } });
+// CHECK-NEXT:         sum = sum.wrapping_add(unsafe { *items.offset(i as isize) });
 // CHECK-NEXT:     }
 // CHECK-NEXT:     sum
 // CHECK-NEXT: }
 // CHECK-NEXT: fn bump() -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         calls.0 = (unsafe { calls.0 }) + 1;
+// CHECK-NEXT:         calls.0 = calls.0 + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     (unsafe { calls.0 })
 // CHECK-NEXT:         + aligned((unsafe { std::ptr::addr_of_mut!(calls.0) }) as *const (), 256 as u64)
@@ -125,7 +125,7 @@ int main(void) {
 // CHECK-NEXT: static mut calls: __SlateAlign256<i32> = __SlateAlign256(unsafe { std::mem::zeroed() });
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         counter.0 = (unsafe { counter.0 }) + 10;
+// CHECK-NEXT:         counter.0 = counter.0 + 10;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         values.0[1] = 50;
@@ -136,7 +136,7 @@ int main(void) {
 // CHECK-NEXT:         *[[V_0]] = [[V_1]].wrapping_add(600);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let [[V_2:__v[0-9]+]]: *mut f64 = unsafe {
-// CHECK-NEXT:         unsafe { std::ptr::addr_of_mut!(weights.0) as *mut f64 }.offset(0 as isize)
+// CHECK-NEXT:         (std::ptr::addr_of_mut!(weights.0) as *mut f64).offset(0 as isize)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let [[V_3:__v[0-9]+]]: f64 = (unsafe { *[[V_2]] }) * 4.0f64;
 // CHECK-NEXT:     unsafe {
@@ -147,7 +147,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let [[V_4:__v[0-9]+]]: *mut Point = unsafe { origin_ptr };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*[[V_4]]).x = (unsafe { (*[[V_4]]).x }) + 1;
+// CHECK-NEXT:         (*[[V_4]]).x = (*[[V_4]]).x + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         page.0[3] = 112;
@@ -157,7 +157,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let [[V_5:__v[0-9]+]]: *mut i32 = unsafe { counter_ptr };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_5]] = (unsafe { *[[V_5]] }) * 2;
+// CHECK-NEXT:         *[[V_5]] = *[[V_5]] * 2;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     bump();
 // CHECK-NEXT:     println!(
@@ -173,14 +173,11 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%d %u %u %u %u\n".as_ptr(),
-// CHECK-NEXT:             unsafe { counter.0 },
-// CHECK-NEXT:             unsafe { values.0[0] },
-// CHECK-NEXT:             unsafe { values.0[1] },
-// CHECK-NEXT:             unsafe { values.0[2] },
-// CHECK-NEXT:             total(
-// CHECK-NEXT:                 (unsafe { std::ptr::addr_of_mut!(values.0) as *mut u32 }) as *const u32,
-// CHECK-NEXT:                 3 as i32,
-// CHECK-NEXT:             ),
+// CHECK-NEXT:             counter.0,
+// CHECK-NEXT:             values.0[0],
+// CHECK-NEXT:             values.0[1],
+// CHECK-NEXT:             values.0[2],
+// CHECK-NEXT:             total((std::ptr::addr_of_mut!(values.0) as *mut u32) as *const u32, 3 as i32),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -188,12 +185,12 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%.2f %.2f %d %d %c %c %d\n".as_ptr(),
-// CHECK-NEXT:             unsafe { weights.0[0] },
-// CHECK-NEXT:             unsafe { weights.0[1] },
-// CHECK-NEXT:             unsafe { origin.0.x },
-// CHECK-NEXT:             unsafe { origin.0.y },
-// CHECK-NEXT:             (unsafe { page.0[3] }) as i32,
-// CHECK-NEXT:             (unsafe { small.0 }) as i32,
+// CHECK-NEXT:             weights.0[0],
+// CHECK-NEXT:             weights.0[1],
+// CHECK-NEXT:             origin.0.x,
+// CHECK-NEXT:             origin.0.y,
+// CHECK-NEXT:             page.0[3] as i32,
+// CHECK-NEXT:             small.0 as i32,
 // CHECK-NEXT:             bump(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };

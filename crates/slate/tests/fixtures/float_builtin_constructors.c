@@ -39,7 +39,7 @@ int main(void) {
 // CHECK-NEXT: static mut calls: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT: fn payload() -> *const i8 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         calls = (unsafe { calls }) + 1;
+// CHECK-NEXT:         calls = calls + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     c"0x23".as_ptr()
 // CHECK-NEXT: }
@@ -61,10 +61,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%d %d %d %08x %016llx %d\n".as_ptr(),
-// CHECK-NEXT:             !(!((if unsafe { std::ptr::read_volatile(std::ptr::addr_of!(infinity)) }
-// CHECK-NEXT:                 .is_infinite()
-// CHECK-NEXT:             {
-// CHECK-NEXT:                 if unsafe { std::ptr::read_volatile(std::ptr::addr_of!(infinity)) }
+// CHECK-NEXT:             !(!((if std::ptr::read_volatile(std::ptr::addr_of!(infinity)).is_infinite() {
+// CHECK-NEXT:                 if std::ptr::read_volatile(std::ptr::addr_of!(infinity))
 // CHECK-NEXT:                     .is_sign_negative()
 // CHECK-NEXT:                 {
 // CHECK-NEXT:                     -1 as i32
@@ -74,12 +72,8 @@ int main(void) {
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 0 as i32
 // CHECK-NEXT:             }) != 0)) as i32,
-// CHECK-NEXT:             !(!((if unsafe { std::ptr::read_volatile(std::ptr::addr_of!(huge)) }
-// CHECK-NEXT:                 .is_infinite()
-// CHECK-NEXT:             {
-// CHECK-NEXT:                 if unsafe { std::ptr::read_volatile(std::ptr::addr_of!(huge)) }
-// CHECK-NEXT:                     .is_sign_negative()
-// CHECK-NEXT:                 {
+// CHECK-NEXT:             !(!((if std::ptr::read_volatile(std::ptr::addr_of!(huge)).is_infinite() {
+// CHECK-NEXT:                 if std::ptr::read_volatile(std::ptr::addr_of!(huge)).is_sign_negative() {
 // CHECK-NEXT:                     -1 as i32
 // CHECK-NEXT:                 } else {
 // CHECK-NEXT:                     1 as i32
@@ -87,11 +81,10 @@ int main(void) {
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 0 as i32
 // CHECK-NEXT:             }) != 0)) as i32,
-// CHECK-NEXT:             !(!unsafe { std::ptr::read_volatile(std::ptr::addr_of!(nan)) }.is_nan())
-// CHECK-NEXT:                 as i32,
-// CHECK-NEXT:             unsafe { f.bits },
-// CHECK-NEXT:             unsafe { d.bits },
-// CHECK-NEXT:             unsafe { calls },
+// CHECK-NEXT:             !(!std::ptr::read_volatile(std::ptr::addr_of!(nan)).is_nan()) as i32,
+// CHECK-NEXT:             f.bits,
+// CHECK-NEXT:             d.bits,
+// CHECK-NEXT:             calls,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

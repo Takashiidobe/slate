@@ -31,7 +31,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: extern "C-unwind" fn add_one(value: *mut i32) -> *mut i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *value = (unsafe { *value }) + 1;
+// CHECK-NEXT:         *value = *value + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     value
 // CHECK-NEXT: }
@@ -40,8 +40,7 @@ int main(void) {
 // CHECK-NEXT:     let mut callback: Callback = Callback { handler: None };
 // CHECK-NEXT:     callback.handler = Some(add_one);
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{}", unsafe { * unsafe { callback.handler.unwrap()
-// CHECK-NEXT:         (std::ptr::addr_of_mut!(value)) } }
+// CHECK-NEXT:         "{}", unsafe { * callback.handler.unwrap() (std::ptr::addr_of_mut!(value)) }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

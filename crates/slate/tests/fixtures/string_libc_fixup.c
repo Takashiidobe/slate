@@ -64,27 +64,21 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%zu %d %d %d %d\n".as_ptr(),
-// CHECK-NEXT:             unsafe { strlen(alpha.as_mut_ptr() as *const i8) },
-// CHECK-NEXT:             ((unsafe {
-// CHECK-NEXT:                 strcmp(alpha.as_mut_ptr() as *const i8, alpha.as_mut_ptr() as *const i8)
-// CHECK-NEXT:             }) == 0) as i32,
-// CHECK-NEXT:             ((unsafe {
-// CHECK-NEXT:                 strcmp(alpha.as_mut_ptr() as *const i8, beta.as_mut_ptr() as *const i8)
-// CHECK-NEXT:             }) < 0) as i32,
-// CHECK-NEXT:             ((unsafe {
-// CHECK-NEXT:                 strncmp(
-// CHECK-NEXT:                     alpha.as_mut_ptr() as *const i8,
-// CHECK-NEXT:                     beta.as_mut_ptr() as *const i8,
-// CHECK-NEXT:                     2 as u64,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             }) == 0) as i32,
-// CHECK-NEXT:             ((unsafe {
-// CHECK-NEXT:                 memcmp(
-// CHECK-NEXT:                     bytes_a.as_mut_ptr() as *const (),
-// CHECK-NEXT:                     bytes_b.as_mut_ptr() as *const (),
-// CHECK-NEXT:                     1 as u64,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             }) == 0) as i32,
+// CHECK-NEXT:             strlen(alpha.as_mut_ptr() as *const i8),
+// CHECK-NEXT:             (strcmp(alpha.as_mut_ptr() as *const i8, alpha.as_mut_ptr() as *const i8)
+// CHECK-NEXT:                 == 0) as i32,
+// CHECK-NEXT:             (strcmp(alpha.as_mut_ptr() as *const i8, beta.as_mut_ptr() as *const i8) < 0)
+// CHECK-NEXT:                 as i32,
+// CHECK-NEXT:             (strncmp(
+// CHECK-NEXT:                 alpha.as_mut_ptr() as *const i8,
+// CHECK-NEXT:                 beta.as_mut_ptr() as *const i8,
+// CHECK-NEXT:                 2 as u64,
+// CHECK-NEXT:             ) == 0) as i32,
+// CHECK-NEXT:             (memcmp(
+// CHECK-NEXT:                 bytes_a.as_mut_ptr() as *const (),
+// CHECK-NEXT:                 bytes_b.as_mut_ptr() as *const (),
+// CHECK-NEXT:                 1 as u64,
+// CHECK-NEXT:             ) == 0) as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -94,24 +88,17 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%c %c %d %d %d %d %zu %zu\n".as_ptr(),
-// CHECK-NEXT:             (unsafe { *first }) as i32,
-// CHECK-NEXT:             (unsafe { *last }) as i32,
-// CHECK-NEXT:             (last == unsafe { first.offset(4 as isize) }) as i32,
-// CHECK-NEXT:             ((unsafe {
-// CHECK-NEXT:                 strstr(hay.as_mut_ptr() as *const i8, sub.as_mut_ptr() as *const i8)
-// CHECK-NEXT:             }) != std::ptr::null_mut::<i8>()) as i32,
-// CHECK-NEXT:             ((unsafe {
-// CHECK-NEXT:                 strstr(hay.as_mut_ptr() as *const i8, empty.as_mut_ptr() as *const i8)
-// CHECK-NEXT:             }) != std::ptr::null_mut::<i8>()) as i32,
-// CHECK-NEXT:             ((unsafe {
-// CHECK-NEXT:                 strpbrk(hay.as_mut_ptr() as *const i8, set.as_mut_ptr() as *const i8)
-// CHECK-NEXT:             }) == std::ptr::null_mut::<i8>()) as i32,
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 strspn(hay.as_mut_ptr() as *const i8, prefix.as_mut_ptr() as *const i8)
-// CHECK-NEXT:             },
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 strcspn(hay.as_mut_ptr() as *const i8, reject.as_mut_ptr() as *const i8)
-// CHECK-NEXT:             },
+// CHECK-NEXT:             *first as i32,
+// CHECK-NEXT:             *last as i32,
+// CHECK-NEXT:             (last == first.offset(4 as isize)) as i32,
+// CHECK-NEXT:             (strstr(hay.as_mut_ptr() as *const i8, sub.as_mut_ptr() as *const i8)
+// CHECK-NEXT:                 != std::ptr::null_mut::<i8>()) as i32,
+// CHECK-NEXT:             (strstr(hay.as_mut_ptr() as *const i8, empty.as_mut_ptr() as *const i8)
+// CHECK-NEXT:                 != std::ptr::null_mut::<i8>()) as i32,
+// CHECK-NEXT:             (strpbrk(hay.as_mut_ptr() as *const i8, set.as_mut_ptr() as *const i8)
+// CHECK-NEXT:                 == std::ptr::null_mut::<i8>()) as i32,
+// CHECK-NEXT:             strspn(hay.as_mut_ptr() as *const i8, prefix.as_mut_ptr() as *const i8),
+// CHECK-NEXT:             strcspn(hay.as_mut_ptr() as *const i8, reject.as_mut_ptr() as *const i8),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

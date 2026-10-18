@@ -39,12 +39,10 @@ int main(int argc, char **argv, char **envp) {
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: fn __slate_main(argc: i32, argv: *mut *mut i8, envp: *mut *mut i8) -> i32 {
 // CHECK-NEXT:     println!("envp {} argc {}", (envp == unsafe { environ }) as i32, argc);
-// CHECK-NEXT:     let len: u64 = unsafe {
-// CHECK-NEXT:         strlen((unsafe { *unsafe { argv.offset(0 as isize) } }) as *const i8)
-// CHECK-NEXT:     };
+// CHECK-NEXT:     let len: u64 = unsafe { strlen(*argv.offset(0 as isize) as *const i8) };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::write_bytes(
-// CHECK-NEXT:             ((unsafe { *unsafe { argv.offset(0 as isize) } }) as *mut ()) as *mut u8,
+// CHECK-NEXT:             (*argv.offset(0 as isize) as *mut ()) as *mut u8,
 // CHECK-NEXT:             0 as u8,
 // CHECK-NEXT:             len as usize,
 // CHECK-NEXT:         )
@@ -52,7 +50,7 @@ int main(int argc, char **argv, char **envp) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::copy_nonoverlapping(
 // CHECK-NEXT:             c"renamed".as_ptr() as *const u8,
-// CHECK-NEXT:             ((unsafe { *unsafe { argv.offset(0 as isize) } }) as *mut ()) as *mut u8,
+// CHECK-NEXT:             (*argv.offset(0 as isize) as *mut ()) as *mut u8,
 // CHECK-NEXT:             (if len < 7 { len } else { 7 as u64 }) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -72,10 +70,9 @@ int main(int argc, char **argv, char **envp) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "environ after argv {}", ((unsafe { * unsafe { unsafe { environ } .offset(0 as
-// CHECK-NEXT:         isize) } }) == std::ptr::null_mut::< i8 > () || (unsafe { * unsafe { unsafe {
-// CHECK-NEXT:         environ } .offset(0 as isize) } }) > unsafe { * unsafe { argv.offset((argc - 1)
-// CHECK-NEXT:         as isize) } }) as i32
+// CHECK-NEXT:         "environ after argv {}", ((unsafe { * unsafe { environ } .offset(0 as isize) })
+// CHECK-NEXT:         == std::ptr::null_mut::< i8 > () || (unsafe { * unsafe { environ } .offset(0 as
+// CHECK-NEXT:         isize) }) > unsafe { * argv.offset((argc - 1) as isize) }) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

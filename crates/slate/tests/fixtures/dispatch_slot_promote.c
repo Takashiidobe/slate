@@ -82,7 +82,7 @@ int main(void) {
 // CHECK-NEXT:         x = n;
 // CHECK-NEXT:         k = 0;
 // CHECK-NEXT:         loop {
-// CHECK-NEXT:             bump(unsafe { &mut (*std::ptr::addr_of_mut!(x)) });
+// CHECK-NEXT:             bump(&mut (*std::ptr::addr_of_mut!(x)));
 // CHECK-NEXT:             k += 1;
 // CHECK-NEXT:             if !(k < 3) {
 // CHECK-NEXT:                 break;

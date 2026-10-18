@@ -69,7 +69,7 @@ int main(void) {
 // CHECK-NEXT: fn sum(values: *const i32, count: i32) -> i32 {
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     for i in 0..count {
-// CHECK-NEXT:         total += unsafe { *unsafe { values.offset(i as isize) } };
+// CHECK-NEXT:         total += unsafe { *values.offset(i as isize) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
@@ -79,19 +79,19 @@ int main(void) {
 // CHECK-NEXT:     let mut [[SLATE_COMPOUND_6:__slate_compound_[0-9]+]]: [i32; 4] = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut Point = unsafe { origin };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*[[V_0]]).x = (unsafe { (*[[V_0]]).x }) + 10;
+// CHECK-NEXT:         (*[[V_0]]).x = (*[[V_0]]).x + 10;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *unsafe { unsafe { primes }.offset(3 as isize) } = 11;
+// CHECK-NEXT:         *unsafe { primes }.offset(3 as isize) = 11;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {}", unsafe { (* unsafe { origin }).x }, unsafe { (* unsafe { origin })
-// CHECK-NEXT:         .y }, unsafe { * unsafe { unsafe { primes } .offset(3 as isize) } }, sum((unsafe
-// CHECK-NEXT:         { primes }) as * const i32, 4 as i32)
+// CHECK-NEXT:         "{} {} {} {}", unsafe { (* origin).x }, unsafe { (* origin).y }, unsafe { *
+// CHECK-NEXT:         unsafe { primes } .offset(3 as isize) }, sum((unsafe { primes }) as * const i32,
+// CHECK-NEXT:         4 as i32)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", unsafe { (* unsafe { pair.first }).x }, unsafe { (* unsafe { pair
-// CHECK-NEXT:         .first }).y }, unsafe { * unsafe { unsafe { pair.values } .offset(1 as isize) } }
+// CHECK-NEXT:         "{} {} {}", unsafe { (* pair.first).x }, unsafe { (* pair.first).y }, unsafe { *
+// CHECK-NEXT:         unsafe { pair.values } .offset(1 as isize) }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let mut i: i32 = 0;
 // CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: while i < 3 {
@@ -102,7 +102,7 @@ int main(void) {
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *counter = (unsafe { *counter }) + 1;
+// CHECK-NEXT:             *counter = *counter + 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         print!("{} ", unsafe { * counter });
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -112,7 +112,7 @@ int main(void) {
 // CHECK-NEXT:     let copied: Point = unsafe {
 // CHECK-NEXT:         *{
 // CHECK-NEXT:             [[SLATE_COMPOUND_5]] = {
-// CHECK-NEXT:                 let mut [[T_0:__t[0-9]+]]: Point = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:                 let mut [[T_0:__t[0-9]+]]: Point = std::mem::zeroed();
 // CHECK-NEXT:                 [[T_0]].y = 7 as i32;
 // CHECK-NEXT:                 [[T_0]]
 // CHECK-NEXT:             };

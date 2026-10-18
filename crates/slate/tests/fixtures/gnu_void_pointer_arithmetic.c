@@ -58,16 +58,13 @@ int main(void) {
 // CHECK-NEXT:     ((15 as i32) as i8) as u8,
 // CHECK-NEXT: ]);
 // CHECK-NEXT: fn at(base: *const (), index: i64) -> u8 {
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *(((unsafe { (base as *const u8).offset(index as isize) }) as *const ())
-// CHECK-NEXT:             as *const u8)
-// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe { *(((base as *const u8).offset(index as isize) as *const ()) as *const u8) }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let start: *mut () = (unsafe { std::ptr::addr_of_mut!(bytes.0) as *mut u8 })
 // CHECK-NEXT:         as *mut ();
 // CHECK-NEXT:     let end: *mut () = (unsafe {
-// CHECK-NEXT:         unsafe { std::ptr::addr_of_mut!(bytes.0) as *mut u8 }.offset(16 as isize)
+// CHECK-NEXT:         (std::ptr::addr_of_mut!(bytes.0) as *mut u8).offset(16 as isize)
 // CHECK-NEXT:     }) as *mut ();
 // CHECK-NEXT:     let middle: *const () = ((unsafe { (start as *const u8).offset(5 as isize) })
 // CHECK-NEXT:         as *mut ()) as *const ();
@@ -95,7 +92,7 @@ int main(void) {
 // CHECK-NEXT:             c"%u %u %u\n".as_ptr(),
 // CHECK-NEXT:             (at(start as *const (), 7 as i64) as u32) as i32,
 // CHECK-NEXT:             (at(middle, -2 as i64) as u32) as i32,
-// CHECK-NEXT:             ((unsafe { *(cursor as *mut u8) }) as u32) as i32,
+// CHECK-NEXT:             (*(cursor as *mut u8) as u32) as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

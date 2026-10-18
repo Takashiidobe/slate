@@ -158,47 +158,44 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut i32 = unsafe { counter_ptr };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_0]] = (unsafe { *[[V_0]] }) + 1;
+// CHECK-NEXT:         *[[V_0]] = *[[V_0]] + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *unsafe { unsafe { table_ptr }.offset(0 as isize) } = 10;
+// CHECK-NEXT:         *unsafe { table_ptr }.offset(0 as isize) = 10;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: *mut i32 = unsafe { table_third };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_1]] = (unsafe { *[[V_1]] }) + 20;
+// CHECK-NEXT:         *[[V_1]] = *[[V_1]] + 20;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *unsafe {
-// CHECK-NEXT:             unsafe { (*unsafe { table_whole }).as_mut_ptr() as *mut i32 }
-// CHECK-NEXT:                 .offset(3 as isize)
-// CHECK-NEXT:         } = 40;
+// CHECK-NEXT:         *((*table_whole).as_mut_ptr() as *mut i32).offset(3 as isize) = 40;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *unsafe { unsafe { grid_row }.offset(2 as isize) } = 60;
+// CHECK-NEXT:         *unsafe { grid_row }.offset(2 as isize) = 60;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *unsafe { pair_right } = 90;
+// CHECK-NEXT:         *pair_right = 90;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*unsafe { pair_ptr }).left = 80;
+// CHECK-NEXT:         (*pair_ptr).left = 80;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *unsafe { unsafe { name_ptr }.offset(0 as isize) } = 83;
+// CHECK-NEXT:         *unsafe { name_ptr }.offset(0 as isize) = 83;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: *mut i32 = unsafe { *unsafe { counter_ptr_ptr } };
+// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: *mut i32 = unsafe { *counter_ptr_ptr };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_2]] = (unsafe { *[[V_2]] }) + 100;
+// CHECK-NEXT:         *[[V_2]] = *[[V_2]] + 100;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *unsafe { slots.0[1] } = 22;
+// CHECK-NEXT:         *slots.0[1] = 22;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let [[V_3:__v[0-9]+]]: *mut i32 = unsafe { slots.0[2] };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_3]] = (unsafe { *[[V_3]] }) + 1;
+// CHECK-NEXT:         *[[V_3]] = *[[V_3]] + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let [[V_4:__v[0-9]+]]: *mut i32 = unsafe { cursors.0[1].value };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_4]] = (unsafe { *[[V_4]] }) + 400;
+// CHECK-NEXT:         *[[V_4]] = *[[V_4]] + 400;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut sum: i32 = 0;
 // CHECK-NEXT:     let mut it: *mut i32 = unsafe { std::ptr::addr_of_mut!(table.0) as *mut i32 };
@@ -208,8 +205,8 @@ int main(void) {
 // CHECK-NEXT:         it = unsafe { [[V_5]].offset(1 as isize) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {} {}", unsafe { counter }, unsafe { * unsafe { fixed_counter } },
-// CHECK-NEXT:         unsafe { table.0[0] }, unsafe { table.0[1] }, unsafe { table.0[2] }
+// CHECK-NEXT:         "{} {} {} {} {}", unsafe { counter }, unsafe { * fixed_counter }, unsafe { table
+// CHECK-NEXT:         .0[0] }, unsafe { table.0[1] }, unsafe { table.0[2] }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {}", unsafe { table.0[3] }, unsafe { grid.0[1] [2] }, unsafe { pair
@@ -218,8 +215,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%s %s %d\n".as_ptr(),
-// CHECK-NEXT:             unsafe { std::ptr::addr_of_mut!(name) as *mut i8 },
-// CHECK-NEXT:             unsafe { name_tail },
+// CHECK-NEXT:             std::ptr::addr_of_mut!(name) as *mut i8,
+// CHECK-NEXT:             name_tail,
 // CHECK-NEXT:             sum,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -228,11 +225,11 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%s %d %d %s %d\n".as_ptr(),
-// CHECK-NEXT:             unsafe { cursors.0[0].label },
-// CHECK-NEXT:             unsafe { *unsafe { cursors.0[0].value } },
-// CHECK-NEXT:             unsafe { (*unsafe { cursors.0[0].pair }).right },
-// CHECK-NEXT:             unsafe { cursors.0[1].label },
-// CHECK-NEXT:             ((unsafe { cursors.0[1].pair }) == std::ptr::null_mut::<Pair>()) as i32,
+// CHECK-NEXT:             cursors.0[0].label,
+// CHECK-NEXT:             *cursors.0[0].value,
+// CHECK-NEXT:             (*cursors.0[0].pair).right,
+// CHECK-NEXT:             cursors.0[1].label,
+// CHECK-NEXT:             (cursors.0[1].pair == std::ptr::null_mut::<Pair>()) as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

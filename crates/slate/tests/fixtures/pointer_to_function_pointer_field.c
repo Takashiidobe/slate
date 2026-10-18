@@ -62,15 +62,15 @@ int main(void) {
 // CHECK-NEXT:     suite.tests = (unsafe { malloc((2 as u64).wrapping_mul(8 as u64)) })
 // CHECK-NEXT:         as *mut Option<unsafe extern "C-unwind" fn()>;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *unsafe { suite.tests.offset(0 as isize) } = Some(test_a);
+// CHECK-NEXT:         *suite.tests.offset(0 as isize) = Some(test_a);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *unsafe { suite.tests.offset(1 as isize) } = Some(test_b);
+// CHECK-NEXT:         *suite.tests.offset(1 as isize) = Some(test_b);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     suite.ntests = 2;
 // CHECK-NEXT:     let mut i: i32 = 0;
 // CHECK-NEXT:     while i < suite.ntests {
-// CHECK-NEXT:         unsafe { unsafe { *unsafe { suite.tests.offset(i as isize) } }.unwrap()() };
+// CHECK-NEXT:         unsafe { unsafe { *suite.tests.offset(i as isize) }.unwrap()() };
 // CHECK-NEXT:         println!("{}", unsafe { last_ran });
 // CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }

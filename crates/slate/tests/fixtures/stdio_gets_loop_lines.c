@@ -140,7 +140,7 @@ int main(void) {
 // CHECK-NEXT:         != std::ptr::null_mut::<i8>()
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe { fputs(line.0.as_mut_ptr() as *const i8, unsafe { stdout }) };
+// CHECK-NEXT:         unsafe { fputs(line.0.as_mut_ptr() as *const i8, stdout) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { fclose(g) };

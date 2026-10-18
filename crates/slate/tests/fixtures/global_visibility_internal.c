@@ -41,19 +41,11 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     for i in 0 as i32..4 as i32 {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             counter = (unsafe { counter })
-// CHECK-NEXT:                 + (((unsafe { opmodes[i as usize] }) as u32) as i32);
+// CHECK-NEXT:             counter = counter + ((opmodes[i as usize] as u32) as i32);
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%d %s %s\n".as_ptr(),
-// CHECK-NEXT:             unsafe { counter },
-// CHECK-NEXT:             unsafe { typenames.0[0] },
-// CHECK-NEXT:             unsafe { typenames.0[2] },
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { printf(c"%d %s %s\n".as_ptr(), counter, typenames.0[0], typenames.0[2]) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     if (unsafe { counter }) == 15 { 0 } else { 1 }
 // CHECK-NEXT: }

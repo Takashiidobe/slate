@@ -310,14 +310,12 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%lld\n".as_ptr(),
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 fp
-// CHECK-NEXT:                     .unwrap()(
+// CHECK-NEXT:             fp
+// CHECK-NEXT:                 .unwrap()(
 // CHECK-NEXT:                     (3 as i16) << 7 >> 7,
 // CHECK-NEXT:                     <bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(4 as i128),
 // CHECK-NEXT:                     5 as i64,
 // CHECK-NEXT:                 )
-// CHECK-NEXT:             }
 // CHECK-NEXT:                 .to_i128() as i64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -326,16 +324,14 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%lld\n".as_ptr(),
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 vsum(
-// CHECK-NEXT:                     5 as i32,
-// CHECK-NEXT:                     ((-3 as i16) << 7 >> 7) as i32,
-// CHECK-NEXT:                     (((70000 as i32) << 15 >> 15) as u32) & 131071,
-// CHECK-NEXT:                     -5000000000 as i64,
-// CHECK-NEXT:                     (((5 as i32) << 15 >> 15) as u32) & 131071,
-// CHECK-NEXT:                     99 as i64,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
+// CHECK-NEXT:             vsum(
+// CHECK-NEXT:                 5 as i32,
+// CHECK-NEXT:                 ((-3 as i16) << 7 >> 7) as i32,
+// CHECK-NEXT:                 (((70000 as i32) << 15 >> 15) as u32) & 131071,
+// CHECK-NEXT:                 -5000000000 as i64,
+// CHECK-NEXT:                 (((5 as i32) << 15 >> 15) as u32) & 131071,
+// CHECK-NEXT:                 99 as i64,
+// CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

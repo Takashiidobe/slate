@@ -33,19 +33,19 @@ int main(void) {
 // CHECK-NEXT:     println!("{}", unsafe { 13i32 });
 // CHECK-NEXT:     println!("{}", unsafe { - 7i32 });
 // CHECK-NEXT:     println!("{}", unsafe { 0i32 });
-// CHECK-NEXT:     unsafe { printf(c"%ld\n".as_ptr(), unsafe { 1000000000000i64 }) };
+// CHECK-NEXT:     unsafe { printf(c"%ld\n".as_ptr(), 1000000000000i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld\n".as_ptr(), unsafe { -9000000000000i64 }) };
+// CHECK-NEXT:     unsafe { printf(c"%lld\n".as_ptr(), -9000000000000i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%.2f\n".as_ptr(), unsafe { 3.14 }) };
+// CHECK-NEXT:     unsafe { printf(c"%.2f\n".as_ptr(), 3.14) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%.1f\n".as_ptr(), unsafe { 2.0 }) };
+// CHECK-NEXT:     unsafe { printf(c"%.1f\n".as_ptr(), 2.0) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%.2f\n".as_ptr(), unsafe { atof(c"6.5garbage".as_ptr()) }) };
+// CHECK-NEXT:     unsafe { printf(c"%.2f\n".as_ptr(), atof(c"6.5garbage".as_ptr())) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

@@ -665,7 +665,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn c11_evaluation_step(value: i32) -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         c11_evaluation_total = (unsafe { c11_evaluation_total }) + value;
+// CHECK-NEXT:         c11_evaluation_total = c11_evaluation_total + value;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     value * 2
 // CHECK-NEXT: }
@@ -676,25 +676,25 @@ int main(void) {
 // CHECK-NEXT:         c11_thread_local_value = 29;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *unsafe { __errno_location() } = 34;
+// CHECK-NEXT:         *__errno_location() = 34;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]] = increment;
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]] = std::sync::atomic::AtomicI32::from_ptr(
-// CHECK-NEXT:                 (unsafe { std::ptr::addr_of_mut!(c11_atomic_total) }) as *mut i32,
+// CHECK-NEXT:                 std::ptr::addr_of_mut!(c11_atomic_total) as *mut i32,
 // CHECK-NEXT:             )
 // CHECK-NEXT:             .fetch_add([[T_0]], std::sync::atomic::Ordering::SeqCst);
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     (unsafe { c11_thread_local_value })
-// CHECK-NEXT:         + (((unsafe { *unsafe { __errno_location() } }) == 34) as i32)
+// CHECK-NEXT:         + (((unsafe { *__errno_location() }) == 34) as i32)
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.c11_quick_handler")]
 // CHECK-NEXT: extern "C-unwind" fn c11_quick_handler() {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]] = 100 as i32;
 // CHECK-NEXT:         let [[T_1]] = std::sync::atomic::AtomicI32::from_ptr(
-// CHECK-NEXT:                 (unsafe { std::ptr::addr_of_mut!(c11_atomic_total) }) as *mut i32,
+// CHECK-NEXT:                 std::ptr::addr_of_mut!(c11_atomic_total) as *mut i32,
 // CHECK-NEXT:             )
 // CHECK-NEXT:             .fetch_add([[T_0]], std::sync::atomic::Ordering::Relaxed);
 // CHECK-NEXT:         [[T_1]]
@@ -703,7 +703,7 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.c11_once_handler")]
 // CHECK-NEXT: extern "C-unwind" fn c11_once_handler() {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         c11_once_total = (unsafe { c11_once_total }) + 1;
+// CHECK-NEXT:         c11_once_total = c11_once_total + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn c11_never_return(status: i32) {
@@ -791,26 +791,22 @@ int main(void) {
 // CHECK-NEXT:     evaluation_total = c11_evaluation_step(2 as i32) + c11_evaluation_step(3 as i32)
 // CHECK-NEXT:         + unsafe { c11_evaluation_total };
 // CHECK-NEXT:     temporary_total = unsafe {
-// CHECK-NEXT:         *unsafe {
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 (*{
-// CHECK-NEXT:                     [[SLATE_COMPOUND_0]] = c11_make_temporary(43 as i32);
-// CHECK-NEXT:                     std::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
-// CHECK-NEXT:                 })
-// CHECK-NEXT:                     .values
-// CHECK-NEXT:                     .as_mut_ptr() as *mut i32
-// CHECK-NEXT:             }
-// CHECK-NEXT:                 .offset(1 as isize)
-// CHECK-NEXT:         }
+// CHECK-NEXT:         *((*{
+// CHECK-NEXT:             [[SLATE_COMPOUND_0]] = c11_make_temporary(43 as i32);
+// CHECK-NEXT:             std::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
+// CHECK-NEXT:         })
+// CHECK-NEXT:             .values
+// CHECK-NEXT:             .as_mut_ptr() as *mut i32)
+// CHECK-NEXT:             .offset(1 as isize)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *unsafe { std::ptr::addr_of_mut!(c11_atomic_total) } = 5;
+// CHECK-NEXT:         *std::ptr::addr_of_mut!(c11_atomic_total) = 5;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         c11_thread_local_value = 17;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *unsafe { __errno_location() } = 0;
+// CHECK-NEXT:         *__errno_location() = 0;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     thread_created = unsafe {
 // CHECK-NEXT:         thrd_create(
@@ -828,13 +824,13 @@ int main(void) {
 // CHECK-NEXT:     thread_joined = [[V_0]];
 // CHECK-NEXT:     atomic_total = unsafe {
 // CHECK-NEXT:         std::sync::atomic::AtomicI32::from_ptr(
-// CHECK-NEXT:                 (unsafe { std::ptr::addr_of_mut!(c11_atomic_total) }) as *mut i32,
+// CHECK-NEXT:                 std::ptr::addr_of_mut!(c11_atomic_total) as *mut i32,
 // CHECK-NEXT:             )
 // CHECK-NEXT:             .load(std::sync::atomic::Ordering::SeqCst)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     thread_total = ((thread_created == 0) as i32) + ((thread_joined == 0) as i32)
 // CHECK-NEXT:         + thread_result + unsafe { c11_thread_local_value }
-// CHECK-NEXT:         + (((unsafe { *unsafe { __errno_location() } }) == 0) as i32);
+// CHECK-NEXT:         + (((unsafe { *__errno_location() }) == 0) as i32);
 // CHECK-NEXT:     if (unsafe { mtx_init(std::ptr::addr_of_mut!(mutex), 0 as i32) }) == 0 {
 // CHECK-NEXT:         concurrency_total += 1;
 // CHECK-NEXT:         let [[V_1:__v[0-9]+]]: i32 = ((unsafe { mtx_lock(std::ptr::addr_of_mut!(mutex)) }) == 0)

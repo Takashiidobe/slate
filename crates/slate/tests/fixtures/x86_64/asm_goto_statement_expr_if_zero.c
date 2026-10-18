@@ -56,12 +56,10 @@ int main(void) {
 // CHECK-NEXT:                 3 => {
 // CHECK-NEXT:                     result = 11;
 // CHECK-NEXT:                     __slate_state = 2usize;
-// CHECK-NEXT:                     unsafe {
-// CHECK-NEXT:                         core::arch::asm!(
-// CHECK-NEXT:                             "testl {0:e}, {0:e}\n\tjz {1}", in (reg) value as u32, label
-// CHECK-NEXT:                             { __slate_state = 1usize; }, options(nostack, att_syntax)
-// CHECK-NEXT:                         );
-// CHECK-NEXT:                     }
+// CHECK-NEXT:                     core::arch::asm!(
+// CHECK-NEXT:                         "testl {0:e}, {0:e}\n\tjz {1}", in (reg) value as u32, label {
+// CHECK-NEXT:                         __slate_state = 1usize; }, options(nostack, att_syntax)
+// CHECK-NEXT:                     );
 // CHECK-NEXT:                     continue;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 _ => {

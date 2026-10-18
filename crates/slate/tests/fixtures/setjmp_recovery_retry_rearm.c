@@ -50,7 +50,7 @@ int main(void) {
 // CHECK-NEXT:     if attempt < 3 {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             longjmp(
-// CHECK-NEXT:                 unsafe { std::ptr::addr_of_mut!(retry_buf.0) as *mut __jmp_buf_tag },
+// CHECK-NEXT:                 std::ptr::addr_of_mut!(retry_buf.0) as *mut __jmp_buf_tag,
 // CHECK-NEXT:                 attempt + 1,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
@@ -59,7 +59,7 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     loop {
 // CHECK-NEXT:         let attempt: i32 = unsafe {
-// CHECK-NEXT:             _setjmp(unsafe { std::ptr::addr_of_mut!(retry_buf.0) as *mut __jmp_buf_tag })
+// CHECK-NEXT:             _setjmp(std::ptr::addr_of_mut!(retry_buf.0) as *mut __jmp_buf_tag)
 // CHECK-NEXT:         };
 // CHECK-NEXT:         println!("attempt {}", attempt);
 // CHECK-NEXT:         if attempt >= 3 {

@@ -68,13 +68,13 @@ int main(void) {
 // CHECK-NEXT:     scale_fixed(a.as_mut_ptr() as *mut i32);
 // CHECK-NEXT:     let m: *mut i32 = (unsafe { malloc((3 as u64).wrapping_mul(4 as u64)) }) as *mut i32;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *unsafe { m.offset(0 as isize) } = 5;
+// CHECK-NEXT:         *m.offset(0 as isize) = 5;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *unsafe { m.offset(1 as isize) } = 6;
+// CHECK-NEXT:         *m.offset(1 as isize) = 6;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *unsafe { m.offset(2 as isize) } = 7;
+// CHECK-NEXT:         *m.offset(2 as isize) = 7;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let r2: i32 = sum3(m);
 // CHECK-NEXT:     unsafe { free(m as *mut ()) };

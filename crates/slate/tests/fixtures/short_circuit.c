@@ -48,7 +48,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn bump(n: &mut i32, x: i32) -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *(n as *mut i32) = (unsafe { *(n as *mut i32) }) + 1;
+// CHECK-NEXT:         *(n as *mut i32) = *(n as *mut i32) + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x
 // CHECK-NEXT: }

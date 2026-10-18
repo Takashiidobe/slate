@@ -124,16 +124,14 @@ int read_static_total(void) { return total; }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let x: i32 = 1;
 // CHECK-NEXT:     let mut outer_seen: i32 = 0;
+// CHECK-NEXT:     let outer: i32 = x;
+// CHECK-NEXT:     let [[X_0:x_[0-9]+]]: i32 = outer * 5;
+// CHECK-NEXT:     outer_seen = [[X_0]];
 // CHECK-NEXT:     {
-// CHECK-NEXT:         let outer: i32 = x;
-// CHECK-NEXT:         let [[X_0:x_[0-9]+]]: i32 = outer * 5;
-// CHECK-NEXT:         outer_seen = [[X_0]];
-// CHECK-NEXT:         {
-// CHECK-NEXT:             let x: i32 = 40;
-// CHECK-NEXT:             outer_seen += x;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         outer_seen += [[X_0]];
+// CHECK-NEXT:         let x: i32 = 40;
+// CHECK-NEXT:         outer_seen += x;
 // CHECK-NEXT:     }
+// CHECK-NEXT:     outer_seen += [[X_0]];
 // CHECK-NEXT:     for i in 0 as i32..2 as i32 {
 // CHECK-NEXT:         let x: i32 = i + 7;
 // CHECK-NEXT:         outer_seen += x;

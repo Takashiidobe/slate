@@ -63,9 +63,9 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%zu %d %d\n".as_ptr(),
-// CHECK-NEXT:             unsafe { wcslen(unsafe { greeting }) },
-// CHECK-NEXT:             unsafe { *unsafe { unsafe { greeting }.offset(5 as isize) } },
-// CHECK-NEXT:             unsafe { *unsafe { unsafe { greeting }.offset(10 as isize) } },
+// CHECK-NEXT:             wcslen(greeting),
+// CHECK-NEXT:             *unsafe { greeting }.offset(5 as isize),
+// CHECK-NEXT:             *unsafe { greeting }.offset(10 as isize),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -73,10 +73,10 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%x %x %x %x\n".as_ptr(),
-// CHECK-NEXT:             ((unsafe { *unsafe { u16.offset(0 as isize) } }) as u32) as i32,
-// CHECK-NEXT:             ((unsafe { *unsafe { u16.offset(2 as isize) } }) as u32) as i32,
-// CHECK-NEXT:             unsafe { *unsafe { u32.offset(0 as isize) } },
-// CHECK-NEXT:             unsafe { *unsafe { u32.offset(1 as isize) } },
+// CHECK-NEXT:             (*u16.offset(0 as isize) as u32) as i32,
+// CHECK-NEXT:             (*u16.offset(2 as isize) as u32) as i32,
+// CHECK-NEXT:             *u32.offset(0 as isize),
+// CHECK-NEXT:             *u32.offset(1 as isize),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -84,9 +84,9 @@ int main(void) {
 // CHECK-NEXT:     unsafe { printf(c"%ls %zu\n".as_ptr(), buf.0.as_mut_ptr() as *mut i32, 16 as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {}", unsafe { __slate_str26[1] }, (unsafe { * unsafe { ((unsafe {
-// CHECK-NEXT:         std::ptr::addr_of_mut!(__slate_str27) as * mut i32 }) as * const i8).offset(4 as
-// CHECK-NEXT:         isize) } }) as i32
+// CHECK-NEXT:         "{} {}", unsafe { __slate_str26[1] }, (unsafe { *
+// CHECK-NEXT:         ((std::ptr::addr_of_mut!(__slate_str27) as * mut i32) as * const i8).offset(4 as
+// CHECK-NEXT:         isize) }) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

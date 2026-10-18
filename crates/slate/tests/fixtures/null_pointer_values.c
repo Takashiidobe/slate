@@ -172,13 +172,7 @@ int main(void) {
 // CHECK-NEXT:         last_key = entries.0[0].key;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%d %s\n".as_ptr(),
-// CHECK-NEXT:             length((unsafe { head }) as *const Node),
-// CHECK-NEXT:             unsafe { last_key },
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { printf(c"%d %s\n".as_ptr(), length(head as *const Node), last_key) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     if entries.0[1].slot == std::ptr::null_mut::<i32>() { 0 } else { 1 }
 // CHECK-NEXT: }

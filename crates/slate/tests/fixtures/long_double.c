@@ -723,9 +723,9 @@ int main(void) {
 // CHECK-NEXT:         __slate_exp2l__rf80_f80(LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 2, 64]))
 // CHECK-NEXT:     });
 // CHECK-NEXT:     print_ld(c"log".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_logl__rf80_f80(unsafe {
-// CHECK-NEXT:             __slate_expl__rf80_f80(LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]))
-// CHECK-NEXT:         })
+// CHECK-NEXT:         __slate_logl__rf80_f80(__slate_expl__rf80_f80(LongDouble([
+// CHECK-NEXT:             0, 0, 0, 0, 0, 0, 0, 128, 255, 63,
+// CHECK-NEXT:         ])))
 // CHECK-NEXT:     });
 // CHECK-NEXT:     print_ld(c"log2".as_ptr(), unsafe {
 // CHECK-NEXT:         __slate_log2l__rf80_f80(LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 2, 64]))
@@ -839,8 +839,8 @@ int main(void) {
 // CHECK-NEXT:     let mut ipart: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 // CHECK-NEXT:     let frac: LongDouble = unsafe {
 // CHECK-NEXT:         __slate_modfl__rf80_f80_pf80(
-// CHECK-NEXT:             (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) })
-// CHECK-NEXT:                 / unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) },
+// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(ten))
+// CHECK-NEXT:                 / std::ptr::read_volatile(std::ptr::addr_of!(three)),
 // CHECK-NEXT:             std::ptr::addr_of_mut!(ipart),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -848,115 +848,101 @@ int main(void) {
 // CHECK-NEXT:     print_ld(c"modf_frac".as_ptr(), frac);
 // CHECK-NEXT:     print_ld(c"remainder".as_ptr(), unsafe {
 // CHECK-NEXT:         __slate_remainderl__rf80_f80_f80(
-// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) },
-// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) },
+// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(ten)),
+// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(three)),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     });
 // CHECK-NEXT:     let mut quo: i32 = 0;
 // CHECK-NEXT:     print_ld(c"remquo".as_ptr(), unsafe {
 // CHECK-NEXT:         __slate_remquol__rf80_f80_f80_pi32(
-// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) },
-// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) },
+// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(ten)),
+// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(three)),
 // CHECK-NEXT:             std::ptr::addr_of_mut!(quo),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     });
 // CHECK-NEXT:     println!("remquo_quo={}", quo);
 // CHECK-NEXT:     print_ld(c"scalbn".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_scalbnl__rf80_f80_i32(
-// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) },
-// CHECK-NEXT:             3 as i32,
-// CHECK-NEXT:         )
+// CHECK-NEXT:         __slate_scalbnl__rf80_f80_i32(std::ptr::read_volatile(std::ptr::addr_of!(ten)), 3 as i32)
 // CHECK-NEXT:     });
 // CHECK-NEXT:     print_ld(c"scalbln".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_scalblnl__rf80_f80_i64(
-// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) },
-// CHECK-NEXT:             3 as i64,
-// CHECK-NEXT:         )
+// CHECK-NEXT:         __slate_scalblnl__rf80_f80_i64(std::ptr::read_volatile(std::ptr::addr_of!(ten)), 3 as i64)
 // CHECK-NEXT:     });
 // CHECK-NEXT:     print_ld(c"nextafter".as_ptr(), unsafe {
 // CHECK-NEXT:         __slate_nextafterl__rf80_f80_f80(
-// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) },
-// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) },
+// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(ten)),
+// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(three)),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     });
 // CHECK-NEXT:     print_ld(c"nexttoward".as_ptr(), unsafe {
 // CHECK-NEXT:         __slate_nexttowardl__rf80_f80_f80(
-// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) },
-// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) },
+// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(ten)),
+// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(three)),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     });
 // CHECK-NEXT:     print_ld(c"fdim".as_ptr(), unsafe {
 // CHECK-NEXT:         __slate_fdiml__rf80_f80_f80(
-// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) },
-// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) },
+// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(ten)),
+// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(three)),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     });
 // CHECK-NEXT:     print_ld(c"rint".as_ptr(), unsafe {
 // CHECK-NEXT:         __slate_rintl__rf80_f80(
-// CHECK-NEXT:             (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) })
-// CHECK-NEXT:                 / unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) },
+// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(ten))
+// CHECK-NEXT:                 / std::ptr::read_volatile(std::ptr::addr_of!(three)),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     });
 // CHECK-NEXT:     print_ld(c"nearbyint".as_ptr(), unsafe {
 // CHECK-NEXT:         __slate_nearbyintl__rf80_f80(
-// CHECK-NEXT:             (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) })
-// CHECK-NEXT:                 / unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) },
+// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(ten))
+// CHECK-NEXT:                 / std::ptr::read_volatile(std::ptr::addr_of!(three)),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     });
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"lrint=%ld llrint=%lld lround=%ld llround=%lld\n".as_ptr(),
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 __slate_lrintl__ri64_f80(
-// CHECK-NEXT:                     (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) })
-// CHECK-NEXT:                         / unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) },
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 __slate_llrintl__ri64_f80(
-// CHECK-NEXT:                     (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) })
-// CHECK-NEXT:                         / unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) },
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 __slate_lroundl__ri64_f80(
-// CHECK-NEXT:                     (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) })
-// CHECK-NEXT:                         / unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) },
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 __slate_llroundl__ri64_f80(
-// CHECK-NEXT:                     (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) })
-// CHECK-NEXT:                         / unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) },
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
+// CHECK-NEXT:             __slate_lrintl__ri64_f80(
+// CHECK-NEXT:                 std::ptr::read_volatile(std::ptr::addr_of!(ten))
+// CHECK-NEXT:                     / std::ptr::read_volatile(std::ptr::addr_of!(three)),
+// CHECK-NEXT:             ),
+// CHECK-NEXT:             __slate_llrintl__ri64_f80(
+// CHECK-NEXT:                 std::ptr::read_volatile(std::ptr::addr_of!(ten))
+// CHECK-NEXT:                     / std::ptr::read_volatile(std::ptr::addr_of!(three)),
+// CHECK-NEXT:             ),
+// CHECK-NEXT:             __slate_lroundl__ri64_f80(
+// CHECK-NEXT:                 std::ptr::read_volatile(std::ptr::addr_of!(ten))
+// CHECK-NEXT:                     / std::ptr::read_volatile(std::ptr::addr_of!(three)),
+// CHECK-NEXT:             ),
+// CHECK-NEXT:             __slate_llroundl__ri64_f80(
+// CHECK-NEXT:                 std::ptr::read_volatile(std::ptr::addr_of!(ten))
+// CHECK-NEXT:                     / std::ptr::read_volatile(std::ptr::addr_of!(three)),
+// CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!("ilogb={}", unsafe {
-// CHECK-NEXT:         __slate_ilogbl__ri32_f80(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) })
+// CHECK-NEXT:         __slate_ilogbl__ri32_f80(std::ptr::read_volatile(std::ptr::addr_of!(ten)))
 // CHECK-NEXT:     });
 // CHECK-NEXT:     print_ld(c"logb".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_logbl__rf80_f80(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) })
+// CHECK-NEXT:         __slate_logbl__rf80_f80(std::ptr::read_volatile(std::ptr::addr_of!(ten)))
 // CHECK-NEXT:     });
 // CHECK-NEXT:     print_ld(c"erf".as_ptr(), unsafe {
 // CHECK-NEXT:         __slate_erfl__rf80_f80(
-// CHECK-NEXT:             (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) })
-// CHECK-NEXT:                 / unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) },
+// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(ten))
+// CHECK-NEXT:                 / std::ptr::read_volatile(std::ptr::addr_of!(three)),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     });
 // CHECK-NEXT:     print_ld(c"erfc".as_ptr(), unsafe {
 // CHECK-NEXT:         __slate_erfcl__rf80_f80(
-// CHECK-NEXT:             (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) })
-// CHECK-NEXT:                 / unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) },
+// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(ten))
+// CHECK-NEXT:                 / std::ptr::read_volatile(std::ptr::addr_of!(three)),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     });
 // CHECK-NEXT:     print_ld(c"tgamma".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_tgammal__rf80_f80(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) })
+// CHECK-NEXT:         __slate_tgammal__rf80_f80(std::ptr::read_volatile(std::ptr::addr_of!(three)))
 // CHECK-NEXT:     });
 // CHECK-NEXT:     print_ld(c"lgamma".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_lgammal__rf80_f80(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) })
+// CHECK-NEXT:         __slate_lgammal__rf80_f80(std::ptr::read_volatile(std::ptr::addr_of!(ten)))
 // CHECK-NEXT:     });
 // CHECK-NEXT:     let vnan: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
 // CHECK-NEXT:     let vinf: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);

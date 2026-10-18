@@ -206,12 +206,10 @@ int main(void) {
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 2 => {
 // CHECK-NEXT:                     __slate_state = 1usize;
-// CHECK-NEXT:                     unsafe {
-// CHECK-NEXT:                         core::arch::asm!(
-// CHECK-NEXT:                             "testl {0:e}, {0:e}\n\tjz {1}", in (reg) value as u32, label
-// CHECK-NEXT:                             { __slate_state = 0usize; }, options(nostack, att_syntax)
-// CHECK-NEXT:                         );
-// CHECK-NEXT:                     }
+// CHECK-NEXT:                     core::arch::asm!(
+// CHECK-NEXT:                         "testl {0:e}, {0:e}\n\tjz {1}", in (reg) value as u32, label {
+// CHECK-NEXT:                         __slate_state = 0usize; }, options(nostack, att_syntax)
+// CHECK-NEXT:                     );
 // CHECK-NEXT:                     continue;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 _ => {
@@ -238,17 +236,15 @@ int main(void) {
 // CHECK-NEXT:                 2 => {
 // CHECK-NEXT:                     std::ptr::write([[SLATE_SLOT_0]], value);
 // CHECK-NEXT:                     __slate_state = 1usize;
-// CHECK-NEXT:                     unsafe {
-// CHECK-NEXT:                         let [[T_0]]: u32;
-// CHECK-NEXT:                         core::arch::asm!(
-// CHECK-NEXT:                             "testl {0:e}, {0:e}\n\tjz {1}", inlateout(reg) *
-// CHECK-NEXT:                             [[SLATE_SLOT_0]] as u32 => [[T_0]], label { __slate_state =
-// CHECK-NEXT:                             0usize; }, options(nostack, att_syntax)
-// CHECK-NEXT:                         );
-// CHECK-NEXT:                         *[[SLATE_SLOT_0]] = unsafe {
-// CHECK-NEXT:                             std::mem::transmute::<u32, i32>([[T_0]] as u32)
-// CHECK-NEXT:                         };
-// CHECK-NEXT:                     }
+// CHECK-NEXT:                     let [[T_0]]: u32;
+// CHECK-NEXT:                     core::arch::asm!(
+// CHECK-NEXT:                         "testl {0:e}, {0:e}\n\tjz {1}", inlateout(reg) * [[SLATE_SLOT_0]]
+// CHECK-NEXT:                         as u32 => [[T_0]], label { __slate_state = 0usize; },
+// CHECK-NEXT:                         options(nostack, att_syntax)
+// CHECK-NEXT:                     );
+// CHECK-NEXT:                     *[[SLATE_SLOT_0]] = unsafe {
+// CHECK-NEXT:                         std::mem::transmute::<u32, i32>([[T_0]] as u32)
+// CHECK-NEXT:                     };
 // CHECK-NEXT:                     continue;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 _ => {

@@ -26,7 +26,7 @@ int main(void) {
 // CHECK-NEXT: fn fill_values(values: *mut i32, len: i32) {
 // CHECK-NEXT:     for i in 0..len {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *unsafe { values.offset(i as isize) } = i * 3;
+// CHECK-NEXT:             *values.offset(i as isize) = i * 3;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
@@ -39,8 +39,8 @@ int main(void) {
 // CHECK-NEXT:         as *mut i32;
 // CHECK-NEXT:     forward_fill(values, len);
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {}", unsafe { * unsafe { values.offset(1 as isize) } }, unsafe { * unsafe {
-// CHECK-NEXT:         values.offset(4 as isize) } }
+// CHECK-NEXT:         "{} {}", unsafe { * values.offset(1 as isize) }, unsafe { * values.offset(4 as
+// CHECK-NEXT:         isize) }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

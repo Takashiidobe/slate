@@ -32,10 +32,10 @@ int main(void) {
 // CHECK-NEXT:     let mut sa: i32 = 0;
 // CHECK-NEXT:     let mut sb: i32 = 0;
 // CHECK-NEXT:     for i in 0..alen {
-// CHECK-NEXT:         sa += (unsafe { *unsafe { a.offset(i as isize) } }) as i32;
+// CHECK-NEXT:         sa += (unsafe { *a.offset(i as isize) }) as i32;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     for i in 0..blen {
-// CHECK-NEXT:         sb += (unsafe { *unsafe { b.offset(i as isize) } }) as i32;
+// CHECK-NEXT:         sb += (unsafe { *b.offset(i as isize) }) as i32;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let order: i32 = unsafe { strcmp(a, b) };
 // CHECK-NEXT:     let sign: i32 = ((order > 0) as i32) - ((order < 0) as i32);

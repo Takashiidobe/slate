@@ -27,7 +27,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn touch([[V_0:__v[0-9]+]]: *mut i32) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_0]] = (unsafe { *[[V_0]] }) + 1;
+// CHECK-NEXT:         *[[V_0]] = *[[V_0]] + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn use_and_free(y: *mut i32) -> i32 {

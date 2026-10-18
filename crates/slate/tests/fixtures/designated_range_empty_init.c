@@ -229,29 +229,25 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%d %g %d %d %g %d\n".as_ptr(),
-// CHECK-NEXT:             unsafe { scalar },
-// CHECK-NEXT:             unsafe { real },
-// CHECK-NEXT:             ((unsafe { pointer }) == std::ptr::null_mut::<()>()) as i32,
+// CHECK-NEXT:             scalar,
+// CHECK-NEXT:             real,
+// CHECK-NEXT:             (pointer == std::ptr::null_mut::<()>()) as i32,
 // CHECK-NEXT:             empty,
 // CHECK-NEXT:             empty_f as f64,
-// CHECK-NEXT:             (unsafe {
-// CHECK-NEXT:                 *{
-// CHECK-NEXT:                     [[SLATE_COMPOUND_0]] = {
-// CHECK-NEXT:                         let mut [[T_10:__t[0-9]+]]: i32 = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:                         [[T_10]]
+// CHECK-NEXT:             *{
+// CHECK-NEXT:                 [[SLATE_COMPOUND_0]] = {
+// CHECK-NEXT:                     let mut [[T_10:__t[0-9]+]]: i32 = std::mem::zeroed();
+// CHECK-NEXT:                     [[T_10]]
+// CHECK-NEXT:                 };
+// CHECK-NEXT:                 std::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
+// CHECK-NEXT:             }
+// CHECK-NEXT:                 + (*{
+// CHECK-NEXT:                     [[SLATE_COMPOUND_1]] = {
+// CHECK-NEXT:                         let mut [[T_11:__t[0-9]+]]: f32 = std::mem::zeroed();
+// CHECK-NEXT:                         [[T_11]]
 // CHECK-NEXT:                     };
-// CHECK-NEXT:                     std::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
-// CHECK-NEXT:                 }
-// CHECK-NEXT:             })
-// CHECK-NEXT:                 + ((unsafe {
-// CHECK-NEXT:                     *{
-// CHECK-NEXT:                         [[SLATE_COMPOUND_1]] = {
-// CHECK-NEXT:                             let mut [[T_11:__t[0-9]+]]: f32 = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:                             [[T_11]]
-// CHECK-NEXT:                         };
-// CHECK-NEXT:                         std::ptr::addr_of_mut!([[SLATE_COMPOUND_1]])
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                 }) as i32),
+// CHECK-NEXT:                     std::ptr::addr_of_mut!([[SLATE_COMPOUND_1]])
+// CHECK-NEXT:                 } as i32),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

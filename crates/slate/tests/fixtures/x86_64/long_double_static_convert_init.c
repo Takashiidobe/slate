@@ -248,30 +248,26 @@ int main(void) {
 // CHECK-NEXT: };
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         __slate_printf__ri32_pi8_f80(c"%.21Lg\n".as_ptr(), unsafe { from_double })
-// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { __slate_printf__ri32_pi8_f80(c"%.21Lg\n".as_ptr(), from_double) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { __slate_printf__ri32_pi8_f80(c"%.21Lg\n".as_ptr(), unsafe { from_int }) };
+// CHECK-NEXT:     unsafe { __slate_printf__ri32_pi8_f80(c"%.21Lg\n".as_ptr(), from_int) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         __slate_printf__ri32_pi8_f80(c"%.21Lg\n".as_ptr(), unsafe { from_negative })
-// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { __slate_printf__ri32_pi8_f80(c"%.21Lg\n".as_ptr(), from_negative) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { __slate_printf__ri32_pi8_f80(c"%.21Lg\n".as_ptr(), unsafe { from_shift }) };
+// CHECK-NEXT:     unsafe { __slate_printf__ri32_pi8_f80(c"%.21Lg\n".as_ptr(), from_shift) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { __slate_printf__ri32_pi8_f80(c"%.21Lg\n".as_ptr(), unsafe { from_float }) };
+// CHECK-NEXT:     unsafe { __slate_printf__ri32_pi8_f80(c"%.21Lg\n".as_ptr(), from_float) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __slate_printf__ri32_pi8_f80_f80(
 // CHECK-NEXT:             c"%.21Lg %.21Lg\n".as_ptr(),
-// CHECK-NEXT:             unsafe { complex_from_int.re },
-// CHECK-NEXT:             unsafe { complex_from_int.im },
+// CHECK-NEXT:             complex_from_int.re,
+// CHECK-NEXT:             complex_from_int.im,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -279,8 +275,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __slate_printf__ri32_pi8_f80_f80(
 // CHECK-NEXT:             c"%.21Lg %.21Lg\n".as_ptr(),
-// CHECK-NEXT:             unsafe { complex_from_real.re },
-// CHECK-NEXT:             unsafe { complex_from_real.im },
+// CHECK-NEXT:             complex_from_real.re,
+// CHECK-NEXT:             complex_from_real.im,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -288,8 +284,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __slate_printf__ri32_pi8_f80_f80(
 // CHECK-NEXT:             c"%.21Lg %.21Lg\n".as_ptr(),
-// CHECK-NEXT:             unsafe { complex_from_double.re },
-// CHECK-NEXT:             unsafe { complex_from_double.im },
+// CHECK-NEXT:             complex_from_double.re,
+// CHECK-NEXT:             complex_from_double.im,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

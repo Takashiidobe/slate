@@ -42,7 +42,7 @@ int main(void) {
 // CHECK-NEXT:             *p = 41;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         println!("{}", unsafe { * p });
-// CHECK-NEXT:         unsafe { free((unsafe { p.offset(-(1 as isize)) }) as *mut ()) };
+// CHECK-NEXT:         unsafe { free(p.offset(-(1 as isize)) as *mut ()) };
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         println!("no alloc");
 // CHECK-NEXT:     }

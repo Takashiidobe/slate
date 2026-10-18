@@ -95,6 +95,10 @@ pub(in crate::backend) fn apply(
     }
     prelude::inject(program, target);
     printf_format::rewrite(program);
+    let passes = [RuleRegistry::build(rules::unsafe_registry())];
+    for item in &mut program.items {
+        apply_item(item, &passes);
+    }
 }
 
 pub(in crate::backend) fn apply_control_flow(program: &mut Program) {

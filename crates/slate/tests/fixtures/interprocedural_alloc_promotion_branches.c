@@ -49,9 +49,9 @@ int main(void) {
 // CHECK-NEXT:     let mut x: *mut i32 = std::ptr::null_mut::<i32>();
 // CHECK-NEXT:     x = c();
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *unsafe { x.offset(0 as isize) } = 10;
+// CHECK-NEXT:         *x.offset(0 as isize) = 10;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     println!("{}", unsafe { * unsafe { x.offset(0 as isize) } });
+// CHECK-NEXT:     println!("{}", unsafe { * x.offset(0 as isize) });
 // CHECK-NEXT:     unsafe { free(x as *mut ()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

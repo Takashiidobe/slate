@@ -46,7 +46,7 @@ int main(void) {
 // CHECK-NEXT: static mut calls: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT: fn once(x: f64) -> f64 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         calls = (unsafe { calls }) + 1;
+// CHECK-NEXT:         calls = calls + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x
 // CHECK-NEXT: }
@@ -84,9 +84,9 @@ int main(void) {
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     for i in 0 as i32..9 as i32 {
 // CHECK-NEXT:         let x: f64 = unsafe {
-// CHECK-NEXT:             std::ptr::read_volatile(unsafe {
-// CHECK-NEXT:                 (values.0.as_mut_ptr() as *mut f64).offset(i as isize)
-// CHECK-NEXT:             })
+// CHECK-NEXT:             std::ptr::read_volatile(
+// CHECK-NEXT:                 (values.0.as_mut_ptr() as *mut f64).offset(i as isize),
+// CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         println!(
 // CHECK-NEXT:             "{}{}{}{}{} {}", ! (! x.is_nan()) as i32, ! (! ((if x.is_infinite() { if x
@@ -107,9 +107,9 @@ int main(void) {
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     for i in 0 as i32..6 as i32 {
 // CHECK-NEXT:         let x: f32 = unsafe {
-// CHECK-NEXT:             std::ptr::read_volatile(unsafe {
-// CHECK-NEXT:                 (small.0.as_mut_ptr() as *mut f32).offset(i as isize)
-// CHECK-NEXT:             })
+// CHECK-NEXT:             std::ptr::read_volatile(
+// CHECK-NEXT:                 (small.0.as_mut_ptr() as *mut f32).offset(i as isize),
+// CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         println!(
 // CHECK-NEXT:             "{}{}{}{}{} {}", ! (! x.is_nan()) as i32, ! (! ((if x.is_infinite() { if x

@@ -86,10 +86,10 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%08x %08x %08x %08x\n".as_ptr(),
-// CHECK-NEXT:             bits_f(unsafe { quiet_f }),
-// CHECK-NEXT:             bits_f(unsafe { quiet_payload_f }),
-// CHECK-NEXT:             bits_f(unsafe { signaling_f }),
-// CHECK-NEXT:             bits_f(unsafe { signaling_payload_f }),
+// CHECK-NEXT:             bits_f(quiet_f),
+// CHECK-NEXT:             bits_f(quiet_payload_f),
+// CHECK-NEXT:             bits_f(signaling_f),
+// CHECK-NEXT:             bits_f(signaling_payload_f),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -97,20 +97,16 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%016llx %016llx %016llx %016llx\n".as_ptr(),
-// CHECK-NEXT:             bits_d(unsafe { quiet_d }),
-// CHECK-NEXT:             bits_d(unsafe { quiet_payload_d }),
-// CHECK-NEXT:             bits_d(unsafe { signaling_d }),
-// CHECK-NEXT:             bits_d(unsafe { signaling_payload_d }),
+// CHECK-NEXT:             bits_d(quiet_d),
+// CHECK-NEXT:             bits_d(quiet_payload_d),
+// CHECK-NEXT:             bits_d(signaling_d),
+// CHECK-NEXT:             bits_d(signaling_payload_d),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%016llx %016llx\n".as_ptr(),
-// CHECK-NEXT:             bits_d(unsafe { table.0[0] }),
-// CHECK-NEXT:             bits_d(unsafe { table.0[1] }),
-// CHECK-NEXT:         )
+// CHECK-NEXT:         printf(c"%016llx %016llx\n".as_ptr(), bits_d(table.0[0]), bits_d(table.0[1]))
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0

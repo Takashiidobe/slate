@@ -15,8 +15,8 @@ int main(void) {
 // CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn first_plus_last(s: *mut i8) -> i32 {
-// CHECK-NEXT:     ((unsafe { *unsafe { s.offset(0 as isize) } }) as i32)
-// CHECK-NEXT:         + ((unsafe { *unsafe { s.offset(10 as isize) } }) as i32)
+// CHECK-NEXT:     ((unsafe { *s.offset(0 as isize) }) as i32)
+// CHECK-NEXT:         + ((unsafe { *s.offset(10 as isize) }) as i32)
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let message: *mut i8 = c"write error".as_ptr() as *mut i8;

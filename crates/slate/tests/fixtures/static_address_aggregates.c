@@ -164,23 +164,20 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%d %ld %d %d %s %d %d %d %d %d %d\n".as_ptr(),
-// CHECK-NEXT:             unsafe { *unsafe { middle } },
-// CHECK-NEXT:             (unsafe {
-// CHECK-NEXT:                 unsafe { end }
-// CHECK-NEXT:                     .offset_from(
-// CHECK-NEXT:                         (unsafe { std::ptr::addr_of_mut!(values.0) as *mut i32 })
-// CHECK-NEXT:                             as *const i32,
-// CHECK-NEXT:                     )
-// CHECK-NEXT:             }) as i64,
-// CHECK-NEXT:             unsafe { *unsafe { entries.0[0].value } },
-// CHECK-NEXT:             unsafe { *unsafe { entries.0[1].value } },
-// CHECK-NEXT:             unsafe { entries.0[0].name },
-// CHECK-NEXT:             unsafe { callback.unwrap()(6 as i32) },
-// CHECK-NEXT:             unsafe { external.unwrap()(-(9 as i32)) },
-// CHECK-NEXT:             unsafe { *unsafe { group.nested[0].value } },
-// CHECK-NEXT:             unsafe { *unsafe { group.tail } },
-// CHECK-NEXT:             unsafe { *((unsafe { addresses.0[0] }) as *mut i32) },
-// CHECK-NEXT:             unsafe { local.unwrap()(4 as i32) },
+// CHECK-NEXT:             *middle,
+// CHECK-NEXT:             unsafe { end }
+// CHECK-NEXT:                 .offset_from(
+// CHECK-NEXT:                     (std::ptr::addr_of_mut!(values.0) as *mut i32) as *const i32,
+// CHECK-NEXT:                 ) as i64,
+// CHECK-NEXT:             *entries.0[0].value,
+// CHECK-NEXT:             *entries.0[1].value,
+// CHECK-NEXT:             entries.0[0].name,
+// CHECK-NEXT:             callback.unwrap()(6 as i32),
+// CHECK-NEXT:             external.unwrap()(-(9 as i32)),
+// CHECK-NEXT:             *group.nested[0].value,
+// CHECK-NEXT:             *group.tail,
+// CHECK-NEXT:             *(addresses.0[0] as *mut i32),
+// CHECK-NEXT:             local.unwrap()(4 as i32),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

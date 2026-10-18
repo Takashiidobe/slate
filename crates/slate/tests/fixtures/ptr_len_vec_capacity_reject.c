@@ -26,9 +26,9 @@ int main(void) {
 // CHECK-NEXT:     let mut sum: i32 = 0;
 // CHECK-NEXT:     for i in 0..len {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *unsafe { values.offset(i as isize) } = i + 1;
+// CHECK-NEXT:             *values.offset(i as isize) = i + 1;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         sum += unsafe { *unsafe { values.offset(i as isize) } };
+// CHECK-NEXT:         sum += unsafe { *values.offset(i as isize) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { free(values as *mut ()) };
 // CHECK-NEXT:     sum

@@ -30,26 +30,20 @@ int main(void) {
 // CHECK-NEXT:     let mut [[SLATE_COMPOUND_1:__slate_compound_[0-9]+]]: Slice = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     let mut first: Slice = unsafe {
 // CHECK-NEXT:         *make_slice(
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 std::ptr::addr_of_mut!(
-// CHECK-NEXT:                     * { [[SLATE_COMPOUND_0]] = { let mut [[T_0:__t[0-9]+]] : Slice = unsafe {
-// CHECK-NEXT:                     std::mem::zeroed() }; [[T_0]] };
-// CHECK-NEXT:                     std::ptr::addr_of_mut!([[SLATE_COMPOUND_0]]) }
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
+// CHECK-NEXT:             std::ptr::addr_of_mut!(
+// CHECK-NEXT:                 * { [[SLATE_COMPOUND_0]] = { let mut [[T_0:__t[0-9]+]] : Slice = std::mem::zeroed();
+// CHECK-NEXT:                 [[T_0]] }; std::ptr::addr_of_mut!([[SLATE_COMPOUND_0]]) }
+// CHECK-NEXT:             ),
 // CHECK-NEXT:             c"slate".as_ptr(),
 // CHECK-NEXT:             (6 as u64).wrapping_sub(1 as u64),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut second: Slice = unsafe {
 // CHECK-NEXT:         *make_slice(
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 std::ptr::addr_of_mut!(
-// CHECK-NEXT:                     * { [[SLATE_COMPOUND_1]] = { let mut [[T_1:__t[0-9]+]] : Slice = unsafe {
-// CHECK-NEXT:                     std::mem::zeroed() }; [[T_1]] };
-// CHECK-NEXT:                     std::ptr::addr_of_mut!([[SLATE_COMPOUND_1]]) }
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
+// CHECK-NEXT:             std::ptr::addr_of_mut!(
+// CHECK-NEXT:                 * { [[SLATE_COMPOUND_1]] = { let mut [[T_1:__t[0-9]+]] : Slice = std::mem::zeroed();
+// CHECK-NEXT:                 [[T_1]] }; std::ptr::addr_of_mut!([[SLATE_COMPOUND_1]]) }
+// CHECK-NEXT:             ),
 // CHECK-NEXT:             c"translation".as_ptr(),
 // CHECK-NEXT:             (12 as u64).wrapping_sub(1 as u64),
 // CHECK-NEXT:         )
@@ -58,9 +52,9 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%c %lu %c %lu\n".as_ptr(),
-// CHECK-NEXT:             (unsafe { *unsafe { first.data.offset(0 as isize) } }) as i32,
+// CHECK-NEXT:             *first.data.offset(0 as isize) as i32,
 // CHECK-NEXT:             first.length,
-// CHECK-NEXT:             (unsafe { *unsafe { second.data.offset(0 as isize) } }) as i32,
+// CHECK-NEXT:             *second.data.offset(0 as isize) as i32,
 // CHECK-NEXT:             second.length,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };

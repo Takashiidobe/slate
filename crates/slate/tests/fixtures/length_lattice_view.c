@@ -19,7 +19,7 @@ int main(void) {
 // CHECK-NEXT: fn sum_n(p: *mut i32, n: i32) -> i32 {
 // CHECK-NEXT:     let mut s: i32 = 0;
 // CHECK-NEXT:     for i in 0..n {
-// CHECK-NEXT:         s += unsafe { *unsafe { p.offset(i as isize) } };
+// CHECK-NEXT:         s += unsafe { *p.offset(i as isize) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     s
 // CHECK-NEXT: }

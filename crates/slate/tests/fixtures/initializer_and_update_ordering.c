@@ -58,16 +58,16 @@ int main(void) {
 // CHECK-NEXT: static mut calls: i32 = 0 as i32;
 // CHECK-NEXT: fn mark() -> u32 {
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: *mut u32 = unsafe {
-// CHECK-NEXT:         unsafe { std::ptr::addr_of_mut!(flags) as *mut u32 }.offset(0 as isize)
+// CHECK-NEXT:         (std::ptr::addr_of_mut!(flags) as *mut u32).offset(0 as isize)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_1]] = (unsafe { *[[V_1]] }) | 128;
+// CHECK-NEXT:         *[[V_1]] = *[[V_1]] | 128;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     1
 // CHECK-NEXT: }
 // CHECK-NEXT: fn advance(p: *mut i32) -> *mut i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         calls = (unsafe { calls }) + 1;
+// CHECK-NEXT:         calls = calls + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { p.offset(1 as isize) }
 // CHECK-NEXT: }
@@ -102,13 +102,13 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let [[V_2:__v[0-9]+]]: u32 = mark();
 // CHECK-NEXT:     let [[V_3:__v[0-9]+]]: *mut u32 = unsafe {
-// CHECK-NEXT:         unsafe { std::ptr::addr_of_mut!(flags) as *mut u32 }.offset(0 as isize)
+// CHECK-NEXT:         (std::ptr::addr_of_mut!(flags) as *mut u32).offset(0 as isize)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_3]] = (unsafe { *[[V_3]] }) | [[V_2]];
+// CHECK-NEXT:         *[[V_3]] = *[[V_3]] | [[V_2]];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%u\n".as_ptr(), unsafe { flags[0] }) };
+// CHECK-NEXT:     unsafe { printf(c"%u\n".as_ptr(), flags[0]) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let mut data: __SlateAlign16<[i32; 4]> = __SlateAlign16([
 // CHECK-NEXT:         0 as i32,

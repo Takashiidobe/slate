@@ -52,7 +52,7 @@ int main(void) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             let [[T_0:__t[0-9]+]] = 1 as i32;
 // CHECK-NEXT:             let [[T_1:__t[0-9]+]] = std::sync::atomic::AtomicI32::from_ptr(
-// CHECK-NEXT:                     (unsafe { std::ptr::addr_of_mut!(counter) }) as *mut i32,
+// CHECK-NEXT:                     std::ptr::addr_of_mut!(counter) as *mut i32,
 // CHECK-NEXT:                 )
 // CHECK-NEXT:                 .fetch_add([[T_0]], std::sync::atomic::Ordering::SeqCst);
 // CHECK-NEXT:             [[T_1]]
@@ -66,7 +66,7 @@ int main(void) {
 // CHECK-NEXT:     for i in 0 as i32..4 as i32 {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             pthread_create(
-// CHECK-NEXT:                 unsafe { (threads.0.as_mut_ptr() as *mut u64).offset(i as isize) },
+// CHECK-NEXT:                 (threads.0.as_mut_ptr() as *mut u64).offset(i as isize),
 // CHECK-NEXT:                 std::ptr::null::<pthread_attr_t>(),
 // CHECK-NEXT:                 Some(worker),
 // CHECK-NEXT:                 std::ptr::null_mut::<()>(),

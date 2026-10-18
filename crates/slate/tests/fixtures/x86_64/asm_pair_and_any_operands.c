@@ -145,7 +145,7 @@ int main(void) {
 // CHECK-NEXT:             c"%lu %lu %d\n".as_ptr(),
 // CHECK-NEXT:             pair_in_high((11 as u128) << (64 as i32) | 12),
 // CHECK-NEXT:             single_a(39 as u64),
-// CHECK-NEXT:             any_operands(40 as i32, unsafe { &(*std::ptr::addr_of_mut!(big)) }),
+// CHECK-NEXT:             any_operands(40 as i32, &(*std::ptr::addr_of_mut!(big))),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

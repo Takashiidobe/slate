@@ -96,10 +96,7 @@ int main(void) {
 // CHECK-NEXT: extern "C-unwind" fn panicky_callback(x: i32) {
 // CHECK-NEXT:     if x == 2 {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             longjmp(
-// CHECK-NEXT:                 unsafe { std::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag },
-// CHECK-NEXT:                 1 as i32,
-// CHECK-NEXT:             )
+// CHECK-NEXT:             longjmp(std::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag, 1 as i32)
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("panicky {}", x);
@@ -114,12 +111,10 @@ int main(void) {
 // CHECK-NEXT:         g_callback = Some(quiet_callback);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     for i in 0 as i32..2 as i32 {
-// CHECK-NEXT:         if (unsafe {
-// CHECK-NEXT:             _setjmp(unsafe { std::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag })
-// CHECK-NEXT:         }) != 0
+// CHECK-NEXT:         if (unsafe { _setjmp(std::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag) }) != 0
 // CHECK-NEXT:         {
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 failures = (unsafe { failures }) + 1;
+// CHECK-NEXT:                 failures = failures + 1;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             println!("recovered quiet {}", i);
 // CHECK-NEXT:         } else {
@@ -130,12 +125,10 @@ int main(void) {
 // CHECK-NEXT:         g_callback = Some(panicky_callback);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     for i in 0 as i32..5 as i32 {
-// CHECK-NEXT:         if (unsafe {
-// CHECK-NEXT:             _setjmp(unsafe { std::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag })
-// CHECK-NEXT:         }) != 0
+// CHECK-NEXT:         if (unsafe { _setjmp(std::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag) }) != 0
 // CHECK-NEXT:         {
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 failures = (unsafe { failures }) + 1;
+// CHECK-NEXT:                 failures = failures + 1;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             println!("recovered panicky {}", i);
 // CHECK-NEXT:         } else {

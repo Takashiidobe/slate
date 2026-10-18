@@ -38,8 +38,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { strlen(text as *const i8) };
 // CHECK-NEXT:     let mut score: i32 = 0;
 // CHECK-NEXT:     for i in 0..len {
-// CHECK-NEXT:         score
-// CHECK-NEXT:             += (((unsafe { *unsafe { text.offset(i as isize) } }) as u8) as u32) as i32;
+// CHECK-NEXT:         score += (((unsafe { *text.offset(i as isize) }) as u8) as u32) as i32;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { free(text as *mut ()) };
 // CHECK-NEXT:     score

@@ -36,7 +36,7 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     for i in 0 as u64..4 as u64 {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe { putchar(((unsafe { data[i as usize] }) as u32) as i32) };
+// CHECK-NEXT:         unsafe { putchar((data[i as usize] as u32) as i32) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let framed_ok: i32 = ((8 as u64) == (8 as u64)

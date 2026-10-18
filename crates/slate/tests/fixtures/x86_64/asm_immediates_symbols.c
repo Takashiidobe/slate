@@ -101,9 +101,9 @@ int main(void) {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%d %d %d %d %s\n".as_ptr(),
 // CHECK-NEXT:             result + only_negated,
-// CHECK-NEXT:             unsafe { *positive },
-// CHECK-NEXT:             unsafe { *negative },
-// CHECK-NEXT:             unsafe { r#fn.unwrap()() },
+// CHECK-NEXT:             *positive,
+// CHECK-NEXT:             *negative,
+// CHECK-NEXT:             r#fn.unwrap()(),
 // CHECK-NEXT:             text,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };

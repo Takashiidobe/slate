@@ -316,37 +316,25 @@ int main(void) {
 // CHECK-NEXT:             std::ptr::addr_of_mut!(cosine_l),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let [[V_12:__v[0-9]+]]: i32 = ((unsafe { fabs(sine - unsafe { sin(0.5f64) }) }) == 0.0f64)
-// CHECK-NEXT:         as i32;
+// CHECK-NEXT:     let [[V_12:__v[0-9]+]]: i32 = ((unsafe { fabs(sine - sin(0.5f64)) }) == 0.0f64) as i32;
 // CHECK-NEXT:     total += [[V_12]];
-// CHECK-NEXT:     let [[V_13:__v[0-9]+]]: i32 = ((unsafe { fabs(cosine - unsafe { cos(0.5f64) }) }) == 0.0f64)
-// CHECK-NEXT:         as i32;
+// CHECK-NEXT:     let [[V_13:__v[0-9]+]]: i32 = ((unsafe { fabs(cosine - cos(0.5f64)) }) == 0.0f64) as i32;
 // CHECK-NEXT:     total += [[V_13]];
-// CHECK-NEXT:     let [[V_14:__v[0-9]+]]: i32 = ((unsafe { fabsf(sine_f - unsafe { sinf(0.5f32) }) }) == 0.0f32)
-// CHECK-NEXT:         as i32;
+// CHECK-NEXT:     let [[V_14:__v[0-9]+]]: i32 = ((unsafe { fabsf(sine_f - sinf(0.5f32)) }) == 0.0f32) as i32;
 // CHECK-NEXT:     total += [[V_14]];
-// CHECK-NEXT:     let [[V_15:__v[0-9]+]]: i32 = ((unsafe { fabsf(cosine_f - unsafe { cosf(0.5f32) }) }) == 0.0f32)
-// CHECK-NEXT:         as i32;
+// CHECK-NEXT:     let [[V_15:__v[0-9]+]]: i32 = ((unsafe { fabsf(cosine_f - cosf(0.5f32)) }) == 0.0f32) as i32;
 // CHECK-NEXT:     total += [[V_15]];
 // CHECK-NEXT:     let [[V_16:__v[0-9]+]]: i32 = ((unsafe {
 // CHECK-NEXT:         __slate_fabsl__rf80_f80(
 // CHECK-NEXT:             sine_l
-// CHECK-NEXT:                 - unsafe {
-// CHECK-NEXT:                     __slate_sinl__rf80_f80(
-// CHECK-NEXT:                         LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 254, 63]),
-// CHECK-NEXT:                     )
-// CHECK-NEXT:                 },
+// CHECK-NEXT:                 - __slate_sinl__rf80_f80(LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 254, 63])),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) == LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0])) as i32;
 // CHECK-NEXT:     total += [[V_16]];
 // CHECK-NEXT:     let [[V_17:__v[0-9]+]]: i32 = ((unsafe {
 // CHECK-NEXT:         __slate_fabsl__rf80_f80(
 // CHECK-NEXT:             cosine_l
-// CHECK-NEXT:                 - unsafe {
-// CHECK-NEXT:                     __slate_cosl__rf80_f80(
-// CHECK-NEXT:                         LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 254, 63]),
-// CHECK-NEXT:                     )
-// CHECK-NEXT:                 },
+// CHECK-NEXT:                 - __slate_cosl__rf80_f80(LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 254, 63])),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) == LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0])) as i32;
 // CHECK-NEXT:     total += [[V_17]];

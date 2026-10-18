@@ -127,23 +127,16 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     for j in 0..argc {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             (*unsafe {
-// CHECK-NEXT:                 (objects.as_mut_ptr() as *mut [[SLATERECORD_0]]).offset(j as isize)
-// CHECK-NEXT:             })
-// CHECK-NEXT:                 .kind = j;
+// CHECK-NEXT:             (*(objects.as_mut_ptr() as *mut [[SLATERECORD_0]]).offset(j as isize)).kind = j;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             (*unsafe {
-// CHECK-NEXT:                 (objects.as_mut_ptr() as *mut [[SLATERECORD_0]]).offset(j as isize)
-// CHECK-NEXT:             })
+// CHECK-NEXT:             (*(objects.as_mut_ptr() as *mut [[SLATERECORD_0]]).offset(j as isize))
 // CHECK-NEXT:                 .payload = (j as i64) * 100;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *unsafe {
-// CHECK-NEXT:                 (argv.as_mut_ptr() as *mut *mut [[SLATERECORD_0]]).offset(j as isize)
-// CHECK-NEXT:             } = unsafe {
-// CHECK-NEXT:                 (objects.as_mut_ptr() as *mut [[SLATERECORD_0]]).offset(j as isize)
-// CHECK-NEXT:             };
+// CHECK-NEXT:             *(argv.as_mut_ptr() as *mut *mut [[SLATERECORD_0]]).offset(j as isize) = (objects
+// CHECK-NEXT:                 .as_mut_ptr() as *mut [[SLATERECORD_0]])
+// CHECK-NEXT:                 .offset(j as isize);
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut total: i64 = 0;
@@ -151,21 +144,12 @@ int main(void) {
 // CHECK-NEXT:         let [[V_2:__v[0-9]+]]: i64 = total;
 // CHECK-NEXT:         total = [[V_2]]
 // CHECK-NEXT:             + (((unsafe {
-// CHECK-NEXT:                 (*unsafe {
-// CHECK-NEXT:                     *unsafe {
-// CHECK-NEXT:                         (argv.as_mut_ptr() as *mut *mut [[SLATERECORD_0]])
-// CHECK-NEXT:                             .offset(j as isize)
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                 })
+// CHECK-NEXT:                 (*(*(argv.as_mut_ptr() as *mut *mut [[SLATERECORD_0]]).offset(j as isize)))
 // CHECK-NEXT:                     .kind
 // CHECK-NEXT:             }) as i64)
 // CHECK-NEXT:                 + unsafe {
-// CHECK-NEXT:                     (*unsafe {
-// CHECK-NEXT:                         *unsafe {
-// CHECK-NEXT:                             (argv.as_mut_ptr() as *mut *mut [[SLATERECORD_0]])
-// CHECK-NEXT:                                 .offset(j as isize)
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                     })
+// CHECK-NEXT:                     (*(*(argv.as_mut_ptr() as *mut *mut [[SLATERECORD_0]])
+// CHECK-NEXT:                         .offset(j as isize)))
 // CHECK-NEXT:                         .payload
 // CHECK-NEXT:                 });
 // CHECK-NEXT:     }
@@ -192,8 +176,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     (((unsafe { strlen(buf.as_mut_ptr() as *const i8) }) as u32) as i32) * 1000
-// CHECK-NEXT:         + ((unsafe { *unsafe { (buf.as_mut_ptr() as *mut i8).offset(0 as isize) } })
-// CHECK-NEXT:             as i32)
+// CHECK-NEXT:         + ((unsafe { *(buf.as_mut_ptr() as *mut i8).offset(0 as isize) }) as i32)
 // CHECK-NEXT: }
 // CHECK-NEXT: fn const_bound() -> i32 {
 // CHECK-NEXT:     let bufflen: i32 = 16;
@@ -213,7 +196,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *unsafe { (buf.as_mut_ptr() as *mut i8).offset((bufflen - 1) as isize) } = 0;
+// CHECK-NEXT:         *(buf.as_mut_ptr() as *mut i8).offset((bufflen - 1) as isize) = 0;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     ((unsafe { strlen(buf.as_mut_ptr() as *const i8) }) as u32) as i32
 // CHECK-NEXT: }
@@ -234,16 +217,12 @@ int main(void) {
 // CHECK-NEXT:     for r in 0..rows {
 // CHECK-NEXT:         for c in 0..cols {
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 *unsafe {
-// CHECK-NEXT:                     ((unsafe {
-// CHECK-NEXT:                         (grid.as_mut_ptr() as *mut [i32; 0])
-// CHECK-NEXT:                             .byte_offset(
-// CHECK-NEXT:                                 (r as isize)
-// CHECK-NEXT:                                     * ((([[V_6]] as usize) * std::mem::size_of::<i32>()) as isize),
-// CHECK-NEXT:                             )
-// CHECK-NEXT:                     }) as *mut i32)
-// CHECK-NEXT:                         .offset(c as isize)
-// CHECK-NEXT:                 } = r * 10 + c;
+// CHECK-NEXT:                 *((grid.as_mut_ptr() as *mut [i32; 0])
+// CHECK-NEXT:                     .byte_offset(
+// CHECK-NEXT:                         (r as isize)
+// CHECK-NEXT:                             * ((([[V_6]] as usize) * std::mem::size_of::<i32>()) as isize),
+// CHECK-NEXT:                     ) as *mut i32)
+// CHECK-NEXT:                     .offset(c as isize) = r * 10 + c;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -257,41 +236,29 @@ int main(void) {
 // CHECK-NEXT:         let [[V_8:__v[0-9]+]]: i32 = sum;
 // CHECK-NEXT:         sum = [[V_8]]
 // CHECK-NEXT:             + ((unsafe {
-// CHECK-NEXT:                 *unsafe {
-// CHECK-NEXT:                     ((unsafe {
-// CHECK-NEXT:                         row.byte_offset(
-// CHECK-NEXT:                             0
-// CHECK-NEXT:                                 * ((([[V_7]] as usize) * std::mem::size_of::<i32>()) as isize),
-// CHECK-NEXT:                         )
-// CHECK-NEXT:                     }) as *mut i32)
-// CHECK-NEXT:                         .offset(c as isize)
-// CHECK-NEXT:                 }
+// CHECK-NEXT:                 *(row
+// CHECK-NEXT:                     .byte_offset(
+// CHECK-NEXT:                         0 * ((([[V_7]] as usize) * std::mem::size_of::<i32>()) as isize),
+// CHECK-NEXT:                     ) as *mut i32)
+// CHECK-NEXT:                     .offset(c as isize)
 // CHECK-NEXT:             })
 // CHECK-NEXT:                 + unsafe {
-// CHECK-NEXT:                     *unsafe {
-// CHECK-NEXT:                         ((unsafe {
-// CHECK-NEXT:                             row.byte_offset(
-// CHECK-NEXT:                                 1
-// CHECK-NEXT:                                     * ((([[V_7]] as usize) * std::mem::size_of::<i32>()) as isize),
-// CHECK-NEXT:                             )
-// CHECK-NEXT:                         }) as *mut i32)
-// CHECK-NEXT:                             .offset(c as isize)
-// CHECK-NEXT:                     }
+// CHECK-NEXT:                     *(row
+// CHECK-NEXT:                         .byte_offset(
+// CHECK-NEXT:                             1
+// CHECK-NEXT:                                 * ((([[V_7]] as usize) * std::mem::size_of::<i32>()) as isize),
+// CHECK-NEXT:                         ) as *mut i32)
+// CHECK-NEXT:                         .offset(c as isize)
 // CHECK-NEXT:                 });
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let distance: i64 = ((unsafe {
-// CHECK-NEXT:         ((unsafe {
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 (grid.as_mut_ptr() as *mut [i32; 0])
-// CHECK-NEXT:                     .byte_offset(
-// CHECK-NEXT:                         (rows as isize)
-// CHECK-NEXT:                             * ((([[V_6]] as usize) * std::mem::size_of::<i32>()) as isize),
-// CHECK-NEXT:                     )
-// CHECK-NEXT:             }
-// CHECK-NEXT:                 .byte_offset(
-// CHECK-NEXT:                     -1 * ((([[V_6]] as usize) * std::mem::size_of::<i32>()) as isize),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:         }) as *const u8)
+// CHECK-NEXT:         ((grid.as_mut_ptr() as *mut [i32; 0])
+// CHECK-NEXT:             .byte_offset(
+// CHECK-NEXT:                 (rows as isize)
+// CHECK-NEXT:                     * ((([[V_6]] as usize) * std::mem::size_of::<i32>()) as isize),
+// CHECK-NEXT:             )
+// CHECK-NEXT:             .byte_offset(-1 * ((([[V_6]] as usize) * std::mem::size_of::<i32>()) as isize))
+// CHECK-NEXT:             as *const u8)
 // CHECK-NEXT:             .offset_from(grid.as_mut_ptr() as *const u8)
 // CHECK-NEXT:     }) / ((([[V_6]] as usize) * std::mem::size_of::<i32>()) as isize)) as i64;
 // CHECK-NEXT:     sum * 100 + (distance as i32) * 10
@@ -312,15 +279,12 @@ int main(void) {
 // CHECK-NEXT:         };
 // CHECK-NEXT:         for k in 0..i {
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 *unsafe { (scratch.as_mut_ptr() as *mut i32).offset(k as isize) } = k
-// CHECK-NEXT:                     + i;
+// CHECK-NEXT:                 *(scratch.as_mut_ptr() as *mut i32).offset(k as isize) = k + i;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:         let [[V_10:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:         total = [[V_10]]
-// CHECK-NEXT:             + unsafe {
-// CHECK-NEXT:                 *unsafe { (scratch.as_mut_ptr() as *mut i32).offset((i - 1) as isize) }
-// CHECK-NEXT:             };
+// CHECK-NEXT:             + unsafe { *(scratch.as_mut_ptr() as *mut i32).offset((i - 1) as isize) };
 // CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
@@ -328,7 +292,7 @@ int main(void) {
 // CHECK-NEXT: fn sum_row(n: i32, values: *mut [i32; 0]) -> i32 {
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     for i in 0..n {
-// CHECK-NEXT:         total += unsafe { *unsafe { (values as *mut i32).offset(i as isize) } };
+// CHECK-NEXT:         total += unsafe { *(values as *mut i32).offset(i as isize) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
@@ -344,7 +308,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     for i in 0..length {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *unsafe { (values.as_mut_ptr() as *mut i32).offset(i as isize) } = i * i;
+// CHECK-NEXT:             *(values.as_mut_ptr() as *mut i32).offset(i as isize) = i * i;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());

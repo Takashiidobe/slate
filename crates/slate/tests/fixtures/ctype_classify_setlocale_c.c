@@ -24,9 +24,8 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe { setlocale(6 as i32, c"C".as_ptr()) };
 // CHECK-NEXT:     let c: i8 = 65;
-// CHECK-NEXT:     if (((unsafe {
-// CHECK-NEXT:         *unsafe { unsafe { *unsafe { __ctype_b_loc() } }.offset((c as i32) as isize) }
-// CHECK-NEXT:     }) as u32) as i32) & 1024 != 0
+// CHECK-NEXT:     if (((unsafe { *unsafe { *__ctype_b_loc() }.offset((c as i32) as isize) }) as u32)
+// CHECK-NEXT:         as i32) & 1024 != 0
 // CHECK-NEXT:     {
 // CHECK-NEXT:         println!("yes");
 // CHECK-NEXT:     } else {

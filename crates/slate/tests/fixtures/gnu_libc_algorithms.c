@@ -373,7 +373,7 @@ int main(void) {
 // CHECK-NEXT:     let arguments: *mut GNUArguments = (unsafe { (*state).input }) as *mut GNUArguments;
 // CHECK-NEXT:     if key == 110 {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             (*arguments).number = unsafe { __slate_atoi(argument as *const i8) };
+// CHECK-NEXT:             (*arguments).number = __slate_atoi(argument as *const i8);
 // CHECK-NEXT:         }
 // CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
@@ -473,7 +473,7 @@ int main(void) {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         if option == 110 {
-// CHECK-NEXT:             number_value = unsafe { __slate_atoi((unsafe { optarg }) as *const i8) };
+// CHECK-NEXT:             number_value = unsafe { __slate_atoi(optarg as *const i8) };
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             if option == 102 {
 // CHECK-NEXT:                 flag_value = 1;
@@ -584,9 +584,8 @@ int main(void) {
 // CHECK-NEXT:     let [[V_3:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_3]]
 // CHECK-NEXT:         + ((found != std::ptr::null_mut::<entry>()
-// CHECK-NEXT:             && (unsafe {
-// CHECK-NEXT:                 strcmp((unsafe { (*found).data }) as *const i8, c"24".as_ptr())
-// CHECK-NEXT:             }) == 0) as i32);
+// CHECK-NEXT:             && (unsafe { strcmp((*found).data as *const i8, c"24".as_ptr()) }) == 0)
+// CHECK-NEXT:             as i32);
 // CHECK-NEXT:     unsafe { hdestroy_r(std::ptr::addr_of_mut!(table)) };
 // CHECK-NEXT:     for index in 0 as u64..4 as u64 {
 // CHECK-NEXT:         let value: *mut i32 = (unsafe { malloc(4 as u64) }) as *mut i32;
@@ -603,8 +602,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let [[V_4:__v[0-9]+]]: i32 = ((unsafe {
 // CHECK-NEXT:         tfind(
-// CHECK-NEXT:             (unsafe { (values.0.as_mut_ptr() as *mut i32).offset(2 as isize) })
-// CHECK-NEXT:                 as *const (),
+// CHECK-NEXT:             (values.0.as_mut_ptr() as *mut i32).offset(2 as isize) as *const (),
 // CHECK-NEXT:             std::ptr::addr_of_mut!(tree) as *const *mut (),
 // CHECK-NEXT:             Some(gnu_compare_entries),
 // CHECK-NEXT:         )

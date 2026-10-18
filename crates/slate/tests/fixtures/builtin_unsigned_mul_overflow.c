@@ -187,7 +187,7 @@ int main(void) {
 // CHECK-NEXT:             results[0],
 // CHECK-NEXT:             a,
 // CHECK-NEXT:             b,
-// CHECK-NEXT:             (unsafe { p.offset_from(results.as_mut_ptr() as *mut u32) }) as i64,
+// CHECK-NEXT:             p.offset_from(results.as_mut_ptr() as *mut u32) as i64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

@@ -19,8 +19,7 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let p: *mut i32 = (unsafe { calloc(4 as u64, 4 as u64) }) as *mut i32;
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{}", (unsafe { * unsafe { p.offset(0 as isize) } }) + unsafe { * unsafe { p
-// CHECK-NEXT:         .offset(3 as isize) } }
+// CHECK-NEXT:         "{}", (unsafe { * p.offset(0 as isize) }) + unsafe { * p.offset(3 as isize) }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe { free(p as *mut ()) };
 // CHECK-NEXT:     0

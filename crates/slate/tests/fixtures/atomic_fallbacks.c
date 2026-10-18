@@ -65,9 +65,7 @@ int main(void) {
 // CHECK-NEXT:             .fetch_update(
 // CHECK-NEXT:                 std::sync::atomic::Ordering::AcqRel,
 // CHECK-NEXT:                 std::sync::atomic::Ordering::Acquire,
-// CHECK-NEXT:                 |[[T_3:__t[0-9]+]]| Some(
-// CHECK-NEXT:                     (unsafe { ([[T_3]] as *mut i32).offset(2 as isize) }) as *mut i32,
-// CHECK-NEXT:                 ),
+// CHECK-NEXT:                 |[[T_3:__t[0-9]+]]| Some(([[T_3]] as *mut i32).offset(2 as isize) as *mut i32),
 // CHECK-NEXT:             )
 // CHECK-NEXT:             .unwrap_or_else(|[[T_3]]| [[T_3]]);
 // CHECK-NEXT:         [[T_2]] as *mut i32
@@ -80,7 +78,7 @@ int main(void) {
 // CHECK-NEXT:             .load(std::sync::atomic::Ordering::SeqCst) as *mut i32
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: *mut i32 = unsafe {
-// CHECK-NEXT:         let [[T_4:__t[0-9]+]] = unsafe { (values.0.as_mut_ptr() as *mut i32).offset(1 as isize) };
+// CHECK-NEXT:         let [[T_4:__t[0-9]+]] = (values.0.as_mut_ptr() as *mut i32).offset(1 as isize);
 // CHECK-NEXT:         let [[T_5:__t[0-9]+]] = std::sync::atomic::AtomicPtr::from_ptr(
 // CHECK-NEXT:                 std::ptr::addr_of_mut!(p) as *mut *mut i32,
 // CHECK-NEXT:             )
@@ -100,11 +98,11 @@ int main(void) {
 // CHECK-NEXT:             c"%.2f %.2f %td %td %d %td %td\n".as_ptr(),
 // CHECK-NEXT:             old_f as f64,
 // CHECK-NEXT:             now_f as f64,
-// CHECK-NEXT:             (unsafe { old_p.offset_from(values.0.as_mut_ptr() as *mut i32) }) as i64,
-// CHECK-NEXT:             (unsafe { now_p.offset_from(values.0.as_mut_ptr() as *mut i32) }) as i64,
-// CHECK-NEXT:             unsafe { *now_p },
-// CHECK-NEXT:             (unsafe { old_x.offset_from(values.0.as_mut_ptr() as *mut i32) }) as i64,
-// CHECK-NEXT:             (unsafe { now_x.offset_from(values.0.as_mut_ptr() as *mut i32) }) as i64,
+// CHECK-NEXT:             old_p.offset_from(values.0.as_mut_ptr() as *mut i32) as i64,
+// CHECK-NEXT:             now_p.offset_from(values.0.as_mut_ptr() as *mut i32) as i64,
+// CHECK-NEXT:             *now_p,
+// CHECK-NEXT:             old_x.offset_from(values.0.as_mut_ptr() as *mut i32) as i64,
+// CHECK-NEXT:             now_x.offset_from(values.0.as_mut_ptr() as *mut i32) as i64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

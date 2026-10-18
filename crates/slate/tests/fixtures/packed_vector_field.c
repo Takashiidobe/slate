@@ -60,17 +60,12 @@ int main(void) {
 // CHECK-NEXT:         [[T_1]].write_unaligned([[T_2]]);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             unsafe { std::ptr::addr_of_mut!((* t).words) as *mut i32 }.offset(1 as isize)
-// CHECK-NEXT:         }
+// CHECK-NEXT:         (std::ptr::addr_of_mut!((* t).words) as *mut i32)
+// CHECK-NEXT:             .offset(1 as isize)
 // CHECK-NEXT:             .write_unaligned(
-// CHECK-NEXT:                 (unsafe {
-// CHECK-NEXT:                     unsafe {
-// CHECK-NEXT:                         unsafe { std::ptr::addr_of_mut!((* t).words) as *mut i32 }
-// CHECK-NEXT:                             .offset(0 as isize)
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                         .read_unaligned()
-// CHECK-NEXT:                 }) + 1,
+// CHECK-NEXT:                 (std::ptr::addr_of_mut!((* t).words) as *mut i32)
+// CHECK-NEXT:                     .offset(0 as isize)
+// CHECK-NEXT:                     .read_unaligned() + 1,
 // CHECK-NEXT:             );
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
@@ -84,9 +79,8 @@ int main(void) {
 // CHECK-NEXT:         (*t).v = seed;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             unsafe { std::ptr::addr_of_mut!((* t).words) as *mut i32 }.offset(0 as isize)
-// CHECK-NEXT:         }
+// CHECK-NEXT:         (std::ptr::addr_of_mut!((* t).words) as *mut i32)
+// CHECK-NEXT:             .offset(0 as isize)
 // CHECK-NEXT:             .write_unaligned(9 as i32);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     bump(t);
@@ -95,23 +89,15 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%lld %lld %d %d %d\n".as_ptr(),
-// CHECK-NEXT:             unsafe { std::ptr::addr_of!((* t).v).read_unaligned()[0] },
-// CHECK-NEXT:             unsafe { std::ptr::addr_of!((* t).v).read_unaligned()[1] },
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     unsafe { std::ptr::addr_of_mut!((* t).words) as *mut i32 }
-// CHECK-NEXT:                         .offset(0 as isize)
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                     .read_unaligned()
-// CHECK-NEXT:             },
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     unsafe { std::ptr::addr_of_mut!((* t).words) as *mut i32 }
-// CHECK-NEXT:                         .offset(1 as isize)
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                     .read_unaligned()
-// CHECK-NEXT:             },
-// CHECK-NEXT:             unsafe { *tail },
+// CHECK-NEXT:             std::ptr::addr_of!((* t).v).read_unaligned()[0],
+// CHECK-NEXT:             std::ptr::addr_of!((* t).v).read_unaligned()[1],
+// CHECK-NEXT:             (std::ptr::addr_of_mut!((* t).words) as *mut i32)
+// CHECK-NEXT:                 .offset(0 as isize)
+// CHECK-NEXT:                 .read_unaligned(),
+// CHECK-NEXT:             (std::ptr::addr_of_mut!((* t).words) as *mut i32)
+// CHECK-NEXT:                 .offset(1 as isize)
+// CHECK-NEXT:                 .read_unaligned(),
+// CHECK-NEXT:             *tail,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

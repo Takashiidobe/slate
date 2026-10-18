@@ -102,9 +102,7 @@ int main(void) {
 // CHECK-NEXT:         "{} {} {} {}", total, clamp_add(3 as i32, 8 as i32), clamp_add(9 as i32, - (1 as
 // CHECK-NEXT:         i32)), seq
 // CHECK-NEXT:     );
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(c"%d %.1f %lu %d\n".as_ptr(), nested, half, wide, unsafe { *cursor })
-// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { printf(c"%d %.1f %lu %d\n".as_ptr(), nested, half, wide, *cursor) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {

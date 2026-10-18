@@ -795,14 +795,14 @@ int main(void) {
 // CHECK-NEXT: fn fold(lanes: *const i64, count: i32) -> i64 {
 // CHECK-NEXT:     let mut h: i64 = 17;
 // CHECK-NEXT:     for i in 0..count {
-// CHECK-NEXT:         h = h * 1000003 + unsafe { *unsafe { lanes.offset(i as isize) } };
+// CHECK-NEXT:         h = h * 1000003 + unsafe { *lanes.offset(i as isize) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     h
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut calls: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT: fn counted(v: std::simd::Simd<i32, 4>) -> std::simd::Simd<i32, 4> {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         calls = (unsafe { calls }) + 1;
+// CHECK-NEXT:         calls = calls + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     return v;
 // CHECK-NEXT: }
@@ -847,9 +847,9 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"ureduce %u %u %lld\n".as_ptr(),
-// CHECK-NEXT:             unsafe { __slate_intrinsic_6144ba70f3b1eac4(u) },
-// CHECK-NEXT:             unsafe { __slate_intrinsic_4596d33813d5b1(u) },
-// CHECK-NEXT:             unsafe { __slate_intrinsic_b914587e1d9172a0(d) },
+// CHECK-NEXT:             __slate_intrinsic_6144ba70f3b1eac4(u),
+// CHECK-NEXT:             __slate_intrinsic_4596d33813d5b1(u),
+// CHECK-NEXT:             __slate_intrinsic_b914587e1d9172a0(d),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -880,16 +880,14 @@ int main(void) {
 // CHECK-NEXT:             lanes.0[i as usize] = unsafe {
 // CHECK-NEXT:                 __slate_intrinsic_e3673729f976a086(
 // CHECK-NEXT:                     a,
-// CHECK-NEXT:                     unsafe {
-// CHECK-NEXT:                         *{
-// CHECK-NEXT:                             [[SLATE_COMPOUND_8]] = std::simd::Simd::from_array([
-// CHECK-NEXT:                                 0 as i32,
-// CHECK-NEXT:                                 0 as i32,
-// CHECK-NEXT:                                 5 as i32,
-// CHECK-NEXT:                                 5 as i32,
-// CHECK-NEXT:                             ]);
-// CHECK-NEXT:                             std::ptr::addr_of_mut!([[SLATE_COMPOUND_8]])
-// CHECK-NEXT:                         }
+// CHECK-NEXT:                     *{
+// CHECK-NEXT:                         [[SLATE_COMPOUND_8]] = std::simd::Simd::from_array([
+// CHECK-NEXT:                             0 as i32,
+// CHECK-NEXT:                             0 as i32,
+// CHECK-NEXT:                             5 as i32,
+// CHECK-NEXT:                             5 as i32,
+// CHECK-NEXT:                         ]);
+// CHECK-NEXT:                         std::ptr::addr_of_mut!([[SLATE_COMPOUND_8]])
 // CHECK-NEXT:                     },
 // CHECK-NEXT:                 )
 // CHECK-NEXT:             }[i as usize] as i64;
@@ -915,16 +913,14 @@ int main(void) {
 // CHECK-NEXT:             lanes.0[i as usize] = (unsafe {
 // CHECK-NEXT:                 __slate_intrinsic_909e0aaaa733917e(
 // CHECK-NEXT:                     u,
-// CHECK-NEXT:                     unsafe {
-// CHECK-NEXT:                         *{
-// CHECK-NEXT:                             [[SLATE_COMPOUND_9]] = std::simd::Simd::from_array([
-// CHECK-NEXT:                                 8 as u32,
-// CHECK-NEXT:                                 8 as u32,
-// CHECK-NEXT:                                 8 as u32,
-// CHECK-NEXT:                                 8 as u32,
-// CHECK-NEXT:                             ]);
-// CHECK-NEXT:                             std::ptr::addr_of_mut!([[SLATE_COMPOUND_9]])
-// CHECK-NEXT:                         }
+// CHECK-NEXT:                     *{
+// CHECK-NEXT:                         [[SLATE_COMPOUND_9]] = std::simd::Simd::from_array([
+// CHECK-NEXT:                             8 as u32,
+// CHECK-NEXT:                             8 as u32,
+// CHECK-NEXT:                             8 as u32,
+// CHECK-NEXT:                             8 as u32,
+// CHECK-NEXT:                         ]);
+// CHECK-NEXT:                         std::ptr::addr_of_mut!([[SLATE_COMPOUND_9]])
 // CHECK-NEXT:                     },
 // CHECK-NEXT:                 )
 // CHECK-NEXT:             }[i as usize] as u64) as i64;
@@ -950,16 +946,14 @@ int main(void) {
 // CHECK-NEXT:             lanes.0[i as usize] = unsafe {
 // CHECK-NEXT:                 __slate_intrinsic_37cf22be76d4abf7(
 // CHECK-NEXT:                     a,
-// CHECK-NEXT:                     unsafe {
-// CHECK-NEXT:                         *{
-// CHECK-NEXT:                             [[SLATE_COMPOUND_10]] = std::simd::Simd::from_array([
-// CHECK-NEXT:                                 0 as i32,
-// CHECK-NEXT:                                 0 as i32,
-// CHECK-NEXT:                                 5 as i32,
-// CHECK-NEXT:                                 5 as i32,
-// CHECK-NEXT:                             ]);
-// CHECK-NEXT:                             std::ptr::addr_of_mut!([[SLATE_COMPOUND_10]])
-// CHECK-NEXT:                         }
+// CHECK-NEXT:                     *{
+// CHECK-NEXT:                         [[SLATE_COMPOUND_10]] = std::simd::Simd::from_array([
+// CHECK-NEXT:                             0 as i32,
+// CHECK-NEXT:                             0 as i32,
+// CHECK-NEXT:                             5 as i32,
+// CHECK-NEXT:                             5 as i32,
+// CHECK-NEXT:                         ]);
+// CHECK-NEXT:                         std::ptr::addr_of_mut!([[SLATE_COMPOUND_10]])
 // CHECK-NEXT:                     },
 // CHECK-NEXT:                 )
 // CHECK-NEXT:             }[i as usize] as i64;
@@ -1003,28 +997,26 @@ int main(void) {
 // CHECK-NEXT:             lanes.0[i as usize] = (unsafe {
 // CHECK-NEXT:                 __slate_intrinsic_d5c5fa99040dca20(
 // CHECK-NEXT:                     bytes,
-// CHECK-NEXT:                     unsafe {
-// CHECK-NEXT:                         *{
-// CHECK-NEXT:                             [[SLATE_COMPOUND_11]] = std::simd::Simd::from_array([
-// CHECK-NEXT:                                 ((128 as i32) as i8) as u8,
-// CHECK-NEXT:                                 ((128 as i32) as i8) as u8,
-// CHECK-NEXT:                                 ((128 as i32) as i8) as u8,
-// CHECK-NEXT:                                 ((128 as i32) as i8) as u8,
-// CHECK-NEXT:                                 ((128 as i32) as i8) as u8,
-// CHECK-NEXT:                                 ((128 as i32) as i8) as u8,
-// CHECK-NEXT:                                 ((128 as i32) as i8) as u8,
-// CHECK-NEXT:                                 ((128 as i32) as i8) as u8,
-// CHECK-NEXT:                                 3 as u8,
-// CHECK-NEXT:                                 3 as u8,
-// CHECK-NEXT:                                 3 as u8,
-// CHECK-NEXT:                                 3 as u8,
-// CHECK-NEXT:                                 3 as u8,
-// CHECK-NEXT:                                 3 as u8,
-// CHECK-NEXT:                                 3 as u8,
-// CHECK-NEXT:                                 3 as u8,
-// CHECK-NEXT:                             ]);
-// CHECK-NEXT:                             std::ptr::addr_of_mut!([[SLATE_COMPOUND_11]])
-// CHECK-NEXT:                         }
+// CHECK-NEXT:                     *{
+// CHECK-NEXT:                         [[SLATE_COMPOUND_11]] = std::simd::Simd::from_array([
+// CHECK-NEXT:                             ((128 as i32) as i8) as u8,
+// CHECK-NEXT:                             ((128 as i32) as i8) as u8,
+// CHECK-NEXT:                             ((128 as i32) as i8) as u8,
+// CHECK-NEXT:                             ((128 as i32) as i8) as u8,
+// CHECK-NEXT:                             ((128 as i32) as i8) as u8,
+// CHECK-NEXT:                             ((128 as i32) as i8) as u8,
+// CHECK-NEXT:                             ((128 as i32) as i8) as u8,
+// CHECK-NEXT:                             ((128 as i32) as i8) as u8,
+// CHECK-NEXT:                             3 as u8,
+// CHECK-NEXT:                             3 as u8,
+// CHECK-NEXT:                             3 as u8,
+// CHECK-NEXT:                             3 as u8,
+// CHECK-NEXT:                             3 as u8,
+// CHECK-NEXT:                             3 as u8,
+// CHECK-NEXT:                             3 as u8,
+// CHECK-NEXT:                             3 as u8,
+// CHECK-NEXT:                         ]);
+// CHECK-NEXT:                         std::ptr::addr_of_mut!([[SLATE_COMPOUND_11]])
 // CHECK-NEXT:                     },
 // CHECK-NEXT:                 )
 // CHECK-NEXT:             }[i as usize] as u64) as i64;
@@ -1122,7 +1114,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut fused: std::simd::Simd<f32, 8> = unsafe {
-// CHECK-NEXT:         _mm256_fmadd_ps(floats, floats, unsafe { _mm256_set1_ps(0.5f32) })
+// CHECK-NEXT:         _mm256_fmadd_ps(floats, floats, _mm256_set1_ps(0.5f32))
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut f: __SlateAlign16<[f32; 4]> = __SlateAlign16([0 as f32; 4]);
 // CHECK-NEXT:     unsafe {
@@ -1178,7 +1170,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"popcnt %lld\n".as_ptr(),
-// CHECK-NEXT:             unsafe { _mm512_reduce_add_epi64(unsafe { _mm512_popcnt_epi64(words) }) },
+// CHECK-NEXT:             _mm512_reduce_add_epi64(_mm512_popcnt_epi64(words)),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -1272,18 +1264,14 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let fused: std::simd::Simd<f32, 16> = unsafe {
-// CHECK-NEXT:         _mm512_fmadd_ps(
-// CHECK-NEXT:             floats,
-// CHECK-NEXT:             unsafe { _mm512_set1_ps(1.5f32) },
-// CHECK-NEXT:             unsafe { _mm512_set1_ps(0.25f32) },
-// CHECK-NEXT:         )
+// CHECK-NEXT:         _mm512_fmadd_ps(floats, _mm512_set1_ps(1.5f32), _mm512_set1_ps(0.25f32))
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"fadd %.9g %.9g\n".as_ptr(),
-// CHECK-NEXT:             (unsafe { _mm512_reduce_add_ps(floats) }) as f64,
-// CHECK-NEXT:             (unsafe { _mm512_reduce_add_ps(fused) }) as f64,
+// CHECK-NEXT:             _mm512_reduce_add_ps(floats) as f64,
+// CHECK-NEXT:             _mm512_reduce_add_ps(fused) as f64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

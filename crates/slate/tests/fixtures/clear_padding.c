@@ -114,12 +114,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     for i in 0..n {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             printf(
-// CHECK-NEXT:                 c" %02x".as_ptr(),
-// CHECK-NEXT:                 ((unsafe { *unsafe { bytes.offset(i as isize) } }) as u32) as i32,
-// CHECK-NEXT:             )
-// CHECK-NEXT:         };
+// CHECK-NEXT:         unsafe { printf(c" %02x".as_ptr(), (*bytes.offset(i as isize) as u32) as i32) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("");

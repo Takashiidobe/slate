@@ -33,8 +33,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%d %ld\n".as_ptr(),
-// CHECK-NEXT:             (unsafe { *c.ptr }) + unsafe { *d.ptr },
-// CHECK-NEXT:             (unsafe { d.ptr.offset_from(c.ptr as *mut i32) }) as i64,
+// CHECK-NEXT:             *c.ptr + *d.ptr,
+// CHECK-NEXT:             d.ptr.offset_from(c.ptr as *mut i32) as i64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

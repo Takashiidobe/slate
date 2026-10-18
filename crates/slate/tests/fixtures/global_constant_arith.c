@@ -63,31 +63,24 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%d %lld %u %d %d %u\n".as_ptr(),
-// CHECK-NEXT:             unsafe { negative },
-// CHECK-NEXT:             unsafe { wide_neg },
-// CHECK-NEXT:             unsafe { wrapped },
-// CHECK-NEXT:             unsafe { mixed },
-// CHECK-NEXT:             unsafe { bits },
-// CHECK-NEXT:             unsafe { shifted },
+// CHECK-NEXT:             negative,
+// CHECK-NEXT:             wide_neg,
+// CHECK-NEXT:             wrapped,
+// CHECK-NEXT:             mixed,
+// CHECK-NEXT:             bits,
+// CHECK-NEXT:             shifted,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%g %g %d\n".as_ptr(),
-// CHECK-NEXT:             unsafe { scaled },
-// CHECK-NEXT:             (unsafe { halved }) as f64,
-// CHECK-NEXT:             (unsafe { sign }) as i32,
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { printf(c"%g %g %d\n".as_ptr(), scaled, halved as f64, sign as i32) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {} {} {}", unsafe { table[0] }, unsafe { table[1] }, unsafe { table[2]
 // CHECK-NEXT:         }, unsafe { range.lo }, unsafe { range.hi }, unsafe { exported }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         negative = (unsafe { negative }) - 1;
+// CHECK-NEXT:         negative = negative - 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("{}", unsafe { negative });
 // CHECK-NEXT:     0

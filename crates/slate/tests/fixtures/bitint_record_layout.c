@@ -112,13 +112,13 @@ int main(void) {
 // CHECK-NEXT:             c"%zu %zu %d %d %lld %d %c%c%c\n".as_ptr(),
 // CHECK-NEXT:             24 as u64,
 // CHECK-NEXT:             40 as u64,
-// CHECK-NEXT:             (unsafe { values.0[1].tag }) as i32,
-// CHECK-NEXT:             unsafe { values.0[1].inner.prefix },
+// CHECK-NEXT:             values.0[1].tag as i32,
+// CHECK-NEXT:             values.0[1].inner.prefix,
 // CHECK-NEXT:             unsafe { values.0[1].inner.value }.to_i128() as i64,
-// CHECK-NEXT:             (unsafe { values.0[1].tail }) as i32,
-// CHECK-NEXT:             (unsafe { item.bytes[0] }) as i32,
-// CHECK-NEXT:             (unsafe { item.bytes[1] }) as i32,
-// CHECK-NEXT:             (unsafe { item.bytes[2] }) as i32,
+// CHECK-NEXT:             values.0[1].tail as i32,
+// CHECK-NEXT:             item.bytes[0] as i32,
+// CHECK-NEXT:             item.bytes[1] as i32,
+// CHECK-NEXT:             item.bytes[2] as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

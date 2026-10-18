@@ -206,10 +206,10 @@ int main(void) {
 // CHECK-NEXT:         std::ptr::write_bytes(c as *mut u8, 4 as u8, ((n as i64) as u64) as usize)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     ok
-// CHECK-NEXT:         * (((unsafe { *unsafe { small.offset(2 as isize) } }) as i32)
-// CHECK-NEXT:             + ((unsafe { *unsafe { a.offset((n - 1) as isize) } }) as i32)
-// CHECK-NEXT:             + ((unsafe { *unsafe { b.offset((n - 1) as isize) } }) as i32)
-// CHECK-NEXT:             + ((unsafe { *unsafe { c.offset((n - 1) as isize) } }) as i32))
+// CHECK-NEXT:         * (((unsafe { *small.offset(2 as isize) }) as i32)
+// CHECK-NEXT:             + ((unsafe { *a.offset((n - 1) as isize) }) as i32)
+// CHECK-NEXT:             + ((unsafe { *b.offset((n - 1) as isize) }) as i32)
+// CHECK-NEXT:             + ((unsafe { *c.offset((n - 1) as isize) }) as i32))
 // CHECK-NEXT: }
 // CHECK-NEXT: fn with_align_uninitialized(n: i32) -> i32 {
 // CHECK-NEXT:     let __slate_alloca_mark = __slate_alloca::Mark::new();
@@ -219,12 +219,12 @@ int main(void) {
 // CHECK-NEXT:     ) as *mut ()) as *mut i32;
 // CHECK-NEXT:     for i in 0..n {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *unsafe { p.offset(i as isize) } = i * i;
+// CHECK-NEXT:             *p.offset(i as isize) = i * i;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut sum: i32 = 0;
 // CHECK-NEXT:     for i in 0..n {
-// CHECK-NEXT:         sum += unsafe { *unsafe { p.offset(i as isize) } };
+// CHECK-NEXT:         sum += unsafe { *p.offset(i as isize) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     aligned_to(p as *mut (), 128 as u64) * sum
 // CHECK-NEXT: }
@@ -238,7 +238,7 @@ int main(void) {
 // CHECK-NEXT:         ) as *mut ()) as *mut u8;
 // CHECK-NEXT:         unsafe { std::ptr::write_bytes(p as *mut u8, 5 as u8, 1100000 as usize) };
 // CHECK-NEXT:         let [[V_8:__v[0-9]+]]: i32 = aligned_to(p as *mut (), 256 as u64)
-// CHECK-NEXT:             * (((unsafe { *unsafe { p.offset(1099999 as isize) } }) as u32) as i32);
+// CHECK-NEXT:             * (((unsafe { *p.offset(1099999 as isize) }) as u32) as i32);
 // CHECK-NEXT:         total += [[V_8]] as i64;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total

@@ -96,7 +96,7 @@ int main(void) {
 // CHECK-NEXT:             append.0.as_mut_ptr() as *mut i8,
 // CHECK-NEXT:             trunc_copy.0.as_mut_ptr() as *mut i8,
 // CHECK-NEXT:             trunc_append.0.as_mut_ptr() as *mut i8,
-// CHECK-NEXT:             unsafe { strlen(trunc_append.0.as_mut_ptr() as *const i8) },
+// CHECK-NEXT:             strlen(trunc_append.0.as_mut_ptr() as *const i8),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

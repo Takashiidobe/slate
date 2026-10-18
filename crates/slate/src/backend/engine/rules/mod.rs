@@ -11,6 +11,7 @@ mod label_elide;
 mod libc_call;
 mod literal_casts;
 mod loop_to_while;
+mod nested_unsafe;
 mod param_spills;
 mod pattern_range;
 mod peel_casts;
@@ -86,4 +87,12 @@ pub(super) fn registry(target: &slate_parser::target_info::TargetInfo) -> Vec<Bo
 
 pub(super) fn late_registry() -> Vec<Box<dyn NodeRule>> {
     vec![Box::new(literal_casts::LiteralCasts)]
+}
+
+pub(super) fn unsafe_registry() -> Vec<Box<dyn NodeRule>> {
+    vec![
+        Box::new(nested_unsafe::NestedUnsafeStmt),
+        Box::new(nested_unsafe::NestedUnsafeExpr),
+        Box::new(singleton_scopes::ScopeFlatten),
+    ]
 }

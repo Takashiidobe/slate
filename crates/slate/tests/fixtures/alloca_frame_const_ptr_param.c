@@ -28,7 +28,7 @@ int main(void) {
 // CHECK-NEXT: fn use_params(params: &[[SLATERECORD_0]], out: &mut u32, lo: *const i8, hi: *const i8) {
 // CHECK-NEXT:     let diff: i64 = (unsafe { hi.offset_from(lo as *const i8) }) as i64;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *(out as *mut u32) = ((unsafe { (*(params as *const [[SLATERECORD_0]])).windowLog })
+// CHECK-NEXT:         *(out as *mut u32) = ((*(params as *const [[SLATERECORD_0]])).windowLog
 // CHECK-NEXT:             + (diff as i32)) as u32;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }

@@ -33,7 +33,7 @@ done:
 // CHECK-NEXT:         '[[JOIN_0:__join_[0-9]+]]: {
 // CHECK-NEXT:             choose_b = 0;
 // CHECK-NEXT:             x = 0;
-// CHECK-NEXT:             if (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(choose_b)) }) != 0 {
+// CHECK-NEXT:             if std::ptr::read_volatile(std::ptr::addr_of!(choose_b)) != 0 {
 // CHECK-NEXT:                 __slate_state = 1;
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 __slate_state = 2;

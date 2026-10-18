@@ -31,7 +31,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%ld %d\n".as_ptr(),
-// CHECK-NEXT:             (unsafe { hit.offset_from(buf.as_mut_ptr() as *mut u8) }) as i64,
+// CHECK-NEXT:             hit.offset_from(buf.as_mut_ptr() as *mut u8) as i64,
 // CHECK-NEXT:             (miss == std::ptr::null_mut::<u8>()) as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };

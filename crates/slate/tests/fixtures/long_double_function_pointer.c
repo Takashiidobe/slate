@@ -310,20 +310,18 @@ int main(void) {
 // CHECK-NEXT:             __slate_printf__ri32_pi8_i32_f80(
 // CHECK-NEXT:                 c"b%d %.6Lf\n".as_ptr(),
 // CHECK-NEXT:                 i,
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     __slate_icall__rf80_f80_i32(
-// CHECK-NEXT:                         unsafe {
-// CHECK-NEXT:                             std::mem::transmute::<
-// CHECK-NEXT:                                 Option<
-// CHECK-NEXT:                                     unsafe extern "C-unwind" fn(LongDouble, i32) -> LongDouble,
-// CHECK-NEXT:                                 >,
-// CHECK-NEXT:                                 *const (),
-// CHECK-NEXT:                             >(b.0[i as usize])
-// CHECK-NEXT:                         },
-// CHECK-NEXT:                         LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 63]),
-// CHECK-NEXT:                         3 as i32,
-// CHECK-NEXT:                     )
-// CHECK-NEXT:                 },
+// CHECK-NEXT:                 __slate_icall__rf80_f80_i32(
+// CHECK-NEXT:                     unsafe {
+// CHECK-NEXT:                         std::mem::transmute::<
+// CHECK-NEXT:                             Option<
+// CHECK-NEXT:                                 unsafe extern "C-unwind" fn(LongDouble, i32) -> LongDouble,
+// CHECK-NEXT:                             >,
+// CHECK-NEXT:                             *const (),
+// CHECK-NEXT:                         >(b.0[i as usize])
+// CHECK-NEXT:                     },
+// CHECK-NEXT:                     LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 63]),
+// CHECK-NEXT:                     3 as i32,
+// CHECK-NEXT:                 ),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };

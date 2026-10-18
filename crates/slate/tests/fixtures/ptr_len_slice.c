@@ -33,7 +33,7 @@ int main(void) {
 // CHECK-NEXT: fn sum(items: *mut i32, len: i32) -> i32 {
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     for i in 0..len {
-// CHECK-NEXT:         total += unsafe { *unsafe { items.offset(i as isize) } };
+// CHECK-NEXT:         total += unsafe { *items.offset(i as isize) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
@@ -43,7 +43,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     for i in 0..len {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             __items_view[i as usize] = (unsafe { __items_view[i as usize] }) + 1;
+// CHECK-NEXT:             __items_view[i as usize] = __items_view[i as usize] + 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }

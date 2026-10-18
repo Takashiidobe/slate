@@ -29,7 +29,7 @@ int main(void) {
 // CHECK-NEXT: static mut calls: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT: fn next() -> u64 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         calls = (unsafe { calls }) + 1;
+// CHECK-NEXT:         calls = calls + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     4294967296
 // CHECK-NEXT: }
@@ -46,9 +46,9 @@ int main(void) {
 // CHECK-NEXT:     let mut i: u32 = 0;
 // CHECK-NEXT:     while (i as u64) < 56 / 8 {
 // CHECK-NEXT:         let __slate_printf_arg0 = unsafe {
-// CHECK-NEXT:             std::ptr::read_volatile(unsafe {
-// CHECK-NEXT:                 (values.0.as_mut_ptr() as *mut u64).offset(i as isize)
-// CHECK-NEXT:             })
+// CHECK-NEXT:             std::ptr::read_volatile(
+// CHECK-NEXT:                 (values.0.as_mut_ptr() as *mut u64).offset(i as isize),
+// CHECK-NEXT:             )
 // CHECK-NEXT:         }
 // CHECK-NEXT:             .leading_zeros() as i32;
 // CHECK-NEXT:         print!("{} ", __slate_printf_arg0);

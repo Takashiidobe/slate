@@ -44,7 +44,7 @@ int main(void) {
 // CHECK-NEXT:                     return 10;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 3 => {
-// CHECK-NEXT:                     match (unsafe { targets.0[x as usize] }) as usize {
+// CHECK-NEXT:                     match targets.0[x as usize] as usize {
 // CHECK-NEXT:                         4 => {
 // CHECK-NEXT:                             __slate_state = 2usize;
 // CHECK-NEXT:                             continue;

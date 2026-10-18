@@ -40,13 +40,11 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *[[V_0]] = [[V_1]].wrapping_add(10);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { *unsafe { items.offset(0 as isize) } }
-// CHECK-NEXT:         .wrapping_add(unsafe { *unsafe { items.offset(2 as isize) } })
+// CHECK-NEXT:     unsafe { *items.offset(0 as isize) }
+// CHECK-NEXT:         .wrapping_add(unsafe { *items.offset(2 as isize) })
 // CHECK-NEXT: }
 // CHECK-NEXT: fn middle(items: *mut [u32; 3]) -> u32 {
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *unsafe { unsafe { (*items).as_mut_ptr() as *mut u32 }.offset(1 as isize) }
-// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe { *((*items).as_mut_ptr() as *mut u32).offset(1 as isize) }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let first: u32 = update(unsafe { std::ptr::addr_of_mut!(values) as *mut u32 });
@@ -59,7 +57,7 @@ int main(void) {
 // CHECK-NEXT:             c"%u %u %u\n".as_ptr(),
 // CHECK-NEXT:             first,
 // CHECK-NEXT:             second,
-// CHECK-NEXT:             middle(unsafe { std::ptr::addr_of_mut!(values) }),
+// CHECK-NEXT:             middle(std::ptr::addr_of_mut!(values)),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

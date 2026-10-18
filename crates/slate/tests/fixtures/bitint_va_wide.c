@@ -197,26 +197,24 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%lld\n".as_ptr(),
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 vsum(
-// CHECK-NEXT:                     5 as i32,
-// CHECK-NEXT:                     <bitint::BInt<
-// CHECK-NEXT:                         100,
-// CHECK-NEXT:                         2,
-// CHECK-NEXT:                         16,
-// CHECK-NEXT:                         bitint::A8,
-// CHECK-NEXT:                     >>::from_i128(123456789012345 as i128),
-// CHECK-NEXT:                     <bitint::BInt<128, 2, 16, bitint::A8>>::from_i128(-77 as i128),
-// CHECK-NEXT:                     <bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(1 as i128)
-// CHECK-NEXT:                         .shl_bits(130 as usize)
-// CHECK-NEXT:                         .wrapping_add(
-// CHECK-NEXT:                             <bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(9 as i128),
-// CHECK-NEXT:                         ),
-// CHECK-NEXT:                     <bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(-5 as i128),
-// CHECK-NEXT:                     <bitint::BInt<128, 2, 16, bitint::A8>>::from_i128(1 as i128)
-// CHECK-NEXT:                         .shl_bits(100 as usize),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
+// CHECK-NEXT:             vsum(
+// CHECK-NEXT:                 5 as i32,
+// CHECK-NEXT:                 <bitint::BInt<
+// CHECK-NEXT:                     100,
+// CHECK-NEXT:                     2,
+// CHECK-NEXT:                     16,
+// CHECK-NEXT:                     bitint::A8,
+// CHECK-NEXT:                 >>::from_i128(123456789012345 as i128),
+// CHECK-NEXT:                 <bitint::BInt<128, 2, 16, bitint::A8>>::from_i128(-77 as i128),
+// CHECK-NEXT:                 <bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(1 as i128)
+// CHECK-NEXT:                     .shl_bits(130 as usize)
+// CHECK-NEXT:                     .wrapping_add(
+// CHECK-NEXT:                         <bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(9 as i128),
+// CHECK-NEXT:                     ),
+// CHECK-NEXT:                 <bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(-5 as i128),
+// CHECK-NEXT:                 <bitint::BInt<128, 2, 16, bitint::A8>>::from_i128(1 as i128)
+// CHECK-NEXT:                     .shl_bits(100 as usize),
+// CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -224,43 +222,41 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%lld\n".as_ptr(),
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 vwide(
-// CHECK-NEXT:                     2 as i32,
-// CHECK-NEXT:                     <bitint::BUint<
-// CHECK-NEXT:                         300,
-// CHECK-NEXT:                         5,
-// CHECK-NEXT:                         40,
-// CHECK-NEXT:                         bitint::A8,
-// CHECK-NEXT:                     >>::from_bint(
-// CHECK-NEXT:                             <bitint::BInt<300, 5, 40, bitint::A8>>::from_i128(3 as i128),
-// CHECK-NEXT:                         )
-// CHECK-NEXT:                         .shl_bits(255 as usize)
-// CHECK-NEXT:                         .bitor_bits(
-// CHECK-NEXT:                             <bitint::BUint<
+// CHECK-NEXT:             vwide(
+// CHECK-NEXT:                 2 as i32,
+// CHECK-NEXT:                 <bitint::BUint<
+// CHECK-NEXT:                     300,
+// CHECK-NEXT:                     5,
+// CHECK-NEXT:                     40,
+// CHECK-NEXT:                     bitint::A8,
+// CHECK-NEXT:                 >>::from_bint(
+// CHECK-NEXT:                         <bitint::BInt<300, 5, 40, bitint::A8>>::from_i128(3 as i128),
+// CHECK-NEXT:                     )
+// CHECK-NEXT:                     .shl_bits(255 as usize)
+// CHECK-NEXT:                     .bitor_bits(
+// CHECK-NEXT:                         <bitint::BUint<
+// CHECK-NEXT:                             300,
+// CHECK-NEXT:                             5,
+// CHECK-NEXT:                             40,
+// CHECK-NEXT:                             bitint::A8,
+// CHECK-NEXT:                         >>::from_bint(
+// CHECK-NEXT:                             <bitint::BInt<
 // CHECK-NEXT:                                 300,
 // CHECK-NEXT:                                 5,
 // CHECK-NEXT:                                 40,
 // CHECK-NEXT:                                 bitint::A8,
-// CHECK-NEXT:                             >>::from_bint(
-// CHECK-NEXT:                                 <bitint::BInt<
-// CHECK-NEXT:                                     300,
-// CHECK-NEXT:                                     5,
-// CHECK-NEXT:                                     40,
-// CHECK-NEXT:                                     bitint::A8,
-// CHECK-NEXT:                                 >>::from_i128(4660 as i128),
-// CHECK-NEXT:                             ),
+// CHECK-NEXT:                             >>::from_i128(4660 as i128),
 // CHECK-NEXT:                         ),
-// CHECK-NEXT:                     <bitint::BUint<
-// CHECK-NEXT:                         300,
-// CHECK-NEXT:                         5,
-// CHECK-NEXT:                         40,
-// CHECK-NEXT:                         bitint::A8,
-// CHECK-NEXT:                     >>::from_bint(
-// CHECK-NEXT:                         <bitint::BInt<300, 5, 40, bitint::A8>>::from_i128(9 as i128),
 // CHECK-NEXT:                     ),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
+// CHECK-NEXT:                 <bitint::BUint<
+// CHECK-NEXT:                     300,
+// CHECK-NEXT:                     5,
+// CHECK-NEXT:                     40,
+// CHECK-NEXT:                     bitint::A8,
+// CHECK-NEXT:                 >>::from_bint(
+// CHECK-NEXT:                     <bitint::BInt<300, 5, 40, bitint::A8>>::from_i128(9 as i128),
+// CHECK-NEXT:                 ),
+// CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

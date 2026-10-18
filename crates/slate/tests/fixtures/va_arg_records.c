@@ -225,13 +225,7 @@ int main(void) {
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             printf(
-// CHECK-NEXT:                 c" %lld %lld %g %g\n".as_ptr(),
-// CHECK-NEXT:                 big.v[0],
-// CHECK-NEXT:                 big.v[4],
-// CHECK-NEXT:                 unsafe { ud.e[0] },
-// CHECK-NEXT:                 unsafe { ud.e[1] },
-// CHECK-NEXT:             )
+// CHECK-NEXT:             printf(c" %lld %lld %g %g\n".as_ptr(), big.v[0], big.v[4], ud.e[0], ud.e[1])
 // CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     }

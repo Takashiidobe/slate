@@ -79,7 +79,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn once(p: &i32) -> *mut i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         calls = (unsafe { calls }) + 1;
+// CHECK-NEXT:         calls = calls + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     (p as *const i32) as *mut i32
 // CHECK-NEXT: }
@@ -177,7 +177,7 @@ int main(void) {
 // CHECK-NEXT:     let vv: i32 = unsafe {
 // CHECK-NEXT:         std::sync::atomic::AtomicI32::load_volatile(
 // CHECK-NEXT:             std::sync::atomic::AtomicI32::from_ptr_raw(
-// CHECK-NEXT:                 once(unsafe { &(*std::ptr::addr_of_mut!(v)) }) as *mut i32,
+// CHECK-NEXT:                 once(&(*std::ptr::addr_of_mut!(v))) as *mut i32,
 // CHECK-NEXT:             ),
 // CHECK-NEXT:             std::sync::atomic::Ordering::Relaxed,
 // CHECK-NEXT:         )
@@ -217,7 +217,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::sync::atomic::AtomicI32::from_ptr(
-// CHECK-NEXT:                 (unsafe { std::ptr::addr_of_mut!(shared) }) as *mut i32,
+// CHECK-NEXT:                 std::ptr::addr_of_mut!(shared) as *mut i32,
 // CHECK-NEXT:             )
 // CHECK-NEXT:             .store(11 as i32, std::sync::atomic::Ordering::Release)
 // CHECK-NEXT:     };
@@ -250,26 +250,21 @@ int main(void) {
 // CHECK-NEXT:             bv,
 // CHECK-NEXT:             cv,
 // CHECK-NEXT:             dv,
-// CHECK-NEXT:             unsafe { *pv },
+// CHECK-NEXT:             *pv,
 // CHECK-NEXT:             vv,
 // CHECK-NEXT:             (sv as u32) as i32,
 // CHECK-NEXT:             wv,
-// CHECK-NEXT:             unsafe { calls },
-// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(v)) },
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 std::sync::atomic::AtomicI32::from_ptr(
-// CHECK-NEXT:                         (unsafe { std::ptr::addr_of_mut!(shared) }) as *mut i32,
-// CHECK-NEXT:                     )
-// CHECK-NEXT:                     .load(std::sync::atomic::Ordering::Acquire)
-// CHECK-NEXT:             },
-// CHECK-NEXT:             ((unsafe { std::ptr::read_volatile(std::ptr::addr_of!(counters.small)) })
-// CHECK-NEXT:                 as u32) as i32,
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 std::sync::atomic::AtomicI32::from_ptr(
-// CHECK-NEXT:                         std::ptr::addr_of_mut!(counters.value) as *mut i32,
-// CHECK-NEXT:                     )
-// CHECK-NEXT:                     .load(std::sync::atomic::Ordering::SeqCst)
-// CHECK-NEXT:             },
+// CHECK-NEXT:             calls,
+// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(v)),
+// CHECK-NEXT:             std::sync::atomic::AtomicI32::from_ptr(
+// CHECK-NEXT:                     std::ptr::addr_of_mut!(shared) as *mut i32,
+// CHECK-NEXT:                 )
+// CHECK-NEXT:                 .load(std::sync::atomic::Ordering::Acquire),
+// CHECK-NEXT:             (std::ptr::read_volatile(std::ptr::addr_of!(counters.small)) as u32) as i32,
+// CHECK-NEXT:             std::sync::atomic::AtomicI32::from_ptr(
+// CHECK-NEXT:                     std::ptr::addr_of_mut!(counters.value) as *mut i32,
+// CHECK-NEXT:                 )
+// CHECK-NEXT:                 .load(std::sync::atomic::Ordering::SeqCst),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

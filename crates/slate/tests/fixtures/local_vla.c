@@ -31,7 +31,7 @@ int main(void) {
 // CHECK-NEXT: fn sum_vla(length: i32, values: *mut [i32; 0]) -> i32 {
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     for index in 0..length {
-// CHECK-NEXT:         total += unsafe { *unsafe { (values as *mut i32).offset(index as isize) } };
+// CHECK-NEXT:         total += unsafe { *(values as *mut i32).offset(index as isize) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
@@ -48,8 +48,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     for index in 0..length {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *unsafe { (values.as_mut_ptr() as *mut i32).offset(index as isize) } = index
-// CHECK-NEXT:                 + 3;
+// CHECK-NEXT:             *(values.as_mut_ptr() as *mut i32).offset(index as isize) = index + 3;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     result = sum_vla(length, values.as_mut_ptr() as *mut [i32; 0]);

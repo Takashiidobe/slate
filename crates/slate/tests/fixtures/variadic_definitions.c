@@ -212,7 +212,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%.3f\n".as_ptr(),
-// CHECK-NEXT:             unsafe { promoted(2 as i32, f as f64, 2.5f64, c as i32, s as i32) },
+// CHECK-NEXT:             promoted(2 as i32, f as f64, 2.5f64, c as i32, s as i32),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -220,22 +220,18 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%s %s\n".as_ptr(),
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 pick(
-// CHECK-NEXT:                     0 as i32,
-// CHECK-NEXT:                     c"zero".as_ptr() as *mut i8,
-// CHECK-NEXT:                     c"one".as_ptr() as *mut i8,
-// CHECK-NEXT:                     c"two".as_ptr() as *mut i8,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 pick(
-// CHECK-NEXT:                     2 as i32,
-// CHECK-NEXT:                     c"zero".as_ptr() as *mut i8,
-// CHECK-NEXT:                     c"one".as_ptr() as *mut i8,
-// CHECK-NEXT:                     c"two".as_ptr() as *mut i8,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
+// CHECK-NEXT:             pick(
+// CHECK-NEXT:                 0 as i32,
+// CHECK-NEXT:                 c"zero".as_ptr() as *mut i8,
+// CHECK-NEXT:                 c"one".as_ptr() as *mut i8,
+// CHECK-NEXT:                 c"two".as_ptr() as *mut i8,
+// CHECK-NEXT:             ),
+// CHECK-NEXT:             pick(
+// CHECK-NEXT:                 2 as i32,
+// CHECK-NEXT:                 c"zero".as_ptr() as *mut i8,
+// CHECK-NEXT:                 c"one".as_ptr() as *mut i8,
+// CHECK-NEXT:                 c"two".as_ptr() as *mut i8,
+// CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -244,15 +240,12 @@ int main(void) {
 // CHECK-NEXT:         as i32) }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%ld\n".as_ptr(),
-// CHECK-NEXT:             unsafe { chain(5 as i32, 1000000000000 as i64, 4660 as u64) },
-// CHECK-NEXT:         )
+// CHECK-NEXT:         printf(c"%ld\n".as_ptr(), chain(5 as i32, 1000000000000 as i64, 4660 as u64))
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{}", unsafe { * ((unsafe { same_pointer(std::ptr::addr_of_mut!(value) as * mut
-// CHECK-NEXT:         (), std::ptr::addr_of_mut!(value)) }) as * mut i32) }
+// CHECK-NEXT:         "{}", unsafe { * (same_pointer(std::ptr::addr_of_mut!(value) as * mut (),
+// CHECK-NEXT:         std::ptr::addr_of_mut!(value)) as * mut i32) }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     (unsafe { dot(1 as i32, 6 as i32, 7 as i32) }) % 40
 // CHECK-NEXT: }

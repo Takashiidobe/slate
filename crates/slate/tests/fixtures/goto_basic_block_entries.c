@@ -99,9 +99,7 @@ int main(void) {
 // CHECK-NEXT:             match __slate_state {
 // CHECK-NEXT:                 8 => {
 // CHECK-NEXT:                     sum += 3;
-// CHECK-NEXT:                     unsafe {
-// CHECK-NEXT:                         std::ptr::write_volatile(std::ptr::addr_of_mut!(observed), sum)
-// CHECK-NEXT:                     };
+// CHECK-NEXT:                     std::ptr::write_volatile(std::ptr::addr_of_mut!(observed), sum);
 // CHECK-NEXT:                     visits += 1;
 // CHECK-NEXT:                     if visits < 4 {
 // CHECK-NEXT:                         __slate_state = 9;
@@ -111,9 +109,7 @@ int main(void) {
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 _ => {
 // CHECK-NEXT:                     sum += 2;
-// CHECK-NEXT:                     unsafe {
-// CHECK-NEXT:                         std::ptr::write_volatile(std::ptr::addr_of_mut!(observed), sum)
-// CHECK-NEXT:                     };
+// CHECK-NEXT:                     std::ptr::write_volatile(std::ptr::addr_of_mut!(observed), sum);
 // CHECK-NEXT:                     visits += 1;
 // CHECK-NEXT:                     if visits < 4 {
 // CHECK-NEXT:                         __slate_state = 8;
@@ -141,9 +137,7 @@ int main(void) {
 // CHECK-NEXT:                         }
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                     let [[V_1:__v[0-9]+]]: i32 = sum
-// CHECK-NEXT:                         + unsafe {
-// CHECK-NEXT:                             std::ptr::read_volatile(std::ptr::addr_of!(observed))
-// CHECK-NEXT:                         };
+// CHECK-NEXT:                         + std::ptr::read_volatile(std::ptr::addr_of!(observed));
 // CHECK-NEXT:                     sum = [[V_1]];
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 steps += 1;
@@ -153,8 +147,8 @@ int main(void) {
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:         println!(
-// CHECK-NEXT:             "{} {} {} {} {}", sum, visits, checks, steps, unsafe {
-// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(observed)) }
+// CHECK-NEXT:             "{} {} {} {} {}", sum, visits, checks, steps,
+// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(observed))
 // CHECK-NEXT:         );
 // CHECK-NEXT:         return sum;
 // CHECK-NEXT:     }

@@ -56,9 +56,7 @@ int main(void) {
 // CHECK-NEXT: });
 // CHECK-NEXT: static mut failures: i32 = 0 as i32;
 // CHECK-NEXT: fn fail_now() {
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         longjmp(unsafe { std::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag }, 1 as i32)
-// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { longjmp(std::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag, 1 as i32) };
 // CHECK-NEXT: }
 // CHECK-NEXT: extern "C-unwind" fn check(ok: i32) {
 // CHECK-NEXT:     if !(ok != 0) {
@@ -67,12 +65,9 @@ int main(void) {
 // CHECK-NEXT:     println!("PASS");
 // CHECK-NEXT: }
 // CHECK-NEXT: fn run_case(r#fn: Option<unsafe extern "C-unwind" fn(i32)>, ok: i32) {
-// CHECK-NEXT:     if (unsafe {
-// CHECK-NEXT:         _setjmp(unsafe { std::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag })
-// CHECK-NEXT:     }) != 0
-// CHECK-NEXT:     {
+// CHECK-NEXT:     if (unsafe { _setjmp(std::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag) }) != 0 {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             failures = (unsafe { failures }) + 1;
+// CHECK-NEXT:             failures = failures + 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         println!("FAIL");
 // CHECK-NEXT:         return;

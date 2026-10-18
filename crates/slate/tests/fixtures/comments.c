@@ -55,7 +55,7 @@ int main(void) {
 // CHECK-NEXT:     // stores the intermediate result
 // CHECK-NEXT:     let next: i32 = value + 1;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         completed_count = (unsafe { completed_count }) + 1;
+// CHECK-NEXT:         completed_count = completed_count + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { std::ptr::read_volatile(std::ptr::addr_of!(next)) }
 // CHECK-NEXT: }

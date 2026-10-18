@@ -47,7 +47,7 @@ int main(void) {
 // CHECK-NEXT: fn input() -> std::simd::Simd<i16, 8> {
 // CHECK-NEXT:     let mut [[SLATE_COMPOUND_0:__slate_compound_[0-9]+]]: std::simd::Simd<i16, 8> = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         calls = (unsafe { calls }) + 1;
+// CHECK-NEXT:         calls = calls + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         *{

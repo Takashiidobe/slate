@@ -26,7 +26,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn pick(p: &mut f64) -> f64 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *(p as *mut f64) = (unsafe { *(p as *mut f64) }) + 5.0f64;
+// CHECK-NEXT:         *(p as *mut f64) = *(p as *mut f64) + 5.0f64;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { *(p as *mut f64) }
 // CHECK-NEXT: }

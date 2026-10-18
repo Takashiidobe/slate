@@ -26,7 +26,7 @@ int main(void) {
 // CHECK-NEXT: fn sum_items(items: *mut i32, len: i32) -> i32 {
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     for i in 0..len {
-// CHECK-NEXT:         let item: i32 = unsafe { *unsafe { items.offset(i as isize) } };
+// CHECK-NEXT:         let item: i32 = unsafe { *items.offset(i as isize) };
 // CHECK-NEXT:         total += item;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total

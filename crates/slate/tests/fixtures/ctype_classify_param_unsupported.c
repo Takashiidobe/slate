@@ -20,9 +20,8 @@ int main(void) {
 // CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn classify(c: i8) -> i32 {
-// CHECK-NEXT:     (((unsafe {
-// CHECK-NEXT:         *unsafe { unsafe { *unsafe { __ctype_b_loc() } }.offset((c as i32) as isize) }
-// CHECK-NEXT:     }) as u32) as i32) & 1024
+// CHECK-NEXT:     (((unsafe { *unsafe { *__ctype_b_loc() }.offset((c as i32) as isize) }) as u32)
+// CHECK-NEXT:         as i32) & 1024
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     if classify(65 as i8) != 0 {

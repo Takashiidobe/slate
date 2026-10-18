@@ -41,15 +41,14 @@ int main(void) {
 // CHECK-NEXT:         (unsafe { std::ptr::addr_of_mut!(buf.0) as *mut u8 }) as *mut (),
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let b: *mut () = first_word_offset(
-// CHECK-NEXT:         (unsafe {
-// CHECK-NEXT:             unsafe { std::ptr::addr_of_mut!(buf.0) as *mut u8 }.offset(8 as isize)
-// CHECK-NEXT:         }) as *mut (),
+// CHECK-NEXT:         (unsafe { (std::ptr::addr_of_mut!(buf.0) as *mut u8).offset(8 as isize) })
+// CHECK-NEXT:             as *mut (),
 // CHECK-NEXT:         8 as u64,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {}", (a == ((unsafe { std::ptr::addr_of_mut!(buf.0) as * mut u8 }) as * mut
-// CHECK-NEXT:         ())) as i32, (b == ((unsafe { unsafe { std::ptr::addr_of_mut!(buf.0) as * mut u8
-// CHECK-NEXT:         } .offset(8 as isize) }) as * mut ())) as i32
+// CHECK-NEXT:         ())) as i32, (b == ((unsafe { (std::ptr::addr_of_mut!(buf.0) as * mut u8)
+// CHECK-NEXT:         .offset(8 as isize) }) as * mut ())) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

@@ -52,7 +52,7 @@ int main(void) {
 // CHECK-NEXT: static mut side_effects: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT: fn fallback(value: i32) -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         side_effects = (unsafe { side_effects }) + 1;
+// CHECK-NEXT:         side_effects = side_effects + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     value
 // CHECK-NEXT: }

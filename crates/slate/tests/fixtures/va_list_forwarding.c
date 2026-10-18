@@ -181,9 +181,7 @@ int main(void) {
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 if kind == 2 {
 // CHECK-NEXT:                     let text: *const i8 = unsafe { ap.next_arg::<*const i8>() };
-// CHECK-NEXT:                     total
-// CHECK-NEXT:                         += ((unsafe { *unsafe { text.offset(0 as isize) } }) as i32)
-// CHECK-NEXT:                             as f64;
+// CHECK-NEXT:                     total += ((unsafe { *text.offset(0 as isize) }) as i32) as f64;
 // CHECK-NEXT:                 } else {
 // CHECK-NEXT:                     let [[V_3:__v[0-9]+]]: f64 = (unsafe { ap.next_arg::<i64>() }) as f64;
 // CHECK-NEXT:                     total += [[V_3]];
@@ -262,38 +260,29 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%ld\n".as_ptr(),
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 sum_ints(5 as i32, 1 as i32, 2 as i32, 3 as i32, 4 as i32, 5 as i32)
-// CHECK-NEXT:             },
+// CHECK-NEXT:             sum_ints(5 as i32, 1 as i32, 2 as i32, 3 as i32, 4 as i32, 5 as i32),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%.2f\n".as_ptr(),
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 mixed(
-// CHECK-NEXT:                     4 as i32,
-// CHECK-NEXT:                     0 as i32,
-// CHECK-NEXT:                     10 as i32,
-// CHECK-NEXT:                     1 as i32,
-// CHECK-NEXT:                     0.5f64,
-// CHECK-NEXT:                     2 as i32,
-// CHECK-NEXT:                     c"A".as_ptr() as *mut i8,
-// CHECK-NEXT:                     3 as i32,
-// CHECK-NEXT:                     1000000000000 as i64,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
+// CHECK-NEXT:             mixed(
+// CHECK-NEXT:                 4 as i32,
+// CHECK-NEXT:                 0 as i32,
+// CHECK-NEXT:                 10 as i32,
+// CHECK-NEXT:                 1 as i32,
+// CHECK-NEXT:                 0.5f64,
+// CHECK-NEXT:                 2 as i32,
+// CHECK-NEXT:                 c"A".as_ptr() as *mut i8,
+// CHECK-NEXT:                 3 as i32,
+// CHECK-NEXT:                 1000000000000 as i64,
+// CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%d\n".as_ptr(),
-// CHECK-NEXT:             unsafe { sum_twice(3 as i32, 4 as i32, 5 as i32, 6 as i32) },
-// CHECK-NEXT:         )
+// CHECK-NEXT:         printf(c"%d\n".as_ptr(), sum_twice(3 as i32, 4 as i32, 5 as i32, 6 as i32))
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(c"%u\n".as_ptr(), unsafe { unsigned_pair(0 as i32, 4000000000 as u32) })
-// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { printf(c"%u\n".as_ptr(), unsigned_pair(0 as i32, 4000000000 as u32)) };
 // CHECK-NEXT:     ((unsafe { sum_ints(3 as i32, 10 as i32, 20 as i32, 30 as i32) }) % 13) as i32
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

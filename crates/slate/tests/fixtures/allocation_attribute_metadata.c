@@ -53,15 +53,15 @@ int main(void) {
 // CHECK-NEXT:         as *mut i32;
 // CHECK-NEXT:     let zeroed: *mut i32 = allocate_array(2 as u64, 4 as u64) as *mut i32;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *unsafe { values.offset(0 as isize) } = 7;
+// CHECK-NEXT:         *values.offset(0 as isize) = 7;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *unsafe { values.offset(1 as isize) } = 9;
+// CHECK-NEXT:         *values.offset(1 as isize) = 9;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let second: *mut i32 = offset_aligned(values as *mut ()) as *mut i32;
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", unsafe { * unsafe { values.offset(0 as isize) } }, unsafe { * second
-// CHECK-NEXT:         }, unsafe { * unsafe { zeroed.offset(1 as isize) } }
+// CHECK-NEXT:         "{} {} {}", unsafe { * values.offset(0 as isize) }, unsafe { * second }, unsafe {
+// CHECK-NEXT:         * zeroed.offset(1 as isize) }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe { free(zeroed as *mut ()) };
 // CHECK-NEXT:     unsafe { free(values as *mut ()) };

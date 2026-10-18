@@ -33,7 +33,7 @@ int main(void) {
 // CHECK-NEXT: static mut hits: i32 = 0 as i32;
 // CHECK-NEXT: fn mark(value: i32) -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         hits = (unsafe { hits }) + 1;
+// CHECK-NEXT:         hits = hits + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     value
 // CHECK-NEXT: }

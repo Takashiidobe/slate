@@ -24,7 +24,7 @@ int main(void) {
 // CHECK-NEXT:         *p = 41;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *p = (unsafe { *p }) + 1;
+// CHECK-NEXT:         *p = *p + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("{}", unsafe { * p });
 // CHECK-NEXT:     unsafe { free(p as *mut ()) };

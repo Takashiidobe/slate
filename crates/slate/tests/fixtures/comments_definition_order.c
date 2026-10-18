@@ -38,7 +38,7 @@ int main(void) {
 // CHECK-NEXT: /// counted doc
 // CHECK-NEXT: fn counted(x: i32) -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         calls = (unsafe { calls }) + 1;
+// CHECK-NEXT:         calls = calls + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x + unsafe { calls }
 // CHECK-NEXT: }

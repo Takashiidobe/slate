@@ -125,7 +125,7 @@ int main(void) {
 // CHECK-NEXT: static mut calls: i32 = 0 as i32;
 // CHECK-NEXT: fn next_value(value: i32) -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         calls = (unsafe { calls }) + 1;
+// CHECK-NEXT:         calls = calls + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     value
 // CHECK-NEXT: }
@@ -188,7 +188,7 @@ int main(void) {
 // CHECK-NEXT:     let mut i: i32 = 0;
 // CHECK-NEXT:     while (1 as i32) != (0 as i32) {
 // CHECK-NEXT:         '[[SLATE_CONTINUE_0:__slate_continue_[0-9]+]]: {
-// CHECK-NEXT:             let op: u32 = unsafe { *unsafe { ops.offset(i as isize) } };
+// CHECK-NEXT:             let op: u32 = unsafe { *ops.offset(i as isize) };
 // CHECK-NEXT:             i += 1;
 // CHECK-NEXT:             '[[SLATE_BREAK_3:__slate_break_[0-9]+]]: {
 // CHECK-NEXT:                 match op as u32 {
@@ -216,7 +216,7 @@ int main(void) {
 // CHECK-NEXT: fn first_over(values: *const i32, count: i32, limit: i32) -> i32 {
 // CHECK-NEXT:     let mut found: i32 = -1;
 // CHECK-NEXT:     for i in 0..count {
-// CHECK-NEXT:         if (unsafe { *unsafe { values.offset(i as isize) } }) > limit {
+// CHECK-NEXT:         if (unsafe { *values.offset(i as isize) }) > limit {
 // CHECK-NEXT:             found = i;
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }

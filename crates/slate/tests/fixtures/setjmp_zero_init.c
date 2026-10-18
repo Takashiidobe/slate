@@ -37,15 +37,9 @@ int main(void) {
 // CHECK-NEXT:     std::mem::zeroed()
 // CHECK-NEXT: });
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     if (unsafe {
-// CHECK-NEXT:         _setjmp(unsafe { std::ptr::addr_of_mut!(frame.0) as *mut __jmp_buf_tag })
-// CHECK-NEXT:     }) == 0
-// CHECK-NEXT:     {
+// CHECK-NEXT:     if (unsafe { _setjmp(std::ptr::addr_of_mut!(frame.0) as *mut __jmp_buf_tag) }) == 0 {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             longjmp(
-// CHECK-NEXT:                 unsafe { std::ptr::addr_of_mut!(frame.0) as *mut __jmp_buf_tag },
-// CHECK-NEXT:                 42 as i32,
-// CHECK-NEXT:             )
+// CHECK-NEXT:             longjmp(std::ptr::addr_of_mut!(frame.0) as *mut __jmp_buf_tag, 42 as i32)
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("returned");

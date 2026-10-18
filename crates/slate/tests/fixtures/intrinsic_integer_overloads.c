@@ -36,7 +36,7 @@ int main(void) {
 // CHECK-NEXT: static mut calls: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT: fn input() -> u32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         calls = (unsafe { calls }) + 1;
+// CHECK-NEXT:         calls = calls + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     2309737967
 // CHECK-NEXT: }
@@ -48,13 +48,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%x %x %llx %d\n".as_ptr(),
-// CHECK-NEXT:             (small as u32) as i32,
-// CHECK-NEXT:             medium,
-// CHECK-NEXT:             large,
-// CHECK-NEXT:             unsafe { calls },
-// CHECK-NEXT:         )
+// CHECK-NEXT:         printf(c"%x %x %llx %d\n".as_ptr(), (small as u32) as i32, medium, large, calls)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0

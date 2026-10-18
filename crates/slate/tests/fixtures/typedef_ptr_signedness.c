@@ -41,9 +41,9 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%c%c%c\n".as_ptr(),
-// CHECK-NEXT:             ((unsafe { *unsafe { b.start.offset(0 as isize) } }) as u32) as i32,
-// CHECK-NEXT:             ((unsafe { *unsafe { b.start.offset(1 as isize) } }) as u32) as i32,
-// CHECK-NEXT:             ((unsafe { *unsafe { b.start.offset(2 as isize) } }) as u32) as i32,
+// CHECK-NEXT:             (*b.start.offset(0 as isize) as u32) as i32,
+// CHECK-NEXT:             (*b.start.offset(1 as isize) as u32) as i32,
+// CHECK-NEXT:             (*b.start.offset(2 as isize) as u32) as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

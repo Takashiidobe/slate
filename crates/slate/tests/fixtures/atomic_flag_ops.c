@@ -34,9 +34,8 @@ int main(void) {
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: bool = unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]] = (1 as i32) != (0 as i32);
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]] = std::sync::atomic::AtomicBool::from_ptr(
-// CHECK-NEXT:                 (unsafe {
-// CHECK-NEXT:                     std::ptr::addr_of_mut!((* std::ptr::addr_of_mut!(flag))._Value)
-// CHECK-NEXT:                 }) as *mut bool,
+// CHECK-NEXT:                 std::ptr::addr_of_mut!((* std::ptr::addr_of_mut!(flag))._Value)
+// CHECK-NEXT:                     as *mut bool,
 // CHECK-NEXT:             )
 // CHECK-NEXT:             .swap([[T_0]], std::sync::atomic::Ordering::SeqCst);
 // CHECK-NEXT:         [[T_1]]
@@ -44,9 +43,8 @@ int main(void) {
 // CHECK-NEXT:     first = [[V_0]] as i32;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::sync::atomic::AtomicBool::from_ptr(
-// CHECK-NEXT:                 (unsafe {
-// CHECK-NEXT:                     std::ptr::addr_of_mut!((* std::ptr::addr_of_mut!(flag))._Value)
-// CHECK-NEXT:                 }) as *mut bool,
+// CHECK-NEXT:                 std::ptr::addr_of_mut!((* std::ptr::addr_of_mut!(flag))._Value)
+// CHECK-NEXT:                     as *mut bool,
 // CHECK-NEXT:             )
 // CHECK-NEXT:             .store((0 as i32) != (0 as i32), std::sync::atomic::Ordering::Release)
 // CHECK-NEXT:     };
@@ -54,9 +52,8 @@ int main(void) {
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: bool = unsafe {
 // CHECK-NEXT:         let [[T_2:__t[0-9]+]] = (1 as i32) != (0 as i32);
 // CHECK-NEXT:         let [[T_3:__t[0-9]+]] = std::sync::atomic::AtomicBool::from_ptr(
-// CHECK-NEXT:                 (unsafe {
-// CHECK-NEXT:                     std::ptr::addr_of_mut!((* std::ptr::addr_of_mut!(flag))._Value)
-// CHECK-NEXT:                 }) as *mut bool,
+// CHECK-NEXT:                 std::ptr::addr_of_mut!((* std::ptr::addr_of_mut!(flag))._Value)
+// CHECK-NEXT:                     as *mut bool,
 // CHECK-NEXT:             )
 // CHECK-NEXT:             .swap([[T_2]], std::sync::atomic::Ordering::Acquire);
 // CHECK-NEXT:         [[T_3]]
@@ -66,9 +63,8 @@ int main(void) {
 // CHECK-NEXT:     let [[V_2:__v[0-9]+]]: bool = unsafe {
 // CHECK-NEXT:         let [[T_4:__t[0-9]+]] = (1 as i32) != (0 as i32);
 // CHECK-NEXT:         let [[T_5:__t[0-9]+]] = std::sync::atomic::AtomicBool::from_ptr(
-// CHECK-NEXT:                 (unsafe {
-// CHECK-NEXT:                     std::ptr::addr_of_mut!((* std::ptr::addr_of_mut!(flag))._Value)
-// CHECK-NEXT:                 }) as *mut bool,
+// CHECK-NEXT:                 std::ptr::addr_of_mut!((* std::ptr::addr_of_mut!(flag))._Value)
+// CHECK-NEXT:                     as *mut bool,
 // CHECK-NEXT:             )
 // CHECK-NEXT:             .swap([[T_4]], std::sync::atomic::Ordering::Relaxed);
 // CHECK-NEXT:         [[T_5]]
@@ -76,9 +72,8 @@ int main(void) {
 // CHECK-NEXT:     third = [[V_2]] as i32;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::sync::atomic::AtomicBool::from_ptr(
-// CHECK-NEXT:                 (unsafe {
-// CHECK-NEXT:                     std::ptr::addr_of_mut!((* std::ptr::addr_of_mut!(flag))._Value)
-// CHECK-NEXT:                 }) as *mut bool,
+// CHECK-NEXT:                 std::ptr::addr_of_mut!((* std::ptr::addr_of_mut!(flag))._Value)
+// CHECK-NEXT:                     as *mut bool,
 // CHECK-NEXT:             )
 // CHECK-NEXT:             .store((0 as i32) != (0 as i32), std::sync::atomic::Ordering::SeqCst)
 // CHECK-NEXT:     };
@@ -86,9 +81,8 @@ int main(void) {
 // CHECK-NEXT:     let [[V_3:__v[0-9]+]]: bool = unsafe {
 // CHECK-NEXT:         let [[T_6:__t[0-9]+]] = (1 as i32) != (0 as i32);
 // CHECK-NEXT:         let [[T_7:__t[0-9]+]] = std::sync::atomic::AtomicBool::from_ptr(
-// CHECK-NEXT:                 (unsafe {
-// CHECK-NEXT:                     std::ptr::addr_of_mut!((* std::ptr::addr_of_mut!(flag))._Value)
-// CHECK-NEXT:                 }) as *mut bool,
+// CHECK-NEXT:                 std::ptr::addr_of_mut!((* std::ptr::addr_of_mut!(flag))._Value)
+// CHECK-NEXT:                     as *mut bool,
 // CHECK-NEXT:             )
 // CHECK-NEXT:             .swap([[T_6]], std::sync::atomic::Ordering::SeqCst);
 // CHECK-NEXT:         [[T_7]]

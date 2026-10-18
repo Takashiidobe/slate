@@ -67,7 +67,7 @@ int main(void) {
 // CHECK-NEXT: static mut failures: i32 = 0 as i32;
 // CHECK-NEXT: fn record_failure(phase: *const i8) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         failures = (unsafe { failures }) + 1;
+// CHECK-NEXT:         failures = failures + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"FAIL: %s\n".as_ptr(), phase) };
@@ -76,18 +76,12 @@ int main(void) {
 // CHECK-NEXT: fn inner_check(ok: i32) {
 // CHECK-NEXT:     if !(ok != 0) {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             longjmp(
-// CHECK-NEXT:                 unsafe { std::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag },
-// CHECK-NEXT:                 1 as i32,
-// CHECK-NEXT:             )
+// CHECK-NEXT:             longjmp(std::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag, 1 as i32)
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn run_case(id: i32, should_fail: i32) {
-// CHECK-NEXT:     if (unsafe {
-// CHECK-NEXT:         _setjmp(unsafe { std::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag })
-// CHECK-NEXT:     }) != 0
-// CHECK-NEXT:     {
+// CHECK-NEXT:     if (unsafe { _setjmp(std::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag) }) != 0 {
 // CHECK-NEXT:         record_failure(c"case".as_ptr());
 // CHECK-NEXT:         return;
 // CHECK-NEXT:     }
@@ -96,9 +90,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     for i in 0 as i32..4 as i32 {
-// CHECK-NEXT:         if (unsafe {
-// CHECK-NEXT:             _setjmp(unsafe { std::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag })
-// CHECK-NEXT:         }) != 0
+// CHECK-NEXT:         if (unsafe { _setjmp(std::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag) }) != 0
 // CHECK-NEXT:         {
 // CHECK-NEXT:             record_failure(c"loop".as_ptr());
 // CHECK-NEXT:         } else {

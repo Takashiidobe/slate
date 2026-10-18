@@ -236,7 +236,7 @@ int main(void) {
 // CHECK-NEXT: fn fold(lanes: *const i64, count: i32) -> i64 {
 // CHECK-NEXT:     let mut h: i64 = 17;
 // CHECK-NEXT:     for i in 0..count {
-// CHECK-NEXT:         h = h * 1000003 + unsafe { *unsafe { lanes.offset(i as isize) } };
+// CHECK-NEXT:         h = h * 1000003 + unsafe { *lanes.offset(i as isize) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     h
 // CHECK-NEXT: }
@@ -280,11 +280,8 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let low: std::simd::Simd<i64, 2> = unsafe { _mm256_castsi256_si128(bytes) };
 // CHECK-NEXT:     let words: std::simd::Simd<i64, 4> = unsafe { _mm256_cvtepi8_epi16(low) };
-// CHECK-NEXT:     let masked: std::simd::Simd<i64, 4> = unsafe {
-// CHECK-NEXT:         _mm256_andnot_si256(bytes, unsafe {
-// CHECK-NEXT:             _mm256_set1_epi64x(71777214294589695 as i64)
-// CHECK-NEXT:         })
-// CHECK-NEXT:     };
+// CHECK-NEXT:     let masked: std::simd::Simd<i64, 4> =
+// CHECK-NEXT:         unsafe { _mm256_andnot_si256(bytes, _mm256_set1_epi64x(71777214294589695 as i64)) };
 // CHECK-NEXT:     let floats: std::simd::Simd<f32, 8> = unsafe {
 // CHECK-NEXT:         _mm256_setr_ps(
 // CHECK-NEXT:             1.5f32, -2.25f32, 3.0f32, 4.75f32, 5.5f32, 6.0f32, -7.0f32, 8.25f32,

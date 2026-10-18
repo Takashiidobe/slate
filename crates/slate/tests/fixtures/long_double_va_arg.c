@@ -341,15 +341,13 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __slate_printf__ri32_pi8_f80(
 // CHECK-NEXT:             c"%.3Lf\n".as_ptr(),
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 __slate_vcall__rf80_i32__f80_f80_f80(
-// CHECK-NEXT:                     sum_long_doubles as *const (),
-// CHECK-NEXT:                     3 as i32,
-// CHECK-NEXT:                     LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 255, 63]),
-// CHECK-NEXT:                     LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 0, 64]),
-// CHECK-NEXT:                     LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 254, 191]),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
+// CHECK-NEXT:             __slate_vcall__rf80_i32__f80_f80_f80(
+// CHECK-NEXT:                 sum_long_doubles as *const (),
+// CHECK-NEXT:                 3 as i32,
+// CHECK-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 255, 63]),
+// CHECK-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 0, 64]),
+// CHECK-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 254, 191]),
+// CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -357,14 +355,12 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __slate_printf__ri32_pi8_f80(
 // CHECK-NEXT:             c"%La\n".as_ptr(),
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 __slate_vcall__rf80_i32__f80_f80(
-// CHECK-NEXT:                     sum_long_doubles as *const (),
-// CHECK-NEXT:                     2 as i32,
-// CHECK-NEXT:                     precise,
-// CHECK-NEXT:                     LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
+// CHECK-NEXT:             __slate_vcall__rf80_i32__f80_f80(
+// CHECK-NEXT:                 sum_long_doubles as *const (),
+// CHECK-NEXT:                 2 as i32,
+// CHECK-NEXT:                 precise,
+// CHECK-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -372,36 +368,34 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __slate_printf__ri32_pi8_f80(
 // CHECK-NEXT:             c"%.3Lf\n".as_ptr(),
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 __slate_vcall__rf80_i32__i32_i32_i32_f64_i32_f80_i32_f64_i32_f64_i32_f64_i32_f64_i32_f64_i32_f64_i32_f64_i32_f80_i32_f64(
-// CHECK-NEXT:                     mixed as *const (),
-// CHECK-NEXT:                     12 as i32,
-// CHECK-NEXT:                     0 as i32,
-// CHECK-NEXT:                     1 as i32,
-// CHECK-NEXT:                     1 as i32,
-// CHECK-NEXT:                     0.5f64,
-// CHECK-NEXT:                     2 as i32,
-// CHECK-NEXT:                     LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 63]),
-// CHECK-NEXT:                     1 as i32,
-// CHECK-NEXT:                     2.0f64,
-// CHECK-NEXT:                     1 as i32,
-// CHECK-NEXT:                     3.0f64,
-// CHECK-NEXT:                     1 as i32,
-// CHECK-NEXT:                     4.0f64,
-// CHECK-NEXT:                     1 as i32,
-// CHECK-NEXT:                     5.0f64,
-// CHECK-NEXT:                     1 as i32,
-// CHECK-NEXT:                     6.0f64,
-// CHECK-NEXT:                     1 as i32,
-// CHECK-NEXT:                     7.0f64,
-// CHECK-NEXT:                     1 as i32,
-// CHECK-NEXT:                     8.0f64,
-// CHECK-NEXT:                     2 as i32,
-// CHECK-NEXT:                     LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 253, 63]),
-// CHECK-NEXT:                     1 as i32,
-// CHECK-NEXT:                     9.0f64,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
+// CHECK-NEXT:             __slate_vcall__rf80_i32__i32_i32_i32_f64_i32_f80_i32_f64_i32_f64_i32_f64_i32_f64_i32_f64_i32_f64_i32_f64_i32_f80_i32_f64(
+// CHECK-NEXT:                 mixed as *const (),
+// CHECK-NEXT:                 12 as i32,
+// CHECK-NEXT:                 0 as i32,
+// CHECK-NEXT:                 1 as i32,
+// CHECK-NEXT:                 1 as i32,
+// CHECK-NEXT:                 0.5f64,
+// CHECK-NEXT:                 2 as i32,
+// CHECK-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 63]),
+// CHECK-NEXT:                 1 as i32,
+// CHECK-NEXT:                 2.0f64,
+// CHECK-NEXT:                 1 as i32,
+// CHECK-NEXT:                 3.0f64,
+// CHECK-NEXT:                 1 as i32,
+// CHECK-NEXT:                 4.0f64,
+// CHECK-NEXT:                 1 as i32,
+// CHECK-NEXT:                 5.0f64,
+// CHECK-NEXT:                 1 as i32,
+// CHECK-NEXT:                 6.0f64,
+// CHECK-NEXT:                 1 as i32,
+// CHECK-NEXT:                 7.0f64,
+// CHECK-NEXT:                 1 as i32,
+// CHECK-NEXT:                 8.0f64,
+// CHECK-NEXT:                 2 as i32,
+// CHECK-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 253, 63]),
+// CHECK-NEXT:                 1 as i32,
+// CHECK-NEXT:                 9.0f64,
+// CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -409,14 +403,12 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __slate_printf__ri32_pi8_f80(
 // CHECK-NEXT:             c"%.1Lf\n".as_ptr(),
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 __slate_vcall__rf80_i32__f80_f80(
-// CHECK-NEXT:                     first_twice as *const (),
-// CHECK-NEXT:                     0 as i32,
-// CHECK-NEXT:                     LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]),
-// CHECK-NEXT:                     LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 64]),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
+// CHECK-NEXT:             __slate_vcall__rf80_i32__f80_f80(
+// CHECK-NEXT:                 first_twice as *const (),
+// CHECK-NEXT:                 0 as i32,
+// CHECK-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]),
+// CHECK-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 64]),
+// CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

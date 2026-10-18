@@ -121,7 +121,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%ld %c %.2f\n".as_ptr(),
-// CHECK-NEXT:             segment_length(unsafe { &(*std::ptr::addr_of_mut!(s)) }),
+// CHECK-NEXT:             segment_length(&(*std::ptr::addr_of_mut!(s))),
 // CHECK-NEXT:             s.tag as i32,
 // CHECK-NEXT:             s.weight,
 // CHECK-NEXT:         )
@@ -138,7 +138,7 @@ int main(void) {
 // CHECK-NEXT:     first.next = std::ptr::addr_of_mut!(second);
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: *mut Node = unsafe { (*first.next).next };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*[[V_1]]).value = (unsafe { (*[[V_1]]).value }) + 4;
+// CHECK-NEXT:         (*[[V_1]]).value = (*[[V_1]]).value + 4;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("{}", sum_list(std::ptr::addr_of_mut!(first), 3 as i32));
 // CHECK-NEXT:     0

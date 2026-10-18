@@ -228,18 +228,18 @@ int main(void) {
 // CHECK-NEXT:     n: i32,
 // CHECK-NEXT: ) -> bitint::BInt<156, 3, 24, bitint::A8> {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let [[T_0:__t[0-9]+]] = unsafe { (*unsafe { p.offset(0 as isize) }).__slate_bits_0.__get_a() }
-// CHECK-NEXT:             .wrapping_add(unsafe {
-// CHECK-NEXT:                 (*unsafe { q.offset(0 as isize) }).__slate_bits_0.__get_b()
-// CHECK-NEXT:             });
-// CHECK-NEXT:         (*unsafe { r.offset(0 as isize) }).__slate_bits_0.__set_b([[T_0]]);
+// CHECK-NEXT:         let [[T_0:__t[0-9]+]] = (*p.offset(0 as isize))
+// CHECK-NEXT:             .__slate_bits_0
+// CHECK-NEXT:             .__get_a()
+// CHECK-NEXT:             .wrapping_add((*q.offset(0 as isize)).__slate_bits_0.__get_b());
+// CHECK-NEXT:         (*r.offset(0 as isize)).__slate_bits_0.__set_b([[T_0]]);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let [[T_1:__t[0-9]+]] = unsafe { (*unsafe { p.offset(1 as isize) }).__slate_bits_0.__get_a() }
-// CHECK-NEXT:             .wrapping_mul(unsafe {
-// CHECK-NEXT:                 (*unsafe { q.offset(1 as isize) }).__slate_bits_0.__get_b()
-// CHECK-NEXT:             });
-// CHECK-NEXT:         (*unsafe { r.offset(1 as isize) }).__slate_bits_0.__set_b([[T_1]]);
+// CHECK-NEXT:         let [[T_1:__t[0-9]+]] = (*p.offset(1 as isize))
+// CHECK-NEXT:             .__slate_bits_0
+// CHECK-NEXT:             .__get_a()
+// CHECK-NEXT:             .wrapping_mul((*q.offset(1 as isize)).__slate_bits_0.__get_b());
+// CHECK-NEXT:         (*r.offset(1 as isize)).__slate_bits_0.__set_b([[T_1]]);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_2:__t[0-9]+]] = <bitint::BInt<
@@ -248,12 +248,12 @@ int main(void) {
 // CHECK-NEXT:             24,
 // CHECK-NEXT:             bitint::A8,
 // CHECK-NEXT:         >>::from_u128(
-// CHECK-NEXT:             (unsafe { (*unsafe { p.offset(2 as isize) }).__slate_bits_0.__get_a() }
-// CHECK-NEXT:                 .compare(unsafe {
-// CHECK-NEXT:                     (*unsafe { q.offset(2 as isize) }).__slate_bits_0.__get_b()
-// CHECK-NEXT:                 }) == 0) as u128,
+// CHECK-NEXT:             ((*p.offset(2 as isize))
+// CHECK-NEXT:                 .__slate_bits_0
+// CHECK-NEXT:                 .__get_a()
+// CHECK-NEXT:                 .compare((*q.offset(2 as isize)).__slate_bits_0.__get_b()) == 0) as u128,
 // CHECK-NEXT:         );
-// CHECK-NEXT:         (*unsafe { r.offset(2 as isize) }).__slate_bits_0.__set_a([[T_2]]);
+// CHECK-NEXT:         (*r.offset(2 as isize)).__slate_bits_0.__set_a([[T_2]]);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_3:__t[0-9]+]] = <bitint::BInt<
@@ -262,17 +262,16 @@ int main(void) {
 // CHECK-NEXT:             24,
 // CHECK-NEXT:             bitint::A8,
 // CHECK-NEXT:         >>::from_u128(
-// CHECK-NEXT:             (unsafe { (*unsafe { p.offset(3 as isize) }).__slate_bits_0.__get_a() }
-// CHECK-NEXT:                 .compare(unsafe {
-// CHECK-NEXT:                     (*unsafe { q.offset(3 as isize) }).__slate_bits_0.__get_b()
-// CHECK-NEXT:                 }) < 0) as u128,
+// CHECK-NEXT:             ((*p.offset(3 as isize))
+// CHECK-NEXT:                 .__slate_bits_0
+// CHECK-NEXT:                 .__get_a()
+// CHECK-NEXT:                 .compare((*q.offset(3 as isize)).__slate_bits_0.__get_b()) < 0) as u128,
 // CHECK-NEXT:         );
-// CHECK-NEXT:         (*unsafe { r.offset(3 as isize) }).__slate_bits_0.__set_a([[T_3]]);
+// CHECK-NEXT:         (*r.offset(3 as isize)).__slate_bits_0.__set_a([[T_3]]);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let [[T_4:__t[0-9]+]] = unsafe { (*unsafe { p.offset(4 as isize) }).__slate_bits_0.__get_a() }
-// CHECK-NEXT:             .shl_bits(n as usize);
-// CHECK-NEXT:         (*unsafe { r.offset(4 as isize) }).__slate_bits_0.__set_b([[T_4]]);
+// CHECK-NEXT:         let [[T_4:__t[0-9]+]] = (*p.offset(4 as isize)).__slate_bits_0.__get_a().shl_bits(n as usize);
+// CHECK-NEXT:         (*r.offset(4 as isize)).__slate_bits_0.__set_b([[T_4]]);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     return <bitint::BInt<
 // CHECK-NEXT:         156,
@@ -280,10 +279,8 @@ int main(void) {
 // CHECK-NEXT:         24,
 // CHECK-NEXT:         bitint::A8,
 // CHECK-NEXT:     >>::from_buint(
-// CHECK-NEXT:         unsafe { (*unsafe { p.offset(5 as isize) }).__slate_bits_0.__get_a() }
-// CHECK-NEXT:             .wrapping_add(unsafe {
-// CHECK-NEXT:                 (*unsafe { q.offset(5 as isize) }).__slate_bits_0.__get_b()
-// CHECK-NEXT:             }),
+// CHECK-NEXT:         unsafe { (*p.offset(5 as isize)).__slate_bits_0.__get_a() }
+// CHECK-NEXT:             .wrapping_add(unsafe { (*q.offset(5 as isize)).__slate_bits_0.__get_b() }),
 // CHECK-NEXT:     );
 // CHECK-NEXT: }
 // CHECK-NEXT: fn dump(m: &mut Mixed) {
@@ -291,12 +288,11 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%d %lld %d %llu %d\n".as_ptr(),
-// CHECK-NEXT:             unsafe { (*(m as *mut Mixed)).__slate_bits_0.__get_tag() },
-// CHECK-NEXT:             unsafe { (*(m as *mut Mixed)).__slate_bits_0.__get_mid() }.to_i128() as i64,
-// CHECK-NEXT:             ((unsafe { (*(m as *mut Mixed)).__slate_bits_0.__get_flag() }) as u32)
-// CHECK-NEXT:                 as i32,
-// CHECK-NEXT:             unsafe { (*(m as *mut Mixed)).__slate_bits_0.__get_top() }.to_u128() as u64,
-// CHECK-NEXT:             (unsafe { (*(m as *mut Mixed)).__slate_bits_1.__get_small() }) as i32,
+// CHECK-NEXT:             (*(m as *mut Mixed)).__slate_bits_0.__get_tag(),
+// CHECK-NEXT:             (*(m as *mut Mixed)).__slate_bits_0.__get_mid().to_i128() as i64,
+// CHECK-NEXT:             ((*(m as *mut Mixed)).__slate_bits_0.__get_flag() as u32) as i32,
+// CHECK-NEXT:             (*(m as *mut Mixed)).__slate_bits_0.__get_top().to_u128() as u64,
+// CHECK-NEXT:             (*(m as *mut Mixed)).__slate_bits_1.__get_small() as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -304,7 +300,9 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%llu\n".as_ptr(),
-// CHECK-NEXT:             unsafe { (*(m as *mut Mixed)).__slate_bits_0.__get_top() }
+// CHECK-NEXT:             (*(m as *mut Mixed))
+// CHECK-NEXT:                 .__slate_bits_0
+// CHECK-NEXT:                 .__get_top()
 // CHECK-NEXT:                 .shr_bits(100 as usize)
 // CHECK-NEXT:                 .to_u128() as u64,
 // CHECK-NEXT:         )

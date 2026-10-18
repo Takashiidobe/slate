@@ -47,13 +47,10 @@ int main(void) {
 // CHECK-NEXT:                     [[V_0]] = [[RESULT_0]];
 // CHECK-NEXT:                     result = 0;
 // CHECK-NEXT:                     __slate_state = 2usize;
-// CHECK-NEXT:                     unsafe {
-// CHECK-NEXT:                         core::arch::asm!(
-// CHECK-NEXT:                             "testl {0:e}, {0:e}\n\tjz {1}", in (reg) (9 as i32) as u32,
-// CHECK-NEXT:                             label { __slate_state = 1usize; }, options(nostack,
-// CHECK-NEXT:                             att_syntax)
-// CHECK-NEXT:                         );
-// CHECK-NEXT:                     }
+// CHECK-NEXT:                     core::arch::asm!(
+// CHECK-NEXT:                         "testl {0:e}, {0:e}\n\tjz {1}", in (reg) (9 as i32) as u32, label
+// CHECK-NEXT:                         { __slate_state = 1usize; }, options(nostack, att_syntax)
+// CHECK-NEXT:                     );
 // CHECK-NEXT:                     continue;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 4 => {
@@ -69,13 +66,10 @@ int main(void) {
 // CHECK-NEXT:                 6 => {
 // CHECK-NEXT:                     [[RESULT_0]] = 0;
 // CHECK-NEXT:                     __slate_state = 5usize;
-// CHECK-NEXT:                     unsafe {
-// CHECK-NEXT:                         core::arch::asm!(
-// CHECK-NEXT:                             "testl {0:e}, {0:e}\n\tjz {1}", in (reg) (0 as i32) as u32,
-// CHECK-NEXT:                             label { __slate_state = 4usize; }, options(nostack,
-// CHECK-NEXT:                             att_syntax)
-// CHECK-NEXT:                         );
-// CHECK-NEXT:                     }
+// CHECK-NEXT:                     core::arch::asm!(
+// CHECK-NEXT:                         "testl {0:e}, {0:e}\n\tjz {1}", in (reg) (0 as i32) as u32, label
+// CHECK-NEXT:                         { __slate_state = 4usize; }, options(nostack, att_syntax)
+// CHECK-NEXT:                     );
 // CHECK-NEXT:                     continue;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 _ => {

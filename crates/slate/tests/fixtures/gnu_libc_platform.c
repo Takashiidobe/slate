@@ -369,8 +369,7 @@ int main(void) {
 // CHECK-NEXT:     total
 // CHECK-NEXT:         += ((unsafe {
 // CHECK-NEXT:             strcmp(
-// CHECK-NEXT:                 (unsafe { secure_getenv(c"SLATE_GNU_LIBC_VALUE".as_ptr()) })
-// CHECK-NEXT:                     as *const i8,
+// CHECK-NEXT:                 secure_getenv(c"SLATE_GNU_LIBC_VALUE".as_ptr()) as *const i8,
 // CHECK-NEXT:                 c"ready".as_ptr(),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         }) == 0) as i32;
@@ -418,7 +417,7 @@ int main(void) {
 // CHECK-NEXT:     let __new: *mut i8 = (__slate_alloca::alloca(__len.wrapping_add(1) as usize, 16usize)
 // CHECK-NEXT:         as *mut ()) as *mut i8;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *unsafe { __new.offset(__len as isize) } = 0;
+// CHECK-NEXT:         *__new.offset(__len as isize) = 0;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     [[V_4]] = (unsafe {
 // CHECK-NEXT:         {
@@ -544,7 +543,7 @@ int main(void) {
 // CHECK-NEXT:     total = [[V_11]]
 // CHECK-NEXT:         + (((unsafe {
 // CHECK-NEXT:             strcmp(
-// CHECK-NEXT:                 (unsafe { *unsafe { paths.gl_pathv.offset(0 as isize) } }) as *const i8,
+// CHECK-NEXT:                 *paths.gl_pathv.offset(0 as isize) as *const i8,
 // CHECK-NEXT:                 c"/dev/null".as_ptr(),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         }) == 0) as i32);
@@ -552,7 +551,7 @@ int main(void) {
 // CHECK-NEXT:     total = [[V_12]]
 // CHECK-NEXT:         + (((unsafe {
 // CHECK-NEXT:             strcmp(
-// CHECK-NEXT:                 (unsafe { *unsafe { paths.gl_pathv.offset(1 as isize) } }) as *const i8,
+// CHECK-NEXT:                 *paths.gl_pathv.offset(1 as isize) as *const i8,
 // CHECK-NEXT:                 c"/dev/zero".as_ptr(),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         }) == 0) as i32);
@@ -602,9 +601,8 @@ int main(void) {
 // CHECK-NEXT:     total += [[V_20]];
 // CHECK-NEXT:     let [[V_21:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_21]] + ((information.dli_fname != std::ptr::null::<i8>()) as i32);
-// CHECK-NEXT:     let [[V_22:__v[0-9]+]]: i32 = (((unsafe {
-// CHECK-NEXT:         *unsafe { unsafe { gnu_get_libc_version() }.offset(0 as isize) }
-// CHECK-NEXT:     }) as i32) != 0) as i32;
+// CHECK-NEXT:     let [[V_22:__v[0-9]+]]: i32 = (((unsafe { *gnu_get_libc_version().offset(0 as isize) }) as i32)
+// CHECK-NEXT:         != 0) as i32;
 // CHECK-NEXT:     total += [[V_22]];
 // CHECK-NEXT:     let [[V_23:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_23]]

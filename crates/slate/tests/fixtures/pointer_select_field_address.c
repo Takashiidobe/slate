@@ -57,9 +57,7 @@ int main(void) {
 // CHECK-NEXT:     add(0 as i32, 5 as u64);
 // CHECK-NEXT:     add(1 as i32, 7 as u64);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(c"%llu %llu\n".as_ptr(), unsafe { acc.direct }, unsafe { acc.indirect })
-// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { printf(c"%llu %llu\n".as_ptr(), acc.direct, acc.indirect) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

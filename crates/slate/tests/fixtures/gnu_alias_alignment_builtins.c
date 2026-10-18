@@ -57,7 +57,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         counter = (unsafe { counter }) + 4;
+// CHECK-NEXT:         counter = counter + 4;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         hidden.0[2] = 30;

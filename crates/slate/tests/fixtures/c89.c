@@ -422,9 +422,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn c89_store(destination: &mut (), source: &()) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *((destination as *mut ()) as *mut i32) = unsafe {
-// CHECK-NEXT:             *((source as *const ()) as *const i32)
-// CHECK-NEXT:         };
+// CHECK-NEXT:         *((destination as *mut ()) as *mut i32) = *((source as *const ()) as *const i32);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C-unwind" fn c89_variadic_sum(count: i32, mut __va_args: ...) -> i32 {
@@ -444,7 +442,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn c89_static_local() -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         calls = (unsafe { calls }) + 1;
+// CHECK-NEXT:         calls = calls + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { calls }
 // CHECK-NEXT: }
@@ -556,11 +554,11 @@ int main(void) {
 // CHECK-NEXT:         u32) as i32, signed_character as i32, float_value as i32, double_value as i32,
 // CHECK-NEXT:         __slate_f80_to_i32(long_double_value), wide_character, color as u32, point.x +
 // CHECK-NEXT:         point.y, bits.__slate_bits_0.__get_low() as i32, bits.__slate_bits_0
-// CHECK-NEXT:         .__get_high(), unsafe { number.integer }, (unsafe { * unsafe { const_pointer
-// CHECK-NEXT:         .offset(0 as isize) } }) + unsafe { * unsafe { const_pointer.offset(3 as isize) }
-// CHECK-NEXT:         }, copied_value, unsafe { operation.unwrap() (53 as i32, 6 as i32) }, arithmetic,
-// CHECK-NEXT:         bitwise, logical, conditional, comma_value, string_length, static_calls,
-// CHECK-NEXT:         variadic_total + control_total
+// CHECK-NEXT:         .__get_high(), unsafe { number.integer }, (unsafe { * const_pointer.offset(0 as
+// CHECK-NEXT:         isize) }) + unsafe { * const_pointer.offset(3 as isize) }, copied_value, unsafe {
+// CHECK-NEXT:         operation.unwrap() (53 as i32, 6 as i32) }, arithmetic, bitwise, logical,
+// CHECK-NEXT:         conditional, comma_value, string_length, static_calls, variadic_total +
+// CHECK-NEXT:         control_total
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

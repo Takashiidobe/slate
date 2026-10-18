@@ -32,7 +32,7 @@ int main(void) {
 // CHECK-NEXT:         *x = 10;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("{}", unsafe { * x });
-// CHECK-NEXT:     unsafe { free((unsafe { x.offset(-(1 as isize)) }) as *mut ()) };
+// CHECK-NEXT:     unsafe { free(x.offset(-(1 as isize)) as *mut ()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

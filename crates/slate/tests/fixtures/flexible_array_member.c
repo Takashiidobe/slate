@@ -61,10 +61,8 @@ int main(void) {
 // CHECK-NEXT:         let mut index: u64 = 0;
 // CHECK-NEXT:         while index < unsafe { (*flexible).count } {
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 *unsafe {
-// CHECK-NEXT:                     unsafe { std::ptr::addr_of_mut!((* flexible).values) as *mut i32 }
-// CHECK-NEXT:                         .offset(index as isize)
-// CHECK-NEXT:                 } = ((index as u32) as i32) + 1;
+// CHECK-NEXT:                 *(std::ptr::addr_of_mut!((* flexible).values) as *mut i32)
+// CHECK-NEXT:                     .offset(index as isize) = ((index as u32) as i32) + 1;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             index = index.wrapping_add(1);
 // CHECK-NEXT:         }
@@ -74,10 +72,8 @@ int main(void) {
 // CHECK-NEXT:     while index < unsafe { (*flexible).count } {
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = total
 // CHECK-NEXT:             + unsafe {
-// CHECK-NEXT:                 *unsafe {
-// CHECK-NEXT:                     unsafe { std::ptr::addr_of_mut!((* flexible).values) as *mut i32 }
-// CHECK-NEXT:                         .offset(index as isize)
-// CHECK-NEXT:                 }
+// CHECK-NEXT:                 *(std::ptr::addr_of_mut!((* flexible).values) as *mut i32)
+// CHECK-NEXT:                     .offset(index as isize)
 // CHECK-NEXT:             };
 // CHECK-NEXT:         total = [[V_0]];
 // CHECK-NEXT:         index = index.wrapping_add(1);

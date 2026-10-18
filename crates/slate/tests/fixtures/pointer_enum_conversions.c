@@ -112,7 +112,7 @@ int main(void) {
 // CHECK-NEXT:     }) as *mut ();
 // CHECK-NEXT:     let read_only: *const i32 = opaque as *const i32;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *(read_only as *mut i32) = (unsafe { *(read_only as *mut i32) }) + 5;
+// CHECK-NEXT:         *(read_only as *mut i32) = *(read_only as *mut i32) + 5;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("{}", values.0[1]);
 // CHECK-NEXT:     let bytes: *mut u8 = (unsafe {
@@ -122,8 +122,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%u %u\n".as_ptr(),
-// CHECK-NEXT:             (unsafe { *unsafe { bytes.offset(0 as isize) } }) as u32,
-// CHECK-NEXT:             (unsafe { *unsafe { bytes.offset(1 as isize) } }) as u32,
+// CHECK-NEXT:             *bytes.offset(0 as isize) as u32,
+// CHECK-NEXT:             *bytes.offset(1 as isize) as u32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

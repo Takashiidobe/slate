@@ -48,9 +48,7 @@ int main(void) {
 // CHECK-NEXT:     d: *mut Data,
 // CHECK-NEXT: ) {
 // CHECK-NEXT:     if flag != 0 {
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             handler.unwrap()((unsafe { std::ptr::addr_of!(c) }) as *const (), 0 as i32)
-// CHECK-NEXT:         };
+// CHECK-NEXT:         unsafe { handler.unwrap()(std::ptr::addr_of!(c) as *const (), 0 as i32) };
 // CHECK-NEXT:         return;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { handler.unwrap()(d as *const (), 42 as i32) };

@@ -113,7 +113,7 @@ int main(void) {
 // CHECK-LABEL: {{^}}fn sum(a: *const i32, n: i32) -> i32 {
 // CHECK-NEXT:     let mut s: i32 = 0;
 // CHECK-NEXT:     for i in 0..n {
-// CHECK-NEXT:         s += unsafe { *unsafe { a.offset(i as isize) } };
+// CHECK-NEXT:         s += unsafe { *a.offset(i as isize) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     s
 // CHECK: {{^}}}
@@ -182,7 +182,7 @@ int main(void) {
 // CHECK-LABEL: {{^}}fn find(a: *const i32, n: i32, x: i32) -> i32 {
 // CHECK-NEXT:     let mut i: i32 = 0;
 // CHECK-NEXT:     while i < n {
-// CHECK-NEXT:         if (unsafe { *unsafe { a.offset(i as isize) } }) == x {
+// CHECK-NEXT:         if (unsafe { *a.offset(i as isize) }) == x {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         i += 1;

@@ -22,7 +22,7 @@ int main(void) {
 // CHECK-NEXT: static mut counter: i32 = 2 as i32;
 // CHECK-NEXT: fn bump_counter() -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         counter = (unsafe { counter }) + 1;
+// CHECK-NEXT:         counter = counter + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { counter }
 // CHECK-NEXT: }

@@ -37,7 +37,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn bump(p: &mut i32) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *(p as *mut i32) = (unsafe { *(p as *mut i32) }) + 1;
+// CHECK-NEXT:         *(p as *mut i32) = *(p as *mut i32) + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn peek(p: &i32) -> i32 {
@@ -45,7 +45,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn use_and_free(y: *mut i32) -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *y = (unsafe { *y }) + 1;
+// CHECK-NEXT:         *y = *y + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let v: i32 = unsafe { *y };
 // CHECK-NEXT:     unsafe { free(y as *mut ()) };

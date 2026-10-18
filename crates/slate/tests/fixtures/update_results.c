@@ -114,9 +114,9 @@ int main(void) {
 // CHECK-NEXT: static mut calls: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT: fn next_slot(slots: *mut i32) -> *mut i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         calls = (unsafe { calls }) + 1;
+// CHECK-NEXT:         calls = calls + 1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { slots.offset((unsafe { calls }) as isize) }
+// CHECK-NEXT:     unsafe { slots.offset(calls as isize) }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut u: u32 = (2147483647 as u32).wrapping_mul(2 as u32).wrapping_add(1);
@@ -246,11 +246,11 @@ int main(void) {
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let [[V_21:__v[0-9]+]]: *mut i32 = next_slot(slots.0.as_mut_ptr() as *mut i32);
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_21]] = (unsafe { *[[V_21]] }) + 1;
+// CHECK-NEXT:         *[[V_21]] = *[[V_21]] + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let [[V_22:__v[0-9]+]]: *mut i32 = next_slot(slots.0.as_mut_ptr() as *mut i32);
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_22]] = (unsafe { *[[V_22]] }) + 1;
+// CHECK-NEXT:         *[[V_22]] = *[[V_22]] + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {} calls={}", slots.0[0], slots.0[1], slots.0[2], slots.0[3], unsafe {
@@ -265,10 +265,10 @@ int main(void) {
 // CHECK-NEXT:     let cp: *mut Counter = std::ptr::addr_of_mut!(counter);
 // CHECK-NEXT:     counter.hits += 1;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*cp).hits = (unsafe { (*cp).hits }) + 1;
+// CHECK-NEXT:         (*cp).hits = (*cp).hits + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*cp).total = (unsafe { (*cp).total }) + ((1 as i32) as f64);
+// CHECK-NEXT:         (*cp).total = (*cp).total + ((1 as i32) as f64);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut hits: i32 = 0;
 // CHECK-NEXT:     let [[V_23:__v[0-9]+]]: i32 = unsafe { (*cp).hits };

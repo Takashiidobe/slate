@@ -27,7 +27,7 @@ int main(void) {
 // CHECK-NEXT:     println!("this is another number: {} {}", printable, length);
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     for i in 0 as i32..4 as i32 {
-// CHECK-NEXT:         total += unsafe { *unsafe { items.offset(i as isize) } };
+// CHECK-NEXT:         total += unsafe { *items.offset(i as isize) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }

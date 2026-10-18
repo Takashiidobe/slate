@@ -200,15 +200,15 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%.3f %.3f %.3f %.3f\n".as_ptr(),
-// CHECK-NEXT:             (unsafe { __slate_intrinsic_1a7588489948374(small) }) as f64,
-// CHECK-NEXT:             unsafe { __slate_intrinsic_999a0f45e9537850(large) },
-// CHECK-NEXT:             __slate_f80_to_f64(unsafe { __slate_f80_abs(extended) }),
-// CHECK-NEXT:             __slate_f80_to_f64(unsafe {
+// CHECK-NEXT:             __slate_intrinsic_1a7588489948374(small) as f64,
+// CHECK-NEXT:             __slate_intrinsic_999a0f45e9537850(large),
+// CHECK-NEXT:             __slate_f80_to_f64(__slate_f80_abs(extended)),
+// CHECK-NEXT:             __slate_f80_to_f64(
 // CHECK-NEXT:                 __slate_f80_copysign(
 // CHECK-NEXT:                     LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // CHECK-NEXT:                     extended,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             }),
+// CHECK-NEXT:                 ),
+// CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

@@ -120,10 +120,7 @@ int main(void) {
 // CHECK-NEXT:     let mut i: i32 = 0;
 // CHECK-NEXT:     while i < count {
 // CHECK-NEXT:         total
-// CHECK-NEXT:             += unsafe {
-// CHECK-NEXT:                 *((unsafe { values.offset(i as isize) })
-// CHECK-NEXT:                     as *const std::simd::Simd<u64, 2>)
-// CHECK-NEXT:             };
+// CHECK-NEXT:             += unsafe { *(values.offset(i as isize) as *const std::simd::Simd<u64, 2>) };
 // CHECK-NEXT:         i += 2;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total[0].wrapping_add(total[1])
@@ -203,13 +200,10 @@ int main(void) {
 // CHECK-NEXT:                     (*[[SLATE_SLOT_0]]).as_mut_ptr() as *const u64,
 // CHECK-NEXT:                     2 as i32,
 // CHECK-NEXT:                 );
-// CHECK-NEXT:                 let [[V_6:__v[0-9]+]]: *mut u64 = unsafe {
-// CHECK-NEXT:                     ((*[[SLATE_SLOT_0]]).as_mut_ptr() as *mut u64).offset(0 as isize)
-// CHECK-NEXT:                 };
-// CHECK-NEXT:                 let [[V_7:__v[0-9]+]]: u64 = unsafe { *[[V_6]] };
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     *[[V_6]] = [[V_7]].wrapping_add([[V_5]]);
-// CHECK-NEXT:                 }
+// CHECK-NEXT:                 let [[V_6:__v[0-9]+]]: *mut u64 = ((*[[SLATE_SLOT_0]]).as_mut_ptr() as *mut u64)
+// CHECK-NEXT:                     .offset(0 as isize);
+// CHECK-NEXT:                 let [[V_7:__v[0-9]+]]: u64 = *[[V_6]];
+// CHECK-NEXT:                 *[[V_6]] = [[V_7]].wrapping_add([[V_5]]);
 // CHECK-NEXT:                 let [[V_8:__v[0-9]+]]: i32 = count + 1;
 // CHECK-NEXT:                 count = [[V_8]];
 // CHECK-NEXT:                 if !([[V_8]] < n) {
@@ -248,8 +242,7 @@ int main(void) {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"table sum %llu\n".as_ptr(),
 // CHECK-NEXT:             sum_vectors(
-// CHECK-NEXT:                 (unsafe { std::ptr::addr_of_mut!(table.0[5]) as *mut u64 })
-// CHECK-NEXT:                     as *const u64,
+// CHECK-NEXT:                 (std::ptr::addr_of_mut!(table.0[5]) as *mut u64) as *const u64,
 // CHECK-NEXT:                 64 as i32,
 // CHECK-NEXT:             ),
 // CHECK-NEXT:         )
@@ -260,7 +253,7 @@ int main(void) {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"small sum %llu\n".as_ptr(),
 // CHECK-NEXT:             sum_vectors(
-// CHECK-NEXT:                 (unsafe { std::ptr::addr_of_mut!(small.0) as *mut u64 }) as *const u64,
+// CHECK-NEXT:                 (std::ptr::addr_of_mut!(small.0) as *mut u64) as *const u64,
 // CHECK-NEXT:                 2 as i32,
 // CHECK-NEXT:             ),
 // CHECK-NEXT:         )

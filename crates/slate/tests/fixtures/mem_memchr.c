@@ -65,7 +65,7 @@ int main(void) {
 // CHECK-NEXT:         __builtin_memchr(
 // CHECK-NEXT:             buf.as_mut_ptr() as *const (),
 // CHECK-NEXT:             needle,
-// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(partial_count)) },
+// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(partial_count)),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) as *mut u8;
 // CHECK-NEXT:     let offset_base: *mut u8 = unsafe {
@@ -81,15 +81,15 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%ld %d %d %ld %d %d %ld %ld %ld\n".as_ptr(),
-// CHECK-NEXT:             (unsafe { hit.offset_from(buf.as_mut_ptr() as *mut u8) }) as i64,
+// CHECK-NEXT:             hit.offset_from(buf.as_mut_ptr() as *mut u8) as i64,
 // CHECK-NEXT:             (miss == std::ptr::null_mut::<u8>()) as i32,
 // CHECK-NEXT:             (zero == std::ptr::null_mut::<u8>()) as i32,
-// CHECK-NEXT:             (unsafe { nul_after.offset_from(word.as_mut_ptr() as *mut i8) }) as i64,
+// CHECK-NEXT:             nul_after.offset_from(word.as_mut_ptr() as *mut i8) as i64,
 // CHECK-NEXT:             (nul_equal == std::ptr::null_mut::<i8>()) as i32,
 // CHECK-NEXT:             (nul_before == std::ptr::null_mut::<i8>()) as i32,
-// CHECK-NEXT:             (unsafe { partial.offset_from(buf.as_mut_ptr() as *mut u8) }) as i64,
-// CHECK-NEXT:             (unsafe { offset.offset_from(offset_base as *mut u8) }) as i64,
-// CHECK-NEXT:             (unsafe { const_hit.offset_from(cbuf.as_ptr() as *const u8) }) as i64,
+// CHECK-NEXT:             partial.offset_from(buf.as_mut_ptr() as *mut u8) as i64,
+// CHECK-NEXT:             offset.offset_from(offset_base as *mut u8) as i64,
+// CHECK-NEXT:             const_hit.offset_from(cbuf.as_ptr() as *const u8) as i64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

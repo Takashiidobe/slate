@@ -243,28 +243,22 @@ int main(void) {
 // CHECK-NEXT:     buf: [i8; 0],
 // CHECK-NEXT: }
 // CHECK-NEXT: fn sdslen(s: *mut i8) -> u64 {
-// CHECK-NEXT:     match ((unsafe { *unsafe { s.offset(-1 as isize) } }) as i32) & 7 {
+// CHECK-NEXT:     match ((unsafe { *s.offset(-1 as isize) }) as i32) & 7 {
 // CHECK-NEXT:         1 => {
-// CHECK-NEXT:             return (unsafe {
-// CHECK-NEXT:                 (*((unsafe { s.offset(-(3 as isize)) }) as *mut sdshdr8)).len
-// CHECK-NEXT:             }) as u64;
+// CHECK-NEXT:             return (unsafe { (*(s.offset(-(3 as isize)) as *mut sdshdr8)).len }) as u64;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         2 => {
-// CHECK-NEXT:             return (unsafe {
-// CHECK-NEXT:                 (*((unsafe { s.offset(-(5 as isize)) }) as *mut sdshdr16)).len
-// CHECK-NEXT:             }) as u64;
+// CHECK-NEXT:             return (unsafe { (*(s.offset(-(5 as isize)) as *mut sdshdr16)).len }) as u64;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         4 => {
-// CHECK-NEXT:             return unsafe {
-// CHECK-NEXT:                 (*((unsafe { s.offset(-(17 as isize)) }) as *mut sdshdr64)).len
-// CHECK-NEXT:             };
+// CHECK-NEXT:             return unsafe { (*(s.offset(-(17 as isize)) as *mut sdshdr64)).len };
 // CHECK-NEXT:         }
 // CHECK-NEXT:         _ => {}
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: fn sdsavail(s: *mut i8) -> u64 {
-// CHECK-NEXT:     match ((unsafe { *unsafe { s.offset(-1 as isize) } }) as i32) & 7 {
+// CHECK-NEXT:     match ((unsafe { *s.offset(-1 as isize) }) as i32) & 7 {
 // CHECK-NEXT:         1 => {
 // CHECK-NEXT:             let sh: *mut sdshdr8 = (unsafe { s.offset(-(3 as isize)) }) as *mut sdshdr8;
 // CHECK-NEXT:             return (((((unsafe { (*sh).alloc }) as u32) as i32)
@@ -292,7 +286,7 @@ int main(void) {
 // CHECK-NEXT:         as *mut i8;
 // CHECK-NEXT:     let s: *mut i8 = unsafe { memory.offset(header as isize) };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *unsafe { s.offset(-1 as isize) } = r#type as i8;
+// CHECK-NEXT:         *s.offset(-1 as isize) = r#type as i8;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: {
 // CHECK-NEXT:         match r#type {
@@ -340,13 +334,12 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn sdsinclen(s: *mut i8, inc: u64) {
 // CHECK-NEXT:     '[[SLATE_BREAK_1:__slate_break_[0-9]+]]: {
-// CHECK-NEXT:         match ((unsafe { *unsafe { s.offset(-1 as isize) } }) as i32) & 7 {
+// CHECK-NEXT:         match ((unsafe { *s.offset(-1 as isize) }) as i32) & 7 {
 // CHECK-NEXT:             1 => {
 // CHECK-NEXT:                 let [[V_0:__v[0-9]+]]: *mut sdshdr8 = (unsafe { s.offset(-(3 as isize)) })
 // CHECK-NEXT:                     as *mut sdshdr8;
 // CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     (*[[V_0]]).len = (((((unsafe { (*[[V_0]]).len }) as u32) as i32) as i64)
-// CHECK-NEXT:                         as u64)
+// CHECK-NEXT:                     (*[[V_0]]).len = (((((*[[V_0]]).len as u32) as i32) as i64) as u64)
 // CHECK-NEXT:                         .wrapping_add(inc) as u8;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
@@ -354,8 +347,7 @@ int main(void) {
 // CHECK-NEXT:                 let [[V_1:__v[0-9]+]]: *mut sdshdr16 = (unsafe { s.offset(-(5 as isize)) })
 // CHECK-NEXT:                     as *mut sdshdr16;
 // CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     (*[[V_1]]).len = (((((unsafe { (*[[V_1]]).len }) as u32) as i32)
-// CHECK-NEXT:                         as i64) as u64)
+// CHECK-NEXT:                     (*[[V_1]]).len = (((((*[[V_1]]).len as u32) as i32) as i64) as u64)
 // CHECK-NEXT:                         .wrapping_add(inc) as u16;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
@@ -446,15 +438,14 @@ int main(void) {
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             free(
-// CHECK-NEXT:                 (unsafe {
-// CHECK-NEXT:                     s.offset(
+// CHECK-NEXT:                 s
+// CHECK-NEXT:                     .offset(
 // CHECK-NEXT:                         -((if types[i as usize] == 1 {
 // CHECK-NEXT:                             3 as u64
 // CHECK-NEXT:                         } else {
 // CHECK-NEXT:                             if types[i as usize] == 2 { 5 as u64 } else { 17 as u64 }
 // CHECK-NEXT:                         }) as isize),
-// CHECK-NEXT:                     )
-// CHECK-NEXT:                 }) as *mut (),
+// CHECK-NEXT:                     ) as *mut (),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
@@ -490,9 +481,8 @@ int main(void) {
 // CHECK-NEXT:             let mut header: payloadHeader = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 std::ptr::copy_nonoverlapping(
-// CHECK-NEXT:                     ((unsafe {
-// CHECK-NEXT:                         (buffer.0.as_mut_ptr() as *mut u8).offset(offset as isize)
-// CHECK-NEXT:                     }) as *const ()) as *const u8,
+// CHECK-NEXT:                     ((buffer.0.as_mut_ptr() as *mut u8).offset(offset as isize)
+// CHECK-NEXT:                         as *const ()) as *const u8,
 // CHECK-NEXT:                     (std::ptr::addr_of_mut!(header) as *mut ()) as *mut u8,
 // CHECK-NEXT:                     9 as usize,
 // CHECK-NEXT:                 )
@@ -541,9 +531,9 @@ int main(void) {
 // CHECK-NEXT:             holder.tag as i32,
 // CHECK-NEXT:             holder.header.payload_len,
 // CHECK-NEXT:             (holder.header.payload_type as u32) as i32,
-// CHECK-NEXT:             unsafe { holder.events[1].data.fd },
-// CHECK-NEXT:             unsafe { holder.events[0].data.u64 },
-// CHECK-NEXT:             unsafe { copy.data.u64 },
+// CHECK-NEXT:             holder.events[1].data.fd,
+// CHECK-NEXT:             holder.events[0].data.u64,
+// CHECK-NEXT:             copy.data.u64,
 // CHECK-NEXT:             holder.tail as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };

@@ -57,7 +57,7 @@ int main(void) {
 // CHECK-NEXT: static mut calls: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT: fn choose(value: i32) -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         calls = (unsafe { calls }) + 1;
+// CHECK-NEXT:         calls = calls + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     value % 4
 // CHECK-NEXT: }
@@ -73,38 +73,28 @@ int main(void) {
 // CHECK-NEXT:                 i = [[V_0]] + 1;
 // CHECK-NEXT:                 let [[T_0:__t[0-9]+]]: i32 = choose([[V_0]]);
 // CHECK-NEXT:                 if [[T_0]] == 0 {
-// CHECK-NEXT:                     unsafe {
-// CHECK-NEXT:                         *total = (unsafe { *total }) + 3;
-// CHECK-NEXT:                     }
+// CHECK-NEXT:                     *total = *total + 3;
 // CHECK-NEXT:                     continue;
 // CHECK-NEXT:                 } else {
 // CHECK-NEXT:                     if [[T_0]] == 1 {
-// CHECK-NEXT:                         unsafe {
-// CHECK-NEXT:                             *total = (unsafe { *total }) + 5;
-// CHECK-NEXT:                         }
+// CHECK-NEXT:                         *total = *total + 5;
 // CHECK-NEXT:                     } else {
 // CHECK-NEXT:                         if [[T_0]] != 2 {
-// CHECK-NEXT:                             unsafe {
-// CHECK-NEXT:                                 *total = (unsafe { *total }) - 2;
-// CHECK-NEXT:                             }
+// CHECK-NEXT:                             *total = *total - 2;
 // CHECK-NEXT:                             continue;
 // CHECK-NEXT:                         }
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                 }
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     *total = (unsafe { *total }) + 7;
-// CHECK-NEXT:                 }
+// CHECK-NEXT:                 *total = *total + 7;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *total = (unsafe { *total }) + unsafe { calls };
-// CHECK-NEXT:         }
+// CHECK-NEXT:         *total = *total + calls;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn classify(mut s: *const i8) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         loop {
-// CHECK-NEXT:             let [[T_0]]: i32 = (unsafe { *s }) as i32;
+// CHECK-NEXT:             let [[T_0]]: i32 = *s as i32;
 // CHECK-NEXT:             if [[T_0]] == 97 {
 // CHECK-NEXT:                 return 1;
 // CHECK-NEXT:             } else {
@@ -119,11 +109,11 @@ int main(void) {
 // CHECK-NEXT:                         } else {
 // CHECK-NEXT:                             if [[T_0]] == 32 {
 // CHECK-NEXT:                                 let [[V_1:__v[0-9]+]]: *const i8 = s;
-// CHECK-NEXT:                                 s = unsafe { [[V_1]].offset(1 as isize) };
+// CHECK-NEXT:                                 s = [[V_1]].offset(1 as isize);
 // CHECK-NEXT:                             } else {
 // CHECK-NEXT:                                 if [[T_0]] == 9 {
 // CHECK-NEXT:                                     let [[V_2:__v[0-9]+]]: *const i8 = s;
-// CHECK-NEXT:                                     s = unsafe { [[V_2]].offset(1 as isize) };
+// CHECK-NEXT:                                     s = [[V_2]].offset(1 as isize);
 // CHECK-NEXT:                                 } else {
 // CHECK-NEXT:                                     if [[T_0]] == 110 {
 // CHECK-NEXT:                                         return 5;

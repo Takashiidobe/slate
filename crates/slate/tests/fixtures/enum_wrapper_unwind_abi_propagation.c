@@ -98,10 +98,7 @@ int main(void) {
 // CHECK-NEXT: extern "C-unwind" fn risky(x: i32) -> u32 {
 // CHECK-NEXT:     if x == 3 {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             longjmp(
-// CHECK-NEXT:                 unsafe { std::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag },
-// CHECK-NEXT:                 1 as i32,
-// CHECK-NEXT:             )
+// CHECK-NEXT:             longjmp(std::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag, 1 as i32)
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
@@ -109,10 +106,7 @@ int main(void) {
 // CHECK-NEXT: extern "C-unwind" fn panicky_callback(x: i32) {
 // CHECK-NEXT:     if x == 2 {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             longjmp(
-// CHECK-NEXT:                 unsafe { std::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag },
-// CHECK-NEXT:                 1 as i32,
-// CHECK-NEXT:             )
+// CHECK-NEXT:             longjmp(std::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag, 1 as i32)
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("callback {}", x);
@@ -129,12 +123,10 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     d.run = Some(risky);
 // CHECK-NEXT:     for i in 0 as i32..5 as i32 {
-// CHECK-NEXT:         if (unsafe {
-// CHECK-NEXT:             _setjmp(unsafe { std::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag })
-// CHECK-NEXT:         }) != 0
+// CHECK-NEXT:         if (unsafe { _setjmp(std::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag) }) != 0
 // CHECK-NEXT:         {
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 failures = (unsafe { failures }) + 1;
+// CHECK-NEXT:                 failures = failures + 1;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             println!("recovered risky {}", i);
 // CHECK-NEXT:         } else {
@@ -143,12 +135,10 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     d.run = Some(content_like);
 // CHECK-NEXT:     for i in 0 as i32..5 as i32 {
-// CHECK-NEXT:         if (unsafe {
-// CHECK-NEXT:             _setjmp(unsafe { std::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag })
-// CHECK-NEXT:         }) != 0
+// CHECK-NEXT:         if (unsafe { _setjmp(std::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag) }) != 0
 // CHECK-NEXT:         {
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 failures = (unsafe { failures }) + 1;
+// CHECK-NEXT:                 failures = failures + 1;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             println!("recovered content_like {}", i);
 // CHECK-NEXT:         } else {

@@ -26,23 +26,22 @@ int main(void) {
 // CHECK-NEXT:     let mut p: *mut i32 = (unsafe { malloc((4 as u64).wrapping_mul(2 as u64)) })
 // CHECK-NEXT:         as *mut i32;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *unsafe { p.offset(0 as isize) } = 1;
+// CHECK-NEXT:         *p.offset(0 as isize) = 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *unsafe { p.offset(1 as isize) } = 2;
+// CHECK-NEXT:         *p.offset(1 as isize) = 2;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     p = (unsafe { realloc(p as *mut (), (4 as u64).wrapping_mul(4 as u64)) })
 // CHECK-NEXT:         as *mut i32;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *unsafe { p.offset(2 as isize) } = 3;
+// CHECK-NEXT:         *p.offset(2 as isize) = 3;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *unsafe { p.offset(3 as isize) } = 4;
+// CHECK-NEXT:         *p.offset(3 as isize) = 4;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{}", (unsafe { * unsafe { p.offset(0 as isize) } }) + unsafe { * unsafe { p
-// CHECK-NEXT:         .offset(1 as isize) } } + unsafe { * unsafe { p.offset(2 as isize) } } + unsafe {
-// CHECK-NEXT:         * unsafe { p.offset(3 as isize) } }
+// CHECK-NEXT:         "{}", (unsafe { * p.offset(0 as isize) }) + unsafe { * p.offset(1 as isize) } +
+// CHECK-NEXT:         unsafe { * p.offset(2 as isize) } + unsafe { * p.offset(3 as isize) }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe { free(p as *mut ()) };
 // CHECK-NEXT:     0

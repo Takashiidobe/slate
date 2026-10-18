@@ -136,59 +136,45 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%d %c %s %s\n".as_ptr(),
-// CHECK-NEXT:             unsafe { (*(std::ptr::addr_of_mut!(tail) as *mut Tail)).count },
-// CHECK-NEXT:             (unsafe { (*(std::ptr::addr_of_mut!(tail) as *mut Tail)).tag }) as i32,
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 std::ptr::addr_of_mut!(
-// CHECK-NEXT:                     (* (std::ptr::addr_of_mut!(tail) as * mut Tail)).name
-// CHECK-NEXT:                 ) as *mut i8
-// CHECK-NEXT:             },
-// CHECK-NEXT:             unsafe { name_pointer },
+// CHECK-NEXT:             (*(std::ptr::addr_of_mut!(tail) as *mut Tail)).count,
+// CHECK-NEXT:             (*(std::ptr::addr_of_mut!(tail) as *mut Tail)).tag as i32,
+// CHECK-NEXT:             std::ptr::addr_of_mut!((* (std::ptr::addr_of_mut!(tail) as * mut Tail)).name)
+// CHECK-NEXT:                 as *mut i8,
+// CHECK-NEXT:             name_pointer,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{}", ((unsafe { unsafe { std::ptr::addr_of_mut!((* (std::ptr::addr_of_mut!(tail)
-// CHECK-NEXT:         as * mut Tail)).name) as * mut i8 } .offset_from((unsafe {
-// CHECK-NEXT:         std::ptr::addr_of_mut!(* (std::ptr::addr_of_mut!(tail) as * mut Tail)) }) as *
-// CHECK-NEXT:         mut i8) }) as i64) as i32
+// CHECK-NEXT:         "{}", ((unsafe { (std::ptr::addr_of_mut!((* (std::ptr::addr_of_mut!(tail) as *
+// CHECK-NEXT:         mut Tail)).name) as * mut i8).offset_from(std::ptr::addr_of_mut!(*
+// CHECK-NEXT:         (std::ptr::addr_of_mut!(tail) as * mut Tail)) as * mut i8) }) as i64) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let copy: Tail = unsafe { *(std::ptr::addr_of_mut!(tail) as *mut Tail) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%d %c\n".as_ptr(), copy.count, copy.tag as i32) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *unsafe {
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 std::ptr::addr_of_mut!(
-// CHECK-NEXT:                     (* (std::ptr::addr_of_mut!(tail) as * mut Tail)).name
-// CHECK-NEXT:                 ) as *mut i8
-// CHECK-NEXT:             }
-// CHECK-NEXT:                 .offset(0 as isize)
-// CHECK-NEXT:         } = 72;
+// CHECK-NEXT:         *(std::ptr::addr_of_mut!((* (std::ptr::addr_of_mut!(tail) as * mut Tail)).name)
+// CHECK-NEXT:             as *mut i8)
+// CHECK-NEXT:             .offset(0 as isize) = 72;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%s %zu\n".as_ptr(),
-// CHECK-NEXT:             unsafe { name_pointer },
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 strlen(
-// CHECK-NEXT:                     (unsafe {
-// CHECK-NEXT:                         std::ptr::addr_of_mut!(
-// CHECK-NEXT:                             (* (std::ptr::addr_of_mut!(tail) as * mut Tail)).name
-// CHECK-NEXT:                         ) as *mut i8
-// CHECK-NEXT:                     }) as *const i8,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
+// CHECK-NEXT:             name_pointer,
+// CHECK-NEXT:             strlen(
+// CHECK-NEXT:                 (std::ptr::addr_of_mut!(
+// CHECK-NEXT:                     (* (std::ptr::addr_of_mut!(tail) as * mut Tail)).name
+// CHECK-NEXT:                 ) as *mut i8) as *const i8,
+// CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     for i in 0 as i32..5 as i32 {
 // CHECK-NEXT:         print!(
-// CHECK-NEXT:             "{} ", (unsafe { * unsafe { unsafe { std::ptr::addr_of_mut!((*
-// CHECK-NEXT:             (std::ptr::addr_of_mut!(bytes) as * mut Bytes)).bytes) as * mut i8 }
-// CHECK-NEXT:             .offset(i as isize) } }) as i32
+// CHECK-NEXT:             "{} ", (unsafe { * (std::ptr::addr_of_mut!((* (std::ptr::addr_of_mut!(bytes)
+// CHECK-NEXT:             as * mut Bytes)).bytes) as * mut i8).offset(i as isize) }) as i32
 // CHECK-NEXT:         );
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     }
@@ -198,13 +184,12 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {}", (unsafe { (* (std::ptr::addr_of_mut!(packed) as * mut Packed)).a
-// CHECK-NEXT:         }) as i32, unsafe { unsafe { unsafe { std::ptr::addr_of_mut!((*
-// CHECK-NEXT:         (std::ptr::addr_of_mut!(packed) as * mut Packed)).values) as * mut i32 }
-// CHECK-NEXT:         .offset(0 as isize) } .read_unaligned() }, unsafe { unsafe { unsafe {
-// CHECK-NEXT:         std::ptr::addr_of_mut!((* (std::ptr::addr_of_mut!(packed) as * mut Packed))
-// CHECK-NEXT:         .values) as * mut i32 } .offset(1 as isize) } .read_unaligned() }, unsafe {
-// CHECK-NEXT:         unsafe { unsafe { std::ptr::addr_of_mut!((* (std::ptr::addr_of_mut!(packed) as *
-// CHECK-NEXT:         mut Packed)).values) as * mut i32 } .offset(2 as isize) } .read_unaligned() }
+// CHECK-NEXT:         }) as i32, unsafe { (std::ptr::addr_of_mut!((* (std::ptr::addr_of_mut!(packed) as
+// CHECK-NEXT:         * mut Packed)).values) as * mut i32).offset(0 as isize).read_unaligned() },
+// CHECK-NEXT:         unsafe { (std::ptr::addr_of_mut!((* (std::ptr::addr_of_mut!(packed) as * mut
+// CHECK-NEXT:         Packed)).values) as * mut i32).offset(1 as isize).read_unaligned() }, unsafe {
+// CHECK-NEXT:         (std::ptr::addr_of_mut!((* (std::ptr::addr_of_mut!(packed) as * mut Packed))
+// CHECK-NEXT:         .values) as * mut i32).offset(2 as isize).read_unaligned() }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

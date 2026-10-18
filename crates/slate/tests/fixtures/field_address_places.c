@@ -92,12 +92,12 @@ int main(void) {
 // CHECK-NEXT: static mut global_outer: Outer = unsafe { std::mem::zeroed() };
 // CHECK-NEXT: fn bump([[V_0:__v[0-9]+]]: *mut i32, by: i32) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_0]] = (unsafe { *[[V_0]] }) + by;
+// CHECK-NEXT:         *[[V_0]] = *[[V_0]] + by;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn scale([[V_1:__v[0-9]+]]: *mut f64, factor: f64) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_1]] = (unsafe { *[[V_1]] }) * factor;
+// CHECK-NEXT:         *[[V_1]] = *[[V_1]] * factor;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn pick(outer: &mut Outer, which: i32) -> *mut i32 {
@@ -108,7 +108,7 @@ int main(void) {
 // CHECK-NEXT:         return unsafe { std::ptr::addr_of_mut!((* (outer as * mut Outer)).inner.value) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         unsafe { (*(outer as *mut Outer)).items.as_mut_ptr() as *mut i32 }
+// CHECK-NEXT:         ((*(outer as *mut Outer)).items.as_mut_ptr() as *mut i32)
 // CHECK-NEXT:             .offset((which - 2) as isize)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
@@ -150,18 +150,18 @@ int main(void) {
 // CHECK-NEXT:         3 as i32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *slot = (unsafe { *slot }) * 2;
+// CHECK-NEXT:         *slot = *slot * 2;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let [[V_2:__v[0-9]+]]: *mut i32 = pick(
 // CHECK-NEXT:         unsafe { &mut (*std::ptr::addr_of_mut!(local)) },
 // CHECK-NEXT:         0 as i32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_2]] = (unsafe { *[[V_2]] }) + 1000;
+// CHECK-NEXT:         *[[V_2]] = *[[V_2]] + 1000;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let inner: *mut Inner = inner_of(unsafe { &mut (*std::ptr::addr_of_mut!(local)) });
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*inner).value = (unsafe { (*inner).value }) + 50;
+// CHECK-NEXT:         (*inner).value = (*inner).value + 50;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         global_outer.id = 3;
@@ -170,19 +170,15 @@ int main(void) {
 // CHECK-NEXT:     bump(unsafe { std::ptr::addr_of_mut!(global_outer.inner.value) }, 11 as i32);
 // CHECK-NEXT:     scale(unsafe { std::ptr::addr_of_mut!(global_outer.inner.weight) }, 2.0f64);
 // CHECK-NEXT:     let global_slot: *mut i32 = unsafe {
-// CHECK-NEXT:         unsafe { std::ptr::addr_of_mut!(global_outer.items) as *mut i32 }
-// CHECK-NEXT:             .offset(1 as isize)
+// CHECK-NEXT:         (std::ptr::addr_of_mut!(global_outer.items) as *mut i32).offset(1 as isize)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *global_slot = 77;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         global_outer.link = unsafe { std::ptr::addr_of_mut!(global_outer.inner) };
+// CHECK-NEXT:         global_outer.link = std::ptr::addr_of_mut!(global_outer.inner);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     bump(
-// CHECK-NEXT:         unsafe { std::ptr::addr_of_mut!((* unsafe { global_outer.link }).value) },
-// CHECK-NEXT:         1 as i32,
-// CHECK-NEXT:     );
+// CHECK-NEXT:     bump(unsafe { std::ptr::addr_of_mut!((* global_outer.link).value) }, 1 as i32);
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {} {} {}", local.id, local.inner.value, local.items[0], local.items[1],
 // CHECK-NEXT:         local.items[2], local.items[3]
@@ -195,10 +191,10 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%d %d %.2f %d\n".as_ptr(),
-// CHECK-NEXT:             unsafe { global_outer.id },
-// CHECK-NEXT:             unsafe { global_outer.inner.value },
-// CHECK-NEXT:             unsafe { global_outer.inner.weight },
-// CHECK-NEXT:             unsafe { global_outer.items[1] },
+// CHECK-NEXT:             global_outer.id,
+// CHECK-NEXT:             global_outer.inner.value,
+// CHECK-NEXT:             global_outer.inner.weight,
+// CHECK-NEXT:             global_outer.items[1],
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

@@ -86,7 +86,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { error(0 as i32, 0 as i32, c"first message".as_ptr()) };
 // CHECK-NEXT:     unsafe { error(0 as i32, 0 as i32, c"second message".as_ptr()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"count_after_two:%u\n".as_ptr(), unsafe { error_message_count }) };
+// CHECK-NEXT:     unsafe { printf(c"count_after_two:%u\n".as_ptr(), error_message_count) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         error_one_per_line = 1;
@@ -110,9 +110,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(c"count_after_dedup:%u\n".as_ptr(), unsafe { error_message_count })
-// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { printf(c"count_after_dedup:%u\n".as_ptr(), error_message_count) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         error_at_line(
@@ -124,9 +122,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(c"count_after_new_line:%u\n".as_ptr(), unsafe { error_message_count })
-// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { printf(c"count_after_new_line:%u\n".as_ptr(), error_message_count) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     unsafe { error(5 as i32, 0 as i32, c"fatal message".as_ptr()) };
 // CHECK-NEXT:     println!("unreachable");

@@ -113,7 +113,7 @@ int main(void) {
 // CHECK-NEXT: static mut calls: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT: fn next(v: i32) -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         calls = (unsafe { calls }) + 1;
+// CHECK-NEXT:         calls = calls + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     v
 // CHECK-NEXT: }
@@ -135,24 +135,18 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%u %d %u\n".as_ptr(),
-// CHECK-NEXT:             (unsafe {
-// CHECK-NEXT:                 std::ptr::read_volatile(
-// CHECK-NEXT:                         std::ptr::addr_of!(* std::ptr::addr_of!(gs.__slate_bits_0)),
-// CHECK-NEXT:                     )
-// CHECK-NEXT:                     .__get_b()
-// CHECK-NEXT:             }) as i32,
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 std::ptr::read_volatile(
-// CHECK-NEXT:                         std::ptr::addr_of!(* std::ptr::addr_of!(gs.__slate_bits_0)),
-// CHECK-NEXT:                     )
-// CHECK-NEXT:                     .__get_c()
-// CHECK-NEXT:             },
-// CHECK-NEXT:             (unsafe {
-// CHECK-NEXT:                 std::ptr::read_volatile(
-// CHECK-NEXT:                         std::ptr::addr_of!(* std::ptr::addr_of!(gs.__slate_bits_0)),
-// CHECK-NEXT:                     )
-// CHECK-NEXT:                     .__get_d()
-// CHECK-NEXT:             }) as i32,
+// CHECK-NEXT:             std::ptr::read_volatile(
+// CHECK-NEXT:                     std::ptr::addr_of!(* std::ptr::addr_of!(gs.__slate_bits_0)),
+// CHECK-NEXT:                 )
+// CHECK-NEXT:                 .__get_b() as i32,
+// CHECK-NEXT:             std::ptr::read_volatile(
+// CHECK-NEXT:                     std::ptr::addr_of!(* std::ptr::addr_of!(gs.__slate_bits_0)),
+// CHECK-NEXT:                 )
+// CHECK-NEXT:                 .__get_c(),
+// CHECK-NEXT:             std::ptr::read_volatile(
+// CHECK-NEXT:                     std::ptr::addr_of!(* std::ptr::addr_of!(gs.__slate_bits_0)),
+// CHECK-NEXT:                 )
+// CHECK-NEXT:                 .__get_d() as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -160,16 +154,12 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%u %u\n".as_ptr(),
-// CHECK-NEXT:             (unsafe {
-// CHECK-NEXT:                 std::ptr::read_volatile(
-// CHECK-NEXT:                         std::ptr::addr_of!(* std::ptr::addr_of!(gu.__slate_bits_0)),
-// CHECK-NEXT:                     )
-// CHECK-NEXT:                     .__get_low()
-// CHECK-NEXT:             }) as i32,
-// CHECK-NEXT:             (unsafe {
-// CHECK-NEXT:                 std::ptr::read_volatile(std::ptr::addr_of!(lu.__slate_bits_0))
-// CHECK-NEXT:                     .__get_low()
-// CHECK-NEXT:             }) as i32,
+// CHECK-NEXT:             std::ptr::read_volatile(
+// CHECK-NEXT:                     std::ptr::addr_of!(* std::ptr::addr_of!(gu.__slate_bits_0)),
+// CHECK-NEXT:                 )
+// CHECK-NEXT:                 .__get_low() as i32,
+// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(lu.__slate_bits_0)).__get_low()
+// CHECK-NEXT:                 as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -238,25 +228,19 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%u %d %u %u\n".as_ptr(),
-// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(gs.a)) },
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 std::ptr::read_volatile(
-// CHECK-NEXT:                         std::ptr::addr_of!(* std::ptr::addr_of!(gs.__slate_bits_0)),
-// CHECK-NEXT:                     )
-// CHECK-NEXT:                     .__get_c()
-// CHECK-NEXT:             },
-// CHECK-NEXT:             (unsafe {
-// CHECK-NEXT:                 std::ptr::read_volatile(
-// CHECK-NEXT:                         std::ptr::addr_of!(* std::ptr::addr_of!(gs.__slate_bits_0)),
-// CHECK-NEXT:                     )
-// CHECK-NEXT:                     .__get_b()
-// CHECK-NEXT:             }) as i32,
-// CHECK-NEXT:             (unsafe {
-// CHECK-NEXT:                 std::ptr::read_volatile(
-// CHECK-NEXT:                         std::ptr::addr_of!(* std::ptr::addr_of!(gs.__slate_bits_0)),
-// CHECK-NEXT:                     )
-// CHECK-NEXT:                     .__get_d()
-// CHECK-NEXT:             }) as i32,
+// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(gs.a)),
+// CHECK-NEXT:             std::ptr::read_volatile(
+// CHECK-NEXT:                     std::ptr::addr_of!(* std::ptr::addr_of!(gs.__slate_bits_0)),
+// CHECK-NEXT:                 )
+// CHECK-NEXT:                 .__get_c(),
+// CHECK-NEXT:             std::ptr::read_volatile(
+// CHECK-NEXT:                     std::ptr::addr_of!(* std::ptr::addr_of!(gs.__slate_bits_0)),
+// CHECK-NEXT:                 )
+// CHECK-NEXT:                 .__get_b() as i32,
+// CHECK-NEXT:             std::ptr::read_volatile(
+// CHECK-NEXT:                     std::ptr::addr_of!(* std::ptr::addr_of!(gs.__slate_bits_0)),
+// CHECK-NEXT:                 )
+// CHECK-NEXT:                 .__get_d() as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -264,16 +248,12 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%u %d %u %u\n".as_ptr(),
-// CHECK-NEXT:             (unsafe {
-// CHECK-NEXT:                 std::ptr::read_volatile(std::ptr::addr_of!(ls.__slate_bits_0)).__get_b()
-// CHECK-NEXT:             }) as i32,
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 std::ptr::read_volatile(std::ptr::addr_of!(ls.__slate_bits_0)).__get_c()
-// CHECK-NEXT:             },
-// CHECK-NEXT:             (unsafe {
-// CHECK-NEXT:                 std::ptr::read_volatile(std::ptr::addr_of!(ls.__slate_bits_0)).__get_d()
-// CHECK-NEXT:             }) as i32,
-// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ls.a)) },
+// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(ls.__slate_bits_0)).__get_b()
+// CHECK-NEXT:                 as i32,
+// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(ls.__slate_bits_0)).__get_c(),
+// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(ls.__slate_bits_0)).__get_d()
+// CHECK-NEXT:                 as i32,
+// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(ls.a)),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -281,9 +261,9 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%x %x %d\n".as_ptr(),
-// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(lu.word)) },
-// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(gu.word)) },
-// CHECK-NEXT:             unsafe { calls },
+// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(lu.word)),
+// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(gu.word)),
+// CHECK-NEXT:             calls,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

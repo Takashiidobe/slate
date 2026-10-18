@@ -219,10 +219,9 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::copy_nonoverlapping(
 // CHECK-NEXT:             buffer as *const u8,
-// CHECK-NEXT:             ((unsafe {
-// CHECK-NEXT:                 unsafe { (*(state as *mut GNUCookie)).bytes.as_mut_ptr() as *mut i8 }
-// CHECK-NEXT:                     .offset((unsafe { (*(state as *mut GNUCookie)).length }) as isize)
-// CHECK-NEXT:             }) as *mut ()) as *mut u8,
+// CHECK-NEXT:             (((*(state as *mut GNUCookie)).bytes.as_mut_ptr() as *mut i8)
+// CHECK-NEXT:                 .offset((*(state as *mut GNUCookie)).length as isize) as *mut ())
+// CHECK-NEXT:                 as *mut u8,
 // CHECK-NEXT:             size as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -292,7 +291,7 @@ int main(void) {
 // CHECK-NEXT:     let stream: *mut _IO_FILE = unsafe {
 // CHECK-NEXT:         fmemopen(
 // CHECK-NEXT:             source.as_mut_ptr() as *mut (),
-// CHECK-NEXT:             unsafe { strlen(source.as_mut_ptr() as *const i8) },
+// CHECK-NEXT:             strlen(source.as_mut_ptr() as *const i8),
 // CHECK-NEXT:             c"r".as_ptr(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };

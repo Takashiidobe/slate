@@ -38,9 +38,9 @@ int main(void) {
 // CHECK-NEXT:     for i in 0..len {
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: *mut i32 = unsafe { values.offset(i as isize) };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *[[V_0]] = (unsafe { *[[V_0]] }) + 1;
+// CHECK-NEXT:             *[[V_0]] = *[[V_0]] + 1;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         sum += unsafe { *unsafe { values.offset(i as isize) } };
+// CHECK-NEXT:         sum += unsafe { *values.offset(i as isize) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { free(values as *mut ()) };
 // CHECK-NEXT:     sum
@@ -54,7 +54,7 @@ int main(void) {
 // CHECK-NEXT:         as *mut i32;
 // CHECK-NEXT:     for i in 0..len {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *unsafe { values.offset(i as isize) } = i * 2;
+// CHECK-NEXT:             *values.offset(i as isize) = i * 2;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let sum: i32 = forward_consume(values, len);

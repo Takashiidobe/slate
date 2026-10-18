@@ -63,17 +63,15 @@ int main(void) {
 // CHECK-NEXT: fn pairwise_swap(items: *mut i32, len: i32) {
 // CHECK-NEXT:     for i in 0..len {
 // CHECK-NEXT:         for j in 0..len {
-// CHECK-NEXT:             if (unsafe { *unsafe { items.offset(i as isize) } })
-// CHECK-NEXT:                 > unsafe { *unsafe { items.offset(j as isize) } }
+// CHECK-NEXT:             if (unsafe { *items.offset(i as isize) })
+// CHECK-NEXT:                 > unsafe { *items.offset(j as isize) }
 // CHECK-NEXT:             {
-// CHECK-NEXT:                 let tmp: i32 = unsafe { *unsafe { items.offset(i as isize) } };
+// CHECK-NEXT:                 let tmp: i32 = unsafe { *items.offset(i as isize) };
 // CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     *unsafe { items.offset(i as isize) } = unsafe {
-// CHECK-NEXT:                         *unsafe { items.offset(j as isize) }
-// CHECK-NEXT:                     };
+// CHECK-NEXT:                     *items.offset(i as isize) = *items.offset(j as isize);
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     *unsafe { items.offset(j as isize) } = tmp;
+// CHECK-NEXT:                     *items.offset(j as isize) = tmp;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
@@ -82,17 +80,15 @@ int main(void) {
 // CHECK-NEXT: fn pairwise_swap_tmp_reused(items: *mut i32, len: i32) {
 // CHECK-NEXT:     for i in 0..len {
 // CHECK-NEXT:         for j in 0..len {
-// CHECK-NEXT:             if (unsafe { *unsafe { items.offset(i as isize) } })
-// CHECK-NEXT:                 > unsafe { *unsafe { items.offset(j as isize) } }
+// CHECK-NEXT:             if (unsafe { *items.offset(i as isize) })
+// CHECK-NEXT:                 > unsafe { *items.offset(j as isize) }
 // CHECK-NEXT:             {
-// CHECK-NEXT:                 let tmp: i32 = unsafe { *unsafe { items.offset(i as isize) } };
+// CHECK-NEXT:                 let tmp: i32 = unsafe { *items.offset(i as isize) };
 // CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     *unsafe { items.offset(i as isize) } = unsafe {
-// CHECK-NEXT:                         *unsafe { items.offset(j as isize) }
-// CHECK-NEXT:                     };
+// CHECK-NEXT:                     *items.offset(i as isize) = *items.offset(j as isize);
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     *unsafe { items.offset(j as isize) } = tmp;
+// CHECK-NEXT:                     *items.offset(j as isize) = tmp;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 println!("tmp={}", tmp);
 // CHECK-NEXT:             }
@@ -102,15 +98,13 @@ int main(void) {
 // CHECK-NEXT: fn nested_self_swap(items: *mut i32, len: i32) {
 // CHECK-NEXT:     for i in 0..len {
 // CHECK-NEXT:         for j in 0..len {
-// CHECK-NEXT:             if (unsafe { *unsafe { items.offset(i as isize) } }) > 0 {
-// CHECK-NEXT:                 let tmp: i32 = unsafe { *unsafe { items.offset(j as isize) } };
+// CHECK-NEXT:             if (unsafe { *items.offset(i as isize) }) > 0 {
+// CHECK-NEXT:                 let tmp: i32 = unsafe { *items.offset(j as isize) };
 // CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     *unsafe { items.offset(j as isize) } = unsafe {
-// CHECK-NEXT:                         *unsafe { items.offset(j as isize) }
-// CHECK-NEXT:                     };
+// CHECK-NEXT:                     *items.offset(j as isize) = *items.offset(j as isize);
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     *unsafe { items.offset(j as isize) } = tmp;
+// CHECK-NEXT:                     *items.offset(j as isize) = tmp;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }

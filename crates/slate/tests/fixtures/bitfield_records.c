@@ -285,11 +285,11 @@ int main(void) {
 // CHECK-NEXT:         (*flags).__slate_bits_2.__set_wide([[V_1]] + 1);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let [[T_0]] = (unsafe { (*flags).__slate_bits_1.__get__flags2() }) * 2;
+// CHECK-NEXT:         let [[T_0]] = (*flags).__slate_bits_1.__get__flags2() * 2;
 // CHECK-NEXT:         (*flags).__slate_bits_1.__set__flags2([[T_0]]);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let [[T_1:__t[0-9]+]] = !(((unsafe { (*flags).__slate_bits_0.__get_ready() }) as i32) != 0);
+// CHECK-NEXT:         let [[T_1:__t[0-9]+]] = !(((*flags).__slate_bits_0.__get_ready() as i32) != 0);
 // CHECK-NEXT:         (*flags).__slate_bits_0.__set_ready([[T_1]]);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
@@ -351,20 +351,17 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%u %u %d %u %d %d %c %d %lld %d %d\n".as_ptr(),
-// CHECK-NEXT:             (unsafe { (*std::ptr::addr_of!(global.__slate_bits_0)).__get_x() }) as i32,
-// CHECK-NEXT:             (unsafe { (*std::ptr::addr_of!(global.__slate_bits_0)).__get_set_x() })
-// CHECK-NEXT:                 as i32,
-// CHECK-NEXT:             unsafe { (*std::ptr::addr_of!(global.__slate_bits_0)).__get_a() },
-// CHECK-NEXT:             (unsafe { (*std::ptr::addr_of!(global.__slate_bits_0)).__get_A() }) as i32,
-// CHECK-NEXT:             unsafe { (*std::ptr::addr_of!(global.__slate_bits_0)).__get_type() },
-// CHECK-NEXT:             (unsafe { (*std::ptr::addr_of!(global.__slate_bits_0)).__get_ready() })
-// CHECK-NEXT:                 as i32,
-// CHECK-NEXT:             (unsafe { global.tag }) as i32,
-// CHECK-NEXT:             unsafe { (*std::ptr::addr_of!(global.__slate_bits_1)).__get__flags2() },
-// CHECK-NEXT:             unsafe { (*std::ptr::addr_of!(global.__slate_bits_2)).__get_wide() },
-// CHECK-NEXT:             (unsafe { (*std::ptr::addr_of!(global.__slate_bits_2)).__get_last() })
-// CHECK-NEXT:                 as i32,
-// CHECK-NEXT:             (unsafe { global.after }) as i32,
+// CHECK-NEXT:             (*std::ptr::addr_of!(global.__slate_bits_0)).__get_x() as i32,
+// CHECK-NEXT:             (*std::ptr::addr_of!(global.__slate_bits_0)).__get_set_x() as i32,
+// CHECK-NEXT:             (*std::ptr::addr_of!(global.__slate_bits_0)).__get_a(),
+// CHECK-NEXT:             (*std::ptr::addr_of!(global.__slate_bits_0)).__get_A() as i32,
+// CHECK-NEXT:             (*std::ptr::addr_of!(global.__slate_bits_0)).__get_type(),
+// CHECK-NEXT:             (*std::ptr::addr_of!(global.__slate_bits_0)).__get_ready() as i32,
+// CHECK-NEXT:             global.tag as i32,
+// CHECK-NEXT:             (*std::ptr::addr_of!(global.__slate_bits_1)).__get__flags2(),
+// CHECK-NEXT:             (*std::ptr::addr_of!(global.__slate_bits_2)).__get_wide(),
+// CHECK-NEXT:             (*std::ptr::addr_of!(global.__slate_bits_2)).__get_last() as i32,
+// CHECK-NEXT:             global.after as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -376,9 +373,9 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%x %x %d\n".as_ptr(),
-// CHECK-NEXT:             (unsafe { overlay.parts.__slate_bits_0.__get_low() }) as i32,
-// CHECK-NEXT:             (unsafe { overlay.parts.__slate_bits_0.__get_high() }) as i32,
-// CHECK-NEXT:             unsafe { overlay.__slate_bits_0.__get_signed_bits() },
+// CHECK-NEXT:             overlay.parts.__slate_bits_0.__get_low() as i32,
+// CHECK-NEXT:             overlay.parts.__slate_bits_0.__get_high() as i32,
+// CHECK-NEXT:             overlay.__slate_bits_0.__get_signed_bits(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -389,12 +386,10 @@ int main(void) {
 // CHECK-NEXT:         overlay.__slate_bits_0.__set_signed_bits(-(1 as i32));
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%x %d\n".as_ptr(), unsafe { overlay.whole }, 4 as i32) };
+// CHECK-NEXT:     unsafe { printf(c"%x %d\n".as_ptr(), overlay.whole, 4 as i32) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         fprintf(unsafe { stdout }, c"%s\n".as_ptr(), c"file ok".as_ptr() as *mut i8)
-// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { fprintf(stdout, c"%s\n".as_ptr(), c"file ok".as_ptr() as *mut i8) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

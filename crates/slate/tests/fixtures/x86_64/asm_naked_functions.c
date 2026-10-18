@@ -63,7 +63,7 @@ int main(void) {
 // CHECK-NEXT:             add(30 as i64, 12 as i64),
 // CHECK-NEXT:             forty_two(),
 // CHECK-NEXT:             declared(),
-// CHECK-NEXT:             unsafe { fp.unwrap()(3 as i32) },
+// CHECK-NEXT:             fp.unwrap()(3 as i32),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

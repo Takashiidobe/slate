@@ -53,7 +53,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn bump(v: i32) -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         side_effect_calls = (unsafe { side_effect_calls }) + 1;
+// CHECK-NEXT:         side_effect_calls = side_effect_calls + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     v
 // CHECK-NEXT: }

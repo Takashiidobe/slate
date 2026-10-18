@@ -22,7 +22,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::write_volatile(
 // CHECK-NEXT:             std::ptr::addr_of_mut!(slot),
-// CHECK-NEXT:             (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(slot)) }) + 3,
+// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(slot)) + 3,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { std::ptr::read_volatile(std::ptr::addr_of!(slot)) }
