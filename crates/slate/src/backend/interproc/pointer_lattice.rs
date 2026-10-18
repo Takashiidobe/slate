@@ -1,6 +1,6 @@
 use std::collections::{BTreeMap, BTreeSet};
 
-use crate::backend::interproc::{self, CallGraph};
+use crate::backend::interproc::{self, CallGraph, FnKey, Symbols};
 use crate::backend::rust_ast::{
     BinOp, Block, CLibType, Expr, FnDef, Ident, Item, Path, Prim, Program, RustValue, Stmt,
     StructDef, StructFields, Type, UnaryOp, Visibility, is_temp_name,
@@ -35,7 +35,7 @@ fn place_key(expr: &Expr) -> Option<String> {
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub(in crate::backend) struct PointerBinding {
-    pub function: String,
+    pub function: FnKey,
     pub name: String,
 }
 
@@ -220,15 +220,15 @@ struct Candidate {
 }
 
 struct CallSite {
-    caller: String,
-    callee: String,
+    caller: FnKey,
+    callee: FnKey,
     arg_index: usize,
     caller_binding: String,
 }
 
 struct ReturnCallSite {
-    caller: String,
-    callee: String,
+    caller: FnKey,
+    callee: FnKey,
     param_index: usize,
     result_binding: String,
 }
@@ -239,44 +239,63 @@ struct ReturnAlias {
     elem_is_byte: bool,
 }
 
-pub(in crate::backend) fn solve(program: &Program) -> BTreeMap<PointerBinding, PointerFact> {
-    let fn_defs = collect_fn_defs(&program.items);
-    let candidates: BTreeMap<String, Candidate> = fn_defs
+#[derive(Clone, Copy)]
+struct ReturnAliases<'a> {
+    unit: usize,
+    symbols: &'a Symbols,
+    aliases: &'a BTreeMap<FnKey, ReturnAlias>,
+}
+
+impl ReturnAliases<'_> {
+    fn get(&self, callee: &str) -> Option<(FnKey, ReturnAlias)> {
+        let key = self.symbols.resolve(self.unit, callee)?;
+        let alias = *self.aliases.get(&key)?;
+        Some((key, alias))
+    }
+}
+
+pub(in crate::backend) fn solve(programs: &[Program]) -> BTreeMap<PointerBinding, PointerFact> {
+    let symbols = Symbols::new(programs);
+    let fn_defs = interproc::fn_defs(programs);
+    let candidates: BTreeMap<FnKey, Candidate> = fn_defs
         .iter()
-        .filter_map(|(name, f)| candidate_for(f).map(|c| (name.clone(), c)))
+        .filter_map(|(key, f)| candidate_for(f).map(|c| (key.clone(), c)))
         .collect();
     if candidates.is_empty() {
         return BTreeMap::new();
     }
 
-    let global_ptr_mutability = collect_global_ptr_mutability(&program.items);
-    let return_aliases = collect_return_aliases(&fn_defs, &candidates);
+    let global_ptr_mutability: Vec<BTreeMap<String, bool>> = programs
+        .iter()
+        .map(|program| collect_global_ptr_mutability(&program.items))
+        .collect();
+    let return_aliases = collect_return_aliases(&symbols, &fn_defs, &candidates);
 
     let mut facts: BTreeMap<PointerBinding, PointerFact> = BTreeMap::new();
     let mut call_sites: Vec<CallSite> = Vec::new();
     let mut return_sites: Vec<ReturnCallSite> = Vec::new();
-    for (name, f) in &fn_defs {
+    for (key, f) in &fn_defs {
         let (local, sites, local_return_sites) = classify_function(
-            name,
+            key,
             f,
-            candidates.get(name),
+            &symbols,
             &candidates,
             &return_aliases,
-            &global_ptr_mutability,
+            &global_ptr_mutability[key.unit],
         );
         facts.extend(local);
         call_sites.extend(sites);
         return_sites.extend(local_return_sites);
     }
 
-    let mut outbound: BTreeMap<String, Vec<&CallSite>> = BTreeMap::new();
-    let mut inbound: BTreeMap<String, Vec<&CallSite>> = BTreeMap::new();
+    let mut outbound: BTreeMap<FnKey, Vec<&CallSite>> = BTreeMap::new();
+    let mut inbound: BTreeMap<FnKey, Vec<&CallSite>> = BTreeMap::new();
     for site in &call_sites {
         outbound.entry(site.caller.clone()).or_default().push(site);
         inbound.entry(site.callee.clone()).or_default().push(site);
     }
 
-    let mut return_incident: BTreeMap<String, Vec<&ReturnCallSite>> = BTreeMap::new();
+    let mut return_incident: BTreeMap<FnKey, Vec<&ReturnCallSite>> = BTreeMap::new();
     for site in &return_sites {
         return_incident
             .entry(site.caller.clone())
@@ -328,7 +347,7 @@ pub(in crate::backend) fn solve(program: &Program) -> BTreeMap<PointerBinding, P
                 continue;
             };
             let callee_binding = PointerBinding {
-                function: name.to_string(),
+                function: name.clone(),
                 name: callee_param_name(&fn_defs, name, site.arg_index),
             };
             if let Some(callee_fact) = facts.get_mut(&callee_binding) {
@@ -373,7 +392,11 @@ pub(in crate::backend) fn solve(program: &Program) -> BTreeMap<PointerBinding, P
     facts
 }
 
-fn callee_param_name(fn_defs: &BTreeMap<String, &FnDef>, callee: &str, arg_index: usize) -> String {
+fn callee_param_name(
+    fn_defs: &BTreeMap<FnKey, &FnDef>,
+    callee: &FnKey,
+    arg_index: usize,
+) -> String {
     fn_defs
         .get(callee)
         .and_then(|f| f.params.get(arg_index))
@@ -411,24 +434,6 @@ fn collect_global_ptr_mutability_into(items: &[Item], out: &mut BTreeMap<String,
                 out.insert(name.clone(), *mutable);
             }
             Item::InlineMod { items, .. } => collect_global_ptr_mutability_into(items, out),
-            _ => {}
-        }
-    }
-}
-
-fn collect_fn_defs(items: &[Item]) -> BTreeMap<String, &FnDef> {
-    let mut out = BTreeMap::new();
-    collect_fn_defs_into(items, &mut out);
-    out
-}
-
-fn collect_fn_defs_into<'a>(items: &'a [Item], out: &mut BTreeMap<String, &'a FnDef>) {
-    for item in items {
-        match item {
-            Item::Fn(f) => {
-                out.insert(f.name.clone(), f);
-            }
-            Item::InlineMod { items, .. } => collect_fn_defs_into(items, out),
             _ => {}
         }
     }
@@ -479,18 +484,24 @@ fn elem_is_byte(ty: &Type) -> bool {
 }
 
 fn collect_return_aliases(
-    fn_defs: &BTreeMap<String, &FnDef>,
-    candidates: &BTreeMap<String, Candidate>,
-) -> BTreeMap<String, ReturnAlias> {
+    symbols: &Symbols,
+    fn_defs: &BTreeMap<FnKey, &FnDef>,
+    candidates: &BTreeMap<FnKey, Candidate>,
+) -> BTreeMap<FnKey, ReturnAlias> {
     let mut aliases = BTreeMap::new();
     loop {
         let mut changed = false;
-        for (name, candidate) in candidates {
-            if aliases.contains_key(name) {
+        for (key, candidate) in candidates {
+            if aliases.contains_key(key) {
                 continue;
             }
-            if let Some(alias) = return_alias_for(fn_defs[name], candidate, &aliases) {
-                aliases.insert(name.clone(), alias);
+            let view = ReturnAliases {
+                unit: key.unit,
+                symbols,
+                aliases: &aliases,
+            };
+            if let Some(alias) = return_alias_for(fn_defs[key], candidate, view) {
+                aliases.insert(key.clone(), alias);
                 changed = true;
             }
         }
@@ -503,7 +514,7 @@ fn collect_return_aliases(
 fn return_alias_for(
     f: &FnDef,
     candidate: &Candidate,
-    return_aliases: &BTreeMap<String, ReturnAlias>,
+    return_aliases: ReturnAliases,
 ) -> Option<ReturnAlias> {
     let mut assignments: BTreeMap<String, Vec<Expr>> = BTreeMap::new();
     collect_assignments(&f.body, &mut assignments);
@@ -552,7 +563,7 @@ fn return_alias_for(
     Some(*alias)
 }
 
-fn return_source_var(expr: &Expr, return_aliases: &BTreeMap<String, ReturnAlias>) -> Option<Ident> {
+fn return_source_var(expr: &Expr, return_aliases: ReturnAliases) -> Option<Ident> {
     if let Some(source) = source_var(expr) {
         return Some(source);
     }
@@ -562,7 +573,7 @@ fn return_source_var(expr: &Expr, return_aliases: &BTreeMap<String, ReturnAlias>
     let Expr::Var(callee) = &**func else {
         return None;
     };
-    let alias = return_aliases.get(callee.as_str())?;
+    let (_, alias) = return_aliases.get(callee.as_str())?;
     return_source_var(args.get(alias.param_index)?, return_aliases)
 }
 
@@ -649,11 +660,11 @@ fn collect_return_exprs(body: &[Stmt], out: &mut Vec<Expr>) {
 }
 
 fn classify_function(
-    name: &str,
+    key: &FnKey,
     f: &FnDef,
-    candidate: Option<&Candidate>,
-    candidates: &BTreeMap<String, Candidate>,
-    return_aliases: &BTreeMap<String, ReturnAlias>,
+    symbols: &Symbols,
+    candidates: &BTreeMap<FnKey, Candidate>,
+    return_aliases: &BTreeMap<FnKey, ReturnAlias>,
     global_ptr_mutability: &BTreeMap<String, bool>,
 ) -> (
     BTreeMap<PointerBinding, PointerFact>,
@@ -662,11 +673,11 @@ fn classify_function(
 ) {
     let mut facts = BTreeMap::new();
     let mut tracked: BTreeMap<String, String> = BTreeMap::new();
-    if let Some(candidate) = candidate {
+    if let Some(candidate) = candidates.get(key) {
         for &index in &candidate.param_indices {
             let param = &f.params[index];
             let binding = PointerBinding {
-                function: name.to_string(),
+                function: key.clone(),
                 name: param.name.clone(),
             };
             facts.insert(binding, PointerFact::new(elem_is_byte(&param.ty)));
@@ -686,10 +697,15 @@ fn classify_function(
     let mut sites = Vec::new();
     let mut return_sites = Vec::new();
     let mut ctx = ClassifyCtx {
-        function: name,
+        function: key,
+        symbols,
         candidates,
-        return_aliases,
-        has_return_alias: return_aliases.contains_key(name),
+        return_aliases: ReturnAliases {
+            unit: key.unit,
+            symbols,
+            aliases: return_aliases,
+        },
+        has_return_alias: return_aliases.contains_key(key),
         facts: &mut facts,
         tracked: &mut tracked,
         sites: &mut sites,
@@ -702,9 +718,10 @@ fn classify_function(
 }
 
 struct ClassifyCtx<'a> {
-    function: &'a str,
-    candidates: &'a BTreeMap<String, Candidate>,
-    return_aliases: &'a BTreeMap<String, ReturnAlias>,
+    function: &'a FnKey,
+    symbols: &'a Symbols,
+    candidates: &'a BTreeMap<FnKey, Candidate>,
+    return_aliases: ReturnAliases<'a>,
     has_return_alias: bool,
     facts: &'a mut BTreeMap<PointerBinding, PointerFact>,
     tracked: &'a mut BTreeMap<String, String>,
@@ -717,7 +734,7 @@ struct ClassifyCtx<'a> {
 impl ClassifyCtx<'_> {
     fn observe(&mut self, canonical: &str, f: impl FnOnce(&mut PointerFact) -> bool) {
         let binding = PointerBinding {
-            function: self.function.to_string(),
+            function: self.function.clone(),
             name: canonical.to_string(),
         };
         if let Some(fact) = self.facts.get_mut(&binding) {
@@ -784,12 +801,12 @@ impl ClassifyCtx<'_> {
         let Expr::Var(callee) = &**func else {
             return false;
         };
-        let Some(alias) = self.return_aliases.get(callee.as_str()).copied() else {
+        let Some((callee, alias)) = self.return_aliases.get(callee.as_str()) else {
             return false;
         };
         self.call(func, args, binding);
         let binding = PointerBinding {
-            function: self.function.to_string(),
+            function: self.function.clone(),
             name: name.to_string(),
         };
         self.facts
@@ -797,8 +814,8 @@ impl ClassifyCtx<'_> {
             .or_insert_with(|| PointerFact::new(alias.elem_is_byte));
         self.tracked.insert(name.to_string(), name.to_string());
         self.return_sites.push(ReturnCallSite {
-            caller: self.function.to_string(),
-            callee: callee.as_str().to_string(),
+            caller: self.function.clone(),
+            callee,
             param_index: alias.param_index,
             result_binding: name.to_string(),
         });
@@ -1135,8 +1152,8 @@ impl ClassifyCtx<'_> {
 
     fn call(&mut self, func: &Expr, args: &[Expr], binding: &CallBinding) {
         self.expr(func);
-        let callee_name = match func {
-            Expr::Var(name) => Some(name.as_str().to_string()),
+        let callee = match func {
+            Expr::Var(name) => self.symbols.resolve(self.function.unit, name.as_str()),
             _ => None,
         };
         let known = match binding {
@@ -1154,14 +1171,14 @@ impl ClassifyCtx<'_> {
             let Some(canonical) = self.canonical_of(name.as_str()) else {
                 continue;
             };
-            self.classify_call_arg(&canonical, &callee_name, known, index);
+            self.classify_call_arg(&canonical, callee.as_ref(), known, index);
         }
     }
 
     fn classify_call_arg(
         &mut self,
         canonical: &str,
-        callee_name: &Option<String>,
+        callee: Option<&FnKey>,
         known: Option<Known>,
         index: usize,
     ) {
@@ -1198,14 +1215,14 @@ impl ClassifyCtx<'_> {
             }
             return;
         }
-        let Some(callee_name) = callee_name else {
+        let Some(callee) = callee else {
             self.observe(canonical, PointerFact::observe_escape);
             return;
         };
-        if self.candidates.contains_key(callee_name) {
+        if self.candidates.contains_key(callee) {
             self.sites.push(CallSite {
-                caller: self.function.to_string(),
-                callee: callee_name.clone(),
+                caller: self.function.clone(),
+                callee: callee.clone(),
                 arg_index: index,
                 caller_binding: canonical.to_string(),
             });
@@ -1329,16 +1346,17 @@ fn type_for(base: ResolvedPtrType, inner: &Type) -> Type {
     }
 }
 
-pub(in crate::backend) fn apply(program: &mut Program) {
-    let facts = solve(program);
+pub(in crate::backend) fn apply(programs: &mut [Program]) {
+    let facts = solve(programs);
 
-    crate::backend::interproc::length_lattice::apply(program, &facts);
+    crate::backend::interproc::length_lattice::apply(programs, &facts);
 
-    let mut plans: BTreeMap<String, BTreeMap<String, LiftPlan>> = BTreeMap::new();
-    let mut param_names: BTreeMap<String, Vec<String>> = BTreeMap::new();
-    let mut param_mutability: BTreeMap<String, Vec<Option<bool>>> = BTreeMap::new();
+    let symbols = Symbols::new(programs);
+    let mut plans: BTreeMap<FnKey, BTreeMap<String, LiftPlan>> = BTreeMap::new();
+    let mut param_names: BTreeMap<FnKey, Vec<String>> = BTreeMap::new();
+    let mut param_mutability: BTreeMap<FnKey, Vec<Option<bool>>> = BTreeMap::new();
     {
-        let fn_defs = collect_fn_defs(&program.items);
+        let fn_defs = interproc::fn_defs(programs);
         for (name, f) in &fn_defs {
             param_names.insert(
                 name.clone(),
@@ -1387,28 +1405,52 @@ pub(in crate::backend) fn apply(program: &mut Program) {
         return;
     }
 
-    validate_plans(&program.items, &mut plans, &param_names);
+    validate_plans(programs, &symbols, &mut plans, &param_names);
     if plans.is_empty() {
         return;
     }
 
-    let field_mutability = collect_field_ptr_mutability(&program.items);
-    apply_plans(
-        &mut program.items,
-        &plans,
-        &param_names,
-        &param_mutability,
-        &field_mutability,
-    );
+    for (unit, program) in programs.iter_mut().enumerate() {
+        let field_mutability = collect_field_ptr_mutability(&program.items);
+        let scope = Scope {
+            unit,
+            symbols: &symbols,
+            plans: &plans,
+            param_names: &param_names,
+            param_mutability: &param_mutability,
+            field_mutability: &field_mutability,
+        };
+        apply_plans(&mut program.items, &scope);
+    }
 }
 
-fn for_each_fn_body<'a>(items: &'a [Item], f: &mut impl FnMut(&'a str, &'a [Stmt])) {
-    for item in items {
-        match item {
-            Item::Fn(func) => f(func.name.as_str(), &func.body),
-            Item::InlineMod { items, .. } => for_each_fn_body(items, f),
-            _ => {}
+struct Scope<'a> {
+    unit: usize,
+    symbols: &'a Symbols,
+    plans: &'a BTreeMap<FnKey, BTreeMap<String, LiftPlan>>,
+    param_names: &'a BTreeMap<FnKey, Vec<String>>,
+    param_mutability: &'a BTreeMap<FnKey, Vec<Option<bool>>>,
+    field_mutability: &'a BTreeMap<String, bool>,
+}
+
+impl Scope<'_> {
+    fn resolve(&self, callee: &str) -> Option<FnKey> {
+        self.symbols.resolve(self.unit, callee)
+    }
+}
+
+fn for_each_fn_body<'a>(programs: &'a [Program], f: &mut impl FnMut(FnKey, &'a [Stmt])) {
+    fn walk<'a>(unit: usize, items: &'a [Item], f: &mut impl FnMut(FnKey, &'a [Stmt])) {
+        for item in items {
+            match item {
+                Item::Fn(func) => f(FnKey::new(unit, func.name.clone()), &func.body),
+                Item::InlineMod { items, .. } => walk(unit, items, f),
+                _ => {}
+            }
         }
+    }
+    for (unit, program) in programs.iter().enumerate() {
+        walk(unit, &program.items, f);
     }
 }
 
@@ -1526,35 +1568,38 @@ fn collect_bridgeable_aliases(
 }
 
 fn validate_plans(
-    items: &[Item],
-    plans: &mut BTreeMap<String, BTreeMap<String, LiftPlan>>,
-    param_names: &BTreeMap<String, Vec<String>>,
+    programs: &[Program],
+    symbols: &Symbols,
+    plans: &mut BTreeMap<FnKey, BTreeMap<String, LiftPlan>>,
+    param_names: &BTreeMap<FnKey, Vec<String>>,
 ) {
-    let mut heap_locals_by_fn: BTreeMap<String, std::collections::BTreeSet<String>> =
+    let mut heap_locals_by_fn: BTreeMap<FnKey, std::collections::BTreeSet<String>> =
         BTreeMap::new();
-    for_each_fn_body(items, &mut |caller_name, body| {
+    for_each_fn_body(programs, &mut |caller, body| {
         let mut locals = std::collections::BTreeSet::new();
         collect_heap_locals(body, &mut locals);
-        heap_locals_by_fn.insert(caller_name.to_string(), locals);
+        heap_locals_by_fn.insert(caller, locals);
     });
 
     loop {
-        let mut invalid: Vec<(String, String)> = Vec::new();
+        let mut invalid: Vec<(FnKey, String)> = Vec::new();
         let empty_locals = std::collections::BTreeSet::new();
-        for_each_fn_body(items, &mut |caller_name, body| {
-            let own = plans.get(caller_name);
+        for_each_fn_body(programs, &mut |caller, body| {
+            let own = plans.get(&caller);
             let bridgeable_aliases = collect_bridgeable_aliases(body, own);
-            let heap_locals = heap_locals_by_fn.get(caller_name).unwrap_or(&empty_locals);
+            let heap_locals = heap_locals_by_fn.get(&caller).unwrap_or(&empty_locals);
             let mut calls = Vec::new();
             for indent in body {
                 indent.collect_calls(&mut calls);
             }
             for (callee, args) in calls {
-                let callee = callee.as_str();
-                let Some(pnames) = param_names.get(callee) else {
+                let Some(callee) = symbols.resolve(caller.unit, callee.as_str()) else {
                     continue;
                 };
-                let Some(callee_plans) = plans.get(callee) else {
+                let Some(pnames) = param_names.get(&callee) else {
+                    continue;
+                };
+                let Some(callee_plans) = plans.get(&callee) else {
                     continue;
                 };
                 for (index, arg) in args.iter().enumerate() {
@@ -1565,7 +1610,7 @@ fn validate_plans(
                         continue;
                     };
                     if !arg_is_provably_bridgeable(arg, &bridgeable_aliases, heap_locals, plan) {
-                        invalid.push((callee.to_string(), pname.clone()));
+                        invalid.push((callee.clone(), pname.clone()));
                     }
                 }
             }
@@ -1584,18 +1629,15 @@ fn validate_plans(
     }
 }
 
-fn apply_plans(
-    items: &mut [Item],
-    plans: &BTreeMap<String, BTreeMap<String, LiftPlan>>,
-    param_names: &BTreeMap<String, Vec<String>>,
-    param_mutability: &BTreeMap<String, Vec<Option<bool>>>,
-    field_mutability: &BTreeMap<String, bool>,
-) {
+fn apply_plans(items: &mut [Item], scope: &Scope) {
     let empty = BTreeMap::new();
     for item in items {
         match item {
             Item::Fn(f) => {
-                let own_plans = plans.get(&f.name).unwrap_or(&empty);
+                let own_plans = scope
+                    .plans
+                    .get(&FnKey::new(scope.unit, f.name.clone()))
+                    .unwrap_or(&empty);
                 for param in &mut f.params {
                     if let Some(plan) = own_plans.get(&param.name) {
                         param.ty = plan.ty.clone();
@@ -1609,11 +1651,8 @@ fn apply_plans(
                 let owned_aliases = collect_owned_aliases(&f.body, own_plans);
                 let ctx = LiftCtx {
                     own: own_plans,
-                    all: plans,
-                    param_names,
-                    param_mutability,
+                    scope,
                     declared_mutability: &declared_mutability,
-                    field_mutability,
                     owned_aliases: &owned_aliases,
                     return_mutability: match &f.ret {
                         Some(Type::Ptr { mutable, .. }) => Some(*mutable),
@@ -1622,13 +1661,7 @@ fn apply_plans(
                 };
                 rewrite_stmts(&mut f.body, &ctx);
             }
-            Item::InlineMod { items, .. } => apply_plans(
-                items,
-                plans,
-                param_names,
-                param_mutability,
-                field_mutability,
-            ),
+            Item::InlineMod { items, .. } => apply_plans(items, scope),
             _ => {}
         }
     }
@@ -1735,19 +1768,19 @@ fn bridge_arg_into_box(arg: &mut Expr) {
 }
 
 fn callee_accepts_directly(
-    callee: &str,
+    callee: &FnKey,
     arg_index: usize,
     own_plan: &LiftPlan,
-    all_plans: &BTreeMap<String, BTreeMap<String, LiftPlan>>,
-    param_names: &BTreeMap<String, Vec<String>>,
+    scope: &Scope,
 ) -> bool {
-    let Some(names) = param_names.get(callee) else {
+    let Some(names) = scope.param_names.get(callee) else {
         return false;
     };
     let Some(param_name) = names.get(arg_index) else {
         return false;
     };
-    all_plans
+    scope
+        .plans
         .get(callee)
         .and_then(|plans| plans.get(param_name))
         .is_some_and(|callee_plan| callee_plan.ty == own_plan.ty)
@@ -1755,11 +1788,8 @@ fn callee_accepts_directly(
 
 struct LiftCtx<'a> {
     own: &'a BTreeMap<String, LiftPlan>,
-    all: &'a BTreeMap<String, BTreeMap<String, LiftPlan>>,
-    param_names: &'a BTreeMap<String, Vec<String>>,
-    param_mutability: &'a BTreeMap<String, Vec<Option<bool>>>,
+    scope: &'a Scope<'a>,
     declared_mutability: &'a BTreeMap<String, bool>,
-    field_mutability: &'a BTreeMap<String, bool>,
     owned_aliases: &'a BTreeMap<String, String>,
     return_mutability: Option<bool>,
 }
@@ -1977,7 +2007,8 @@ fn rewrite_stmt(stmt: &mut Stmt, ctx: &LiftCtx) {
                     }
                     Expr::TupleField { .. } => Some(true),
                     Expr::Field { field, .. } => Some(
-                        ctx.field_mutability
+                        ctx.scope
+                            .field_mutability
                             .get(field.as_str())
                             .copied()
                             .unwrap_or(true),
@@ -2147,20 +2178,20 @@ fn rewrite_expr(expr: &mut Expr, ctx: &LiftCtx) {
     if let Expr::Call { func, args, .. } = expr {
         rewrite_expr(func, ctx);
         let callee = match &**func {
-            Expr::Var(name) => Some(name.as_str().to_string()),
+            Expr::Var(name) => ctx.scope.resolve(name.as_str()),
             _ => None,
         };
         for (index, arg) in args.iter_mut().enumerate() {
             if let Expr::Var(name) = arg
                 && let Some(plan) = ctx.own.get(name.as_str())
             {
-                let direct = callee.as_deref().is_some_and(|callee| {
-                    callee_accepts_directly(callee, index, plan, ctx.all, ctx.param_names)
-                });
+                let direct = callee
+                    .as_ref()
+                    .is_some_and(|callee| callee_accepts_directly(callee, index, plan, ctx.scope));
                 if !direct {
                     let target_mutable = callee
-                        .as_deref()
-                        .and_then(|callee| ctx.param_mutability.get(callee))
+                        .as_ref()
+                        .and_then(|callee| ctx.scope.param_mutability.get(callee))
                         .and_then(|params| params.get(index))
                         .copied()
                         .flatten()
@@ -2169,9 +2200,9 @@ fn rewrite_expr(expr: &mut Expr, ctx: &LiftCtx) {
                 }
                 continue;
             }
-            let callee_plan = callee.as_deref().and_then(|callee| {
-                let pname = ctx.param_names.get(callee)?.get(index)?;
-                ctx.all.get(callee)?.get(pname.as_str())
+            let callee_plan = callee.as_ref().and_then(|callee| {
+                let pname = ctx.scope.param_names.get(callee)?.get(index)?;
+                ctx.scope.plans.get(callee)?.get(pname.as_str())
             });
             if let Some(plan) = callee_plan {
                 match plan.kind {

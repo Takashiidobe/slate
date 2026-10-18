@@ -1,6 +1,7 @@
 use std::collections::{BTreeMap, BTreeSet, VecDeque};
 
 use crate::backend::interproc::pointer_lattice::{PointerBinding, PointerFact, ResolvedPtrType};
+use crate::backend::interproc::{self, FnKey, Symbols};
 use crate::backend::rust_ast::{
     BinOp, Block, CLibType, Expr, FnDef, Ident, Item, Path, Prim, Program, Stmt, Type, UnaryOp,
     Visibility,
@@ -34,35 +35,40 @@ impl BufferKind {
 }
 
 pub(in crate::backend) fn compute(
-    program: &Program,
+    programs: &[Program],
     facts: &BTreeMap<PointerBinding, PointerFact>,
 ) -> BTreeMap<PointerBinding, Pairing> {
     let mut out = BTreeMap::new();
-    collect_items(&program.items, facts, &mut out);
+    for (unit, program) in programs.iter().enumerate() {
+        collect_items(unit, &program.items, facts, &mut out);
+    }
     out
 }
 
 pub(in crate::backend) fn apply(
-    program: &mut Program,
+    programs: &mut [Program],
     facts: &BTreeMap<PointerBinding, PointerFact>,
 ) {
-    let pairings = compute(program, facts);
+    let symbols = Symbols::new(programs);
+    let pairings = compute(programs, facts);
     if !pairings.is_empty() {
-        let lifted = apply_signature_lifts(program, &pairings, facts);
+        let lifted = apply_signature_lifts(programs, &symbols, &pairings, facts);
         let remaining = pairings
             .into_iter()
             .filter(|(binding, pairing)| !lifted.contains(binding) && !pairing.kind.owned())
             .collect();
-        apply_items(&mut program.items, &remaining);
+        for (unit, program) in programs.iter_mut().enumerate() {
+            apply_items(unit, &mut program.items, &remaining);
+        }
     }
-    apply_const_length(program, facts);
-    apply_return_buffers(program);
+    apply_const_length(programs, &symbols, facts);
+    apply_return_buffers(programs, &symbols);
 }
 
 #[derive(Clone)]
 struct SignatureCandidate {
     binding: PointerBinding,
-    function: String,
+    function: FnKey,
     ptr_param: String,
     len_param: String,
     ptr_index: usize,
@@ -82,8 +88,8 @@ enum CallProof {
 }
 
 struct CallSiteProof {
-    caller: String,
-    callee: String,
+    caller: FnKey,
+    callee: FnKey,
     target: usize,
     proof: Option<CallProof>,
 }
@@ -122,18 +128,22 @@ impl ArrayCatalog {
 }
 
 fn apply_signature_lifts(
-    program: &mut Program,
+    programs: &mut [Program],
+    symbols: &Symbols,
     pairings: &BTreeMap<PointerBinding, Pairing>,
     facts: &BTreeMap<PointerBinding, PointerFact>,
 ) -> BTreeSet<PointerBinding> {
     let (candidates, sites) = {
-        let fn_defs = collect_fn_defs(&program.items);
-        let global_arrays = collect_global_arrays(&program.items);
+        let fn_defs = interproc::fn_defs(programs);
+        let global_arrays: Vec<ArrayCatalog> = programs
+            .iter()
+            .map(|program| collect_global_arrays(&program.items))
+            .collect();
         let candidates = signature_candidates(&fn_defs, pairings, facts);
         if candidates.is_empty() {
             return BTreeSet::new();
         }
-        let sites = signature_call_sites(&fn_defs, &candidates, &global_arrays);
+        let sites = signature_call_sites(symbols, &fn_defs, &candidates, &global_arrays);
         (candidates, sites)
     };
 
@@ -211,7 +221,7 @@ fn apply_signature_lifts(
         return lifted;
     }
 
-    let accepted: BTreeMap<String, Vec<usize>> = candidates
+    let accepted: BTreeMap<FnKey, Vec<usize>> = candidates
         .iter()
         .enumerate()
         .filter(|(id, _)| active[*id])
@@ -219,7 +229,7 @@ fn apply_signature_lifts(
             map.entry(candidate.function.clone()).or_default().push(id);
             map
         });
-    let mut proofs: BTreeMap<(String, String), VecDeque<CallProof>> = BTreeMap::new();
+    let mut proofs: BTreeMap<(FnKey, FnKey), VecDeque<CallProof>> = BTreeMap::new();
     for site in sites {
         if !active[site.target] {
             continue;
@@ -232,26 +242,23 @@ fn apply_signature_lifts(
             .or_default()
             .push_back(proof);
     }
-    apply_signature_items(&mut program.items, &accepted, &candidates, &mut proofs);
+    for (unit, program) in programs.iter_mut().enumerate() {
+        let ctx = SignatureCtx {
+            unit,
+            symbols,
+            accepted: &accepted,
+            candidates: &candidates,
+        };
+        apply_signature_items(&mut program.items, &ctx, &mut proofs);
+    }
     lifted
 }
 
-fn collect_fn_defs(items: &[Item]) -> BTreeMap<String, &FnDef> {
-    let mut out = BTreeMap::new();
-    collect_fn_defs_into(items, &mut out);
-    out
-}
-
-fn collect_fn_defs_into<'a>(items: &'a [Item], out: &mut BTreeMap<String, &'a FnDef>) {
-    for item in items {
-        match item {
-            Item::Fn(f) => {
-                out.insert(f.name.clone(), f);
-            }
-            Item::InlineMod { items, .. } => collect_fn_defs_into(items, out),
-            _ => {}
-        }
-    }
+struct SignatureCtx<'a> {
+    unit: usize,
+    symbols: &'a Symbols,
+    accepted: &'a BTreeMap<FnKey, Vec<usize>>,
+    candidates: &'a [SignatureCandidate],
 }
 
 fn collect_global_arrays(items: &[Item]) -> ArrayCatalog {
@@ -291,7 +298,7 @@ fn array_source(ty: &Type) -> Option<ArraySource> {
 }
 
 fn signature_candidates(
-    fn_defs: &BTreeMap<String, &FnDef>,
+    fn_defs: &BTreeMap<FnKey, &FnDef>,
     pairings: &BTreeMap<PointerBinding, Pairing>,
     facts: &BTreeMap<PointerBinding, PointerFact>,
 ) -> Vec<SignatureCandidate> {
@@ -353,37 +360,38 @@ fn signature_candidates(
 }
 
 fn signature_call_sites(
-    fn_defs: &BTreeMap<String, &FnDef>,
+    symbols: &Symbols,
+    fn_defs: &BTreeMap<FnKey, &FnDef>,
     candidates: &[SignatureCandidate],
-    global_arrays: &ArrayCatalog,
+    global_arrays: &[ArrayCatalog],
 ) -> Vec<CallSiteProof> {
-    let by_callee: BTreeMap<&str, Vec<usize>> =
+    let by_function: BTreeMap<&FnKey, Vec<usize>> =
         candidates
             .iter()
             .enumerate()
             .fold(BTreeMap::new(), |mut map, (id, candidate)| {
-                map.entry(candidate.function.as_str()).or_default().push(id);
-                map
-            });
-    let by_caller: BTreeMap<&str, Vec<usize>> =
-        candidates
-            .iter()
-            .enumerate()
-            .fold(BTreeMap::new(), |mut map, (id, candidate)| {
-                map.entry(candidate.function.as_str()).or_default().push(id);
+                map.entry(&candidate.function).or_default().push(id);
                 map
             });
     let mut out = Vec::new();
     for (caller, f) in fn_defs {
         let defs = collect_value_defs(&f.body);
-        let mut arrays = global_arrays.clone();
+        let mut arrays = global_arrays[caller.unit].clone();
         collect_local_arrays(&f.body, &mut arrays);
         let mut calls = Vec::new();
         for indent in &f.body {
             indent.collect_calls(&mut calls);
         }
+        let is_candidate_fn = |name: &str| {
+            symbols
+                .resolve(caller.unit, name)
+                .is_some_and(|key| by_function.contains_key(&key))
+        };
         for (callee, args) in calls {
-            let Some(targets) = by_callee.get(callee.as_str()) else {
+            let Some(callee) = symbols.resolve(caller.unit, callee.as_str()) else {
+                continue;
+            };
+            let Some(targets) = by_function.get(&callee) else {
                 continue;
             };
             for &target in targets {
@@ -407,15 +415,19 @@ fn signature_call_sites(
                         BufferKind::StringOwned => {
                             exact_allocation_pair(ptr_arg, len_arg, &candidate.elem_ty, &defs)
                                 && utf8_owned_fill_proof(
-                                    &f.body, ptr_arg, len_arg, &defs, &by_callee,
+                                    &f.body,
+                                    ptr_arg,
+                                    len_arg,
+                                    &defs,
+                                    is_candidate_fn,
                                 )
                         }
                     };
                     if exact {
                         return Some(CallProof::Exact);
                     }
-                    by_caller
-                        .get(caller.as_str())
+                    by_function
+                        .get(caller)
                         .into_iter()
                         .flatten()
                         .find(|&&source| {
@@ -427,7 +439,7 @@ fn signature_call_sites(
                 });
                 out.push(CallSiteProof {
                     caller: caller.clone(),
-                    callee: callee.to_string(),
+                    callee: callee.clone(),
                     target,
                     proof,
                 });
@@ -583,7 +595,7 @@ fn utf8_owned_fill_proof(
     ptr_arg: &Expr,
     len_arg: &Expr,
     defs: &BTreeMap<String, Expr>,
-    candidate_fns: &BTreeMap<&str, Vec<usize>>,
+    is_candidate_fn: impl Fn(&str) -> bool,
 ) -> bool {
     let Some(ptr_canon) = canonical_var(ptr_arg, defs) else {
         return false;
@@ -630,7 +642,7 @@ fn utf8_owned_fill_proof(
                 }
                 valid_fills += 1;
             }
-            other if candidate_fns.contains_key(other) => transfers += 1,
+            other if is_candidate_fn(other) => transfers += 1,
             _ => return false,
         }
     }
@@ -1026,16 +1038,13 @@ fn remove_owned_frees_stmt(
 
 fn apply_signature_items(
     items: &mut [Item],
-    accepted: &BTreeMap<String, Vec<usize>>,
-    candidates: &[SignatureCandidate],
-    proofs: &mut BTreeMap<(String, String), VecDeque<CallProof>>,
+    ctx: &SignatureCtx,
+    proofs: &mut BTreeMap<(FnKey, FnKey), VecDeque<CallProof>>,
 ) {
     for item in items {
         match item {
-            Item::Fn(f) => apply_signature_fn(f, accepted, candidates, proofs),
-            Item::InlineMod { items, .. } => {
-                apply_signature_items(items, accepted, candidates, proofs)
-            }
+            Item::Fn(f) => apply_signature_fn(f, ctx, proofs),
+            Item::InlineMod { items, .. } => apply_signature_items(items, ctx, proofs),
             _ => {}
         }
     }
@@ -1043,14 +1052,14 @@ fn apply_signature_items(
 
 fn apply_signature_fn(
     f: &mut FnDef,
-    accepted: &BTreeMap<String, Vec<usize>>,
-    candidates: &[SignatureCandidate],
-    proofs: &mut BTreeMap<(String, String), VecDeque<CallProof>>,
+    ctx: &SignatureCtx,
+    proofs: &mut BTreeMap<(FnKey, FnKey), VecDeque<CallProof>>,
 ) {
-    if let Some(ids) = accepted.get(&f.name) {
+    let caller = FnKey::new(ctx.unit, f.name.clone());
+    if let Some(ids) = ctx.accepted.get(&caller) {
         let mut len_indices = Vec::new();
         for &id in ids {
-            let candidate = &candidates[id];
+            let candidate = &ctx.candidates[id];
             if candidate.kind.owned() {
                 let defs = collect_value_defs(&f.body);
                 remove_owned_frees(&mut f.body, candidate, &defs);
@@ -1108,22 +1117,21 @@ fn apply_signature_fn(
         }
     }
     for indent in &mut f.body {
-        rewrite_signature_stmt(indent, &f.name, accepted, candidates, proofs);
+        rewrite_signature_stmt(indent, &caller, ctx, proofs);
     }
 }
 
 fn rewrite_signature_stmt(
     stmt: &mut Stmt,
-    caller: &str,
-    accepted: &BTreeMap<String, Vec<usize>>,
-    candidates: &[SignatureCandidate],
-    proofs: &mut BTreeMap<(String, String), VecDeque<CallProof>>,
+    caller: &FnKey,
+    ctx: &SignatureCtx,
+    proofs: &mut BTreeMap<(FnKey, FnKey), VecDeque<CallProof>>,
 ) {
     match stmt {
         Stmt::Comment(_) => {}
         Stmt::Let {
             init: Some(expr), ..
-        } => rewrite_signature_expr(expr, caller, accepted, candidates, proofs),
+        } => rewrite_signature_expr(expr, caller, ctx, proofs),
         Stmt::Let { init: None, .. } => {}
         Stmt::LetIf {
             cond,
@@ -1133,19 +1141,19 @@ fn rewrite_signature_stmt(
             else_value,
             ..
         } => {
-            rewrite_signature_expr(cond, caller, accepted, candidates, proofs);
+            rewrite_signature_expr(cond, caller, ctx, proofs);
             for indent in then_body.iter_mut().chain(else_body.iter_mut()) {
-                rewrite_signature_stmt(indent, caller, accepted, candidates, proofs);
+                rewrite_signature_stmt(indent, caller, ctx, proofs);
             }
-            rewrite_signature_expr(then_value, caller, accepted, candidates, proofs);
-            rewrite_signature_expr(else_value, caller, accepted, candidates, proofs);
+            rewrite_signature_expr(then_value, caller, ctx, proofs);
+            rewrite_signature_expr(else_value, caller, ctx, proofs);
         }
         Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
-            rewrite_signature_expr(target, caller, accepted, candidates, proofs);
-            rewrite_signature_expr(value, caller, accepted, candidates, proofs);
+            rewrite_signature_expr(target, caller, ctx, proofs);
+            rewrite_signature_expr(value, caller, ctx, proofs);
         }
         Stmt::Expr(expr) | Stmt::Return(Some(expr)) => {
-            rewrite_signature_expr(expr, caller, accepted, candidates, proofs)
+            rewrite_signature_expr(expr, caller, ctx, proofs)
         }
         Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) | Stmt::InlineAsm(_) => {}
         Stmt::If {
@@ -1153,9 +1161,9 @@ fn rewrite_signature_stmt(
             then_body,
             else_body,
         } => {
-            rewrite_signature_expr(cond, caller, accepted, candidates, proofs);
+            rewrite_signature_expr(cond, caller, ctx, proofs);
             for indent in then_body.iter_mut().chain(else_body.iter_mut()) {
-                rewrite_signature_stmt(indent, caller, accepted, candidates, proofs);
+                rewrite_signature_stmt(indent, caller, ctx, proofs);
             }
         }
         Stmt::Loop { body, .. }
@@ -1163,22 +1171,22 @@ fn rewrite_signature_stmt(
         | Stmt::Scope { body }
         | Stmt::LabeledBlock { body, .. } => {
             for indent in body {
-                rewrite_signature_stmt(indent, caller, accepted, candidates, proofs);
+                rewrite_signature_stmt(indent, caller, ctx, proofs);
             }
         }
         Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
             for indent in &mut body.stmts {
-                rewrite_signature_stmt(indent, caller, accepted, candidates, proofs);
+                rewrite_signature_stmt(indent, caller, ctx, proofs);
             }
             if let Some(tail) = &mut body.tail {
-                rewrite_signature_expr(tail, caller, accepted, candidates, proofs);
+                rewrite_signature_expr(tail, caller, ctx, proofs);
             }
         }
         Stmt::Match { expr, arms } => {
-            rewrite_signature_expr(expr, caller, accepted, candidates, proofs);
+            rewrite_signature_expr(expr, caller, ctx, proofs);
             for arm in arms {
                 for indent in &mut arm.body {
-                    rewrite_signature_stmt(indent, caller, accepted, candidates, proofs);
+                    rewrite_signature_stmt(indent, caller, ctx, proofs);
                 }
             }
         }
@@ -1187,30 +1195,32 @@ fn rewrite_signature_stmt(
 
 fn rewrite_signature_expr(
     expr: &mut Expr,
-    caller: &str,
-    accepted: &BTreeMap<String, Vec<usize>>,
-    candidates: &[SignatureCandidate],
-    proofs: &mut BTreeMap<(String, String), VecDeque<CallProof>>,
+    caller: &FnKey,
+    ctx: &SignatureCtx,
+    proofs: &mut BTreeMap<(FnKey, FnKey), VecDeque<CallProof>>,
 ) {
     match expr {
         Expr::Call { func, args, .. } => {
-            rewrite_signature_expr(func, caller, accepted, candidates, proofs);
+            rewrite_signature_expr(func, caller, ctx, proofs);
             for arg in args.iter_mut() {
-                rewrite_signature_expr(arg, caller, accepted, candidates, proofs);
+                rewrite_signature_expr(arg, caller, ctx, proofs);
             }
             let Expr::Var(callee) = &**func else {
                 return;
             };
-            let Some(ids) = accepted.get(callee.as_str()) else {
+            let Some(callee) = ctx.symbols.resolve(ctx.unit, callee.as_str()) else {
                 return;
             };
-            let Some(queue) = proofs.get_mut(&(caller.to_string(), callee.to_string())) else {
+            let Some(ids) = ctx.accepted.get(&callee) else {
+                return;
+            };
+            let Some(queue) = proofs.get_mut(&(caller.clone(), callee)) else {
                 return;
             };
             let mut bridges = Vec::new();
             let mut len_indices = Vec::new();
             for &id in ids {
-                let candidate = &candidates[id];
+                let candidate = &ctx.candidates[id];
                 let Some(proof) = queue.pop_front() else {
                     return;
                 };
@@ -1223,7 +1233,7 @@ fn rewrite_signature_expr(
                 let bridge = match proof {
                     CallProof::Exact => buffer_bridge(ptr_arg, len_arg, candidate),
                     CallProof::Forwarded(source) => {
-                        Expr::Var(Ident::new(candidates[source].ptr_param.as_str()))
+                        Expr::Var(Ident::new(ctx.candidates[source].ptr_param.as_str()))
                     }
                 };
                 bridges.push((candidate.ptr_index, bridge));
@@ -1241,15 +1251,13 @@ fn rewrite_signature_expr(
         | Expr::Cast { expr, .. }
         | Expr::Ref { expr, .. }
         | Expr::AddrOf { expr, .. }
-        | Expr::Transmute { expr, .. } => {
-            rewrite_signature_expr(expr, caller, accepted, candidates, proofs)
-        }
+        | Expr::Transmute { expr, .. } => rewrite_signature_expr(expr, caller, ctx, proofs),
         Expr::Block(block) | Expr::Unsafe(block) => {
             for indent in &mut block.stmts {
-                rewrite_signature_stmt(indent, caller, accepted, candidates, proofs);
+                rewrite_signature_stmt(indent, caller, ctx, proofs);
             }
             if let Some(tail) = &mut block.tail {
-                rewrite_signature_expr(tail, caller, accepted, candidates, proofs);
+                rewrite_signature_expr(tail, caller, ctx, proofs);
             }
         }
         Expr::Binary { lhs, rhs, .. }
@@ -1257,24 +1265,22 @@ fn rewrite_signature_expr(
             start: lhs,
             end: rhs,
         } => {
-            rewrite_signature_expr(lhs, caller, accepted, candidates, proofs);
-            rewrite_signature_expr(rhs, caller, accepted, candidates, proofs);
+            rewrite_signature_expr(lhs, caller, ctx, proofs);
+            rewrite_signature_expr(rhs, caller, ctx, proofs);
         }
         Expr::MethodCall { recv, args, .. } | Expr::MethodCallGeneric { recv, args, .. } => {
-            rewrite_signature_expr(recv, caller, accepted, candidates, proofs);
+            rewrite_signature_expr(recv, caller, ctx, proofs);
             for arg in args {
-                rewrite_signature_expr(arg, caller, accepted, candidates, proofs);
+                rewrite_signature_expr(arg, caller, ctx, proofs);
             }
         }
         Expr::Index { base, index } => {
-            rewrite_signature_expr(base, caller, accepted, candidates, proofs);
-            rewrite_signature_expr(index, caller, accepted, candidates, proofs);
+            rewrite_signature_expr(base, caller, ctx, proofs);
+            rewrite_signature_expr(index, caller, ctx, proofs);
         }
         Expr::Field { base, .. }
         | Expr::TupleField { base, .. }
-        | Expr::ArrayPtr { array: base, .. } => {
-            rewrite_signature_expr(base, caller, accepted, candidates, proofs)
-        }
+        | Expr::ArrayPtr { array: base, .. } => rewrite_signature_expr(base, caller, ctx, proofs),
         _ => {}
     }
 }
@@ -1348,24 +1354,25 @@ fn buffer_bridge(ptr: Expr, len: Expr, candidate: &SignatureCandidate) -> Expr {
 }
 
 fn collect_items(
+    unit: usize,
     items: &[Item],
     facts: &BTreeMap<PointerBinding, PointerFact>,
     out: &mut BTreeMap<PointerBinding, Pairing>,
 ) {
     for item in items {
         match item {
-            Item::Fn(f) => collect_fn(f, facts, out),
-            Item::InlineMod { items, .. } => collect_items(items, facts, out),
+            Item::Fn(f) => collect_fn(unit, f, facts, out),
+            Item::InlineMod { items, .. } => collect_items(unit, items, facts, out),
             _ => {}
         }
     }
 }
 
-fn apply_items(items: &mut [Item], pairings: &BTreeMap<PointerBinding, Pairing>) {
+fn apply_items(unit: usize, items: &mut [Item], pairings: &BTreeMap<PointerBinding, Pairing>) {
     for item in items {
         match item {
-            Item::Fn(f) => apply_fn(f, pairings),
-            Item::InlineMod { items, .. } => apply_items(items, pairings),
+            Item::Fn(f) => apply_fn(unit, f, pairings),
+            Item::InlineMod { items, .. } => apply_items(unit, items, pairings),
             _ => {}
         }
     }
@@ -1392,6 +1399,7 @@ fn is_integer_type(ty: &Type) -> bool {
 }
 
 fn collect_fn(
+    unit: usize,
     f: &FnDef,
     facts: &BTreeMap<PointerBinding, PointerFact>,
     out: &mut BTreeMap<PointerBinding, Pairing>,
@@ -1402,7 +1410,7 @@ fn collect_fn(
     let has_owned = f.params.iter().any(|param| {
         facts
             .get(&PointerBinding {
-                function: f.name.clone(),
+                function: FnKey::new(unit, f.name.clone()),
                 name: param.name.clone(),
             })
             .is_some_and(|fact| {
@@ -1420,7 +1428,7 @@ fn collect_fn(
         .filter(|p| matches!(p.ty, Type::Ptr { .. }))
         .filter(|p| {
             let binding = PointerBinding {
-                function: f.name.clone(),
+                function: FnKey::new(unit, f.name.clone()),
                 name: p.name.clone(),
             };
             facts.get(&binding).is_some_and(|fact| {
@@ -1436,7 +1444,7 @@ fn collect_fn(
         })
         .filter_map(|p| {
             let binding = PointerBinding {
-                function: f.name.clone(),
+                function: FnKey::new(unit, f.name.clone()),
                 name: p.name.clone(),
             };
             let kind = match facts[&binding].resolved().base {
@@ -1515,7 +1523,7 @@ fn collect_fn(
             }
             out.insert(
                 PointerBinding {
-                    function: f.name.clone(),
+                    function: FnKey::new(unit, f.name.clone()),
                     name: ptr_param.clone(),
                 },
                 Pairing {
@@ -1546,7 +1554,7 @@ fn shadow_local_name(body: &[Stmt], param: &str) -> Option<String> {
     })
 }
 
-fn apply_fn(f: &mut FnDef, pairings: &BTreeMap<PointerBinding, Pairing>) {
+fn apply_fn(unit: usize, f: &mut FnDef, pairings: &BTreeMap<PointerBinding, Pairing>) {
     for (ptr_name, elem_ty) in f
         .params
         .iter()
@@ -1557,7 +1565,7 @@ fn apply_fn(f: &mut FnDef, pairings: &BTreeMap<PointerBinding, Pairing>) {
         .collect::<Vec<_>>()
     {
         let binding = PointerBinding {
-            function: f.name.clone(),
+            function: FnKey::new(unit, f.name.clone()),
             name: ptr_name.clone(),
         };
         let Some(pairing) = pairings.get(&binding) else {
@@ -2273,7 +2281,7 @@ fn peeled_offset_call(expr: &Expr) -> Option<(&str, &Expr)> {
 }
 
 struct ConstCandidate {
-    function: String,
+    function: FnKey,
     ptr_param: String,
     ptr_index: usize,
     elem_ty: Type,
@@ -2282,25 +2290,48 @@ struct ConstCandidate {
     bound: u64,
 }
 
-fn apply_const_length(program: &mut Program, facts: &BTreeMap<PointerBinding, PointerFact>) {
+struct ConstCtx<'a> {
+    unit: usize,
+    symbols: &'a Symbols,
+    accepted: &'a BTreeMap<FnKey, Vec<ConstCandidate>>,
+}
+
+impl ConstCtx<'_> {
+    fn accepted_for(&self, callee: &str) -> Option<&[ConstCandidate]> {
+        let key = self.symbols.resolve(self.unit, callee)?;
+        self.accepted.get(&key).map(Vec::as_slice)
+    }
+}
+
+fn apply_const_length(
+    programs: &mut [Program],
+    symbols: &Symbols,
+    facts: &BTreeMap<PointerBinding, PointerFact>,
+) {
     let candidates = {
-        let fn_defs = collect_fn_defs(&program.items);
+        let fn_defs = interproc::fn_defs(programs);
         const_candidates(&fn_defs, facts)
     };
     if candidates.is_empty() {
         return;
     }
-    let global_arrays = collect_global_arrays(&program.items);
-    let accepted = const_accepted(&program.items, &candidates, &global_arrays);
+    let accepted = const_accepted(programs, symbols, &candidates);
     if accepted.is_empty() {
         return;
     }
-    retype_const_items(&mut program.items, &accepted);
-    rewrite_const_call_items(&mut program.items, &accepted);
+    for (unit, program) in programs.iter_mut().enumerate() {
+        let ctx = ConstCtx {
+            unit,
+            symbols,
+            accepted: &accepted,
+        };
+        retype_const_items(&mut program.items, &ctx);
+        rewrite_const_call_items(&mut program.items, &ctx);
+    }
 }
 
 fn const_candidates(
-    fn_defs: &BTreeMap<String, &FnDef>,
+    fn_defs: &BTreeMap<FnKey, &FnDef>,
     facts: &BTreeMap<PointerBinding, PointerFact>,
 ) -> Vec<ConstCandidate> {
     let mut out = Vec::new();
@@ -2393,51 +2424,57 @@ fn const_candidates(
 }
 
 fn const_accepted(
-    items: &[Item],
+    programs: &[Program],
+    symbols: &Symbols,
     candidates: &[ConstCandidate],
-    global_arrays: &ArrayCatalog,
-) -> BTreeMap<String, Vec<ConstCandidate>> {
-    let by_callee: BTreeMap<&str, Vec<usize>> =
+) -> BTreeMap<FnKey, Vec<ConstCandidate>> {
+    let by_callee: BTreeMap<&FnKey, Vec<usize>> =
         candidates
             .iter()
             .enumerate()
             .fold(BTreeMap::new(), |mut map, (id, candidate)| {
-                map.entry(candidate.function.as_str()).or_default().push(id);
+                map.entry(&candidate.function).or_default().push(id);
                 map
             });
     let mut call_counts = vec![0usize; candidates.len()];
     let mut proven = vec![true; candidates.len()];
-    let mut callers = Vec::new();
-    collect_fn_bodies(items, &mut callers);
-    for f in &callers {
-        let defs = collect_value_defs(&f.body);
-        let mut arrays = global_arrays.clone();
-        collect_local_arrays(&f.body, &mut arrays);
-        let mut calls = Vec::new();
-        for indent in &f.body {
-            indent.collect_calls(&mut calls);
-        }
-        for (callee, args) in calls {
-            let Some(ids) = by_callee.get(callee.as_str()) else {
-                continue;
-            };
-            for &id in ids {
-                let candidate = &candidates[id];
-                call_counts[id] += 1;
-                let ok = args.get(candidate.ptr_index).is_some_and(|ptr_arg| {
-                    source_len_at_least(
-                        ptr_arg,
-                        &defs,
-                        &arrays,
-                        &candidate.elem_ty,
-                        candidate.bound,
-                    )
-                });
-                proven[id] &= ok;
+    for (unit, program) in programs.iter().enumerate() {
+        let global_arrays = collect_global_arrays(&program.items);
+        let mut callers = Vec::new();
+        collect_fn_bodies(&program.items, &mut callers);
+        for f in &callers {
+            let defs = collect_value_defs(&f.body);
+            let mut arrays = global_arrays.clone();
+            collect_local_arrays(&f.body, &mut arrays);
+            let mut calls = Vec::new();
+            for indent in &f.body {
+                indent.collect_calls(&mut calls);
+            }
+            for (callee, args) in calls {
+                let Some(callee) = symbols.resolve(unit, callee.as_str()) else {
+                    continue;
+                };
+                let Some(ids) = by_callee.get(&callee) else {
+                    continue;
+                };
+                for &id in ids {
+                    let candidate = &candidates[id];
+                    call_counts[id] += 1;
+                    let ok = args.get(candidate.ptr_index).is_some_and(|ptr_arg| {
+                        source_len_at_least(
+                            ptr_arg,
+                            &defs,
+                            &arrays,
+                            &candidate.elem_ty,
+                            candidate.bound,
+                        )
+                    });
+                    proven[id] &= ok;
+                }
             }
         }
     }
-    let mut out: BTreeMap<String, Vec<ConstCandidate>> = BTreeMap::new();
+    let mut out: BTreeMap<FnKey, Vec<ConstCandidate>> = BTreeMap::new();
     for (id, candidate) in candidates.iter().enumerate() {
         if call_counts[id] == 0 || !proven[id] {
             continue;
@@ -2515,15 +2552,15 @@ fn source_len_at_least(
             && resolved_integer(rhs, defs, 0).is_some_and(|k| k >= need))
 }
 
-fn retype_const_items(items: &mut [Item], accepted: &BTreeMap<String, Vec<ConstCandidate>>) {
+fn retype_const_items(items: &mut [Item], ctx: &ConstCtx) {
     for item in items {
         match item {
             Item::Fn(f) => {
-                if let Some(cands) = accepted.get(&f.name) {
+                if let Some(cands) = ctx.accepted.get(&FnKey::new(ctx.unit, f.name.clone())) {
                     retype_const_fn(f, cands);
                 }
             }
-            Item::InlineMod { items, .. } => retype_const_items(items, accepted),
+            Item::InlineMod { items, .. } => retype_const_items(items, ctx),
             _ => {}
         }
     }
@@ -2558,26 +2595,26 @@ fn retype_const_fn(f: &mut FnDef, cands: &[ConstCandidate]) {
     }
 }
 
-fn rewrite_const_call_items(items: &mut [Item], accepted: &BTreeMap<String, Vec<ConstCandidate>>) {
+fn rewrite_const_call_items(items: &mut [Item], ctx: &ConstCtx) {
     for item in items {
         match item {
             Item::Fn(f) => {
                 for indent in &mut f.body {
-                    rewrite_const_call_stmt(indent, accepted);
+                    rewrite_const_call_stmt(indent, ctx);
                 }
             }
-            Item::InlineMod { items, .. } => rewrite_const_call_items(items, accepted),
+            Item::InlineMod { items, .. } => rewrite_const_call_items(items, ctx),
             _ => {}
         }
     }
 }
 
-fn rewrite_const_call_stmt(stmt: &mut Stmt, accepted: &BTreeMap<String, Vec<ConstCandidate>>) {
+fn rewrite_const_call_stmt(stmt: &mut Stmt, ctx: &ConstCtx) {
     match stmt {
         Stmt::Comment(_) => {}
         Stmt::Let {
             init: Some(expr), ..
-        } => rewrite_const_call_expr(expr, accepted),
+        } => rewrite_const_call_expr(expr, ctx),
         Stmt::Let { init: None, .. }
         | Stmt::Return(None)
         | Stmt::Break(_)
@@ -2591,26 +2628,26 @@ fn rewrite_const_call_stmt(stmt: &mut Stmt, accepted: &BTreeMap<String, Vec<Cons
             else_value,
             ..
         } => {
-            rewrite_const_call_expr(cond, accepted);
+            rewrite_const_call_expr(cond, ctx);
             for indent in then_body.iter_mut().chain(else_body.iter_mut()) {
-                rewrite_const_call_stmt(indent, accepted);
+                rewrite_const_call_stmt(indent, ctx);
             }
-            rewrite_const_call_expr(then_value, accepted);
-            rewrite_const_call_expr(else_value, accepted);
+            rewrite_const_call_expr(then_value, ctx);
+            rewrite_const_call_expr(else_value, ctx);
         }
         Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
-            rewrite_const_call_expr(target, accepted);
-            rewrite_const_call_expr(value, accepted);
+            rewrite_const_call_expr(target, ctx);
+            rewrite_const_call_expr(value, ctx);
         }
-        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => rewrite_const_call_expr(expr, accepted),
+        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => rewrite_const_call_expr(expr, ctx),
         Stmt::If {
             cond,
             then_body,
             else_body,
         } => {
-            rewrite_const_call_expr(cond, accepted);
+            rewrite_const_call_expr(cond, ctx);
             for indent in then_body.iter_mut().chain(else_body.iter_mut()) {
-                rewrite_const_call_stmt(indent, accepted);
+                rewrite_const_call_stmt(indent, ctx);
             }
         }
         Stmt::Loop { body, .. }
@@ -2618,39 +2655,39 @@ fn rewrite_const_call_stmt(stmt: &mut Stmt, accepted: &BTreeMap<String, Vec<Cons
         | Stmt::Scope { body }
         | Stmt::LabeledBlock { body, .. } => {
             for indent in body {
-                rewrite_const_call_stmt(indent, accepted);
+                rewrite_const_call_stmt(indent, ctx);
             }
         }
         Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
             for indent in &mut body.stmts {
-                rewrite_const_call_stmt(indent, accepted);
+                rewrite_const_call_stmt(indent, ctx);
             }
             if let Some(tail) = &mut body.tail {
-                rewrite_const_call_expr(tail, accepted);
+                rewrite_const_call_expr(tail, ctx);
             }
         }
         Stmt::Match { expr, arms } => {
-            rewrite_const_call_expr(expr, accepted);
+            rewrite_const_call_expr(expr, ctx);
             for arm in arms {
                 for indent in &mut arm.body {
-                    rewrite_const_call_stmt(indent, accepted);
+                    rewrite_const_call_stmt(indent, ctx);
                 }
             }
         }
     }
 }
 
-fn rewrite_const_call_expr(expr: &mut Expr, accepted: &BTreeMap<String, Vec<ConstCandidate>>) {
+fn rewrite_const_call_expr(expr: &mut Expr, ctx: &ConstCtx) {
     match expr {
         Expr::Call { func, args, .. } => {
-            rewrite_const_call_expr(func, accepted);
+            rewrite_const_call_expr(func, ctx);
             for arg in args.iter_mut() {
-                rewrite_const_call_expr(arg, accepted);
+                rewrite_const_call_expr(arg, ctx);
             }
             let Expr::Var(callee) = &**func else {
                 return;
             };
-            let Some(cands) = accepted.get(callee.as_str()) else {
+            let Some(cands) = ctx.accepted_for(callee.as_str()) else {
                 return;
             };
             for candidate in cands {
@@ -2663,13 +2700,13 @@ fn rewrite_const_call_expr(expr: &mut Expr, accepted: &BTreeMap<String, Vec<Cons
         | Expr::Cast { expr, .. }
         | Expr::Ref { expr, .. }
         | Expr::AddrOf { expr, .. }
-        | Expr::Transmute { expr, .. } => rewrite_const_call_expr(expr, accepted),
+        | Expr::Transmute { expr, .. } => rewrite_const_call_expr(expr, ctx),
         Expr::Block(block) | Expr::Unsafe(block) => {
             for indent in &mut block.stmts {
-                rewrite_const_call_stmt(indent, accepted);
+                rewrite_const_call_stmt(indent, ctx);
             }
             if let Some(tail) = &mut block.tail {
-                rewrite_const_call_expr(tail, accepted);
+                rewrite_const_call_expr(tail, ctx);
             }
         }
         Expr::Binary { lhs, rhs, .. }
@@ -2677,22 +2714,22 @@ fn rewrite_const_call_expr(expr: &mut Expr, accepted: &BTreeMap<String, Vec<Cons
             start: lhs,
             end: rhs,
         } => {
-            rewrite_const_call_expr(lhs, accepted);
-            rewrite_const_call_expr(rhs, accepted);
+            rewrite_const_call_expr(lhs, ctx);
+            rewrite_const_call_expr(rhs, ctx);
         }
         Expr::MethodCall { recv, args, .. } | Expr::MethodCallGeneric { recv, args, .. } => {
-            rewrite_const_call_expr(recv, accepted);
+            rewrite_const_call_expr(recv, ctx);
             for arg in args {
-                rewrite_const_call_expr(arg, accepted);
+                rewrite_const_call_expr(arg, ctx);
             }
         }
         Expr::Index { base, index } => {
-            rewrite_const_call_expr(base, accepted);
-            rewrite_const_call_expr(index, accepted);
+            rewrite_const_call_expr(base, ctx);
+            rewrite_const_call_expr(index, ctx);
         }
         Expr::Field { base, .. }
         | Expr::TupleField { base, .. }
-        | Expr::ArrayPtr { array: base, .. } => rewrite_const_call_expr(base, accepted),
+        | Expr::ArrayPtr { array: base, .. } => rewrite_const_call_expr(base, ctx),
         _ => {}
     }
 }
@@ -2726,14 +2763,14 @@ fn const_bridge(ptr: Expr, candidate: &ConstCandidate) -> Expr {
 }
 
 struct ReturnBufferLift {
-    function: String,
+    function: FnKey,
     elem_ty: Type,
     count: Expr,
 }
 
 #[derive(Clone)]
 struct ReturnRetentionPlan {
-    caller: String,
+    caller: FnKey,
     callee: String,
     binding: String,
     elem_ty: Type,
@@ -2742,62 +2779,87 @@ struct ReturnRetentionPlan {
     base_aliases: BTreeSet<String>,
 }
 
-fn apply_return_buffers(program: &mut Program) {
+fn apply_return_buffers(programs: &mut [Program], symbols: &Symbols) {
     let lifts = {
-        let fn_defs = collect_fn_defs(&program.items);
+        let fn_defs = interproc::fn_defs(programs);
         return_buffer_candidates(&fn_defs)
     };
     if lifts.is_empty() {
         return;
     }
-    let by_fn: BTreeMap<String, &ReturnBufferLift> = lifts
+    let by_fn: BTreeMap<FnKey, &ReturnBufferLift> = lifts
         .iter()
         .map(|lift| (lift.function.clone(), lift))
         .collect();
-    let elems: BTreeMap<String, Type> = lifts
-        .iter()
-        .map(|lift| (lift.function.clone(), lift.elem_ty.clone()))
+    let visible_elems = |unit: usize, excluded: &BTreeSet<FnKey>| -> BTreeMap<String, Type> {
+        lifts
+            .iter()
+            .filter(|lift| {
+                !excluded.contains(&lift.function)
+                    && symbols.resolve(unit, &lift.function.name).as_ref() == Some(&lift.function)
+            })
+            .map(|lift| (lift.function.name.clone(), lift.elem_ty.clone()))
+            .collect()
+    };
+    let elems: Vec<BTreeMap<String, Type>> = (0..programs.len())
+        .map(|unit| visible_elems(unit, &BTreeSet::new()))
         .collect();
-    let (retained, retained_callees) = return_retention_plans(program, &elems);
-    retype_return_items(&mut program.items, &by_fn);
-    apply_return_retention(&mut program.items, &retained);
-    let raw_elems: BTreeMap<String, Type> = elems
-        .into_iter()
-        .filter(|(name, _)| !retained_callees.contains(name))
-        .collect();
-    for item in &mut program.items {
-        rewrite_return_call_item(item, &raw_elems);
+    let (retained, retained_callees) = return_retention_plans(programs, symbols, &elems);
+    for (unit, program) in programs.iter_mut().enumerate() {
+        retype_return_items(unit, &mut program.items, &by_fn);
+        apply_return_retention(unit, &mut program.items, &retained);
+        let raw_elems = visible_elems(unit, &retained_callees);
+        for item in &mut program.items {
+            rewrite_return_call_item(item, &raw_elems);
+        }
     }
 }
 
 fn return_retention_plans(
-    program: &Program,
-    elems: &BTreeMap<String, Type>,
-) -> (Vec<ReturnRetentionPlan>, BTreeSet<String>) {
-    let mut call_counts = BTreeMap::<String, usize>::new();
+    programs: &[Program],
+    symbols: &Symbols,
+    elems: &[BTreeMap<String, Type>],
+) -> (Vec<ReturnRetentionPlan>, BTreeSet<FnKey>) {
+    let mut call_counts = BTreeMap::<FnKey, usize>::new();
     let mut plans = Vec::new();
-    collect_return_retention_items(&program.items, elems, &mut call_counts, &mut plans);
-    let mut plan_counts = BTreeMap::<String, usize>::new();
+    for (unit, program) in programs.iter().enumerate() {
+        collect_return_retention_items(
+            unit,
+            &program.items,
+            symbols,
+            &elems[unit],
+            &mut call_counts,
+            &mut plans,
+        );
+    }
+    let callee_key = |plan: &ReturnRetentionPlan| {
+        symbols
+            .resolve(plan.caller.unit, &plan.callee)
+            .expect("retained callee has a visible definition")
+    };
+    let mut plan_counts = BTreeMap::<FnKey, usize>::new();
     for plan in &plans {
-        *plan_counts.entry(plan.callee.clone()).or_default() += 1;
+        *plan_counts.entry(callee_key(plan)).or_default() += 1;
     }
     if std::env::var_os("SLATE_PTR_LEN_DEBUG").is_some() {
         eprintln!("return retention calls={call_counts:?} plans={plan_counts:?}");
     }
-    let accepted: BTreeSet<String> = call_counts
+    let accepted: BTreeSet<FnKey> = call_counts
         .into_iter()
         .filter_map(|(callee, count)| {
             (count > 0 && plan_counts.get(&callee) == Some(&count)).then_some(callee)
         })
         .collect();
-    plans.retain(|plan| accepted.contains(&plan.callee));
+    plans.retain(|plan| accepted.contains(&callee_key(plan)));
     (plans, accepted)
 }
 
 fn collect_return_retention_items(
+    unit: usize,
     items: &[Item],
+    symbols: &Symbols,
     elems: &BTreeMap<String, Type>,
-    call_counts: &mut BTreeMap<String, usize>,
+    call_counts: &mut BTreeMap<FnKey, usize>,
     plans: &mut Vec<ReturnRetentionPlan>,
 ) {
     for item in items {
@@ -2808,14 +2870,17 @@ fn collect_return_retention_items(
                     indent.collect_calls(&mut calls);
                 }
                 for (callee, _) in calls {
-                    if elems.contains_key(callee.as_str()) {
-                        *call_counts.entry(callee.to_string()).or_default() += 1;
+                    if elems.contains_key(callee.as_str())
+                        && let Some(callee) = symbols.resolve(unit, callee.as_str())
+                    {
+                        *call_counts.entry(callee).or_default() += 1;
                     }
                 }
-                collect_return_retention_body(&f.body, &f.name, &f.body, elems, plans);
+                let caller = FnKey::new(unit, f.name.clone());
+                collect_return_retention_body(&f.body, &caller, &f.body, elems, plans);
             }
             Item::InlineMod { items, .. } => {
-                collect_return_retention_items(items, elems, call_counts, plans)
+                collect_return_retention_items(unit, items, symbols, elems, call_counts, plans)
             }
             _ => {}
         }
@@ -2824,7 +2889,7 @@ fn collect_return_retention_items(
 
 fn collect_return_retention_body(
     body: &[Stmt],
-    caller: &str,
+    caller: &FnKey,
     function_body: &[Stmt],
     elems: &BTreeMap<String, Type>,
     plans: &mut Vec<ReturnRetentionPlan>,
@@ -2878,7 +2943,7 @@ fn collect_return_retention_body(
             continue;
         };
         plans.push(ReturnRetentionPlan {
-            caller: caller.to_string(),
+            caller: caller.clone(),
             callee,
             binding: name.clone(),
             elem_ty: elem_ty.clone(),
@@ -3342,7 +3407,7 @@ fn retained_deref_root(
     }
 }
 
-fn return_buffer_candidates(fn_defs: &BTreeMap<String, &FnDef>) -> Vec<ReturnBufferLift> {
+fn return_buffer_candidates(fn_defs: &BTreeMap<FnKey, &FnDef>) -> Vec<ReturnBufferLift> {
     let mut out = Vec::new();
     for (name, f) in fn_defs {
         if f.unsafe_ || f.abi.is_some() || !matches!(f.vis, Visibility::Private) {
@@ -3498,11 +3563,14 @@ fn box_slice_type(elem_ty: &Type) -> Type {
     }
 }
 
-fn apply_return_retention(items: &mut [Item], plans: &[ReturnRetentionPlan]) {
+fn apply_return_retention(unit: usize, items: &mut [Item], plans: &[ReturnRetentionPlan]) {
     for item in items {
         match item {
             Item::Fn(f) => {
-                for plan in plans.iter().filter(|plan| plan.caller == f.name) {
+                for plan in plans
+                    .iter()
+                    .filter(|plan| plan.caller.unit == unit && plan.caller.name == f.name)
+                {
                     remove_retained_frees(&mut f.body, &plan.base_aliases);
                     retain_call_binding(&mut f.body, plan);
                     let raw = Expr::MethodCall {
@@ -3522,7 +3590,7 @@ fn apply_return_retention(items: &mut [Item], plans: &[ReturnRetentionPlan]) {
                     remove_unused_retained_aliases(&mut f.body, &aliases);
                 }
             }
-            Item::InlineMod { items, .. } => apply_return_retention(items, plans),
+            Item::InlineMod { items, .. } => apply_return_retention(unit, items, plans),
             _ => {}
         }
     }
@@ -3683,18 +3751,22 @@ fn retain_call_binding(body: &mut Vec<Stmt>, plan: &ReturnRetentionPlan) -> bool
     false
 }
 
-fn retype_return_items(items: &mut [Item], by_fn: &BTreeMap<String, &ReturnBufferLift>) {
+fn retype_return_items(
+    unit: usize,
+    items: &mut [Item],
+    by_fn: &BTreeMap<FnKey, &ReturnBufferLift>,
+) {
     for item in items {
         match item {
             Item::Fn(f) => {
-                if let Some(lift) = by_fn.get(&f.name) {
+                if let Some(lift) = by_fn.get(&FnKey::new(unit, f.name.clone())) {
                     f.ret = Some(box_slice_type(&lift.elem_ty));
                     for indent in &mut f.body {
                         wrap_returns_stmt(indent, &lift.elem_ty, &lift.count);
                     }
                 }
             }
-            Item::InlineMod { items, .. } => retype_return_items(items, by_fn),
+            Item::InlineMod { items, .. } => retype_return_items(unit, items, by_fn),
             _ => {}
         }
     }

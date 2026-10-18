@@ -83,8 +83,8 @@ pub(in crate::backend) fn apply(
     program: &mut Program,
     target: &slate_parser::target_info::TargetInfo,
 ) {
-    crate::backend::interproc::string_params::run(program);
-    crate::backend::interproc::pointer_lattice::apply(program);
+    crate::backend::interproc::string_params::run(std::slice::from_mut(program));
+    crate::backend::interproc::pointer_lattice::apply(std::slice::from_mut(program));
 
     let passes = [
         RuleRegistry::build(rules::registry(target)),

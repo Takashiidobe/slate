@@ -1,6 +1,6 @@
 use std::collections::{BTreeMap, BTreeSet};
 
-use crate::backend::interproc::{self, CallGraph};
+use crate::backend::interproc::{self, CallGraph, FnKey, Symbols};
 use crate::backend::rust_ast::{
     Block, CLibType, Expr, FnDef, Ident, Item, Pattern, Prim, Program, RustValue, Stmt, Type,
     Visibility,
@@ -11,7 +11,7 @@ struct CandidateFn {
 }
 
 struct CallSite {
-    caller: String,
+    caller: FnKey,
     args: Vec<Expr>,
 }
 
@@ -20,38 +20,41 @@ struct AliasInfo {
     established: BTreeSet<String>,
 }
 
-pub(in crate::backend) fn run(program: &mut Program) {
-    let fn_defs = collect_fn_defs(&program.items);
+pub(in crate::backend) fn run(programs: &mut [Program]) {
+    let symbols = Symbols::new(programs);
+    let fn_defs = interproc::fn_defs(programs);
 
-    let candidates: BTreeMap<String, CandidateFn> = fn_defs
+    let candidates: BTreeMap<FnKey, CandidateFn> = fn_defs
         .iter()
-        .filter_map(|(name, f)| candidate_for(f).map(|c| (name.clone(), c)))
+        .filter_map(|(key, f)| candidate_for(f).map(|c| (key.clone(), c)))
         .collect();
     if candidates.is_empty() {
         return;
     }
 
-    let alias_sets: BTreeMap<(String, usize), AliasInfo> = candidates
+    let alias_sets: BTreeMap<(FnKey, usize), AliasInfo> = candidates
         .iter()
-        .flat_map(|(name, candidate)| {
+        .flat_map(|(key, candidate)| {
             candidate.param_indices.iter().map(|&index| {
-                let info = alias_fixpoint(fn_defs[name], &fn_defs[name].params[index].name);
-                ((name.clone(), index), info)
+                let info = alias_fixpoint(fn_defs[key], &fn_defs[key].params[index].name);
+                ((key.clone(), index), info)
             })
         })
         .collect();
 
-    let literal_locals: BTreeMap<String, BTreeMap<String, Vec<u8>>> = fn_defs
+    let literal_locals: BTreeMap<FnKey, BTreeMap<String, Vec<u8>>> = fn_defs
         .iter()
-        .map(|(name, f)| (name.clone(), literal_string_locals(&f.body)))
+        .map(|(key, f)| (key.clone(), literal_string_locals(&f.body)))
         .collect();
 
-    let mut callsites_by_callee: BTreeMap<String, Vec<CallSite>> = BTreeMap::new();
+    let mut callsites_by_callee: BTreeMap<FnKey, Vec<CallSite>> = BTreeMap::new();
     for (caller, f) in &fn_defs {
         let mut calls = Vec::new();
         collect_calls(&f.body, &mut calls);
         for (callee, args) in calls {
-            if candidates.contains_key(&callee) {
+            if let Some(callee) = symbols.resolve(caller.unit, &callee)
+                && candidates.contains_key(&callee)
+            {
                 callsites_by_callee
                     .entry(callee)
                     .or_default()
@@ -70,32 +73,36 @@ pub(in crate::backend) fn run(program: &mut Program) {
         }
     }
 
-    let mut active: BTreeMap<String, BTreeSet<usize>> = candidates
+    let mut active: BTreeMap<FnKey, BTreeSet<usize>> = candidates
         .iter()
-        .map(|(name, c)| (name.clone(), c.param_indices.iter().copied().collect()))
+        .map(|(key, c)| (key.clone(), c.param_indices.iter().copied().collect()))
         .collect();
 
     let order = interproc::scc_order(&graph);
     let empty_sites: Vec<CallSite> = Vec::new();
 
-    interproc::run_worklist(&graph, &order, |name| {
-        let fn_def = fn_defs[name];
-        let candidate = &candidates[name];
-        let sites = callsites_by_callee.get(name).unwrap_or(&empty_sites);
+    interproc::run_worklist(&graph, &order, |key| {
+        let fn_def = fn_defs[key];
+        let candidate = &candidates[key];
+        let sites = callsites_by_callee.get(key).unwrap_or(&empty_sites);
 
         let mut new_set = BTreeSet::new();
         for &index in &candidate.param_indices {
-            if !active[name].contains(&index) {
+            if !active[key].contains(&index) {
                 continue;
             }
-            let info = &alias_sets[&(name.to_string(), index)];
+            let info = &alias_sets[&(key.clone(), index)];
             let eligible = !body_writes_tracked(&fn_def.body, &info.tracked, &info.established)
                 && body_reads_ok(
                     &fn_def.body,
                     &info.tracked,
-                    &info.established,
-                    &candidates,
-                    &active,
+                    &Ctx {
+                        unit: key.unit,
+                        symbols: &symbols,
+                        candidates: &candidates,
+                        active: &active,
+                        established: &info.established,
+                    },
                 )
                 && callers_prove_arg_at(
                     sites,
@@ -110,15 +117,15 @@ pub(in crate::backend) fn run(program: &mut Program) {
             }
         }
 
-        if new_set == active[name] {
+        if new_set == active[key] {
             false
         } else {
-            active.insert(name.to_string(), new_set);
+            active.insert(key.clone(), new_set);
             true
         }
     });
 
-    let lifted: BTreeMap<String, BTreeSet<usize>> = active
+    let lifted: BTreeMap<FnKey, BTreeSet<usize>> = active
         .into_iter()
         .filter(|(_, indices)| !indices.is_empty())
         .collect();
@@ -126,7 +133,16 @@ pub(in crate::backend) fn run(program: &mut Program) {
         return;
     }
 
-    apply_rewrite(&mut program.items, &lifted, &alias_sets, &literal_locals);
+    for (unit, program) in programs.iter_mut().enumerate() {
+        apply_rewrite(
+            unit,
+            &mut program.items,
+            &symbols,
+            &lifted,
+            &alias_sets,
+            &literal_locals,
+        );
+    }
 }
 
 fn candidate_for(f: &FnDef) -> Option<CandidateFn> {
@@ -140,24 +156,6 @@ fn candidate_for(f: &FnDef) -> Option<CandidateFn> {
         .filter_map(|(index, param)| is_char_ptr(&param.ty).then_some(index))
         .collect();
     (!param_indices.is_empty()).then_some(CandidateFn { param_indices })
-}
-
-fn collect_fn_defs(items: &[Item]) -> BTreeMap<String, &FnDef> {
-    let mut out = BTreeMap::new();
-    collect_fn_defs_into(items, &mut out);
-    out
-}
-
-fn collect_fn_defs_into<'a>(items: &'a [Item], out: &mut BTreeMap<String, &'a FnDef>) {
-    for item in items {
-        match item {
-            Item::Fn(f) => {
-                out.insert(f.name.clone(), f);
-            }
-            Item::InlineMod { items, .. } => collect_fn_defs_into(items, out),
-            _ => {}
-        }
-    }
 }
 
 fn is_char_ptr(ty: &Type) -> bool {
@@ -615,8 +613,10 @@ fn body_writes_tracked(
 }
 
 struct Ctx<'a> {
-    candidates: &'a BTreeMap<String, CandidateFn>,
-    active: &'a BTreeMap<String, BTreeSet<usize>>,
+    unit: usize,
+    symbols: &'a Symbols,
+    candidates: &'a BTreeMap<FnKey, CandidateFn>,
+    active: &'a BTreeMap<FnKey, BTreeSet<usize>>,
     established: &'a BTreeSet<String>,
 }
 
@@ -628,29 +628,20 @@ impl Ctx<'_> {
         if is_supported_libc_str_fn(name) {
             return true;
         }
-        if self.candidates.contains_key(name) {
+        if let Some(callee) = self.symbols.resolve(self.unit, name)
+            && self.candidates.contains_key(&callee)
+        {
             return self
                 .active
-                .get(name)
+                .get(&callee)
                 .is_some_and(|set| set.contains(&index));
         }
         false
     }
 }
 
-fn body_reads_ok(
-    body: &[Stmt],
-    tracked: &BTreeSet<String>,
-    established: &BTreeSet<String>,
-    candidates: &BTreeMap<String, CandidateFn>,
-    active: &BTreeMap<String, BTreeSet<usize>>,
-) -> bool {
-    let ctx = Ctx {
-        candidates,
-        active,
-        established,
-    };
-    body.iter().all(|s| stmt_ok(s, tracked, &ctx))
+fn body_reads_ok(body: &[Stmt], tracked: &BTreeSet<String>, ctx: &Ctx) -> bool {
+    body.iter().all(|s| stmt_ok(s, tracked, ctx))
 }
 
 fn stmt_ok(stmt: &Stmt, tracked: &BTreeSet<String>, ctx: &Ctx) -> bool {
@@ -865,10 +856,10 @@ fn is_supported_libc_str_fn(name: &str) -> bool {
 fn callers_prove_arg_at(
     sites: &[CallSite],
     index: usize,
-    candidates: &BTreeMap<String, CandidateFn>,
-    active: &BTreeMap<String, BTreeSet<usize>>,
-    alias_sets: &BTreeMap<(String, usize), AliasInfo>,
-    literal_locals: &BTreeMap<String, BTreeMap<String, Vec<u8>>>,
+    candidates: &BTreeMap<FnKey, CandidateFn>,
+    active: &BTreeMap<FnKey, BTreeSet<usize>>,
+    alias_sets: &BTreeMap<(FnKey, usize), AliasInfo>,
+    literal_locals: &BTreeMap<FnKey, BTreeMap<String, Vec<u8>>>,
 ) -> bool {
     if sites.is_empty() {
         return false;
@@ -889,11 +880,11 @@ fn callers_prove_arg_at(
 
 fn arg_is_liftable_source(
     expr: &Expr,
-    caller: &str,
-    candidates: &BTreeMap<String, CandidateFn>,
-    active: &BTreeMap<String, BTreeSet<usize>>,
-    alias_sets: &BTreeMap<(String, usize), AliasInfo>,
-    literal_locals: &BTreeMap<String, BTreeMap<String, Vec<u8>>>,
+    caller: &FnKey,
+    candidates: &BTreeMap<FnKey, CandidateFn>,
+    active: &BTreeMap<FnKey, BTreeSet<usize>>,
+    alias_sets: &BTreeMap<(FnKey, usize), AliasInfo>,
+    literal_locals: &BTreeMap<FnKey, BTreeMap<String, Vec<u8>>>,
 ) -> bool {
     match peel_pointer_view(expr) {
         Expr::Var(v) => {
@@ -904,7 +895,7 @@ fn arg_is_liftable_source(
                 .any(|&p| {
                     active.get(caller).is_some_and(|set| set.contains(&p))
                         && alias_sets
-                            .get(&(caller.to_string(), p))
+                            .get(&(caller.clone(), p))
                             .is_some_and(|info| info.tracked.contains(v.as_str()))
                 });
             passes_through_active_param
@@ -940,29 +931,34 @@ fn c_string_payload(bytes: &[u8]) -> Option<&[u8]> {
 }
 
 fn apply_rewrite(
+    unit: usize,
     items: &mut [Item],
-    lifted: &BTreeMap<String, BTreeSet<usize>>,
-    alias_sets: &BTreeMap<(String, usize), AliasInfo>,
-    literal_locals: &BTreeMap<String, BTreeMap<String, Vec<u8>>>,
+    symbols: &Symbols,
+    lifted: &BTreeMap<FnKey, BTreeSet<usize>>,
+    alias_sets: &BTreeMap<(FnKey, usize), AliasInfo>,
+    literal_locals: &BTreeMap<FnKey, BTreeMap<String, Vec<u8>>>,
 ) {
     let empty_literals: BTreeMap<String, Vec<u8>> = BTreeMap::new();
     for item in items {
         match item {
             Item::Fn(f) => {
+                let key = FnKey::new(unit, f.name.clone());
                 let mut own_tracked = BTreeSet::new();
-                if let Some(indices) = lifted.get(&f.name) {
+                if let Some(indices) = lifted.get(&key) {
                     for &index in indices {
                         if let Some(param) = f.params.get_mut(index) {
                             param.ty = str_ref_type();
                         }
-                        if let Some(info) = alias_sets.get(&(f.name.clone(), index)) {
+                        if let Some(info) = alias_sets.get(&(key.clone(), index)) {
                             own_tracked.extend(info.tracked.iter().cloned());
                         }
                     }
                     promote_tracked_lets(&mut f.body, &own_tracked);
                 }
-                let own_literals = literal_locals.get(&f.name).unwrap_or(&empty_literals);
+                let own_literals = literal_locals.get(&key).unwrap_or(&empty_literals);
                 let ctx = RewriteCtx {
+                    unit,
+                    symbols,
                     targets: lifted,
                     own_tracked: &own_tracked,
                     own_literals,
@@ -970,7 +966,7 @@ fn apply_rewrite(
                 rewrite_calls_in_stmts(&mut f.body, &ctx);
             }
             Item::InlineMod { items, .. } => {
-                apply_rewrite(items, lifted, alias_sets, literal_locals)
+                apply_rewrite(unit, items, symbols, lifted, alias_sets, literal_locals)
             }
             _ => {}
         }
@@ -1043,7 +1039,9 @@ fn promote_nested_bodies(stmt: &mut Stmt, tracked: &BTreeSet<String>) -> bool {
 }
 
 struct RewriteCtx<'a> {
-    targets: &'a BTreeMap<String, BTreeSet<usize>>,
+    unit: usize,
+    symbols: &'a Symbols,
+    targets: &'a BTreeMap<FnKey, BTreeSet<usize>>,
     own_tracked: &'a BTreeSet<String>,
     own_literals: &'a BTreeMap<String, Vec<u8>>,
 }
@@ -1156,7 +1154,8 @@ fn rewrite_calls_in_expr(expr: &mut Expr, ctx: &RewriteCtx) -> bool {
     if let Expr::Call { func, args, .. } = expr {
         changed |= rewrite_calls_in_expr(func, ctx);
         if let Expr::Var(name) = &**func
-            && let Some(indices) = ctx.targets.get(name.as_str())
+            && let Some(callee) = ctx.symbols.resolve(ctx.unit, name.as_str())
+            && let Some(indices) = ctx.targets.get(&callee)
         {
             for &index in indices {
                 if let Some(arg) = args.get_mut(index)
