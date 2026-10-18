@@ -187,6 +187,7 @@ impl FunctionLowerer<'_, '_> {
             return None;
         };
         (matches!(base.kind, PlaceKind::Deref(_) | PlaceKind::Index { .. })
+            || matches!(base.kind, PlaceKind::Binding(id) if self.dispatch_bindings.contains(&id))
             || self.reduced_alignment_access(base)
             || self.tables.array_subscript(base).is_some()
             || self.place_in_packed(base))

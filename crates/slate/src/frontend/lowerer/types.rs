@@ -642,9 +642,6 @@ impl FunctionLowerer<'_, '_> {
                 self.dependencies.long_double = true;
                 return Ok(rust::Type::LongDouble);
             }
-            ir::Type::Pointer { .. } if self.tables.function_type_has_vector(ty) => {
-                return Err(unsupported_type(ty));
-            }
             ir::Type::Pointer { pointee, .. } if matches!(**pointee, ir::Type::Function { .. }) => {
                 let ir::Type::Function {
                     return_type,
@@ -660,6 +657,11 @@ impl FunctionLowerer<'_, '_> {
                     *abi == rust::Abi::CUnwind || !self.tables.function_type_passes_long_double(ty)
                 }) else {
                     return Err(unsupported_type(ty));
+                };
+                let abi = match (self.tables.function_type_has_vector(ty), variadic) {
+                    (false, _) => abi,
+                    (true, false) => rust::Abi::Rust,
+                    (true, true) => return Err(unsupported_type(ty)),
                 };
                 let mut params = parameters
                     .iter()

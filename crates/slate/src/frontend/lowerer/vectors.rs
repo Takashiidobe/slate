@@ -135,6 +135,83 @@ impl FunctionLowerer<'_, '_> {
         })
     }
 
+    pub(super) fn lower_vector_compare(
+        &mut self,
+        value: &ir::Value,
+        op: ir::CompareOp,
+        left: &ir::Value,
+        right: &ir::Value,
+    ) -> Result<Expr> {
+        let element = self
+            .tables
+            .vector_element(&value.ty)
+            .ok_or_else(|| unsupported_value(value))?;
+        let result = self.lower_type(&value.ty)?;
+        let lane = self.lower_type(&ir::Type::Numeric(element))?;
+        let mut stmts = Vec::new();
+        let mut arrays = Vec::new();
+        for operand in [left, right] {
+            let vector = self.next_temp();
+            stmts.push(Stmt::Let {
+                name: vector.clone(),
+                mutable: false,
+                ty: Some(self.lower_type(&operand.ty)?),
+                init: Some(self.lower_value(operand)?),
+            });
+            let array = Expr::MethodCall {
+                recv: Box::new(Expr::Var(vector.into())),
+                method: "to_array".into(),
+                args: Vec::new(),
+            };
+            arrays.push(self.bind(&mut stmts, array));
+        }
+        let at = |array: &Expr| Expr::Index {
+            base: Box::new(array.clone()),
+            index: Box::new(Expr::Var("__lane".into())),
+        };
+        let compare = Expr::Binary {
+            op: match op {
+                ir::CompareOp::Eq => BinOp::Eq,
+                ir::CompareOp::Ne => BinOp::Ne,
+                ir::CompareOp::Lt => BinOp::Lt,
+                ir::CompareOp::Le => BinOp::Le,
+                ir::CompareOp::Gt => BinOp::Gt,
+                ir::CompareOp::Ge => BinOp::Ge,
+            },
+            lhs: Box::new(at(&arrays[0])),
+            rhs: Box::new(at(&arrays[1])),
+        };
+        let mask = Expr::Unary {
+            op: rust::UnaryOp::Neg,
+            expr: Box::new(Expr::Cast {
+                expr: Box::new(compare),
+                ty: lane,
+            }),
+        };
+        let temp = self.next_temp();
+        stmts.push(Stmt::Let {
+            name: temp.clone(),
+            mutable: false,
+            ty: Some(result.clone()),
+            init: Some(Expr::Call {
+                func: Box::new(vector_constructor(&result, "from_array")),
+                args: vec![Expr::Call {
+                    func: Box::new(Expr::Var("std::array::from_fn".into())),
+                    args: vec![Expr::Closure {
+                        params: vec!["__lane".into()],
+                        body: Box::new(mask),
+                    }],
+                    binding: CallBinding::Generated,
+                }],
+                binding: CallBinding::Generated,
+            }),
+        });
+        Ok(Expr::Block(Box::new(rust::Block {
+            stmts,
+            tail: Some(Box::new(Expr::Var(temp.into()))),
+        })))
+    }
+
     pub(super) fn lower_vector_unary(
         &mut self,
         value: &ir::Value,

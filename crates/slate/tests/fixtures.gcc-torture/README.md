@@ -20,9 +20,8 @@ after Slate translation live in `../fixtures.gcc-torture.unsupported`.
 
 Of 1,918 upstream C files, the reference filter admitted 1,443, rejected 468 at
 compile time, and rejected 7 that aborted. Differential classification placed
-1,207 admitted cases here and 236 in the unsupported tree. The complete triage
-output is preserved as `../fixtures.gcc-torture.unsupported/TRIAGE.log.gz` and
-follow-up classification is tracked by `slate-os0h.3.1`.
+1,207 admitted cases here and 236 in the unsupported tree. The remaining
+unsupported cases are tracked by `slate-oreg` and its sub-epics.
 
 The supported bucket runs under `cargo nextest r --release --profile slate` and uses every
 available CPU through one shared work queue and cached `src/bin` batch crate.

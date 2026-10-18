@@ -125,9 +125,7 @@ pub(super) fn zeroed() -> Expr {
 
 impl FunctionLowerer<'_, '_> {
     fn lower_function_address(&mut self, value: &ir::Value, id: BindingId) -> Result<Expr> {
-        if self.tables.intrinsics.contains_key(&id)
-            || self.tables.function_type_has_vector(&value.ty)
-        {
+        if self.tables.intrinsics.contains_key(&id) {
             return Err(unsupported_value(value));
         }
         if self
@@ -150,7 +148,9 @@ impl FunctionLowerer<'_, '_> {
         }
         Ok(match self.tables.names.get(&id) {
             Some(name) if !name.is_extern => {
-                self.dependencies.address_taken.insert(name.rust.clone());
+                if !self.tables.function_type_has_vector(&value.ty) {
+                    self.dependencies.address_taken.insert(name.rust.clone());
+                }
                 Expr::Call {
                     func: Box::new(Expr::Var("Some".into())),
                     args: vec![Expr::Var(name.rust.as_str().into())],
@@ -1171,10 +1171,10 @@ impl FunctionLowerer<'_, '_> {
                     _ => select,
                 }
             }
-            ValueKind::Compare { left, .. }
-                if matches!(self.tables.resolve_type(&left.ty), ir::Type::Vector { .. }) =>
-            {
-                return Err(unsupported_value(value));
+            ValueKind::Compare {
+                op, left, right, ..
+            } if matches!(self.tables.resolve_type(&left.ty), ir::Type::Vector { .. }) => {
+                return self.lower_vector_compare(value, *op, left, right);
             }
             ValueKind::Compare {
                 op, left, right, ..
