@@ -125,14 +125,14 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "sse")]
 // CHECK-NEXT: unsafe fn _mm_storeu_ps(__p: *mut f32, __a: std::simd::Simd<f32, 4>) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*(__p as *mut __storeu_ps)).__v = __a;
+// CHECK-NEXT:         std::ptr::addr_of_mut!((*(__p as *mut __storeu_ps)).__v).write_unaligned(__a);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx")]
 // CHECK-NEXT: unsafe fn _mm256_storeu_si256(__p: *mut std::simd::Simd<i64, 4>, __a: std::simd::Simd<i64, 4>) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*(__p as *mut __storeu_si256)).__v = __a;
+// CHECK-NEXT:         std::ptr::addr_of_mut!((*(__p as *mut __storeu_si256)).__v).write_unaligned(__a);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:

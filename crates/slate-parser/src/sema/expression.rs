@@ -1257,7 +1257,10 @@ impl Lowerer {
             c,
             place: Place {
                 ty: (**pointee).clone(),
-                access: *access,
+                access: Access {
+                    align: self.types.reduced_alignment(c),
+                    ..*access
+                },
                 kind: PlaceKind::Deref(Box::new(pointer.value)),
             },
         })

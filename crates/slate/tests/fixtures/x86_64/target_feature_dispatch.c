@@ -156,7 +156,9 @@ int main(void) {
 // CHECK-NEXT: unsafe fn _mm256_loadu_si256(
 // CHECK-NEXT:     __p: *const std::simd::Simd<i64, 4>,
 // CHECK-NEXT: ) -> std::simd::Simd<i64, 4> {
-// CHECK-NEXT:     return unsafe { (*(__p as *const __loadu_si256)).__v };
+// CHECK-NEXT:     return unsafe {
+// CHECK-NEXT:         std::ptr::addr_of!((* (__p as * const __loadu_si256)).__v).read_unaligned()
+// CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx")]
 // CHECK-NEXT: unsafe fn _mm256_storeu_si256(
@@ -164,7 +166,8 @@ int main(void) {
 // CHECK-NEXT:     __a: std::simd::Simd<i64, 4>,
 // CHECK-NEXT: ) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*(__p as *mut __storeu_si256)).__v = __a;
+// CHECK-NEXT:         std::ptr::addr_of_mut!((* (__p as * mut __storeu_si256)).__v)
+// CHECK-NEXT:             .write_unaligned(__a);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx")]
@@ -416,12 +419,15 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
 // CHECK-NEXT: unsafe fn _mm512_loadu_si512(__P: *const ()) -> std::simd::Simd<i64, 8> {
-// CHECK-NEXT:     return unsafe { (*(__P as *const __loadu_si512)).__v };
+// CHECK-NEXT:     return unsafe {
+// CHECK-NEXT:         std::ptr::addr_of!((* (__P as * const __loadu_si512)).__v).read_unaligned()
+// CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
 // CHECK-NEXT: unsafe fn _mm512_storeu_si512(__P: *mut (), __A: std::simd::Simd<i64, 8>) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*(__P as *mut __storeu_si512)).__v = __A;
+// CHECK-NEXT:         std::ptr::addr_of_mut!((* (__P as * mut __storeu_si512)).__v)
+// CHECK-NEXT:             .write_unaligned(__A);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn popcount_scalar(words: *const u64, count: u64) -> i64 {

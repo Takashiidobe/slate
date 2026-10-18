@@ -23,6 +23,9 @@ impl FunctionLowerer<'_, '_> {
         if let Some(lane) = self.lower_lane_write(place, &value)? {
             return Ok(lane);
         }
+        if let Some(unaligned) = self.lower_unaligned_write(place, &value)? {
+            return Ok(unaligned);
+        }
         let assignment = match self.bit_field_accessor(place, "set")? {
             Some((storage, setter)) if is_trivial_operand(&value) => Stmt::Expr(Expr::MethodCall {
                 recv: Box::new(storage),

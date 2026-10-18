@@ -103,6 +103,80 @@ impl FunctionLowerer<'_, '_> {
         ) || self.place_in_packed(base)
     }
 
+    fn reduced_alignment_access(&mut self, place: &ir::Place) -> bool {
+        self.reduced_place(place)
+            && !place.access.atomic
+            && !place.access.volatile
+            && Self::rooted_in_deref(place)
+    }
+
+    fn reduced_place(&mut self, place: &ir::Place) -> bool {
+        place.access.align.is_some()
+            || match &place.kind {
+                PlaceKind::Deref(pointer) => self.reduced_pointer(pointer),
+                PlaceKind::Field { base, .. }
+                | PlaceKind::Lane { base, .. }
+                | PlaceKind::ComplexPart { base, .. } => self.reduced_place(base),
+                _ => false,
+            }
+    }
+
+    fn reduced_pointer(&mut self, value: &ir::Value) -> bool {
+        match &value.node.value {
+            ValueKind::PointerOffset { pointer, .. } => self.reduced_pointer(pointer),
+            ValueKind::ArrayDecay { place, .. } | ValueKind::AddressOf(place) => {
+                self.reduced_place(place) || self.place_in_packed(place)
+            }
+            _ => false,
+        }
+    }
+
+    fn rooted_in_deref(place: &ir::Place) -> bool {
+        match &place.kind {
+            PlaceKind::Deref(_) | PlaceKind::Index { .. } => true,
+            PlaceKind::Field {
+                base, bits: None, ..
+            }
+            | PlaceKind::Lane { base, .. }
+            | PlaceKind::ComplexPart { base, .. } => Self::rooted_in_deref(base),
+            _ => false,
+        }
+    }
+
+    pub(super) fn lower_unaligned_read(&mut self, place: &ir::Place) -> Result<Option<Expr>> {
+        if !self.reduced_alignment_access(place) || matches!(place.kind, PlaceKind::Lane { .. }) {
+            return Ok(None);
+        }
+        Ok(Some(Expr::Unsafe(Box::new(rust::Block {
+            stmts: Vec::new(),
+            tail: Some(Box::new(Expr::MethodCall {
+                recv: Box::new(self.lower_address(place, false)?),
+                method: "read_unaligned".into(),
+                args: Vec::new(),
+            })),
+        }))))
+    }
+
+    pub(super) fn lower_unaligned_write(
+        &mut self,
+        place: &ir::Place,
+        value: &Expr,
+    ) -> Result<Option<Stmt>> {
+        if !self.reduced_alignment_access(place) || matches!(place.kind, PlaceKind::Lane { .. }) {
+            return Ok(None);
+        }
+        Ok(Some(Stmt::Unsafe {
+            body: rust::Block {
+                stmts: vec![Stmt::Expr(Expr::MethodCall {
+                    recv: Box::new(self.lower_address(place, true)?),
+                    method: "write_unaligned".into(),
+                    args: vec![value.clone()],
+                })],
+                tail: None,
+            },
+        }))
+    }
+
     fn unaligned_lane<'p>(
         &mut self,
         place: &'p ir::Place,
@@ -111,6 +185,7 @@ impl FunctionLowerer<'_, '_> {
             return None;
         };
         (matches!(base.kind, PlaceKind::Deref(_) | PlaceKind::Index { .. })
+            || self.reduced_alignment_access(base)
             || self.tables.array_subscript(base).is_some()
             || self.place_in_packed(base))
         .then_some((&**base, &**index))

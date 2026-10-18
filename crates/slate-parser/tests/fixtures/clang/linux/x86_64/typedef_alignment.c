@@ -85,7 +85,7 @@ int locals(void) {
 // IR-NEXT:     fn %[[VALUE_locals:[0-9]+]] @locals() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         let %[[VALUE_r:[0-9]+]] r: i32 [storage=automatic] [align=16] = const<i32>(1);
 // IR-NEXT:         let %[[VALUE_l:[0-9]+]] l: i32 [storage=automatic] [align=1] = const<i32>(2);
-// IR-NEXT:         return add<i32>(read<i32>(%[[VALUE_r]]), read<i32>(%[[VALUE_l]]));
+// IR-NEXT:         return add<i32>(read<i32>(%[[VALUE_r]]), read<i32, align=1>(%[[VALUE_l]]));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

@@ -213,7 +213,7 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "sse")]
 // CHECK-NEXT: unsafe fn _mm_storeu_ps(__p: *mut f32, __a: std::simd::Simd<f32, 4>) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*(__p as *mut __storeu_ps)).__v = __a;
+// CHECK-NEXT:         std::ptr::addr_of_mut!((* (__p as * mut __storeu_ps)).__v).write_unaligned(__a);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "sse2")]
@@ -222,7 +222,8 @@ int main(void) {
 // CHECK-NEXT:     __b: std::simd::Simd<i64, 2>,
 // CHECK-NEXT: ) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*(__p as *mut __storeu_si128)).__v = __b;
+// CHECK-NEXT:         std::ptr::addr_of_mut!((* (__p as * mut __storeu_si128)).__v)
+// CHECK-NEXT:             .write_unaligned(__b);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx")]
@@ -231,7 +232,8 @@ int main(void) {
 // CHECK-NEXT:     __a: std::simd::Simd<i64, 4>,
 // CHECK-NEXT: ) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*(__p as *mut __storeu_si256)).__v = __a;
+// CHECK-NEXT:         std::ptr::addr_of_mut!((* (__p as * mut __storeu_si256)).__v)
+// CHECK-NEXT:             .write_unaligned(__a);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx")]

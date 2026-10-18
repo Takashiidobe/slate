@@ -74,6 +74,7 @@ pub struct Field {
 pub struct Access {
     pub volatile: bool,
     pub atomic: bool,
+    pub align: Option<u64>,
 }
 
 impl Access {
@@ -85,6 +86,10 @@ impl Access {
         Self {
             volatile: self.volatile || other.volatile,
             atomic: self.atomic || other.atomic,
+            align: match (self.align, other.align) {
+                (Some(left), Some(right)) => Some(left.min(right)),
+                (left, right) => left.or(right),
+            },
         }
     }
 
@@ -102,6 +107,9 @@ impl std::fmt::Display for Access {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         if self.volatile {
             f.write_str(", volatile")?;
+        }
+        if let Some(align) = self.align {
+            write!(f, ", align={align}")?;
         }
         Ok(())
     }

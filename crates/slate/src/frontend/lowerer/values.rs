@@ -738,6 +738,9 @@ impl FunctionLowerer<'_, '_> {
                 if let Some(lane) = self.lower_lane_read(place)? {
                     return Ok(lane);
                 }
+                if let Some(unaligned) = self.lower_unaligned_read(place)? {
+                    return Ok(unaligned);
+                }
                 let lowered = match self.bit_field_accessor(place, "get")? {
                     Some((storage, getter)) => Expr::MethodCall {
                         recv: Box::new(storage),

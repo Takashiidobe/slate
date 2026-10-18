@@ -1113,6 +1113,7 @@ impl Lowerer {
                     access: Access {
                         volatile: shape.qualifiers.is_volatile,
                         atomic: shape.qualifiers.is_atomic,
+                        align: None,
                     },
                     constexpr: false,
                     alignment: None,
@@ -1149,6 +1150,7 @@ impl Lowerer {
                 access: Access {
                     volatile: shape.qualifiers.is_volatile,
                     atomic: shape.qualifiers.is_atomic,
+                    align: None,
                 },
                 array: shape.array,
             });
@@ -1513,6 +1515,7 @@ impl Lowerer {
                 access: Access {
                     volatile: qualifiers.is_volatile,
                     atomic: qualifiers.is_atomic,
+                    align: None,
                 },
                 constexpr: item.specifiers.is_constexpr,
                 alignment: automatic_alignment,

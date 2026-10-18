@@ -331,7 +331,18 @@ impl TypeResolver {
     }
 
     pub fn access_of(&self, q: QualType) -> Access {
-        self.ctypes.access(q)
+        Access {
+            align: self.reduced_alignment(q),
+            ..self.ctypes.access(q)
+        }
+    }
+
+    pub(super) fn reduced_alignment(&self, q: QualType) -> Option<u64> {
+        self.ctypes.typedef_alignment(q)?;
+        let natural = self.storage(self.ir_type(q)).ok()?;
+        let declared = self.declared_storage(q, natural).ok()?;
+        (declared.alignment_bytes < natural.alignment_bytes)
+            .then_some(u64::from(declared.alignment_bytes))
     }
 
     pub(super) fn with_names(unit: &TranslationUnit, names: &crate::ir::NameResolution) -> Self {
@@ -4585,6 +4596,7 @@ fn resolve_parameters(
             access: Access {
                 volatile: shape.qualifiers.is_volatile,
                 atomic: shape.qualifiers.is_atomic,
+                align: None,
             },
             array: shape.array,
         });

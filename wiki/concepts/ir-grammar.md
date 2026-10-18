@@ -426,7 +426,7 @@ place  = binding
        | "compound_literal" binding "[storage=" storage "]"
          [ "[align=" int "]" ] "=" value
        | "temporary" binding "=" value ;
-access   = [ ", volatile" ] ;
+access   = [ ", volatile" ] [ ", align=" int ] ;
 ordering = ", atomic=" order [ sync_scope ] ;
 order    = "relaxed" | "consume" | "acquire" | "release" | "acq_rel"
          | "seq_cst" | "dynamic(" value ")" ;

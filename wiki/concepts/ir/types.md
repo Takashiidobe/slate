@@ -227,8 +227,10 @@ __attribute__((aligned(16)))` is still `i32`). Its alignment lives on the
   globals and locals. Unlike a declaration-site request it replaces natural
   alignment and may lower it; the outermost aligned typedef in a chain wins,
   arrays inherit it from their element, `_Atomic` drops it, and an array
-  whose element size isn't a multiple of it is rejected. Access alignment
-  through pointers isn't modeled (loads and stores carry none).
+  whose element size isn't a multiple of it is rejected. When the
+  typedef lowers a type's natural alignment, a place reached through a
+  pointer to it, and every read or write of that place, carries
+  `align=N` (`read<i32, align=1>`); `Access::align` is `None` otherwise.
 - `aligned` in a type name's specifiers (`_Alignof(__attribute__((aligned(16)))
 char)`, casts, `sizeof`, `typeof`, `_Generic`, compound literals) is
   flavor-dependent. gcc makes the whole type name an anonymous aligned
