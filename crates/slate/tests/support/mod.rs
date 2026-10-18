@@ -248,9 +248,14 @@ pub fn compile_c_with_args_for_target(
     src: &Path,
     out: &Path,
     extra_args: &[String],
+    cc_override: Option<&str>,
     cross: Option<&CrossTarget>,
 ) -> Result<(), String> {
-    let cc_bin = cross.map_or_else(cc, |cross| cross.cc.clone());
+    let cc_bin = match (cross, cc_override) {
+        (Some(cross), _) => cross.cc.clone(),
+        (None, Some(cc_bin)) => cc_bin.to_string(),
+        (None, None) => cc(),
+    };
     let cc_extra_args = cross
         .map(|cross| cross.cc_extra_args.clone())
         .unwrap_or_default();
@@ -500,6 +505,7 @@ pub struct RunConfig {
     pub compare_stderr: bool,
     pub timeout_seconds: Option<u64>,
     pub c_args: Vec<String>,
+    pub cc: Option<String>,
     pub expected_stdout: Option<PathBuf>,
     pub extra_files: Vec<PathBuf>,
     pub extra_files_dir: PathBuf,
@@ -515,6 +521,7 @@ impl Default for RunConfig {
             compare_stderr: false,
             timeout_seconds: None,
             c_args: Vec::new(),
+            cc: None,
             expected_stdout: None,
             extra_files: Vec::new(),
             extra_files_dir: PathBuf::from("src/functional"),
@@ -582,7 +589,13 @@ pub fn compare_batch_with_jobs_for_target(
             };
             let c_bin = work_dir.join(format!("{}_c", bn));
             if case.config.expected_stdout.is_none() {
-                compile_c_with_args_for_target(&case.c_src, &c_bin, &case.config.c_args, cross)?;
+                compile_c_with_args_for_target(
+                    &case.c_src,
+                    &c_bin,
+                    &case.config.c_args,
+                    case.config.cc.as_deref(),
+                    cross,
+                )?;
             }
             let run_dir = work_dir.join("runs").join(&bn);
             if run_dir.exists() {

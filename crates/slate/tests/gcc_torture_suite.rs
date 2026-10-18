@@ -20,15 +20,39 @@ fn gcc_torture_jobs() -> usize {
         })
 }
 
-fn supported_root() -> PathBuf {
-    Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures.gcc-torture")
+struct Corpus {
+    dir: &'static str,
+    gcc: bool,
 }
 
-fn unsupported_root() -> PathBuf {
-    Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures.gcc-torture.unsupported")
+const CLANG: Corpus = Corpus {
+    dir: "fixtures.gcc-torture",
+    gcc: false,
+};
+
+const GCC_ONLY: Corpus = Corpus {
+    dir: "fixtures.gcc-torture.gcc-only",
+    gcc: true,
+};
+
+impl Corpus {
+    fn supported_root(&self) -> PathBuf {
+        Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("tests")
+            .join(self.dir)
+    }
+
+    fn unsupported_root(&self) -> PathBuf {
+        Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("tests")
+            .join(format!("{}.unsupported", self.dir))
+    }
 }
 
 fn collect_cases(dir: &Path) -> Vec<(String, PathBuf)> {
+    if !dir.exists() {
+        return Vec::new();
+    }
     let selected = std::env::var("SLATE_GCC_TORTURE_FIXTURE").ok();
     let mut cases: Vec<(String, PathBuf)> = std::fs::read_dir(dir)
         .unwrap_or_else(|e| panic!("read {}: {e}", dir.display()))
@@ -47,24 +71,30 @@ fn collect_cases(dir: &Path) -> Vec<(String, PathBuf)> {
     cases
 }
 
-fn run_cases(group: &str, dir: &Path) -> Vec<(String, Result<(), String>)> {
+fn run_cases(corpus: &Corpus, group: &str, dir: &Path) -> Vec<(String, Result<(), String>)> {
     let cases = collect_cases(dir);
     let jobs = gcc_torture_jobs();
     let work = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("target/gcc-torture-suite")
+        .join(corpus.dir)
         .join(group);
     std::fs::create_dir_all(&work).expect("create work dir");
 
     let translated = support::parallel_map_with_jobs(&cases, jobs, |(name, path)| {
         let generated = work.join(format!("{name}.generated.rs"));
         let extra_args = support::gnu_dg_option_flags(path);
-        support::translate_slate(path, &generated, &extra_args).map(|()| support::Case {
+        let mut translate_args = extra_args.clone();
+        if corpus.gcc {
+            translate_args.push("--flavor=gcc".into());
+        }
+        support::translate_slate(path, &generated, &translate_args).map(|()| support::Case {
             name: name.clone(),
             c_src: path.clone(),
             rs_src: generated,
             config: support::RunConfig {
                 timeout_seconds: Some(5),
                 c_args: extra_args,
+                cc: corpus.gcc.then(|| "gcc".to_string()),
                 ..support::RunConfig::default()
             },
         })
@@ -84,34 +114,35 @@ fn run_cases(group: &str, dir: &Path) -> Vec<(String, Result<(), String>)> {
     results
 }
 
-#[test]
-fn gcc_torture_supported_tests_match_c() {
-    let results = run_cases("supported", &supported_root());
+fn assert_supported(corpus: &Corpus) {
+    let results = run_cases(corpus, "supported", &corpus.supported_root());
     let failures: Vec<_> = results
         .into_iter()
         .filter_map(|(name, result)| result.err().map(|e| (name, e)))
         .collect();
     assert!(
         failures.is_empty(),
-        "gcc-torture supported tests failed:\n{}",
+        "{} supported tests failed:\n{}",
+        corpus.dir,
         support::failure_report(&failures)
     );
 }
 
-#[test]
-fn gcc_torture_unsupported_tests_still_fail() {
-    let results = run_cases("unsupported", &unsupported_root());
+fn assert_unsupported_still_fail(corpus: &Corpus) {
+    let results = run_cases(corpus, "unsupported", &corpus.unsupported_root());
     let unexpected_passes: Vec<String> = results
         .into_iter()
         .filter_map(|(name, result)| result.ok().map(|()| name))
         .collect();
     assert!(
         unexpected_passes.is_empty(),
-        "gcc-torture test(s) now pass end-to-end -- promote them:\n{}",
+        "{} test(s) now pass end-to-end -- promote them:\n{}",
+        corpus.dir,
         unexpected_passes
             .iter()
             .map(|name| format!(
-                "  git mv crates/slate/tests/fixtures.gcc-torture.unsupported/{name}.c crates/slate/tests/fixtures.gcc-torture/{name}.c"
+                "  git mv crates/slate/tests/{dir}.unsupported/{name}.c crates/slate/tests/{dir}/{name}.c",
+                dir = corpus.dir
             ))
             .collect::<Vec<_>>()
             .join("\n")
@@ -119,7 +150,34 @@ fn gcc_torture_unsupported_tests_still_fail() {
 }
 
 #[test]
+fn gcc_torture_supported_tests_match_c() {
+    assert_supported(&CLANG);
+}
+
+#[test]
+fn gcc_torture_unsupported_tests_still_fail() {
+    assert_unsupported_still_fail(&CLANG);
+}
+
+#[test]
+fn gcc_torture_gcc_only_supported_tests_match_c() {
+    assert_supported(&GCC_ONLY);
+}
+
+#[test]
+fn gcc_torture_gcc_only_unsupported_tests_still_fail() {
+    assert_unsupported_still_fail(&GCC_ONLY);
+}
+
+#[test]
 #[ignore]
 fn gcc_torture_unsupported_triage_report() {
-    support::print_triage("", &run_cases("unsupported", &unsupported_root()));
+    support::print_triage(
+        "",
+        &run_cases(&CLANG, "unsupported", &CLANG.unsupported_root()),
+    );
+    support::print_triage(
+        "gcc-only ",
+        &run_cases(&GCC_ONLY, "unsupported", &GCC_ONLY.unsupported_root()),
+    );
 }
