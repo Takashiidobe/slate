@@ -735,6 +735,9 @@ impl FunctionLowerer<'_, '_> {
                 place,
                 ordering: None,
             } => {
+                if let Some(lane) = self.lower_lane_read(place)? {
+                    return Ok(lane);
+                }
                 let lowered = match self.bit_field_accessor(place, "get")? {
                     Some((storage, getter)) => Expr::MethodCall {
                         recv: Box::new(storage),
@@ -907,6 +910,7 @@ impl FunctionLowerer<'_, '_> {
                     let decayed = Expr::Cast {
                         expr: Box::new(
                             if self.tables.place_is_static(place)
+                                || self.place_in_packed(place)
                                 || matches!(
                                     self.tables.resolve_type(&place.ty),
                                     ir::Type::Array { length: None, .. }

@@ -86,6 +86,116 @@ impl Tables<'_> {
 }
 
 impl FunctionLowerer<'_, '_> {
+    pub(super) fn place_in_packed(&mut self, place: &ir::Place) -> bool {
+        let PlaceKind::Field { base, .. } = &place.kind else {
+            return false;
+        };
+        if self.lower_type(&base.ty).is_err() {
+            return false;
+        }
+        matches!(
+            self.tables.resolve_type(&base.ty),
+            ir::Type::Defined(id)
+                if matches!(
+                    self.dependencies.records.get(&id.0),
+                    Some(Record::Built(record)) if record.packed.is_some()
+                )
+        ) || self.place_in_packed(base)
+    }
+
+    fn unaligned_lane<'p>(
+        &mut self,
+        place: &'p ir::Place,
+    ) -> Option<(&'p ir::Place, &'p ir::Value)> {
+        let PlaceKind::Lane { base, index } = &place.kind else {
+            return None;
+        };
+        (matches!(base.kind, PlaceKind::Deref(_) | PlaceKind::Index { .. })
+            || self.tables.array_subscript(base).is_some()
+            || self.place_in_packed(base))
+        .then_some((&**base, &**index))
+    }
+
+    pub(super) fn lower_lane_read(&mut self, place: &ir::Place) -> Result<Option<Expr>> {
+        let Some((base, index)) = self.unaligned_lane(place) else {
+            return Ok(None);
+        };
+        let vector = Expr::MethodCall {
+            recv: Box::new(self.lower_address(base, false)?),
+            method: "read_unaligned".into(),
+            args: Vec::new(),
+        };
+        Ok(Some(Expr::Unsafe(Box::new(rust::Block {
+            stmts: Vec::new(),
+            tail: Some(Box::new(Expr::Index {
+                base: Box::new(vector),
+                index: Box::new(Expr::Cast {
+                    expr: Box::new(self.lower_value(index)?),
+                    ty: rust::Type::Prim(Prim::Usize),
+                }),
+            })),
+        }))))
+    }
+
+    pub(super) fn lower_lane_write(
+        &mut self,
+        place: &ir::Place,
+        value: &Expr,
+    ) -> Result<Option<Stmt>> {
+        let Some((base, index)) = self.unaligned_lane(place) else {
+            return Ok(None);
+        };
+        let pointer = self.next_temp();
+        let vector = self.next_temp();
+        let operand = self.next_temp();
+        let index = Expr::Cast {
+            expr: Box::new(self.lower_value(index)?),
+            ty: rust::Type::Prim(Prim::Usize),
+        };
+        let pointer_var = || Expr::Var(pointer.as_str().into());
+        Ok(Some(Stmt::Unsafe {
+            body: rust::Block {
+                stmts: vec![
+                    Stmt::Let {
+                        name: operand.clone(),
+                        mutable: false,
+                        ty: None,
+                        init: Some(value.clone()),
+                    },
+                    Stmt::Let {
+                        name: pointer.clone(),
+                        mutable: false,
+                        ty: None,
+                        init: Some(self.lower_address(base, true)?),
+                    },
+                    Stmt::Let {
+                        name: vector.clone(),
+                        mutable: true,
+                        ty: None,
+                        init: Some(Expr::MethodCall {
+                            recv: Box::new(pointer_var()),
+                            method: "read_unaligned".into(),
+                            args: Vec::new(),
+                        }),
+                    },
+                    Stmt::Assign {
+                        target: Expr::Index {
+                            base: Box::new(Expr::Var(vector.as_str().into())),
+                            index: Box::new(index),
+                        },
+                        value: Expr::Var(operand.as_str().into()),
+                    },
+                    Stmt::Expr(Expr::MethodCall {
+                        recv: Box::new(pointer_var()),
+                        method: "write_unaligned".into(),
+                        args: vec![Expr::Var(vector.as_str().into())],
+                    }),
+                ],
+                tail: None,
+            },
+        }))
+    }
+
     pub(super) fn lower_address(&mut self, place: &ir::Place, mutable: bool) -> Result<Expr> {
         if let Some(address) = self.vla_address(place)? {
             return Ok(address);
