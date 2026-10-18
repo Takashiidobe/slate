@@ -2552,7 +2552,16 @@ impl Lowerer {
                         (test, self.expr(then_value)?, then_value, None)
                     }
                     None => {
-                        let shared = self.expr(condition)?;
+                        let mut shared = self.expr(condition)?;
+                        if shared.value.ty == Type::Bool
+                            && self.types.ir_type(shared.c) != Type::Bool
+                        {
+                            shared.value = self.emit_convert_to(
+                                shared.value,
+                                shared.c,
+                                ConversionReason::Promotion,
+                            )?;
+                        }
                         let id = self.fresh();
                         self.types.entities.declare(id, shared.c, false);
                         let place = Place {

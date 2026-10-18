@@ -810,6 +810,15 @@ impl FunctionLowerer<'_, '_> {
                     })),
                 }))
             }
+            ValueKind::AddressOf(place) | ValueKind::ArrayDecay { place, .. }
+                if let PlaceKind::Field { bits: None, .. } = place.kind
+                    && let Some(offset) = self.tables.null_place_offset(place) =>
+            {
+                Expr::Cast {
+                    expr: Box::new(Expr::Value(rust::RustValue::Usize(offset as usize))),
+                    ty: self.lower_type(&value.ty)?,
+                }
+            }
             ValueKind::AddressOf(place) => match place.kind {
                 PlaceKind::Deref(ref pointer) => self.lower_value(pointer)?,
                 _ => {
@@ -1051,23 +1060,28 @@ impl FunctionLowerer<'_, '_> {
             } => self.lower_overflow(value, *op, left, right, result)?,
             ValueKind::Arith {
                 op, left, right, ..
-            } => Expr::Binary {
-                op: match op {
-                    ir::ArithOp::Add => BinOp::Add,
-                    ir::ArithOp::Sub => BinOp::Sub,
-                    ir::ArithOp::Mul => BinOp::Mul,
-                    ir::ArithOp::Div => BinOp::Div,
-                    ir::ArithOp::Rem => BinOp::Rem,
-                    ir::ArithOp::And => BinOp::BitAnd,
-                    ir::ArithOp::Or => BinOp::BitOr,
-                    ir::ArithOp::Xor => BinOp::BitXor,
-                    ir::ArithOp::Shl => BinOp::Shl,
-                    ir::ArithOp::Shr => BinOp::Shr,
-                    _ => return Err(unsupported_value(value)),
-                },
-                lhs: Box::new(self.lower_value(left)?),
-                rhs: Box::new(self.lower_value(right)?),
-            },
+            } => {
+                if self.tables.may_trip_known_panics(*op, value, right) {
+                    self.dependencies.known_panics = true;
+                }
+                Expr::Binary {
+                    op: match op {
+                        ir::ArithOp::Add => BinOp::Add,
+                        ir::ArithOp::Sub => BinOp::Sub,
+                        ir::ArithOp::Mul => BinOp::Mul,
+                        ir::ArithOp::Div => BinOp::Div,
+                        ir::ArithOp::Rem => BinOp::Rem,
+                        ir::ArithOp::And => BinOp::BitAnd,
+                        ir::ArithOp::Or => BinOp::BitOr,
+                        ir::ArithOp::Xor => BinOp::BitXor,
+                        ir::ArithOp::Shl => BinOp::Shl,
+                        ir::ArithOp::Shr => BinOp::Shr,
+                        _ => return Err(unsupported_value(value)),
+                    },
+                    lhs: Box::new(self.lower_value(left)?),
+                    rhs: Box::new(self.lower_value(right)?),
+                }
+            }
             ValueKind::Unary {
                 op: ir::UnaryArithOp::Neg,
                 operand,
@@ -1217,7 +1231,23 @@ impl FunctionLowerer<'_, '_> {
                     ir::CompareOp::Gt => BinOp::Gt,
                     ir::CompareOp::Ge => BinOp::Ge,
                 },
-                lhs: Box::new(self.lower_value(left)?),
+                lhs: Box::new(
+                    if matches!(left.node.value, ValueKind::FunctionDecay { .. })
+                        && matches!(right.node.value, ValueKind::FunctionDecay { .. })
+                    {
+                        Expr::Block(Box::new(rust::Block {
+                            stmts: vec![Stmt::Let {
+                                name: "__slate_function".into(),
+                                mutable: false,
+                                ty: Some(self.lower_type(&left.ty)?),
+                                init: Some(self.lower_value(left)?),
+                            }],
+                            tail: Some(Box::new(Expr::Var("__slate_function".into()))),
+                        }))
+                    } else {
+                        self.lower_value(left)?
+                    },
+                ),
                 rhs: Box::new(self.lower_value(right)?),
             },
             ValueKind::PointerOffset {

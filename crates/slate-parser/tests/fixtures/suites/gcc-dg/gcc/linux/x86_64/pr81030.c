@@ -88,9 +88,9 @@ int main ()
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:                         body:
 // DEFAULT-NEXT:                             ;
-// DEFAULT-NEXT:                 let %[[VALUE5:[0-9]+]]: bool [synthetic] = logical_or<bool>(ne<i32>(read<i32>(%[[VALUE_c]]), const<i32>(0)), not<bool>(ne<ptr<i32>>(read<ptr<i32>>(%[[VALUE_j]]), null<ptr<i32>>)));
-// DEFAULT-NEXT:                 if ne<i32>(read<bool>(%[[VALUE5]]), const<i32>(0))
-// DEFAULT-NEXT:                     read<bool>(%[[VALUE5]]);
+// DEFAULT-NEXT:                 let %[[VALUE5:[0-9]+]]: i32 [synthetic] = from_bool<i32, reason=promotion>(logical_or<bool>(ne<i32>(read<i32>(%[[VALUE_c]]), const<i32>(0)), not<bool>(ne<ptr<i32>>(read<ptr<i32>>(%[[VALUE_j]]), null<ptr<i32>>))));
+// DEFAULT-NEXT:                 if ne<i32>(read<i32>(%[[VALUE5]]), const<i32>(0))
+// DEFAULT-NEXT:                     read<i32>(%[[VALUE5]]);
 // DEFAULT-NEXT:                 else
 // DEFAULT-NEXT:                     call<void, signature=fn(ptr<const i8>, ptr<const i8>, u32, ptr<const i8>) -> void>(%[[VALUE___assert_fail]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(8)>(%[[VALUE_str]])), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(8)>(%[[VALUE_str_2]])), reinterpret<u32, reason=arg, fits=always>(const<i32>(20)), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%[[VALUE_str_3]])));
 // DEFAULT-NEXT:                 if ne<i32>(read<i32>(%[[VALUE_f]]), const<i32>(0))

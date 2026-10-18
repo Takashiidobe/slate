@@ -210,10 +210,10 @@ fn15 (_Complex volatile int *z)
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(logical_and<bool>(ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%[[VALUE_s]]), conditional<i32>(ne<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0)), read<i32, volatile>(deref(read<ptr<volatile i32>>(%[[VALUE_e]]))), const<i32>(0)))))), const<i32>(0)), ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%[[VALUE_s]]), conditional<i32>(ne<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0)), read<i32, volatile>(deref(read<ptr<volatile i32>>(%[[VALUE_e]]))), const<i32>(0)))))), const<i32>(47))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fn14:[0-9]+]] @fn14() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE10:[0-9]+]]: bool [synthetic] = not<bool>(not<bool>(ne<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0))));
+// DEFAULT-NEXT:         let %[[VALUE10:[0-9]+]]: i32 [synthetic] = from_bool<i32, reason=promotion>(not<bool>(not<bool>(ne<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0)))));
 // DEFAULT-NEXT:         let %[[VALUE11:[0-9]+]]: u32 [synthetic];
-// DEFAULT-NEXT:         if ne<i32>(read<bool>(%[[VALUE10]]), const<i32>(0))
-// DEFAULT-NEXT:             write<u32>(%[[VALUE11]], reinterpret<u32, reason=usual_arith, fits=unknown>(read<bool>(%[[VALUE10]])));
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE10]]), const<i32>(0))
+// DEFAULT-NEXT:             write<u32>(%[[VALUE11]], reinterpret<u32, reason=usual_arith, fits=unknown>(read<i32>(%[[VALUE10]])));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             let %[[VALUE12:[0-9]+]]: u32 [synthetic] = read<u32>(%[[VALUE_u]]);
 // DEFAULT-NEXT:             let %[[VALUE13:[0-9]+]]: u32 [synthetic] = mul<u32, overflow=wrap>(read<u32>(%[[VALUE12]]), reinterpret<u32, reason=usual_arith, fits=unknown>(div<i32, by_zero=ub, min_by_neg_one=ub>(conditional<i32>(ne<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0)), read<i32, volatile>(deref(read<ptr<volatile i32>>(%[[VALUE_e]]))), const<i32>(0)), const<i32>(0))));

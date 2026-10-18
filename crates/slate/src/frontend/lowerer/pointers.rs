@@ -15,7 +15,7 @@ impl Tables<'_> {
         }
     }
 
-    fn null_place_offset(&self, place: &ir::Place) -> Option<u64> {
+    pub(super) fn null_place_offset(&self, place: &ir::Place) -> Option<u64> {
         match &place.kind {
             PlaceKind::Deref(pointer) => self.null_address_offset(pointer),
             PlaceKind::Field {

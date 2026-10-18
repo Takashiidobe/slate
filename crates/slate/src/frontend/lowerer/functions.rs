@@ -201,6 +201,9 @@ impl FunctionLowerer<'_, '_> {
             .builtin_library(function.value.id)
             .map(str::to_owned)
             .or_else(|| ifunc_symbol(function))
+            .or_else(|| {
+                (function_rust_name(function) != function.name).then(|| function.name.clone())
+            })
             .map(Attr::LinkName)
             .into_iter()
             .collect();

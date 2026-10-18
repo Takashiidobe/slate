@@ -98,6 +98,7 @@ struct Dependencies {
     atomic_volatile: bool,
     asm_unwind: bool,
     long_const_eval: bool,
+    known_panics: bool,
     huge_stack: bool,
     asm_goto_with_outputs: bool,
     asm_strings: BTreeMap<u32, Item>,
@@ -220,7 +221,7 @@ pub(crate) fn function_rust_name(function: &ir::Function) -> String {
     if function.name == "main" {
         "__slate_main".into()
     } else {
-        function.name.clone()
+        path_keyword_free(&function.name)
     }
 }
 
@@ -685,6 +686,8 @@ impl<'m> ModuleLowerer<'m> {
                         && !function_is_variadic(function)
                     {
                         long_double_export_name(&function.name, &definition).map(Attr::ExportName)
+                    } else if definition.name != function.name {
+                        Ok(Attr::ExportName(function.name.clone()))
                     } else {
                         Ok(Attr::NoMangle)
                     };
@@ -832,6 +835,12 @@ impl<'m> ModuleLowerer<'m> {
         if dependencies.long_const_eval {
             features.push(rust::CrateAttr::Allow(vec![
                 rust::Lint::LongRunningConstEval,
+            ]));
+        }
+        if dependencies.known_panics {
+            features.push(rust::CrateAttr::Allow(vec![
+                rust::Lint::ArithmeticOverflow,
+                rust::Lint::UnconditionalPanic,
             ]));
         }
         if dependencies.x86_interrupt {

@@ -385,4 +385,48 @@ impl Tables<'_> {
             ((raw as u128) << shift >> shift) as i128
         })
     }
+
+    pub(super) fn may_trip_known_panics(
+        &self,
+        op: ir::ArithOp,
+        value: &ir::Value,
+        right: &ir::Value,
+    ) -> bool {
+        let ir::Type::Numeric(ir::NumericType::Integer { width, .. }) =
+            *self.resolve_type(&value.ty)
+        else {
+            return false;
+        };
+        match op {
+            ir::ArithOp::Shl | ir::ArithOp::Shr => self
+                .fold_integer(right)
+                .is_some_and(|count| !(0..i128::from(width)).contains(&count)),
+            ir::ArithOp::Div | ir::ArithOp::Rem => {
+                self.fold_integer(right).is_none_or(|divisor| divisor == 0)
+                    && self.locally_propagated(right)
+            }
+            _ => false,
+        }
+    }
+
+    fn locally_propagated(&self, value: &ir::Value) -> bool {
+        match &value.node.value {
+            ValueKind::Constant(_) => true,
+            ValueKind::Read {
+                place:
+                    place @ ir::Place {
+                        kind: PlaceKind::Binding(_),
+                        ..
+                    },
+                ordering: None,
+            } => !self.place_is_unsafe(place),
+            ValueKind::Convert { operand, .. } | ValueKind::Unary { operand, .. } => {
+                self.locally_propagated(operand)
+            }
+            ValueKind::Arith { left, right, .. } => {
+                self.locally_propagated(left) && self.locally_propagated(right)
+            }
+            _ => false,
+        }
+    }
 }
