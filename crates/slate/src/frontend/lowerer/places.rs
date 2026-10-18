@@ -58,7 +58,9 @@ impl Tables<'_> {
             return self.place_is_unsafe(array);
         }
         match &place.kind {
-            PlaceKind::Deref(_) | PlaceKind::CompoundLiteral { .. } => true,
+            PlaceKind::Deref(_)
+            | PlaceKind::CompoundLiteral { .. }
+            | PlaceKind::Temporary { .. } => true,
             PlaceKind::Binding(_) if self.variably_modified(&place.ty) => true,
             PlaceKind::Lane { base, .. } | PlaceKind::ComplexPart { base, .. } => {
                 self.place_is_unsafe(base)
@@ -362,6 +364,10 @@ impl FunctionLowerer<'_, '_> {
                 alignment: None,
                 ref initializer,
             } => self.lower_compound_literal(object, storage, initializer),
+            PlaceKind::Temporary {
+                object,
+                ref initializer,
+            } => self.lower_compound_literal(object, ir::StorageDuration::Automatic, initializer),
             _ => Err(Construct::Place {
                 ir: place.to_string(),
             }

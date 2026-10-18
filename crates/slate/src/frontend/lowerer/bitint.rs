@@ -760,7 +760,9 @@ impl FunctionLowerer<'_, '_> {
         };
         if let Some(ir::NumericType::Integer { signed, .. }) = self.tables.vector_element(&value.ty)
         {
-            self.lower_type(&value.ty)?;
+            if vectors::is_slate_vector(&self.lower_type(&value.ty)?) {
+                return Err(unsupported_value(value));
+            }
             return Ok(Expr::Call {
                 func: Box::new(Expr::Var(
                     format!(

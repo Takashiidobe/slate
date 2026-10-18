@@ -9,6 +9,8 @@ bitint_ops
 bitint_shift
 bitint_shift_widths
 bitint_va_wide
+builtin_powi
+c11
 c23_stdlib_memory_management
 float128
 goto_into_later_switch_case_bitint

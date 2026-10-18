@@ -805,9 +805,9 @@ impl FunctionLowerer<'_, '_> {
                 operand,
                 ..
             } => {
-                self.lower_type(&value.ty)?;
+                let ty = self.lower_type(&value.ty)?;
                 Expr::Call {
-                    func: Box::new(Expr::Var("std::simd::Simd::splat".into())),
+                    func: Box::new(vectors::vector_constructor(&ty, "splat")),
                     args: vec![self.lower_value(operand)?],
                     binding: CallBinding::Generated,
                 }
@@ -1592,13 +1592,13 @@ impl FunctionLowerer<'_, '_> {
             })
         };
         if let ir::Type::Vector { element, lanes } = self.tables.resolve_type(ty) {
-            self.lower_type(ty)?;
+            let vector = self.lower_type(ty)?;
             let array = ir::Type::Array {
                 element: Box::new(ir::Type::Numeric(*element)),
                 length: Some((*lanes).into()),
             };
             return Ok(Expr::Call {
-                func: Box::new(Expr::Var("std::simd::Simd::from_array".into())),
+                func: Box::new(vectors::vector_constructor(&vector, "from_array")),
                 args: vec![self.lower_aggregate(&array, members, zero_fill)?],
                 binding: CallBinding::Generated,
             });
@@ -1606,7 +1606,10 @@ impl FunctionLowerer<'_, '_> {
         let lowered_ty = self.lower_type(ty)?;
         let fields = self.tables.record_fields(ty);
         let resolved = self.tables.resolve_type(ty);
-        if fields.is_none() && !matches!(resolved, ir::Type::Array { .. }) {
+        if fields.is_none()
+            && !matches!(resolved, ir::Type::Array { .. })
+            && !(zero_fill && members.is_empty())
+        {
             return Err(unsupported());
         }
         let field_name = |index: usize| {
@@ -1682,7 +1685,51 @@ impl FunctionLowerer<'_, '_> {
                     base: Box::new(Expr::Var(target.as_str().into())),
                     index: Box::new(Expr::Value(rust::RustValue::U128(index.into()))),
                 },
-                ir::AggregateTarget::Range { .. } => return Err(unsupported()),
+                ir::AggregateTarget::Range { start, end } => {
+                    let element = self.next_temp();
+                    let index = self.next_temp();
+                    let position = || Expr::Var(index.as_str().into());
+                    stmts.extend([
+                        Stmt::Let {
+                            name: element.clone(),
+                            mutable: false,
+                            ty: None,
+                            init: Some(self.lower_value(&member.value)?),
+                        },
+                        Stmt::Let {
+                            name: index.clone(),
+                            mutable: true,
+                            ty: Some(rust::Type::Prim(Prim::Usize)),
+                            init: Some(Expr::Value(rust::RustValue::U128(start.into()))),
+                        },
+                        Stmt::While {
+                            label: None,
+                            cond: Expr::Binary {
+                                op: BinOp::Le,
+                                lhs: Box::new(position()),
+                                rhs: Box::new(Expr::Value(rust::RustValue::U128(end.into()))),
+                            },
+                            body: rust::Block {
+                                stmts: vec![
+                                    Stmt::Assign {
+                                        target: Expr::Index {
+                                            base: Box::new(Expr::Var(target.as_str().into())),
+                                            index: Box::new(position()),
+                                        },
+                                        value: Expr::Var(element.as_str().into()),
+                                    },
+                                    Stmt::CompoundAssign {
+                                        target: position(),
+                                        op: BinOp::Add,
+                                        value: Expr::Value(rust::RustValue::U128(1)),
+                                    },
+                                ],
+                                tail: None,
+                            },
+                        },
+                    ]);
+                    continue;
+                }
             };
             stmts.push(Stmt::Assign {
                 target: place,

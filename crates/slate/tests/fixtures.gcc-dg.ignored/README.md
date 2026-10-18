@@ -7,6 +7,9 @@ what they test.
 - `torture__pr68264`: expects `sqrt` of a negative number to set `errno`. The
   Rust link resolves `sqrt` to compiler_builtins' errno-less copy before it
   reaches glibc's libm.
+- `torture__builtin-fp-int-inexact-c23`: expects `round` and `roundf` not to
+  raise `FE_INEXACT`. Like `sqrt` above, they link to compiler_builtins'
+  copies, which raise it, so the result depends on the compiler runtime.
 - `c2y-if-decls-6`: the clang oracle (23.1) rejects C2y selection-statement
   declarations. `fixtures/c2y_if_declarations.c` covers the lowering with a
   recorded `.expected`.

@@ -696,12 +696,18 @@ impl FunctionLowerer<'_, '_> {
                 });
             }
             ir::Type::Vector { element, lanes } => {
-                let ty = intrinsics::simd_type(
-                    self.lower_type(&ir::Type::Numeric(*element))?,
-                    (*lanes).into(),
-                )
-                .ok_or_else(|| unsupported_type(ty))?;
-                self.dependencies.simd = true;
+                let lane = self.lower_type(&ir::Type::Numeric(*element))?;
+                if let Some(simd) = intrinsics::simd_type(lane.clone(), (*lanes).into()) {
+                    self.dependencies.simd = true;
+                    return Ok(simd);
+                }
+                let (_, alignment) = self
+                    .tables
+                    .storage_of(ty)
+                    .ok_or_else(|| unsupported_type(ty))?;
+                let ty = vectors::slate_vector_type(lane, (*lanes).into(), alignment)
+                    .ok_or_else(|| unsupported_type(ty))?;
+                self.dependencies.slate_vector = true;
                 return Ok(ty);
             }
             ir::Type::VaList => return Ok(rust::Type::VaList),

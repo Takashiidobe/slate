@@ -675,6 +675,11 @@ impl TargetInfo {
             let rounded = bytes.next_power_of_two();
             let alignment =
                 u32::try_from(rounded).map_err(|_| LayoutError::UnsupportedScalar(ty.clone()))?;
+            let alignment = match self.family {
+                TargetFamily::AArch64 => alignment.min(16),
+                TargetFamily::Arm32 => alignment.min(8),
+                TargetFamily::X86 | TargetFamily::X86_64 => alignment,
+            };
             return Ok(StorageLayout {
                 size_bytes: rounded,
                 alignment_bytes: alignment,

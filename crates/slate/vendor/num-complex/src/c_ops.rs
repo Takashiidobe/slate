@@ -88,7 +88,7 @@ macro_rules! float_ops {
                     b = unit(b);
                     x = $t::INFINITY * (a * c + b * d);
                     y = $t::INFINITY * (b * c - a * d);
-                } else if logbw.is_infinite() && a.is_finite() && b.is_finite() {
+                } else if logbw.is_infinite() && logbw > 0.0 && a.is_finite() && b.is_finite() {
                     c = unit(c);
                     d = unit(d);
                     x = 0.0 * (a * c + b * d);

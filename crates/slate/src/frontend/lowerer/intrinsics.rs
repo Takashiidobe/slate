@@ -1,6 +1,6 @@
 use super::*;
 use intrinsics_table::{IntrinsicSignature, StdarchOverride};
-use slate_parser::target_info::TargetFamily;
+use slate_parser::target_info::{LongDoubleFormat, TargetFamily};
 use std::hash::{Hash, Hasher};
 
 pub(super) fn builtin_intrinsic(
@@ -21,9 +21,20 @@ pub(super) fn builtin_intrinsic(
         "__builtin_copysign" | "__builtin_copysignf" | "__builtin_copysignl" => {
             Some("llvm.copysign")
         }
+        "__builtin_powi" | "__builtin_powif" => Some("llvm.powi"),
         "__builtin_bswap16" | "__builtin_bswap32" | "__builtin_bswap64" => Some("llvm.bswap"),
         "__builtin_frame_address" => Some("llvm.frameaddress"),
         "__builtin_return_address" => Some("llvm.returnaddress"),
+        name if module.target.long_double != LongDoubleFormat::Binary128 => match name {
+            "__builtin_powil" => Some("llvm.powi"),
+            "__builtin_ceill" => Some("llvm.ceil"),
+            "__builtin_floorl" => Some("llvm.floor"),
+            "__builtin_truncl" => Some("llvm.trunc"),
+            "__builtin_roundl" => Some("llvm.round"),
+            "__builtin_rintl" => Some("llvm.rint"),
+            "__builtin_nearbyintl" => Some("llvm.nearbyint"),
+            _ => None,
+        },
         _ => None,
     };
     catalog(module.target.family).find(|intrinsic| {

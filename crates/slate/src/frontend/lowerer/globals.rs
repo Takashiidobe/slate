@@ -114,6 +114,7 @@ impl Tables<'_> {
             } if let Some(initializer) = self.constexprs.get(id) => {
                 self.is_constant_initializer(initializer)
             }
+            ValueKind::Copy { operand, .. } => self.is_constant_initializer(operand),
             ValueKind::ArrayDecay { place, .. } | ValueKind::AddressOf(place) => {
                 self.is_constant_address(place)
             }
@@ -142,6 +143,11 @@ impl Tables<'_> {
             ValueKind::Aggregate { members, .. } => members
                 .iter()
                 .all(|member| self.is_constant_initializer(&member.value)),
+            ValueKind::Arith { .. } | ValueKind::Unary { .. }
+                if self.complex_float_kind(&value.ty).is_some() =>
+            {
+                self.fold_complex_bits(value).is_some()
+            }
             ValueKind::Unary { operand, .. } => {
                 if self.is_long_double(&value.ty) {
                     self.fold_long_double(value).is_some()

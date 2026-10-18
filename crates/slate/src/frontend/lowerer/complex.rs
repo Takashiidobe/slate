@@ -67,7 +67,7 @@ fn parts_block(stmts: Vec<Stmt>, re: Expr, im: Expr) -> Expr {
 }
 
 impl FunctionLowerer<'_, '_> {
-    fn bind(&mut self, stmts: &mut Vec<Stmt>, init: Expr) -> Expr {
+    pub(super) fn bind(&mut self, stmts: &mut Vec<Stmt>, init: Expr) -> Expr {
         let temp = self.next_temp();
         stmts.push(Stmt::Let {
             name: temp.clone(),
@@ -185,14 +185,18 @@ impl FunctionLowerer<'_, '_> {
 
     pub(super) fn lower_complex_value(&mut self, value: &ir::Value) -> Result<Option<Expr>> {
         match &value.node.value {
-            ValueKind::Convert { .. }
+            ValueKind::Convert { .. } | ValueKind::Arith { .. } | ValueKind::Unary { .. }
                 if self.in_static_initializer
-                    && let Some([re, im]) = self.tables.fold_complex_long_double(value) =>
+                    && (!matches!(value.node.value, ValueKind::Convert { .. })
+                        || self.tables.is_complex_long_double(&value.ty))
+                    && let Some(component) = self.complex_component(&value.ty)
+                    && let Some([re, im]) = self.tables.fold_complex_bits(value) =>
             {
                 self.lower_type(&value.ty)?;
+                let ty = ir::Type::Numeric(component);
                 Ok(Some(complex_literal(
-                    long_double_literal(re),
-                    long_double_literal(im),
+                    self.lower_number(&ir::Number::FloatBits(re), &ty)?,
+                    self.lower_number(&ir::Number::FloatBits(im), &ty)?,
                 )))
             }
             ValueKind::Aggregate { members, .. } if self.complex_component(&value.ty).is_some() => {

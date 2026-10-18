@@ -19,6 +19,7 @@ mod complex;
 mod control_flow;
 mod errors;
 mod f80;
+mod float_fold;
 mod functions;
 mod globals;
 mod intrinsics;
@@ -100,6 +101,7 @@ struct Dependencies {
     asm_goto_with_outputs: bool,
     asm_strings: BTreeMap<u32, Item>,
     libatomic: bool,
+    slate_vector: bool,
     long_double: bool,
     complex_long_double: bool,
     f16: bool,
@@ -830,6 +832,16 @@ impl<'m> ModuleLowerer<'m> {
                 Item::SupportModule(rust::SupportModule {
                     name: "__slate_libgcc".into(),
                     source: include_str!("support/libgcc.rs").into(),
+                    exports: Vec::new(),
+                }),
+            );
+        }
+        if dependencies.slate_vector {
+            items.insert(
+                0,
+                Item::SupportModule(rust::SupportModule {
+                    name: "__slate_vector".into(),
+                    source: include_str!("support/vector.rs").into(),
                     exports: Vec::new(),
                 }),
             );
