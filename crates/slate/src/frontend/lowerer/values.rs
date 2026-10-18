@@ -126,7 +126,10 @@ pub(super) fn open_coded_builtin(builtin: &str) -> bool {
         || is_stdc_bit(builtin)
         || matches!(
             builtin,
-            "__builtin_elementwise_add_sat" | "__builtin_elementwise_sub_sat"
+            "__builtin_elementwise_add_sat"
+                | "__builtin_elementwise_sub_sat"
+                | "__builtin_setjmp"
+                | "__builtin_longjmp"
         )
 }
 
