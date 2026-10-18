@@ -21,12 +21,11 @@ pub(super) fn builtin_intrinsic(
         "__builtin_copysign" | "__builtin_copysignf" | "__builtin_copysignl" => {
             Some("llvm.copysign")
         }
-        "__builtin_powi" | "__builtin_powif" => Some("llvm.powi"),
+        "__builtin_powi" | "__builtin_powif" | "__builtin_powil" => Some("llvm.powi"),
         "__builtin_bswap16" | "__builtin_bswap32" | "__builtin_bswap64" => Some("llvm.bswap"),
         "__builtin_frame_address" => Some("llvm.frameaddress"),
         "__builtin_return_address" => Some("llvm.returnaddress"),
         name if module.target.long_double != LongDoubleFormat::Binary128 => match name {
-            "__builtin_powil" => Some("llvm.powi"),
             "__builtin_ceill" => Some("llvm.ceil"),
             "__builtin_floorl" => Some("llvm.floor"),
             "__builtin_truncl" => Some("llvm.trunc"),
@@ -136,6 +135,7 @@ fn mangle_llvm_type(ty: &rust::Type) -> Option<String> {
             rust::Type::Prim(Prim::I128 | Prim::U128) => "i128",
             rust::Type::Prim(Prim::F32) => "f32",
             rust::Type::Prim(Prim::F64) => "f64",
+            rust::Type::Prim(Prim::F128) => "f128",
             rust::Type::Ptr { .. } => "p0",
             _ => return None,
         }
@@ -157,7 +157,10 @@ fn resolve_llvm_type(name: &str, overloads: &[rust::Type]) -> Option<rust::Type>
             || match element_constraint {
                 "any" => false,
                 "int" => !mangle_llvm_type(element)?.starts_with('i'),
-                "float" => !matches!(element, rust::Type::Prim(Prim::F32 | Prim::F64)),
+                "float" => !matches!(
+                    element,
+                    rust::Type::Prim(Prim::F32 | Prim::F64 | Prim::F128)
+                ),
                 "ptr" => !matches!(element, rust::Type::Ptr { .. }),
                 _ => true,
             }

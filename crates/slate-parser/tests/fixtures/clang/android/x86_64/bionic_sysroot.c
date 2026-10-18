@@ -1,6 +1,7 @@
 // SLATE-FILECHECK-DEFINES IR
 // SLATE-FILECHECK-ARGS --dump-ir
 #define __ASSEMBLY__ 1
+#define __ASSEMBLER__ 1
 #include <sys/cdefs.h>
 
 #ifndef __BIONIC__

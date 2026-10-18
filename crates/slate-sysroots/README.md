@@ -117,8 +117,9 @@ Each target has its own sysroot. Every target below supports `install`,
 - `armv7-unknown-linux-gnueabi`
 - `armv7-unknown-linux-gnueabihf`
 
-Installs pinned Debian cross packages. aarch64 and armel use Bookworm's
-glibc 2.36; x86_64, i686, and armhf use Sid's glibc 2.43. Headers retain the
+Installs pinned Debian Sid cross packages (glibc 2.43, Linux UAPI headers
+7.2.11) from a fixed snapshot.debian.org timestamp, so the pins keep resolving
+after Sid moves on. Headers retain the
 `usr/<Debian triplet>/include` layout. i686 uses i386 packages, and the armv7
 targets use armel and armhf respectively.
 
@@ -142,7 +143,7 @@ archives.
 - `x86_64-linux-android`
 - `aarch64-linux-android`
 
-Downloads Google's NDK r27d Linux ZIP, verifies its SHA-256, and extracts only
+Downloads Google's NDK r30 Linux ZIP, verifies its SHA-256, and extracts only
 Bionic headers and the NDK notice for the selected architecture. The same
 archive supplies headers on Linux, macOS, and Windows hosts.
 

@@ -6,8 +6,8 @@ use std::io;
 use std::path::{Path, PathBuf};
 use xz2::read::XzDecoder;
 
-const RELEASE: &str = "20260430";
-const BASE_URL: &str = "https://github.com/cross-tools/musl-cross/releases/download/20260430";
+const RELEASE: &str = "20261001";
+const BASE_URL: &str = "https://github.com/cross-tools/musl-cross/releases/download/20261001";
 
 pub(crate) fn install(paths: &Paths, target: Target) -> io::Result<PathBuf> {
     install_staged(
@@ -90,10 +90,10 @@ fn arch(target: Target) -> &'static str {
 fn sha256(target: Target) -> &'static str {
     match target {
         Target::X86_64UnknownLinuxMusl => {
-            "2495cfe18fc1f406d5cab93d902176af75a78f0ae93137f3e8b2df7708ec32fa"
+            "faeaf3c7c377cb4351490988d9a1c8fed7d403a5b8066e5103af5d4dd96450fe"
         }
         Target::Aarch64UnknownLinuxMusl => {
-            "9303385fc29f8197004f641f96382196d56e4ec6dd975bff8ddd66641378628d"
+            "7bf54ef24ecbca3f418e6b74ddc055e3a23b2cbf31ffc0b9a25775189df344ad"
         }
         _ => unreachable!("musl module received a non-musl target"),
     }

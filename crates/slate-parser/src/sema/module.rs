@@ -877,6 +877,15 @@ impl Lowerer {
                     request.alignment,
                 )
                 .map_err(|error| error.checked().at(loc))?;
+            if global.variable.access.atomic
+                && let Some(atomic) = self
+                    .types
+                    .atomic_object_alignment(&global.variable.ty)
+                    .map_err(|error| error.checked().at(loc))?
+            {
+                global.variable.alignment =
+                    Some(global.variable.alignment.map_or(atomic, |alignment| alignment.max(atomic)));
+            }
             let symbol = &global.symbol;
             let tentative = global.definition
                 && global.variable.initializer.is_none()

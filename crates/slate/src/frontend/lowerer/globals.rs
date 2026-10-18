@@ -243,7 +243,9 @@ impl FunctionLowerer<'_, '_> {
         };
         if matches!(variable.storage, ir::StorageDuration::Automatic)
             || (variable.alignment.is_some() && tables.storage_of(&variable.ty).is_none())
-            || (variable.access.atomic && !tables.atomic_unpadded(&variable.ty))
+            || (variable.access.atomic
+                && !tables.atomic_unpadded(&variable.ty)
+                && !tables.target.triple.contains("linux"))
             || symbol != ir::SymbolAttributes::default()
         {
             return Err(Construct::Global {

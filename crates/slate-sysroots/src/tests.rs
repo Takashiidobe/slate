@@ -335,12 +335,12 @@ fn android_targets_copy_only_their_architecture_headers() {
     let mut zip = zip::ZipWriter::new(fs::File::create(&archive).unwrap());
     let options =
         zip::write::SimpleFileOptions::default().compression_method(zip::CompressionMethod::Stored);
-    zip.start_file("android-ndk-r27d/source.properties", options)
+    zip.start_file("android-ndk-r30/source.properties", options)
         .unwrap();
-    zip.write_all(b"Pkg.Revision = 27.3.13750724\n").unwrap();
-    zip.start_file("android-ndk-r27d/NOTICE", options).unwrap();
+    zip.write_all(b"Pkg.Revision = 30.0.16248370\n").unwrap();
+    zip.start_file("android-ndk-r30/NOTICE", options).unwrap();
     zip.write_all(b"license").unwrap();
-    let prefix = "android-ndk-r27d/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include";
+    let prefix = "android-ndk-r30/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include";
     for name in ["stdio.h", "stdlib.h"] {
         zip.start_file(format!("{prefix}/{name}"), options).unwrap();
         zip.write_all(b"header").unwrap();

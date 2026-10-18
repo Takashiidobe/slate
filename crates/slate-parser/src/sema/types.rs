@@ -3458,6 +3458,15 @@ impl TypeResolver {
         }
     }
 
+    pub(super) fn atomic_object_alignment(&self, ty: &Type) -> Result<Option<u64>, ResolveError> {
+        let natural = self.qualified_storage(ty.clone(), false)?;
+        let atomic = self.qualified_storage(ty.clone(), true)?;
+        let alignment = u64::from(atomic.alignment_bytes);
+        Ok((alignment > u64::from(natural.alignment_bytes)
+            && atomic.size_bytes == natural.size_bytes.max(1).next_multiple_of(alignment))
+        .then_some(alignment))
+    }
+
     pub(super) fn effective_alignment(&self, requested: u64, natural: u64) -> u64 {
         if matches!(self.dialect.flavor(), CompilerFlavor::Clang) {
             requested

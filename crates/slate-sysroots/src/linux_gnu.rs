@@ -6,9 +6,13 @@ use std::io;
 use std::path::{Path, PathBuf};
 use xz2::read::XzDecoder;
 
-const BASE_URL: &str = "https://deb.debian.org/debian/pool/main/c/cross-toolchain-base";
+const SNAPSHOT: &str = "https://snapshot.debian.org/archive/debian/20261015T205142Z/pool/main";
+const GLIBC_POOL: &str = "c/cross-toolchain-base";
+const GLIBC_PORTS_POOL: &str = "c/cross-toolchain-base-ports";
+const LINUX_POOL: &str = "l/linux";
 
 struct Package {
+    pool: &'static str,
     filename: &'static str,
     sha256: &'static str,
 }
@@ -18,111 +22,137 @@ struct Release {
     glibc: &'static str,
     linux_headers: &'static str,
     debian: &'static str,
-    packages: [Package; 3],
+    packages: [Package; 4],
 }
+
+const LINUX_UAPI: Package = Package {
+    pool: LINUX_POOL,
+    filename: "linux-libc-dev_7.2.11-1_all.deb",
+    sha256: "816dffbb6bbce8e125c0c8ffa526f3e16433e1e926363f297a24208d124d9923",
+};
 
 const X86_64: Release = Release {
     triplet: "x86_64-linux-gnu",
     glibc: "2.43-3",
-    linux_headers: "6.12.38-1",
+    linux_headers: "7.2.11-1",
     debian: "Debian Sid",
     packages: [
         Package {
+            pool: GLIBC_POOL,
             filename: "libc6-amd64-cross_2.43-3cross8_all.deb",
             sha256: "902d11748eb83e0f3dea4377f1e59af18fafa34c7de56b61b7a0bc9972f724fb",
         },
         Package {
+            pool: GLIBC_POOL,
             filename: "libc6-dev-amd64-cross_2.43-3cross8_all.deb",
             sha256: "377d11965ef7b26dc279fdb9b91271916a73a47754a1a7037b01e1bd4be1228f",
         },
         Package {
-            filename: "linux-libc-dev-amd64-cross_6.12.38-1cross1_all.deb",
-            sha256: "da463ddd3ee96b37c33f16da99c47b03b4e514888d3d853e73253ee73bd0d7d8",
+            pool: LINUX_POOL,
+            filename: "linux-libc-dev-amd64-cross_7.2.11-1_all.deb",
+            sha256: "49b4c084c0bc41133171ee46ffcc62148469c5836f68e4784899a7f884394a1f",
         },
+        LINUX_UAPI,
     ],
 };
 
 const AARCH64: Release = Release {
     triplet: "aarch64-linux-gnu",
-    glibc: "2.36-8",
-    linux_headers: "6.1.4-1",
-    debian: "Debian Bookworm",
+    glibc: "2.43-3",
+    linux_headers: "7.2.11-1",
+    debian: "Debian Sid",
     packages: [
         Package {
-            filename: "libc6-arm64-cross_2.36-8cross1_all.deb",
-            sha256: "91936cbbee75771c360ed16513f6e734a25ca5517fe7c3e13dfd7835d7553186",
+            pool: GLIBC_POOL,
+            filename: "libc6-arm64-cross_2.43-3cross8_all.deb",
+            sha256: "1192c1a3de7c48169235ff137c6b6f81ad7af93b0f26b48fbe39b8030388c43a",
         },
         Package {
-            filename: "libc6-dev-arm64-cross_2.36-8cross1_all.deb",
-            sha256: "5e4cf6abf0e89e89c4b3006bb8b7dc47aa831df25d94df9134929b8b968cacb4",
+            pool: GLIBC_POOL,
+            filename: "libc6-dev-arm64-cross_2.43-3cross8_all.deb",
+            sha256: "f0bb4dc323b0d493cf992df554acfbd47046681a328e105c9bb4707a637c9640",
         },
         Package {
-            filename: "linux-libc-dev-arm64-cross_6.1.4-1cross1_all.deb",
-            sha256: "66457f015d16b7d372db6591cff38db0da928362ff2ea1fa75491e28f6904d81",
+            pool: LINUX_POOL,
+            filename: "linux-libc-dev-arm64-cross_7.2.11-1_all.deb",
+            sha256: "1169821349e46159a1c2687bf2422bcfb057e7c80739587fb71e1b9e960820bd",
         },
+        LINUX_UAPI,
     ],
 };
 
 const I686: Release = Release {
     triplet: "i686-linux-gnu",
     glibc: "2.43-3",
-    linux_headers: "6.12.38-1",
+    linux_headers: "7.2.11-1",
     debian: "Debian Sid",
     packages: [
         Package {
+            pool: GLIBC_POOL,
             filename: "libc6-i386-cross_2.43-3cross8_all.deb",
             sha256: "3aa5c2c33d9ab1f6e2f0b2cc0e5f932cd942da810cba97c8e6fca43f625e5435",
         },
         Package {
+            pool: GLIBC_POOL,
             filename: "libc6-dev-i386-cross_2.43-3cross8_all.deb",
             sha256: "0fbf0c61f7a7dfe6e6c96238936edac05262256256275bdc55faf6f8a7575e12",
         },
         Package {
-            filename: "linux-libc-dev-i386-cross_6.12.38-1cross1_all.deb",
-            sha256: "6375cf48f33a25df794c26fe5a4ab0edddf9284d57867a82ed5ad846c2e7a1c5",
+            pool: LINUX_POOL,
+            filename: "linux-libc-dev-i386-cross_7.2.11-1_all.deb",
+            sha256: "12a2d8558833b4cb2b5febe9ad8431581c72735075e8bcd924a535225e02077b",
         },
+        LINUX_UAPI,
     ],
 };
 
 const ARMEL: Release = Release {
     triplet: "arm-linux-gnueabi",
-    glibc: "2.36-8",
-    linux_headers: "6.1.4-1",
-    debian: "Debian Bookworm",
+    glibc: "2.43-3",
+    linux_headers: "7.2.11-1",
+    debian: "Debian Sid",
     packages: [
         Package {
-            filename: "libc6-armel-cross_2.36-8cross1_all.deb",
-            sha256: "1f263368de455d680381c6665956770e63f7646084cc4d8393750e23475dde13",
+            pool: GLIBC_PORTS_POOL,
+            filename: "libc6-armel-cross_2.43-3cross8_all.deb",
+            sha256: "eea89767b5e390a53a33a3f2856f1c9ddc4817b958c2fac065f1bea49a00b2f6",
         },
         Package {
-            filename: "libc6-dev-armel-cross_2.36-8cross1_all.deb",
-            sha256: "c0f6385b372dcdcbd6c4b1628cc3c41c4d114d591665b763f62e33947d032117",
+            pool: GLIBC_PORTS_POOL,
+            filename: "libc6-dev-armel-cross_2.43-3cross8_all.deb",
+            sha256: "7b255b73e3846ecdd37cbd2a4d09c3070d90bc6831c1ff37fcadde7b2b0a2d8f",
         },
         Package {
-            filename: "linux-libc-dev-armel-cross_6.1.4-1cross1_all.deb",
-            sha256: "b62b393dbc326f7d45571cfb11ae96863af6640269212b9bdb28a86b7fe05809",
+            pool: LINUX_POOL,
+            filename: "linux-libc-dev-armel-cross_7.2.11-1_all.deb",
+            sha256: "6a39635d70750d2641ac1adafcc4fe98494eb39467fe61f4dbe4eb0b90e38f59",
         },
+        LINUX_UAPI,
     ],
 };
 
 const ARMHF: Release = Release {
     triplet: "arm-linux-gnueabihf",
     glibc: "2.43-3",
-    linux_headers: "6.12.38-1",
+    linux_headers: "7.2.11-1",
     debian: "Debian Sid",
     packages: [
         Package {
+            pool: GLIBC_POOL,
             filename: "libc6-armhf-cross_2.43-3cross8_all.deb",
             sha256: "41e24b4b2a9507688a95493f2024cbd1baeca4003db3da6d203843414cae2d34",
         },
         Package {
+            pool: GLIBC_POOL,
             filename: "libc6-dev-armhf-cross_2.43-3cross8_all.deb",
             sha256: "74f89d7ce010f6889df318d178ac9ffd81b227af3013554ba8810f6ff312de26",
         },
         Package {
-            filename: "linux-libc-dev-armhf-cross_6.12.38-1cross1_all.deb",
-            sha256: "bf6fa2d938e493a84c34086219b3e3e391aba885d4fb349022eda9fdafa36272",
+            pool: LINUX_POOL,
+            filename: "linux-libc-dev-armhf-cross_7.2.11-1_all.deb",
+            sha256: "72728621e4b4d58b8fab2c01bccd999a5d1f0b7d2dd3fce098e43f6c323461ff",
         },
+        LINUX_UAPI,
     ],
 };
 
@@ -147,14 +177,14 @@ pub(crate) fn install(paths: &Paths, target: Target) -> io::Result<PathBuf> {
             let release = release(target);
             let cache = paths.cache.join("linux/debian");
             for package in &release.packages {
-                let url = format!("{BASE_URL}/{}", package.filename);
+                let url = format!("{SNAPSHOT}/{}/{}", package.pool, package.filename);
                 let archive = fetch(&cache, package.filename, &url, package.sha256)?;
                 extract_deb_data(&archive, root)?;
             }
             fs::write(
                 root.join("SYSROOT-MANIFEST.txt"),
                 format!(
-                    "Target: {}\nLibc: glibc {} (Debian cross-toolchain-base)\nLinux UAPI headers: {}\nSource: {} cross-toolchain-base packages\nPackages:\n{}",
+                    "Target: {}\nLibc: glibc {} (Debian cross-toolchain-base)\nLinux UAPI headers: {}\nSource: {} packages from {SNAPSHOT}\nPackages:\n{}",
                     target.triple(),
                     release.glibc,
                     release.linux_headers,

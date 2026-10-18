@@ -211,7 +211,9 @@ impl FunctionLowerer<'_, '_> {
         let mut units = BTreeSet::new();
         for (index, field) in fields.iter().enumerate() {
             pending.extend(self.claim_comments(field.id));
-            if (field.access.atomic && !self.tables.atomic_scalar(&field.ty))
+            if (field.access.atomic
+                && !self.tables.atomic_scalar(&field.ty)
+                && !self.tables.target.triple.contains("linux"))
                 || (field.access.volatile && field.bit_width.is_some())
             {
                 return Err(unsupported_record(name, &format!("field {index}")).at(Site::of(field)));

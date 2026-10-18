@@ -6,12 +6,12 @@ use std::io::{self, Read};
 use std::path::{Path, PathBuf};
 use zip::ZipArchive;
 
-const NDK_REVISION: &str = "27.3.13750724";
-const NDK_FILENAME: &str = "android-ndk-r27d-linux.zip";
-const NDK_URL: &str = "https://dl.google.com/android/repository/android-ndk-r27d-linux.zip";
-const NDK_SHA256: &str = "601246087a682d1944e1e16dd85bc6e49560fe8b6d61255be2829178c8ed15d9";
+const NDK_REVISION: &str = "30.0.16248370";
+const NDK_FILENAME: &str = "android-ndk-r30-linux.zip";
+const NDK_URL: &str = "https://dl.google.com/android/repository/android-ndk-r30-linux.zip";
+const NDK_SHA256: &str = "753611f410d002cfcd3f3dc2ef49aad532089d3180b436c060a90bf0fcb64df2";
 const HEADER_PREFIX: &str =
-    "android-ndk-r27d/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include";
+    "android-ndk-r30/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include";
 const ARCH_DIRS: [&str; 5] = [
     "aarch64-linux-android",
     "arm-linux-androideabi",
@@ -36,7 +36,7 @@ pub(crate) fn install(paths: &Paths, target: Target) -> io::Result<PathBuf> {
             fs::write(
                 root.join("SYSROOT-MANIFEST.txt"),
                 format!(
-                    "Target: {}\nOperating system: Android (Bionic)\nNDK: r27d ({NDK_REVISION})\nAndroid API level: 21\nContents: C system headers only; link libraries and runtime files omitted\nSource URL: {NDK_URL}\nSource SHA-256: {NDK_SHA256}\n",
+                    "Target: {}\nOperating system: Android (Bionic)\nNDK: r30 ({NDK_REVISION})\nAndroid API level: 21\nContents: C system headers only; link libraries and runtime files omitted\nSource URL: {NDK_URL}\nSource SHA-256: {NDK_SHA256}\n",
                     target.triple()
                 ),
             )?;
@@ -48,7 +48,7 @@ pub(crate) fn install(paths: &Paths, target: Target) -> io::Result<PathBuf> {
 pub(crate) fn extract_headers(archive: &Path, target: Target, root: &Path) -> io::Result<()> {
     let mut zip = ZipArchive::new(File::open(archive)?).map_err(io::Error::other)?;
     let mut properties = String::new();
-    zip.by_name("android-ndk-r27d/source.properties")
+    zip.by_name("android-ndk-r30/source.properties")
         .map_err(io::Error::other)?
         .read_to_string(&mut properties)?;
     if !properties
@@ -57,14 +57,14 @@ pub(crate) fn extract_headers(archive: &Path, target: Target, root: &Path) -> io
     {
         return Err(io::Error::new(
             io::ErrorKind::InvalidData,
-            format!("expected Android NDK r27d ({NDK_REVISION})"),
+            format!("expected Android NDK r30 ({NDK_REVISION})"),
         ));
     }
     let notice = root.join("licenses/ANDROID-NDK-NOTICE");
     fs::create_dir_all(notice.parent().expect("notice has a parent"))?;
     {
         let mut source = zip
-            .by_name("android-ndk-r27d/NOTICE")
+            .by_name("android-ndk-r30/NOTICE")
             .map_err(io::Error::other)?;
         let mut destination = File::create(&notice)?;
         io::copy(&mut source, &mut destination)?;
