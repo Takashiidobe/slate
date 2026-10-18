@@ -11,7 +11,6 @@ bitint_shift_widths
 bitint_va_wide
 float128
 goto_into_later_switch_case_bitint
-intrinsic_float_overloads
 long_double
 main_process_argv
 object_alignment
