@@ -128,7 +128,6 @@ impl FunctionLowerer<'_, '_> {
         } else {
             "__slate_cf80_div"
         };
-        let mut stmts = Vec::new();
         Some(match (op, left_complex, right_complex) {
             (ir::ArithOp::Add, true, true) => shim("__slate_cf80_add", vec![lhs, rhs]),
             (ir::ArithOp::Sub, true, true) => shim("__slate_cf80_sub", vec![lhs, rhs]),
@@ -136,6 +135,38 @@ impl FunctionLowerer<'_, '_> {
             (ir::ArithOp::Div, true, true) => shim(div, vec![lhs, rhs]),
             (ir::ArithOp::Div, false, true) => {
                 shim(div, vec![complex_literal(lhs, long_double_literal(0)), rhs])
+            }
+            _ => {
+                return self.lower_componentwise_arith(
+                    op,
+                    (lhs, left_complex),
+                    (rhs, right_complex),
+                );
+            }
+        })
+    }
+
+    fn lower_componentwise_arith(
+        &mut self,
+        op: ir::ArithOp,
+        (lhs, left_complex): (Expr, bool),
+        (rhs, right_complex): (Expr, bool),
+    ) -> Option<Expr> {
+        let mut stmts = Vec::new();
+        Some(match (op, left_complex, right_complex) {
+            (ir::ArithOp::Add | ir::ArithOp::Sub, true, true) => {
+                let op = if matches!(op, ir::ArithOp::Add) {
+                    BinOp::Add
+                } else {
+                    BinOp::Sub
+                };
+                let z = self.bind(&mut stmts, lhs);
+                let w = self.bind(&mut stmts, rhs);
+                parts_block(
+                    stmts,
+                    binary(op, part(&z, "re"), part(&w, "re")),
+                    binary(op, part(&z, "im"), part(&w, "im")),
+                )
             }
             (op, true, false) => {
                 let z = self.bind(&mut stmts, lhs);
@@ -235,14 +266,19 @@ impl FunctionLowerer<'_, '_> {
                 )))
             }
             ValueKind::Convert {
-                kind: ir::ConversionKind::ComplexToReal,
+                kind: kind @ (ir::ConversionKind::ComplexToReal | ir::ConversionKind::ComplexToImag),
                 operand,
                 ..
             } if self.complex_component(&operand.ty).is_some() => {
                 self.lower_type(&operand.ty)?;
                 Ok(Some(Expr::Field {
                     base: Box::new(self.lower_value(operand)?),
-                    field: "re".into(),
+                    field: if matches!(kind, ir::ConversionKind::ComplexToReal) {
+                        "re"
+                    } else {
+                        "im"
+                    }
+                    .into(),
                 }))
             }
             ValueKind::Convert {
@@ -289,6 +325,15 @@ impl FunctionLowerer<'_, '_> {
                         )
                         .map(Some)
                         .ok_or_else(|| unsupported_value(value));
+                }
+                if self.in_static_initializer
+                    && let Some(lowered) = self.lower_componentwise_arith(
+                        *op,
+                        (lhs.clone(), left_complex),
+                        (rhs.clone(), right_complex),
+                    )
+                {
+                    return Ok(Some(lowered));
                 }
                 let binary = |op| Expr::Binary {
                     op,

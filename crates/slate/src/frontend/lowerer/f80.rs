@@ -138,7 +138,7 @@ impl FunctionLowerer<'_, '_> {
         arguments: &[ir::Value],
         ret: &ir::Type,
     ) -> Result<Expr> {
-        let callee = function.rust.as_str();
+        let callee = function.library.as_deref().unwrap_or(&function.rust);
         if (function.is_variadic && crate::function_identity::Known::from_symbol(callee).is_none())
             || callee.contains("__")
         {
