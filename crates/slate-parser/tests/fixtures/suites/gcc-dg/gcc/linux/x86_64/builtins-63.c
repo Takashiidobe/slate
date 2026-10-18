@@ -54,8 +54,8 @@ int test1l(long double x)
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_isinf:[0-9]+]] @isinf(%[[VALUE0:[0-9]+]] <unnamed>: f64) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_isinff:[0-9]+]] @isinff(%[[VALUE1:[0-9]+]] <unnamed>: f32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_isinfl:[0-9]+]] @isinfl(%[[VALUE2:[0-9]+]] <unnamed>: f80) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_isinff:[0-9]+]] @isinff(%[[VALUE1:[0-9]+]] <unnamed>: f32) -> i32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_isinfl:[0-9]+]] @isinfl(%[[VALUE2:[0-9]+]] <unnamed>: f80) -> i32 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %[[VALUE_test1:[0-9]+]] @test1(%[[VALUE_x:[0-9]+]] x: f64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return call<i32, signature=fn(f64) -> i32>(%[[VALUE_isinf]], read<f64>(%[[VALUE_x]]));
 // DEFAULT-NEXT:     }

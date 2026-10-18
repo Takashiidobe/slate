@@ -171,7 +171,7 @@ int sprintf_nonstring_2 (char *d, NONSTRING const char *s)
 // DEFAULT-NEXT:     fn %[[VALUE_strstr:[0-9]+]] @strstr(%[[VALUE39:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE40:[0-9]+]] <unnamed>: ptr<const i8>) -> ptr<i8> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_strdup:[0-9]+]] @strdup(%[[VALUE41:[0-9]+]] <unnamed>: ptr<const i8>) -> ptr<i8> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_strlen:[0-9]+]] @strlen(%[[VALUE42:[0-9]+]] <unnamed>: ptr<const i8>) -> u64 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_strnlen:[0-9]+]] @strnlen(%[[VALUE43:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE44:[0-9]+]] <unnamed>: u64) -> u64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_strnlen:[0-9]+]] @strnlen(%[[VALUE43:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE44:[0-9]+]] <unnamed>: u64) -> u64 [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %[[VALUE_strndup:[0-9]+]] @strndup(%[[VALUE45:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE46:[0-9]+]] <unnamed>: u64) -> ptr<i8> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_strcmp_nonstring_1:[0-9]+]] @strcmp_nonstring_1(%[[VALUE_a:[0-9]+]] a: ptr<const i8>, %[[VALUE_b:[0-9]+]] b: ptr<const i8>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(%[[VALUE_strcmp]], read<ptr<const i8>>(%[[VALUE_a]]), read<ptr<const i8>>(%[[VALUE_b]]));

@@ -63,8 +63,8 @@ int main()
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_link_error:[0-9]+]] @link_error() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_signbit:[0-9]+]] @signbit(%[[VALUE0:[0-9]+]] <unnamed>: f64) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_signbitf:[0-9]+]] @signbitf(%[[VALUE1:[0-9]+]] <unnamed>: f32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_signbitl:[0-9]+]] @signbitl(%[[VALUE2:[0-9]+]] <unnamed>: f80) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_signbitf:[0-9]+]] @signbitf(%[[VALUE1:[0-9]+]] <unnamed>: f32) -> i32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_signbitl:[0-9]+]] @signbitl(%[[VALUE2:[0-9]+]] <unnamed>: f80) -> i32 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(f64) -> i32>(%[[VALUE_signbit]], const<f64>(1.0)), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);

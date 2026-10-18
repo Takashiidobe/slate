@@ -42,9 +42,9 @@ static_assert(expr_has_type(1 + 1.1d64x, _Decimal64x));
 // DEFAULT-NEXT:     global %[[VALUE_plain:[0-9]+]] plain: d128 [storage=static] = const<d128>(1.5) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_upper:[0-9]+]] upper: d128 [storage=static] = const<d128>(2.5) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_inf:[0-9]+]] inf: d128 [storage=static] = call<d128>(%[[VALUE___builtin_infd64x:[0-9]+]]) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_magnitude:[0-9]+]] magnitude: d128 [storage=static] = call<d128>(%[[VALUE___builtin_fabsd64x:[0-9]+]], neg<d128>(const<d128>(1.5))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_magnitude:[0-9]+]] magnitude: d128 [storage=static] = call<d128>(%[[VALUE_fabsd64x:[0-9]+]], neg<d128>(const<d128>(1.5))) [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_infd64x]] @__builtin_infd64x() -> d128 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %[[VALUE___builtin_fabsd64x]] @__builtin_fabsd64x(%[[VALUE0:[0-9]+]] <unnamed>: d128) -> d128 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_fabsd64x]] @fabsd64x(%[[VALUE0:[0-9]+]] <unnamed>: d128) -> d128 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %[[VALUE_sum:[0-9]+]] @sum(%[[VALUE_a:[0-9]+]] a: d128, %[[VALUE_b:[0-9]+]] b: d128) -> d128 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return add<d128>(read<d128>(%[[VALUE_a]]), read<d128>(%[[VALUE_b]]));
 // DEFAULT-NEXT:     }

@@ -85,8 +85,8 @@ int main()
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_signbit:[0-9]+]] @signbit(%[[VALUE0:[0-9]+]] <unnamed>: f64) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_signbitf:[0-9]+]] @signbitf(%[[VALUE1:[0-9]+]] <unnamed>: f32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_signbitl:[0-9]+]] @signbitl(%[[VALUE2:[0-9]+]] <unnamed>: f80) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_signbitf:[0-9]+]] @signbitf(%[[VALUE1:[0-9]+]] <unnamed>: f32) -> i32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_signbitl:[0-9]+]] @signbitl(%[[VALUE2:[0-9]+]] <unnamed>: f80) -> i32 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %[[VALUE_test:[0-9]+]] @test(%[[VALUE_x:[0-9]+]] x: f64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return call<i32, signature=fn(f64) -> i32>(%[[VALUE_signbit]], read<f64>(%[[VALUE_x]]));
 // DEFAULT-NEXT:     }

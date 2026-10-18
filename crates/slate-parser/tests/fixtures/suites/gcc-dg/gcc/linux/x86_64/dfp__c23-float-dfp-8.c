@@ -78,9 +78,9 @@ main (void)
 // DEFAULT-NEXT:     global %[[VALUE_d128:[0-9]+]] d128: volatile d128 [storage=static] = call<d128, signature=fn(ptr<const i8>) -> d128>(%[[VALUE___builtin_nansd128:[0-9]+]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%[[VALUE_str_3]]))) [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_feclearexcept:[0-9]+]] @feclearexcept(%[[VALUE___excepts:[0-9]+]] __excepts: i32) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_fetestexcept:[0-9]+]] @fetestexcept(%[[VALUE___excepts_2:[0-9]+]] __excepts: i32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE___builtin_nansd32]] @__builtin_nansd32(%[[VALUE0:[0-9]+]] <unnamed>: ptr<const i8>) -> d32 [linkage=external] [memory=read];
-// DEFAULT-NEXT:     fn %[[VALUE___builtin_nansd64]] @__builtin_nansd64(%[[VALUE1:[0-9]+]] <unnamed>: ptr<const i8>) -> d64 [linkage=external] [memory=read];
-// DEFAULT-NEXT:     fn %[[VALUE___builtin_nansd128]] @__builtin_nansd128(%[[VALUE2:[0-9]+]] <unnamed>: ptr<const i8>) -> d128 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_nansd32]] @__builtin_nansd32(%[[VALUE0:[0-9]+]] <unnamed>: ptr<const i8>) -> d32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_nansd64]] @__builtin_nansd64(%[[VALUE1:[0-9]+]] <unnamed>: ptr<const i8>) -> d64 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_nansd128]] @__builtin_nansd128(%[[VALUE2:[0-9]+]] <unnamed>: ptr<const i8>) -> d128 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE3:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

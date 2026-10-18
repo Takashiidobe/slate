@@ -91,8 +91,8 @@ overflow, `lowerer/values.rs` handles rotations and scalar bit counts, and
   argument stays a call to the library function.
 - `__builtin_flt_rounds`
 - `__builtin_{inf,nan,nans,fabs}d{32,64,128,64x}` (gcc only): decimal float values
-  that clang lacks, so they come from `GCC_DECIMAL_BUILTINS` in
-  `sema/builtins.rs` rather than the generated clang table. gcc's `float.h`
+  that clang lacks, so they come from the generated gcc table
+  (see [library calls](#library-and-target-intrinsic-calls)). gcc's `float.h`
   builds `DEC_INFINITY`, `DEC_NAN` and `DEC*_SNAN` from them. They stay
   retained calls; `__has_builtin` reports them for gcc only.
 
@@ -237,7 +237,18 @@ come from `clang_aarch64_builtins.rs`, selected in `target_builtin`.
   supported `__builtin_ia32_*` calls
 
 `sema/builtins.rs` resolves signatures from `sema/clang_builtins.rs` and
-`sema/expression.rs` emits calls with `c_builtin` metadata. A `__builtin_X`
+`sema/gcc_builtins.rs` (generated from gcc's `builtins.def`), and
+`sema/expression.rs` emits calls with `c_builtin` metadata. `clang_builtin`
+looks a name up in this order:
+
+- clang and MSVC flavors: the clang table, then (clang only) the target table.
+- gcc flavor: the clang entry, unless its prototype names a header type
+  (`FILE *`, `jmp_buf`) that gcc spells as a plain pointer; then the gcc entry,
+  then for `__builtin_X` the library entry `X` (clang's, or gcc's when clang's
+  names a header type). A gcc library entry is gated by its `builtins.def`
+  standard (`DEF_C99_BUILTIN` and so on) unless the mode is a GNU one. gcc
+  records are the `BUILT_IN_*` enum names, so custom semantics keyed on clang
+  records do not apply to gcc-only builtins such as `__builtin_add_overflow_p`. A `__builtin_X`
 declaration whose `X` is a registered library builtin also carries
 `c_builtin_library="X"`, the symbol clang calls when it does not open-code the
 builtin; Slate declares the extern with that `link_name`. Slate maps library

@@ -43,7 +43,7 @@ ffsll (long long int i)
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ffs:[0-9]+]] @ffs(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external] [asm_name="__GI_ffs"] [memory=none];
-// DEFAULT-NEXT:     fn %[[VALUE_ffsll:[0-9]+]] @ffsll(%[[VALUE_i:[0-9]+]] i: i64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_ffsll:[0-9]+]] @ffsll(%[[VALUE_i:[0-9]+]] i: i64) -> i32 [linkage=external] [memory=none] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(and<i64>(read<i64>(%[[VALUE_i]]), neg<i64, overflow=ub>(read<i64>(%[[VALUE_i]]))));
 // DEFAULT-NEXT:         if le<u64>(read<u64>(%[[VALUE_x]]), widen<u64, reason=usual_arith>(const<u32>(4294967295)))
 // DEFAULT-NEXT:             return call<i32, signature=fn(i32) -> i32>(%[[VALUE_ffs]], truncate<i32, reason=arg, fits=unknown>(read<i64>(%[[VALUE_i]])));
