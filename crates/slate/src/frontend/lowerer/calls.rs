@@ -55,7 +55,15 @@ impl FunctionLowerer<'_, '_> {
                     }
                     .into());
                 }
-                Expr::Var(name.rust.as_str().into())
+                if name.weak_extern {
+                    Expr::MethodCall {
+                        recv: Box::new(Expr::Var(name.rust.as_str().into())),
+                        method: "unwrap".into(),
+                        args: Vec::new(),
+                    }
+                } else {
+                    Expr::Var(name.rust.as_str().into())
+                }
             }
             ir::Callee::Indirect(pointer) => Expr::MethodCall {
                 recv: Box::new(self.lower_value(pointer)?),

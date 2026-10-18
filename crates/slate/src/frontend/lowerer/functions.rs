@@ -204,6 +204,28 @@ impl FunctionLowerer<'_, '_> {
             .map(Attr::LinkName)
             .into_iter()
             .collect();
+        if function.symbol.weak {
+            let mut params = fixed
+                .iter()
+                .map(|parameter| self.lower_type(&parameter.ty))
+                .collect::<Result<Vec<_>>>()?;
+            if *variadic {
+                params.push(rust::Type::Variadic);
+            }
+            return Ok((
+                abi,
+                rust::ExternDecl::Static {
+                    attrs: vec![Attr::ExternWeakLinkage],
+                    mutable: false,
+                    name: function.name.clone(),
+                    ty: rust::Type::FnPtr {
+                        abi,
+                        params,
+                        ret: Box::new(ret.unwrap_or(rust::Type::Unit)),
+                    },
+                },
+            ));
+        }
         let decl = rust::ExternDecl::Fn(rust::ExternFnDecl {
             attrs,
             name: function.name.clone(),

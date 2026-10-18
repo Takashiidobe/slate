@@ -130,6 +130,18 @@ impl FunctionLowerer<'_, '_> {
         {
             return Err(unsupported_value(value));
         }
+        if self
+            .tables
+            .names
+            .get(&id)
+            .is_some_and(|name| name.weak_extern)
+        {
+            let name = &self.tables.names[&id];
+            return Ok(Expr::Unsafe(Box::new(rust::Block {
+                stmts: Vec::new(),
+                tail: Some(Box::new(Expr::Var(name.rust.as_str().into()))),
+            })));
+        }
         self.dependencies.taken_functions.insert(id);
         if self.tables.names.contains_key(&id)
             && self.tables.function_type_passes_long_double(&value.ty)

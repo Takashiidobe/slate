@@ -57,6 +57,7 @@ struct FunctionName {
     library: Option<String>,
     codegen_builtin: bool,
     is_extern: bool,
+    weak_extern: bool,
     is_unsafe: bool,
     is_variadic: bool,
     exported: bool,
@@ -400,6 +401,7 @@ impl<'m> ModuleLowerer<'m> {
                             .get(&function.id)
                             .is_some_and(|entries| codegen_builtin(entries)),
                         is_extern: function.body.is_none(),
+                        weak_extern: function.body.is_none() && function.symbol.weak,
                         is_unsafe: function.body.is_none()
                             || !function.semantics.target.is_empty()
                             || matches!(
@@ -927,6 +929,14 @@ impl<'m> ModuleLowerer<'m> {
             _ => false,
         }) {
             features.push(rust::CrateAttr::Feature(rust::Feature::ThreadLocal));
+        }
+        if items.iter().any(|item| match item {
+            Item::ExternBlock { decls, .. } => decls.iter().any(|decl| {
+                matches!(decl, rust::ExternDecl::Static { attrs, .. } if attrs.contains(&Attr::ExternWeakLinkage))
+            }),
+            _ => false,
+        }) {
+            features.push(rust::CrateAttr::Feature(rust::Feature::Linkage));
         }
         if items.iter().any(|item| {
             matches!(item, Item::Fn(definition) if definition.attrs.iter().any(|attr| {
