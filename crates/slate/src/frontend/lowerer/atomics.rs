@@ -92,7 +92,7 @@ struct AtomicTarget {
     ty: rust::Type,
     atomic_ty: rust::Type,
     repr: AtomicRepr,
-    wrapper: &'static str,
+    wrapper: String,
 }
 
 impl AtomicTarget {
@@ -242,6 +242,14 @@ impl Tables<'_> {
                 })
         )
     }
+
+    pub(super) fn atomic_unpadded(&self, ty: &ir::Type) -> bool {
+        self.atomic_scalar(ty)
+            || matches!(
+                self.resolve_type(ty),
+                ir::Type::Numeric(ir::NumericType::Float(_)) | ir::Type::Complex(_)
+            )
+    }
 }
 
 impl FunctionLowerer<'_, '_> {
@@ -271,18 +279,37 @@ impl FunctionLowerer<'_, '_> {
             return Err(barrier());
         }
         if !self.tables.atomic_scalar(&place.ty) {
-            let target = self
-                .atomic_target(&place.ty)?
-                .filter(|target| {
-                    matches!(target.repr, AtomicRepr::Bits(_)) && !place.access.volatile
-                })
-                .ok_or_else(barrier)?;
-            let recv = self.atomic_receiver(place, &target, value.is_some())?;
+            let target = self.atomic_target(&place.ty)?.ok_or_else(barrier)?;
+            let is_store = value.is_some();
+            let value = value.map(|value| target.to_atomic(value));
+            let access = if place.access.volatile && matches!(target.repr, AtomicRepr::Bits(_)) {
+                self.dependencies.atomic_volatile = true;
+                let address = Expr::Cast {
+                    expr: Box::new(self.lower_address(place, value.is_some())?),
+                    ty: rust::Type::Ptr {
+                        mutable: true,
+                        inner: Box::new(target.atomic_ty.clone()),
+                    },
+                };
+                let ptr = call(&format!("{}::from_ptr_raw", target.wrapper), vec![address]);
+                let (method, args) = match value {
+                    Some(value) => ("store_volatile", vec![ptr, value, order]),
+                    None => ("load_volatile", vec![ptr, order]),
+                };
+                call(&format!("{}::{method}", target.wrapper), args)
+            } else {
+                let recv = self.atomic_receiver(place, &target, value.is_some())?;
+                match value {
+                    Some(value) => method(recv, "store", vec![value, order]),
+                    None => method(recv, "load", vec![order]),
+                }
+            };
             return Ok(unsafe_block(
                 Vec::new(),
-                match value {
-                    Some(value) => method(recv, "store", vec![target.to_atomic(value), order]),
-                    None => target.to_c(method(recv, "load", vec![order])),
+                if is_store {
+                    access
+                } else {
+                    target.to_c(access)
                 },
             ));
         }
@@ -327,7 +354,7 @@ impl FunctionLowerer<'_, '_> {
             if !self.tables.target.triple.contains("linux") {
                 return Err(barrier());
             }
-            self.dependencies.atomic128 = true;
+            self.dependencies.libatomic = true;
             let address = Expr::Cast {
                 expr: Box::new(address),
                 ty: rust::Type::Ptr {
@@ -344,7 +371,7 @@ impl FunctionLowerer<'_, '_> {
             }));
             match value {
                 Some(value) => call(
-                    "__slate_atomic128::__atomic_store_16",
+                    "__slate_libatomic::__atomic_store_16",
                     vec![
                         address,
                         Expr::Cast {
@@ -356,7 +383,7 @@ impl FunctionLowerer<'_, '_> {
                 ),
                 None => Expr::Cast {
                     expr: Box::new(call(
-                        "__slate_atomic128::__atomic_load_16",
+                        "__slate_libatomic::__atomic_load_16",
                         vec![address, order],
                     )),
                     ty: ty.clone(),
@@ -426,10 +453,22 @@ impl FunctionLowerer<'_, '_> {
             ),
             rust::Type::Prim(Prim::F32) => (rust::Type::Prim(Prim::U32), AtomicRepr::Bits("f32")),
             rust::Type::Prim(Prim::F64) => (rust::Type::Prim(Prim::U64), AtomicRepr::Bits("f64")),
-            _ if self.tables.atomic_scalar(ty) => (lowered.clone(), AtomicRepr::Value),
-            _ => return Ok(None),
+            _ => (lowered.clone(), AtomicRepr::Value),
         };
-        Ok(atomic_wrapper(&atomic_ty).map(|wrapper| AtomicTarget {
+        let wrapper = match atomic_wrapper(&atomic_ty) {
+            Some(wrapper) => format!("std::sync::atomic::{wrapper}"),
+            None if !self.tables.target.triple.contains("linux") => return Ok(None),
+            None => {
+                self.dependencies.libatomic = true;
+                let wrapper = match atomic_ty {
+                    rust::Type::Prim(Prim::I128) => "AtomicI128",
+                    rust::Type::Prim(Prim::U128) => "AtomicU128",
+                    _ => "AtomicGeneric",
+                };
+                format!("__slate_libatomic::{wrapper}")
+            }
+        };
+        Ok(Some(AtomicTarget {
             ty: lowered,
             atomic_ty,
             repr,
@@ -451,7 +490,7 @@ impl FunctionLowerer<'_, '_> {
             },
         };
         Ok(call(
-            &format!("std::sync::atomic::{}::from_ptr", target.wrapper),
+            &format!("{}::from_ptr", target.wrapper),
             vec![address],
         ))
     }

@@ -336,6 +336,29 @@ impl Tables<'_> {
                 operand: inner,
                 ..
             } => Some((-operand(inner)?).to_bits()),
+            ValueKind::Convert {
+                kind: ir::ConversionKind::IntToFloat,
+                operand: inner,
+                semantics:
+                    ir::ConversionSema::IntToFloat {
+                        floating:
+                            ir::FloatingSemantics {
+                                rounding: ir::Rounding::NearestEven,
+                                ..
+                            },
+                        ..
+                    },
+                ..
+            } => Some(
+                X87DoubleExtended::from_i128(self.fold_integer(inner)?)
+                    .value
+                    .to_bits(),
+            ),
+            ValueKind::Convert {
+                kind: ir::ConversionKind::FloatWiden,
+                operand: inner,
+                ..
+            } => self.widen_to_f80(inner),
             ValueKind::Arith {
                 op,
                 left,
@@ -362,5 +385,129 @@ impl Tables<'_> {
             }
             _ => None,
         }
+    }
+
+    pub(super) fn is_complex_long_double(&self, ty: &ir::Type) -> bool {
+        matches!(
+            self.resolve_type(ty),
+            ir::Type::Complex(ir::NumericType::Float(ir::FloatType::F80))
+        )
+    }
+
+    pub(super) fn fold_complex_long_double(&self, value: &ir::Value) -> Option<[u128; 2]> {
+        let ValueKind::Convert {
+            kind: ir::ConversionKind::ComplexConvert,
+            operand,
+            ..
+        } = &value.node.value
+        else {
+            return None;
+        };
+        let ValueKind::Aggregate { members, .. } = &operand.node.value else {
+            return None;
+        };
+        if !self.is_complex_long_double(&value.ty) {
+            return None;
+        }
+        let mut parts = [0u128; 2];
+        for member in members {
+            let ir::AggregateTarget::Index(index @ (0 | 1)) = member.target else {
+                return None;
+            };
+            parts[index as usize] = self.widen_to_f80(&member.value)?;
+        }
+        Some(parts)
+    }
+
+    fn widen_to_f80(&self, value: &ir::Value) -> Option<u128> {
+        use rustc_apfloat::{
+            Float, FloatConvert,
+            ieee::{Double, Single, X87DoubleExtended},
+        };
+        let bits = self.fold_real_constant(value)?;
+        let widened: X87DoubleExtended = match self.resolve_type(&value.ty) {
+            ir::Type::Numeric(ir::NumericType::Float(ir::FloatType::F64)) => {
+                Double::from_bits(bits).convert(&mut false).value
+            }
+            ir::Type::Numeric(ir::NumericType::Float(ir::FloatType::F32)) => {
+                Single::from_bits(bits).convert(&mut false).value
+            }
+            _ => return None,
+        };
+        Some(widened.to_bits())
+    }
+
+    fn fold_real_constant(&self, value: &ir::Value) -> Option<u128> {
+        let sign = match self.resolve_type(&value.ty) {
+            ir::Type::Numeric(ir::NumericType::Float(ir::FloatType::F64)) => 1u128 << 63,
+            ir::Type::Numeric(ir::NumericType::Float(ir::FloatType::F32)) => 1u128 << 31,
+            _ => return None,
+        };
+        match &value.node.value {
+            ValueKind::Constant(ir::Number::FloatBits(bits)) => Some(*bits),
+            ValueKind::Unary {
+                op: ir::UnaryArithOp::Neg,
+                operand,
+                ..
+            } => Some(self.fold_real_constant(operand)? ^ sign),
+            ValueKind::Convert {
+                kind: ir::ConversionKind::ComplexToReal,
+                operand,
+                ..
+            } => match &operand.node.value {
+                ValueKind::Aggregate { members, .. } => members
+                    .iter()
+                    .find(|member| matches!(member.target, ir::AggregateTarget::Index(0)))
+                    .and_then(|member| self.fold_real_constant(&member.value)),
+                _ => None,
+            },
+            _ => None,
+        }
+    }
+
+    fn fold_integer(&self, value: &ir::Value) -> Option<i128> {
+        let ir::Type::Numeric(ir::NumericType::Integer { width, signed, .. }) =
+            *self.resolve_type(&value.ty)
+        else {
+            return None;
+        };
+        let raw = match &value.node.value {
+            ValueKind::Constant(ir::Number::Integer(number)) => i128::try_from(number).ok()?,
+            ValueKind::Constant(ir::Number::SignedInteger(number)) => {
+                i128::try_from(number).ok()?
+            }
+            ValueKind::Unary {
+                op: ir::UnaryArithOp::Neg,
+                operand,
+                ..
+            } => self.fold_integer(operand)?.wrapping_neg(),
+            ValueKind::Arith {
+                op, left, right, ..
+            } => {
+                let (left, right) = (self.fold_integer(left)?, self.fold_integer(right)?);
+                match op {
+                    ir::ArithOp::Add => left.wrapping_add(right),
+                    ir::ArithOp::Sub => left.wrapping_sub(right),
+                    ir::ArithOp::Mul => left.wrapping_mul(right),
+                    ir::ArithOp::Shl if (0..i128::from(width)).contains(&right) => left << right,
+                    _ => return None,
+                }
+            }
+            ValueKind::Convert {
+                kind: ir::ConversionKind::Widen | ir::ConversionKind::Truncate,
+                operand,
+                ..
+            } => self.fold_integer(operand)?,
+            _ => return None,
+        };
+        if width >= 128 {
+            return (signed || raw >= 0).then_some(raw);
+        }
+        let shift = 128 - width;
+        Some(if signed {
+            (raw << shift) >> shift
+        } else {
+            ((raw as u128) << shift >> shift) as i128
+        })
     }
 }

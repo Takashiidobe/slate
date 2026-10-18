@@ -828,6 +828,13 @@ impl FunctionLowerer<'_, '_> {
                     ty: rust::Type::Prim(Prim::Usize),
                 }),
             },
+            ValueKind::Convert { .. }
+                if self.in_static_initializer
+                    && let Some(bits) = self.tables.fold_long_double(value) =>
+            {
+                self.lower_type(&value.ty)?;
+                long_double_literal(bits)
+            }
             ValueKind::Convert { operand, .. }
                 if self.tables.wide_int(&operand.ty).is_some()
                     || self.tables.wide_int(&value.ty).is_some() =>

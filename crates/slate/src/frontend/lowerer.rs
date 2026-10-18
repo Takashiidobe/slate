@@ -99,7 +99,7 @@ struct Dependencies {
     huge_stack: bool,
     asm_goto_with_outputs: bool,
     asm_strings: BTreeMap<u32, Item>,
-    atomic128: bool,
+    libatomic: bool,
     long_double: bool,
     complex_long_double: bool,
     f16: bool,
@@ -562,6 +562,12 @@ impl<'m> ModuleLowerer<'m> {
                         attrs: thread_local
                             .into_iter()
                             .chain(exported.then_some(Attr::NoMangle))
+                            .chain(
+                                global
+                                    .symbol
+                                    .used
+                                    .then_some(Attr::Used(rust::UsedKind::Plain)),
+                            )
                             .collect(),
                         vis: rust::Visibility::Private,
                         mutable: true,
@@ -828,12 +834,12 @@ impl<'m> ModuleLowerer<'m> {
                 }),
             );
         }
-        if dependencies.atomic128 {
+        if dependencies.libatomic {
             items.insert(
                 0,
                 Item::SupportModule(rust::SupportModule {
-                    name: "__slate_atomic128".into(),
-                    source: include_str!("support/atomic128.rs").into(),
+                    name: "__slate_libatomic".into(),
+                    source: include_str!("support/libatomic.rs").into(),
                     exports: Vec::new(),
                 }),
             );

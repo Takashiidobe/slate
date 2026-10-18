@@ -1117,9 +1117,7 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{}",
-// CHECK-NEXT:         truncate_long_double(
-// CHECK-NEXT:             __slate_f80_from_i32(7 as i32) / LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64])
-// CHECK-NEXT:         )
+// CHECK-NEXT:         truncate_long_double(LongDouble([0, 0, 0, 0, 0, 0, 0, 224, 0, 64]))
 // CHECK-NEXT:     );
 // CHECK-NEXT:     check_int_casts();
 // CHECK-NEXT:     check_i128_casts();

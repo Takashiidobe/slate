@@ -185,6 +185,16 @@ impl FunctionLowerer<'_, '_> {
 
     pub(super) fn lower_complex_value(&mut self, value: &ir::Value) -> Result<Option<Expr>> {
         match &value.node.value {
+            ValueKind::Convert { .. }
+                if self.in_static_initializer
+                    && let Some([re, im]) = self.tables.fold_complex_long_double(value) =>
+            {
+                self.lower_type(&value.ty)?;
+                Ok(Some(complex_literal(
+                    long_double_literal(re),
+                    long_double_literal(im),
+                )))
+            }
             ValueKind::Aggregate { members, .. } if self.complex_component(&value.ty).is_some() => {
                 let component = self.complex_component(&value.ty).into_iter().next();
                 self.lower_type(&value.ty)?;
@@ -346,6 +356,19 @@ impl FunctionLowerer<'_, '_> {
                 let [Some(lhs), Some(rhs)] = sides else {
                     return Err(unsupported_value(value));
                 };
+                if self.in_static_initializer && !is_f80(component) {
+                    let (compare, combine) = if matches!(op, ir::CompareOp::Eq) {
+                        (BinOp::Eq, BinOp::And)
+                    } else {
+                        (BinOp::Ne, BinOp::Or)
+                    };
+                    let [re, im] = ["re", "im"].map(|field| Expr::Binary {
+                        op: compare,
+                        lhs: Box::new(part(&lhs, field)),
+                        rhs: Box::new(part(&rhs, field)),
+                    });
+                    return Ok(Some(binary(combine, re, im)));
+                }
                 Ok(Some(Expr::Binary {
                     op: if matches!(op, ir::CompareOp::Eq) {
                         BinOp::Eq

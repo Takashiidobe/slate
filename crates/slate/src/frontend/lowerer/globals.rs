@@ -125,6 +125,15 @@ impl Tables<'_> {
                 operand,
                 ..
             } => self.is_constant_initializer(operand),
+            ValueKind::Convert { .. } if self.is_long_double(&value.ty) => {
+                self.fold_long_double(value).is_some()
+            }
+            ValueKind::Convert { operand, .. }
+                if self.is_complex_long_double(&value.ty)
+                    || self.is_complex_long_double(&operand.ty) =>
+            {
+                self.fold_complex_long_double(value).is_some()
+            }
             ValueKind::Convert { operand, .. } => {
                 !self.is_long_double(&operand.ty)
                     && !self.is_long_double(&value.ty)
@@ -194,11 +203,12 @@ impl FunctionLowerer<'_, '_> {
         let variable = &global.variable;
         let symbol = ir::SymbolAttributes {
             visibility: None,
+            used: false,
             ..global.symbol.clone()
         };
         if matches!(variable.storage, ir::StorageDuration::Automatic)
             || (variable.alignment.is_some() && tables.storage_of(&variable.ty).is_none())
-            || (variable.access.atomic && !tables.atomic_scalar(&variable.ty))
+            || (variable.access.atomic && !tables.atomic_unpadded(&variable.ty))
             || symbol != ir::SymbolAttributes::default()
         {
             return Err(Construct::Global {

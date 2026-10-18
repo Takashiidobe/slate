@@ -61,7 +61,7 @@ impl WideInt {
         )
     }
 
-    fn from_bytes(self, bytes: &[u8]) -> Expr {
+    fn bytes_literal(self, bytes: &[u8]) -> Expr {
         Expr::Call {
             func: Box::new(Expr::Var(
                 format!(
@@ -415,12 +415,12 @@ impl FunctionLowerer<'_, '_> {
                 Err(_) => {
                     let mut bytes = value.to_bytes_le();
                     bytes.push(0);
-                    return Ok(wide.from_bytes(&bytes));
+                    return Ok(wide.bytes_literal(&bytes));
                 }
             },
             Number::SignedInteger(value) => match i128::try_from(value) {
                 Ok(value) => ("from_i128", rust::RustValue::I128(value)),
-                Err(_) => return Ok(wide.from_bytes(&value.to_signed_bytes_le())),
+                Err(_) => return Ok(wide.bytes_literal(&value.to_signed_bytes_le())),
             },
             _ => return Err(unsupported_constant(number)),
         };
