@@ -1,5 +1,5 @@
 use crate::backend::engine::arena::{Arena, NodeId, NodeKind};
-use crate::backend::rust_ast::{Expr, Stmt};
+use crate::backend::rust_ast::{AsmOperand, Block, Expr, Stmt};
 
 pub(super) fn child_exprs(expr: &Expr) -> Vec<&Expr> {
     match expr {
@@ -197,14 +197,82 @@ pub(super) fn stmt_exprs<'a>(stmt: &'a Stmt, out: &mut Vec<&'a Expr>) {
             out.push(target);
             out.push(value);
         }
-        Stmt::Unsafe { body } => {
-            for stmt in &body.stmts {
-                stmt_exprs(stmt, out);
-            }
-            out.extend(body.tail.as_deref());
+        Stmt::LetIf {
+            cond,
+            then_body,
+            then_value,
+            else_body,
+            else_value,
+            ..
+        } => {
+            out.push(cond);
+            stmts_exprs(then_body, out);
+            out.push(then_value);
+            stmts_exprs(else_body, out);
+            out.push(else_value);
         }
-        _ => {}
+        Stmt::InlineAsm(asm) => {
+            for operand in &asm.operands {
+                match operand {
+                    AsmOperand::In { value, .. }
+                    | AsmOperand::Out { value, .. }
+                    | AsmOperand::Const(value)
+                    | AsmOperand::Sym(value) => out.push(value),
+                    AsmOperand::InOut { input, output, .. } => {
+                        out.push(input);
+                        out.push(output);
+                    }
+                    AsmOperand::Label { state, value } => {
+                        out.push(state);
+                        out.push(value);
+                    }
+                }
+            }
+        }
+        Stmt::Unsafe { body } | Stmt::Block(body) => block_exprs(body, out),
+        Stmt::While { cond, body, .. } => {
+            out.push(cond);
+            block_exprs(body, out);
+        }
+        Stmt::If {
+            cond,
+            then_body,
+            else_body,
+        } => {
+            out.push(cond);
+            stmts_exprs(then_body, out);
+            stmts_exprs(else_body, out);
+        }
+        Stmt::For { iter, body, .. } => {
+            out.push(iter);
+            stmts_exprs(body, out);
+        }
+        Stmt::Match { expr, arms } => {
+            out.push(expr);
+            for arm in arms {
+                stmts_exprs(&arm.body, out);
+            }
+        }
+        Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
+            stmts_exprs(body, out)
+        }
+        Stmt::Let { init: None, .. }
+        | Stmt::Return(None)
+        | Stmt::Comment(_)
+        | Stmt::Break(_)
+        | Stmt::Continue(_) => {}
     }
+}
+
+fn stmts_exprs<'a>(stmts: &'a [Stmt], out: &mut Vec<&'a Expr>) {
+    for stmt in stmts {
+        stmt_exprs(stmt, out);
+    }
+}
+
+fn block_exprs<'a>(block: &'a Block, out: &mut Vec<&'a Expr>) {
+    stmts_exprs(&block.stmts, out);
+    out.extend(block.tail.as_deref());
 }
 
 pub(super) fn stmt_exprs_mut<'a>(stmt: &'a mut Stmt, out: &mut Vec<&'a mut Expr>) {
@@ -218,14 +286,82 @@ pub(super) fn stmt_exprs_mut<'a>(stmt: &'a mut Stmt, out: &mut Vec<&'a mut Expr>
             out.push(target);
             out.push(value);
         }
-        Stmt::Unsafe { body } => {
-            for stmt in &mut body.stmts {
-                stmt_exprs_mut(stmt, out);
-            }
-            out.extend(body.tail.as_deref_mut());
+        Stmt::LetIf {
+            cond,
+            then_body,
+            then_value,
+            else_body,
+            else_value,
+            ..
+        } => {
+            out.push(cond);
+            stmts_exprs_mut(then_body, out);
+            out.push(then_value);
+            stmts_exprs_mut(else_body, out);
+            out.push(else_value);
         }
-        _ => {}
+        Stmt::InlineAsm(asm) => {
+            for operand in &mut asm.operands {
+                match operand {
+                    AsmOperand::In { value, .. }
+                    | AsmOperand::Out { value, .. }
+                    | AsmOperand::Const(value)
+                    | AsmOperand::Sym(value) => out.push(value),
+                    AsmOperand::InOut { input, output, .. } => {
+                        out.push(input);
+                        out.push(output);
+                    }
+                    AsmOperand::Label { state, value } => {
+                        out.push(state);
+                        out.push(value);
+                    }
+                }
+            }
+        }
+        Stmt::Unsafe { body } | Stmt::Block(body) => block_exprs_mut(body, out),
+        Stmt::While { cond, body, .. } => {
+            out.push(cond);
+            block_exprs_mut(body, out);
+        }
+        Stmt::If {
+            cond,
+            then_body,
+            else_body,
+        } => {
+            out.push(cond);
+            stmts_exprs_mut(then_body, out);
+            stmts_exprs_mut(else_body, out);
+        }
+        Stmt::For { iter, body, .. } => {
+            out.push(iter);
+            stmts_exprs_mut(body, out);
+        }
+        Stmt::Match { expr, arms } => {
+            out.push(expr);
+            for arm in arms {
+                stmts_exprs_mut(&mut arm.body, out);
+            }
+        }
+        Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
+            stmts_exprs_mut(body, out)
+        }
+        Stmt::Let { init: None, .. }
+        | Stmt::Return(None)
+        | Stmt::Comment(_)
+        | Stmt::Break(_)
+        | Stmt::Continue(_) => {}
     }
+}
+
+fn stmts_exprs_mut<'a>(stmts: &'a mut [Stmt], out: &mut Vec<&'a mut Expr>) {
+    for stmt in stmts {
+        stmt_exprs_mut(stmt, out);
+    }
+}
+
+fn block_exprs_mut<'a>(block: &'a mut Block, out: &mut Vec<&'a mut Expr>) {
+    stmts_exprs_mut(&mut block.stmts, out);
+    out.extend(block.tail.as_deref_mut());
 }
 
 pub(super) fn visit_kind_exprs(kind: &NodeKind, mut f: impl FnMut(&Expr)) {
