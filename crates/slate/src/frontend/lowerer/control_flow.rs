@@ -477,6 +477,14 @@ pub(super) fn slot_pointer(id: BindingId) -> Expr {
     Expr::Var(slot_name(id).into())
 }
 
+fn vla_name(id: BindingId) -> String {
+    format!("__slate_vla_{}", id.0)
+}
+
+pub(super) fn vla_storage(id: BindingId) -> Expr {
+    Expr::Var(vla_name(id).into())
+}
+
 impl FunctionLowerer<'_, '_> {
     pub(super) fn lower_dispatch(&mut self, statements: &[Statement]) -> Result<Vec<Stmt>> {
         let mut graph = Graph::default();
@@ -484,13 +492,29 @@ impl FunctionLowerer<'_, '_> {
         let end = graph.push(Node::End);
         let entry = graph.list(statements, end);
         let (entry, blocks) = graph.blocks(entry);
-        self.dispatch_bindings
-            .extend(graph.locals.iter().map(|(id, ..)| *id));
+        for (id, ty, _) in &graph.locals {
+            if self.tables.variably_modified(ty) {
+                self.dispatch_vlas.insert(*id);
+            } else {
+                self.dispatch_bindings.insert(*id);
+            }
+        }
         let mut lowered = Vec::new();
         let mut storage_positions = HashMap::new();
         for (id, ir_ty, alignment) in graph.locals {
             if self.tables.variably_modified(ir_ty) {
-                return Err(unsupported_type(ir_ty));
+                storage_positions.insert(id, lowered.len());
+                lowered.push(Stmt::Let {
+                    name: vla_name(id),
+                    mutable: true,
+                    ty: Some(self.vla_vec_type(ir_ty)?),
+                    init: Some(Expr::Call {
+                        func: Box::new(Expr::Var("Vec::new".into())),
+                        args: Vec::new(),
+                        binding: CallBinding::Generated,
+                    }),
+                });
+                continue;
             }
             let ty = self.lower_type(ir_ty)?;
             let stored = match self.tables.over_alignment(ir_ty, alignment) {
@@ -582,6 +606,15 @@ impl FunctionLowerer<'_, '_> {
                     Node::Jump(next) => jump(next),
                     Node::Statement(statement, next) => {
                         let mut body = match declared_local(&statement.value) {
+                            Some(_)
+                                if let ir::Statement::Let(variable) = &statement.value
+                                    && self.tables.variably_modified(&variable.ty) =>
+                            {
+                                vec![Stmt::Assign {
+                                    target: vla_storage(variable.id),
+                                    value: self.vla_buffer(variable)?.1,
+                                }]
+                            }
                             Some((id, Some(initializer))) => vec![Stmt::Expr(Expr::Call {
                                 func: Box::new(Expr::Var("std::ptr::write".into())),
                                 args: vec![slot_pointer(id), self.lower_value(initializer)?],

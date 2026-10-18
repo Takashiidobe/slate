@@ -197,6 +197,12 @@ pub(super) fn stmt_exprs<'a>(stmt: &'a Stmt, out: &mut Vec<&'a Expr>) {
             out.push(target);
             out.push(value);
         }
+        Stmt::Unsafe { body } => {
+            for stmt in &body.stmts {
+                stmt_exprs(stmt, out);
+            }
+            out.extend(body.tail.as_deref());
+        }
         _ => {}
     }
 }
@@ -211,6 +217,12 @@ pub(super) fn stmt_exprs_mut<'a>(stmt: &'a mut Stmt, out: &mut Vec<&'a mut Expr>
         Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
             out.push(target);
             out.push(value);
+        }
+        Stmt::Unsafe { body } => {
+            for stmt in &mut body.stmts {
+                stmt_exprs_mut(stmt, out);
+            }
+            out.extend(body.tail.as_deref_mut());
         }
         _ => {}
     }

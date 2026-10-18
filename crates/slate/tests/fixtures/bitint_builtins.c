@@ -133,7 +133,7 @@ int main(void) {
 // CHECK-NEXT:         let [[T_1]]: i128 = b as i128;
 // CHECK-NEXT:         let [[T_2]]: i128 = [[T_0]].wrapping_add([[T_1]]);
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *std::ptr::addr_of_mut!(r) = ([[T_2]] as u8) & (31 as u8);
+// CHECK-NEXT:             *std::ptr::addr_of_mut!(r) = ([[T_2]] as u8) & 31;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         [[T_0]].checked_add([[T_1]]).is_none() || ((([[T_2]] as u8) & 31) as i128) != [[T_2]]
 // CHECK-NEXT:     }) as i32;
@@ -145,7 +145,7 @@ int main(void) {
 // CHECK-NEXT:         let [[T_4]]: i128 = b as i128;
 // CHECK-NEXT:         let [[T_5]]: i128 = [[T_3]].wrapping_sub([[T_4]]);
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *std::ptr::addr_of_mut!(r) = ([[T_5]] as u8) & (31 as u8);
+// CHECK-NEXT:             *std::ptr::addr_of_mut!(r) = ([[T_5]] as u8) & 31;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         [[T_3]].checked_sub([[T_4]]).is_none() || ((([[T_5]] as u8) & 31) as i128) != [[T_5]]
 // CHECK-NEXT:     }) as i32;
@@ -157,7 +157,7 @@ int main(void) {
 // CHECK-NEXT:         let [[T_7]]: i128 = b as i128;
 // CHECK-NEXT:         let [[T_8]]: i128 = [[T_6]].wrapping_mul([[T_7]]);
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *std::ptr::addr_of_mut!(r) = ([[T_8]] as u8) & (31 as u8);
+// CHECK-NEXT:             *std::ptr::addr_of_mut!(r) = ([[T_8]] as u8) & 31;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         [[T_6]].checked_mul([[T_7]]).is_none() || ((([[T_8]] as u8) & 31) as i128) != [[T_8]]
 // CHECK-NEXT:     }) as i32;

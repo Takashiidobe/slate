@@ -76,6 +76,24 @@ impl FunctionLowerer<'_, '_> {
     }
 
     pub(super) fn lower_vla_let(&mut self, variable: &ir::Variable) -> Result<Stmt> {
+        let (storage, buffer) = self.vla_buffer(variable)?;
+        Ok(Stmt::Let {
+            name: binding_name(variable.id, &self.tables.bindings),
+            mutable: true,
+            ty: Some(storage),
+            init: Some(buffer),
+        })
+    }
+
+    pub(super) fn vla_vec_type(&mut self, ty: &ir::Type) -> Result<rust::Type> {
+        let element = self.vla_layout(ty, &mut Vec::new())?;
+        Ok(rust::Type::Generic {
+            name: "Vec".into(),
+            args: vec![element],
+        })
+    }
+
+    pub(super) fn vla_buffer(&mut self, variable: &ir::Variable) -> Result<(rust::Type, Expr)> {
         if let Some(initializer) = &variable.initializer
             && !matches!(
                 &initializer.node.value,
@@ -92,11 +110,9 @@ impl FunctionLowerer<'_, '_> {
             args: vec![element],
         };
         let buffer = "__slate_vla";
-        Ok(Stmt::Let {
-            name: binding_name(variable.id, &self.tables.bindings),
-            mutable: true,
-            ty: Some(storage.clone()),
-            init: Some(Expr::Block(Box::new(rust::Block {
+        Ok((
+            storage.clone(),
+            Expr::Block(Box::new(rust::Block {
                 stmts: vec![
                     Stmt::Let {
                         name: buffer.into(),
@@ -127,8 +143,8 @@ impl FunctionLowerer<'_, '_> {
                     },
                 ],
                 tail: Some(Box::new(Expr::Var(buffer.into()))),
-            }))),
-        })
+            })),
+        ))
     }
 
     pub(super) fn vla_address(&mut self, place: &ir::Place) -> Result<Option<Expr>> {

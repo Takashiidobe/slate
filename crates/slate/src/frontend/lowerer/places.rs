@@ -383,6 +383,9 @@ impl FunctionLowerer<'_, '_> {
                 expr: Box::new(control_flow::slot_pointer(id)),
             };
         }
+        if self.dispatch_vlas.contains(&id) {
+            return control_flow::vla_storage(id);
+        }
         let binding = Expr::Var(binding_name(id, &self.tables.bindings).as_str().into());
         if let Some(record) = self.tables.flexible_globals.get(&id) {
             return Expr::Unary {
