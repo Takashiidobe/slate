@@ -32,8 +32,10 @@ C -> slate-parser (preprocess, parse, sema) -> ir::Module
   preserve prior designs.
 
 The frontend consumes slate-parser IR exclusively. `src/backend/` holds
-rewrites and code generation. Rewrites are always on: differential suites run
-`translate`, and `translate-project` always applies its rewrites.
+rewrites and code generation. Rewrites are always on: `translate` and
+`translate-project` both run the full backend, the latter once per unit.
+Interprocedural rewrites stay within a unit and only change `static`
+functions, so exported signatures never change.
 `tests/fixtures.release/` fixtures go through `translate-project` and a
 `cargo build --release` (`release_build_differential`), for behavior that only
 shows up after LLVM optimization or across translation units: a `.c` file is a

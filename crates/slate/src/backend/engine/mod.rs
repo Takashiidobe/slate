@@ -101,13 +101,6 @@ pub(in crate::backend) fn apply(
     }
 }
 
-pub(in crate::backend) fn apply_control_flow(program: &mut Program) {
-    let passes = [RuleRegistry::build(rules::control_flow_registry())];
-    for item in &mut program.items {
-        apply_item(item, &passes);
-    }
-}
-
 fn apply_item(item: &mut Item, passes: &[RuleRegistry]) {
     match item {
         Item::Fn(func) => run_function(&mut func.body, &mut func.params, func.ret.as_ref(), passes),

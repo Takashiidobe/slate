@@ -880,7 +880,8 @@ fn translate_slate_project(
             .map(|(unit, options)| {
                 frontend::lower_module(&unit.module, &unit.files, &options)
                     .map(|mut lowered| {
-                        lowered.program = slate::backend::structure_control_flow(lowered.program);
+                        lowered.program =
+                            slate::backend::apply_with_target(lowered.program, &unit.module.target);
                         lowered
                     })
                     .map_err(|error| format!("{}: {error}", unit.path.display()))
