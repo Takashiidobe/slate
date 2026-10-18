@@ -75,6 +75,7 @@ struct Tables<'m> {
     asm_names: HashMap<String, BindingId>,
     register_globals: HashMap<BindingId, &'static str>,
     over_aligned: HashMap<BindingId, u64>,
+    flexible_globals: HashMap<BindingId, String>,
     target: &'m TargetInfo,
     metadata: &'m ir::Metadata,
     comments: &'m ir::Comments,
@@ -112,6 +113,7 @@ struct Dependencies {
     bridges: BTreeMap<String, rust::ExternFnDecl>,
     align_wrappers: BTreeSet<u32>,
     records: BTreeMap<u32, Record>,
+    flexible_records: Vec<Item>,
     compound_literals: Vec<Item>,
     address_taken: BTreeSet<String>,
     taken_functions: HashSet<BindingId>,
@@ -481,6 +483,7 @@ impl<'m> ModuleLowerer<'m> {
             asm_names: asm_names(module, options, &statics),
             register_globals,
             over_aligned: HashMap::new(),
+            flexible_globals: HashMap::new(),
             target: &module.target,
             metadata: &module.metadata,
             comments: &module.comments,
@@ -501,6 +504,16 @@ impl<'m> ModuleLowerer<'m> {
                     global.variable.id,
                     tables.over_alignment(&global.variable.ty, global.variable.alignment)?,
                 ))
+            })
+            .collect();
+        tables.flexible_globals = statics
+            .iter()
+            .filter(|global| global.definition && tables.flexible_member(global).is_some())
+            .filter_map(|global| {
+                let ir::Type::Defined(id) = tables.resolve_type(&global.variable.ty) else {
+                    return None;
+                };
+                Some((global.variable.id, tables.record_names.get(id)?.clone()))
             })
             .collect();
         Ok(Self {
@@ -736,6 +749,7 @@ impl<'m> ModuleLowerer<'m> {
         items.splice(
             0..0,
             records
+                .chain(dependencies.flexible_records)
                 .chain(wrappers)
                 .chain(bit_units)
                 .chain(dependencies.bit_unit_impls),

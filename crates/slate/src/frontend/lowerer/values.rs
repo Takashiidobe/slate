@@ -1585,6 +1585,16 @@ impl FunctionLowerer<'_, '_> {
         members: &[ir::AggregateMember],
         zero_fill: bool,
     ) -> Result<Expr> {
+        self.lower_aggregate_into(ty, members, zero_fill, None)
+    }
+
+    pub(super) fn lower_aggregate_into(
+        &mut self,
+        ty: &ir::Type,
+        members: &[ir::AggregateMember],
+        zero_fill: bool,
+        storage: Option<rust::Type>,
+    ) -> Result<Expr> {
         let unsupported = || {
             Failure::from(Construct::Value {
                 kind: "Aggregate".into(),
@@ -1604,6 +1614,8 @@ impl FunctionLowerer<'_, '_> {
             });
         }
         let lowered_ty = self.lower_type(ty)?;
+        let forced_storage = storage.is_some();
+        let lowered_ty = storage.unwrap_or(lowered_ty);
         let fields = self.tables.record_fields(ty);
         let resolved = self.tables.resolve_type(ty);
         if fields.is_none()
@@ -1618,7 +1630,7 @@ impl FunctionLowerer<'_, '_> {
                 .map(|field| field_name(field, index))
                 .ok_or_else(unsupported)
         };
-        let complete = !zero_fill && !self.tables.has_padding(ty) && fields.is_none_or(|fields| fields.len() == members.len()) && !self.tables.is_union(ty) && !self.tables.has_bit_fields(ty) && members.iter().enumerate().all(|(position, member)| {
+        let complete = !forced_storage && !zero_fill && !self.tables.has_padding(ty) && fields.is_none_or(|fields| fields.len() == members.len()) && !self.tables.is_union(ty) && !self.tables.has_bit_fields(ty) && members.iter().enumerate().all(|(position, member)| {
             matches!(
                 (&member.target, fields),
                 (ir::AggregateTarget::Field(index), Some(_)) if *index == position

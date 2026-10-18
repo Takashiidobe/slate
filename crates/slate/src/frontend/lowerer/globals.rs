@@ -178,6 +178,35 @@ impl Tables<'_> {
         }
     }
 
+    pub(super) fn flexible_member<'g>(
+        &self,
+        global: &'g ir::Global,
+    ) -> Option<(usize, &'g ir::Type)> {
+        let ValueKind::Aggregate { members, .. } =
+            &global.variable.initializer.as_ref()?.node.value
+        else {
+            return None;
+        };
+        let fields = self.record_fields(&global.variable.ty)?;
+        members.iter().find_map(|member| {
+            let ir::AggregateTarget::Field(index) = member.target else {
+                return None;
+            };
+            let ir::Type::Array { length: None, .. } = self.resolve_type(&fields.get(index)?.ty)
+            else {
+                return None;
+            };
+            matches!(
+                self.resolve_type(&member.value.ty),
+                ir::Type::Array {
+                    length: Some(1..),
+                    ..
+                }
+            )
+            .then_some((index, &member.value.ty))
+        })
+    }
+
     pub(super) fn is_constant_address(&self, place: &ir::Place) -> bool {
         match &place.kind {
             PlaceKind::Binding(id) => {
@@ -227,11 +256,21 @@ impl FunctionLowerer<'_, '_> {
         if !global.definition {
             return Ok((ty, None));
         }
+        let flexible = tables.flexible_member(global);
+        let ty = match flexible {
+            Some((index, sized)) => self.flexible_storage(global, index, sized)?,
+            None => ty,
+        };
         let init = match &variable.initializer {
             None => zeroed(),
             Some(value) if tables.is_constant_initializer(value) => {
                 self.in_static_initializer = true;
-                let lowered = self.lower_value(value);
+                let lowered = match (&value.node.value, flexible) {
+                    (ValueKind::Aggregate { members, zero_fill }, Some(_)) => {
+                        self.lower_aggregate_into(&value.ty, members, *zero_fill, Some(ty.clone()))
+                    }
+                    _ => self.lower_value(value),
+                };
                 self.in_static_initializer = false;
                 lowered?
             }
@@ -250,6 +289,66 @@ impl FunctionLowerer<'_, '_> {
             self.align_wrapped(&variable.name, alignment, ty)?,
             Some(align_wrap(alignment, init)),
         ))
+    }
+
+    fn flexible_storage(
+        &mut self,
+        global: &ir::Global,
+        index: usize,
+        sized: &ir::Type,
+    ) -> Result<rust::Type> {
+        let tables = self.tables;
+        let unsupported = |detail: &str| {
+            Failure::from(Construct::Global {
+                name: global.variable.name.clone(),
+                detail: detail.into(),
+            })
+        };
+        if tables.over_aligned.contains_key(&global.variable.id)
+            || tables.has_bit_fields(&global.variable.ty)
+        {
+            return Err(unsupported("flexible array member storage"));
+        }
+        let ir::Type::Defined(id) = *tables.resolve_type(&global.variable.ty) else {
+            return Err(unsupported("flexible array member storage"));
+        };
+        let ir::TypeDefinitionKind::Record {
+            kind,
+            fields: Some(fields),
+            layout: Some(layout),
+        } = &tables.types[&id].kind
+        else {
+            return Err(unsupported("flexible array member storage"));
+        };
+        let (size, _) = tables
+            .storage_of(sized)
+            .ok_or_else(|| unsupported("flexible array member storage"))?;
+        let mut fields = fields.clone();
+        fields[index].value.ty = sized.clone();
+        let layout = ir::RecordLayout {
+            size: layout
+                .size
+                .max(layout.offsets[index] + size)
+                .next_multiple_of(layout.align),
+            ..layout.clone()
+        };
+        let name = format!(
+            "__SlateStorage_{}",
+            binding_name(global.variable.id, &tables.bindings)
+        );
+        let record = self.build_record(
+            id,
+            &ir::TypeDefinitionKind::Record {
+                kind: *kind,
+                fields: Some(fields),
+                layout: Some(layout),
+            },
+            &name,
+        )?;
+        self.dependencies
+            .flexible_records
+            .push(Item::Record(record));
+        Ok(rust::Type::Custom(name))
     }
 
     pub(super) fn align_wrapped(

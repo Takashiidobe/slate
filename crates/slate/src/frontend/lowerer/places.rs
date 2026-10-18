@@ -383,6 +383,21 @@ impl FunctionLowerer<'_, '_> {
             };
         }
         let binding = Expr::Var(binding_name(id, &self.tables.bindings).as_str().into());
+        if let Some(record) = self.tables.flexible_globals.get(&id) {
+            return Expr::Unary {
+                op: rust::UnaryOp::Deref,
+                expr: Box::new(Expr::Cast {
+                    expr: Box::new(Expr::AddrOf {
+                        mutable: true,
+                        expr: Box::new(binding),
+                    }),
+                    ty: rust::Type::Ptr {
+                        mutable: true,
+                        inner: Box::new(rust::Type::Custom(record.clone())),
+                    },
+                }),
+            };
+        }
         if self.tables.over_aligned.contains_key(&id) || self.aligned_locals.contains(&id) {
             Expr::TupleField {
                 base: Box::new(binding),
