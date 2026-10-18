@@ -1,5 +1,13 @@
 use super::*;
 
+pub(super) fn volatile_read(address: Expr) -> Expr {
+    Expr::Call {
+        func: Box::new(Expr::Var("std::ptr::read_volatile".into())),
+        args: vec![address],
+        binding: CallBinding::Generated,
+    }
+}
+
 impl Tables<'_> {
     pub(super) fn array_subscript<'p>(
         &self,
@@ -410,6 +418,55 @@ impl FunctionLowerer<'_, '_> {
         } else {
             binding
         }
+    }
+
+    pub(super) fn volatile_bit_field_write(
+        &mut self,
+        place: &ir::Place,
+        value: Expr,
+    ) -> Result<Option<Stmt>> {
+        let Some((storage, setter)) = self.bit_field_accessor(place, "set")? else {
+            return Ok(None);
+        };
+        let address = Expr::AddrOf {
+            mutable: true,
+            expr: Box::new(storage),
+        };
+        let operand = self.next_temp();
+        let unit = self.next_temp();
+        Ok(Some(Stmt::Scope {
+            body: vec![
+                Stmt::Let {
+                    name: operand.clone(),
+                    mutable: false,
+                    ty: None,
+                    init: Some(value),
+                },
+                Stmt::Unsafe {
+                    body: rust::Block {
+                        stmts: vec![
+                            Stmt::Let {
+                                name: unit.clone(),
+                                mutable: true,
+                                ty: None,
+                                init: Some(volatile_read(address.clone())),
+                            },
+                            Stmt::Expr(Expr::MethodCall {
+                                recv: Box::new(Expr::Var(unit.as_str().into())),
+                                method: setter,
+                                args: vec![Expr::Var(operand.into())],
+                            }),
+                            Stmt::Expr(Expr::Call {
+                                func: Box::new(Expr::Var("std::ptr::write_volatile".into())),
+                                args: vec![address, Expr::Var(unit.into())],
+                                binding: CallBinding::Generated,
+                            }),
+                        ],
+                        tail: None,
+                    },
+                },
+            ],
+        }))
     }
 
     pub(super) fn bit_field_accessor(

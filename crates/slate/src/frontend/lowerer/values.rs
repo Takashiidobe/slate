@@ -723,14 +723,23 @@ impl FunctionLowerer<'_, '_> {
             ValueKind::Read {
                 place,
                 ordering: None,
-            } if place.access.volatile => Expr::Unsafe(Box::new(rust::Block {
-                stmts: Vec::new(),
-                tail: Some(Box::new(Expr::Call {
-                    func: Box::new(Expr::Var("std::ptr::read_volatile".into())),
-                    args: vec![self.lower_address(place, false)?],
-                    binding: CallBinding::Generated,
-                })),
-            })),
+            } if place.access.volatile => {
+                let read = match self.bit_field_accessor(place, "get")? {
+                    Some((storage, getter)) => Expr::MethodCall {
+                        recv: Box::new(places::volatile_read(Expr::AddrOf {
+                            mutable: false,
+                            expr: Box::new(storage),
+                        })),
+                        method: getter,
+                        args: Vec::new(),
+                    },
+                    None => places::volatile_read(self.lower_address(place, false)?),
+                };
+                Expr::Unsafe(Box::new(rust::Block {
+                    stmts: Vec::new(),
+                    tail: Some(Box::new(read)),
+                }))
+            }
             ValueKind::Read {
                 place,
                 ordering: None,
