@@ -70,12 +70,12 @@ int main(void) {
 // CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a;
-// CHECK-NEXT:     r = (r.wrapping_shl(1 as u32) as i8) << 3 >> 3;
+// CHECK-NEXT:     r = (r.wrapping_shl(1u32) as i8) << 3 >> 3;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a;
-// CHECK-NEXT:     r = r.wrapping_shr(1 as u32);
+// CHECK-NEXT:     r = r.wrapping_shr(1u32);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%lld\n".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -98,12 +98,12 @@ int main(void) {
 // CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a;
-// CHECK-NEXT:     r = (r.wrapping_shl(1 as u32) as u8) & 31;
+// CHECK-NEXT:     r = (r.wrapping_shl(1u32) as u8) & 31;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a;
-// CHECK-NEXT:     r = r.wrapping_shr(1 as u32);
+// CHECK-NEXT:     r = r.wrapping_shr(1u32);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%llu\n".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -126,12 +126,12 @@ int main(void) {
 // CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a;
-// CHECK-NEXT:     r = (r.wrapping_shl(1 as u32) as i16) << 7 >> 7;
+// CHECK-NEXT:     r = (r.wrapping_shl(1u32) as i16) << 7 >> 7;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a;
-// CHECK-NEXT:     r = r.wrapping_shr(1 as u32);
+// CHECK-NEXT:     r = r.wrapping_shr(1u32);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%lld\n".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -154,12 +154,12 @@ int main(void) {
 // CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a;
-// CHECK-NEXT:     r = (r.wrapping_shl(1 as u32) as u16) & 511;
+// CHECK-NEXT:     r = (r.wrapping_shl(1u32) as u16) & 511;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a;
-// CHECK-NEXT:     r = r.wrapping_shr(1 as u32);
+// CHECK-NEXT:     r = r.wrapping_shr(1u32);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%llu\n".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -182,12 +182,12 @@ int main(void) {
 // CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a;
-// CHECK-NEXT:     r = (r.wrapping_shl(1 as u32) as i64) << 31 >> 31;
+// CHECK-NEXT:     r = (r.wrapping_shl(1u32) as i64) << 31 >> 31;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a;
-// CHECK-NEXT:     r = r.wrapping_shr(1 as u32);
+// CHECK-NEXT:     r = r.wrapping_shr(1u32);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%lld\n".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -210,12 +210,12 @@ int main(void) {
 // CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a;
-// CHECK-NEXT:     r = (r.wrapping_shl(1 as u32) as u64) & 8589934591;
+// CHECK-NEXT:     r = (r.wrapping_shl(1u32) as u64) & 8589934591;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a;
-// CHECK-NEXT:     r = r.wrapping_shr(1 as u32);
+// CHECK-NEXT:     r = r.wrapping_shr(1u32);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%llu\n".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -238,12 +238,12 @@ int main(void) {
 // CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a;
-// CHECK-NEXT:     r <<= 1 as i32;
+// CHECK-NEXT:     r <<= 1i32;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a;
-// CHECK-NEXT:     r >>= 1 as i32;
+// CHECK-NEXT:     r >>= 1i32;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%lld\n".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -266,12 +266,12 @@ int main(void) {
 // CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a;
-// CHECK-NEXT:     r <<= 1 as i32;
+// CHECK-NEXT:     r <<= 1i32;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a;
-// CHECK-NEXT:     r >>= 1 as i32;
+// CHECK-NEXT:     r >>= 1i32;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%llu\n".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -467,54 +467,33 @@ int main(void) {
 // CHECK-NEXT:     4,
 // CHECK-NEXT:     32,
 // CHECK-NEXT:     bitint::A8,
-// CHECK-NEXT: >>::from_i128((3 as i32) as i128)
-// CHECK-NEXT:     .shl_bits((70 as i32) as usize);
+// CHECK-NEXT: >>::from_i128(3i32 as i128)
+// CHECK-NEXT:     .shl_bits(70i32 as usize);
 // CHECK-NEXT: static mut g_shr: bitint::BUint<100, 2, 16, bitint::A8> = <bitint::BUint<
 // CHECK-NEXT:     100,
 // CHECK-NEXT:     2,
 // CHECK-NEXT:     16,
 // CHECK-NEXT:     bitint::A8,
-// CHECK-NEXT: >>::from_bint(<bitint::BInt<100, 2, 16, bitint::A8>>::from_i128((1024 as i32) as i128))
-// CHECK-NEXT:     .shr_bits((4 as i32) as usize);
-// CHECK-NEXT: static mut g_small: i16 = ((((3 as i32) as i16) << 7 >> 7)
-// CHECK-NEXT:     .wrapping_shl(((7 as i32) as usize) as u32) as i16) << 7 >> 7;
+// CHECK-NEXT: >>::from_bint(<bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(1024i32 as i128))
+// CHECK-NEXT:     .shr_bits(4i32 as usize);
+// CHECK-NEXT: static mut g_small: i16 = (3i16.wrapping_shl((7i32 as usize) as u32) as i16) << 7 >> 7;
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     s5((5 as i8) << 3 >> 3, 2 as i32, (((1 as i8) << 1 >> 1) as u8) & 127);
-// CHECK-NEXT:     s5((-7 as i8) << 3 >> 3, 1 as i32, (((3 as i8) << 1 >> 1) as u8) & 127);
-// CHECK-NEXT:     u5(
-// CHECK-NEXT:         (((21 as i8) << 3 >> 3) as u8) & 31,
-// CHECK-NEXT:         3 as i32,
-// CHECK-NEXT:         (((2 as i8) << 1 >> 1) as u8) & 127,
-// CHECK-NEXT:     );
-// CHECK-NEXT:     u5(
-// CHECK-NEXT:         (((31 as i8) << 3 >> 3) as u8) & 31,
-// CHECK-NEXT:         1 as i32,
-// CHECK-NEXT:         (((4 as i8) << 1 >> 1) as u8) & 127,
-// CHECK-NEXT:     );
-// CHECK-NEXT:     s9((100 as i16) << 7 >> 7, 3 as i32, (((2 as i8) << 1 >> 1) as u8) & 127);
-// CHECK-NEXT:     s9((-200 as i16) << 7 >> 7, 2 as i32, (((5 as i8) << 1 >> 1) as u8) & 127);
-// CHECK-NEXT:     u9(
-// CHECK-NEXT:         (((300 as i16) << 7 >> 7) as u16) & 511,
-// CHECK-NEXT:         2 as i32,
-// CHECK-NEXT:         (((1 as i8) << 1 >> 1) as u8) & 127,
-// CHECK-NEXT:     );
-// CHECK-NEXT:     u9(
-// CHECK-NEXT:         (((511 as i16) << 7 >> 7) as u16) & 511,
-// CHECK-NEXT:         4 as i32,
-// CHECK-NEXT:         (((3 as i8) << 1 >> 1) as u8) & 127,
-// CHECK-NEXT:     );
-// CHECK-NEXT:     s33((4294967295 as i64) << 31 >> 31, 3 as i32, (((2 as i8) << 1 >> 1) as u8) & 127);
-// CHECK-NEXT:     u33(
-// CHECK-NEXT:         (8589934591 as u64) & (8589934591 as u64),
-// CHECK-NEXT:         4 as i32,
-// CHECK-NEXT:         (((1 as i8) << 1 >> 1) as u8) & 127,
-// CHECK-NEXT:     );
-// CHECK-NEXT:     s64(-9223372036854775807 as i64, 1 as i32, (((2 as i8) << 1 >> 1) as u8) & 127);
-// CHECK-NEXT:     u64(18446744073709551615 as u64, 5 as i32, (((3 as i8) << 1 >> 1) as u8) & 127);
+// CHECK-NEXT:     s5(5i8, 2i32, 1u8);
+// CHECK-NEXT:     s5(-7i8, 1i32, 3u8);
+// CHECK-NEXT:     u5(21u8, 3i32, 2u8);
+// CHECK-NEXT:     u5(31u8, 1i32, 4u8);
+// CHECK-NEXT:     s9(100i16, 3i32, 2u8);
+// CHECK-NEXT:     s9(-200i16, 2i32, 5u8);
+// CHECK-NEXT:     u9(300u16, 2i32, 1u8);
+// CHECK-NEXT:     u9(511u16, 4i32, 3u8);
+// CHECK-NEXT:     s33(4294967295i64, 3i32, 2u8);
+// CHECK-NEXT:     u33(8589934591u64, 4i32, 1u8);
+// CHECK-NEXT:     s64(-9223372036854775807i64, 1i32, 2u8);
+// CHECK-NEXT:     u64(18446744073709551615u64, 5i32, 3u8);
 // CHECK-NEXT:     s100(
 // CHECK-NEXT:         <bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(-123456789 as i128),
-// CHECK-NEXT:         40 as i32,
-// CHECK-NEXT:         (((20 as i8) << 1 >> 1) as u8) & 127,
+// CHECK-NEXT:         40i32,
+// CHECK-NEXT:         20u8,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     u100(
 // CHECK-NEXT:         <bitint::BUint<
@@ -525,13 +504,13 @@ int main(void) {
 // CHECK-NEXT:         >>::from_bint(
 // CHECK-NEXT:             <bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(123456789 as i128),
 // CHECK-NEXT:         ),
-// CHECK-NEXT:         40 as i32,
-// CHECK-NEXT:         (((20 as i8) << 1 >> 1) as u8) & 127,
+// CHECK-NEXT:         40i32,
+// CHECK-NEXT:         20u8,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     s128(
 // CHECK-NEXT:         <bitint::BInt<128, 2, 16, bitint::A8>>::from_i128(-123456789 as i128),
-// CHECK-NEXT:         70 as i32,
-// CHECK-NEXT:         (((3 as i8) << 1 >> 1) as u8) & 127,
+// CHECK-NEXT:         70i32,
+// CHECK-NEXT:         3u8,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     u128(
 // CHECK-NEXT:         <bitint::BUint<
@@ -542,13 +521,13 @@ int main(void) {
 // CHECK-NEXT:         >>::from_bint(
 // CHECK-NEXT:             <bitint::BInt<128, 2, 16, bitint::A8>>::from_i128(123456789 as i128),
 // CHECK-NEXT:         ),
-// CHECK-NEXT:         70 as i32,
-// CHECK-NEXT:         (((3 as i8) << 1 >> 1) as u8) & 127,
+// CHECK-NEXT:         70i32,
+// CHECK-NEXT:         3u8,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     s200(
 // CHECK-NEXT:         <bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(-123456789 as i128),
-// CHECK-NEXT:         130 as i32,
-// CHECK-NEXT:         (((100 as i8) << 1 >> 1) as u8) & 127,
+// CHECK-NEXT:         130i32,
+// CHECK-NEXT:         100u8,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     u200(
 // CHECK-NEXT:         <bitint::BUint<
@@ -559,8 +538,8 @@ int main(void) {
 // CHECK-NEXT:         >>::from_bint(
 // CHECK-NEXT:             <bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(123456789 as i128),
 // CHECK-NEXT:         ),
-// CHECK-NEXT:         130 as i32,
-// CHECK-NEXT:         (((100 as i8) << 1 >> 1) as u8) & 127,
+// CHECK-NEXT:         130i32,
+// CHECK-NEXT:         100u8,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {

@@ -61,7 +61,7 @@ int main(void) {
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     loop {
 // CHECK-NEXT:         total += 7;
-// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:         if !(0i32 != 0i32) {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -82,10 +82,10 @@ int main(void) {
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     println!("{}", sum_do_while(5 as i32));
-// CHECK-NEXT:     println!("{}", sum_do_while(0 as i32));
+// CHECK-NEXT:     println!("{}", sum_do_while(5i32));
+// CHECK-NEXT:     println!("{}", sum_do_while(0i32));
 // CHECK-NEXT:     println!("{}", runs_once_when_false());
-// CHECK-NEXT:     println!("{}", continue_checks_condition(6 as i32));
+// CHECK-NEXT:     println!("{}", continue_checks_condition(6i32));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

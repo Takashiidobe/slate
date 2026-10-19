@@ -182,29 +182,23 @@ int main(void) {
 // CHECK-NEXT:         (32768 as usize) / 8usize,
 // CHECK-NEXT:     ) as *mut ()) as *mut i8;
 // CHECK-NEXT:     let mut [[V_5:__v[0-9]+]]: bool;
-// CHECK-NEXT:     if aligned_to(a as *mut (), 8 as u64) != 0 {
-// CHECK-NEXT:         [[V_5]] = aligned_to(b as *mut (), 64 as u64) != 0;
+// CHECK-NEXT:     if aligned_to(a as *mut (), 8u64) != 0 {
+// CHECK-NEXT:         [[V_5]] = aligned_to(b as *mut (), 64u64) != 0;
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         [[V_5]] = false as bool;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut [[V_6:__v[0-9]+]]: bool;
 // CHECK-NEXT:     if [[V_5]] {
-// CHECK-NEXT:         [[V_6]] = aligned_to(c as *mut (), 4096 as u64) != 0;
+// CHECK-NEXT:         [[V_6]] = aligned_to(c as *mut (), 4096u64) != 0;
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         [[V_6]] = false as bool;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let [[V_7:__v[0-9]+]]: i32 = [[V_6]] as i32;
 // CHECK-NEXT:     ok &= [[V_7]];
-// CHECK-NEXT:     unsafe { std::ptr::write_bytes(small as *mut u8, 1 as u8, 3 as usize) };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::ptr::write_bytes(a as *mut u8, 2 as u8, ((n as i64) as u64) as usize)
-// CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::ptr::write_bytes(b as *mut u8, 3 as u8, ((n as i64) as u64) as usize)
-// CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::ptr::write_bytes(c as *mut u8, 4 as u8, ((n as i64) as u64) as usize)
-// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { std::ptr::write_bytes(small as *mut u8, 1u8, 3 as usize) };
+// CHECK-NEXT:     unsafe { std::ptr::write_bytes(a as *mut u8, 2u8, ((n as i64) as u64) as usize) };
+// CHECK-NEXT:     unsafe { std::ptr::write_bytes(b as *mut u8, 3u8, ((n as i64) as u64) as usize) };
+// CHECK-NEXT:     unsafe { std::ptr::write_bytes(c as *mut u8, 4u8, ((n as i64) as u64) as usize) };
 // CHECK-NEXT:     ok
 // CHECK-NEXT:         * (((unsafe { *small.offset(2 as isize) }) as i32)
 // CHECK-NEXT:             + ((unsafe { *a.offset((n - 1) as isize) }) as i32)
@@ -214,7 +208,7 @@ int main(void) {
 // CHECK-NEXT: fn with_align_uninitialized(n: i32) -> i32 {
 // CHECK-NEXT:     let __slate_alloca_mark = __slate_alloca::Mark::new();
 // CHECK-NEXT:     let p: *mut i32 = (__slate_alloca::alloca(
-// CHECK-NEXT:         (4 as u64).wrapping_mul((n as i64) as u64) as usize,
+// CHECK-NEXT:         4u64.wrapping_mul((n as i64) as u64) as usize,
 // CHECK-NEXT:         (1024 as usize) / 8usize,
 // CHECK-NEXT:     ) as *mut ()) as *mut i32;
 // CHECK-NEXT:     for i in 0..n {
@@ -226,26 +220,26 @@ int main(void) {
 // CHECK-NEXT:     for i in 0..n {
 // CHECK-NEXT:         sum += unsafe { *p.offset(i as isize) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     aligned_to(p as *mut (), 128 as u64) * sum
+// CHECK-NEXT:     aligned_to(p as *mut (), 128u64) * sum
 // CHECK-NEXT: }
 // CHECK-NEXT: fn large_with_align() -> i64 {
 // CHECK-NEXT:     let __slate_alloca_mark = __slate_alloca::Mark::new();
 // CHECK-NEXT:     let mut total: i64 = 0;
-// CHECK-NEXT:     for i in 0 as i32..3 as i32 {
+// CHECK-NEXT:     for i in 0i32..3i32 {
 // CHECK-NEXT:         let p: *mut u8 = (__slate_alloca::alloca(
 // CHECK-NEXT:             1100000 as usize,
 // CHECK-NEXT:             (2048 as usize) / 8usize,
 // CHECK-NEXT:         ) as *mut ()) as *mut u8;
-// CHECK-NEXT:         unsafe { std::ptr::write_bytes(p as *mut u8, 5 as u8, 1100000 as usize) };
-// CHECK-NEXT:         let [[V_8:__v[0-9]+]]: i32 = aligned_to(p as *mut (), 256 as u64)
+// CHECK-NEXT:         unsafe { std::ptr::write_bytes(p as *mut u8, 5u8, 1100000 as usize) };
+// CHECK-NEXT:         let [[V_8:__v[0-9]+]]: i32 = aligned_to(p as *mut (), 256u64)
 // CHECK-NEXT:             * (((unsafe { *p.offset(1099999 as isize) }) as u32) as i32);
 // CHECK-NEXT:         total += [[V_8]] as i64;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     println!("{} {}", with_align(5 as i32), with_align(33 as i32));
-// CHECK-NEXT:     println!("{}", with_align_uninitialized(10 as i32));
+// CHECK-NEXT:     println!("{} {}", with_align(5i32), with_align(33i32));
+// CHECK-NEXT:     println!("{}", with_align_uninitialized(10i32));
 // CHECK-NEXT:     unsafe { printf(c"%ld\n".as_ptr(), large_with_align()) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0

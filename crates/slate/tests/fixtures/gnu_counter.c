@@ -24,9 +24,9 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut direct_zero: i32 = 0 as i32;
-// CHECK-NEXT: static mut macro_one: i32 = 1 as i32;
-// CHECK-NEXT: static mut pair: i32 = (2 as i32) * (10 as i32) + (3 as i32);
+// CHECK-NEXT: static mut direct_zero: i32 = 0;
+// CHECK-NEXT: static mut macro_one: i32 = 1;
+// CHECK-NEXT: static mut pair: i32 = 23;
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let local_four: i32 = 4;
 // CHECK-NEXT:     println!(

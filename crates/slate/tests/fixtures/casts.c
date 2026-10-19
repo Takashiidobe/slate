@@ -31,11 +31,11 @@ int main(void) {
 // CHECK-NEXT:     let d: f64 = 7.75f64;
 // CHECK-NEXT:     let f: f32 = d as f32;
 // CHECK-NEXT:     let i: i32 = d as i32;
-// CHECK-NEXT:     let u: u32 = -(1 as i32) as u32;
+// CHECK-NEXT:     let u: u32 = 4294967295u32;
 // CHECK-NEXT:     let l: i64 = i as i64;
-// CHECK-NEXT:     let c: u8 = ((260 as i32) as i8) as u8;
+// CHECK-NEXT:     let c: u8 = 4u8;
 // CHECK-NEXT:     let b0: bool = 0.0f64 != 0.0f64;
-// CHECK-NEXT:     let b1: bool = -(3 as i32) != (0 as i32);
+// CHECK-NEXT:     let b1: bool = -3i32 != 0i32;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%f\n".as_ptr(), f as f64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

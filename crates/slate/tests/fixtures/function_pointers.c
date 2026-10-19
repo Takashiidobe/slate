@@ -41,9 +41,9 @@ int main(void) {
 // CHECK-NEXT:     let mut chosen: Option<unsafe extern "C-unwind" fn(i32, i32) -> i32> = Some(
 // CHECK-NEXT:         add_pair,
 // CHECK-NEXT:     );
-// CHECK-NEXT:     println!("{}", apply_binary(chosen, 4 as i32, 5 as i32));
+// CHECK-NEXT:     println!("{}", apply_binary(chosen, 4i32, 5i32));
 // CHECK-NEXT:     chosen = Some(mul_pair);
-// CHECK-NEXT:     println!("{}", unsafe { chosen.unwrap() (3 as i32, 6 as i32) });
+// CHECK-NEXT:     println!("{}", unsafe { chosen.unwrap() (3i32, 6i32) });
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

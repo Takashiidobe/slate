@@ -217,12 +217,12 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(export_name = "__slate_ld____slate_ldfp__twice__rf80_f80")]
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.twice")]
 // CHECK-NEXT: extern "C-unwind" fn twice(x: LongDouble) -> LongDouble {
-// CHECK-NEXT:     x * __slate_f80_from_i32(2 as i32)
+// CHECK-NEXT:     x * __slate_f80_from_i32(2i32)
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(export_name = "__slate_ld____slate_ldfp__halve__rf80_f80")]
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.halve")]
 // CHECK-NEXT: extern "C-unwind" fn halve(x: LongDouble) -> LongDouble {
-// CHECK-NEXT:     x / __slate_f80_from_i32(2 as i32)
+// CHECK-NEXT:     x / __slate_f80_from_i32(2i32)
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(export_name = "__slate_ld____slate_ldfp__shift__rf80_f80_i32")]
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.shift")]
@@ -282,7 +282,7 @@ int main(void) {
 // CHECK-NEXT:         },
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let mut x: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 216, 3, 192]);
-// CHECK-NEXT:     for i in 0 as i32..5 as i32 {
+// CHECK-NEXT:     for i in 0i32..5i32 {
 // CHECK-NEXT:         x = apply(table.0[i as usize], x);
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { __slate_printf__ri32_pi8_i32_f80(c"%d %.6Lf\n".as_ptr(), i, x) };
@@ -304,7 +304,7 @@ int main(void) {
 // CHECK-NEXT:             >(__slate_ldfp__ldexpl as *const ())
 // CHECK-NEXT:         },
 // CHECK-NEXT:     ]);
-// CHECK-NEXT:     for i in 0 as i32..2 as i32 {
+// CHECK-NEXT:     for i in 0i32..2i32 {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             __slate_printf__ri32_pi8_i32_f80(
@@ -320,7 +320,7 @@ int main(void) {
 // CHECK-NEXT:                         >(b.0[i as usize])
 // CHECK-NEXT:                     },
 // CHECK-NEXT:                     LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 63]),
-// CHECK-NEXT:                     3 as i32,
+// CHECK-NEXT:                     3i32,
 // CHECK-NEXT:                 ),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };

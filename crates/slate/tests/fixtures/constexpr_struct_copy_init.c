@@ -43,27 +43,27 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut base: pair = pair {
-// CHECK-NEXT:     a: 2 as i32,
+// CHECK-NEXT:     a: 2i32,
 // CHECK-NEXT:     b: 3.5f32,
-// CHECK-NEXT:     c: [4 as i32, 5 as i32, 6 as i32],
+// CHECK-NEXT:     c: [4i32, 5i32, 6i32],
 // CHECK-NEXT: };
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut alias: pair = pair {
-// CHECK-NEXT:     a: 2 as i32,
+// CHECK-NEXT:     a: 2i32,
 // CHECK-NEXT:     b: 3.5f32,
-// CHECK-NEXT:     c: [4 as i32, 5 as i32, 6 as i32],
+// CHECK-NEXT:     c: [4i32, 5i32, 6i32],
 // CHECK-NEXT: };
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut copied: pair = pair {
-// CHECK-NEXT:     a: 2 as i32,
+// CHECK-NEXT:     a: 2i32,
 // CHECK-NEXT:     b: 3.5f32,
-// CHECK-NEXT:     c: [4 as i32, 5 as i32, 6 as i32],
+// CHECK-NEXT:     c: [4i32, 5i32, 6i32],
 // CHECK-NEXT: };
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut exported: pair = pair {
-// CHECK-NEXT:     a: 2 as i32,
+// CHECK-NEXT:     a: 2i32,
 // CHECK-NEXT:     b: 3.5f32,
-// CHECK-NEXT:     c: [4 as i32, 5 as i32, 6 as i32],
+// CHECK-NEXT:     c: [4i32, 5i32, 6i32],
 // CHECK-NEXT: };
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

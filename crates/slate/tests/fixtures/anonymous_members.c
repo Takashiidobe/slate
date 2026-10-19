@@ -62,7 +62,7 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut value: container = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: container = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]].prefix = 0 as i32;
+// CHECK-NEXT:         [[T_0]].prefix = 0i32;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     value.prefix = 3;
@@ -79,7 +79,7 @@ int main(void) {
 // CHECK-NEXT:             value.[[SLATE_ANON_0]].integer,
 // CHECK-NEXT:             value.[[SLATE_ANON_1]].x,
 // CHECK-NEXT:             value.[[SLATE_ANON_1]].y,
-// CHECK-NEXT:             16 as u64,
+// CHECK-NEXT:             16u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -91,7 +91,7 @@ int main(void) {
 // CHECK-NEXT:         prefix: 1,
 // CHECK-NEXT:         [[SLATE_ANON_0]]: {
 // CHECK-NEXT:             let mut [[T_1:__t[0-9]+]]: [[SLATERECORD_0]] = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:             [[T_1]].integer = 2 as i32;
+// CHECK-NEXT:             [[T_1]].integer = 2i32;
 // CHECK-NEXT:             [[T_1]]
 // CHECK-NEXT:         },
 // CHECK-NEXT:         [[SLATE_ANON_1]]: [[SLATERECORD_1]] { x: 3, y: 4 },
@@ -100,12 +100,12 @@ int main(void) {
 // CHECK-NEXT:         prefix: 5,
 // CHECK-NEXT:         [[SLATE_ANON_0]]: {
 // CHECK-NEXT:             let mut [[T_2:__t[0-9]+]]: [[SLATERECORD_0]] = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:             [[T_2]].integer = 6 as i32;
+// CHECK-NEXT:             [[T_2]].integer = 6i32;
 // CHECK-NEXT:             [[T_2]]
 // CHECK-NEXT:         },
 // CHECK-NEXT:         [[SLATE_ANON_1]]: {
 // CHECK-NEXT:             let mut [[T_3:__t[0-9]+]]: [[SLATERECORD_1]] = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:             [[T_3]].y = 7 as i32;
+// CHECK-NEXT:             [[T_3]].y = 7i32;
 // CHECK-NEXT:             [[T_3]]
 // CHECK-NEXT:         },
 // CHECK-NEXT:     };

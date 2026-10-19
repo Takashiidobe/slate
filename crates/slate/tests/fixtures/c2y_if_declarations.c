@@ -80,13 +80,8 @@ int main(void) {
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         println!("nonzero");
 // CHECK-NEXT:     }
-// CHECK-NEXT:     println!("{} {}", pick(2 as i32), pick(8 as i32));
-// CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}",
-// CHECK-NEXT:         classify(5 as i32),
-// CHECK-NEXT:         classify(15 as i32),
-// CHECK-NEXT:         classify(35 as i32)
-// CHECK-NEXT:     );
+// CHECK-NEXT:     println!("{} {}", pick(2i32), pick(8i32));
+// CHECK-NEXT:     println!("{} {} {}", classify(5i32), classify(15i32), classify(35i32));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

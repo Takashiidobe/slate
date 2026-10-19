@@ -43,7 +43,7 @@ int main(void) {
 // CHECK-NEXT:     fn thrd_join(__thr: u64, __res: *mut i32) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[thread_local]
-// CHECK-NEXT: static mut file_value: i32 = 5 as i32;
+// CHECK-NEXT: static mut file_value: i32 = 5;
 // CHECK-NEXT: fn update_values(file_next: i32, block_next: i32) -> i32 {
 // CHECK-NEXT:     let result: i32 = (unsafe { file_value }) * 100 + unsafe { block_value };
 // CHECK-NEXT:     unsafe {
@@ -55,7 +55,7 @@ int main(void) {
 // CHECK-NEXT:     result
 // CHECK-NEXT: }
 // CHECK-NEXT: #[thread_local]
-// CHECK-NEXT: static mut block_value: i32 = 7 as i32;
+// CHECK-NEXT: static mut block_value: i32 = 7;
 // CHECK-NEXT: extern "C-unwind" fn worker(argument: *mut ()) -> i32 {
 // CHECK-NEXT:     let values: *mut i32 = argument as *mut i32;
 // CHECK-NEXT:     update_values(
@@ -66,7 +66,7 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut thread: u64 = 0;
 // CHECK-NEXT:     let mut values: [i32; 2] = [11, 13];
-// CHECK-NEXT:     let main_before: i32 = update_values(17 as i32, 19 as i32);
+// CHECK-NEXT:     let main_before: i32 = update_values(17i32, 19i32);
 // CHECK-NEXT:     let mut worker_result: i32 = 0;
 // CHECK-NEXT:     let created: i32 = unsafe {
 // CHECK-NEXT:         thrd_create(
@@ -83,7 +83,7 @@ int main(void) {
 // CHECK-NEXT:         [[V_0]] = -1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     joined = [[V_0]];
-// CHECK-NEXT:     let main_after: i32 = update_values(23 as i32, 29 as i32);
+// CHECK-NEXT:     let main_after: i32 = update_values(23i32, 29i32);
 // CHECK-NEXT:     println!("{} {} {} {} {}", main_before, worker_result, main_after, created, joined);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

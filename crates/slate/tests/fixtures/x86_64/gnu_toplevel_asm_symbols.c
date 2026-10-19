@@ -40,7 +40,7 @@ int main(void) {
 // CHECK-NEXT:     fn toplevel_bump() -> i32;
 // CHECK-NEXT:     fn toplevel_twice(value: i32) -> i32;
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut counter: i32 = 40 as i32;
+// CHECK-NEXT: static mut counter: i32 = 40;
 // CHECK-NEXT: core::arch::global_asm!(
 // CHECK-NEXT:     ".text\n.globl toplevel_bump\n.type toplevel_bump,@function\ntoplevel_bump:\n  incl {0}(%rip) # {{[{][{]}}braces}}\n  movl {0}(%rip), %eax\n  add $1, %eax\n  ret\n.size toplevel_bump,.-toplevel_bump\n\n.text\n.globl toplevel_twice\n.type toplevel_twice,@function\ntoplevel_twice:\n  jmp {1}\n.size toplevel_twice,.-toplevel_twice\n",
 // CHECK-NEXT:     sym counter, sym twice, options(att_syntax)
@@ -54,8 +54,8 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let bumped: i32 = unsafe { toplevel_bump() };
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {}", bumped, unsafe { counter }, unsafe { toplevel_twice(21 as i32) },
-// CHECK-NEXT:         add(2 as i32, 3 as i32)
+// CHECK-NEXT:         "{} {} {} {}", bumped, unsafe { counter }, unsafe { toplevel_twice(21i32) },
+// CHECK-NEXT:         add(2i32, 3i32)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

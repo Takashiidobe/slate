@@ -39,7 +39,7 @@ int main(void) {
 // CHECK-NEXT:         CaseData { input: 2, expected: 1 },
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let actual: u32 = 0;
-// CHECK-NEXT:     for i in 0 as i32..2 as i32 {
+// CHECK-NEXT:     for i in 0i32..2i32 {
 // CHECK-NEXT:         if (actual as u32) != (cases.0[i as usize].expected as u32) {
 // CHECK-NEXT:             println!("mismatch {}", i);
 // CHECK-NEXT:         } else {

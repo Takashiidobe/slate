@@ -71,32 +71,12 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut input: [u8; 4] = [97, 98, 99, 0];
 // CHECK-NEXT:     let tag: __SlateAlign16<[u8; 22]> = __SlateAlign16([
-// CHECK-NEXT:         116 as u8,
-// CHECK-NEXT:         97 as u8,
-// CHECK-NEXT:         103 as u8,
-// CHECK-NEXT:         58 as u8,
-// CHECK-NEXT:         121 as u8,
-// CHECK-NEXT:         97 as u8,
-// CHECK-NEXT:         109 as u8,
-// CHECK-NEXT:         108 as u8,
-// CHECK-NEXT:         46 as u8,
-// CHECK-NEXT:         111 as u8,
-// CHECK-NEXT:         114 as u8,
-// CHECK-NEXT:         103 as u8,
-// CHECK-NEXT:         44 as u8,
-// CHECK-NEXT:         50 as u8,
-// CHECK-NEXT:         48 as u8,
-// CHECK-NEXT:         48 as u8,
-// CHECK-NEXT:         50 as u8,
-// CHECK-NEXT:         58 as u8,
-// CHECK-NEXT:         115 as u8,
-// CHECK-NEXT:         116 as u8,
-// CHECK-NEXT:         114 as u8,
-// CHECK-NEXT:         0 as u8,
+// CHECK-NEXT:         116u8, 97u8, 103u8, 58u8, 121u8, 97u8, 109u8, 108u8, 46u8, 111u8, 114u8, 103u8,
+// CHECK-NEXT:         44u8, 50u8, 48u8, 48u8, 50u8, 58u8, 115u8, 116u8, 114u8, 0u8,
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let mut buffer: [u8; 4] = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [u8; 4] = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]][0] = 0 as u8;
+// CHECK-NEXT:         [[T_0]][0] = 0u8;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut size_read: u64 = 0;
@@ -109,7 +89,7 @@ int main(void) {
 // CHECK-NEXT:             .unwrap()(
 // CHECK-NEXT:             parser.read_handler_data,
 // CHECK-NEXT:             buffer.as_mut_ptr() as *mut u8,
-// CHECK-NEXT:             3 as u64,
+// CHECK-NEXT:             3u64,
 // CHECK-NEXT:             std::ptr::addr_of_mut!(size_read),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };

@@ -19,10 +19,10 @@ int main(void) {
 // CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut global_value: num_complex::Complex<i32> = {
-// CHECK-NEXT:     let [[T_0:__t[0-9]+]] = 17 as i32;
+// CHECK-NEXT:     let [[T_0:__t[0-9]+]] = 17i32;
 // CHECK-NEXT:     let [[T_1:__t[0-9]+]] = num_complex::Complex {
-// CHECK-NEXT:         re: 0 as i32,
-// CHECK-NEXT:         im: 19 as i32,
+// CHECK-NEXT:         re: 0i32,
+// CHECK-NEXT:         im: 19i32,
 // CHECK-NEXT:     };
 // CHECK-NEXT:     num_complex::Complex {
 // CHECK-NEXT:         re: [[T_0]] + [[T_1]].re,

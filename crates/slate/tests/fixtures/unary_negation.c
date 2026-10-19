@@ -27,8 +27,8 @@ int main(void) {
 // CHECK-NEXT:     -x
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     println!("{}", neg_int(7 as i32));
-// CHECK-NEXT:     println!("{}", neg_int(- (12 as i32)));
+// CHECK-NEXT:     println!("{}", neg_int(7i32));
+// CHECK-NEXT:     println!("{}", neg_int(- 12i32));
 // CHECK-NEXT:     unsafe { printf(c"%f\n".as_ptr(), neg_double(1.5f64)) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0

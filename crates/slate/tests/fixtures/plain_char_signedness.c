@@ -21,9 +21,9 @@ int main(void) {
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:     (((c as u32) as i32) < 0) as i32
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:     let c: i8 = (200 as i32) as i8;
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:     let c: i8 = -56i8;
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:     println!("{} {}", is_negative(c), c as i32);
-// AARCH64-UNKNOWN-LINUX-GNU-NEXT:     let c: u8 = ((200 as i32) as i8) as u8;
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:     let c: u8 = 200u8;
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:     println!("{} {}", is_negative(c), (c as u32) as i32);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

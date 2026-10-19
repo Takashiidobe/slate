@@ -63,7 +63,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: /// counter definition
-// CHECK-NEXT: static mut counter: i32 = 4 as i32;
+// CHECK-NEXT: static mut counter: i32 = 4;
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let foo: Foo = Foo { a: 1 };

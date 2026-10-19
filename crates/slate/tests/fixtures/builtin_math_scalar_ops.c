@@ -47,8 +47,8 @@ int main(void) {
 // CHECK-NEXT:     let fdim_v: f64 = unsafe { __builtin_fdim(5.0f64, 2.0f64) };
 // CHECK-NEXT:     let fdim_neg: f64 = unsafe { __builtin_fdim(2.0f64, 5.0f64) };
 // CHECK-NEXT:     let cbrt_v: f64 = unsafe { __builtin_cbrt(27.0f64) };
-// CHECK-NEXT:     let ldexp_v: f64 = unsafe { __builtin_ldexp(1.0f64, 4 as i32) };
-// CHECK-NEXT:     let scalbn_v: f64 = unsafe { __builtin_scalbn(10.0f64, 3 as i32) };
+// CHECK-NEXT:     let ldexp_v: f64 = unsafe { __builtin_ldexp(1.0f64, 4i32) };
+// CHECK-NEXT:     let scalbn_v: f64 = unsafe { __builtin_scalbn(10.0f64, 3i32) };
 // CHECK-NEXT:     let logb_v: f64 = unsafe { __builtin_logb(10.0f64) };
 // CHECK-NEXT:     let ilogb_v: i32 = unsafe { __builtin_ilogb(10.0f64) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());

@@ -20,15 +20,9 @@ int main(void) {
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut buf: __SlateAlign16<[i8; 64]> = __SlateAlign16([0 as i8; 64]);
+// CHECK-NEXT:     let mut buf: __SlateAlign16<[i8; 64]> = __SlateAlign16([0i8; 64]);
 // CHECK-NEXT:     let n: i32 = unsafe {
-// CHECK-NEXT:         snprintf(
-// CHECK-NEXT:             buf.0.as_mut_ptr() as *mut i8,
-// CHECK-NEXT:             64 as u64,
-// CHECK-NEXT:             c"%d-%d".as_ptr(),
-// CHECK-NEXT:             3 as i32,
-// CHECK-NEXT:             4 as i32,
-// CHECK-NEXT:         )
+// CHECK-NEXT:         snprintf(buf.0.as_mut_ptr() as *mut i8, 64u64, c"%d-%d".as_ptr(), 3i32, 4i32)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"n=%d buf=%s\n".as_ptr(), n, buf.0.as_mut_ptr() as *mut i8) };

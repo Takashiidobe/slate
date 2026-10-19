@@ -74,7 +74,7 @@ int main(void) {
 // CHECK-NEXT:         [[V_1]] = unsafe { std::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:         [[V_2]] = unsafe { std::mem::transmute::<u32, u32>([[T_1]] as u32) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     ([[V_1]] as u64) | ([[V_2]] as u64) << (32 as u32)
+// CHECK-NEXT:     ([[V_1]] as u64) | ([[V_2]] as u64) << 32u32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn narrow(mut v: i32) -> u8 {
@@ -97,7 +97,7 @@ int main(void) {
 // CHECK-NEXT:     ([[V_4]] as u16) as i16
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut global_value: i32 = 5 as i32;
+// CHECK-NEXT: static mut global_value: i32 = 5;
 // CHECK-EMPTY:
 // CHECK-NEXT: fn pointer() -> *mut i32 {
 // CHECK-NEXT:     let mut [[V_5:__v[0-9]+]]: u32 = 0;
@@ -124,14 +124,14 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%d %llx %u %d\n".as_ptr(),
-// CHECK-NEXT:             implicit_return(21 as i32),
+// CHECK-NEXT:             implicit_return(21i32),
 // CHECK-NEXT:             implicit_return64(),
-// CHECK-NEXT:             (narrow(511 as i32) as u32) as i32,
-// CHECK-NEXT:             narrow16(32767 as i32) as i32,
+// CHECK-NEXT:             (narrow(511i32) as u32) as i32,
+// CHECK-NEXT:             narrow16(32767i32) as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     println!("{} {}", unsafe { *pointer() }, explicit_wins(3 as i32));
+// CHECK-NEXT:     println!("{} {}", unsafe { *pointer() }, explicit_wins(3i32));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

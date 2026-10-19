@@ -99,15 +99,15 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut gs: S = {
 // CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: S = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     [[T_0]].a = (1 as i32) as u32;
-// CHECK-NEXT:     [[T_0]].__slate_bits_0.__set_b((3 as i32) as u32);
-// CHECK-NEXT:     [[T_0]].__slate_bits_0.__set_c(-(7 as i32));
-// CHECK-NEXT:     [[T_0]].__slate_bits_0.__set_d((48879 as i32) as u32);
+// CHECK-NEXT:     [[T_0]].a = 1u32;
+// CHECK-NEXT:     [[T_0]].__slate_bits_0.__set_b(3u32);
+// CHECK-NEXT:     [[T_0]].__slate_bits_0.__set_c(-7i32);
+// CHECK-NEXT:     [[T_0]].__slate_bits_0.__set_d(48879u32);
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
 // CHECK-NEXT: static mut gu: U = {
 // CHECK-NEXT:     let mut [[T_0]]: U = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     [[T_0]].word = (305419896 as i32) as u32;
+// CHECK-NEXT:     [[T_0]].word = 305419896u32;
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
 // CHECK-NEXT: static mut calls: i32 = unsafe { std::mem::zeroed() };
@@ -120,15 +120,15 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut ls: S = {
 // CHECK-NEXT:         let mut [[T_0]]: S = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]].a = 2 as u32;
-// CHECK-NEXT:         [[T_0]].__slate_bits_0.__set_b(9 as u32);
-// CHECK-NEXT:         [[T_0]].__slate_bits_0.__set_c(100 as i32);
-// CHECK-NEXT:         [[T_0]].__slate_bits_0.__set_d(7 as u32);
+// CHECK-NEXT:         [[T_0]].a = 2u32;
+// CHECK-NEXT:         [[T_0]].__slate_bits_0.__set_b(9u32);
+// CHECK-NEXT:         [[T_0]].__slate_bits_0.__set_c(100i32);
+// CHECK-NEXT:         [[T_0]].__slate_bits_0.__set_d(7u32);
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut lu: U = {
 // CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: U = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_1]].word = 11259375 as u32;
+// CHECK-NEXT:         [[T_1]].word = 11259375u32;
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -163,7 +163,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     let [[T_2:__t[0-9]+]] = next(-(300 as i32));
+// CHECK-NEXT:     let [[T_2:__t[0-9]+]] = next(-300i32);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let mut [[T_3:__t[0-9]+]] = std::ptr::read_volatile(
 // CHECK-NEXT:             std::ptr::addr_of_mut!(* std::ptr::addr_of_mut!(gs.__slate_bits_0)),
@@ -191,7 +191,7 @@ int main(void) {
 // CHECK-NEXT:             [[T_5]],
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[T_6:__t[0-9]+]] = next(131071 as i32) as u32;
+// CHECK-NEXT:     let [[T_6:__t[0-9]+]] = next(131071i32) as u32;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let mut [[T_7:__t[0-9]+]] = std::ptr::read_volatile(
 // CHECK-NEXT:             std::ptr::addr_of_mut!(ls.__slate_bits_0),
@@ -199,7 +199,7 @@ int main(void) {
 // CHECK-NEXT:         [[T_7]].__set_d([[T_6]]);
 // CHECK-NEXT:         std::ptr::write_volatile(std::ptr::addr_of_mut!(ls.__slate_bits_0), [[T_7]]);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[T_8:__t[0-9]+]] = 85 as u32;
+// CHECK-NEXT:     let [[T_8:__t[0-9]+]] = 85u32;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let mut [[T_9:__t[0-9]+]] = std::ptr::read_volatile(
 // CHECK-NEXT:             std::ptr::addr_of_mut!(lu.__slate_bits_0),

@@ -95,7 +95,7 @@ int main(void) {
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_0]] + (!stream.is_null() as i32);
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i32 = ((unsafe {
-// CHECK-NEXT:         fprintf(stream, c"%s:%d".as_ptr(), c"cookie".as_ptr() as *mut i8, 7 as i32)
+// CHECK-NEXT:         fprintf(stream, c"%s:%d".as_ptr(), c"cookie".as_ptr() as *mut i8, 7i32)
 // CHECK-NEXT:     }) == 8) as i32;
 // CHECK-NEXT:     total += [[V_1]];
 // CHECK-NEXT:     let [[V_2:__v[0-9]+]]: i32 = ((unsafe { fclose(stream) }) == 0) as i32;
@@ -108,7 +108,7 @@ int main(void) {
 // CHECK-NEXT:             memcmp(
 // CHECK-NEXT:                 cookie.bytes.as_mut_ptr() as *const (),
 // CHECK-NEXT:                 b"cookie:7\0".as_ptr() as *const (),
-// CHECK-NEXT:                 8 as u64,
+// CHECK-NEXT:                 8u64,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         }) == 0) as i32);
 // CHECK-NEXT:     total

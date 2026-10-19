@@ -37,8 +37,8 @@ int main(void) {
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     println!("{}", sum_skipping_threes(10 as i32));
-// CHECK-NEXT:     println!("{}", sum_skipping_threes(2 as i32));
+// CHECK-NEXT:     println!("{}", sum_skipping_threes(10i32));
+// CHECK-NEXT:     println!("{}", sum_skipping_threes(2i32));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

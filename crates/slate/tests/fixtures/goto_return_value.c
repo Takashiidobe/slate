@@ -37,9 +37,7 @@ int main() {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", classify(- (5 as i32)), classify(0 as i32), classify(42 as i32)
-// CHECK-NEXT:     );
+// CHECK-NEXT:     println!("{} {} {}", classify(- 5i32), classify(0i32), classify(42i32));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

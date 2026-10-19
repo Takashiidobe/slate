@@ -96,8 +96,8 @@ int main(void) {
 // CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "\n{} {} {} {} {}", stacked(0 as u64), stacked(18446744073709551615 as u64),
-// CHECK-NEXT:         stacked(9223372036854775808 as u64), stacked(3 as u64), stacked(4 as u64)
+// CHECK-NEXT:         "\n{} {} {} {} {}", stacked(0u64), stacked(18446744073709551615u64),
+// CHECK-NEXT:         stacked(9223372036854775808u64), stacked(3u64), stacked(4u64)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

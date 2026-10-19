@@ -216,7 +216,7 @@ int main(void) {
 // CHECK-NEXT: fn dump(mut v: LongDouble) {
 // CHECK-NEXT:     let mut bytes: __SlateAlign16<[u8; 16]> = __SlateAlign16({
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [u8; 16] = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]][0] = 0 as u8;
+// CHECK-NEXT:         [[T_0]][0] = 0u8;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     });
 // CHECK-NEXT:     unsafe {
@@ -236,7 +236,7 @@ int main(void) {
 // CHECK-NEXT:     println!("");
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     for i in 0 as i32..7 as i32 {
+// CHECK-NEXT:     for i in 0i32..7i32 {
 // CHECK-NEXT:         dump(unsafe { table[i as usize] });
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0

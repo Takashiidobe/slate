@@ -105,37 +105,9 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut name: __SlateAlign16<[i8; 31]> = __SlateAlign16([
-// CHECK-NEXT:         115 as i8,
-// CHECK-NEXT:         108 as i8,
-// CHECK-NEXT:         97 as i8,
-// CHECK-NEXT:         116 as i8,
-// CHECK-NEXT:         101 as i8,
-// CHECK-NEXT:         95 as i8,
-// CHECK-NEXT:         115 as i8,
-// CHECK-NEXT:         116 as i8,
-// CHECK-NEXT:         100 as i8,
-// CHECK-NEXT:         105 as i8,
-// CHECK-NEXT:         111 as i8,
-// CHECK-NEXT:         95 as i8,
-// CHECK-NEXT:         102 as i8,
-// CHECK-NEXT:         105 as i8,
-// CHECK-NEXT:         108 as i8,
-// CHECK-NEXT:         101 as i8,
-// CHECK-NEXT:         95 as i8,
-// CHECK-NEXT:         111 as i8,
-// CHECK-NEXT:         119 as i8,
-// CHECK-NEXT:         110 as i8,
-// CHECK-NEXT:         101 as i8,
-// CHECK-NEXT:         114 as i8,
-// CHECK-NEXT:         115 as i8,
-// CHECK-NEXT:         104 as i8,
-// CHECK-NEXT:         105 as i8,
-// CHECK-NEXT:         112 as i8,
-// CHECK-NEXT:         46 as i8,
-// CHECK-NEXT:         116 as i8,
-// CHECK-NEXT:         109 as i8,
-// CHECK-NEXT:         112 as i8,
-// CHECK-NEXT:         0 as i8,
+// CHECK-NEXT:         115i8, 108i8, 97i8, 116i8, 101i8, 95i8, 115i8, 116i8, 100i8, 105i8, 111i8, 95i8,
+// CHECK-NEXT:         102i8, 105i8, 108i8, 101i8, 95i8, 111i8, 119i8, 110i8, 101i8, 114i8, 115i8,
+// CHECK-NEXT:         104i8, 105i8, 112i8, 46i8, 116i8, 109i8, 112i8, 0i8,
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     unsafe { remove(name.0.as_mut_ptr() as *const i8) };
 // CHECK-NEXT:     let f: *mut _IO_FILE = unsafe {
@@ -162,10 +134,10 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut buf: __SlateAlign16<[i8; 16]> = __SlateAlign16({
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [i8; 16] = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]][0] = 0 as i8;
+// CHECK-NEXT:         [[T_0]][0] = 0i8;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     });
-// CHECK-NEXT:     unsafe { fgets(buf.0.as_mut_ptr() as *mut i8, 16 as i32, g) };
+// CHECK-NEXT:     unsafe { fgets(buf.0.as_mut_ptr() as *mut i8, 16i32, g) };
 // CHECK-NEXT:     unsafe { fclose(g) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { fputs(buf.0.as_mut_ptr() as *const i8, stdout) };

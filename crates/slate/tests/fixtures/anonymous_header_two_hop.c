@@ -24,7 +24,7 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut state: [[SLATERECORD_0]] = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [[SLATERECORD_0]] = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]].count = 0 as i32;
+// CHECK-NEXT:         [[T_0]].count = 0i32;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {

@@ -38,8 +38,8 @@ int main(void) {
 // CHECK-NEXT:     indirect: u64,
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut acc: Accounting = Accounting {
-// CHECK-NEXT:     direct: ((0 as i32) as i64) as u64,
-// CHECK-NEXT:     indirect: ((0 as i32) as i64) as u64,
+// CHECK-NEXT:     direct: 0u64,
+// CHECK-NEXT:     indirect: 0u64,
 // CHECK-NEXT: };
 // CHECK-NEXT: fn add(isDirect: i32, amount: u64) {
 // CHECK-NEXT:     let target: *mut u64 = if isDirect != 0 {
@@ -53,9 +53,9 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     add(1 as i32, 3 as u64);
-// CHECK-NEXT:     add(0 as i32, 5 as u64);
-// CHECK-NEXT:     add(1 as i32, 7 as u64);
+// CHECK-NEXT:     add(1i32, 3u64);
+// CHECK-NEXT:     add(0i32, 5u64);
+// CHECK-NEXT:     add(1i32, 7u64);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%llu %llu\n".as_ptr(), acc.direct, acc.indirect) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

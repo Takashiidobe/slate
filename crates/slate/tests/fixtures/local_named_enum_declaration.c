@@ -37,7 +37,7 @@ int main(void) {
 // CHECK-NEXT:     let mut cases: [Case; 2] = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     cases[0].expectedStatus = 1;
 // CHECK-NEXT:     cases[1].expectedStatus = 0;
-// CHECK-NEXT:     for i in 0 as i32..2 as i32 {
+// CHECK-NEXT:     for i in 0i32..2i32 {
 // CHECK-NEXT:         let expectedStatus: u32 = cases[i as usize].expectedStatus;
 // CHECK-NEXT:         if (expectedStatus as u32) == 1 {
 // CHECK-NEXT:             println!("ok");

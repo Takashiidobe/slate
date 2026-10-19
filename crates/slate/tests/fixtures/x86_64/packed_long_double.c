@@ -284,36 +284,36 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut gp: P = {
 // CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: P = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     [[T_0]].tag = (97 as i32) as i8;
+// CHECK-NEXT:     [[T_0]].tag = 97i8;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (std::ptr::addr_of_mut!([[T_0]].l) as *mut LongDouble)
 // CHECK-NEXT:             .write_unaligned(LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 63]));
 // CHECK-NEXT:     }
-// CHECK-NEXT:     [[T_0]].__slate_bits_0.__set_k((7 as i32) as u32);
-// CHECK-NEXT:     [[T_0]].__slate_bits_0.__set_j((9 as i32) as u32);
+// CHECK-NEXT:     [[T_0]].__slate_bits_0.__set_k(7u32);
+// CHECK-NEXT:     [[T_0]].__slate_bits_0.__set_j(9u32);
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
 // CHECK-NEXT: fn half(p: &LongDouble) -> LongDouble {
-// CHECK-NEXT:     (unsafe { *(p as *const LongDouble) }) / __slate_f80_from_i32(2 as i32)
+// CHECK-NEXT:     (unsafe { *(p as *const LongDouble) }) / __slate_f80_from_i32(2i32)
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut [[SLATE_COMPOUND_0:__slate_compound_[0-9]+]]: Inner = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     let mut p: P = {
 // CHECK-NEXT:         let mut [[T_0]]: P = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]].tag = 98 as i8;
+// CHECK-NEXT:         [[T_0]].tag = 98i8;
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             (std::ptr::addr_of_mut!([[T_0]].l) as *mut LongDouble)
 // CHECK-NEXT:                 .write_unaligned(LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 0, 64]));
 // CHECK-NEXT:         }
-// CHECK-NEXT:         [[T_0]].__slate_bits_0.__set_k(3 as u32);
-// CHECK-NEXT:         [[T_0]].__slate_bits_0.__set_j(4 as u32);
+// CHECK-NEXT:         [[T_0]].__slate_bits_0.__set_k(3u32);
+// CHECK-NEXT:         [[T_0]].__slate_bits_0.__set_j(4u32);
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut q: Q = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::write_bytes(
 // CHECK-NEXT:             (std::ptr::addr_of_mut!(q) as *mut ()) as *mut u8,
-// CHECK-NEXT:             0 as u8,
+// CHECK-NEXT:             0u8,
 // CHECK-NEXT:             33 as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -325,7 +325,7 @@ int main(void) {
 // CHECK-NEXT:                     [[SLATE_COMPOUND_0]] = {
 // CHECK-NEXT:                         let mut [[T_1:__t[0-9]+]]: Inner = std::mem::zeroed();
 // CHECK-NEXT:                         [[T_1]].x = LongDouble([0, 0, 0, 0, 0, 0, 0, 136, 2, 64]);
-// CHECK-NEXT:                         [[T_1]].n = 11 as i32;
+// CHECK-NEXT:                         [[T_1]].n = 11i32;
 // CHECK-NEXT:                         [[T_1]]
 // CHECK-NEXT:                     };
 // CHECK-NEXT:                     std::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
@@ -343,7 +343,7 @@ int main(void) {
 // CHECK-NEXT:         (std::ptr::addr_of_mut!(gp.l) as *mut LongDouble)
 // CHECK-NEXT:             .write_unaligned(
 // CHECK-NEXT:                 (std::ptr::addr_of!(gp.l) as *const LongDouble).read_unaligned()
-// CHECK-NEXT:                     * __slate_f80_from_i32(3 as i32),
+// CHECK-NEXT:                     * __slate_f80_from_i32(3i32),
 // CHECK-NEXT:             );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut copy: LongDouble = unsafe { std::mem::zeroed() };
@@ -356,9 +356,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let same: P = p;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(c"%zu %zu %zu %zu\n".as_ptr(), 21 as u64, 33 as u64, 0 as u64, 1 as u64)
-// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { printf(c"%zu %zu %zu %zu\n".as_ptr(), 21u64, 33u64, 0u64, 1u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {

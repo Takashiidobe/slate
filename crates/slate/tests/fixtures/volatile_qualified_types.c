@@ -37,7 +37,7 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut marker: i8 = (65 as i32) as i8;
+// CHECK-NEXT: static mut marker: i8 = 65;
 // CHECK-NEXT: static mut gain: f64 = 1.5f64;
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
@@ -54,10 +54,7 @@ int main(void) {
 // CHECK-NEXT: fn use_volatile_fields(input: f64) -> f64 {
 // CHECK-NEXT:     let mut fields: VolatileFields = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::ptr::write_volatile(
-// CHECK-NEXT:             std::ptr::addr_of_mut!(fields.count),
-// CHECK-NEXT:             bump_return(4 as i32),
-// CHECK-NEXT:         )
+// CHECK-NEXT:         std::ptr::write_volatile(std::ptr::addr_of_mut!(fields.count), bump_return(4i32))
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::write_volatile(

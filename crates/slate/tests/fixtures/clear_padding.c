@@ -124,7 +124,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::write_bytes(
 // CHECK-NEXT:             (std::ptr::addr_of_mut!(h) as *mut ()) as *mut u8,
-// CHECK-NEXT:             171 as u8,
+// CHECK-NEXT:             171u8,
 // CHECK-NEXT:             24 as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -137,12 +137,12 @@ int main(void) {
 // CHECK-NEXT:         [[T_0]].add(1usize).write_bytes(0u8, 3usize);
 // CHECK-NEXT:         [[T_0]].add(10usize).write_bytes(0u8, 6usize);
 // CHECK-NEXT:     };
-// CHECK-NEXT:     dump(c"holes".as_ptr(), std::ptr::addr_of_mut!(h) as *const (), 24 as u64);
+// CHECK-NEXT:     dump(c"holes".as_ptr(), std::ptr::addr_of_mut!(h) as *const (), 24u64);
 // CHECK-NEXT:     let mut n: nested = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::write_bytes(
 // CHECK-NEXT:             (std::ptr::addr_of_mut!(n) as *mut ()) as *mut u8,
-// CHECK-NEXT:             205 as u8,
+// CHECK-NEXT:             205u8,
 // CHECK-NEXT:             56 as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -155,17 +155,17 @@ int main(void) {
 // CHECK-NEXT:         [[T_1]].add(34usize).write_bytes(0u8, 6usize);
 // CHECK-NEXT:         [[T_1]].add(49usize).write_bytes(0u8, 7usize);
 // CHECK-NEXT:     };
-// CHECK-NEXT:     dump(c"nested".as_ptr(), std::ptr::addr_of_mut!(n) as *const (), 56 as u64);
+// CHECK-NEXT:     dump(c"nested".as_ptr(), std::ptr::addr_of_mut!(n) as *const (), 56u64);
 // CHECK-NEXT:     let mut b: bits = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::write_bytes(
 // CHECK-NEXT:             (std::ptr::addr_of_mut!(b) as *mut ()) as *mut u8,
-// CHECK-NEXT:             255 as u8,
+// CHECK-NEXT:             255u8,
 // CHECK-NEXT:             4 as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     b.__slate_bits_0.__set_a(1 as i32);
-// CHECK-NEXT:     b.__slate_bits_0.__set_b(2 as i32);
+// CHECK-NEXT:     b.__slate_bits_0.__set_a(1i32);
+// CHECK-NEXT:     b.__slate_bits_0.__set_b(2i32);
 // CHECK-NEXT:     b.c = 3;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_2:__t[0-9]+]]: *mut u8 = std::ptr::addr_of_mut!(b) as *mut u8;
@@ -173,7 +173,7 @@ int main(void) {
 // CHECK-NEXT:         *[[T_2]].add(1usize) &= 3u8;
 // CHECK-NEXT:         [[T_2]].add(3usize).write_bytes(0u8, 1usize);
 // CHECK-NEXT:     };
-// CHECK-NEXT:     dump(c"bits".as_ptr(), std::ptr::addr_of_mut!(b) as *const (), 4 as u64);
+// CHECK-NEXT:     dump(c"bits".as_ptr(), std::ptr::addr_of_mut!(b) as *const (), 4u64);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

@@ -360,11 +360,17 @@ def run_harness(targets, fixtures):
 
 
 def all_fixtures():
-    return sorted(
+    generated = (
         path
         for subdirectory in ("", *ARCH_TARGETS)
         for path in (FIXTURES / subdirectory).glob("*.c")
     )
+    release = (
+        path
+        for path in RELEASE.rglob("*.c")
+        if BEGIN in path.read_text(errors="surrogateescape")
+    )
+    return sorted([*generated, *release])
 
 
 def resolve_fixture(argument):
@@ -396,7 +402,7 @@ def fixture_targets(path, requested, extra):
 
 def main(argv):
     parser = argparse.ArgumentParser(
-        description="Regenerate the FileCheck blocks of tests/fixtures fixtures: the whole generated Rust, or only the @check-fn-wrapped functions."
+        description="Regenerate the FileCheck blocks of tests/fixtures and tests/fixtures.release fixtures: the whole generated Rust, or only the @check-fn-wrapped functions."
     )
     parser.add_argument(
         "fixtures",

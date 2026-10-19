@@ -21,7 +21,7 @@ int main(void) {
 // CHECK-NEXT:     fn free(__ptr: *mut ());
 // CHECK-NEXT: }
 // CHECK-NEXT: fn alloc() -> *mut i32 {
-// CHECK-NEXT:     (unsafe { malloc((4 as u64).wrapping_mul(10 as u64)) }) as *mut i32
+// CHECK-NEXT:     (unsafe { malloc(40u64) }) as *mut i32
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut x: *mut i32 = std::ptr::null_mut::<i32>();

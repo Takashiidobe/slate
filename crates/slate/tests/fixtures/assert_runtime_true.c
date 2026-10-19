@@ -29,7 +29,7 @@ int main(int argc, char **argv) {
 // CHECK-NEXT:                 c"argc == 1".as_ptr(),
 // CHECK-NEXT:                 c"{{.*}}tests/fixtures/assert_runtime_true.c"
 // CHECK-NEXT:                     .as_ptr(),
-// CHECK-NEXT:                 6 as u32,
+// CHECK-NEXT:                 6u32,
 // CHECK-NEXT:                 c"int main(int, char **)".as_ptr(),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };

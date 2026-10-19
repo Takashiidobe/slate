@@ -34,7 +34,7 @@ int main(void) {
 // CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn sizeof_values() -> i32 {
-// CHECK-NEXT:     ((4 as u64).wrapping_add(12 as u64).wrapping_add(8).wrapping_add(4) as u32) as i32
+// CHECK-NEXT:     28i32
 // CHECK-NEXT: }
 // CHECK-NEXT: fn sizeof_expr() -> i32 {
 // CHECK-NEXT:     4

@@ -32,8 +32,8 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut small: i8 = (12 as i32) as i8;
-// CHECK-NEXT: static mut byte: u8 = ((200 as i32) as i8) as u8;
+// CHECK-NEXT: static mut small: i8 = 12;
+// CHECK-NEXT: static mut byte: u8 = 200;
 // CHECK-NEXT: static mut ratio: f32 = 1.5f32;
 // CHECK-NEXT: static mut total: f64 = 2.25f64;
 // CHECK-NEXT: fn add_char(a: i8, b: i8) -> i8 {
@@ -47,7 +47,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         small = add_char(small, 3 as i8);
+// CHECK-NEXT:         small = add_char(small, 3i8);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         byte = ((((byte as u32) as i32) + 1) as i8) as u8;

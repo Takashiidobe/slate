@@ -43,7 +43,7 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut info: stat = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: stat = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]].st_dev = 0 as u64;
+// CHECK-NEXT:         [[T_0]].st_dev = 0u64;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let result: i32 = unsafe {

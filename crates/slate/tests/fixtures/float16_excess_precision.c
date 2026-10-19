@@ -59,7 +59,7 @@ int main(void) {
 // CHECK-NEXT:     (-((a as f32) * (b as f32)) - (c as f32)) as f16
 // CHECK-NEXT: }
 // CHECK-NEXT: fn compare(a: f16, b: f16, c: f16) -> i32 {
-// CHECK-NEXT:     ((((a as f32) * (b as f32) + (c as f32)) as f16) == ((0 as i32) as f16)) as i32
+// CHECK-NEXT:     ((((a as f32) * (b as f32) + (c as f32)) as f16) == (0i32 as f16)) as i32
 // CHECK-NEXT: }
 // CHECK-NEXT: fn compound(a: f16, b: f16, mut c: f16) -> f16 {
 // CHECK-NEXT:     c = ((c as f32) + (a as f32) * (b as f32)) as f16;
@@ -130,8 +130,8 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let a: f16 = ((((1 as i32) as f16) as f32) + (9.7656E-4f16 as f32)) as f16;
-// CHECK-NEXT:     let c: f16 = (((-(1 as i32) as f16) as f32) - (0.0019531f16 as f32)) as f16;
+// CHECK-NEXT:     let a: f16 = (((1i32 as f16) as f32) + (9.7656E-4f16 as f32)) as f16;
+// CHECK-NEXT:     let c: f16 = (((-1i32 as f16) as f32) - (0.0019531f16 as f32)) as f16;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
@@ -220,9 +220,9 @@ int main(void) {
 // CHECK-NEXT:         "{} {} {} {}", (({ let [[T_6:__t[0-9]+]] = { let [[T_7:__t[0-9]+]] = x; num_complex::Complex { re : [[T_7]].re
 // CHECK-NEXT:         as f32, im : [[T_7]].im as f32 } } .c_mul({ let [[T_8:__t[0-9]+]] = x; num_complex::Complex { re
 // CHECK-NEXT:         : [[T_8]].re as f32, im : [[T_8]].im as f32 } }, false); num_complex::Complex { re :
-// CHECK-NEXT:         [[T_6]].re as f16, im : [[T_6]].im as f16 } }) == num_complex::Complex { re : (0 as
-// CHECK-NEXT:         i32) as f16, im : 0.0 }) as i32, (num_complex::Complex { re : a, im : 0.0 } == x)
-// CHECK-NEXT:         as i32, (w == num_complex::Complex { re : 2.0f64, im : 0.0 }) as i32,
+// CHECK-NEXT:         [[T_6]].re as f16, im : [[T_6]].im as f16 } }) == num_complex::Complex { re : 0i32 as
+// CHECK-NEXT:         f16, im : 0.0 }) as i32, (num_complex::Complex { re : a, im : 0.0 } == x) as i32,
+// CHECK-NEXT:         (w == num_complex::Complex { re : 2.0f64, im : 0.0 }) as i32,
 // CHECK-NEXT:         (num_complex::Complex { re : 3.0f64, im : 0.0 } != w) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0

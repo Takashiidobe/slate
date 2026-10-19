@@ -116,10 +116,10 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {}",
-// CHECK-NEXT:         add_mem(2 as i32, 5 as i32),
+// CHECK-NEXT:         add_mem(2i32, 5i32),
 // CHECK-NEXT:         field_and_index(),
 // CHECK-NEXT:         sized(),
-// CHECK-NEXT:         indexed(2 as i32)
+// CHECK-NEXT:         indexed(2i32)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

@@ -73,12 +73,12 @@ int main(void) {
 // CHECK-NEXT:     t + 3
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn shifts(k: i32) -> u64 {
-// CHECK-NEXT:     let big: u64 = (1 as u64) << (40 as i32);
-// CHECK-NEXT:     let wide: i64 = (1 as i64) << k;
+// CHECK-NEXT:     let big: u64 = 1099511627776u64;
+// CHECK-NEXT:     let wide: i64 = 1i64 << k;
 // CHECK-NEXT:     big.wrapping_add(wide as u64)
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn wraps(u: u32) -> u32 {
-// CHECK-NEXT:     let all: u32 = -(1 as i32) as u32;
+// CHECK-NEXT:     let all: u32 = 4294967295u32;
 // CHECK-NEXT:     u.wrapping_add(all).wrapping_add(2)
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn negatives(n: i32) -> i32 {
@@ -89,15 +89,15 @@ int main(void) {
 // CHECK-NEXT:     n * -3 + lo
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn floats(n: i32) -> f64 {
-// CHECK-NEXT:     let d: f64 = (2 as i32) as f64;
+// CHECK-NEXT:     let d: f64 = 2i32 as f64;
 // CHECK-NEXT:     let f: f32 = 1.5f32;
 // CHECK-NEXT:     d * (n as f64) + (f as f64)
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn aggregates() -> i64 {
 // CHECK-NEXT:     let p: Point = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: Point = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]].x = 1 as i32;
-// CHECK-NEXT:         [[T_0]].y = 2 as i64;
+// CHECK-NEXT:         [[T_0]].x = 1i32;
+// CHECK-NEXT:         [[T_0]].y = 2i64;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let s: [i16; 3] = [1, 2, 3];

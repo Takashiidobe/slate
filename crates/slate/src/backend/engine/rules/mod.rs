@@ -1,6 +1,7 @@
 mod array_iter;
 mod bool_ternary;
 mod compound_assign;
+pub(super) mod const_fold;
 mod constant_index_casts;
 mod cstr_literal;
 mod dead_store;
@@ -88,7 +89,10 @@ pub(super) fn registry(target: &slate_parser::target_info::TargetInfo) -> Vec<Bo
 }
 
 pub(super) fn late_registry() -> Vec<Box<dyn NodeRule>> {
-    vec![Box::new(literal_casts::LiteralCasts)]
+    vec![
+        Box::new(literal_casts::LiteralCasts),
+        Box::new(const_fold::ConstFold),
+    ]
 }
 
 pub(super) fn unsafe_registry() -> Vec<Box<dyn NodeRule>> {

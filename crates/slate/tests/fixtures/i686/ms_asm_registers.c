@@ -48,7 +48,7 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.bump")]
 // CHECK-NEXT: extern "C-unwind" fn bump() {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         sink = (unsafe { sink }) + 100;
+// CHECK-NEXT:         sink = sink + 100;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:

@@ -360,11 +360,11 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn gnu_environment_extensions() -> i32 {
 // CHECK-NEXT:     let __slate_alloca_mark = __slate_alloca::Mark::new();
-// CHECK-NEXT:     let mut current: __SlateAlign16<[i8; 4096]> = __SlateAlign16([0 as i8; 4096]);
+// CHECK-NEXT:     let mut current: __SlateAlign16<[i8; 4096]> = __SlateAlign16([0i8; 4096]);
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     total
 // CHECK-NEXT:         += ((unsafe {
-// CHECK-NEXT:             setenv(c"SLATE_GNU_LIBC_VALUE".as_ptr(), c"ready".as_ptr(), 1 as i32)
+// CHECK-NEXT:             setenv(c"SLATE_GNU_LIBC_VALUE".as_ptr(), c"ready".as_ptr(), 1i32)
 // CHECK-NEXT:         }) == 0) as i32;
 // CHECK-NEXT:     total
 // CHECK-NEXT:         += ((unsafe {
@@ -377,7 +377,7 @@ int main(void) {
 // CHECK-NEXT:     let directory: *mut i8 = unsafe { get_current_dir_name() };
 // CHECK-NEXT:     let canonical: *mut i8 = unsafe { canonicalize_file_name(c".".as_ptr()) };
 // CHECK-NEXT:     total
-// CHECK-NEXT:         += !unsafe { getcwd(current.0.as_mut_ptr() as *mut i8, 4096 as u64) }.is_null()
+// CHECK-NEXT:         += !unsafe { getcwd(current.0.as_mut_ptr() as *mut i8, 4096u64) }.is_null()
 // CHECK-NEXT:             as i32;
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_1]]
@@ -469,50 +469,14 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     let [[V_7:__v[0-9]+]]: i32 = ((unsafe {
-// CHECK-NEXT:         fnmatch(
-// CHECK-NEXT:             c"file-+(one|two).c".as_ptr(),
-// CHECK-NEXT:             c"file-two.c".as_ptr(),
-// CHECK-NEXT:             (1 as i32) << (5 as i32),
-// CHECK-NEXT:         )
+// CHECK-NEXT:         fnmatch(c"file-+(one|two).c".as_ptr(), c"file-two.c".as_ptr(), 32i32)
 // CHECK-NEXT:     }) == 0) as i32;
 // CHECK-NEXT:     total += [[V_7]];
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         re_set_syntax(
-// CHECK-NEXT:             (1 as u64) << (1 as i32) << (1 as i32)
-// CHECK-NEXT:                 | (1 as u64) << (1 as i32) << (1 as i32) << (1 as i32) << (1 as i32)
-// CHECK-NEXT:                     << (1 as i32) << (1 as i32)
-// CHECK-NEXT:                 | (1 as u64) << (1 as i32) << (1 as i32) << (1 as i32) << (1 as i32)
-// CHECK-NEXT:                     << (1 as i32) << (1 as i32) << (1 as i32)
-// CHECK-NEXT:                 | (1 as u64) << (1 as i32) << (1 as i32) << (1 as i32) << (1 as i32)
-// CHECK-NEXT:                     << (1 as i32) << (1 as i32) << (1 as i32) << (1 as i32) << (1 as i32)
-// CHECK-NEXT:                 | (1 as u64) << (1 as i32) << (1 as i32) << (1 as i32) << (1 as i32)
-// CHECK-NEXT:                     << (1 as i32) << (1 as i32) << (1 as i32) << (1 as i32) << (1 as i32)
-// CHECK-NEXT:                     << (1 as i32) << (1 as i32) << (1 as i32) << (1 as i32) << (1 as i32)
-// CHECK-NEXT:                     << (1 as i32) << (1 as i32)
-// CHECK-NEXT:                 | (1 as u64) << (1 as i32) << (1 as i32) << (1 as i32)
-// CHECK-NEXT:                 | (1 as u64) << (1 as i32) << (1 as i32) << (1 as i32) << (1 as i32)
-// CHECK-NEXT:                 | (1 as u64) << (1 as i32) << (1 as i32) << (1 as i32) << (1 as i32)
-// CHECK-NEXT:                     << (1 as i32) << (1 as i32) << (1 as i32) << (1 as i32) << (1 as i32)
-// CHECK-NEXT:                     << (1 as i32) << (1 as i32) << (1 as i32)
-// CHECK-NEXT:                 | (1 as u64) << (1 as i32) << (1 as i32) << (1 as i32) << (1 as i32)
-// CHECK-NEXT:                     << (1 as i32) << (1 as i32) << (1 as i32) << (1 as i32) << (1 as i32)
-// CHECK-NEXT:                     << (1 as i32) << (1 as i32) << (1 as i32) << (1 as i32)
-// CHECK-NEXT:                 | (1 as u64) << (1 as i32) << (1 as i32) << (1 as i32) << (1 as i32)
-// CHECK-NEXT:                     << (1 as i32) << (1 as i32) << (1 as i32) << (1 as i32) << (1 as i32)
-// CHECK-NEXT:                     << (1 as i32) << (1 as i32) << (1 as i32) << (1 as i32) << (1 as i32)
-// CHECK-NEXT:                     << (1 as i32)
-// CHECK-NEXT:                 | (1 as u64) << (1 as i32) << (1 as i32) << (1 as i32) << (1 as i32)
-// CHECK-NEXT:                     << (1 as i32)
-// CHECK-NEXT:                 | (1 as u64) << (1 as i32) << (1 as i32) << (1 as i32) << (1 as i32)
-// CHECK-NEXT:                     << (1 as i32) << (1 as i32) << (1 as i32) << (1 as i32) << (1 as i32)
-// CHECK-NEXT:                     << (1 as i32) << (1 as i32) << (1 as i32) << (1 as i32) << (1 as i32)
-// CHECK-NEXT:                     << (1 as i32) << (1 as i32) << (1 as i32),
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { re_set_syntax(242428u64) };
 // CHECK-NEXT:     let error: *const i8 = unsafe {
 // CHECK-NEXT:         re_compile_pattern(
 // CHECK-NEXT:             c"sl(a|e)te".as_ptr(),
-// CHECK-NEXT:             9 as u64,
+// CHECK-NEXT:             9u64,
 // CHECK-NEXT:             std::ptr::addr_of_mut!(expression),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -522,20 +486,15 @@ int main(void) {
 // CHECK-NEXT:         re_match(
 // CHECK-NEXT:             std::ptr::addr_of_mut!(expression),
 // CHECK-NEXT:             c"slate".as_ptr(),
-// CHECK-NEXT:             5 as i32,
-// CHECK-NEXT:             0 as i32,
+// CHECK-NEXT:             5i32,
+// CHECK-NEXT:             0i32,
 // CHECK-NEXT:             std::ptr::null_mut::<re_registers>(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) == 5) as i32;
 // CHECK-NEXT:     total += [[V_9]];
 // CHECK-NEXT:     unsafe { regfree(std::ptr::addr_of_mut!(expression)) };
 // CHECK-NEXT:     let [[V_10:__v[0-9]+]]: i32 = ((unsafe {
-// CHECK-NEXT:         glob(
-// CHECK-NEXT:             c"/dev/{null,zero}".as_ptr(),
-// CHECK-NEXT:             (1 as i32) << (10 as i32),
-// CHECK-NEXT:             None,
-// CHECK-NEXT:             std::ptr::addr_of_mut!(paths),
-// CHECK-NEXT:         )
+// CHECK-NEXT:         glob(c"/dev/{null,zero}".as_ptr(), 1024i32, None, std::ptr::addr_of_mut!(paths))
 // CHECK-NEXT:     }) == 0) as i32;
 // CHECK-NEXT:     total += [[V_10]];
 // CHECK-NEXT:     total += (paths.gl_pathc == 2) as i32;
@@ -560,31 +519,31 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.gnu_runtime_extensions")]
 // CHECK-NEXT: extern "C-unwind" fn gnu_runtime_extensions() -> i32 {
-// CHECK-NEXT:     let mut random_bytes: [u8; 8] = [0 as u8; 8];
+// CHECK-NEXT:     let mut random_bytes: [u8; 8] = [0u8; 8];
 // CHECK-NEXT:     let mut frames: __SlateAlign16<[*mut (); 8]> = __SlateAlign16([0 as *mut (); 8]);
 // CHECK-NEXT:     let mut information: [[SLATERECORD_0]] = {
 // CHECK-NEXT:         let mut [[T_0]]: [[SLATERECORD_0]] = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let page_size: i64 = unsafe { sysconf(30 as i32) };
+// CHECK-NEXT:     let page_size: i64 = unsafe { sysconf(30i32) };
 // CHECK-NEXT:     let mut total: i32 = 0;
-// CHECK-NEXT:     let [[V_13:__v[0-9]+]]: i32 = ((unsafe { getauxval(6 as u64) }) == (page_size as u64)) as i32;
+// CHECK-NEXT:     let [[V_13:__v[0-9]+]]: i32 = ((unsafe { getauxval(6u64) }) == (page_size as u64)) as i32;
 // CHECK-NEXT:     total += [[V_13]];
-// CHECK-NEXT:     let [[V_14:__v[0-9]+]]: i32 = ((unsafe { gettid() })
-// CHECK-NEXT:         == ((unsafe { syscall(186 as i64) }) as i32)) as i32;
+// CHECK-NEXT:     let [[V_14:__v[0-9]+]]: i32 = ((unsafe { gettid() }) == ((unsafe { syscall(186i64) }) as i32))
+// CHECK-NEXT:         as i32;
 // CHECK-NEXT:     total += [[V_14]];
 // CHECK-NEXT:     let [[V_15:__v[0-9]+]]: i32 = ((unsafe {
-// CHECK-NEXT:         getentropy(random_bytes.as_mut_ptr() as *mut (), 8 as u64)
+// CHECK-NEXT:         getentropy(random_bytes.as_mut_ptr() as *mut (), 8u64)
 // CHECK-NEXT:     }) == 0) as i32;
 // CHECK-NEXT:     total += [[V_15]];
-// CHECK-NEXT:     let [[V_16:__v[0-9]+]]: i32 = ((unsafe { arc4random_uniform(1 as u32) }) == 0) as i32;
+// CHECK-NEXT:     let [[V_16:__v[0-9]+]]: i32 = ((unsafe { arc4random_uniform(1u32) }) == 0) as i32;
 // CHECK-NEXT:     total += [[V_16]];
 // CHECK-NEXT:     let [[V_17:__v[0-9]+]]: i32 = ((unsafe { get_nprocs() }) > 0) as i32;
 // CHECK-NEXT:     total += [[V_17]];
 // CHECK-NEXT:     let [[V_18:__v[0-9]+]]: i32 = ((unsafe { get_phys_pages() }) > 0) as i32;
 // CHECK-NEXT:     total += [[V_18]];
 // CHECK-NEXT:     let [[V_19:__v[0-9]+]]: i32 = ((unsafe {
-// CHECK-NEXT:         backtrace(frames.0.as_mut_ptr() as *mut *mut (), 8 as i32)
+// CHECK-NEXT:         backtrace(frames.0.as_mut_ptr() as *mut *mut (), 8i32)
 // CHECK-NEXT:     }) > 0) as i32;
 // CHECK-NEXT:     total += [[V_19]];
 // CHECK-NEXT:     let [[V_20:__v[0-9]+]]: i32 = ((unsafe {

@@ -58,13 +58,13 @@ int main(void) {
 // CHECK-NEXT:         {
 // CHECK-NEXT:             let mut [[T_0:__t[0-9]+]]: [[REC_0]] = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:             [[T_0]].text = c"a".as_ptr();
-// CHECK-NEXT:             [[T_0]].code = 0 as u32;
+// CHECK-NEXT:             [[T_0]].code = 0u32;
 // CHECK-NEXT:             [[T_0]]
 // CHECK-NEXT:         },
 // CHECK-NEXT:         {
 // CHECK-NEXT:             let mut [[T_1:__t[0-9]+]]: [[REC_0]] = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:             [[T_1]].text = c"bb".as_ptr();
-// CHECK-NEXT:             [[T_1]].code = 5 as u32;
+// CHECK-NEXT:             [[T_1]].code = 5u32;
 // CHECK-NEXT:             [[T_1]]
 // CHECK-NEXT:         },
 // CHECK-NEXT:     ]);
@@ -82,16 +82,16 @@ int main(void) {
 // CHECK-NEXT:     let mut items: __SlateAlign16<[[[REC_1]]; 2]> = __SlateAlign16([
 // CHECK-NEXT:         {
 // CHECK-NEXT:             let mut [[T_0]]: [[REC_1]] = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:             [[T_0]].n = 5 as u64;
+// CHECK-NEXT:             [[T_0]].n = 5u64;
 // CHECK-NEXT:             [[T_0]].text = c"x".as_ptr();
-// CHECK-NEXT:             [[T_0]].code = 0 as u32;
+// CHECK-NEXT:             [[T_0]].code = 0u32;
 // CHECK-NEXT:             [[T_0]]
 // CHECK-NEXT:         },
 // CHECK-NEXT:         {
 // CHECK-NEXT:             let mut [[T_1]]: [[REC_1]] = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:             [[T_1]].n = 6 as u64;
+// CHECK-NEXT:             [[T_1]].n = 6u64;
 // CHECK-NEXT:             [[T_1]].text = c"y".as_ptr();
-// CHECK-NEXT:             [[T_1]].code = 5 as u32;
+// CHECK-NEXT:             [[T_1]].code = 5u32;
 // CHECK-NEXT:             [[T_1]]
 // CHECK-NEXT:         },
 // CHECK-NEXT:     ]);

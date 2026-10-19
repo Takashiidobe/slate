@@ -204,7 +204,7 @@ int main(void) {
 // CHECK-NEXT:     v: LongDouble,
 // CHECK-NEXT: }
 // CHECK-NEXT: fn dump80(name: *const i8, mut value: LongDouble) {
-// CHECK-NEXT:     let mut bytes: [u8; 10] = [0 as u8; 10];
+// CHECK-NEXT:     let mut bytes: [u8; 10] = [0u8; 10];
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::copy_nonoverlapping(
 // CHECK-NEXT:             (std::ptr::addr_of_mut!(value) as *const ()) as *const u8,
@@ -215,7 +215,7 @@ int main(void) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%s".as_ptr(), name) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     for i in 0 as i32..10 as i32 {
+// CHECK-NEXT:     for i in 0i32..10i32 {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { printf(c"%02x".as_ptr(), (bytes[i as usize] as u32) as i32) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
@@ -228,7 +228,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     dump80(c"before".as_ptr(), b.v);
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: LongDouble = b.v;
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: LongDouble = [[V_0]] + __slate_f80_from_i32(1 as i32);
+// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: LongDouble = [[V_0]] + __slate_f80_from_i32(1i32);
 // CHECK-NEXT:     b.v = [[V_1]];
 // CHECK-NEXT:     dump80(c"after".as_ptr(), b.v);
 // CHECK-NEXT:     0

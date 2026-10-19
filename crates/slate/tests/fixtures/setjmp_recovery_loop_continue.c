@@ -55,18 +55,16 @@ int main(void) {
 // CHECK-NEXT: static mut env: __SlateAlign16<[__jmp_buf_tag; 1]> = __SlateAlign16(unsafe {
 // CHECK-NEXT:     std::mem::zeroed()
 // CHECK-NEXT: });
-// CHECK-NEXT: static mut failures: i32 = 0 as i32;
-// CHECK-NEXT: static mut teardown_failures: i32 = 0 as i32;
+// CHECK-NEXT: static mut failures: i32 = 0;
+// CHECK-NEXT: static mut teardown_failures: i32 = 0;
 // CHECK-NEXT: fn run_test(i: i32) {
 // CHECK-NEXT:     if i == 2 {
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             longjmp(std::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag, 1 as i32)
-// CHECK-NEXT:         };
+// CHECK-NEXT:         unsafe { longjmp(std::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag, 1i32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("ran {}", i);
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     for i in 0 as i32..5 as i32 {
+// CHECK-NEXT:     for i in 0i32..5i32 {
 // CHECK-NEXT:         if (unsafe { _setjmp(std::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag) }) != 0
 // CHECK-NEXT:         {
 // CHECK-NEXT:             unsafe {

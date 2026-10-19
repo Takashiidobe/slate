@@ -23,10 +23,10 @@ int main(void) {
 // CHECK-NEXT:         __builtin_bcopy(
 // CHECK-NEXT:             buf.as_mut_ptr() as *const (),
 // CHECK-NEXT:             (buf.as_mut_ptr() as *mut i8).offset(2 as isize) as *mut (),
-// CHECK-NEXT:             4 as u64,
+// CHECK-NEXT:             4u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     for i in 0 as i32..8 as i32 {
+// CHECK-NEXT:     for i in 0i32..8i32 {
 // CHECK-NEXT:         print!("{} ", buf[i as usize] as i32);
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     }

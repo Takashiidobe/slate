@@ -139,14 +139,8 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     show(c"tinydiv".as_ptr(), div(tiny, tiny));
 // CHECK-NEXT:     let precise: f128 = mul(
-// CHECK-NEXT:             make(
-// CHECK-NEXT:                 1f128 + 7.88860905221011805411728565282786229E-31f128,
-// CHECK-NEXT:                 (0 as i32) as f128,
-// CHECK-NEXT:             ),
-// CHECK-NEXT:             make(
-// CHECK-NEXT:                 1f128 - 7.88860905221011805411728565282786229E-31f128,
-// CHECK-NEXT:                 (0 as i32) as f128,
-// CHECK-NEXT:             ),
+// CHECK-NEXT:             make(1f128 + 7.88860905221011805411728565282786229E-31f128, 0i32 as f128),
+// CHECK-NEXT:             make(1f128 - 7.88860905221011805411728565282786229E-31f128, 0i32 as f128),
 // CHECK-NEXT:         )
 // CHECK-NEXT:         .re;
 // CHECK-NEXT:     println!(
@@ -186,7 +180,7 @@ int main(void) {
 // CHECK-NEXT:     show(
 // CHECK-NEXT:         c"int".as_ptr(),
 // CHECK-NEXT:         num_complex::Complex {
-// CHECK-NEXT:             re: (7 as i32) as f128,
+// CHECK-NEXT:             re: 7i32 as f128,
 // CHECK-NEXT:             im: 0.0,
 // CHECK-NEXT:         },
 // CHECK-NEXT:     );
@@ -194,7 +188,7 @@ int main(void) {
 // CHECK-NEXT:     acc += b;
 // CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: num_complex::Complex<f128> = acc;
 // CHECK-NEXT:     acc = [[V_0]].c_mul(b, false);
-// CHECK-NEXT:     acc -= (1 as i32) as f128;
+// CHECK-NEXT:     acc -= 1i32 as f128;
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: num_complex::Complex<f128> = acc / 2f128;
 // CHECK-NEXT:     acc = [[V_1]];
 // CHECK-NEXT:     show(c"acc".as_ptr(), acc);
@@ -205,10 +199,10 @@ int main(void) {
 // CHECK-NEXT:     show(c"place".as_ptr(), unsafe { *p });
 // CHECK-NEXT:     show(c"global".as_ptr(), unsafe { global_cl });
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", ! (make((0 as i32) as f128, (0 as i32) as f128) !=
-// CHECK-NEXT:         num_complex::Complex { re : 0f128, im : 0.0 }) as i32, ! (! (a !=
-// CHECK-NEXT:         num_complex::Complex { re : 0f128, im : 0.0 })) as i32, if (a !=
-// CHECK-NEXT:         num_complex::Complex { re : 0f128, im : 0.0 }) { 1 as i32 } else { 0 as i32 }
+// CHECK-NEXT:         "{} {} {}", ! (make(0i32 as f128, 0i32 as f128) != num_complex::Complex { re :
+// CHECK-NEXT:         0f128, im : 0.0 }) as i32, ! (! (a != num_complex::Complex { re : 0f128, im : 0.0
+// CHECK-NEXT:         })) as i32, if (a != num_complex::Complex { re : 0f128, im : 0.0 }) { 1i32 } else
+// CHECK-NEXT:         { 0i32 }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let re: f128 = a.re;
 // CHECK-NEXT:     let truncated: i32 = a.re as i32;

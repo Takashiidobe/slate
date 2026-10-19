@@ -28,7 +28,7 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut word: Word = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: Word = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]].value = 0 as i32;
+// CHECK-NEXT:         [[T_0]].value = 0i32;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {

@@ -50,10 +50,10 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut s: Bits = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     s.__slate_bits_0.__set_a(5 as u32);
-// CHECK-NEXT:     s.__slate_bits_0.__set_b(-(3 as i32));
-// CHECK-NEXT:     s.__slate_bits_0.__set_c(1 as u32);
-// CHECK-NEXT:     s.__slate_bits_0.__set_d(4000 as u32);
+// CHECK-NEXT:     s.__slate_bits_0.__set_a(5u32);
+// CHECK-NEXT:     s.__slate_bits_0.__set_b(-3i32);
+// CHECK-NEXT:     s.__slate_bits_0.__set_c(1u32);
+// CHECK-NEXT:     s.__slate_bits_0.__set_d(4000u32);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
@@ -65,9 +65,9 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     s.__slate_bits_0.__set_a(13 as u32);
-// CHECK-NEXT:     s.__slate_bits_0.__set_b(20 as i32);
-// CHECK-NEXT:     s.__slate_bits_0.__set_c(3 as u32);
+// CHECK-NEXT:     s.__slate_bits_0.__set_a(13u32);
+// CHECK-NEXT:     s.__slate_bits_0.__set_b(20i32);
+// CHECK-NEXT:     s.__slate_bits_0.__set_c(3u32);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
@@ -91,10 +91,10 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     s.__slate_bits_0.__set_a(7 as u32);
-// CHECK-NEXT:     s.__slate_bits_0.__set_b(15 as i32);
-// CHECK-NEXT:     s.__slate_bits_0.__set_c(0 as u32);
-// CHECK-NEXT:     s.__slate_bits_0.__set_d(4095 as u32);
+// CHECK-NEXT:     s.__slate_bits_0.__set_a(7u32);
+// CHECK-NEXT:     s.__slate_bits_0.__set_b(15i32);
+// CHECK-NEXT:     s.__slate_bits_0.__set_c(0u32);
+// CHECK-NEXT:     s.__slate_bits_0.__set_d(4095u32);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
@@ -107,8 +107,8 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let mut w: Wide = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     w.__slate_bits_0.__set_x(1099511627775 as u64);
-// CHECK-NEXT:     w.__slate_bits_1.__set_y(-500000 as i64);
+// CHECK-NEXT:     w.__slate_bits_0.__set_x(1099511627775u64);
+// CHECK-NEXT:     w.__slate_bits_1.__set_y(-500000i64);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(

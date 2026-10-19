@@ -70,18 +70,15 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let t: *mut T = (unsafe { calloc(2 as u64, 29 as u64) }) as *mut T;
-// CHECK-NEXT:     let seed: std::simd::Simd<i64, 2> = std::simd::Simd::from_array([
-// CHECK-NEXT:         3 as i64,
-// CHECK-NEXT:         4 as i64,
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let t: *mut T = (unsafe { calloc(2u64, 29u64) }) as *mut T;
+// CHECK-NEXT:     let seed: std::simd::Simd<i64, 2> = std::simd::Simd::from_array([3i64, 4i64]);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*t).v = seed;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (std::ptr::addr_of_mut!((* t).words) as *mut i32)
 // CHECK-NEXT:             .offset(0 as isize)
-// CHECK-NEXT:             .write_unaligned(9 as i32);
+// CHECK-NEXT:             .write_unaligned(9i32);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     bump(t);
 // CHECK-NEXT:     let tail: *mut i32 = unsafe { std::ptr::addr_of_mut!((* t).words) as *mut i32 };

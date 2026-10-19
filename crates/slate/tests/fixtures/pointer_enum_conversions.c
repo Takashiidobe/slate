@@ -70,32 +70,23 @@ int main(void) {
 // CHECK-NEXT:     -(value as i32) as i32
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     println!("{} {} {}", as_int(0 as u32), as_int(5 as u32), as_int(6 as u32));
-// CHECK-NEXT:     let mut color: u32 = from_int(6 as i32);
+// CHECK-NEXT:     println!("{} {} {}", as_int(0u32), as_int(5u32), as_int(6u32));
+// CHECK-NEXT:     let mut color: u32 = from_int(6i32);
 // CHECK-NEXT:     println!("{} {}", ((color as u32) == 6) as i32, (color as u32).wrapping_add(1));
 // CHECK-NEXT:     color = 42;
 // CHECK-NEXT:     println!("{}", (color as u32) as i32);
 // CHECK-NEXT:     color = (color as u32).wrapping_add(1) as u32;
 // CHECK-NEXT:     println!("{}", color as u32);
-// CHECK-NEXT:     println!("{} {}", flip(- 3 as i32) as i32, ((flip(3 as i32) as i32) < 0) as i32);
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%u %d\n".as_ptr(),
-// CHECK-NEXT:             4294967295 as u32,
-// CHECK-NEXT:             ((4294967295 as u32) > (0 as u32)) as i32,
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
+// CHECK-NEXT:     println!("{} {}", flip(- 3i32) as i32, ((flip(3i32) as i32) < 0) as i32);
+// CHECK-NEXT:     unsafe { printf(c"%u %d\n".as_ptr(), 4294967295u32, (4294967295u32 > 0u32) as i32) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let wide: i64 = -3;
-// CHECK-NEXT:     let narrow: u8 = (-3 as i8) as u8;
+// CHECK-NEXT:     let narrow: u8 = 253u8;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%lld %u\n".as_ptr(), wide, narrow as u32) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 4]> = __SlateAlign16([
-// CHECK-NEXT:         10 as i32,
-// CHECK-NEXT:         20 as i32,
-// CHECK-NEXT:         30 as i32,
-// CHECK-NEXT:         40 as i32,
+// CHECK-NEXT:         10i32, 20i32, 30i32, 40i32,
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let p: *mut i32 = values.0.as_mut_ptr() as *mut i32;
 // CHECK-NEXT:     let address: u64 = p as u64;

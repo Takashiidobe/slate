@@ -90,24 +90,20 @@ int main(void) {
 // CHECK-NEXT: static mut env: __SlateAlign16<[__jmp_buf_tag; 1]> = __SlateAlign16(unsafe {
 // CHECK-NEXT:     std::mem::zeroed()
 // CHECK-NEXT: });
-// CHECK-NEXT: static mut failures: i32 = 0 as i32;
+// CHECK-NEXT: static mut failures: i32 = 0;
 // CHECK-NEXT: static mut g_callback: Option<unsafe extern "C-unwind" fn(i32)> = unsafe {
 // CHECK-NEXT:     std::mem::zeroed()
 // CHECK-NEXT: };
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.risky")]
 // CHECK-NEXT: extern "C-unwind" fn risky(x: i32) -> u32 {
 // CHECK-NEXT:     if x == 3 {
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             longjmp(std::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag, 1 as i32)
-// CHECK-NEXT:         };
+// CHECK-NEXT:         unsafe { longjmp(std::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag, 1i32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: extern "C-unwind" fn panicky_callback(x: i32) {
 // CHECK-NEXT:     if x == 2 {
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             longjmp(std::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag, 1 as i32)
-// CHECK-NEXT:         };
+// CHECK-NEXT:         unsafe { longjmp(std::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag, 1i32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("callback {}", x);
 // CHECK-NEXT: }
@@ -122,7 +118,7 @@ int main(void) {
 // CHECK-NEXT:         g_callback = Some(panicky_callback);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     d.run = Some(risky);
-// CHECK-NEXT:     for i in 0 as i32..5 as i32 {
+// CHECK-NEXT:     for i in 0i32..5i32 {
 // CHECK-NEXT:         if (unsafe { _setjmp(std::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag) }) != 0
 // CHECK-NEXT:         {
 // CHECK-NEXT:             unsafe {
@@ -134,7 +130,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     d.run = Some(content_like);
-// CHECK-NEXT:     for i in 0 as i32..5 as i32 {
+// CHECK-NEXT:     for i in 0i32..5i32 {
 // CHECK-NEXT:         if (unsafe { _setjmp(std::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag) }) != 0
 // CHECK-NEXT:         {
 // CHECK-NEXT:             unsafe {

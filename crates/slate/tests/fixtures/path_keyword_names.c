@@ -50,7 +50,7 @@ int main(void) {
 // CHECK-NEXT:     crate_: i32,
 // CHECK-NEXT:     Self_: i32,
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut super_: i32 = 3 as i32;
+// CHECK-NEXT: static mut super_: i32 = 3;
 // CHECK-NEXT: fn combine(self_: i32, crate_: i32) -> i32 {
 // CHECK-NEXT:     let Self_: i32 = self_ * crate_;
 // CHECK-NEXT:     Self_ + unsafe { super_ }
@@ -61,12 +61,12 @@ int main(void) {
 // CHECK-NEXT:         [[T_0]].super_ = {
 // CHECK-NEXT:             let mut [[T_1:__t[0-9]+]]: writer = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:             [[T_1]].name = c"out".as_ptr();
-// CHECK-NEXT:             [[T_1]].phase = 2 as i32;
+// CHECK-NEXT:             [[T_1]].phase = 2i32;
 // CHECK-NEXT:             [[T_1]]
 // CHECK-NEXT:         };
-// CHECK-NEXT:         [[T_0]].self_ = 5 as i32;
-// CHECK-NEXT:         [[T_0]].crate_ = 7 as i32;
-// CHECK-NEXT:         [[T_0]].Self_ = 11 as i32;
+// CHECK-NEXT:         [[T_0]].self_ = 5i32;
+// CHECK-NEXT:         [[T_0]].crate_ = 7i32;
+// CHECK-NEXT:         [[T_0]].Self_ = 11i32;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     ctx.super_.phase += ctx.self_;

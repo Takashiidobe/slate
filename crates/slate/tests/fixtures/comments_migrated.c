@@ -88,12 +88,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}",
-// CHECK-NEXT:         folded(3 as i32),
-// CHECK-NEXT:         zeroed(5 as i32),
-// CHECK-NEXT:         dispatched(7 as i32)
-// CHECK-NEXT:     );
+// CHECK-NEXT:     println!("{} {} {}", folded(3i32), zeroed(5i32), dispatched(7i32));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

@@ -50,7 +50,7 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn present_check() -> i32 {
-// CHECK-NEXT:     unsafe { setenv(c"SLATE_GETENV_FIXTURE_PRESENT".as_ptr(), c"1".as_ptr(), 1 as i32) };
+// CHECK-NEXT:     unsafe { setenv(c"SLATE_GETENV_FIXTURE_PRESENT".as_ptr(), c"1".as_ptr(), 1i32) };
 // CHECK-NEXT:     let value: *mut i8 = unsafe { getenv(c"SLATE_GETENV_FIXTURE_PRESENT".as_ptr()) };
 // CHECK-NEXT:     if !value.is_null() {
 // CHECK-NEXT:         return 1;
@@ -69,7 +69,7 @@ int main(void) {
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn rejected_check() -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         setenv(c"SLATE_GETENV_FIXTURE_REJECTED".as_ptr(), c"ready".as_ptr(), 1 as i32)
+// CHECK-NEXT:         setenv(c"SLATE_GETENV_FIXTURE_REJECTED".as_ptr(), c"ready".as_ptr(), 1i32)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let value: *mut i8 = unsafe { getenv(c"SLATE_GETENV_FIXTURE_REJECTED".as_ptr()) };
 // CHECK-NEXT:     let mut found: i32 = 0;

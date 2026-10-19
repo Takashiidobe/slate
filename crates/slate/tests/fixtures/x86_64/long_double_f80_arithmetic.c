@@ -226,7 +226,7 @@ int main(void) {
 // CHECK-NEXT:     value
 // CHECK-NEXT: }
 // CHECK-NEXT: fn dump80(name: *const i8, mut value: LongDouble) {
-// CHECK-NEXT:     let mut bytes: [u8; 10] = [0 as u8; 10];
+// CHECK-NEXT:     let mut bytes: [u8; 10] = [0u8; 10];
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::copy_nonoverlapping(
 // CHECK-NEXT:             (std::ptr::addr_of_mut!(value) as *const ()) as *const u8,
@@ -237,7 +237,7 @@ int main(void) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%s".as_ptr(), name) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     for i in 0 as i32..10 as i32 {
+// CHECK-NEXT:     for i in 0i32..10i32 {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { printf(c"%02x".as_ptr(), (bytes[i as usize] as u32) as i32) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
@@ -245,42 +245,9 @@ int main(void) {
 // CHECK-NEXT:     println!("");
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut one_bits: [u8; 10] = [
-// CHECK-NEXT:         0,
-// CHECK-NEXT:         0,
-// CHECK-NEXT:         0,
-// CHECK-NEXT:         0,
-// CHECK-NEXT:         0,
-// CHECK-NEXT:         0,
-// CHECK-NEXT:         0,
-// CHECK-NEXT:         ((128 as i32) as i8) as u8,
-// CHECK-NEXT:         ((255 as i32) as i8) as u8,
-// CHECK-NEXT:         63,
-// CHECK-NEXT:     ];
-// CHECK-NEXT:     let mut two_bits: [u8; 10] = [
-// CHECK-NEXT:         0,
-// CHECK-NEXT:         0,
-// CHECK-NEXT:         0,
-// CHECK-NEXT:         0,
-// CHECK-NEXT:         0,
-// CHECK-NEXT:         0,
-// CHECK-NEXT:         0,
-// CHECK-NEXT:         ((128 as i32) as i8) as u8,
-// CHECK-NEXT:         0,
-// CHECK-NEXT:         64,
-// CHECK-NEXT:     ];
-// CHECK-NEXT:     let mut near_bits: [u8; 10] = [
-// CHECK-NEXT:         1,
-// CHECK-NEXT:         0,
-// CHECK-NEXT:         0,
-// CHECK-NEXT:         0,
-// CHECK-NEXT:         0,
-// CHECK-NEXT:         0,
-// CHECK-NEXT:         0,
-// CHECK-NEXT:         ((128 as i32) as i8) as u8,
-// CHECK-NEXT:         ((255 as i32) as i8) as u8,
-// CHECK-NEXT:         63,
-// CHECK-NEXT:     ];
+// CHECK-NEXT:     let mut one_bits: [u8; 10] = [0, 0, 0, 0, 0, 0, 0, 128u8, 255u8, 63];
+// CHECK-NEXT:     let mut two_bits: [u8; 10] = [0, 0, 0, 0, 0, 0, 0, 128u8, 0, 64];
+// CHECK-NEXT:     let mut near_bits: [u8; 10] = [1, 0, 0, 0, 0, 0, 0, 128u8, 255u8, 63];
 // CHECK-NEXT:     let one: LongDouble = load80(one_bits.as_mut_ptr() as *const u8);
 // CHECK-NEXT:     let two: LongDouble = load80(two_bits.as_mut_ptr() as *const u8);
 // CHECK-NEXT:     let near: LongDouble = load80(near_bits.as_mut_ptr() as *const u8);
@@ -294,8 +261,8 @@ int main(void) {
 // CHECK-NEXT:         (near != one) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{}", __slate_f80_to_i32(one + two));
-// CHECK-NEXT:     dump80(c"from_i64".as_ptr(), __slate_f80_from_i64(1234567890123 as i64));
-// CHECK-NEXT:     println!("{}", __slate_f80_to_i32(__slate_f80_from_i32(123456789 as i32)));
+// CHECK-NEXT:     dump80(c"from_i64".as_ptr(), __slate_f80_from_i64(1234567890123i64));
+// CHECK-NEXT:     println!("{}", __slate_f80_to_i32(__slate_f80_from_i32(123456789i32)));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

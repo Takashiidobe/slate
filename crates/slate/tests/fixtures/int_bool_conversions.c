@@ -90,47 +90,38 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", to_bool(256 as i32) as i32, to_bool(0 as i32) as i32, to_bool(- (7 as
-// CHECK-NEXT:         i32)) as i32
+// CHECK-NEXT:         "{} {} {}", to_bool(256i32) as i32, to_bool(0i32) as i32, to_bool(- 7i32) as i32
 // CHECK-NEXT:     );
-// CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {}", to_bool_u8(0 as u8) as i32, to_bool_u8(((200 as i32) as i8) as u8) as
-// CHECK-NEXT:         i32
-// CHECK-NEXT:     );
-// CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {}", to_bool_ll((1 as i64) << (40 as i32)) as i32, to_bool_ll(0 as i64) as
-// CHECK-NEXT:         i32
-// CHECK-NEXT:     );
-// CHECK-NEXT:     let mut b: bool = (42 as i32) != (0 as i32);
+// CHECK-NEXT:     println!("{} {}", to_bool_u8(0u8) as i32, to_bool_u8(200u8) as i32);
+// CHECK-NEXT:     println!("{} {}", to_bool_ll(1099511627776i64) as i32, to_bool_ll(0i64) as i32);
+// CHECK-NEXT:     let mut b: bool = 42i32 != 0i32;
 // CHECK-NEXT:     println!("{} {}", b as i32, from_bool(b));
-// CHECK-NEXT:     b = to_bool(0 as i32);
+// CHECK-NEXT:     b = to_bool(0i32);
 // CHECK-NEXT:     let bi: i32 = b as i32;
 // CHECK-NEXT:     println!("{}", bi);
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", trunc_sc(200 as i32) as i32, (trunc_uc(- (1 as i32)) as u32) as i32,
-// CHECK-NEXT:         trunc_s(305419896 as i64) as i32
+// CHECK-NEXT:         "{} {} {}", trunc_sc(200i32) as i32, (trunc_uc(- 1i32) as u32) as i32,
+// CHECK-NEXT:         trunc_s(305419896i64) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%u %lld %llu\n".as_ptr(),
-// CHECK-NEXT:             widen_u(-3 as i8),
-// CHECK-NEXT:             widen_ll(((65535 as i32) as i16) as u16),
-// CHECK-NEXT:             widen_ull(-(1 as i32)),
+// CHECK-NEXT:             widen_u(-3i8),
+// CHECK-NEXT:             widen_ll(65535u16),
+// CHECK-NEXT:             widen_ull(-1i32),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(c"%d %u\n".as_ptr(), reinterp(4294967295 as u32), reinterp_u(-(2 as i32)))
-// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { printf(c"%d %u\n".as_ptr(), reinterp(4294967295u32), reinterp_u(-2i32)) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     println!("{} {}", promote(1 as u8, 2 as u8), promote_s(300 as i16, 300 as i16));
-// CHECK-NEXT:     let mut uc: u8 = ((255 as i32) as i8) as u8;
+// CHECK-NEXT:     println!("{} {}", promote(1u8, 2u8), promote_s(300i16, 300i16));
+// CHECK-NEXT:     let mut uc: u8 = 255u8;
 // CHECK-NEXT:     uc = ((((uc as u32) as i32) + 1) as i8) as u8;
 // CHECK-NEXT:     println!("{}", (uc as u32) as i32);
 // CHECK-NEXT:     let c: bool = !b;
 // CHECK-NEXT:     println!("{} {}", c as i32, ! (bi != 0) as i32);
-// CHECK-NEXT:     (to_bool(3 as i32) as i32) + (to_bool(0 as i32) as i32)
+// CHECK-NEXT:     (to_bool(3i32) as i32) + (to_bool(0i32) as i32)
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(

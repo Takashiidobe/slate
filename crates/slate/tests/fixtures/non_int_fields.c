@@ -74,7 +74,7 @@ int main(void) {
 // CHECK-NEXT: fn struct_values() -> i32 {
 // CHECK-NEXT:     let mut m: Mixed = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     m.tag = 65;
-// CHECK-NEXT:     m.code = ((200 as i32) as i8) as u8;
+// CHECK-NEXT:     m.code = 200u8;
 // CHECK-NEXT:     m.ratio = 1.5f32;
 // CHECK-NEXT:     m.total = 2.25f64;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -109,7 +109,7 @@ int main(void) {
 // CHECK-NEXT:     println!("{}", struct_values());
 // CHECK-NEXT:     unsafe { printf(c"%f\n".as_ptr(), union_double(4.5f64)) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     println!("{}", union_char(90 as i8));
+// CHECK-NEXT:     println!("{}", union_char(90i8));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

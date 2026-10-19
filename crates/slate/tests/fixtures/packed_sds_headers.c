@@ -401,30 +401,24 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%zu %zu %zu\n".as_ptr(), 3 as u64, 5 as u64, 17 as u64) };
+// CHECK-NEXT:     unsafe { printf(c"%zu %zu %zu\n".as_ptr(), 3u64, 5u64, 17u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%zu %zu %zu\n".as_ptr(), 2 as u64, 4 as u64, 17 as u64) };
+// CHECK-NEXT:     unsafe { printf(c"%zu %zu %zu\n".as_ptr(), 2u64, 4u64, 17u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(c"%zu %zu %zu %zu\n".as_ptr(), 9 as u64, 1 as u64, 12 as u64, 1 as u64)
-// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { printf(c"%zu %zu %zu %zu\n".as_ptr(), 9u64, 1u64, 12u64, 1u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(c"%zu %zu %zu %zu\n".as_ptr(), 48 as u64, 2 as u64, 10 as u64, 46 as u64)
-// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { printf(c"%zu %zu %zu %zu\n".as_ptr(), 48u64, 2u64, 10u64, 46u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(c"%zu %zu %zu %zu\n".as_ptr(), 14 as u64, 2 as u64, 2 as u64, 6 as u64)
-// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { printf(c"%zu %zu %zu %zu\n".as_ptr(), 14u64, 2u64, 2u64, 6u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let types: [i32; 3] = [1, 2, 4];
-// CHECK-NEXT:     for i in 0 as i32..3 as i32 {
+// CHECK-NEXT:     for i in 0i32..3i32 {
 // CHECK-NEXT:         let s: *mut i8 = sdsnew(c"hello".as_ptr(), types[i as usize]);
-// CHECK-NEXT:         sdsinclen(s, 2 as u64);
+// CHECK-NEXT:         sdsinclen(s, 2u64);
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             printf(
@@ -441,18 +435,16 @@ int main(void) {
 // CHECK-NEXT:                 s
 // CHECK-NEXT:                     .offset(
 // CHECK-NEXT:                         -((if types[i as usize] == 1 {
-// CHECK-NEXT:                             3 as u64
+// CHECK-NEXT:                             3u64
 // CHECK-NEXT:                         } else {
-// CHECK-NEXT:                             if types[i as usize] == 2 { 5 as u64 } else { 17 as u64 }
+// CHECK-NEXT:                             if types[i as usize] == 2 { 5u64 } else { 17u64 }
 // CHECK-NEXT:                         }) as isize),
 // CHECK-NEXT:                     ) as *mut (),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut buffer: __SlateAlign16<[u8; 64]> = __SlateAlign16([0 as u8; 64]);
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::ptr::write_bytes(buffer.0.as_mut_ptr() as *mut u8, 0 as u8, 64 as usize)
-// CHECK-NEXT:     };
+// CHECK-NEXT:     let mut buffer: __SlateAlign16<[u8; 64]> = __SlateAlign16([0u8; 64]);
+// CHECK-NEXT:     unsafe { std::ptr::write_bytes(buffer.0.as_mut_ptr() as *mut u8, 0u8, 64 as usize) };
 // CHECK-NEXT:     let mut used: u64 = 0;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let mut i: i32 = 1;
@@ -470,7 +462,7 @@ int main(void) {
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 (*header).payload_len = [[V_4]].wrapping_add(7);
 // CHECK-NEXT:             }
-// CHECK-NEXT:             used = used.wrapping_add((9 as u64).wrapping_add((i as i64) as u64));
+// CHECK-NEXT:             used = used.wrapping_add(9u64.wrapping_add((i as i64) as u64));
 // CHECK-NEXT:             i += 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -497,7 +489,7 @@ int main(void) {
 // CHECK-NEXT:                 )
 // CHECK-NEXT:             };
 // CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:             offset = offset.wrapping_add((9 as u64).wrapping_add(i));
+// CHECK-NEXT:             offset = offset.wrapping_add(9u64.wrapping_add(i));
 // CHECK-NEXT:             i = i.wrapping_add(1);
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -505,17 +497,17 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::write_bytes(
 // CHECK-NEXT:             (std::ptr::addr_of_mut!(holder) as *mut ()) as *mut u8,
-// CHECK-NEXT:             0 as u8,
+// CHECK-NEXT:             0u8,
 // CHECK-NEXT:             48 as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     holder.tag = 104;
 // CHECK-NEXT:     holder.header.payload_len = 300;
 // CHECK-NEXT:     holder.header.payload_type = (holder.header.payload_len / 7) as u8;
-// CHECK-NEXT:     for i in 0 as i32..3 as i32 {
+// CHECK-NEXT:     for i in 0i32..3i32 {
 // CHECK-NEXT:         holder.events[i as usize].events = (i + 1) as u32;
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             holder.events[i as usize].data.u64 = (1234605616436508552 as u64)
+// CHECK-NEXT:             holder.events[i as usize].data.u64 = 1234605616436508552u64
 // CHECK-NEXT:                 .wrapping_add((i as i64) as u64);
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -540,13 +532,13 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let mut two: pack_two = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: pack_two = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]].tag = 116 as i8;
-// CHECK-NEXT:         [[T_0]].value = 3735928559 as u32;
-// CHECK-NEXT:         [[T_0]].wide = 72623859790382856 as u64;
+// CHECK-NEXT:         [[T_0]].tag = 116i8;
+// CHECK-NEXT:         [[T_0]].value = 3735928559u32;
+// CHECK-NEXT:         [[T_0]].wide = 72623859790382856u64;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     two.value ^= 65535;
-// CHECK-NEXT:     two.wide <<= 4 as i32;
+// CHECK-NEXT:     two.wide <<= 4i32;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%c %x %llx\n".as_ptr(), two.tag as i32, two.value, two.wide) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

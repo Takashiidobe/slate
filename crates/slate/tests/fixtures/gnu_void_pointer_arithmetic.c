@@ -40,22 +40,7 @@ int main(void) {
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: static mut bytes: __SlateAlign16<[u8; 16]> = __SlateAlign16([
-// CHECK-NEXT:     ((0 as i32) as i8) as u8,
-// CHECK-NEXT:     ((1 as i32) as i8) as u8,
-// CHECK-NEXT:     ((2 as i32) as i8) as u8,
-// CHECK-NEXT:     ((3 as i32) as i8) as u8,
-// CHECK-NEXT:     ((4 as i32) as i8) as u8,
-// CHECK-NEXT:     ((5 as i32) as i8) as u8,
-// CHECK-NEXT:     ((6 as i32) as i8) as u8,
-// CHECK-NEXT:     ((7 as i32) as i8) as u8,
-// CHECK-NEXT:     ((8 as i32) as i8) as u8,
-// CHECK-NEXT:     ((9 as i32) as i8) as u8,
-// CHECK-NEXT:     ((10 as i32) as i8) as u8,
-// CHECK-NEXT:     ((11 as i32) as i8) as u8,
-// CHECK-NEXT:     ((12 as i32) as i8) as u8,
-// CHECK-NEXT:     ((13 as i32) as i8) as u8,
-// CHECK-NEXT:     ((14 as i32) as i8) as u8,
-// CHECK-NEXT:     ((15 as i32) as i8) as u8,
+// CHECK-NEXT:     0u8, 1u8, 2u8, 3u8, 4u8, 5u8, 6u8, 7u8, 8u8, 9u8, 10u8, 11u8, 12u8, 13u8, 14u8, 15u8,
 // CHECK-NEXT: ]);
 // CHECK-NEXT: fn at(base: *const (), index: i64) -> u8 {
 // CHECK-NEXT:     unsafe { *(((base as *const u8).offset(index as isize) as *const ()) as *const u8) }
@@ -90,8 +75,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%u %u %u\n".as_ptr(),
-// CHECK-NEXT:             (at(start as *const (), 7 as i64) as u32) as i32,
-// CHECK-NEXT:             (at(middle, -2 as i64) as u32) as i32,
+// CHECK-NEXT:             (at(start as *const (), 7i64) as u32) as i32,
+// CHECK-NEXT:             (at(middle, -2i64) as u32) as i32,
 // CHECK-NEXT:             (*(cursor as *mut u8) as u32) as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };

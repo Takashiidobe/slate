@@ -140,7 +140,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*[[V_1]]).value = (*[[V_1]]).value + 4;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     println!("{}", sum_list(std::ptr::addr_of_mut!(first), 3 as i32));
+// CHECK-NEXT:     println!("{}", sum_list(std::ptr::addr_of_mut!(first), 3i32));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

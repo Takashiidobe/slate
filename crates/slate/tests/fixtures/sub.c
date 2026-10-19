@@ -23,7 +23,7 @@ int main(void) {
 // CHECK-NEXT:     a - b
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     println!("{}", isub(10 as i32, 25 as i32));
+// CHECK-NEXT:     println!("{}", isub(10i32, 25i32));
 // CHECK-NEXT:     let u: u32 = 3;
 // CHECK-NEXT:     let w: u32 = 10;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());

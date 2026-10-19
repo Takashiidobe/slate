@@ -103,7 +103,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         print_values(c"%d %s\n".as_ptr(), 42 as i32, c"forwarded".as_ptr() as *mut i8)
+// CHECK-NEXT:         print_values(c"%d %s\n".as_ptr(), 42i32, c"forwarded".as_ptr() as *mut i8)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

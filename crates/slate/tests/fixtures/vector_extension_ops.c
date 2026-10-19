@@ -22,16 +22,10 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let a: std::simd::Simd<i32, 4> = std::simd::Simd::from_array([
-// CHECK-NEXT:         1 as i32,
-// CHECK-NEXT:         2 as i32,
-// CHECK-NEXT:         3 as i32,
-// CHECK-NEXT:         4 as i32,
+// CHECK-NEXT:         1i32, 2i32, 3i32, 4i32,
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let b: std::simd::Simd<i32, 4> = std::simd::Simd::from_array([
-// CHECK-NEXT:         5 as i32,
-// CHECK-NEXT:         6 as i32,
-// CHECK-NEXT:         7 as i32,
-// CHECK-NEXT:         8 as i32,
+// CHECK-NEXT:         5i32, 6i32, 7i32, 8i32,
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let mut c: std::simd::Simd<i32, 4> = a + b;
 // CHECK-NEXT:     c[1] = 20;

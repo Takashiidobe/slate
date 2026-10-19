@@ -35,7 +35,7 @@ int main(void) {
 // CHECK-NEXT:                 [[T_0]] }; std::ptr::addr_of_mut!([[SLATE_COMPOUND_0]]) }
 // CHECK-NEXT:             ),
 // CHECK-NEXT:             c"slate".as_ptr(),
-// CHECK-NEXT:             (6 as u64).wrapping_sub(1 as u64),
+// CHECK-NEXT:             5u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut second: Slice = unsafe {
@@ -45,7 +45,7 @@ int main(void) {
 // CHECK-NEXT:                 [[T_1]] }; std::ptr::addr_of_mut!([[SLATE_COMPOUND_1]]) }
 // CHECK-NEXT:             ),
 // CHECK-NEXT:             c"translation".as_ptr(),
-// CHECK-NEXT:             (12 as u64).wrapping_sub(1 as u64),
+// CHECK-NEXT:             11u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());

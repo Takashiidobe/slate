@@ -63,13 +63,13 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let pairs: __SlateAlign16<{{\[\[}}i32; 2]; 7]> = __SlateAlign16([
-// CHECK-NEXT:         [7 as i32, 2 as i32],
-// CHECK-NEXT:         [-(7 as i32), 2 as i32],
-// CHECK-NEXT:         [7 as i32, -(2 as i32)],
-// CHECK-NEXT:         [-(7 as i32), -(2 as i32)],
-// CHECK-NEXT:         [0 as i32, 5 as i32],
-// CHECK-NEXT:         [-(2147483647 as i32) - (1 as i32), 2 as i32],
-// CHECK-NEXT:         [2147483647 as i32, -(1 as i32)],
+// CHECK-NEXT:         [7i32, 2i32],
+// CHECK-NEXT:         [-7i32, 2i32],
+// CHECK-NEXT:         [7i32, -2i32],
+// CHECK-NEXT:         [-7i32, -2i32],
+// CHECK-NEXT:         [0i32, 5i32],
+// CHECK-NEXT:         [-2147483648i32, 2i32],
+// CHECK-NEXT:         [2147483647i32, -1i32],
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let mut i: u32 = 0;
 // CHECK-NEXT:     while (i as u64) < 56 / 8 {
@@ -81,8 +81,8 @@ int main(void) {
 // CHECK-NEXT:         );
 // CHECK-NEXT:         i = i.wrapping_add(1);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mixed: u32 = (-(7 as i32) as u32) / 2;
-// CHECK-NEXT:     let mixed_rem: u32 = (-(7 as i32) as u32) % 3;
+// CHECK-NEXT:     let mixed: u32 = 2147483644u32;
+// CHECK-NEXT:     let mixed_rem: u32 = 0u32;
 // CHECK-NEXT:     let big: i64 = (-9223372036854775807 - 1) / 3;
 // CHECK-NEXT:     let big_rem: i64 = (-9223372036854775807 - 1) % 7;
 // CHECK-NEXT:     let ubig: u64 = 18446744073709551615 / 10;
@@ -101,9 +101,9 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let mut sc: i8 = -100;
-// CHECK-NEXT:     let mut uc: u8 = ((250 as i32) as i8) as u8;
+// CHECK-NEXT:     let mut uc: u8 = 250u8;
 // CHECK-NEXT:     let mut sh: i16 = -30000;
-// CHECK-NEXT:     let mut us: u16 = ((65535 as i32) as i16) as u16;
+// CHECK-NEXT:     let mut us: u16 = 65535u16;
 // CHECK-NEXT:     sc = ((sc as i32) / 3) as i8;
 // CHECK-NEXT:     uc = ((((uc as u32) as i32) % 7) as i8) as u8;
 // CHECK-NEXT:     sh = ((sh as i32) / -7) as i16;
@@ -125,7 +125,7 @@ int main(void) {
 // CHECK-NEXT:         steps += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("{} {}", steps, - 17 % 5 + 17 % - 5);
-// CHECK-NEXT:     quotient(-(45 as i32), 4 as i32) & 255
+// CHECK-NEXT:     quotient(-45i32, 4i32) & 255
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(

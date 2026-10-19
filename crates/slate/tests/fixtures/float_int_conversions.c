@@ -75,7 +75,7 @@ int main(void) {
 // CHECK-NEXT:         2147483647.0f64,
 // CHECK-NEXT:         -2147483648.0f64,
 // CHECK-NEXT:     ]);
-// CHECK-NEXT:     for i in 0 as i32..7 as i32 {
+// CHECK-NEXT:     for i in 0i32..7i32 {
 // CHECK-NEXT:         print!("{} ", values.0[i as usize] as i32);
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     }
@@ -97,8 +97,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%.1f %.1f\n".as_ptr(),
-// CHECK-NEXT:             (9223372036854775807 as i64) as f64,
-// CHECK-NEXT:             (9223372036854775807 as u64).wrapping_mul(2 as u64).wrapping_add(1) as f64,
+// CHECK-NEXT:             9223372036854775807i64 as f64,
+// CHECK-NEXT:             18446744073709551615u64 as f64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -106,18 +106,14 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%.1f %.1f\n".as_ptr(),
-// CHECK-NEXT:             ((2147483647 as i32) as f32) as f64,
-// CHECK-NEXT:             ((16777217 as i32) as f32) as f64,
+// CHECK-NEXT:             (2147483647i32 as f32) as f64,
+// CHECK-NEXT:             (16777217i32 as f32) as f64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%.1f %.1f\n".as_ptr(),
-// CHECK-NEXT:             (4294967295 as u32) as f64,
-// CHECK-NEXT:             (-(2147483647 as i32) - (1 as i32)) as f64,
-// CHECK-NEXT:         )
+// CHECK-NEXT:         printf(c"%.1f %.1f\n".as_ptr(), 4294967295u32 as f64, -2147483648i32 as f64)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let big: u64 = 18446744073709549569;
@@ -125,7 +121,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { printf(c"%.1f %.1f\n".as_ptr(), big as f64, (big as f32) as f64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let sc: i8 = -7;
-// CHECK-NEXT:     let uc: u8 = ((250 as i32) as i8) as u8;
+// CHECK-NEXT:     let uc: u8 = 250u8;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%g %g\n".as_ptr(), sc as f64, (uc as f32) as f64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

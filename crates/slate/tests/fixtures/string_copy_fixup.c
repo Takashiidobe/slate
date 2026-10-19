@@ -36,58 +36,26 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut copy: __SlateAlign16<[i8; 16]> = __SlateAlign16({
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [i8; 16] = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]][0] = 0 as i8;
+// CHECK-NEXT:         [[T_0]][0] = 0i8;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     });
 // CHECK-NEXT:     let mut append: __SlateAlign16<[i8; 16]> = __SlateAlign16([
-// CHECK-NEXT:         102 as i8,
-// CHECK-NEXT:         111 as i8,
-// CHECK-NEXT:         111 as i8,
-// CHECK-NEXT:         0 as i8,
-// CHECK-NEXT:         0 as i8,
-// CHECK-NEXT:         0 as i8,
-// CHECK-NEXT:         0 as i8,
-// CHECK-NEXT:         0 as i8,
-// CHECK-NEXT:         0 as i8,
-// CHECK-NEXT:         0 as i8,
-// CHECK-NEXT:         0 as i8,
-// CHECK-NEXT:         0 as i8,
-// CHECK-NEXT:         0 as i8,
-// CHECK-NEXT:         0 as i8,
-// CHECK-NEXT:         0 as i8,
-// CHECK-NEXT:         0 as i8,
+// CHECK-NEXT:         102i8, 111i8, 111i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8,
+// CHECK-NEXT:         0i8,
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let mut trunc_copy: __SlateAlign16<[i8; 16]> = __SlateAlign16({
 // CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: [i8; 16] = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_1]][0] = 0 as i8;
+// CHECK-NEXT:         [[T_1]][0] = 0i8;
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     });
 // CHECK-NEXT:     let mut trunc_append: __SlateAlign16<[i8; 16]> = __SlateAlign16([
-// CHECK-NEXT:         112 as i8,
-// CHECK-NEXT:         114 as i8,
-// CHECK-NEXT:         101 as i8,
-// CHECK-NEXT:         0 as i8,
-// CHECK-NEXT:         0 as i8,
-// CHECK-NEXT:         0 as i8,
-// CHECK-NEXT:         0 as i8,
-// CHECK-NEXT:         0 as i8,
-// CHECK-NEXT:         0 as i8,
-// CHECK-NEXT:         0 as i8,
-// CHECK-NEXT:         0 as i8,
-// CHECK-NEXT:         0 as i8,
-// CHECK-NEXT:         0 as i8,
-// CHECK-NEXT:         0 as i8,
-// CHECK-NEXT:         0 as i8,
-// CHECK-NEXT:         0 as i8,
+// CHECK-NEXT:         112i8, 114i8, 101i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8,
+// CHECK-NEXT:         0i8,
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     unsafe { strcpy(copy.0.as_mut_ptr() as *mut i8, c"abc".as_ptr()) };
 // CHECK-NEXT:     unsafe { strcat(append.0.as_mut_ptr() as *mut i8, c"bar".as_ptr()) };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         strncpy(trunc_copy.0.as_mut_ptr() as *mut i8, c"abcdef".as_ptr(), 3 as u64)
-// CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         strncat(trunc_append.0.as_mut_ptr() as *mut i8, c"suffix".as_ptr(), 3 as u64)
-// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { strncpy(trunc_copy.0.as_mut_ptr() as *mut i8, c"abcdef".as_ptr(), 3u64) };
+// CHECK-NEXT:     unsafe { strncat(trunc_append.0.as_mut_ptr() as *mut i8, c"suffix".as_ptr(), 3u64) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(

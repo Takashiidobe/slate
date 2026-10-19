@@ -39,13 +39,10 @@ int main(void) {
 // CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: loop {
 // CHECK-NEXT:         let mut r: u32 = 0;
 // CHECK-NEXT:         let values: __SlateAlign16<{{\[\[}}u32; 2]; 4]> = __SlateAlign16([
-// CHECK-NEXT:             [0 as u32, (2147483647 as u32).wrapping_mul(2 as u32).wrapping_add(1)],
-// CHECK-NEXT:             [1 as u32, (2147483647 as u32).wrapping_mul(2 as u32).wrapping_add(1)],
-// CHECK-NEXT:             [(2147483647 as u32).wrapping_mul(2 as u32).wrapping_add(1), 2 as u32],
-// CHECK-NEXT:             [
-// CHECK-NEXT:                 (2147483647 as u32).wrapping_mul(2 as u32).wrapping_add(1),
-// CHECK-NEXT:                 (2147483647 as u32).wrapping_mul(2 as u32).wrapping_add(1),
-// CHECK-NEXT:             ],
+// CHECK-NEXT:             [0u32, 4294967295u32],
+// CHECK-NEXT:             [1u32, 4294967295u32],
+// CHECK-NEXT:             [4294967295u32, 2u32],
+// CHECK-NEXT:             [4294967295u32, 4294967295u32],
 // CHECK-NEXT:         ]);
 // CHECK-NEXT:         let mut i: u32 = 0;
 // CHECK-NEXT:         '[[SLATE_BREAK_1:__slate_break_[0-9]+]]: while i < 4 {
@@ -63,29 +60,17 @@ int main(void) {
 // CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:             i = i.wrapping_add(1);
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:         if !(0i32 != 0i32) {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     '[[SLATE_BREAK_2:__slate_break_[0-9]+]]: loop {
 // CHECK-NEXT:         let mut r: u64 = 0;
 // CHECK-NEXT:         let values: __SlateAlign16<{{\[\[}}u64; 2]; 4]> = __SlateAlign16([
-// CHECK-NEXT:             [
-// CHECK-NEXT:                 0 as u64,
-// CHECK-NEXT:                 (9223372036854775807 as u64).wrapping_mul(2 as u64).wrapping_add(1),
-// CHECK-NEXT:             ],
-// CHECK-NEXT:             [
-// CHECK-NEXT:                 1 as u64,
-// CHECK-NEXT:                 (9223372036854775807 as u64).wrapping_mul(2 as u64).wrapping_add(1),
-// CHECK-NEXT:             ],
-// CHECK-NEXT:             [
-// CHECK-NEXT:                 (9223372036854775807 as u64).wrapping_mul(2 as u64).wrapping_add(1),
-// CHECK-NEXT:                 2 as u64,
-// CHECK-NEXT:             ],
-// CHECK-NEXT:             [
-// CHECK-NEXT:                 (9223372036854775807 as u64).wrapping_mul(2 as u64).wrapping_add(1),
-// CHECK-NEXT:                 (9223372036854775807 as u64).wrapping_mul(2 as u64).wrapping_add(1),
-// CHECK-NEXT:             ],
+// CHECK-NEXT:             [0u64, 18446744073709551615u64],
+// CHECK-NEXT:             [1u64, 18446744073709551615u64],
+// CHECK-NEXT:             [18446744073709551615u64, 2u64],
+// CHECK-NEXT:             [18446744073709551615u64, 18446744073709551615u64],
 // CHECK-NEXT:         ]);
 // CHECK-NEXT:         let mut i: u32 = 0;
 // CHECK-NEXT:         '[[SLATE_BREAK_3:__slate_break_[0-9]+]]: while i < 4 {
@@ -103,29 +88,17 @@ int main(void) {
 // CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:             i = i.wrapping_add(1);
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:         if !(0i32 != 0i32) {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     '[[SLATE_BREAK_4:__slate_break_[0-9]+]]: loop {
 // CHECK-NEXT:         let mut r: u64 = 0;
 // CHECK-NEXT:         let values: __SlateAlign16<{{\[\[}}u64; 2]; 4]> = __SlateAlign16([
-// CHECK-NEXT:             [
-// CHECK-NEXT:                 0 as u64,
-// CHECK-NEXT:                 (9223372036854775807 as u64).wrapping_mul(2 as u64).wrapping_add(1),
-// CHECK-NEXT:             ],
-// CHECK-NEXT:             [
-// CHECK-NEXT:                 1 as u64,
-// CHECK-NEXT:                 (9223372036854775807 as u64).wrapping_mul(2 as u64).wrapping_add(1),
-// CHECK-NEXT:             ],
-// CHECK-NEXT:             [
-// CHECK-NEXT:                 (9223372036854775807 as u64).wrapping_mul(2 as u64).wrapping_add(1),
-// CHECK-NEXT:                 2 as u64,
-// CHECK-NEXT:             ],
-// CHECK-NEXT:             [
-// CHECK-NEXT:                 (9223372036854775807 as u64).wrapping_mul(2 as u64).wrapping_add(1),
-// CHECK-NEXT:                 (9223372036854775807 as u64).wrapping_mul(2 as u64).wrapping_add(1),
-// CHECK-NEXT:             ],
+// CHECK-NEXT:             [0u64, 18446744073709551615u64],
+// CHECK-NEXT:             [1u64, 18446744073709551615u64],
+// CHECK-NEXT:             [18446744073709551615u64, 2u64],
+// CHECK-NEXT:             [18446744073709551615u64, 18446744073709551615u64],
 // CHECK-NEXT:         ]);
 // CHECK-NEXT:         let mut i: u32 = 0;
 // CHECK-NEXT:         '[[SLATE_BREAK_5:__slate_break_[0-9]+]]: while i < 4 {
@@ -143,14 +116,14 @@ int main(void) {
 // CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:             i = i.wrapping_add(1);
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:         if !(0i32 != 0i32) {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut r: u32 = 0;
 // CHECK-NEXT:     let mut overflow: i32 = ({
-// CHECK-NEXT:         let [[T_9:__t[0-9]+]]: i128 = ((4294967297 as u64) as u32) as i128;
-// CHECK-NEXT:         let [[T_10:__t[0-9]+]]: i128 = (-(1 as i32) as u32) as i128;
+// CHECK-NEXT:         let [[T_9:__t[0-9]+]]: i128 = 1u32 as i128;
+// CHECK-NEXT:         let [[T_10:__t[0-9]+]]: i128 = 4294967295u32 as i128;
 // CHECK-NEXT:         let [[T_11:__t[0-9]+]]: i128 = [[T_9]].wrapping_mul([[T_10]]);
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *std::ptr::addr_of_mut!(r) = [[T_11]] as u32;

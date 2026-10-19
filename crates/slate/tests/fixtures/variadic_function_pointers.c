@@ -77,8 +77,7 @@ int main(void) {
 // CHECK-NEXT:     let a: i8 = 7;
 // CHECK-NEXT:     let b: f32 = 2.5f32;
 // CHECK-NEXT:     let c: u16 = 19;
-// CHECK-NEXT:     if (unsafe { callback.unwrap()(3 as i32, a as i32, b as f64, (c as u32) as i32) })
-// CHECK-NEXT:         != 31
+// CHECK-NEXT:     if (unsafe { callback.unwrap()(3i32, a as i32, b as f64, (c as u32) as i32) }) != 31
 // CHECK-NEXT:     {
 // CHECK-NEXT:         return 1;
 // CHECK-NEXT:     }
@@ -94,12 +93,12 @@ int main(void) {
 // CHECK-NEXT:             Option<unsafe extern "C-unwind" fn(*mut i8, u64, *const i8, ...) -> i32>,
 // CHECK-NEXT:         >(snprintf as *const ())
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut buffer: __SlateAlign16<[i8; 32]> = __SlateAlign16([0 as i8; 32]);
+// CHECK-NEXT:     let mut buffer: __SlateAlign16<[i8; 32]> = __SlateAlign16([0i8; 32]);
 // CHECK-NEXT:     if (unsafe {
 // CHECK-NEXT:         format
 // CHECK-NEXT:             .unwrap()(
 // CHECK-NEXT:             buffer.0.as_mut_ptr() as *mut i8,
-// CHECK-NEXT:             32 as u64,
+// CHECK-NEXT:             32u64,
 // CHECK-NEXT:             c"%d %.1f".as_ptr(),
 // CHECK-NEXT:             a as i32,
 // CHECK-NEXT:             b as f64,

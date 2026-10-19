@@ -26,9 +26,9 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%c%c %d\n".as_ptr(),
-// CHECK-NEXT:             toupper(97 as i32),
-// CHECK-NEXT:             tolower(90 as i32),
-// CHECK-NEXT:             (-(42 as i32)).wrapping_abs(),
+// CHECK-NEXT:             toupper(97i32),
+// CHECK-NEXT:             tolower(90i32),
+// CHECK-NEXT:             (-42i32).wrapping_abs(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

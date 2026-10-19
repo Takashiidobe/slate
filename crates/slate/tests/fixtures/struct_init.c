@@ -37,14 +37,14 @@ int main(void) {
 // CHECK-NEXT:     let full: Triple = Triple { x: 1, y: 2, z: 3 };
 // CHECK-NEXT:     let partial: Triple = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: Triple = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]].x = 4 as i32;
-// CHECK-NEXT:         [[T_0]].y = 5 as i32;
+// CHECK-NEXT:         [[T_0]].x = 4i32;
+// CHECK-NEXT:         [[T_0]].y = 5i32;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let designated: Triple = {
 // CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: Triple = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_1]].x = 7 as i32;
-// CHECK-NEXT:         [[T_1]].z = 9 as i32;
+// CHECK-NEXT:         [[T_1]].x = 7i32;
+// CHECK-NEXT:         [[T_1]].z = 9i32;
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     println!("{} {} {}", full.x, full.y, full.z);

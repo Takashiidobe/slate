@@ -100,26 +100,10 @@ int main(void) {
 // CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut buf: __SlateAlign16<[i8; 16]> = __SlateAlign16([
-// CHECK-NEXT:         48 as i8,
-// CHECK-NEXT:         49 as i8,
-// CHECK-NEXT:         50 as i8,
-// CHECK-NEXT:         51 as i8,
-// CHECK-NEXT:         52 as i8,
-// CHECK-NEXT:         53 as i8,
-// CHECK-NEXT:         54 as i8,
-// CHECK-NEXT:         55 as i8,
-// CHECK-NEXT:         56 as i8,
-// CHECK-NEXT:         57 as i8,
-// CHECK-NEXT:         97 as i8,
-// CHECK-NEXT:         98 as i8,
-// CHECK-NEXT:         99 as i8,
-// CHECK-NEXT:         100 as i8,
-// CHECK-NEXT:         101 as i8,
-// CHECK-NEXT:         0 as i8,
+// CHECK-NEXT:         48i8, 49i8, 50i8, 51i8, 52i8, 53i8, 54i8, 55i8, 56i8, 57i8, 97i8, 98i8, 99i8,
+// CHECK-NEXT:         100i8, 101i8, 0i8,
 // CHECK-NEXT:     ]);
-// CHECK-NEXT:     let n: u64 = unsafe {
-// CHECK-NEXT:         fwrite(buf.0.as_mut_ptr() as *const (), 1 as u64, 15 as u64, f)
-// CHECK-NEXT:     };
+// CHECK-NEXT:     let n: u64 = unsafe { fwrite(buf.0.as_mut_ptr() as *const (), 1u64, 15u64, f) };
 // CHECK-NEXT:     unsafe { printf(c"%zu\n".as_ptr(), n) };
 // CHECK-NEXT:     unsafe { fclose(f) };
 // CHECK-NEXT:     unsafe { remove(c"slate_stdio_fwrite_return.tmp".as_ptr()) };

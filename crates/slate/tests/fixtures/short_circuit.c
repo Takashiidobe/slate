@@ -74,7 +74,7 @@ int main(void) {
 // CHECK-NEXT:     let mut r1: i32 = 0;
 // CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: bool;
 // CHECK-NEXT:     if n > 5 {
-// CHECK-NEXT:         [[V_0]] = bump(unsafe { &mut (*std::ptr::addr_of_mut!(n)) }, 1 as i32) != 0;
+// CHECK-NEXT:         [[V_0]] = bump(unsafe { &mut (*std::ptr::addr_of_mut!(n)) }, 1i32) != 0;
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         [[V_0]] = false as bool;
 // CHECK-NEXT:     }
@@ -84,13 +84,13 @@ int main(void) {
 // CHECK-NEXT:     if n < 5 {
 // CHECK-NEXT:         [[V_1]] = true as bool;
 // CHECK-NEXT:     } else {
-// CHECK-NEXT:         [[V_1]] = bump(unsafe { &mut (*std::ptr::addr_of_mut!(n)) }, 1 as i32) != 0;
+// CHECK-NEXT:         [[V_1]] = bump(unsafe { &mut (*std::ptr::addr_of_mut!(n)) }, 1i32) != 0;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     r2 = [[V_1]] as i32;
 // CHECK-NEXT:     let mut r3: i32 = 0;
 // CHECK-NEXT:     let mut [[V_2:__v[0-9]+]]: bool;
-// CHECK-NEXT:     if bump(unsafe { &mut (*std::ptr::addr_of_mut!(n)) }, 0 as i32) != 0 {
-// CHECK-NEXT:         let [[V_3:__v[0-9]+]]: i32 = bump(unsafe { &mut (*std::ptr::addr_of_mut!(n)) }, 7 as i32);
+// CHECK-NEXT:     if bump(unsafe { &mut (*std::ptr::addr_of_mut!(n)) }, 0i32) != 0 {
+// CHECK-NEXT:         let [[V_3:__v[0-9]+]]: i32 = bump(unsafe { &mut (*std::ptr::addr_of_mut!(n)) }, 7i32);
 // CHECK-NEXT:         b = [[V_3]];
 // CHECK-NEXT:         [[V_2]] = [[V_3]] != 0;
 // CHECK-NEXT:     } else {
@@ -99,10 +99,10 @@ int main(void) {
 // CHECK-NEXT:     r3 = [[V_2]] as i32;
 // CHECK-NEXT:     let mut r4: i32 = 0;
 // CHECK-NEXT:     let mut [[V_4:__v[0-9]+]]: bool;
-// CHECK-NEXT:     if bump(unsafe { &mut (*std::ptr::addr_of_mut!(n)) }, 0 as i32) != 0 {
+// CHECK-NEXT:     if bump(unsafe { &mut (*std::ptr::addr_of_mut!(n)) }, 0i32) != 0 {
 // CHECK-NEXT:         [[V_4]] = true as bool;
 // CHECK-NEXT:     } else {
-// CHECK-NEXT:         let [[V_5:__v[0-9]+]]: i32 = bump(unsafe { &mut (*std::ptr::addr_of_mut!(n)) }, 9 as i32);
+// CHECK-NEXT:         let [[V_5:__v[0-9]+]]: i32 = bump(unsafe { &mut (*std::ptr::addr_of_mut!(n)) }, 9i32);
 // CHECK-NEXT:         b = [[V_5]];
 // CHECK-NEXT:         [[V_4]] = [[V_5]] != 0;
 // CHECK-NEXT:     }
@@ -121,8 +121,8 @@ int main(void) {
 // CHECK-NEXT:     r5 = [[V_7]] as i32;
 // CHECK-NEXT:     println!("{} {} {} {} {} n={} b={} i={}", r1, r2, r3, r4, r5, n, b, i);
 // CHECK-NEXT:     let mut [[V_9:__v[0-9]+]]: bool;
-// CHECK-NEXT:     if bump(unsafe { &mut (*std::ptr::addr_of_mut!(n)) }, 1 as i32) != 0 {
-// CHECK-NEXT:         [[V_9]] = bump(unsafe { &mut (*std::ptr::addr_of_mut!(n)) }, 2 as i32) != 0;
+// CHECK-NEXT:     if bump(unsafe { &mut (*std::ptr::addr_of_mut!(n)) }, 1i32) != 0 {
+// CHECK-NEXT:         [[V_9]] = bump(unsafe { &mut (*std::ptr::addr_of_mut!(n)) }, 2i32) != 0;
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         [[V_9]] = false as bool;
 // CHECK-NEXT:     }
@@ -130,10 +130,10 @@ int main(void) {
 // CHECK-NEXT:         println!("both n={}", n);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut [[V_10:__v[0-9]+]]: bool;
-// CHECK-NEXT:     if bump(unsafe { &mut (*std::ptr::addr_of_mut!(n)) }, 0 as i32) != 0 {
+// CHECK-NEXT:     if bump(unsafe { &mut (*std::ptr::addr_of_mut!(n)) }, 0i32) != 0 {
 // CHECK-NEXT:         [[V_10]] = true as bool;
 // CHECK-NEXT:     } else {
-// CHECK-NEXT:         [[V_10]] = bump(unsafe { &mut (*std::ptr::addr_of_mut!(n)) }, 0 as i32) != 0;
+// CHECK-NEXT:         [[V_10]] = bump(unsafe { &mut (*std::ptr::addr_of_mut!(n)) }, 0i32) != 0;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if [[V_10]] {
 // CHECK-NEXT:         println!("unreachable");
@@ -142,7 +142,7 @@ int main(void) {
 // CHECK-NEXT:     loop {
 // CHECK-NEXT:         let mut [[V_11:__v[0-9]+]]: bool;
 // CHECK-NEXT:         if i < 10 {
-// CHECK-NEXT:             [[V_11]] = bump(unsafe { &mut (*std::ptr::addr_of_mut!(n)) }, 1 as i32) != 0;
+// CHECK-NEXT:             [[V_11]] = bump(unsafe { &mut (*std::ptr::addr_of_mut!(n)) }, 1i32) != 0;
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             [[V_11]] = false as bool;
 // CHECK-NEXT:         }
@@ -153,26 +153,23 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("i={} n={}", i, n);
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", safe_ratio(9 as i32, 0 as i32), safe_ratio(9 as i32, 2 as i32),
-// CHECK-NEXT:         safe_ratio(3 as i32, 2 as i32)
+// CHECK-NEXT:         "{} {} {}", safe_ratio(9i32, 0i32), safe_ratio(9i32, 2i32), safe_ratio(3i32,
+// CHECK-NEXT:         2i32)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", either_zero(0 as i32, 5 as i32), either_zero(5 as i32, 0 as i32),
-// CHECK-NEXT:         either_zero(2 as i32, 3 as i32)
+// CHECK-NEXT:         "{} {} {}", either_zero(0i32, 5i32), either_zero(5i32, 0i32), either_zero(2i32,
+// CHECK-NEXT:         3i32)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {}", mixed(0 as i32, 0 as i32, 1 as i32), mixed(0 as i32, 1 as i32, 1
-// CHECK-NEXT:         as i32), mixed(1 as i32, 0 as i32, 0 as i32), mixed(1 as i32, 1 as i32, 1 as i32)
+// CHECK-NEXT:         "{} {} {} {}", mixed(0i32, 0i32, 1i32), mixed(0i32, 1i32, 1i32), mixed(1i32,
+// CHECK-NEXT:         0i32, 0i32), mixed(1i32, 1i32, 1i32)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", grouped(0 as i32, 1 as i32, 1 as i32), grouped(1 as i32, 0 as i32, 1
-// CHECK-NEXT:         as i32), grouped(1 as i32, 0 as i32, 0 as i32)
+// CHECK-NEXT:         "{} {} {}", grouped(0i32, 1i32, 1i32), grouped(1i32, 0i32, 1i32), grouped(1i32,
+// CHECK-NEXT:         0i32, 0i32)
 // CHECK-NEXT:     );
-// CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", negated(1 as i32, 1 as i32), negated(0 as i32, 1 as i32), negated(1
-// CHECK-NEXT:         as i32, 0 as i32)
-// CHECK-NEXT:     );
-// CHECK-NEXT:     safe_ratio(4 as i32, 1 as i32) + mixed(1 as i32, 0 as i32, 1 as i32)
+// CHECK-NEXT:     println!("{} {} {}", negated(1i32, 1i32), negated(0i32, 1i32), negated(1i32, 0i32));
+// CHECK-NEXT:     safe_ratio(4i32, 1i32) + mixed(1i32, 0i32, 1i32)
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(

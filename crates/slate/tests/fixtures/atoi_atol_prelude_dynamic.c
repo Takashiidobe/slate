@@ -31,9 +31,9 @@ int main(void) {
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut a: __SlateAlign16<[i8; 32]> = __SlateAlign16([0 as i8; 32]);
-// CHECK-NEXT:     let mut b: __SlateAlign16<[i8; 32]> = __SlateAlign16([0 as i8; 32]);
-// CHECK-NEXT:     let mut c: __SlateAlign16<[i8; 32]> = __SlateAlign16([0 as i8; 32]);
+// CHECK-NEXT:     let mut a: __SlateAlign16<[i8; 32]> = __SlateAlign16([0i8; 32]);
+// CHECK-NEXT:     let mut b: __SlateAlign16<[i8; 32]> = __SlateAlign16([0i8; 32]);
+// CHECK-NEXT:     let mut c: __SlateAlign16<[i8; 32]> = __SlateAlign16([0i8; 32]);
 // CHECK-NEXT:     unsafe { strcpy(a.0.as_mut_ptr() as *mut i8, c"  -42abc".as_ptr()) };
 // CHECK-NEXT:     unsafe { strcpy(b.0.as_mut_ptr() as *mut i8, c"+1000000000000zzz".as_ptr()) };
 // CHECK-NEXT:     unsafe { strcpy(c.0.as_mut_ptr() as *mut i8, c"9000000000000".as_ptr()) };

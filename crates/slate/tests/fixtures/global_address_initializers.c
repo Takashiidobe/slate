@@ -78,48 +78,33 @@ int main(void) {
 // CHECK-NEXT:     left: i32,
 // CHECK-NEXT:     right: i32,
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut counter: i32 = 5 as i32;
+// CHECK-NEXT: static mut counter: i32 = 5;
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
-// CHECK-NEXT: static mut table: __SlateAlign16<[i32; 4]> = __SlateAlign16([
-// CHECK-NEXT:     1 as i32,
-// CHECK-NEXT:     2 as i32,
-// CHECK-NEXT:     3 as i32,
-// CHECK-NEXT:     4 as i32,
-// CHECK-NEXT: ]);
+// CHECK-NEXT: static mut table: __SlateAlign16<[i32; 4]> = __SlateAlign16([1i32, 2i32, 3i32, 4i32]);
 // CHECK-NEXT: static mut grid: __SlateAlign16<{{\[\[}}i32; 3]; 2]> = __SlateAlign16([
-// CHECK-NEXT:     [1 as i32, 2 as i32, 3 as i32],
-// CHECK-NEXT:     [4 as i32, 5 as i32, 6 as i32],
+// CHECK-NEXT:     [1i32, 2i32, 3i32],
+// CHECK-NEXT:     [4i32, 5i32, 6i32],
 // CHECK-NEXT: ]);
-// CHECK-NEXT: static mut pair: Pair = Pair {
-// CHECK-NEXT:     left: 8 as i32,
-// CHECK-NEXT:     right: 9 as i32,
-// CHECK-NEXT: };
-// CHECK-NEXT: static mut name: [i8; 6] = [
-// CHECK-NEXT:     115 as i8,
-// CHECK-NEXT:     108 as i8,
-// CHECK-NEXT:     97 as i8,
-// CHECK-NEXT:     116 as i8,
-// CHECK-NEXT:     101 as i8,
-// CHECK-NEXT:     0 as i8,
-// CHECK-NEXT: ];
+// CHECK-NEXT: static mut pair: Pair = Pair { left: 8i32, right: 9i32 };
+// CHECK-NEXT: static mut name: [i8; 6] = [115, 108, 97, 116, 101, 0];
 // CHECK-NEXT: static mut counter_ptr: *mut i32 = unsafe { std::ptr::addr_of_mut!(counter) };
 // CHECK-NEXT: static mut table_ptr: *mut i32 = unsafe { std::ptr::addr_of_mut!(table.0) as *mut i32 };
 // CHECK-NEXT: static mut table_third: *mut i32 = unsafe {
-// CHECK-NEXT:     unsafe { std::ptr::addr_of_mut!(table.0) as *mut i32 }.offset((2 as i32) as isize)
+// CHECK-NEXT:     unsafe { std::ptr::addr_of_mut!(table.0) as *mut i32 }.offset(2i32 as isize)
 // CHECK-NEXT: };
 // CHECK-NEXT: static mut table_end: *mut i32 = unsafe {
-// CHECK-NEXT:     unsafe { std::ptr::addr_of_mut!(table.0) as *mut i32 }.offset((4 as i32) as isize)
+// CHECK-NEXT:     unsafe { std::ptr::addr_of_mut!(table.0) as *mut i32 }.offset(4i32 as isize)
 // CHECK-NEXT: };
 // CHECK-NEXT: static mut table_whole: *mut [i32; 4] = unsafe { std::ptr::addr_of_mut!(table.0) };
 // CHECK-NEXT: static mut grid_row: *mut i32 = unsafe {
-// CHECK-NEXT:     std::ptr::addr_of_mut!(grid.0[(1 as i32) as usize]) as *mut i32
+// CHECK-NEXT:     std::ptr::addr_of_mut!(grid.0[1i32 as usize]) as *mut i32
 // CHECK-NEXT: };
 // CHECK-NEXT: static mut pair_right: *mut i32 = unsafe { std::ptr::addr_of_mut!(pair.right) };
 // CHECK-NEXT: static mut pair_ptr: *mut Pair = unsafe { std::ptr::addr_of_mut!(pair) };
 // CHECK-NEXT: static mut name_ptr: *mut i8 = unsafe { std::ptr::addr_of_mut!(name) as *mut i8 };
 // CHECK-NEXT: static mut name_tail: *const i8 = (unsafe {
-// CHECK-NEXT:     unsafe { std::ptr::addr_of_mut!(name) as *mut i8 }.offset((2 as i32) as isize)
+// CHECK-NEXT:     unsafe { std::ptr::addr_of_mut!(name) as *mut i8 }.offset(2i32 as isize)
 // CHECK-NEXT: }) as *const i8;
 // CHECK-NEXT: static mut fixed_counter: *mut i32 = unsafe { std::ptr::addr_of_mut!(counter) };
 // CHECK-NEXT: static mut counter_ptr_ptr: *mut *mut i32 = unsafe {
@@ -128,8 +113,7 @@ int main(void) {
 // CHECK-NEXT: static mut slots: __SlateAlign16<[*mut i32; 3]> = __SlateAlign16([
 // CHECK-NEXT:     unsafe { std::ptr::addr_of_mut!(counter) },
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         unsafe { std::ptr::addr_of_mut!(table.0) as *mut i32 }
-// CHECK-NEXT:             .offset((1 as i32) as isize)
+// CHECK-NEXT:         unsafe { std::ptr::addr_of_mut!(table.0) as *mut i32 }.offset(1i32 as isize)
 // CHECK-NEXT:     },
 // CHECK-NEXT:     unsafe { std::ptr::addr_of_mut!(pair.left) },
 // CHECK-NEXT: ]);
@@ -149,8 +133,7 @@ int main(void) {
 // CHECK-NEXT:     Cursor {
 // CHECK-NEXT:         label: (b"table\0".as_ptr() as *mut i8) as *const i8,
 // CHECK-NEXT:         value: unsafe {
-// CHECK-NEXT:             unsafe { std::ptr::addr_of_mut!(table.0) as *mut i32 }
-// CHECK-NEXT:                 .offset((3 as i32) as isize)
+// CHECK-NEXT:             unsafe { std::ptr::addr_of_mut!(table.0) as *mut i32 }.offset(3i32 as isize)
 // CHECK-NEXT:         },
 // CHECK-NEXT:         pair: std::ptr::null_mut::<Pair>(),
 // CHECK-NEXT:     },

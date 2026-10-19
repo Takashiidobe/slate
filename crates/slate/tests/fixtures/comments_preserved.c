@@ -115,7 +115,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let h: HeaderValue = HeaderValue {
-// CHECK-NEXT:         n: jumped(selected(1 as i32)),
+// CHECK-NEXT:         n: jumped(selected(1i32)),
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let v: Value = Value { n: value(h.n) };
 // CHECK-NEXT:     // preserved-call-comment

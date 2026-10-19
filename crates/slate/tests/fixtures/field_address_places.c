@@ -118,44 +118,35 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut local: Outer = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: Outer = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]].id = 1 as i32;
+// CHECK-NEXT:         [[T_0]].id = 1i32;
 // CHECK-NEXT:         [[T_0]].inner = {
 // CHECK-NEXT:             let mut [[T_1:__t[0-9]+]]: Inner = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:             [[T_1]].value = 2 as i32;
+// CHECK-NEXT:             [[T_1]].value = 2i32;
 // CHECK-NEXT:             [[T_1]].weight = 1.5f64;
 // CHECK-NEXT:             [[T_1]]
 // CHECK-NEXT:         };
-// CHECK-NEXT:         [[T_0]].items = [10 as i32, 20 as i32, 30 as i32, 40 as i32];
+// CHECK-NEXT:         [[T_0]].items = [10i32, 20i32, 30i32, 40i32];
 // CHECK-NEXT:         [[T_0]].link = std::ptr::null_mut::<Inner>();
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut spare: Inner = {
 // CHECK-NEXT:         let mut [[T_2:__t[0-9]+]]: Inner = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_2]].value = 7 as i32;
+// CHECK-NEXT:         [[T_2]].value = 7i32;
 // CHECK-NEXT:         [[T_2]].weight = 0.25f64;
 // CHECK-NEXT:         [[T_2]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     local.link = std::ptr::addr_of_mut!(spare);
-// CHECK-NEXT:     bump(std::ptr::addr_of_mut!(local.id), 5 as i32);
-// CHECK-NEXT:     bump(std::ptr::addr_of_mut!(local.inner.value), 3 as i32);
-// CHECK-NEXT:     bump(
-// CHECK-NEXT:         unsafe { (local.items.as_mut_ptr() as *mut i32).offset(2 as isize) },
-// CHECK-NEXT:         100 as i32,
-// CHECK-NEXT:     );
+// CHECK-NEXT:     bump(std::ptr::addr_of_mut!(local.id), 5i32);
+// CHECK-NEXT:     bump(std::ptr::addr_of_mut!(local.inner.value), 3i32);
+// CHECK-NEXT:     bump(unsafe { (local.items.as_mut_ptr() as *mut i32).offset(2 as isize) }, 100i32);
 // CHECK-NEXT:     scale(std::ptr::addr_of_mut!(local.inner.weight), 4.0f64);
-// CHECK-NEXT:     bump(unsafe { std::ptr::addr_of_mut!((* local.link).value) }, 9 as i32);
+// CHECK-NEXT:     bump(unsafe { std::ptr::addr_of_mut!((* local.link).value) }, 9i32);
 // CHECK-NEXT:     scale(unsafe { std::ptr::addr_of_mut!((* local.link).weight) }, 8.0f64);
-// CHECK-NEXT:     let slot: *mut i32 = pick(
-// CHECK-NEXT:         unsafe { &mut (*std::ptr::addr_of_mut!(local)) },
-// CHECK-NEXT:         3 as i32,
-// CHECK-NEXT:     );
+// CHECK-NEXT:     let slot: *mut i32 = pick(unsafe { &mut (*std::ptr::addr_of_mut!(local)) }, 3i32);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *slot = *slot * 2;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: *mut i32 = pick(
-// CHECK-NEXT:         unsafe { &mut (*std::ptr::addr_of_mut!(local)) },
-// CHECK-NEXT:         0 as i32,
-// CHECK-NEXT:     );
+// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: *mut i32 = pick(unsafe { &mut (*std::ptr::addr_of_mut!(local)) }, 0i32);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *[[V_2]] = *[[V_2]] + 1000;
 // CHECK-NEXT:     }
@@ -166,8 +157,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         global_outer.id = 3;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     bump(unsafe { std::ptr::addr_of_mut!(global_outer.id) }, 4 as i32);
-// CHECK-NEXT:     bump(unsafe { std::ptr::addr_of_mut!(global_outer.inner.value) }, 11 as i32);
+// CHECK-NEXT:     bump(unsafe { std::ptr::addr_of_mut!(global_outer.id) }, 4i32);
+// CHECK-NEXT:     bump(unsafe { std::ptr::addr_of_mut!(global_outer.inner.value) }, 11i32);
 // CHECK-NEXT:     scale(unsafe { std::ptr::addr_of_mut!(global_outer.inner.weight) }, 2.0f64);
 // CHECK-NEXT:     let global_slot: *mut i32 = unsafe {
 // CHECK-NEXT:         (std::ptr::addr_of_mut!(global_outer.items) as *mut i32).offset(1 as isize)
@@ -178,7 +169,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         global_outer.link = std::ptr::addr_of_mut!(global_outer.inner);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     bump(unsafe { std::ptr::addr_of_mut!((* global_outer.link).value) }, 1 as i32);
+// CHECK-NEXT:     bump(unsafe { std::ptr::addr_of_mut!((* global_outer.link).value) }, 1i32);
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {} {} {}", local.id, local.inner.value, local.items[0], local.items[1],
 // CHECK-NEXT:         local.items[2], local.items[3]

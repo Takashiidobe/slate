@@ -28,12 +28,9 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let original: i32 = unsafe { fegetround() };
 // CHECK-NEXT:     let modes: __SlateAlign16<[i32; 4]> = __SlateAlign16([
-// CHECK-NEXT:         0 as i32,
-// CHECK-NEXT:         3072 as i32,
-// CHECK-NEXT:         2048 as i32,
-// CHECK-NEXT:         1024 as i32,
+// CHECK-NEXT:         0i32, 3072i32, 2048i32, 1024i32,
 // CHECK-NEXT:     ]);
-// CHECK-NEXT:     for i in 0 as u32..4 as u32 {
+// CHECK-NEXT:     for i in 0u32..4u32 {
 // CHECK-NEXT:         if (unsafe { fesetround(modes.0[i as usize]) }) != 0 {
 // CHECK-NEXT:             return 1;
 // CHECK-NEXT:         }

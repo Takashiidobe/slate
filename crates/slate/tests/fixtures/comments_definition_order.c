@@ -43,7 +43,7 @@ int main(void) {
 // CHECK-NEXT:     x + unsafe { calls }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut calls: i32 = 0 as i32;
+// CHECK-NEXT: static mut calls: i32 = 0;
 // CHECK-EMPTY:
 // CHECK-NEXT: /// section B
 // CHECK-NEXT: fn late(x: i32) -> i32 {
@@ -51,12 +51,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}",
-// CHECK-NEXT:         early(1 as i32),
-// CHECK-NEXT:         counted(1 as i32),
-// CHECK-NEXT:         late(2 as i32)
-// CHECK-NEXT:     );
+// CHECK-NEXT:     println!("{} {} {}", early(1i32), counted(1i32), late(2i32));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

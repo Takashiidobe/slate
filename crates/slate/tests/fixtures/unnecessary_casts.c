@@ -18,10 +18,10 @@ int main(void) {
 // CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let a: u8 = ((200 as i32) as i8) as u8;
+// CHECK-NEXT:     let a: u8 = 200u8;
 // CHECK-NEXT:     let b: u8 = 100;
 // CHECK-NEXT:     let mut c: u8 = 0;
-// CHECK-NEXT:     for i in 0 as i32..1 as i32 {
+// CHECK-NEXT:     for i in 0i32..1i32 {
 // CHECK-NEXT:         c = ((((a as u32) as i32) + ((b as u32) as i32)) as i8) as u8;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("{}", (c as u32) as i32);

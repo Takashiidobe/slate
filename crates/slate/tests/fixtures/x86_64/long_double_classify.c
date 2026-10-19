@@ -261,7 +261,7 @@ int main(void) {
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: fn string2ld(s: *const i8, slen: u64, dp: *mut LongDouble) -> i32 {
-// CHECK-NEXT:     let mut buf: __SlateAlign16<[i8; 64]> = __SlateAlign16([0 as i8; 64]);
+// CHECK-NEXT:     let mut buf: __SlateAlign16<[i8; 64]> = __SlateAlign16([0i8; 64]);
 // CHECK-NEXT:     let mut eptr: *mut i8 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     if slen == 0 || slen >= 64 {
 // CHECK-NEXT:         return 0;
@@ -292,15 +292,15 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn ld2string(buf: *mut i8, len: u64, value: LongDouble) -> i32 {
 // CHECK-NEXT:     if (if __slate_f80_is_fp_class(value, 516) {
-// CHECK-NEXT:         if __slate_f80_signbit(value) { -1 as i32 } else { 1 as i32 }
+// CHECK-NEXT:         if __slate_f80_signbit(value) { -1i32 } else { 1i32 }
 // CHECK-NEXT:     } else {
-// CHECK-NEXT:         0 as i32
+// CHECK-NEXT:         0i32
 // CHECK-NEXT:     }) != 0
 // CHECK-NEXT:     {
 // CHECK-NEXT:         if len < 5 {
 // CHECK-NEXT:             return 0;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if value > __slate_f80_from_i32(0 as i32) {
+// CHECK-NEXT:         if value > __slate_f80_from_i32(0i32) {
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 std::ptr::copy_nonoverlapping(
 // CHECK-NEXT:                     c"inf".as_ptr() as *const u8,
@@ -327,9 +327,9 @@ int main(void) {
 // CHECK-NEXT:     let next: LongDouble = (unsafe { *(acc as *mut LongDouble) }) + v;
 // CHECK-NEXT:     if __slate_f80_is_fp_class(next, 3)
 // CHECK-NEXT:         || (if __slate_f80_is_fp_class(next, 516) {
-// CHECK-NEXT:             if __slate_f80_signbit(next) { -1 as i32 } else { 1 as i32 }
+// CHECK-NEXT:             if __slate_f80_signbit(next) { -1i32 } else { 1i32 }
 // CHECK-NEXT:         } else {
-// CHECK-NEXT:             0 as i32
+// CHECK-NEXT:             0i32
 // CHECK-NEXT:         }) != 0
 // CHECK-NEXT:     {
 // CHECK-NEXT:         return 0;
@@ -342,39 +342,38 @@ int main(void) {
 // CHECK-NEXT: fn classify(x: LongDouble) -> i32 {
 // CHECK-NEXT:     (!(!__slate_f80_is_fp_class(x, 3)) as i32)
 // CHECK-NEXT:         | (!(!((if __slate_f80_is_fp_class(x, 516) {
-// CHECK-NEXT:             if __slate_f80_signbit(x) { -1 as i32 } else { 1 as i32 }
+// CHECK-NEXT:             if __slate_f80_signbit(x) { -1i32 } else { 1i32 }
 // CHECK-NEXT:         } else {
-// CHECK-NEXT:             0 as i32
-// CHECK-NEXT:         }) != 0)) as i32) << (1 as i32)
-// CHECK-NEXT:         | (!(!__slate_f80_is_fp_class(x, 504)) as i32) << (2 as i32)
-// CHECK-NEXT:         | (!(!__slate_f80_is_fp_class(x, 264)) as i32) << (3 as i32)
-// CHECK-NEXT:         | (!(!__slate_f80_signbit(x)) as i32) << (4 as i32)
+// CHECK-NEXT:             0i32
+// CHECK-NEXT:         }) != 0)) as i32) << 1i32 | (!(!__slate_f80_is_fp_class(x, 504)) as i32) << 2i32
+// CHECK-NEXT:         | (!(!__slate_f80_is_fp_class(x, 264)) as i32) << 3i32
+// CHECK-NEXT:         | (!(!__slate_f80_signbit(x)) as i32) << 4i32
 // CHECK-NEXT:         | (((if __slate_f80_is_fp_class(x, 3) {
-// CHECK-NEXT:             0 as i32
+// CHECK-NEXT:             0i32
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             if __slate_f80_is_fp_class(x, 516) {
-// CHECK-NEXT:                 1 as i32
+// CHECK-NEXT:                 1i32
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 if __slate_f80_is_fp_class(x, 264) {
-// CHECK-NEXT:                     4 as i32
+// CHECK-NEXT:                     4i32
 // CHECK-NEXT:                 } else {
-// CHECK-NEXT:                     if __slate_f80_is_fp_class(x, 144) { 3 as i32 } else { 2 as i32 }
+// CHECK-NEXT:                     if __slate_f80_is_fp_class(x, 144) { 3i32 } else { 2i32 }
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
-// CHECK-NEXT:         }) == 3) as i32) << (5 as i32)
+// CHECK-NEXT:         }) == 3) as i32) << 5i32
 // CHECK-NEXT:         | (((if __slate_f80_is_fp_class(x, 3) {
-// CHECK-NEXT:             0 as i32
+// CHECK-NEXT:             0i32
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             if __slate_f80_is_fp_class(x, 516) {
-// CHECK-NEXT:                 1 as i32
+// CHECK-NEXT:                 1i32
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 if __slate_f80_is_fp_class(x, 264) {
-// CHECK-NEXT:                     4 as i32
+// CHECK-NEXT:                     4i32
 // CHECK-NEXT:                 } else {
-// CHECK-NEXT:                     if __slate_f80_is_fp_class(x, 144) { 3 as i32 } else { 2 as i32 }
+// CHECK-NEXT:                     if __slate_f80_is_fp_class(x, 144) { 3i32 } else { 2i32 }
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
-// CHECK-NEXT:         }) == 2) as i32) << (6 as i32)
+// CHECK-NEXT:         }) == 2) as i32) << 6i32
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let values: [LongDouble; 14] = [
@@ -393,7 +392,7 @@ int main(void) {
 // CHECK-NEXT:         LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]),
 // CHECK-NEXT:         LongDouble([7, 0, 0, 0, 0, 0, 0, 192, 255, 255]),
 // CHECK-NEXT:     ];
-// CHECK-NEXT:     for i in 0..((224 as u64) / (16 as u64)) {
+// CHECK-NEXT:     for i in 0..14u64 {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { printf(c"%zu %#x\n".as_ptr(), i, classify(values[i as usize])) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
@@ -406,18 +405,18 @@ int main(void) {
 // CHECK-NEXT:         c"12x".as_ptr(),
 // CHECK-NEXT:         c"".as_ptr(),
 // CHECK-NEXT:     ]);
-// CHECK-NEXT:     for i in 0..((48 as u64) / (8 as u64)) {
+// CHECK-NEXT:     for i in 0..6u64 {
 // CHECK-NEXT:         let mut d: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 191]);
 // CHECK-NEXT:         let ok: i32 = string2ld(
 // CHECK-NEXT:             inputs.0[i as usize],
 // CHECK-NEXT:             unsafe { strlen(inputs.0[i as usize]) },
 // CHECK-NEXT:             std::ptr::addr_of_mut!(d),
 // CHECK-NEXT:         );
-// CHECK-NEXT:         let mut out: __SlateAlign16<[i8; 64]> = __SlateAlign16([0 as i8; 64]);
+// CHECK-NEXT:         let mut out: __SlateAlign16<[i8; 64]> = __SlateAlign16([0i8; 64]);
 // CHECK-NEXT:         let mut n: i32 = 0;
 // CHECK-NEXT:         let mut [[V_0:__v[0-9]+]]: i32;
 // CHECK-NEXT:         if ok != 0 {
-// CHECK-NEXT:             [[V_0]] = ld2string(out.0.as_mut_ptr() as *mut i8, 64 as u64, d);
+// CHECK-NEXT:             [[V_0]] = ld2string(out.0.as_mut_ptr() as *mut i8, 64u64, d);
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             [[V_0]] = 0;
 // CHECK-NEXT:         }
@@ -435,15 +434,15 @@ int main(void) {
 // CHECK-NEXT:         LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 255]),
 // CHECK-NEXT:     ];
 // CHECK-NEXT:     let mut accepted: i32 = 0;
-// CHECK-NEXT:     for i in 0..((80 as u64) / (16 as u64)) {
+// CHECK-NEXT:     for i in 0..5u64 {
 // CHECK-NEXT:         let [[V_1:__v[0-9]+]]: i32 = arOpAccumulate(
 // CHECK-NEXT:             unsafe { &mut (*std::ptr::addr_of_mut!(acc)) },
 // CHECK-NEXT:             addends[i as usize],
 // CHECK-NEXT:         );
 // CHECK-NEXT:         accepted += [[V_1]];
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut out: __SlateAlign16<[i8; 64]> = __SlateAlign16([0 as i8; 64]);
-// CHECK-NEXT:     let n: i32 = ld2string(out.0.as_mut_ptr() as *mut i8, 64 as u64, acc);
+// CHECK-NEXT:     let mut out: __SlateAlign16<[i8; 64]> = __SlateAlign16([0i8; 64]);
+// CHECK-NEXT:     let n: i32 = ld2string(out.0.as_mut_ptr() as *mut i8, 64u64, acc);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%d %.*s\n".as_ptr(), accepted, n, out.0.as_mut_ptr() as *mut i8) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

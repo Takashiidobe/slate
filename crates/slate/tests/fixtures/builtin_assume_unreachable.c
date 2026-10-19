@@ -94,13 +94,13 @@ int main(void) {
 // CHECK-NEXT:     let x: i32 = 5;
 // CHECK-NEXT:     unsafe { std::hint::assert_unchecked(true as bool) };
 // CHECK-NEXT:     unsafe { std::hint::assert_unchecked(true as bool) };
-// CHECK-NEXT:     println!("{} {} {}", x, counter, positive_half(9 as i32));
-// CHECK-NEXT:     for i in 0 as i32..6 as i32 {
+// CHECK-NEXT:     println!("{} {} {}", x, counter, positive_half(9i32));
+// CHECK-NEXT:     for i in 0i32..6i32 {
 // CHECK-NEXT:         print!("{} ", classify(i));
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"\n%u\n".as_ptr(), checked(7 as u32)) };
+// CHECK-NEXT:     unsafe { printf(c"\n%u\n".as_ptr(), checked(7u32)) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

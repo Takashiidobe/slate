@@ -26,7 +26,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn countdown(mut n: i32) -> i32 {
 // CHECK-NEXT:     let mut steps: i32 = 0;
-// CHECK-NEXT:     while (1 as i32) != (0 as i32) {
+// CHECK-NEXT:     while 1i32 != 0i32 {
 // CHECK-NEXT:         if n <= 0 {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
@@ -36,8 +36,8 @@ int main(void) {
 // CHECK-NEXT:     steps
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     println!("{}", countdown(100 as i32));
-// CHECK-NEXT:     println!("{}", countdown(0 as i32));
+// CHECK-NEXT:     println!("{}", countdown(100i32));
+// CHECK-NEXT:     println!("{}", countdown(0i32));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

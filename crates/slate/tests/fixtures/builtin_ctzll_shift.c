@@ -22,7 +22,7 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn lowest_bit(x: u64) -> u64 {
-// CHECK-NEXT:     (1 as u64) << (((x.trailing_zeros() as i32) as i64) as u64)
+// CHECK-NEXT:     1u64 << (((x.trailing_zeros() as i32) as i64) as u64)
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let x: u64 = 19070976;

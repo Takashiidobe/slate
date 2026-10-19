@@ -156,14 +156,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn print_lc(name: *const u8, z: num_complex::Complex<f128>) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%s=%Lax%Lai\n".as_ptr(),
-// CHECK-NEXT:             name,
-// CHECK-NEXT:             unsafe { creall(z) },
-// CHECK-NEXT:             unsafe { cimagl(z) },
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { printf(c"%s=%Lax%Lai\n".as_ptr(), name, creall(z), cimagl(z)) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT: }
 // CHECK-NEXT: fn mix_complex(
@@ -294,10 +287,10 @@ int main(void) {
 // CHECK-NEXT:         im: 4f128,
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"cabs=%La\n".as_ptr(), unsafe { cabsl(z) }) };
+// CHECK-NEXT:     unsafe { printf(c"cabs=%La\n".as_ptr(), cabsl(z)) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"carg=%La\n".as_ptr(), unsafe { cargl(z) }) };
+// CHECK-NEXT:     unsafe { printf(c"carg=%La\n".as_ptr(), cargl(z)) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     print_lc(c"conj".as_ptr(), unsafe { conjl(z) });
 // CHECK-NEXT:     print_lc(c"cproj".as_ptr(), unsafe { cprojl(z) });
@@ -444,13 +437,7 @@ int main(void) {
 // CHECK-NEXT:         },
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"creal=%La cimag=%La\n".as_ptr(),
-// CHECK-NEXT:             unsafe { creall(z) },
-// CHECK-NEXT:             unsafe { cimagl(z) },
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { printf(c"creal=%La cimag=%La\n".as_ptr(), creall(z), cimagl(z)) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {

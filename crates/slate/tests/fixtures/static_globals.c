@@ -19,7 +19,7 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut counter: i32 = 2 as i32;
+// CHECK-NEXT: static mut counter: i32 = 2;
 // CHECK-NEXT: fn bump_counter() -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         counter = counter + 1;

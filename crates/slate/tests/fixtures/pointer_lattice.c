@@ -56,7 +56,7 @@ int main(void) {
 // CHECK-NEXT:     bump(unsafe { &mut (*std::ptr::addr_of_mut!(a)) });
 // CHECK-NEXT:     let mut b: i32 = 10;
 // CHECK-NEXT:     let peeked: i32 = peek(unsafe { &(*std::ptr::addr_of_mut!(b)) });
-// CHECK-NEXT:     let c: *mut i32 = (unsafe { malloc(4 as u64) }) as *mut i32;
+// CHECK-NEXT:     let c: *mut i32 = (unsafe { malloc(4u64) }) as *mut i32;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *c = 100;
 // CHECK-NEXT:     }

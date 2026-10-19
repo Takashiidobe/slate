@@ -40,42 +40,16 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
-// CHECK-NEXT: static mut greeting: [i8; 6] = [
-// CHECK-NEXT:     104 as i8,
-// CHECK-NEXT:     101 as i8,
-// CHECK-NEXT:     108 as i8,
-// CHECK-NEXT:     108 as i8,
-// CHECK-NEXT:     111 as i8,
-// CHECK-NEXT:     0 as i8,
-// CHECK-NEXT: ];
-// CHECK-NEXT: static mut padded: [i8; 8] = [
-// CHECK-NEXT:     97 as i8,
-// CHECK-NEXT:     98 as i8,
-// CHECK-NEXT:     0 as i8,
-// CHECK-NEXT:     0 as i8,
-// CHECK-NEXT:     0 as i8,
-// CHECK-NEXT:     0 as i8,
-// CHECK-NEXT:     0 as i8,
-// CHECK-NEXT:     0 as i8,
-// CHECK-NEXT: ];
-// CHECK-NEXT: static mut label: [i8; 6] = [
-// CHECK-NEXT:     108 as i8,
-// CHECK-NEXT:     97 as i8,
-// CHECK-NEXT:     98 as i8,
-// CHECK-NEXT:     101 as i8,
-// CHECK-NEXT:     108 as i8,
-// CHECK-NEXT:     0 as i8,
-// CHECK-NEXT: ];
-// CHECK-NEXT: static mut grid: {{\[\[}}i8; 4]; 2] = [
-// CHECK-NEXT:     [97 as i8, 98 as i8, 99 as i8, 0 as i8],
-// CHECK-NEXT:     [120 as i8, 121 as i8, 122 as i8, 0 as i8],
-// CHECK-NEXT: ];
+// CHECK-NEXT: static mut greeting: [i8; 6] = [104, 101, 108, 108, 111, 0];
+// CHECK-NEXT: static mut padded: [i8; 8] = [97, 98, 0, 0, 0, 0, 0, 0];
+// CHECK-NEXT: static mut label: [i8; 6] = [108, 97, 98, 101, 108, 0];
+// CHECK-NEXT: static mut grid: {{\[\[}}i8; 4]; 2] = {{\[\[}}97, 98, 99, 0], [120, 121, 122, 0]];
 // CHECK-NEXT: static mut words: __SlateAlign16<[*const i8; 3]> = __SlateAlign16([
 // CHECK-NEXT:     (b"zero\0".as_ptr() as *mut i8) as *const i8,
 // CHECK-NEXT:     (b"one\0".as_ptr() as *mut i8) as *const i8,
 // CHECK-NEXT:     (b"two\0".as_ptr() as *mut i8) as *const i8,
 // CHECK-NEXT: ]);
-// CHECK-NEXT: static mut high: [i8; 4] = [-128 as i8, -1 as i8, 127 as i8, 0 as i8];
+// CHECK-NEXT: static mut high: [i8; 4] = [-128, -1, 127, 0];
 // CHECK-NEXT: fn total(mut s: *const i8) -> i32 {
 // CHECK-NEXT:     let mut sum: i32 = 0;
 // CHECK-NEXT:     while (unsafe { *s }) != 0 {
@@ -115,7 +89,7 @@ int main(void) {
 // CHECK-NEXT:         total(unsafe { words.0[2] }), (unsafe { high[0] }) as i32, (unsafe { high[1] })
 // CHECK-NEXT:         as i32, (unsafe { high[2] }) as i32
 // CHECK-NEXT:     );
-// CHECK-NEXT:     for i in 0 as i32..3 as i32 {
+// CHECK-NEXT:     for i in 0i32..3i32 {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { printf(c"%s\n".as_ptr(), words.0[i as usize]) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };

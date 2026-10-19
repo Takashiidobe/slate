@@ -35,9 +35,9 @@ int main(void) {
 // CHECK-NEXT:     let mut left: i32 = 11;
 // CHECK-NEXT:     let mut right: i32 = 3;
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {}", combine(unsafe { & (* std::ptr::addr_of_mut!(left)) }, 2 as i32, unsafe
-// CHECK-NEXT:         { & (* std::ptr::addr_of_mut!(right)) }, std::ptr::null_mut::< i32 > ()),
-// CHECK-NEXT:         difference(unsafe { & (* std::ptr::addr_of_mut!(left)) }, 2 as i32, unsafe { & (*
+// CHECK-NEXT:         "{} {}", combine(unsafe { & (* std::ptr::addr_of_mut!(left)) }, 2i32, unsafe { &
+// CHECK-NEXT:         (* std::ptr::addr_of_mut!(right)) }, std::ptr::null_mut::< i32 > ()),
+// CHECK-NEXT:         difference(unsafe { & (* std::ptr::addr_of_mut!(left)) }, 2i32, unsafe { & (*
 // CHECK-NEXT:         std::ptr::addr_of_mut!(right)) })
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0

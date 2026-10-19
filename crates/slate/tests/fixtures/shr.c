@@ -23,11 +23,11 @@ int main(void) {
 // CHECK-NEXT:     a >> b
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     println!("{}", ishr(256 as i32, 3 as i32));
-// CHECK-NEXT:     println!("{}", ishr(- (256 as i32), 3 as i32));
+// CHECK-NEXT:     println!("{}", ishr(256i32, 3i32));
+// CHECK-NEXT:     println!("{}", ishr(- 256i32, 3i32));
 // CHECK-NEXT:     let u: u32 = 2147483648;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%u\n".as_ptr(), u >> (4 as i32)) };
+// CHECK-NEXT:     unsafe { printf(c"%u\n".as_ptr(), u >> 4i32) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

@@ -30,9 +30,9 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let s: i16 = 300;
-// CHECK-NEXT:     let us: u16 = ((60000 as i32) as i16) as u16;
+// CHECK-NEXT:     let us: u16 = 60000u16;
 // CHECK-NEXT:     let c: i8 = -5;
-// CHECK-NEXT:     let uc: u8 = ((200 as i32) as i8) as u8;
+// CHECK-NEXT:     let uc: u8 = 200u8;
 // CHECK-NEXT:     let j: i64 = 123456789;
 // CHECK-NEXT:     let ju: u64 = 123456789;
 // CHECK-NEXT:     let t: i64 = -7;

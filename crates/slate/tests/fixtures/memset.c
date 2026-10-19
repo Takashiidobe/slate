@@ -41,33 +41,33 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut zero_buf: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
-// CHECK-NEXT:     unsafe { zero_buf[0usize..8usize].fill(0 as u8) };
+// CHECK-NEXT:     unsafe { zero_buf[0usize..8usize].fill(0u8) };
 // CHECK-NEXT:     let mut value_buf: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
-// CHECK-NEXT:     unsafe { value_buf[0usize..8usize].fill(65 as u8) };
+// CHECK-NEXT:     unsafe { value_buf[0usize..8usize].fill(65u8) };
 // CHECK-NEXT:     let mut partial_buf: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
-// CHECK-NEXT:     unsafe { partial_buf[0usize..4usize].fill(9 as u8) };
+// CHECK-NEXT:     unsafe { partial_buf[0usize..4usize].fill(9u8) };
 // CHECK-NEXT:     let mut dynamic_buf: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
 // CHECK-NEXT:     let n: i32 = get_count();
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::write_bytes(
 // CHECK-NEXT:             dynamic_buf.as_mut_ptr() as *mut u8,
-// CHECK-NEXT:             9 as u8,
+// CHECK-NEXT:             9u8,
 // CHECK-NEXT:             ((n as i64) as u64) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     for i in 0 as i32..8 as i32 {
+// CHECK-NEXT:     for i in 0i32..8i32 {
 // CHECK-NEXT:         print!("{} ", (zero_buf[i as usize] as u32) as i32);
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     }
-// CHECK-NEXT:     for i in 0 as i32..8 as i32 {
+// CHECK-NEXT:     for i in 0i32..8i32 {
 // CHECK-NEXT:         print!("{} ", (value_buf[i as usize] as u32) as i32);
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     }
-// CHECK-NEXT:     for i in 0 as i32..8 as i32 {
+// CHECK-NEXT:     for i in 0i32..8i32 {
 // CHECK-NEXT:         print!("{} ", (partial_buf[i as usize] as u32) as i32);
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     }
-// CHECK-NEXT:     for i in 0 as i32..8 as i32 {
+// CHECK-NEXT:     for i in 0i32..8i32 {
 // CHECK-NEXT:         print!("{} ", (dynamic_buf[i as usize] as u32) as i32);
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     }

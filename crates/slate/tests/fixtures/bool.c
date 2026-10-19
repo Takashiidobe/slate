@@ -41,12 +41,12 @@ int main(void) {
 // CHECK-NEXT:     flag as i32
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     println!("{}", from_int(0 as i32) as i32);
-// CHECK-NEXT:     println!("{}", from_int(42 as i32) as i32);
-// CHECK-NEXT:     println!("{}", from_compare(2 as i32, 5 as i32) as i32);
-// CHECK-NEXT:     println!("{}", from_compare(9 as i32, 5 as i32) as i32);
-// CHECK-NEXT:     println!("{}", use_bool((2 as i32) != (0 as i32)));
-// CHECK-NEXT:     println!("{}", use_bool((0 as i32) != (0 as i32)));
+// CHECK-NEXT:     println!("{}", from_int(0i32) as i32);
+// CHECK-NEXT:     println!("{}", from_int(42i32) as i32);
+// CHECK-NEXT:     println!("{}", from_compare(2i32, 5i32) as i32);
+// CHECK-NEXT:     println!("{}", from_compare(9i32, 5i32) as i32);
+// CHECK-NEXT:     println!("{}", use_bool(2i32 != 0i32));
+// CHECK-NEXT:     println!("{}", use_bool(0i32 != 0i32));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

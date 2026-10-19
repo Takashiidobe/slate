@@ -94,14 +94,13 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {} {} {} {} {} {} {} {} {}", classify(1 as i32), classify(2 as i32),
-// CHECK-NEXT:         classify(4 as i32), classify(5 as i32), classify(7 as i32), classify(8 as i32),
-// CHECK-NEXT:         classify(9 as i32), classify(10 as i32), classify(11 as i32), classify(12 as
-// CHECK-NEXT:         i32), classify_direct(- (1 as i32)), classify_direct(3 as i32)
+// CHECK-NEXT:         "{} {} {} {} {} {} {} {} {} {} {} {}", classify(1i32), classify(2i32),
+// CHECK-NEXT:         classify(4i32), classify(5i32), classify(7i32), classify(8i32), classify(9i32),
+// CHECK-NEXT:         classify(10i32), classify(11i32), classify(12i32), classify_direct(- 1i32),
+// CHECK-NEXT:         classify_direct(3i32)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", classify_empty(3 as i32), classify_empty(4 as i32), classify_empty(5
-// CHECK-NEXT:         as i32)
+// CHECK-NEXT:         "{} {} {}", classify_empty(3i32), classify_empty(4i32), classify_empty(5i32)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

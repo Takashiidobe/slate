@@ -80,19 +80,19 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let aligned: [[SLATERECORD_0]] = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [[SLATERECORD_0]] = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]].value = 7 as i32;
+// CHECK-NEXT:         [[T_0]].value = 7i32;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut middle: [[SLATERECORD_1]] = {
 // CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: [[SLATERECORD_1]] = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_1]].tag = 3 as i8;
-// CHECK-NEXT:         [[T_1]].value = 20 as i32;
+// CHECK-NEXT:         [[T_1]].tag = 3i8;
+// CHECK-NEXT:         [[T_1]].value = 20i32;
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let packed: [[SLATERECORD_2]] = {
 // CHECK-NEXT:         let mut [[T_2:__t[0-9]+]]: [[SLATERECORD_2]] = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_2]].tag = 4 as i8;
-// CHECK-NEXT:         [[T_2]].value = 30 as i32;
+// CHECK-NEXT:         [[T_2]].tag = 4i8;
+// CHECK-NEXT:         [[T_2]].value = 30i32;
 // CHECK-NEXT:         [[T_2]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     middle = round_trip(middle);
@@ -103,9 +103,9 @@ int main(void) {
 // CHECK-NEXT:             take_aligned(aligned),
 // CHECK-NEXT:             middle.value,
 // CHECK-NEXT:             take_packed(packed),
-// CHECK-NEXT:             16 as u64,
-// CHECK-NEXT:             8 as u64,
-// CHECK-NEXT:             8 as u64,
+// CHECK-NEXT:             16u64,
+// CHECK-NEXT:             8u64,
+// CHECK-NEXT:             8u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

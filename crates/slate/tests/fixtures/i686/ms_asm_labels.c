@@ -104,10 +104,10 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {}",
-// CHECK-NEXT:         loop_label(4 as i32),
-// CHECK-NEXT:         forward(0 as i32),
-// CHECK-NEXT:         forward(5 as i32),
-// CHECK-NEXT:         two_blocks(2 as i32)
+// CHECK-NEXT:         loop_label(4i32),
+// CHECK-NEXT:         forward(0i32),
+// CHECK-NEXT:         forward(5i32),
+// CHECK-NEXT:         two_blocks(2i32)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

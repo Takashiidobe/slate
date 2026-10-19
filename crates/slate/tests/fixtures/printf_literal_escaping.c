@@ -28,7 +28,7 @@ int main(void) {
 // CHECK-NEXT:             c"{%d} %% \"quoted\" back\\slash %s|%c|%x\n".as_ptr(),
 // CHECK-NEXT:             d,
 // CHECK-NEXT:             c"hi".as_ptr() as *mut i8,
-// CHECK-NEXT:             88 as i32,
+// CHECK-NEXT:             88i32,
 // CHECK-NEXT:             h,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };

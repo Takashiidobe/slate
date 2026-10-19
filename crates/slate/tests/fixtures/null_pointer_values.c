@@ -110,19 +110,19 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut c: Node = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: Node = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]].value = 3 as i32;
+// CHECK-NEXT:         [[T_0]].value = 3i32;
 // CHECK-NEXT:         [[T_0]].next = std::ptr::null_mut::<Node>();
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut b: Node = {
 // CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: Node = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_1]].value = 2 as i32;
+// CHECK-NEXT:         [[T_1]].value = 2i32;
 // CHECK-NEXT:         [[T_1]].next = std::ptr::addr_of_mut!(c);
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut a: Node = {
 // CHECK-NEXT:         let mut [[T_2:__t[0-9]+]]: Node = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_2]].value = 1 as i32;
+// CHECK-NEXT:         [[T_2]].value = 1i32;
 // CHECK-NEXT:         [[T_2]].next = std::ptr::addr_of_mut!(b);
 // CHECK-NEXT:         [[T_2]]
 // CHECK-NEXT:     };
@@ -137,8 +137,8 @@ int main(void) {
 // CHECK-NEXT:             slot: std::ptr::null_mut::<i32>(),
 // CHECK-NEXT:         },
 // CHECK-NEXT:     ]);
-// CHECK-NEXT:     let missing: i32 = find(std::ptr::addr_of_mut!(a), 9 as i32).is_null() as i32;
-// CHECK-NEXT:     let found: i32 = !find(std::ptr::addr_of_mut!(a), 2 as i32).is_null() as i32;
+// CHECK-NEXT:     let missing: i32 = find(std::ptr::addr_of_mut!(a), 9i32).is_null() as i32;
+// CHECK-NEXT:     let found: i32 = !find(std::ptr::addr_of_mut!(a), 2i32).is_null() as i32;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         head = std::ptr::addr_of_mut!(a);
 // CHECK-NEXT:     }

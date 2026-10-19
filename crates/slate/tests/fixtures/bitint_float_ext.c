@@ -369,7 +369,7 @@ int main(void) {
 // CHECK-NEXT:         LongDouble([119, 240, 185, 97, 251, 135, 116, 199, 95, 64]),
 // CHECK-NEXT:         LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 254, 63]),
 // CHECK-NEXT:     ];
-// CHECK-NEXT:     for i in 0 as i32..6 as i32 {
+// CHECK-NEXT:     for i in 0i32..6i32 {
 // CHECK-NEXT:         let mut s: bitint::BInt<200, 4, 32, bitint::A8> = <bitint::BInt<
 // CHECK-NEXT:             200,
 // CHECK-NEXT:             4,
@@ -382,7 +382,7 @@ int main(void) {
 // CHECK-NEXT:             32,
 // CHECK-NEXT:             bitint::A8,
 // CHECK-NEXT:         >>::from_f80_bytes(
-// CHECK-NEXT:             if values[i as usize] < __slate_f80_from_i32(0 as i32) {
+// CHECK-NEXT:             if values[i as usize] < __slate_f80_from_i32(0i32) {
 // CHECK-NEXT:                 -values[i as usize]
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 values[i as usize]
@@ -413,8 +413,8 @@ int main(void) {
 // CHECK-NEXT:         bitint::A8,
 // CHECK-NEXT:     >>::from_i128(65520 as i128);
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{}", (f16::from_bits(h2.to_ieee_bits(10, 5, false) as u16) > ((65504 as i32) as
-// CHECK-NEXT:         f16)) as i32
+// CHECK-NEXT:         "{}", (f16::from_bits(h2.to_ieee_bits(10, 5, false) as u16) > (65504i32 as f16))
+// CHECK-NEXT:         as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let mut m: bitint::BInt<200, 4, 32, bitint::A8> = <bitint::BInt<
 // CHECK-NEXT:         200,

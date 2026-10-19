@@ -17,7 +17,7 @@ int main(void) {
 // CHECK-NEXT:     value * 3 + 1
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     println!("{}", stable_function(7 as i32));
+// CHECK-NEXT:     println!("{}", stable_function(7i32));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

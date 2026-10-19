@@ -24,9 +24,9 @@ int main(void) {
 // CHECK-NEXT:     !a
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     println!("{}", inot(0 as i32));
-// CHECK-NEXT:     println!("{}", inot(12 as i32));
-// CHECK-NEXT:     println!("{}", inot(- (1 as i32)));
+// CHECK-NEXT:     println!("{}", inot(0i32));
+// CHECK-NEXT:     println!("{}", inot(12i32));
+// CHECK-NEXT:     println!("{}", inot(- 1i32));
 // CHECK-NEXT:     let u: u32 = 240;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%u\n".as_ptr(), !u) };

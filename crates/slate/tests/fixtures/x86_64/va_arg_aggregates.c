@@ -232,7 +232,7 @@ int main(void) {
 // CHECK-NEXT:     let p: pair = pair { a: 2, b: 3 };
 // CHECK-NEXT:     let m: mixed = mixed { d: 4.0f64, l: 5 };
 // CHECK-NEXT:     let f: floats = floats {
-// CHECK-NEXT:         f: [(1 as i32) as f32, (2 as i32) as f32, (3 as i32) as f32, (4 as i32) as f32],
+// CHECK-NEXT:         f: [1i32 as f32, 2i32 as f32, 3i32 as f32, 4i32 as f32],
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let b: big = big { a: 6, b: 7, c: 8 };
 // CHECK-NEXT:     let o: odd = odd { c: [1, 2, 3] };
@@ -241,10 +241,8 @@ int main(void) {
 // CHECK-NEXT:         [[T_0]].d = 9.0f64;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         sum(2 as i32, t, p, m, f, b, o, u, 10 as i64, t, p, m, f, b, o, u, 11 as i64)
-// CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { copied(1 as i32, p) };
+// CHECK-NEXT:     unsafe { sum(2i32, t, p, m, f, b, o, u, 10i64, t, p, m, f, b, o, u, 11i64) };
+// CHECK-NEXT:     unsafe { copied(1i32, p) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

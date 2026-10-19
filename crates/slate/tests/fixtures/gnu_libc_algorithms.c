@@ -395,18 +395,13 @@ int main(void) {
 // CHECK-NEXT:     7
 // CHECK-NEXT: }
 // CHECK-NEXT: fn gnu_qsort_extension() -> i32 {
-// CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 4]> = __SlateAlign16([
-// CHECK-NEXT:         4 as i32,
-// CHECK-NEXT:         1 as i32,
-// CHECK-NEXT:         3 as i32,
-// CHECK-NEXT:         2 as i32,
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 4]> = __SlateAlign16([4i32, 1i32, 3i32, 2i32]);
 // CHECK-NEXT:     let mut direction: i32 = -1;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         qsort_r(
 // CHECK-NEXT:             values.0.as_mut_ptr() as *mut (),
-// CHECK-NEXT:             4 as u64,
-// CHECK-NEXT:             4 as u64,
+// CHECK-NEXT:             4u64,
+// CHECK-NEXT:             4u64,
 // CHECK-NEXT:             Some(gnu_compare_with_direction),
 // CHECK-NEXT:             std::ptr::addr_of_mut!(direction) as *mut (),
 // CHECK-NEXT:         )
@@ -427,25 +422,25 @@ int main(void) {
 // CHECK-NEXT:         {
 // CHECK-NEXT:             let mut [[T_0:__t[0-9]+]]: option = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:             [[T_0]].name = c"number".as_ptr();
-// CHECK-NEXT:             [[T_0]].has_arg = 1 as i32;
+// CHECK-NEXT:             [[T_0]].has_arg = 1i32;
 // CHECK-NEXT:             [[T_0]].flag = std::ptr::null_mut::<i32>();
-// CHECK-NEXT:             [[T_0]].val = 110 as i32;
+// CHECK-NEXT:             [[T_0]].val = 110i32;
 // CHECK-NEXT:             [[T_0]]
 // CHECK-NEXT:         },
 // CHECK-NEXT:         {
 // CHECK-NEXT:             let mut [[T_1:__t[0-9]+]]: option = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:             [[T_1]].name = c"flag".as_ptr();
-// CHECK-NEXT:             [[T_1]].has_arg = 0 as i32;
+// CHECK-NEXT:             [[T_1]].has_arg = 0i32;
 // CHECK-NEXT:             [[T_1]].flag = std::ptr::null_mut::<i32>();
-// CHECK-NEXT:             [[T_1]].val = 102 as i32;
+// CHECK-NEXT:             [[T_1]].val = 102i32;
 // CHECK-NEXT:             [[T_1]]
 // CHECK-NEXT:         },
 // CHECK-NEXT:         {
 // CHECK-NEXT:             let mut [[T_2:__t[0-9]+]]: option = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:             [[T_2]].name = std::ptr::null::<i8>();
-// CHECK-NEXT:             [[T_2]].has_arg = 0 as i32;
+// CHECK-NEXT:             [[T_2]].has_arg = 0i32;
 // CHECK-NEXT:             [[T_2]].flag = std::ptr::null_mut::<i32>();
-// CHECK-NEXT:             [[T_2]].val = 0 as i32;
+// CHECK-NEXT:             [[T_2]].val = 0i32;
 // CHECK-NEXT:             [[T_2]]
 // CHECK-NEXT:         },
 // CHECK-NEXT:     ]);
@@ -461,7 +456,7 @@ int main(void) {
 // CHECK-NEXT:     loop {
 // CHECK-NEXT:         let [[V_2:__v[0-9]+]]: i32 = unsafe {
 // CHECK-NEXT:             getopt_long(
-// CHECK-NEXT:                 3 as i32,
+// CHECK-NEXT:                 3i32,
 // CHECK-NEXT:                 arguments.0.as_mut_ptr() as *const *mut i8,
 // CHECK-NEXT:                 c"fn:".as_ptr(),
 // CHECK-NEXT:                 options.0.as_mut_ptr() as *const option,
@@ -487,21 +482,21 @@ int main(void) {
 // CHECK-NEXT:         {
 // CHECK-NEXT:             let mut [[T_0]]: argp_option = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:             [[T_0]].name = c"number".as_ptr();
-// CHECK-NEXT:             [[T_0]].key = 110 as i32;
+// CHECK-NEXT:             [[T_0]].key = 110i32;
 // CHECK-NEXT:             [[T_0]].arg = c"VALUE".as_ptr();
-// CHECK-NEXT:             [[T_0]].flags = 0 as i32;
+// CHECK-NEXT:             [[T_0]].flags = 0i32;
 // CHECK-NEXT:             [[T_0]].doc = c"number".as_ptr();
-// CHECK-NEXT:             [[T_0]].group = 0 as i32;
+// CHECK-NEXT:             [[T_0]].group = 0i32;
 // CHECK-NEXT:             [[T_0]]
 // CHECK-NEXT:         },
 // CHECK-NEXT:         {
 // CHECK-NEXT:             let mut [[T_1]]: argp_option = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:             [[T_1]].name = std::ptr::null::<i8>();
-// CHECK-NEXT:             [[T_1]].key = 0 as i32;
+// CHECK-NEXT:             [[T_1]].key = 0i32;
 // CHECK-NEXT:             [[T_1]].arg = std::ptr::null::<i8>();
-// CHECK-NEXT:             [[T_1]].flags = 0 as i32;
+// CHECK-NEXT:             [[T_1]].flags = 0i32;
 // CHECK-NEXT:             [[T_1]].doc = std::ptr::null::<i8>();
-// CHECK-NEXT:             [[T_1]].group = 0 as i32;
+// CHECK-NEXT:             [[T_1]].group = 0i32;
 // CHECK-NEXT:             [[T_1]]
 // CHECK-NEXT:         },
 // CHECK-NEXT:     ]);
@@ -530,9 +525,9 @@ int main(void) {
 // CHECK-NEXT:     let result: i32 = unsafe {
 // CHECK-NEXT:         argp_parse(
 // CHECK-NEXT:             std::ptr::addr_of_mut!(parser) as *const argp,
-// CHECK-NEXT:             3 as i32,
+// CHECK-NEXT:             3i32,
 // CHECK-NEXT:             arguments.0.as_mut_ptr() as *mut *mut i8,
-// CHECK-NEXT:             ((32 as i32) | (16 as i32)) as u32,
+// CHECK-NEXT:             48u32,
 // CHECK-NEXT:             std::ptr::null_mut::<i32>(),
 // CHECK-NEXT:             std::ptr::addr_of_mut!(parsed) as *mut (),
 // CHECK-NEXT:         )
@@ -554,20 +549,14 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut found: *mut entry = std::ptr::null_mut::<entry>();
 // CHECK-NEXT:     let mut tree: *mut () = std::ptr::null_mut::<()>();
-// CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 4]> = __SlateAlign16([
-// CHECK-NEXT:         3 as i32,
-// CHECK-NEXT:         1 as i32,
-// CHECK-NEXT:         4 as i32,
-// CHECK-NEXT:         2 as i32,
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 4]> = __SlateAlign16([3i32, 1i32, 4i32, 2i32]);
 // CHECK-NEXT:     let mut total: i32 = 0;
-// CHECK-NEXT:     total
-// CHECK-NEXT:         += ((unsafe { hcreate_r(8 as u64, std::ptr::addr_of_mut!(table)) }) != 0) as i32;
+// CHECK-NEXT:     total += ((unsafe { hcreate_r(8u64, std::ptr::addr_of_mut!(table)) }) != 0) as i32;
 // CHECK-NEXT:     total
 // CHECK-NEXT:         += ((unsafe {
 // CHECK-NEXT:             hsearch_r(
 // CHECK-NEXT:                 inserted,
-// CHECK-NEXT:                 1 as u32,
+// CHECK-NEXT:                 1u32,
 // CHECK-NEXT:                 std::ptr::addr_of_mut!(found),
 // CHECK-NEXT:                 std::ptr::addr_of_mut!(table),
 // CHECK-NEXT:             )
@@ -576,7 +565,7 @@ int main(void) {
 // CHECK-NEXT:         += ((unsafe {
 // CHECK-NEXT:             hsearch_r(
 // CHECK-NEXT:                 query,
-// CHECK-NEXT:                 0 as u32,
+// CHECK-NEXT:                 0u32,
 // CHECK-NEXT:                 std::ptr::addr_of_mut!(found),
 // CHECK-NEXT:                 std::ptr::addr_of_mut!(table),
 // CHECK-NEXT:             )
@@ -587,8 +576,8 @@ int main(void) {
 // CHECK-NEXT:             && (unsafe { strcmp((*found).data as *const i8, c"24".as_ptr()) }) == 0)
 // CHECK-NEXT:             as i32);
 // CHECK-NEXT:     unsafe { hdestroy_r(std::ptr::addr_of_mut!(table)) };
-// CHECK-NEXT:     for index in 0 as u64..4 as u64 {
-// CHECK-NEXT:         let value: *mut i32 = (unsafe { malloc(4 as u64) }) as *mut i32;
+// CHECK-NEXT:     for index in 0u64..4u64 {
+// CHECK-NEXT:         let value: *mut i32 = (unsafe { malloc(4u64) }) as *mut i32;
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *value = values.0[index as usize];
 // CHECK-NEXT:         }

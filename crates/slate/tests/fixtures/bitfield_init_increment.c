@@ -19,9 +19,9 @@ int main(void) {
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut x: [[SLATERECORD_0:__SlateRecord[0-9]+]] = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [[SLATERECORD_0]] = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]].__slate_bits_0.__set_a(1 as i32);
-// CHECK-NEXT:         [[T_0]].__slate_bits_0.__set_b(2 as i32);
-// CHECK-NEXT:         [[T_0]].__slate_bits_0.__set_c(3 as i32);
+// CHECK-NEXT:         [[T_0]].__slate_bits_0.__set_a(1i32);
+// CHECK-NEXT:         [[T_0]].__slate_bits_0.__set_b(2i32);
+// CHECK-NEXT:         [[T_0]].__slate_bits_0.__set_c(3i32);
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = x.__slate_bits_0.__get_a();
@@ -30,7 +30,7 @@ int main(void) {
 // CHECK-NEXT:     x.__slate_bits_0.__set_b([[V_1]] + 1);
 // CHECK-NEXT:     let [[V_2:__v[0-9]+]]: i32 = x.__slate_bits_0.__get_c();
 // CHECK-NEXT:     x.__slate_bits_0.__set_c([[V_2]] + 1);
-// CHECK-NEXT:     println!("{} {} {} {}", [[V_0]], [[V_1]], [[V_2]], 4 as u64);
+// CHECK-NEXT:     println!("{} {} {} {}", [[V_0]], [[V_1]], [[V_2]], 4u64);
 // CHECK-NEXT:     let [[V_3:__v[0-9]+]]: i32 = x.__slate_bits_0.__get_a();
 // CHECK-NEXT:     let [[V_4:__v[0-9]+]]: i32 = [[V_3]] + 1;
 // CHECK-NEXT:     x.__slate_bits_0.__set_a([[V_4]]);

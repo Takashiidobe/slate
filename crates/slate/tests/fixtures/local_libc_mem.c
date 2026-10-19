@@ -28,7 +28,7 @@ int main(void) {
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut dst: __SlateAlign16<[i8; 16]> = __SlateAlign16([0 as i8; 16]);
+// CHECK-NEXT:     let mut dst: __SlateAlign16<[i8; 16]> = __SlateAlign16([0i8; 16]);
 // CHECK-NEXT:     let mut src: [i8; 8] = [104, 101, 108, 108, 111, 0, 0, 0];
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::copy_nonoverlapping(
@@ -40,12 +40,12 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::write_bytes(
 // CHECK-NEXT:             ((dst.0.as_mut_ptr() as *mut i8).offset(5 as isize) as *mut ()) as *mut u8,
-// CHECK-NEXT:             65 as u8,
+// CHECK-NEXT:             65u8,
 // CHECK-NEXT:             3 as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     dst.0[8] = 0;
-// CHECK-NEXT:     let mut moved: __SlateAlign16<[i8; 16]> = __SlateAlign16([0 as i8; 16]);
+// CHECK-NEXT:     let mut moved: __SlateAlign16<[i8; 16]> = __SlateAlign16([0i8; 16]);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::copy(
 // CHECK-NEXT:             dst.0.as_mut_ptr() as *const u8,

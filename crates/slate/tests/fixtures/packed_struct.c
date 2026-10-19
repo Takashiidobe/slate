@@ -42,10 +42,10 @@ int main(void) {
 // CHECK-NEXT:     p.b = 287454020;
 // CHECK-NEXT:     p.c = 2;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%zu %zu\n".as_ptr(), 6 as u64, 1 as u64) };
+// CHECK-NEXT:     unsafe { printf(c"%zu %zu\n".as_ptr(), 6u64, 1u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%zu %zu %zu\n".as_ptr(), 0 as u64, 1 as u64, 5 as u64) };
+// CHECK-NEXT:     unsafe { printf(c"%zu %zu %zu\n".as_ptr(), 0u64, 1u64, 5u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%d %x %d\n".as_ptr(), p.a as i32, p.b, p.c as i32) };

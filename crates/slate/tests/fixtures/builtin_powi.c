@@ -223,7 +223,7 @@ int main(void) {
 // CHECK-NEXT:             ),
 // CHECK-NEXT:             __slate_intrinsic_8234b76a75b4587f(
 // CHECK-NEXT:                 std::ptr::read_volatile(std::ptr::addr_of!(d)),
-// CHECK-NEXT:                 0 as i32,
+// CHECK-NEXT:                 0i32,
 // CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };

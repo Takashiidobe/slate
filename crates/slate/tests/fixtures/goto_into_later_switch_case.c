@@ -77,12 +77,12 @@ int main() {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     println!("{}", classify(1 as i32));
-// CHECK-NEXT:     println!("{}", classify(3 as i32));
-// CHECK-NEXT:     println!("{}", classify(4 as i32));
-// CHECK-NEXT:     println!("{}", classify(5 as i32));
-// CHECK-NEXT:     println!("{}", classify(6 as i32));
-// CHECK-NEXT:     println!("{}", classify(9 as i32));
+// CHECK-NEXT:     println!("{}", classify(1i32));
+// CHECK-NEXT:     println!("{}", classify(3i32));
+// CHECK-NEXT:     println!("{}", classify(4i32));
+// CHECK-NEXT:     println!("{}", classify(5i32));
+// CHECK-NEXT:     println!("{}", classify(6i32));
+// CHECK-NEXT:     println!("{}", classify(9i32));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

@@ -134,21 +134,21 @@ int main(void) {
 // CHECK-NEXT:     (v.to_i128() as i32) + seed
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     if shift_by_promoted_types(0 as i32) != 1024 {
+// CHECK-NEXT:     if shift_by_promoted_types(0i32) != 1024 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if shift_across_limbs(0 as i32) != 2 {
+// CHECK-NEXT:     if shift_across_limbs(0i32) != 2 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if shift_signed_arithmetic(0 as i32) != -512 {
+// CHECK-NEXT:     if shift_signed_arithmetic(0i32) != -512 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if shift_by_bitint(0 as i32) != 3 {
+// CHECK-NEXT:     if shift_by_bitint(0i32) != 3 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {}", shift_by_promoted_types(1 as i32), shift_across_limbs(2 as i32),
-// CHECK-NEXT:         shift_signed_arithmetic(3 as i32), shift_by_bitint(4 as i32)
+// CHECK-NEXT:         "{} {} {} {}", shift_by_promoted_types(1i32), shift_across_limbs(2i32),
+// CHECK-NEXT:         shift_signed_arithmetic(3i32), shift_by_bitint(4i32)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

@@ -61,9 +61,9 @@ int main(void) {
 // CHECK-NEXT:     0.0f64
 // CHECK-NEXT: }
 // CHECK-NEXT: fn compare_all(a: f64, b: f64) -> i32 {
-// CHECK-NEXT:     ((a < b) as i32) | ((a <= b) as i32) << (1 as i32) | ((a > b) as i32) << (2 as i32)
-// CHECK-NEXT:         | ((a >= b) as i32) << (3 as i32) | ((a == b) as i32) << (4 as i32)
-// CHECK-NEXT:         | ((a != b) as i32) << (5 as i32)
+// CHECK-NEXT:     ((a < b) as i32) | ((a <= b) as i32) << 1i32 | ((a > b) as i32) << 2i32
+// CHECK-NEXT:         | ((a >= b) as i32) << 3i32 | ((a == b) as i32) << 4i32
+// CHECK-NEXT:         | ((a != b) as i32) << 5i32
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let nan: f64 = zero() / zero();
@@ -74,8 +74,8 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{} {}", compare_all(- 0.0f64, 0.0f64), compare_all(inf, - inf));
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", ! (nan != 0.0f64) as i32, if nan != 0.0f64 { 1 as i32 } else { 0 as
-// CHECK-NEXT:         i32 }, if - 0.0f64 != 0.0f64 { 1 as i32 } else { 0 as i32 }
+// CHECK-NEXT:         "{} {} {}", ! (nan != 0.0f64) as i32, if nan != 0.0f64 { 1i32 } else { 0i32 }, if
+// CHECK-NEXT:         - 0.0f64 != 0.0f64 { 1i32 } else { 0i32 }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(c"%g %g %d\n".as_ptr(), inf, -inf, (inf - inf == inf - inf) as i32)
@@ -104,10 +104,10 @@ int main(void) {
 // CHECK-NEXT:     unsafe { printf(c"%.1f\n".as_ptr(), f as f64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let mut d: f64 = 2.5f64;
-// CHECK-NEXT:     d *= (3 as i32) as f64;
+// CHECK-NEXT:     d *= 3i32 as f64;
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: f64 = d - 0.5f64;
 // CHECK-NEXT:     d = [[V_1]];
-// CHECK-NEXT:     d /= (4 as i32) as f64;
+// CHECK-NEXT:     d /= 4i32 as f64;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%g\n".as_ptr(), d) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -131,11 +131,11 @@ int main(void) {
 // CHECK-NEXT:         1e300f64,
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let mut max: f64 = values.0[0];
-// CHECK-NEXT:     for k in 1 as i32..4 as i32 {
+// CHECK-NEXT:     for k in 1i32..4i32 {
 // CHECK-NEXT:         max = if values.0[k as usize] > max { values.0[k as usize] } else { max };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%g %g\n".as_ptr(), max, values.0[3] * ((10 as i32) as f64)) };
+// CHECK-NEXT:     unsafe { printf(c"%g %g\n".as_ptr(), max, values.0[3] * (10i32 as f64)) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {}", ((1.0f32 as f64) < 1.0f64) as i32, (((0.1f64 as f32) as f64) == 0.1f64)

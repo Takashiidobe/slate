@@ -86,14 +86,14 @@ int main(void) {
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: static mut sized: __SlateStorage_sized = {
 // CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: __SlateStorage_sized = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     [[T_0]].n = 3 as i32;
-// CHECK-NEXT:     [[T_0]].data = [10 as i32, 20 as i32, 30 as i32];
+// CHECK-NEXT:     [[T_0]].n = 3i32;
+// CHECK-NEXT:     [[T_0]].data = [10i32, 20i32, 30i32];
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let range_values: __SlateAlign16<[i32; 10]> = __SlateAlign16({
 // CHECK-NEXT:         let mut [[T_0]]: [i32; 10] = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         let [[T_1:__t[0-9]+]] = 9 as i32;
+// CHECK-NEXT:         let [[T_1:__t[0-9]+]] = 9i32;
 // CHECK-NEXT:         let mut [[T_2:__t[0-9]+]]: usize = 2;
 // CHECK-NEXT:         while [[T_2]] <= 5 {
 // CHECK-NEXT:             [[T_0]][[[T_2]]] = [[T_1]];
@@ -103,7 +103,7 @@ int main(void) {
 // CHECK-NEXT:     });
 // CHECK-NEXT:     let old_index: [i32; 3] = {
 // CHECK-NEXT:         let mut [[T_3:__t[0-9]+]]: [i32; 3] = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_3]][1] = 11 as i32;
+// CHECK-NEXT:         [[T_3]][1] = 11i32;
 // CHECK-NEXT:         [[T_3]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let p: Point = Point { x: 1, y: 2 };
@@ -116,7 +116,7 @@ int main(void) {
 // CHECK-NEXT:     let f: u32 = 1;
 // CHECK-NEXT:     println!("{} {} {} {}", range_values.0[3], old_index[1], p.x + p.y, unsafe { c.i });
 // CHECK-NEXT:     println!("{}", (f as u32) as i32);
-// CHECK-NEXT:     unsafe { printf(c"%zu %zu\n".as_ptr(), 4 as u64, 0 as u64) };
+// CHECK-NEXT:     unsafe { printf(c"%zu %zu\n".as_ptr(), 4u64, 0u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {}", unsafe { * (std::ptr::addr_of_mut!((* (std::ptr::addr_of_mut!(sized)
@@ -126,7 +126,7 @@ int main(void) {
 // CHECK-NEXT:         (std::ptr::addr_of_mut!(sized) as * mut Sized)).data) as * mut i32).offset(2 as
 // CHECK-NEXT:         isize) }
 // CHECK-NEXT:     );
-// CHECK-NEXT:     unsafe { printf(c"%zu\n".as_ptr(), 4 as u64) };
+// CHECK-NEXT:     unsafe { printf(c"%zu\n".as_ptr(), 4u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

@@ -157,7 +157,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn format_port(port: i32) -> i32 {
 // CHECK-NEXT:     let length: i32 = unsafe {
-// CHECK-NEXT:         snprintf(std::ptr::null_mut::<i8>(), 0 as u64, c"%d".as_ptr(), port)
+// CHECK-NEXT:         snprintf(std::ptr::null_mut::<i8>(), 0u64, c"%d".as_ptr(), port)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut [[V_3:__v[0-9]+]]: u64 = ((length + 1) as i64) as u64;
 // CHECK-NEXT:     let mut buf: Vec<i8> = {
@@ -191,7 +191,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::write_bytes(
 // CHECK-NEXT:             buf.as_mut_ptr() as *mut u8,
-// CHECK-NEXT:             120 as u8,
+// CHECK-NEXT:             120u8,
 // CHECK-NEXT:             [[V_4]].wrapping_mul(1).wrapping_sub(1) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -312,12 +312,12 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%ld\n".as_ptr(), wrap_objects(4 as i32)) };
+// CHECK-NEXT:     unsafe { printf(c"%ld\n".as_ptr(), wrap_objects(4i32)) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     println!("{}", format_port(6379 as i32));
+// CHECK-NEXT:     println!("{}", format_port(6379i32));
 // CHECK-NEXT:     println!("{}", const_bound());
-// CHECK-NEXT:     println!("{}", matrix(3 as i32, 4 as i32));
-// CHECK-NEXT:     println!("{}", per_iteration(6 as i32));
+// CHECK-NEXT:     println!("{}", matrix(3i32, 4i32));
+// CHECK-NEXT:     println!("{}", per_iteration(6i32));
 // CHECK-NEXT:     let __slate_printf_arg0 = sum_row(length, values.as_mut_ptr() as *mut [i32; 0]);
 // CHECK-NEXT:     println!("{}", __slate_printf_arg0);
 // CHECK-NEXT:     0

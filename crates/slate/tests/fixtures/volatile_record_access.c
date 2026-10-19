@@ -72,12 +72,12 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut interrupt: Interrupt = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: Interrupt = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]].flag = 0 as i32;
+// CHECK-NEXT:         [[T_0]].flag = 0i32;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut state: State = {
 // CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: State = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_1]].before = 0 as i32;
+// CHECK-NEXT:         [[T_1]].before = 0i32;
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut target: i32 = 7;
@@ -87,13 +87,13 @@ int main(void) {
 // CHECK-NEXT:             std::ptr::addr_of_mut!(
 // CHECK-NEXT:                 (* once(& (* std::ptr::addr_of_mut!(state)))).[[SLATE_ANON_0]].interrupted
 // CHECK-NEXT:             ),
-// CHECK-NEXT:             17 as i32,
+// CHECK-NEXT:             17i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::write_volatile(
 // CHECK-NEXT:             (state.counters.as_mut_ptr() as *mut u16).offset(2 as isize),
-// CHECK-NEXT:             100 as u16,
+// CHECK-NEXT:             100u16,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut u16 = unsafe {
@@ -103,11 +103,9 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::write_volatile([[V_0]], (((([[V_1]] as u32) as i32) + 23) as i16) as u16)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { std::ptr::write_volatile(state.pointer, 11 as i32) };
+// CHECK-NEXT:     unsafe { std::ptr::write_volatile(state.pointer, 11i32) };
 // CHECK-NEXT:     let view: *const Interrupt = std::ptr::addr_of_mut!(interrupt) as *const Interrupt;
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::ptr::write_volatile(std::ptr::addr_of_mut!(interrupt.flag), 9 as i32)
-// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(interrupt.flag), 9i32) };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::write_volatile(
 // CHECK-NEXT:             std::ptr::addr_of_mut!(global),
@@ -128,9 +126,7 @@ int main(void) {
 // CHECK-NEXT:         return 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let all: *mut State = std::ptr::addr_of_mut!(state) as *mut State;
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::ptr::write_volatile(std::ptr::addr_of_mut!((* all).before), 31 as i32)
-// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!((* all).before), 31i32) };
 // CHECK-NEXT:     if (unsafe { std::ptr::read_volatile(std::ptr::addr_of!((* all).before)) }) != 31 {
 // CHECK-NEXT:         return 2;
 // CHECK-NEXT:     }

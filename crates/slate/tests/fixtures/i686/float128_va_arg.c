@@ -53,29 +53,27 @@ int main(void) {
 // CHECK-NEXT:     ap = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<core::ffi::VaList<'_>, *mut i8>(__va_args.clone())
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut total: f128 = (0 as i32) as f128;
+// CHECK-NEXT:     let mut total: f128 = 0i32 as f128;
 // CHECK-NEXT:     for i in 0..n {
 // CHECK-NEXT:         let scale: i32 = unsafe {
 // CHECK-NEXT:             __slate_i386_va::arg::<_, i32>(std::ptr::addr_of_mut!(ap))
 // CHECK-NEXT:         };
-// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: f128 = total;
-// CHECK-NEXT:         total = [[V_0]]
-// CHECK-NEXT:             + (scale as f128)
-// CHECK-NEXT:                 * unsafe { __slate_i386_va::arg::<_, f128>(std::ptr::addr_of_mut!(ap)) };
+// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: f128 = (scale as f128)
+// CHECK-NEXT:             * unsafe { __slate_i386_va::arg::<_, f128>(std::ptr::addr_of_mut!(ap)) };
+// CHECK-NEXT:         total += [[V_0]];
 // CHECK-NEXT:     }
-// CHECK-NEXT:     {}
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let big: f128 = 1f128 + 7.88860905221011805411728565282786229E-31f128;
 // CHECK-NEXT:     let total: f128 = unsafe {
 // CHECK-NEXT:         sum(
-// CHECK-NEXT:             3 as i32,
-// CHECK-NEXT:             2 as i32,
+// CHECK-NEXT:             3i32,
+// CHECK-NEXT:             2i32,
 // CHECK-NEXT:             big,
-// CHECK-NEXT:             3 as i32,
+// CHECK-NEXT:             3i32,
 // CHECK-NEXT:             -1.5f128,
-// CHECK-NEXT:             1 as i32,
+// CHECK-NEXT:             1i32,
 // CHECK-NEXT:             8.07793566946316088741610050849573099E-28f128,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -84,7 +82,7 @@ int main(void) {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%a %d\n".as_ptr(),
 // CHECK-NEXT:             total as f64,
-// CHECK-NEXT:             (total - (((2 as i32) as f128) * big - 4.5f128)
+// CHECK-NEXT:             (total - ((2i32 as f128) * big - 4.5f128)
 // CHECK-NEXT:                 == 8.07793566946316088741610050849573099E-28f128) as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };

@@ -58,38 +58,38 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut state16: [[SLATERECORD_0]] = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [[SLATERECORD_0]] = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]].__count = 0 as i32;
+// CHECK-NEXT:         [[T_0]].__count = 0i32;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut state32: [[SLATERECORD_0]] = {
 // CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: [[SLATERECORD_0]] = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_1]].__count = 0 as i32;
+// CHECK-NEXT:         [[T_1]].__count = 0i32;
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut converted16: u16 = 0;
 // CHECK-NEXT:     let mut converted32: u32 = 0;
 // CHECK-NEXT:     let mut multibyte16: [i8; 4] = {
 // CHECK-NEXT:         let mut [[T_2:__t[0-9]+]]: [i8; 4] = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_2]][0] = 0 as i8;
+// CHECK-NEXT:         [[T_2]][0] = 0i8;
 // CHECK-NEXT:         [[T_2]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut multibyte32: [i8; 4] = {
 // CHECK-NEXT:         let mut [[T_3:__t[0-9]+]]: [i8; 4] = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_3]][0] = 0 as i8;
+// CHECK-NEXT:         [[T_3]][0] = 0i8;
 // CHECK-NEXT:         [[T_3]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let read16: u64 = unsafe {
 // CHECK-NEXT:         mbrtoc16(
 // CHECK-NEXT:             std::ptr::addr_of_mut!(converted16),
 // CHECK-NEXT:             c"A".as_ptr(),
-// CHECK-NEXT:             1 as u64,
+// CHECK-NEXT:             1u64,
 // CHECK-NEXT:             std::ptr::addr_of_mut!(state16),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let write16: u64 = unsafe {
 // CHECK-NEXT:         c16rtomb(
 // CHECK-NEXT:             multibyte16.as_mut_ptr() as *mut i8,
-// CHECK-NEXT:             65 as u16,
+// CHECK-NEXT:             65u16,
 // CHECK-NEXT:             std::ptr::addr_of_mut!(state16),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -97,14 +97,14 @@ int main(void) {
 // CHECK-NEXT:         mbrtoc32(
 // CHECK-NEXT:             std::ptr::addr_of_mut!(converted32),
 // CHECK-NEXT:             c"B".as_ptr(),
-// CHECK-NEXT:             1 as u64,
+// CHECK-NEXT:             1u64,
 // CHECK-NEXT:             std::ptr::addr_of_mut!(state32),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let write32: u64 = unsafe {
 // CHECK-NEXT:         c32rtomb(
 // CHECK-NEXT:             multibyte32.as_mut_ptr() as *mut i8,
-// CHECK-NEXT:             66 as u32,
+// CHECK-NEXT:             66u32,
 // CHECK-NEXT:             std::ptr::addr_of_mut!(state32),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };

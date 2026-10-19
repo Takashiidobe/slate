@@ -59,9 +59,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(c"%d %u\n".as_ptr(), add_via_asm(37 as i32), cpuid_leaf7_feature())
-// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { printf(c"%d %u\n".as_ptr(), add_via_asm(37i32), cpuid_leaf7_feature()) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

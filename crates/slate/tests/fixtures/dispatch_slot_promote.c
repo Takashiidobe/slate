@@ -114,7 +114,7 @@ int main(void) {
 // CHECK-NEXT:     let mut v: std::mem::MaybeUninit<__SlateAlign32<i32>> = std::mem::MaybeUninit::uninit();
 // CHECK-NEXT:     let [[SLATE_SLOT_0:__slate_slot_[0-9]+]]: *mut i32 = std::ptr::addr_of_mut!(v) as *mut i32;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::ptr::write([[SLATE_SLOT_0]], 1 as i32);
+// CHECK-NEXT:         std::ptr::write([[SLATE_SLOT_0]], 1i32);
 // CHECK-NEXT:         k = 0;
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             *[[SLATE_SLOT_0]] *= 2;

@@ -52,14 +52,14 @@ int main(void) {
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         *{
 // CHECK-NEXT:             [[SLATE_COMPOUND_0]] = std::simd::Simd::from_array([
-// CHECK-NEXT:                 -1 as i16,
-// CHECK-NEXT:                 -32768 as i16,
-// CHECK-NEXT:                 1000 as i16,
-// CHECK-NEXT:                 1 as i16,
-// CHECK-NEXT:                 30000 as i16,
-// CHECK-NEXT:                 400 as i16,
-// CHECK-NEXT:                 200 as i16,
-// CHECK-NEXT:                 3 as i16,
+// CHECK-NEXT:                 -1i16,
+// CHECK-NEXT:                 -32768i16,
+// CHECK-NEXT:                 1000i16,
+// CHECK-NEXT:                 1i16,
+// CHECK-NEXT:                 30000i16,
+// CHECK-NEXT:                 400i16,
+// CHECK-NEXT:                 200i16,
+// CHECK-NEXT:                 3i16,
 // CHECK-NEXT:             ]);
 // CHECK-NEXT:             std::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
 // CHECK-NEXT:         }
@@ -67,14 +67,14 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let right: std::simd::Simd<i16, 8> = std::simd::Simd::from_array([
-// CHECK-NEXT:         -1 as i16,
-// CHECK-NEXT:         2 as i16,
-// CHECK-NEXT:         1000 as i16,
-// CHECK-NEXT:         1 as i16,
-// CHECK-NEXT:         30000 as i16,
-// CHECK-NEXT:         400 as i16,
-// CHECK-NEXT:         200 as i16,
-// CHECK-NEXT:         3 as i16,
+// CHECK-NEXT:         -1i16,
+// CHECK-NEXT:         2i16,
+// CHECK-NEXT:         1000i16,
+// CHECK-NEXT:         1i16,
+// CHECK-NEXT:         30000i16,
+// CHECK-NEXT:         400i16,
+// CHECK-NEXT:         200i16,
+// CHECK-NEXT:         3i16,
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let product: std::simd::Simd<i16, 8> = unsafe {
 // CHECK-NEXT:         std::mem::transmute::<
@@ -115,21 +115,16 @@ int main(void) {
 // CHECK-NEXT:     let packed: std::simd::Simd<i32, 4> = unsafe {
 // CHECK-NEXT:         std::mem::transmute::<std::simd::Simd<i16, 8>, std::simd::Simd<i32, 4>>(product)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let sum: std::simd::Simd<i32, 4> = packed
-// CHECK-NEXT:         + std::simd::Simd::splat(2147483647 as i32);
+// CHECK-NEXT:     let sum: std::simd::Simd<i32, 4> = packed + std::simd::Simd::splat(2147483647i32);
 // CHECK-NEXT:     let counts: std::simd::Simd<i32, 4> = std::simd::Simd::from_array([
-// CHECK-NEXT:         1 as i32,
-// CHECK-NEXT:         0 as i32,
-// CHECK-NEXT:         0 as i32,
-// CHECK-NEXT:         0 as i32,
+// CHECK-NEXT:         1i32, 0i32, 0i32, 0i32,
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let shifted: std::simd::Simd<i32, 4> = unsafe {
 // CHECK-NEXT:         __slate_intrinsic_65fb1843bfbf1b54(packed, counts)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {} {} {}", product[0] as i32, product[1] as i32, product[2] as i32,
-// CHECK-NEXT:         unsafe { calls }, (shifted[0] == packed[0] << (1 as i32)) as i32, (sum[0] < 0) as
-// CHECK-NEXT:         i32
+// CHECK-NEXT:         unsafe { calls }, (shifted[0] == packed[0] << 1i32) as i32, (sum[0] < 0) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

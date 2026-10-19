@@ -215,7 +215,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::write_bytes(
 // CHECK-NEXT:             (std::ptr::addr_of_mut!(src) as *mut ()) as *mut u8,
-// CHECK-NEXT:             0 as u8,
+// CHECK-NEXT:             0u8,
 // CHECK-NEXT:             16 as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };

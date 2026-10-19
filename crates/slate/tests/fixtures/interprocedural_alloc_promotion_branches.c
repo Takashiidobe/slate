@@ -31,13 +31,13 @@ int main(void) {
 // CHECK-NEXT:     fn free(__ptr: *mut ());
 // CHECK-NEXT: }
 // CHECK-NEXT: fn alloc() -> *mut i32 {
-// CHECK-NEXT:     (unsafe { malloc((4 as u64).wrapping_mul(10 as u64)) }) as *mut i32
+// CHECK-NEXT:     (unsafe { malloc(40u64) }) as *mut i32
 // CHECK-NEXT: }
 // CHECK-NEXT: fn a() -> *mut i32 {
 // CHECK-NEXT:     alloc()
 // CHECK-NEXT: }
 // CHECK-NEXT: fn b() -> *mut i32 {
-// CHECK-NEXT:     if (1 as i32) != (0 as i32) {
+// CHECK-NEXT:     if 1i32 != 0i32 {
 // CHECK-NEXT:         return a();
 // CHECK-NEXT:     }
 // CHECK-NEXT:     alloc()

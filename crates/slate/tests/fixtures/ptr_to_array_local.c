@@ -18,15 +18,11 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut src: __SlateAlign16<[i32; 5]> = __SlateAlign16([
-// CHECK-NEXT:         1 as i32,
-// CHECK-NEXT:         2 as i32,
-// CHECK-NEXT:         3 as i32,
-// CHECK-NEXT:         4 as i32,
-// CHECK-NEXT:         5 as i32,
+// CHECK-NEXT:         1i32, 2i32, 3i32, 4i32, 5i32,
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let p: *mut [i32; 5] = std::ptr::addr_of_mut!(src.0);
 // CHECK-NEXT:     let mut sum: i32 = 0;
-// CHECK-NEXT:     for i in 0 as i32..5 as i32 {
+// CHECK-NEXT:     for i in 0i32..5i32 {
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = sum;
 // CHECK-NEXT:         sum = [[V_0]] + unsafe { *((*p).as_mut_ptr() as *mut i32).offset(i as isize) };
 // CHECK-NEXT:     }

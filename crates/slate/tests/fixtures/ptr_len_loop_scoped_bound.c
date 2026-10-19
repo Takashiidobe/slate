@@ -62,25 +62,11 @@ int main(void) {
 // CHECK-NEXT:     s
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut x: __SlateAlign16<[i32; 5]> = __SlateAlign16([
-// CHECK-NEXT:         1 as i32,
-// CHECK-NEXT:         2 as i32,
-// CHECK-NEXT:         3 as i32,
-// CHECK-NEXT:         4 as i32,
-// CHECK-NEXT:         5 as i32,
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let mut x: __SlateAlign16<[i32; 5]> = __SlateAlign16([1i32, 2i32, 3i32, 4i32, 5i32]);
 // CHECK-NEXT:     let y: [i32; 2] = [10, 20];
 // CHECK-NEXT:     println!("{} {}", sum_both(& x.0, & y), sum_both(& y, & x.0));
-// CHECK-NEXT:     let __slate_printf_arg0 = sum_twice(
-// CHECK-NEXT:         x.0.as_mut_ptr() as *const i32,
-// CHECK-NEXT:         5 as i32,
-// CHECK-NEXT:         2 as i32,
-// CHECK-NEXT:     );
-// CHECK-NEXT:     let __slate_printf_arg1 = sum_twice(
-// CHECK-NEXT:         x.0.as_mut_ptr() as *const i32,
-// CHECK-NEXT:         2 as i32,
-// CHECK-NEXT:         5 as i32,
-// CHECK-NEXT:     );
+// CHECK-NEXT:     let __slate_printf_arg0 = sum_twice(x.0.as_mut_ptr() as *const i32, 5i32, 2i32);
+// CHECK-NEXT:     let __slate_printf_arg1 = sum_twice(x.0.as_mut_ptr() as *const i32, 2i32, 5i32);
 // CHECK-NEXT:     println!("{} {}", __slate_printf_arg0, __slate_printf_arg1);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

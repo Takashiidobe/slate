@@ -18,13 +18,7 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%s %c %c %d\n".as_ptr(),
-// CHECK-NEXT:             c"tag".as_ptr() as *mut i8,
-// CHECK-NEXT:             65 as i32,
-// CHECK-NEXT:             10 as i32,
-// CHECK-NEXT:             7 as i32,
-// CHECK-NEXT:         )
+// CHECK-NEXT:         printf(c"%s %c %c %d\n".as_ptr(), c"tag".as_ptr() as *mut i8, 65i32, 10i32, 7i32)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());

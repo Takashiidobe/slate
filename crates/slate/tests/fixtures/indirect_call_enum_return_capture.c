@@ -63,7 +63,7 @@ int main(void) {
 // CHECK-NEXT:             };
 // CHECK-NEXT:             [[T_0]]
 // CHECK-NEXT:         };
-// CHECK-NEXT:         let result: u32 = unsafe { p.processor.unwrap()(5 as i32) };
+// CHECK-NEXT:         let result: u32 = unsafe { p.processor.unwrap()(5i32) };
 // CHECK-NEXT:         if (result as u32) == 0 {
 // CHECK-NEXT:             println!("ok");
 // CHECK-NEXT:         } else {

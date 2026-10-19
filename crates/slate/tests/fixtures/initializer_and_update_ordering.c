@@ -54,8 +54,8 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
-// CHECK-NEXT: static mut flags: [u32; 1] = [(2 as i32) as u32];
-// CHECK-NEXT: static mut calls: i32 = 0 as i32;
+// CHECK-NEXT: static mut flags: [u32; 1] = [2];
+// CHECK-NEXT: static mut calls: i32 = 0;
 // CHECK-NEXT: fn mark() -> u32 {
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: *mut u32 = unsafe {
 // CHECK-NEXT:         (std::ptr::addr_of_mut!(flags) as *mut u32).offset(0 as isize)
@@ -75,7 +75,7 @@ int main(void) {
 // CHECK-NEXT:     let mut self_: node = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     self_ = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: node = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]].value = 7 as i32;
+// CHECK-NEXT:         [[T_0]].value = 7i32;
 // CHECK-NEXT:         [[T_0]].next = std::ptr::addr_of_mut!(self_);
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
@@ -85,13 +85,13 @@ int main(void) {
 // CHECK-NEXT:     ring.0 = [
 // CHECK-NEXT:         {
 // CHECK-NEXT:             let mut [[T_1:__t[0-9]+]]: node = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:             [[T_1]].value = 1 as i32;
+// CHECK-NEXT:             [[T_1]].value = 1i32;
 // CHECK-NEXT:             [[T_1]].next = unsafe { (ring.0.as_mut_ptr() as *mut node).offset(1 as isize) };
 // CHECK-NEXT:             [[T_1]]
 // CHECK-NEXT:         },
 // CHECK-NEXT:         {
 // CHECK-NEXT:             let mut [[T_2:__t[0-9]+]]: node = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:             [[T_2]].value = 2 as i32;
+// CHECK-NEXT:             [[T_2]].value = 2i32;
 // CHECK-NEXT:             [[T_2]].next = unsafe { (ring.0.as_mut_ptr() as *mut node).offset(0 as isize) };
 // CHECK-NEXT:             [[T_2]]
 // CHECK-NEXT:         },
@@ -110,12 +110,7 @@ int main(void) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%u\n".as_ptr(), flags[0]) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     let mut data: __SlateAlign16<[i32; 4]> = __SlateAlign16([
-// CHECK-NEXT:         0 as i32,
-// CHECK-NEXT:         1 as i32,
-// CHECK-NEXT:         2 as i32,
-// CHECK-NEXT:         3 as i32,
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let mut data: __SlateAlign16<[i32; 4]> = __SlateAlign16([0i32, 1i32, 2i32, 3i32]);
 // CHECK-NEXT:     let mut p: *mut i32 = data.0.as_mut_ptr() as *mut i32;
 // CHECK-NEXT:     let mut i: i32 = 0;
 // CHECK-NEXT:     {

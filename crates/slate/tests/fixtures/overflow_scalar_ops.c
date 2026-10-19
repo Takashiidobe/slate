@@ -47,7 +47,7 @@ int main(void) {
 // CHECK-NEXT:     }) as i32;
 // CHECK-NEXT:     println!("{} {}", add_i, ri);
 // CHECK-NEXT:     let sub_i: i32 = ({
-// CHECK-NEXT:         let [[T_3:__t[0-9]+]]: i128 = (-(2147483647 as i32) - (1 as i32)) as i128;
+// CHECK-NEXT:         let [[T_3:__t[0-9]+]]: i128 = -2147483648i32 as i128;
 // CHECK-NEXT:         let [[T_4:__t[0-9]+]]: i128 = 1 as i128;
 // CHECK-NEXT:         let [[T_5:__t[0-9]+]]: i128 = [[T_3]].wrapping_sub([[T_4]]);
 // CHECK-NEXT:         unsafe {

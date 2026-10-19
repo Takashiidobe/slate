@@ -42,8 +42,8 @@ int main() {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut x: u64 = 10;
-// CHECK-NEXT:     let a: u64 = bump(unsafe { &mut (*std::ptr::addr_of_mut!(x)) }, 1 as i32);
-// CHECK-NEXT:     let b: u64 = bump(unsafe { &mut (*std::ptr::addr_of_mut!(x)) }, 0 as i32);
+// CHECK-NEXT:     let a: u64 = bump(unsafe { &mut (*std::ptr::addr_of_mut!(x)) }, 1i32);
+// CHECK-NEXT:     let b: u64 = bump(unsafe { &mut (*std::ptr::addr_of_mut!(x)) }, 0i32);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%lu %lu %lu\n".as_ptr(), a, b, x) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

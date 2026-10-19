@@ -68,14 +68,9 @@ int main(void) {
 // CHECK-NEXT:     pair.a * 10 + pair.b
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let values: __SlateAlign16<[i32; 4]> = __SlateAlign16([
-// CHECK-NEXT:         5 as i32,
-// CHECK-NEXT:         -(7 as i32),
-// CHECK-NEXT:         0 as i32,
-// CHECK-NEXT:         12 as i32,
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let values: __SlateAlign16<[i32; 4]> = __SlateAlign16([5i32, -7i32, 0i32, 12i32]);
 // CHECK-NEXT:     let mut total: i32 = 0;
-// CHECK-NEXT:     for i in 0 as i32..4 as i32 {
+// CHECK-NEXT:     for i in 0i32..4i32 {
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = sign(values.0[i as usize]) * 100
 // CHECK-NEXT:             + if values.0[i as usize] % 2 != 0 { 7 } else { 3 };
 // CHECK-NEXT:         total += [[V_0]];
@@ -98,18 +93,15 @@ int main(void) {
 // CHECK-NEXT:     if (if x > 2 { (y > 2) as i32 } else { (y < 2) as i32 }) != 0 {
 // CHECK-NEXT:         total += 1000;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {}", total, clamp_add(3 as i32, 8 as i32), clamp_add(9 as i32, - (1 as
-// CHECK-NEXT:         i32)), seq
-// CHECK-NEXT:     );
+// CHECK-NEXT:     println!("{} {} {} {}", total, clamp_add(3i32, 8i32), clamp_add(9i32, - 1i32), seq);
 // CHECK-NEXT:     unsafe { printf(c"%d %.1f %lu %d\n".as_ptr(), nested, half, wide, *cursor) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%s %s\n".as_ptr(),
-// CHECK-NEXT:             pick(1 as i32, c"left".as_ptr(), c"right".as_ptr()),
-// CHECK-NEXT:             pick(0 as i32, c"left".as_ptr(), c"right".as_ptr()),
+// CHECK-NEXT:             pick(1i32, c"left".as_ptr(), c"right".as_ptr()),
+// CHECK-NEXT:             pick(0i32, c"left".as_ptr(), c"right".as_ptr()),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

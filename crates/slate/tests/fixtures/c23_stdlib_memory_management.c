@@ -34,13 +34,13 @@ int main(void) {
 // CHECK-NEXT:     fn memalignment(__p: *const ()) -> u64;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let p: *mut () = unsafe { malloc(16 as u64) };
-// CHECK-NEXT:     unsafe { free_sized(p, 16 as u64) };
-// CHECK-NEXT:     let q: *mut () = unsafe { aligned_alloc(16 as u64, 32 as u64) };
-// CHECK-NEXT:     unsafe { free_aligned_sized(q, 16 as u64, 32 as u64) };
-// CHECK-NEXT:     let r: *mut () = unsafe { realloc(std::ptr::null_mut::<()>(), 0 as u64) };
+// CHECK-NEXT:     let p: *mut () = unsafe { malloc(16u64) };
+// CHECK-NEXT:     unsafe { free_sized(p, 16u64) };
+// CHECK-NEXT:     let q: *mut () = unsafe { aligned_alloc(16u64, 32u64) };
+// CHECK-NEXT:     unsafe { free_aligned_sized(q, 16u64, 32u64) };
+// CHECK-NEXT:     let r: *mut () = unsafe { realloc(std::ptr::null_mut::<()>(), 0u64) };
 // CHECK-NEXT:     unsafe { free(r) };
-// CHECK-NEXT:     let a: *mut () = unsafe { aligned_alloc(64 as u64, 64 as u64) };
+// CHECK-NEXT:     let a: *mut () = unsafe { aligned_alloc(64u64, 64u64) };
 // CHECK-NEXT:     println!("{}", ((unsafe { memalignment(a as * const ()) }) % 64 == 0) as i32);
 // CHECK-NEXT:     unsafe { free(a) };
 // CHECK-NEXT:     println!("ok");

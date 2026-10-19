@@ -177,30 +177,22 @@ int main(void) {
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     println!("{}", id9((- 200 as i16) << 7 >> 7) as i32);
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%u\n".as_ptr(),
-// CHECK-NEXT:             add17(
-// CHECK-NEXT:                 (((100000 as i32) << 15 >> 15) as u32) & 131071,
-// CHECK-NEXT:                 (((40000 as i32) << 15 >> 15) as u32) & 131071,
-// CHECK-NEXT:             ) as u32,
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
+// CHECK-NEXT:     println!("{}", id9(- 200i16) as i32);
+// CHECK-NEXT:     unsafe { printf(c"%u\n".as_ptr(), add17(100000u32, 40000u32) as u32) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%lld\n".as_ptr(),
 // CHECK-NEXT:             mix100(
-// CHECK-NEXT:                     (-5 as i16) << 7 >> 7,
+// CHECK-NEXT:                     -5i16,
 // CHECK-NEXT:                     <bitint::BInt<
 // CHECK-NEXT:                         100,
 // CHECK-NEXT:                         2,
 // CHECK-NEXT:                         16,
 // CHECK-NEXT:                         bitint::A8,
 // CHECK-NEXT:                     >>::from_i128(1000000000000 as i128),
-// CHECK-NEXT:                     -3 as i64,
+// CHECK-NEXT:                     -3i64,
 // CHECK-NEXT:                 )
 // CHECK-NEXT:                 .to_i128() as i64,
 // CHECK-NEXT:         )
@@ -224,7 +216,7 @@ int main(void) {
 // CHECK-NEXT:                     <bitint::BInt<128, 2, 16, bitint::A8>>::from_i128(5 as i128),
 // CHECK-NEXT:                 ),
 // CHECK-NEXT:             ),
-// CHECK-NEXT:         7 as i32,
+// CHECK-NEXT:         7i32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
@@ -264,7 +256,7 @@ int main(void) {
 // CHECK-NEXT:                     <bitint::BInt<300, 5, 40, bitint::A8>>::from_i128(3 as i128),
 // CHECK-NEXT:                 ),
 // CHECK-NEXT:             ),
-// CHECK-NEXT:         5 as i32,
+// CHECK-NEXT:         5i32,
 // CHECK-NEXT:         <bitint::BUint<
 // CHECK-NEXT:             300,
 // CHECK-NEXT:             5,
@@ -282,7 +274,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let mut p: pair = mkpair(
-// CHECK-NEXT:         (-7 as i16) << 7 >> 7,
+// CHECK-NEXT:         -7i16,
 // CHECK-NEXT:         <bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(1 as i128)
 // CHECK-NEXT:             .shl_bits(80 as usize)
 // CHECK-NEXT:             .wrapping_sub(<bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(1 as i128)),
@@ -312,9 +304,9 @@ int main(void) {
 // CHECK-NEXT:             c"%lld\n".as_ptr(),
 // CHECK-NEXT:             fp
 // CHECK-NEXT:                 .unwrap()(
-// CHECK-NEXT:                     (3 as i16) << 7 >> 7,
+// CHECK-NEXT:                     3i16,
 // CHECK-NEXT:                     <bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(4 as i128),
-// CHECK-NEXT:                     5 as i64,
+// CHECK-NEXT:                     5i64,
 // CHECK-NEXT:                 )
 // CHECK-NEXT:                 .to_i128() as i64,
 // CHECK-NEXT:         )
@@ -324,14 +316,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%lld\n".as_ptr(),
-// CHECK-NEXT:             vsum(
-// CHECK-NEXT:                 5 as i32,
-// CHECK-NEXT:                 ((-3 as i16) << 7 >> 7) as i32,
-// CHECK-NEXT:                 (((70000 as i32) << 15 >> 15) as u32) & 131071,
-// CHECK-NEXT:                 -5000000000 as i64,
-// CHECK-NEXT:                 (((5 as i32) << 15 >> 15) as u32) & 131071,
-// CHECK-NEXT:                 99 as i64,
-// CHECK-NEXT:             ),
+// CHECK-NEXT:             vsum(5i32, -3i32, 70000u32, -5000000000i64, 5u32, 99i64),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

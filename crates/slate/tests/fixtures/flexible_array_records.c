@@ -241,21 +241,16 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let header: List = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: List = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]].count = 2 as i32;
+// CHECK-NEXT:         [[T_0]].count = 2i32;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let copied: List = header;
 // CHECK-NEXT:     if copied.count != 2 {
 // CHECK-NEXT:         return 7;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let list: *mut List = (unsafe {
-// CHECK-NEXT:         malloc((8 as u64).wrapping_add((5 as u64).wrapping_mul(16 as u64)))
-// CHECK-NEXT:     }) as *mut List;
-// CHECK-NEXT:     let bytes: *mut Bytes = (unsafe { malloc((16 as u64).wrapping_add(9 as u64)) })
-// CHECK-NEXT:         as *mut Bytes;
-// CHECK-NEXT:     let wide: *mut Wide = (unsafe {
-// CHECK-NEXT:         malloc((16 as u64).wrapping_add((3 as u64).wrapping_mul(16 as u64)))
-// CHECK-NEXT:     }) as *mut Wide;
+// CHECK-NEXT:     let list: *mut List = (unsafe { malloc(88u64) }) as *mut List;
+// CHECK-NEXT:     let bytes: *mut Bytes = (unsafe { malloc(25u64) }) as *mut Bytes;
+// CHECK-NEXT:     let wide: *mut Wide = (unsafe { malloc(64u64) }) as *mut Wide;
 // CHECK-NEXT:     if list.is_null() || bytes.is_null() || wide.is_null() {
 // CHECK-NEXT:         return 1;
 // CHECK-NEXT:     }
@@ -319,13 +314,13 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let array: *mut [u8; 0] = unsafe { std::ptr::addr_of_mut!((* bytes).bytes) };
-// CHECK-NEXT:     for i in 0 as i32..9 as i32 {
+// CHECK-NEXT:     for i in 0i32..9i32 {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *(std::ptr::addr_of_mut!(* array) as *mut u8).offset(i as isize) = ((i * 3)
 // CHECK-NEXT:                 as i8) as u8;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     for i in 0 as i32..3 as i32 {
+// CHECK-NEXT:     for i in 0i32..3i32 {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *(std::ptr::addr_of_mut!((* wide).values) as *mut LongDouble)
 // CHECK-NEXT:                 .offset(i as isize) = __slate_f80_from_i32(i)

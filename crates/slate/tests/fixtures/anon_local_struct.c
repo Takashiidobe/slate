@@ -55,7 +55,7 @@ int main(void) {
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let point: [[SLATERECORD_1]] = [[SLATERECORD_1]] { x: 3, y: 4 };
-// CHECK-NEXT:     let mut storage: __SlateAlign16<[i32; 4]> = __SlateAlign16([0 as i32; 4]);
+// CHECK-NEXT:     let mut storage: __SlateAlign16<[i32; 4]> = __SlateAlign16([0i32; 4]);
 // CHECK-NEXT:     let mut buf: [[SLATERECORD_0]] = [[SLATERECORD_0]] {
 // CHECK-NEXT:         start: std::ptr::null_mut::<i32>(),
 // CHECK-NEXT:         end: std::ptr::null_mut::<i32>(),

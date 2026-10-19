@@ -234,8 +234,8 @@ int main(void) {
 // CHECK-NEXT:     let t: Tiny = Tiny { c: [97, 98, 99] };
 // CHECK-NEXT:     let p: Pair = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: Pair = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]].a = (1 as i64) << (40 as i32);
-// CHECK-NEXT:         [[T_0]].b = -(7 as i32);
+// CHECK-NEXT:         [[T_0]].a = 1099511627776i64;
+// CHECK-NEXT:         [[T_0]].b = -7i32;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let f2: F2 = F2 { x: 1.5f32, y: 2.5f32 };
@@ -259,10 +259,10 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         dump(
-// CHECK-NEXT:             3 as i32,
+// CHECK-NEXT:             3i32,
 // CHECK-NEXT:             t,
 // CHECK-NEXT:             p,
-// CHECK-NEXT:             11 as i32,
+// CHECK-NEXT:             11i32,
 // CHECK-NEXT:             f2,
 // CHECK-NEXT:             f3,
 // CHECK-NEXT:             0.125f64,
@@ -272,7 +272,7 @@ int main(void) {
 // CHECK-NEXT:             ud,
 // CHECK-NEXT:             t,
 // CHECK-NEXT:             p,
-// CHECK-NEXT:             22 as i32,
+// CHECK-NEXT:             22i32,
 // CHECK-NEXT:             f2,
 // CHECK-NEXT:             f3,
 // CHECK-NEXT:             0.25f64,
@@ -282,7 +282,7 @@ int main(void) {
 // CHECK-NEXT:             ud,
 // CHECK-NEXT:             t,
 // CHECK-NEXT:             p,
-// CHECK-NEXT:             33 as i32,
+// CHECK-NEXT:             33i32,
 // CHECK-NEXT:             f2,
 // CHECK-NEXT:             f3,
 // CHECK-NEXT:             0.5f64,

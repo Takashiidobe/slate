@@ -31,22 +31,16 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut negative: i32 = -(1 as i32);
-// CHECK-NEXT: static mut wide_neg: i64 = -(9000000000 as i64);
-// CHECK-NEXT: static mut wrapped: u32 = (1 as u32).wrapping_neg();
-// CHECK-NEXT: static mut mixed: i32 = ((3 as i32) + (4 as i32)) * -(2 as i32)
-// CHECK-NEXT:     - (10 as i32) / (3 as i32) % (2 as i32);
-// CHECK-NEXT: static mut bits: i32 = ((240 as i32) | (15 as i32)) & !(3 as i32)
-// CHECK-NEXT:     ^ (1 as i32) << (4 as i32);
-// CHECK-NEXT: static mut shifted: u32 = (2147483648 as u32) >> (31 as i32);
+// CHECK-NEXT: static mut negative: i32 = -1;
+// CHECK-NEXT: static mut wide_neg: i64 = -9000000000;
+// CHECK-NEXT: static mut wrapped: u32 = 1u32.wrapping_neg();
+// CHECK-NEXT: static mut mixed: i32 = -15;
+// CHECK-NEXT: static mut bits: i32 = 236;
+// CHECK-NEXT: static mut shifted: u32 = 1;
 // CHECK-NEXT: static mut scaled: f64 = -2.5f64 * 4.0f64 + 1.0f64;
 // CHECK-NEXT: static mut halved: f32 = -(1.0f32 / 2.0f32);
-// CHECK-NEXT: static mut sign: i8 = -(97 as i32) as i8;
-// CHECK-NEXT: static mut table: [i32; 3] = [
-// CHECK-NEXT:     -(1 as i32),
-// CHECK-NEXT:     -(2 as i32) * (3 as i32),
-// CHECK-NEXT:     (7 as i32) - (10 as i32),
-// CHECK-NEXT: ];
+// CHECK-NEXT: static mut sign: i8 = -97;
+// CHECK-NEXT: static mut table: [i32; 3] = [-1, -6, -3];
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct [[SLATERECORD_0:__SlateRecord[0-9]+]] {
@@ -54,10 +48,10 @@ int main(void) {
 // CHECK-NEXT:     hi: i32,
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut range: [[SLATERECORD_0]] = [[SLATERECORD_0]] {
-// CHECK-NEXT:     lo: -(5 as i32),
-// CHECK-NEXT:     hi: -(-(5 as i32)),
+// CHECK-NEXT:     lo: -5i32,
+// CHECK-NEXT:     hi: 5i32,
 // CHECK-NEXT: };
-// CHECK-NEXT: static mut exported: i32 = -(42 as i32);
+// CHECK-NEXT: static mut exported: i32 = -42;
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {

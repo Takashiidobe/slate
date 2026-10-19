@@ -137,14 +137,14 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn gnu_allocation_extensions() -> i32 {
 // CHECK-NEXT:     let values: *mut i32 = (unsafe {
-// CHECK-NEXT:         reallocarray(std::ptr::null_mut::<()>(), 4 as u64, 4 as u64)
+// CHECK-NEXT:         reallocarray(std::ptr::null_mut::<()>(), 4u64, 4u64)
 // CHECK-NEXT:     }) as *mut i32;
-// CHECK-NEXT:     let aligned: *mut () = unsafe { memalign(64 as u64, 80 as u64) };
-// CHECK-NEXT:     let page: *mut () = unsafe { valloc(1 as u64) };
-// CHECK-NEXT:     let rounded: *mut () = unsafe { pvalloc(1 as u64) };
-// CHECK-NEXT:     let page_size: i64 = unsafe { sysconf(30 as i32) };
+// CHECK-NEXT:     let aligned: *mut () = unsafe { memalign(64u64, 80u64) };
+// CHECK-NEXT:     let page: *mut () = unsafe { valloc(1u64) };
+// CHECK-NEXT:     let rounded: *mut () = unsafe { pvalloc(1u64) };
+// CHECK-NEXT:     let page_size: i64 = unsafe { sysconf(30i32) };
 // CHECK-NEXT:     let mut total: i32 = 0;
-// CHECK-NEXT:     for index in 0 as i32..4 as i32 {
+// CHECK-NEXT:     for index in 0i32..4i32 {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *values.offset(index as isize) = index + 1;
 // CHECK-NEXT:         }
@@ -154,8 +154,8 @@ int main(void) {
 // CHECK-NEXT:             + unsafe { *values.offset(1 as isize) }
 // CHECK-NEXT:             + unsafe { *values.offset(2 as isize) }
 // CHECK-NEXT:             + unsafe { *values.offset(3 as isize) };
-// CHECK-NEXT:     let [[V_9:__v[0-9]+]]: i32 = ((unsafe { malloc_usable_size(values as *mut ()) })
-// CHECK-NEXT:         >= (4 as u64).wrapping_mul(4 as u64)) as i32;
+// CHECK-NEXT:     let [[V_9:__v[0-9]+]]: i32 = ((unsafe { malloc_usable_size(values as *mut ()) }) >= 16u64)
+// CHECK-NEXT:         as i32;
 // CHECK-NEXT:     total += [[V_9]];
 // CHECK-NEXT:     let [[V_10:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_10]] + ((!aligned.is_null() && (aligned as u64) % 64 == 0) as i32);
@@ -168,7 +168,7 @@ int main(void) {
 // CHECK-NEXT:     let [[V_13:__v[0-9]+]]: i32 = ((unsafe { malloc_usable_size(rounded) }) >= (page_size as u64))
 // CHECK-NEXT:         as i32;
 // CHECK-NEXT:     total += [[V_13]];
-// CHECK-NEXT:     let [[V_14:__v[0-9]+]]: i32 = ((unsafe { mallopt(-(5 as i32), 1 as i32) }) != 0) as i32;
+// CHECK-NEXT:     let [[V_14:__v[0-9]+]]: i32 = ((unsafe { mallopt(-5i32, 1i32) }) != 0) as i32;
 // CHECK-NEXT:     total += [[V_14]];
 // CHECK-NEXT:     unsafe { free(values as *mut ()) };
 // CHECK-NEXT:     unsafe { free(aligned) };
@@ -182,8 +182,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         _obstack_begin(
 // CHECK-NEXT:             std::ptr::addr_of_mut!(storage),
-// CHECK-NEXT:             0 as i32,
-// CHECK-NEXT:             0 as i32,
+// CHECK-NEXT:             0i32,
+// CHECK-NEXT:             0i32,
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 std::mem::transmute::<
 // CHECK-NEXT:                     Option<unsafe extern "C-unwind" fn(u64) -> *mut ()>,
@@ -237,11 +237,11 @@ int main(void) {
 // CHECK-NEXT:         let __value: *mut () = (unsafe { (*__o1).object_base }) as *mut ();
 // CHECK-NEXT:         if (unsafe { (*__o1).next_free }) == (__value as *mut i8) {
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 (*__o1).__slate_bits_0.__set_maybe_empty_object(1 as u32);
+// CHECK-NEXT:                 (*__o1).__slate_bits_0.__set_maybe_empty_object(1u32);
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             (*__o1).next_free = if (8 as u64) < (8 as u64) {
+// CHECK-NEXT:             (*__o1).next_free = if 8u64 < 8u64 {
 // CHECK-NEXT:                 (*__o1).object_base
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 std::ptr::null_mut::<i8>()
@@ -249,7 +249,7 @@ int main(void) {
 // CHECK-NEXT:                 .offset(
 // CHECK-NEXT:                     ((unsafe { (*__o1).next_free }
 // CHECK-NEXT:                         .offset_from(
-// CHECK-NEXT:                             (if (8 as u64) < (8 as u64) {
+// CHECK-NEXT:                             (if 8u64 < 8u64 {
 // CHECK-NEXT:                                 (*__o1).object_base
 // CHECK-NEXT:                             } else {
 // CHECK-NEXT:                                 std::ptr::null_mut::<i8>()
@@ -311,11 +311,11 @@ int main(void) {
 // CHECK-NEXT:     let __value: *mut () = (unsafe { (*__o1).object_base }) as *mut ();
 // CHECK-NEXT:     if (unsafe { (*__o1).next_free }) == (__value as *mut i8) {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             (*__o1).__slate_bits_0.__set_maybe_empty_object(1 as u32);
+// CHECK-NEXT:             (*__o1).__slate_bits_0.__set_maybe_empty_object(1u32);
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*__o1).next_free = if (8 as u64) < (8 as u64) {
+// CHECK-NEXT:         (*__o1).next_free = if 8u64 < 8u64 {
 // CHECK-NEXT:             (*__o1).object_base
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             std::ptr::null_mut::<i8>()
@@ -323,7 +323,7 @@ int main(void) {
 // CHECK-NEXT:             .offset(
 // CHECK-NEXT:                 ((unsafe { (*__o1).next_free }
 // CHECK-NEXT:                     .offset_from(
-// CHECK-NEXT:                         (if (8 as u64) < (8 as u64) {
+// CHECK-NEXT:                         (if 8u64 < 8u64 {
 // CHECK-NEXT:                             (*__o1).object_base
 // CHECK-NEXT:                         } else {
 // CHECK-NEXT:                             std::ptr::null_mut::<i8>()

@@ -67,14 +67,14 @@ int main(void) {
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: static mut flat: __SlateAlign16<[i32; 8]> = __SlateAlign16({
 // CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: [i32; 8] = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let [[T_1:__t[0-9]+]] = 7 as i32;
+// CHECK-NEXT:     let [[T_1:__t[0-9]+]] = 7i32;
 // CHECK-NEXT:     let mut [[T_2:__t[0-9]+]]: usize = 1;
 // CHECK-NEXT:     while [[T_2]] <= 3 {
 // CHECK-NEXT:         [[T_0]][[[T_2]]] = [[T_1]];
 // CHECK-NEXT:         [[T_2]] += 1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     [[T_0]][5] = 9 as i32;
-// CHECK-NEXT:     let [[T_3:__t[0-9]+]] = -(1 as i32);
+// CHECK-NEXT:     [[T_0]][5] = 9i32;
+// CHECK-NEXT:     let [[T_3:__t[0-9]+]] = -1i32;
 // CHECK-NEXT:     let mut [[T_4:__t[0-9]+]]: usize = 6;
 // CHECK-NEXT:     while [[T_4]] <= 7 {
 // CHECK-NEXT:         [[T_0]][[[T_4]]] = [[T_3]];
@@ -85,7 +85,7 @@ int main(void) {
 // CHECK-NEXT: static mut grid: __SlateAlign16<{{\[\[}}i32; 4]; 3]> = __SlateAlign16([
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let mut [[T_0]]: [i32; 4] = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         let [[T_1]] = 4 as i32;
+// CHECK-NEXT:         let [[T_1]] = 4i32;
 // CHECK-NEXT:         let mut [[T_2]]: usize = 1;
 // CHECK-NEXT:         while [[T_2]] <= 2 {
 // CHECK-NEXT:             [[T_0]][[[T_2]]] = [[T_1]];
@@ -95,13 +95,13 @@ int main(void) {
 // CHECK-NEXT:     },
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let mut [[T_3]]: [i32; 4] = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_3]][1] = 4 as i32;
-// CHECK-NEXT:         [[T_3]][2] = 5 as i32;
+// CHECK-NEXT:         [[T_3]][1] = 4i32;
+// CHECK-NEXT:         [[T_3]][2] = 5i32;
 // CHECK-NEXT:         [[T_3]]
 // CHECK-NEXT:     },
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let mut [[T_4]]: [i32; 4] = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         let [[T_5:__t[0-9]+]] = 4 as i32;
+// CHECK-NEXT:         let [[T_5:__t[0-9]+]] = 4i32;
 // CHECK-NEXT:         let mut [[T_6:__t[0-9]+]]: usize = 1;
 // CHECK-NEXT:         while [[T_6]] <= 2 {
 // CHECK-NEXT:             [[T_4]][[[T_6]]] = [[T_5]];
@@ -116,7 +116,7 @@ int main(void) {
 // CHECK-NEXT:         let mut [[T_3]]: row = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:         [[T_3]].pts = {
 // CHECK-NEXT:             let mut [[T_4]]: [point; 3] = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:             let [[T_5]] = point { x: 1 as i32, y: 2 as i32 };
+// CHECK-NEXT:             let [[T_5]] = point { x: 1i32, y: 2i32 };
 // CHECK-NEXT:             let mut [[T_6]]: usize = 0;
 // CHECK-NEXT:             while [[T_6]] <= 1 {
 // CHECK-NEXT:                 [[T_4]][[[T_6]]] = [[T_5]];
@@ -132,10 +132,10 @@ int main(void) {
 // CHECK-NEXT:         [[T_2]] += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     [[T_0]][2] = row {
-// CHECK-NEXT:         tag: 8 as i32,
+// CHECK-NEXT:         tag: 8i32,
 // CHECK-NEXT:         pts: {
 // CHECK-NEXT:             let mut [[T_7:__t[0-9]+]]: [point; 3] = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:             let [[T_8:__t[0-9]+]] = point { x: 1 as i32, y: 2 as i32 };
+// CHECK-NEXT:             let [[T_8:__t[0-9]+]] = point { x: 1i32, y: 2i32 };
 // CHECK-NEXT:             let mut [[T_9:__t[0-9]+]]: usize = 0;
 // CHECK-NEXT:             while [[T_9]] <= 1 {
 // CHECK-NEXT:                 [[T_7]][[[T_9]]] = [[T_8]];
@@ -197,20 +197,20 @@ int main(void) {
 // CHECK-NEXT:         let mut [[T_9]]: f32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:         [[T_9]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     for i in 0 as i32..8 as i32 {
+// CHECK-NEXT:     for i in 0i32..8i32 {
 // CHECK-NEXT:         println!("flat[{}]={}", i, unsafe { flat.0[i as usize] });
 // CHECK-NEXT:     }
-// CHECK-NEXT:     for i in 0 as i32..3 as i32 {
-// CHECK-NEXT:         for j in 0 as i32..4 as i32 {
+// CHECK-NEXT:     for i in 0i32..3i32 {
+// CHECK-NEXT:         for j in 0i32..4i32 {
 // CHECK-NEXT:             println!(
 // CHECK-NEXT:                 "grid[{}][{}]={}", i, j, unsafe { grid.0[i as usize] [j as usize] }
 // CHECK-NEXT:             );
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     for i in 0 as i32..3 as i32 {
+// CHECK-NEXT:     for i in 0i32..3i32 {
 // CHECK-NEXT:         print!("rows[{}].tag={}", i, unsafe { rows.0[i as usize].tag });
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         for j in 0 as i32..3 as i32 {
+// CHECK-NEXT:         for j in 0i32..3i32 {
 // CHECK-NEXT:             print!(
 // CHECK-NEXT:                 " ({},{})", unsafe { rows.0[i as usize].pts[j as usize].x }, unsafe {
 // CHECK-NEXT:                 rows.0[i as usize].pts[j as usize].y }
@@ -219,10 +219,10 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:         println!("");
 // CHECK-NEXT:     }
-// CHECK-NEXT:     for i in 0 as i32..6 as i32 {
+// CHECK-NEXT:     for i in 0i32..6i32 {
 // CHECK-NEXT:         println!("local[{}]={}", i, local.0[i as usize]);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     for i in 0 as i32..4 as i32 {
+// CHECK-NEXT:     for i in 0i32..4i32 {
 // CHECK-NEXT:         println!("many[{}]=({},{})", i, many.0[i as usize].x, many.0[i as usize].y);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());

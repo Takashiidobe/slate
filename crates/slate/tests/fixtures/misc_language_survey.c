@@ -49,7 +49,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut values: [i32; 3] = [1, 2, 3];
-// CHECK-NEXT:     scale(3 as i32, values.as_mut_ptr() as *mut i32);
+// CHECK-NEXT:     scale(3i32, values.as_mut_ptr() as *mut i32);
 // CHECK-NEXT:     let separated: f64 = 1000.5f64;
 // CHECK-NEXT:     let escape_e: i8 = 27;
 // CHECK-NEXT:     let escape_unknown: i8 = 37;
@@ -57,9 +57,9 @@ int main(void) {
 // CHECK-NEXT:     unsafe { printf(c"%f\n".as_ptr(), separated) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!("{} {}", escape_e as i32, escape_unknown as i32);
-// CHECK-NEXT:     unsafe { printf(c"%zu\n".as_ptr(), 1 as u64) };
+// CHECK-NEXT:     unsafe { printf(c"%zu\n".as_ptr(), 1u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     println!("{}", add(3 as i32, 4 as i32));
+// CHECK-NEXT:     println!("{}", add(3i32, 4i32));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

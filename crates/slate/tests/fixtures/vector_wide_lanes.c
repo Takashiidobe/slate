@@ -139,10 +139,7 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut seed: std::simd::Simd<u8, 2> = std::simd::Simd::from_array([
-// CHECK-NEXT:         3 as u8,
-// CHECK-NEXT:         ((250 as i32) as i8) as u8,
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let mut seed: std::simd::Simd<u8, 2> = std::simd::Simd::from_array([3u8, 250u8]);
 // CHECK-NEXT:     let mut spread: __slate_vector::__SlateVector<u8, 128, __slate_vector::Align128> = {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]] = seed.to_array();
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]] = seed.to_array();
@@ -280,7 +277,7 @@ int main(void) {
 // CHECK-NEXT:     spread += spread;
 // CHECK-NEXT:     spread = -spread;
 // CHECK-NEXT:     let mut total: u32 = 0;
-// CHECK-NEXT:     for i in 0 as i32..128 as i32 {
+// CHECK-NEXT:     for i in 0i32..128i32 {
 // CHECK-NEXT:         total = total
 // CHECK-NEXT:             .wrapping_add((((spread[i as usize] as u32) as i32) * (i + 1)) as u32);
 // CHECK-NEXT:     }
@@ -298,10 +295,10 @@ int main(void) {
 // CHECK-NEXT:         let mut [[T_2:__t[0-9]+]]: [f32; 128] = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:         [[T_2]]
 // CHECK-NEXT:     });
-// CHECK-NEXT:     for i in 0 as i32..128 as i32 {
+// CHECK-NEXT:     for i in 0i32..128i32 {
 // CHECK-NEXT:         f[i as usize] = (i as f32) * 0.5f32;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     f = f * f - f / __slate_vector::__SlateVector::splat((2 as i32) as f32);
+// CHECK-NEXT:     f = f * f - f / __slate_vector::__SlateVector::splat(2i32 as f32);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"f %g %g\n".as_ptr(), f[3] as f64, f[127] as f64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -310,8 +307,8 @@ int main(void) {
 // CHECK-NEXT:         [[T_3]]
 // CHECK-NEXT:     });
 // CHECK-NEXT:     w[95] = 7;
-// CHECK-NEXT:     w = w << __slate_vector::__SlateVector::splat(2 as i32)
-// CHECK-NEXT:         | __slate_vector::__SlateVector::splat(1 as i32);
+// CHECK-NEXT:     w = w << __slate_vector::__SlateVector::splat(2i32)
+// CHECK-NEXT:         | __slate_vector::__SlateVector::splat(1i32);
 // CHECK-NEXT:     println!("w {} {}", w[0], w[95]);
 // CHECK-NEXT:     let pair: std::simd::Simd<u8, 2> = {
 // CHECK-NEXT:         let [[T_4:__t[0-9]+]] = spread.to_array();
@@ -319,15 +316,7 @@ int main(void) {
 // CHECK-NEXT:         std::simd::Simd::from_array([[[T_4]][1], [[T_4]][127]])
 // CHECK-NEXT:     };
 // CHECK-NEXT:     println!("pair {} {}", (pair[0] as u32) as i32, (pair[1] as u32) as i32);
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%zu %zu %zu %zu\n".as_ptr(),
-// CHECK-NEXT:             128 as u64,
-// CHECK-NEXT:             128 as u64,
-// CHECK-NEXT:             512 as u64,
-// CHECK-NEXT:             512 as u64,
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { printf(c"%zu %zu %zu %zu\n".as_ptr(), 128u64, 128u64, 512u64, 512u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

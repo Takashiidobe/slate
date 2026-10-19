@@ -61,7 +61,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn shifted(x: i32) -> i32 {
 // CHECK-NEXT:     if x > 32 {
-// CHECK-NEXT:         return x << -(64 as i32) & 255;
+// CHECK-NEXT:         return x << -64i32 & 255;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x
 // CHECK-NEXT: }
@@ -88,11 +88,11 @@ int main(void) {
 // CHECK-NEXT:     other = if [[V_1]] != 0 { [[V_1]] } else { c };
 // CHECK-NEXT:     let tail: u64 = (13usize as *mut [i8; 2]) as u64;
 // CHECK-NEXT:     let tag: u64 = (12usize as *mut i8) as u64;
-// CHECK-NEXT:     println!("{} {}", self_(4 as i32), crate_());
+// CHECK-NEXT:     println!("{} {}", self_(4i32), crate_());
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", shifted(5 as i32), divided(20 as i32), (({ let __slate_function :
-// CHECK-NEXT:         Option < unsafe extern "C-unwind" fn () -> i32 > = Some(same); __slate_function
-// CHECK-NEXT:         }) == Some(same)) as i32
+// CHECK-NEXT:         "{} {} {}", shifted(5i32), divided(20i32), (({ let __slate_function : Option <
+// CHECK-NEXT:         unsafe extern "C-unwind" fn () -> i32 > = Some(same); __slate_function }) ==
+// CHECK-NEXT:         Some(same)) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe { printf(c"%d %d %lu %lu\n".as_ptr(), elvis, other, tail, tag) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

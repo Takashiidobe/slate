@@ -44,7 +44,7 @@ int main(void) {
 // CHECK-NEXT:     tests: *mut Option<unsafe extern "C-unwind" fn()>,
 // CHECK-NEXT:     ntests: i32,
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut last_ran: i32 = -(1 as i32);
+// CHECK-NEXT: static mut last_ran: i32 = -1;
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.test_a")]
 // CHECK-NEXT: extern "C-unwind" fn test_a() {
 // CHECK-NEXT:     unsafe {
@@ -59,7 +59,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut suite: [[SLATERECORD_0]] = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     suite.tests = (unsafe { malloc((2 as u64).wrapping_mul(8 as u64)) })
+// CHECK-NEXT:     suite.tests = (unsafe { malloc(16u64) })
 // CHECK-NEXT:         as *mut Option<unsafe extern "C-unwind" fn()>;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *suite.tests.offset(0 as isize) = Some(test_a);

@@ -61,15 +61,15 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%d %d %d %zu %zu %zu %zu %zu %zu\n".as_ptr(),
-// CHECK-NEXT:             (bounded_cmp(abc.as_ptr() as *const i8, abd.as_ptr() as *const i8, 2 as u64)
+// CHECK-NEXT:             (bounded_cmp(abc.as_ptr() as *const i8, abd.as_ptr() as *const i8, 2u64)
 // CHECK-NEXT:                 == 0) as i32,
-// CHECK-NEXT:             (bounded_cmp(abc.as_ptr() as *const i8, abd.as_ptr() as *const i8, 3 as u64)
-// CHECK-NEXT:                 < 0) as i32,
-// CHECK-NEXT:             (bounded_cmp(abc.as_ptr() as *const i8, abd.as_ptr() as *const i8, 0 as u64)
+// CHECK-NEXT:             (bounded_cmp(abc.as_ptr() as *const i8, abd.as_ptr() as *const i8, 3u64) < 0)
+// CHECK-NEXT:                 as i32,
+// CHECK-NEXT:             (bounded_cmp(abc.as_ptr() as *const i8, abd.as_ptr() as *const i8, 0u64)
 // CHECK-NEXT:                 == 0) as i32,
-// CHECK-NEXT:             bounded_len(abc.as_ptr() as *const i8, 99 as u64),
-// CHECK-NEXT:             bounded_len(text.as_ptr() as *const i8, 3 as u64),
-// CHECK-NEXT:             bounded_len(empty.as_ptr() as *const i8, 7 as u64),
+// CHECK-NEXT:             bounded_len(abc.as_ptr() as *const i8, 99u64),
+// CHECK-NEXT:             bounded_len(text.as_ptr() as *const i8, 3u64),
+// CHECK-NEXT:             bounded_len(empty.as_ptr() as *const i8, 7u64),
 // CHECK-NEXT:             spans(span.as_ptr() as *const i8, accept.as_ptr() as *const i8),
 // CHECK-NEXT:             spans(span.as_ptr() as *const i8, empty.as_ptr() as *const i8),
 // CHECK-NEXT:             spans(empty.as_ptr() as *const i8, reject.as_ptr() as *const i8),

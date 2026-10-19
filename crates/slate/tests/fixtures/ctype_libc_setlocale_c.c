@@ -20,7 +20,7 @@ int main(void) {
 // CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     unsafe { setlocale(6 as i32, c"C".as_ptr()) };
+// CHECK-NEXT:     unsafe { setlocale(6i32, c"C".as_ptr()) };
 // CHECK-NEXT:     let lower: i32 = 113;
 // CHECK-NEXT:     let upper: i32 = 81;
 // CHECK-NEXT:     println!("{} {}", unsafe { toupper(lower) }, unsafe { tolower(upper) });

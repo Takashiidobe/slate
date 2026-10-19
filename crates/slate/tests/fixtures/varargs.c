@@ -63,8 +63,8 @@ int main(void) {
 // CHECK-NEXT:     marker + first * 10 + second
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     println!("{}", unsafe { sum(4 as i32, 10 as i32, 20 as i32, 30 as i32, 40 as i32) });
-// CHECK-NEXT:     println!("{}", unsafe { pick_second(5 as i32, 7 as i32, 9 as i32) });
+// CHECK-NEXT:     println!("{}", unsafe { sum(4i32, 10i32, 20i32, 30i32, 40i32) });
+// CHECK-NEXT:     println!("{}", unsafe { pick_second(5i32, 7i32, 9i32) });
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

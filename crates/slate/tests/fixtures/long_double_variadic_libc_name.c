@@ -223,7 +223,7 @@ int main(void) {
 // CHECK-NEXT:             c"%.2Lf\n".as_ptr(),
 // CHECK-NEXT:             __slate_vcall__rf80_i32__f80_f80(
 // CHECK-NEXT:                 exit as *const (),
-// CHECK-NEXT:                 2 as i32,
+// CHECK-NEXT:                 2i32,
 // CHECK-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 255, 63]),
 // CHECK-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 0, 64]),
 // CHECK-NEXT:             ),

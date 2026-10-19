@@ -47,7 +47,7 @@ int main(void) {
 // CHECK-NEXT:         >(slot)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let none: Option<unsafe extern "C-unwind" fn(i32) -> i32> = None;
-// CHECK-NEXT:     println!("{} {}", unsafe { cb.unwrap() (41 as i32) }, (none != None) as i32);
+// CHECK-NEXT:     println!("{} {}", unsafe { cb.unwrap() (41i32) }, (none != None) as i32);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

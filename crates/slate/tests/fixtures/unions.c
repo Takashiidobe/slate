@@ -54,8 +54,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe { p.left }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     println!("{}", pick_left(7 as i32));
-// CHECK-NEXT:     println!("{}", overwrite(3 as i32, 9 as i32));
+// CHECK-NEXT:     println!("{}", pick_left(7i32));
+// CHECK-NEXT:     println!("{}", overwrite(3i32, 9i32));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

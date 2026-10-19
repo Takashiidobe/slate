@@ -76,7 +76,7 @@ int main(void) {
 // CHECK-NEXT:     for i in 0..n {
 // CHECK-NEXT:         total += i;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     for j in 0 as i32..3 as i32 {
+// CHECK-NEXT:     for j in 0i32..3i32 {
 // CHECK-NEXT:         let i: i32 = j * 2;
 // CHECK-NEXT:         total += i;
 // CHECK-NEXT:     }
@@ -85,7 +85,7 @@ int main(void) {
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn shadows_param(v: i32) -> i32 {
 // CHECK-NEXT:     let mut acc: i32 = v;
-// CHECK-NEXT:     for k in 0 as i32..2 as i32 {
+// CHECK-NEXT:     for k in 0i32..2i32 {
 // CHECK-NEXT:         let v: i32 = k + 10;
 // CHECK-NEXT:         acc += v;
 // CHECK-NEXT:     }

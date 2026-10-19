@@ -48,7 +48,7 @@ int late = 99;
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut total: i32 = 10 as i32;
+// CHECK-NEXT: static mut total: i32 = 10;
 // CHECK-NEXT: static mut scale: i64 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
@@ -58,7 +58,7 @@ int late = 99;
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut tally: Tally = {
 // CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: Tally = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     [[T_0]].hits = 1 as i32;
+// CHECK-NEXT:     [[T_0]].hits = 1i32;
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
 // CHECK-NEXT: fn bump([[V_0:__v[0-9]+]]: *mut i32, by: i32) {
@@ -80,9 +80,9 @@ int late = 99;
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let before: i32 = unsafe { total };
 // CHECK-NEXT:     let mut [[TOTAL_1:total_[0-9]+]]: i32 = 3;
-// CHECK-NEXT:     bump(std::ptr::addr_of_mut!([[TOTAL_1]]), 4 as i32);
+// CHECK-NEXT:     bump(std::ptr::addr_of_mut!([[TOTAL_1]]), 4i32);
 // CHECK-NEXT:     println!("local {}", [[TOTAL_1]]);
-// CHECK-NEXT:     bump(unsafe { std::ptr::addr_of_mut!(total) }, 5 as i32);
+// CHECK-NEXT:     bump(unsafe { std::ptr::addr_of_mut!(total) }, 5i32);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         scale = 7;
 // CHECK-NEXT:     }
@@ -94,7 +94,7 @@ int late = 99;
 // CHECK-NEXT:     println!("late {}", unsafe { late });
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut late: i32 = 99 as i32;
+// CHECK-NEXT: static mut late: i32 = 99;
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

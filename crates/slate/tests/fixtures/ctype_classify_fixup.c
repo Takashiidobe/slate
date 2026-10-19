@@ -156,7 +156,7 @@ int main(void) {
 // CHECK-NEXT:         println!("cntrl-no");
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if (((unsafe { *unsafe { *__ctype_b_loc() }.offset((punct as i32) as isize) })
-// CHECK-NEXT:         as u32) as i32) & (((((32768 as i32) as i16) as u16) as u32) as i32) != 0
+// CHECK-NEXT:         as u32) as i32) & 32768i32 != 0
 // CHECK-NEXT:     {
 // CHECK-NEXT:         println!("graph-yes");
 // CHECK-NEXT:     } else {

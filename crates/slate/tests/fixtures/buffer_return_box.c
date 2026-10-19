@@ -77,12 +77,12 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
-// CHECK-NEXT:     let q: *mut i32 = make(4 as i32);
+// CHECK-NEXT:     let q: *mut i32 = make(4i32);
 // CHECK-NEXT:     let r: *mut i32 = make8();
-// CHECK-NEXT:     let m: *mut i32 = maybe(2 as i32);
-// CHECK-NEXT:     let a: *mut i32 = allocfree(3 as i32);
-// CHECK-NEXT:     let raw: *mut i32 = make_raw(2 as i32);
-// CHECK-NEXT:     let raw2: *mut i32 = make_raw(2 as i32);
+// CHECK-NEXT:     let m: *mut i32 = maybe(2i32);
+// CHECK-NEXT:     let a: *mut i32 = allocfree(3i32);
+// CHECK-NEXT:     let raw: *mut i32 = make_raw(2i32);
+// CHECK-NEXT:     let raw2: *mut i32 = make_raw(2i32);
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {} {} {}", unsafe { * q.offset(3 as isize) }, unsafe { * r.offset(7 as
 // CHECK-NEXT:         isize) }, ! m.is_null() as i32, ! a.is_null() as i32, read_first(raw), unsafe { *
@@ -97,7 +97,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { free(raw as *mut ()) };
 // CHECK-NEXT:     unsafe { free(raw2 as *mut ()) };
 // CHECK-NEXT:     let free: Option<unsafe extern "C-unwind" fn(*mut ())> = Some(custom_free);
-// CHECK-NEXT:     let shadow: *mut i32 = make_shadow(1 as i32);
+// CHECK-NEXT:     let shadow: *mut i32 = make_shadow(1i32);
 // CHECK-NEXT:     unsafe { free.unwrap()(shadow as *mut ()) };
 // CHECK-NEXT:     0
 // CHECK: {{^}}}

@@ -30,13 +30,13 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut u8: u8 = ((250 as i32) as i8) as u8;
+// CHECK-NEXT:     let mut u8: u8 = 250u8;
 // CHECK-NEXT:     let mut i8: i8 = -5;
 // CHECK-NEXT:     let mut u32: u32 = 1000;
 // CHECK-NEXT:     let mut i64: i64 = -10000000000;
 // CHECK-NEXT:     let mut old_u8: u8 = 0;
 // CHECK-NEXT:     old_u8 = unsafe {
-// CHECK-NEXT:         let [[T_0:__t[0-9]+]] = 3 as u8;
+// CHECK-NEXT:         let [[T_0:__t[0-9]+]] = 3u8;
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]] = std::sync::atomic::AtomicU8::from_ptr(
 // CHECK-NEXT:                 std::ptr::addr_of_mut!(u8) as *mut u8,
 // CHECK-NEXT:             )
@@ -45,7 +45,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut old_i8: i8 = 0;
 // CHECK-NEXT:     old_i8 = unsafe {
-// CHECK-NEXT:         let [[T_2:__t[0-9]+]] = 7 as i8;
+// CHECK-NEXT:         let [[T_2:__t[0-9]+]] = 7i8;
 // CHECK-NEXT:         let [[T_3:__t[0-9]+]] = std::sync::atomic::AtomicI8::from_ptr(
 // CHECK-NEXT:                 std::ptr::addr_of_mut!(i8) as *mut i8,
 // CHECK-NEXT:             )
@@ -54,7 +54,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut old_u32: u32 = 0;
 // CHECK-NEXT:     old_u32 = unsafe {
-// CHECK-NEXT:         let [[T_4:__t[0-9]+]] = 255 as u32;
+// CHECK-NEXT:         let [[T_4:__t[0-9]+]] = 255u32;
 // CHECK-NEXT:         let [[T_5:__t[0-9]+]] = std::sync::atomic::AtomicU32::from_ptr(
 // CHECK-NEXT:                 std::ptr::addr_of_mut!(u32) as *mut u32,
 // CHECK-NEXT:             )
@@ -63,7 +63,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut old_i64: i64 = 0;
 // CHECK-NEXT:     old_i64 = unsafe {
-// CHECK-NEXT:         let [[T_6:__t[0-9]+]] = 1234567890123 as i64;
+// CHECK-NEXT:         let [[T_6:__t[0-9]+]] = 1234567890123i64;
 // CHECK-NEXT:         let [[T_7:__t[0-9]+]] = std::sync::atomic::AtomicI64::from_ptr(
 // CHECK-NEXT:                 std::ptr::addr_of_mut!(i64) as *mut i64,
 // CHECK-NEXT:             )

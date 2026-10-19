@@ -59,10 +59,10 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {}", unsafe { invoke(4 as i32, unsafe { std::mem::transmute::< Option <
-// CHECK-NEXT:         unsafe extern "C-unwind" fn (i32) -> i32 >, * const u8 > (Some(twice)) }, unsafe
-// CHECK-NEXT:         { std::mem::transmute::< Option < unsafe extern "C-unwind" fn (i32) -> i32 >, *
-// CHECK-NEXT:         const u8 > (Some(twice)) }) }, unsafe { invoke(7 as i32, unsafe {
+// CHECK-NEXT:         "{} {}", unsafe { invoke(4i32, unsafe { std::mem::transmute::< Option < unsafe
+// CHECK-NEXT:         extern "C-unwind" fn (i32) -> i32 >, * const u8 > (Some(twice)) }, unsafe {
+// CHECK-NEXT:         std::mem::transmute::< Option < unsafe extern "C-unwind" fn (i32) -> i32 >, *
+// CHECK-NEXT:         const u8 > (Some(twice)) }) }, unsafe { invoke(7i32, unsafe {
 // CHECK-NEXT:         std::mem::transmute::< Option < unsafe extern "C-unwind" fn (i32) -> i32 >, *
 // CHECK-NEXT:         const u8 > (Some(twice)) }, unsafe { std::mem::transmute::< Option < unsafe
 // CHECK-NEXT:         extern "C-unwind" fn (i32) -> i32 >, * const u8 > (None) }) }

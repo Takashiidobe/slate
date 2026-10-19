@@ -128,10 +128,10 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut buf: __SlateAlign16<[i8; 16]> = __SlateAlign16({
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [i8; 16] = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]][0] = 0 as i8;
+// CHECK-NEXT:         [[T_0]][0] = 0i8;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     });
-// CHECK-NEXT:     let n: u64 = unsafe { fread(buf.0.as_mut_ptr() as *mut (), 4 as u64, 3 as u64, g) };
+// CHECK-NEXT:     let n: u64 = unsafe { fread(buf.0.as_mut_ptr() as *mut (), 4u64, 3u64, g) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%zu %s\n".as_ptr(), n, buf.0.as_mut_ptr() as *mut i8) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

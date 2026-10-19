@@ -43,7 +43,7 @@ int main(void) {
 // CHECK-NEXT: struct Dispatcher {
 // CHECK-NEXT:     run: Option<unsafe extern "C-unwind" fn(i32) -> u32>,
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut lastCode: i32 = -(1 as i32);
+// CHECK-NEXT: static mut lastCode: i32 = -1;
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.succeed")]
 // CHECK-NEXT: extern "C-unwind" fn succeed(x: i32) -> u32 {
 // CHECK-NEXT:     unsafe {
@@ -61,10 +61,10 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut d: Dispatcher = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     d.run = Some(succeed);
-// CHECK-NEXT:     unsafe { d.run.unwrap()(1 as i32) };
+// CHECK-NEXT:     unsafe { d.run.unwrap()(1i32) };
 // CHECK-NEXT:     let a: i32 = unsafe { lastCode };
 // CHECK-NEXT:     d.run = Some(fail);
-// CHECK-NEXT:     unsafe { d.run.unwrap()(2 as i32) };
+// CHECK-NEXT:     unsafe { d.run.unwrap()(2i32) };
 // CHECK-NEXT:     let b: i32 = unsafe { lastCode };
 // CHECK-NEXT:     println!("{} {}", a, b);
 // CHECK-NEXT:     0

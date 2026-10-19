@@ -13,7 +13,7 @@ int main(void) { long l = 5; printf("%zu %zu %ld\n", sizeof(void *), sizeof(long
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let l: i32 = 5;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%zu %zu %ld\n".as_ptr(), 4 as u32, 4 as u32, l) };
+// CHECK-NEXT:     unsafe { printf(c"%zu %zu %ld\n".as_ptr(), 4u32, 4u32, l) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

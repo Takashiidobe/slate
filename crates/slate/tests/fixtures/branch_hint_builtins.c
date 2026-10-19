@@ -49,7 +49,7 @@ int main(void) {
 // CHECK-NEXT:     fn __builtin_unpredictable([[V_5:__v[0-9]+]]: i64) -> i64;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut side_effect_calls: i32 = 0 as i32;
+// CHECK-NEXT: static mut side_effect_calls: i32 = 0;
 // CHECK-EMPTY:
 // CHECK-NEXT: fn bump(v: i32) -> i32 {
 // CHECK-NEXT:     unsafe {
@@ -80,9 +80,9 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let a: i32 = use_expect(1 as i32);
-// CHECK-NEXT:     let b: i32 = use_expect_with_probability(1 as i32);
-// CHECK-NEXT:     let c: i32 = use_unpredictable(1 as i32);
+// CHECK-NEXT:     let a: i32 = use_expect(1i32);
+// CHECK-NEXT:     let b: i32 = use_expect_with_probability(1i32);
+// CHECK-NEXT:     let c: i32 = use_unpredictable(1i32);
 // CHECK-NEXT:     println!("{} {} {} {}", a, b, c, unsafe { side_effect_calls });
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

@@ -48,7 +48,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: // names holder records
 // CHECK-NEXT: /// counts completed operations
-// CHECK-NEXT: static mut completed_count: i32 = 1 as i32;
+// CHECK-NEXT: static mut completed_count: i32 = 1;
 // CHECK-EMPTY:
 // CHECK-NEXT: /// increments a value and records the operation
 // CHECK-NEXT: fn increment(value: i32) -> i32 {
@@ -64,7 +64,7 @@ int main(void) {
 // CHECK-NEXT:     let holder: Holder = Holder { mode: 1 };
 // CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: bool;
 // CHECK-NEXT:     if (holder.mode as u32) == 1 {
-// CHECK-NEXT:         [[V_0]] = increment(1 as i32) == 2;
+// CHECK-NEXT:         [[V_0]] = increment(1i32) == 2;
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         [[V_0]] = false as bool;
 // CHECK-NEXT:     }

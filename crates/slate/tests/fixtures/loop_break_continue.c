@@ -49,8 +49,8 @@ int main(void) {
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     println!("{}", grid(8 as i32, 8 as i32));
-// CHECK-NEXT:     println!("{}", grid(3 as i32, 3 as i32));
+// CHECK-NEXT:     println!("{}", grid(8i32, 8i32));
+// CHECK-NEXT:     println!("{}", grid(3i32, 3i32));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

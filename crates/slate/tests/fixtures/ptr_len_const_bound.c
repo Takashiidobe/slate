@@ -26,24 +26,19 @@ int main(void) {
 // CHECK-NEXT: fn sum_items(items: &[i32], printable: i32, length: i32) -> i32 {
 // CHECK-NEXT:     println!("this is another number: {} {}", printable, length);
 // CHECK-NEXT:     let mut total: i32 = 0;
-// CHECK-NEXT:     for i in 0 as i32..4 as i32 {
+// CHECK-NEXT:     for i in 0i32..4i32 {
 // CHECK-NEXT:         total += unsafe { items[i as usize] };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 4]> = __SlateAlign16([
-// CHECK-NEXT:         2 as i32,
-// CHECK-NEXT:         4 as i32,
-// CHECK-NEXT:         6 as i32,
-// CHECK-NEXT:         8 as i32,
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 4]> = __SlateAlign16([2i32, 4i32, 6i32, 8i32]);
 // CHECK-NEXT:     let __slate_printf_arg0 = sum_items(
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             std::slice::from_raw_parts(values.0.as_mut_ptr() as *const i32, 4usize)
 // CHECK-NEXT:         },
-// CHECK-NEXT:         5 as i32,
-// CHECK-NEXT:         4 as i32,
+// CHECK-NEXT:         5i32,
+// CHECK-NEXT:         4i32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{}", __slate_printf_arg0);
 // CHECK-NEXT:     0

@@ -82,38 +82,29 @@ int main(void) {
 // CHECK-NEXT:     [[T_0]].inner = {
 // CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: Inner = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:         [[T_1]].scanners = [Some(add1), Some(add2), Some(add3)];
-// CHECK-NEXT:         [[T_1]].tag = 42 as i32;
+// CHECK-NEXT:         [[T_1]].tag = 42i32;
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     [[T_0]].bytes = [
-// CHECK-NEXT:         ((1 as i32) as i8) as u8,
-// CHECK-NEXT:         ((2 as i32) as i8) as u8,
-// CHECK-NEXT:         ((3 as i32) as i8) as u8,
-// CHECK-NEXT:         ((4 as i32) as i8) as u8,
-// CHECK-NEXT:         ((5 as i32) as i8) as u8,
-// CHECK-NEXT:         ((6 as i32) as i8) as u8,
-// CHECK-NEXT:         ((7 as i32) as i8) as u8,
-// CHECK-NEXT:         ((8 as i32) as i8) as u8,
-// CHECK-NEXT:     ];
+// CHECK-NEXT:     [[T_0]].bytes = [1u8, 2u8, 3u8, 4u8, 5u8, 6u8, 7u8, 8u8];
 // CHECK-NEXT:     [[T_0]].trailing1 = Some(mul5);
 // CHECK-NEXT:     [[T_0]].trailing2 = Some(mul7);
-// CHECK-NEXT:     [[T_0]].trailing3 = 99 as i32;
+// CHECK-NEXT:     [[T_0]].trailing3 = 99i32;
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {}", unsafe { unsafe { g.inner.scanners[0] } .unwrap() (10 as i32) },
-// CHECK-NEXT:         unsafe { unsafe { g.inner.scanners[1] } .unwrap() (10 as i32) }, unsafe { unsafe
-// CHECK-NEXT:         { g.inner.scanners[2] } .unwrap() (10 as i32) }, unsafe { g.inner.tag }
+// CHECK-NEXT:         "{} {} {} {}", unsafe { unsafe { g.inner.scanners[0] } .unwrap() (10i32) },
+// CHECK-NEXT:         unsafe { unsafe { g.inner.scanners[1] } .unwrap() (10i32) }, unsafe { unsafe { g
+// CHECK-NEXT:         .inner.scanners[2] } .unwrap() (10i32) }, unsafe { g.inner.tag }
 // CHECK-NEXT:     );
-// CHECK-NEXT:     for i in 0 as i32..8 as i32 {
+// CHECK-NEXT:     for i in 0i32..8i32 {
 // CHECK-NEXT:         print!("{} ", ((unsafe { g.bytes[i as usize] }) as u32) as i32);
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("");
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", unsafe { unsafe { g.trailing1 } .unwrap() (10 as i32) }, unsafe {
-// CHECK-NEXT:         unsafe { g.trailing2 } .unwrap() (10 as i32) }, unsafe { g.trailing3 }
+// CHECK-NEXT:         "{} {} {}", unsafe { unsafe { g.trailing1 } .unwrap() (10i32) }, unsafe { unsafe
+// CHECK-NEXT:         { g.trailing2 } .unwrap() (10i32) }, unsafe { g.trailing3 }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

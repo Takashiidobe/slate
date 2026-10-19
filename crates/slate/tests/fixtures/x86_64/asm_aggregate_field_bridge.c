@@ -107,12 +107,12 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut padded: padded = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: padded = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]].first = 1 as u8;
-// CHECK-NEXT:         [[T_0]].second = 2 as u16;
+// CHECK-NEXT:         [[T_0]].first = 1u8;
+// CHECK-NEXT:         [[T_0]].second = 2u16;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut flags: flags = flags {
-// CHECK-NEXT:         first: (1 as i32) != (0 as i32),
+// CHECK-NEXT:         first: 1i32 != 0i32,
 // CHECK-NEXT:         second: 2,
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
@@ -189,9 +189,9 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let mut bits: bits = {
 // CHECK-NEXT:         let mut [[T_5:__t[0-9]+]]: bits = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_5]].__slate_bits_0.__set_low(5 as u32);
-// CHECK-NEXT:         [[T_5]].__slate_bits_0.__set_high(100 as u32);
-// CHECK-NEXT:         [[T_5]].tail = 7 as u16;
+// CHECK-NEXT:         [[T_5]].__slate_bits_0.__set_low(5u32);
+// CHECK-NEXT:         [[T_5]].__slate_bits_0.__set_high(100u32);
+// CHECK-NEXT:         [[T_5]].tail = 7u16;
 // CHECK-NEXT:         [[T_5]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
@@ -245,10 +245,10 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let mut nested: nested = nested {
 // CHECK-NEXT:         inner: flags {
-// CHECK-NEXT:             first: (0 as i32) != (0 as i32),
+// CHECK-NEXT:             first: 0i32 != 0i32,
 // CHECK-NEXT:             second: 3,
 // CHECK-NEXT:         },
-// CHECK-NEXT:         done: [(1 as i32) != (0 as i32), (0 as i32) != (0 as i32)],
+// CHECK-NEXT:         done: [1i32 != 0i32, 0i32 != 0i32],
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_9:__t[0-9]+]]: u32;
@@ -281,8 +281,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let mut wide: wide = {
 // CHECK-NEXT:         let mut [[T_10:__t[0-9]+]]: wide = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_10]].tag = 97 as i8;
-// CHECK-NEXT:         [[T_10]].value = -(7 as i32);
+// CHECK-NEXT:         [[T_10]].tag = 97i8;
+// CHECK-NEXT:         [[T_10]].value = -7i32;
 // CHECK-NEXT:         [[T_10]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut copy: wide = unsafe { std::mem::zeroed() };

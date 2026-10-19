@@ -57,10 +57,10 @@ int main(void) {
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {}", unsafe { op.unwrap() (10 as i32, 3 as i32) }, apply(0 as i32, 10
-// CHECK-NEXT:         as i32, 3 as i32), apply(1 as i32, 4 as i32, 4 as i32), unsafe { { let [[T_1:__t[0-9]+]] :
-// CHECK-NEXT:         Option < unsafe extern "C-unwind" fn (i32, i32) -> i32 > = if useAdd != 0 {
-// CHECK-NEXT:         Some(sub) } else { Some(add) }; [[T_1]] } .unwrap() (9 as i32, 2 as i32) }
+// CHECK-NEXT:         "{} {} {} {}", unsafe { op.unwrap() (10i32, 3i32) }, apply(0i32, 10i32, 3i32),
+// CHECK-NEXT:         apply(1i32, 4i32, 4i32), unsafe { { let [[T_1:__t[0-9]+]] : Option < unsafe extern "C-unwind"
+// CHECK-NEXT:         fn (i32, i32) -> i32 > = if useAdd != 0 { Some(sub) } else { Some(add) }; [[T_1]] }
+// CHECK-NEXT:         .unwrap() (9i32, 2i32) }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

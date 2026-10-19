@@ -84,24 +84,24 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "avx")]
 // CHECK-NEXT: unsafe fn avx_sum() -> f32 {
 // CHECK-NEXT:     let mut left: std::simd::Simd<f32, 8> = std::simd::Simd::from_array([
-// CHECK-NEXT:         (1 as i32) as f32,
-// CHECK-NEXT:         (2 as i32) as f32,
-// CHECK-NEXT:         (3 as i32) as f32,
-// CHECK-NEXT:         (4 as i32) as f32,
-// CHECK-NEXT:         (5 as i32) as f32,
-// CHECK-NEXT:         (6 as i32) as f32,
-// CHECK-NEXT:         (7 as i32) as f32,
-// CHECK-NEXT:         (8 as i32) as f32,
+// CHECK-NEXT:         1i32 as f32,
+// CHECK-NEXT:         2i32 as f32,
+// CHECK-NEXT:         3i32 as f32,
+// CHECK-NEXT:         4i32 as f32,
+// CHECK-NEXT:         5i32 as f32,
+// CHECK-NEXT:         6i32 as f32,
+// CHECK-NEXT:         7i32 as f32,
+// CHECK-NEXT:         8i32 as f32,
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let mut right: std::simd::Simd<f32, 8> = std::simd::Simd::from_array([
-// CHECK-NEXT:         (10 as i32) as f32,
-// CHECK-NEXT:         (20 as i32) as f32,
-// CHECK-NEXT:         (30 as i32) as f32,
-// CHECK-NEXT:         (40 as i32) as f32,
-// CHECK-NEXT:         (50 as i32) as f32,
-// CHECK-NEXT:         (60 as i32) as f32,
-// CHECK-NEXT:         (70 as i32) as f32,
-// CHECK-NEXT:         (80 as i32) as f32,
+// CHECK-NEXT:         10i32 as f32,
+// CHECK-NEXT:         20i32 as f32,
+// CHECK-NEXT:         30i32 as f32,
+// CHECK-NEXT:         40i32 as f32,
+// CHECK-NEXT:         50i32 as f32,
+// CHECK-NEXT:         60i32 as f32,
+// CHECK-NEXT:         70i32 as f32,
+// CHECK-NEXT:         80i32 as f32,
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let mut result: std::simd::Simd<f32, 8> = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
@@ -121,8 +121,8 @@ int main(void) {
 // CHECK-NEXT:             >([[T_0]])
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut sum: f32 = (0 as i32) as f32;
-// CHECK-NEXT:     for i in 0 as i32..8 as i32 {
+// CHECK-NEXT:     let mut sum: f32 = 0i32 as f32;
+// CHECK-NEXT:     for i in 0i32..8i32 {
 // CHECK-NEXT:         sum += result[i as usize];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     sum
@@ -130,40 +130,12 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
 // CHECK-NEXT: unsafe fn avx512_masked_sum() -> i32 {
 // CHECK-NEXT:     let mut left: std::simd::Simd<i32, 16> = std::simd::Simd::from_array([
-// CHECK-NEXT:         1 as i32,
-// CHECK-NEXT:         2 as i32,
-// CHECK-NEXT:         3 as i32,
-// CHECK-NEXT:         4 as i32,
-// CHECK-NEXT:         5 as i32,
-// CHECK-NEXT:         6 as i32,
-// CHECK-NEXT:         7 as i32,
-// CHECK-NEXT:         8 as i32,
-// CHECK-NEXT:         9 as i32,
-// CHECK-NEXT:         10 as i32,
-// CHECK-NEXT:         11 as i32,
-// CHECK-NEXT:         12 as i32,
-// CHECK-NEXT:         13 as i32,
-// CHECK-NEXT:         14 as i32,
-// CHECK-NEXT:         15 as i32,
-// CHECK-NEXT:         16 as i32,
+// CHECK-NEXT:         1i32, 2i32, 3i32, 4i32, 5i32, 6i32, 7i32, 8i32, 9i32, 10i32, 11i32, 12i32, 13i32,
+// CHECK-NEXT:         14i32, 15i32, 16i32,
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let mut right: std::simd::Simd<i32, 16> = std::simd::Simd::from_array([
-// CHECK-NEXT:         100 as i32,
-// CHECK-NEXT:         100 as i32,
-// CHECK-NEXT:         100 as i32,
-// CHECK-NEXT:         100 as i32,
-// CHECK-NEXT:         100 as i32,
-// CHECK-NEXT:         100 as i32,
-// CHECK-NEXT:         100 as i32,
-// CHECK-NEXT:         100 as i32,
-// CHECK-NEXT:         100 as i32,
-// CHECK-NEXT:         100 as i32,
-// CHECK-NEXT:         100 as i32,
-// CHECK-NEXT:         100 as i32,
-// CHECK-NEXT:         100 as i32,
-// CHECK-NEXT:         100 as i32,
-// CHECK-NEXT:         100 as i32,
-// CHECK-NEXT:         100 as i32,
+// CHECK-NEXT:         100i32, 100i32, 100i32, 100i32, 100i32, 100i32, 100i32, 100i32, 100i32, 100i32,
+// CHECK-NEXT:         100i32, 100i32, 100i32, 100i32, 100i32, 100i32,
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let mut mask: u16 = 240;
 // CHECK-NEXT:     let mut result: std::simd::Simd<i32, 16> = unsafe { std::mem::zeroed() };
@@ -185,7 +157,7 @@ int main(void) {
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut sum: i32 = 0;
-// CHECK-NEXT:     for i in 0 as i32..16 as i32 {
+// CHECK-NEXT:     for i in 0i32..16i32 {
 // CHECK-NEXT:         sum += result[i as usize];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     sum
@@ -193,40 +165,12 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
 // CHECK-NEXT: unsafe fn avx512_equal_lanes() -> u32 {
 // CHECK-NEXT:     let mut left: std::simd::Simd<i32, 16> = std::simd::Simd::from_array([
-// CHECK-NEXT:         1 as i32,
-// CHECK-NEXT:         2 as i32,
-// CHECK-NEXT:         3 as i32,
-// CHECK-NEXT:         4 as i32,
-// CHECK-NEXT:         5 as i32,
-// CHECK-NEXT:         6 as i32,
-// CHECK-NEXT:         7 as i32,
-// CHECK-NEXT:         8 as i32,
-// CHECK-NEXT:         9 as i32,
-// CHECK-NEXT:         10 as i32,
-// CHECK-NEXT:         11 as i32,
-// CHECK-NEXT:         12 as i32,
-// CHECK-NEXT:         13 as i32,
-// CHECK-NEXT:         14 as i32,
-// CHECK-NEXT:         15 as i32,
-// CHECK-NEXT:         16 as i32,
+// CHECK-NEXT:         1i32, 2i32, 3i32, 4i32, 5i32, 6i32, 7i32, 8i32, 9i32, 10i32, 11i32, 12i32, 13i32,
+// CHECK-NEXT:         14i32, 15i32, 16i32,
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let mut right: std::simd::Simd<i32, 16> = std::simd::Simd::from_array([
-// CHECK-NEXT:         1 as i32,
-// CHECK-NEXT:         0 as i32,
-// CHECK-NEXT:         3 as i32,
-// CHECK-NEXT:         0 as i32,
-// CHECK-NEXT:         5 as i32,
-// CHECK-NEXT:         0 as i32,
-// CHECK-NEXT:         7 as i32,
-// CHECK-NEXT:         0 as i32,
-// CHECK-NEXT:         9 as i32,
-// CHECK-NEXT:         0 as i32,
-// CHECK-NEXT:         11 as i32,
-// CHECK-NEXT:         0 as i32,
-// CHECK-NEXT:         13 as i32,
-// CHECK-NEXT:         0 as i32,
-// CHECK-NEXT:         15 as i32,
-// CHECK-NEXT:         0 as i32,
+// CHECK-NEXT:         1i32, 0i32, 3i32, 0i32, 5i32, 0i32, 7i32, 0i32, 9i32, 0i32, 11i32, 0i32, 13i32,
+// CHECK-NEXT:         0i32, 15i32, 0i32,
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let mut mask: u16 = 0;
 // CHECK-NEXT:     unsafe {

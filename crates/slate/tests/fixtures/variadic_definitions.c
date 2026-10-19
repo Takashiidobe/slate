@@ -107,7 +107,7 @@ int main(void) {
 // CHECK-NEXT:             core::ffi::VaList<'static>,
 // CHECK-NEXT:         >(__va_args.clone())
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut total: f64 = (0 as i32) as f64;
+// CHECK-NEXT:     let mut total: f64 = 0i32 as f64;
 // CHECK-NEXT:     for i in 0..count {
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: f64 = unsafe { ap.next_arg::<f64>() };
 // CHECK-NEXT:         total += [[V_0]];
@@ -188,8 +188,8 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let extra: i64 = unsafe { ap.next_arg::<i64>() };
 // CHECK-NEXT:     let mask: u64 = unsafe { ap.next_arg::<u64>() };
-// CHECK-NEXT:     (unsafe { sum_longs(3 as i32, seed as i64, extra, (mask & 255) as i64) })
-// CHECK-NEXT:         + ((unsafe { ignore_rest(seed, 1 as i32, 2.0f64, c"three".as_ptr() as *mut i8) })
+// CHECK-NEXT:     (unsafe { sum_longs(3i32, seed as i64, extra, (mask & 255) as i64) })
+// CHECK-NEXT:         + ((unsafe { ignore_rest(seed, 1i32, 2.0f64, c"three".as_ptr() as *mut i8) })
 // CHECK-NEXT:             as i64)
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C-unwind" fn same_pointer(first: *mut (), mut __va_args: ...) -> *mut () {
@@ -208,12 +208,9 @@ int main(void) {
 // CHECK-NEXT:     let s: i16 = -12;
 // CHECK-NEXT:     let f: f32 = 1.25f32;
 // CHECK-NEXT:     let mut value: i32 = 9;
-// CHECK-NEXT:     println!("{}", unsafe { ignore_rest(14 as i32) });
+// CHECK-NEXT:     println!("{}", unsafe { ignore_rest(14i32) });
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%.3f\n".as_ptr(),
-// CHECK-NEXT:             promoted(2 as i32, f as f64, 2.5f64, c as i32, s as i32),
-// CHECK-NEXT:         )
+// CHECK-NEXT:         printf(c"%.3f\n".as_ptr(), promoted(2i32, f as f64, 2.5f64, c as i32, s as i32))
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -221,13 +218,13 @@ int main(void) {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%s %s\n".as_ptr(),
 // CHECK-NEXT:             pick(
-// CHECK-NEXT:                 0 as i32,
+// CHECK-NEXT:                 0i32,
 // CHECK-NEXT:                 c"zero".as_ptr() as *mut i8,
 // CHECK-NEXT:                 c"one".as_ptr() as *mut i8,
 // CHECK-NEXT:                 c"two".as_ptr() as *mut i8,
 // CHECK-NEXT:             ),
 // CHECK-NEXT:             pick(
-// CHECK-NEXT:                 2 as i32,
+// CHECK-NEXT:                 2i32,
 // CHECK-NEXT:                 c"zero".as_ptr() as *mut i8,
 // CHECK-NEXT:                 c"one".as_ptr() as *mut i8,
 // CHECK-NEXT:                 c"two".as_ptr() as *mut i8,
@@ -235,19 +232,14 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{}", unsafe { dot(3 as i32, 1 as i32, 2 as i32, 3 as i32, 4 as i32, 5 as i32, 6
-// CHECK-NEXT:         as i32) }
-// CHECK-NEXT:     );
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(c"%ld\n".as_ptr(), chain(5 as i32, 1000000000000 as i64, 4660 as u64))
-// CHECK-NEXT:     };
+// CHECK-NEXT:     println!("{}", unsafe { dot(3i32, 1i32, 2i32, 3i32, 4i32, 5i32, 6i32) });
+// CHECK-NEXT:     unsafe { printf(c"%ld\n".as_ptr(), chain(5i32, 1000000000000i64, 4660u64)) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{}", unsafe { * (same_pointer(std::ptr::addr_of_mut!(value) as * mut (),
 // CHECK-NEXT:         std::ptr::addr_of_mut!(value)) as * mut i32) }
 // CHECK-NEXT:     );
-// CHECK-NEXT:     (unsafe { dot(1 as i32, 6 as i32, 7 as i32) }) % 40
+// CHECK-NEXT:     (unsafe { dot(1i32, 6i32, 7i32) }) % 40
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(

@@ -71,13 +71,13 @@ int main(void) {
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: static mut malloc_conf: *const i8 = (b"background_thread:true\0".as_ptr() as *mut i8)
 // CHECK-NEXT:     as *const i8;
-// CHECK-NEXT: static mut exported_count: i32 = 3 as i32;
+// CHECK-NEXT: static mut exported_count: i32 = 3;
 // CHECK-NEXT: #[thread_local]
 // CHECK-NEXT: static mut reusable_buffer: *mut i8 = std::ptr::null_mut::<i8>();
 // CHECK-NEXT: #[thread_local]
 // CHECK-NEXT: static mut reusable_used: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT: #[thread_local]
-// CHECK-NEXT: static mut thread_index: i64 = -(1 as i32) as i64;
+// CHECK-NEXT: static mut thread_index: i64 = -1;
 // CHECK-NEXT: fn detect() -> i32 {
 // CHECK-NEXT:     if (unsafe { supported }) == -1 {
 // CHECK-NEXT:         unsafe {
@@ -87,7 +87,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { supported }
 // CHECK-NEXT: }
 // CHECK-NEXT: #[thread_local]
-// CHECK-NEXT: static mut supported: i32 = -(1 as i32);
+// CHECK-NEXT: static mut supported: i32 = -1;
 // CHECK-NEXT: extern "C-unwind" fn worker(argument: *mut ()) -> *mut () {
 // CHECK-NEXT:     let out: *mut i64 = argument as *mut i64;
 // CHECK-NEXT:     unsafe {
@@ -117,7 +117,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         reusable_used = 5;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut seen: __SlateAlign16<[i64; 4]> = __SlateAlign16([0 as i64; 4]);
+// CHECK-NEXT:     let mut seen: __SlateAlign16<[i64; 4]> = __SlateAlign16([0i64; 4]);
 // CHECK-NEXT:     let mut thread: u64 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         pthread_create(

@@ -34,7 +34,7 @@ int main(void) {
 // CHECK-NEXT: fn compute(flag: i32) -> i32 {
 // CHECK-NEXT:     let mut p: *mut i32 = std::ptr::null_mut::<i32>();
 // CHECK-NEXT:     if flag != 0 {
-// CHECK-NEXT:         p = (unsafe { malloc(4 as u64) }) as *mut i32;
+// CHECK-NEXT:         p = (unsafe { malloc(4u64) }) as *mut i32;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if !p.is_null() {
 // CHECK-NEXT:         unsafe {
@@ -49,8 +49,8 @@ int main(void) {
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     compute(1 as i32);
-// CHECK-NEXT:     compute(0 as i32);
+// CHECK-NEXT:     compute(1i32);
+// CHECK-NEXT:     compute(0i32);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

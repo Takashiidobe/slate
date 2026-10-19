@@ -83,12 +83,7 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn sum4() -> i32 {
-// CHECK-NEXT:     let a: __SlateAlign16<[i32; 4]> = __SlateAlign16([
-// CHECK-NEXT:         1 as i32,
-// CHECK-NEXT:         2 as i32,
-// CHECK-NEXT:         3 as i32,
-// CHECK-NEXT:         4 as i32,
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let a: __SlateAlign16<[i32; 4]> = __SlateAlign16([1i32, 2i32, 3i32, 4i32]);
 // CHECK-NEXT:     let mut s: i32 = 0;
 // CHECK-NEXT:     for i in a.0.iter().copied() {
 // CHECK-NEXT:         s += i;
@@ -110,8 +105,8 @@ int main(void) {
 // CHECK-NEXT:     let mut g: __SlateAlign16<{{\[\[}}i32; 3]; 2]> = __SlateAlign16(unsafe {
 // CHECK-NEXT:         std::mem::zeroed()
 // CHECK-NEXT:     });
-// CHECK-NEXT:     for i in 0 as i32..2 as i32 {
-// CHECK-NEXT:         for j in 0 as i32..3 as i32 {
+// CHECK-NEXT:     for i in 0i32..2i32 {
+// CHECK-NEXT:         for j in 0i32..3i32 {
 // CHECK-NEXT:             g.0[i as usize][j as usize] = i * 3 + j;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -119,7 +114,7 @@ int main(void) {
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn doubled() -> i32 {
 // CHECK-NEXT:     let mut a: [i32; 3] = [1, 2, 3];
-// CHECK-NEXT:     for i in 0 as i32..3 as i32 {
+// CHECK-NEXT:     for i in 0i32..3i32 {
 // CHECK-NEXT:         a[i as usize] *= 2;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     a[0] + a[1] + a[2]
@@ -128,7 +123,7 @@ int main(void) {
 // CHECK-NEXT:     let mut a: [i32; 3] = [1, 2, 3];
 // CHECK-NEXT:     let q: *mut i32 = a.as_mut_ptr() as *mut i32;
 // CHECK-NEXT:     let mut s: i32 = 0;
-// CHECK-NEXT:     for i in 0 as i32..3 as i32 {
+// CHECK-NEXT:     for i in 0i32..3i32 {
 // CHECK-NEXT:         s += a[i as usize];
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *q.offset(2 as isize) = 10;

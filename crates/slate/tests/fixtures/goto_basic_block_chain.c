@@ -67,17 +67,17 @@ int main(void) {
 // CHECK-NEXT:     let mut value: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     let mut result: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         result = mark(1 as i32);
+// CHECK-NEXT:         result = mark(1i32);
 // CHECK-NEXT:         saved = std::ptr::addr_of_mut!(result);
 // CHECK-NEXT:         if skip == 0 {
-// CHECK-NEXT:             value = mark(2 as i32);
+// CHECK-NEXT:             value = mark(2i32);
 // CHECK-NEXT:         }
-// CHECK-NEXT:         value = mark(3 as i32);
+// CHECK-NEXT:         value = mark(3i32);
 // CHECK-NEXT:         result += value;
-// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = mark(4 as i32);
+// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = mark(4i32);
 // CHECK-NEXT:         let [[V_1:__v[0-9]+]]: *mut i32 = saved;
 // CHECK-NEXT:         *[[V_1]] = *[[V_1]] + [[V_0]];
-// CHECK-NEXT:         result += mark(5 as i32);
+// CHECK-NEXT:         result += mark(5i32);
 // CHECK-NEXT:         println!("{} {}", result, unsafe { trace });
 // CHECK-NEXT:         return result;
 // CHECK-NEXT:     }
@@ -85,18 +85,18 @@ int main(void) {
 // CHECK-NEXT: fn straight_line() -> i32 {
 // CHECK-NEXT:     let mut result: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         result = mark(6 as i32);
-// CHECK-NEXT:         result += mark(7 as i32);
-// CHECK-NEXT:         result += mark(8 as i32);
+// CHECK-NEXT:         result = mark(6i32);
+// CHECK-NEXT:         result += mark(7i32);
+// CHECK-NEXT:         result += mark(8i32);
 // CHECK-NEXT:         return result;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     run(0 as i32);
+// CHECK-NEXT:     run(0i32);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         trace = 0;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     run(1 as i32);
+// CHECK-NEXT:     run(1i32);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         trace = 0;
 // CHECK-NEXT:     }

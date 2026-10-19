@@ -122,8 +122,8 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", gnu_extended_asm(7 as i32), gnu_numeric_operands(19 as i32, 4 as
-// CHECK-NEXT:         i32), gnu_multiple_outputs()
+// CHECK-NEXT:         "{} {} {}", gnu_extended_asm(7i32), gnu_numeric_operands(19i32, 4i32),
+// CHECK-NEXT:         gnu_multiple_outputs()
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

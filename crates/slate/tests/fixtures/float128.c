@@ -42,7 +42,7 @@ int main(void) {
 // CHECK-NEXT:     if sum - one != tiny {
 // CHECK-NEXT:         return 2;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if ((42 as i32) as f128) != 42f128 {
+// CHECK-NEXT:     if (42i32 as f128) != 42f128 {
 // CHECK-NEXT:         return 3;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if (42.75f128 as i32) != 42 {
@@ -51,10 +51,10 @@ int main(void) {
 // CHECK-NEXT:     if (1.5f128 as f64) != 1.5f64 {
 // CHECK-NEXT:         return 5;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if (16 as u64) != (16 as u64) {
+// CHECK-NEXT:     if 16u64 != 16u64 {
 // CHECK-NEXT:         return 6;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if (16 as u64) != (16 as u64) {
+// CHECK-NEXT:     if 16u64 != 16u64 {
 // CHECK-NEXT:         return 7;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0

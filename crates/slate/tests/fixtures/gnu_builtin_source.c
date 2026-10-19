@@ -27,8 +27,8 @@ int main(void) {
 // CHECK-NEXT:             c"source_probe".as_ptr() as *mut i8,
 // CHECK-NEXT:             c"{{.*}}tests/fixtures/gnu_builtin_source.c"
 // CHECK-NEXT:                 .as_ptr() as *mut i8,
-// CHECK-NEXT:             5 as i32,
-// CHECK-NEXT:             28 as i32,
+// CHECK-NEXT:             5i32,
+// CHECK-NEXT:             28i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

@@ -53,7 +53,7 @@ int main(void) {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: block = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     for i in 0 as i32..64 as i32 {
+// CHECK-NEXT:     for i in 0i32..64i32 {
 // CHECK-NEXT:         b.a[i as usize] = seed * i;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     b.tag[0] = (97 + seed % 26) as i8;
@@ -103,7 +103,7 @@ int main(void) {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%d %d %c\n".as_ptr(),
 // CHECK-NEXT:             *((*{
-// CHECK-NEXT:                 [[SLATE_COMPOUND_1]] = make(3 as i32);
+// CHECK-NEXT:                 [[SLATE_COMPOUND_1]] = make(3i32);
 // CHECK-NEXT:                 std::ptr::addr_of_mut!([[SLATE_COMPOUND_1]])
 // CHECK-NEXT:             })
 // CHECK-NEXT:                 .a
@@ -111,7 +111,7 @@ int main(void) {
 // CHECK-NEXT:                 .offset(5 as isize),
 // CHECK-NEXT:             total,
 // CHECK-NEXT:             *((*{
-// CHECK-NEXT:                 [[SLATE_COMPOUND_2]] = make(4 as i32);
+// CHECK-NEXT:                 [[SLATE_COMPOUND_2]] = make(4i32);
 // CHECK-NEXT:                 std::ptr::addr_of_mut!([[SLATE_COMPOUND_2]])
 // CHECK-NEXT:             })
 // CHECK-NEXT:                 .tag
@@ -122,7 +122,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let __slate_printf_arg0 = unsafe {
 // CHECK-NEXT:         *((*{
-// CHECK-NEXT:             [[SLATE_COMPOUND_3]] = summed(3 as i32, 7 as i32, 8 as i32, 9 as i32);
+// CHECK-NEXT:             [[SLATE_COMPOUND_3]] = summed(3i32, 7i32, 8i32, 9i32);
 // CHECK-NEXT:             std::ptr::addr_of_mut!([[SLATE_COMPOUND_3]])
 // CHECK-NEXT:         })
 // CHECK-NEXT:             .a
@@ -133,7 +133,7 @@ int main(void) {
 // CHECK-NEXT:         *((*{
 // CHECK-NEXT:             [[SLATE_COMPOUND_5]] = make(
 // CHECK-NEXT:                 *((*{
-// CHECK-NEXT:                     [[SLATE_COMPOUND_4]] = make(2 as i32);
+// CHECK-NEXT:                     [[SLATE_COMPOUND_4]] = make(2i32);
 // CHECK-NEXT:                     std::ptr::addr_of_mut!([[SLATE_COMPOUND_4]])
 // CHECK-NEXT:                 })
 // CHECK-NEXT:                     .a

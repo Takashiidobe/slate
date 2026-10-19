@@ -32,7 +32,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let x: i8 = 10;
-// CHECK-NEXT:     let y: u8 = ((200 as i32) as i8) as u8;
+// CHECK-NEXT:     let y: u8 = 200u8;
 // CHECK-NEXT:     let z: i8 = -5;
 // CHECK-NEXT:     let letter: i8 = 65;
 // CHECK-NEXT:     println!("{}", add_char(x, z) as i32);

@@ -45,7 +45,7 @@ int main(void) {
 // CHECK-NEXT:                     continue;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 2 => {
-// CHECK-NEXT:                     if (0 as i32) != (0 as i32) {
+// CHECK-NEXT:                     if 0i32 != 0i32 {
 // CHECK-NEXT:                         __slate_state = 1usize;
 // CHECK-NEXT:                         continue;
 // CHECK-NEXT:                     } else {
@@ -71,7 +71,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { std::mem::zeroed() }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     println!("{} {}", classify_zero(0 as i32), classify_zero(9 as i32));
+// CHECK-NEXT:     println!("{} {}", classify_zero(0i32), classify_zero(9i32));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

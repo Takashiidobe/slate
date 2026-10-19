@@ -71,12 +71,12 @@ int main(void) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     r = ((if b != 0 { ((a.wrapping_div(b) as i8) << 3 >> 3) as i32 } else { 0 as i32 })
+// CHECK-NEXT:     r = ((if b != 0 { ((a.wrapping_div(b) as i8) << 3 >> 3) as i32 } else { 0i32 })
 // CHECK-NEXT:         as i8) << 3 >> 3;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     r = ((if b != 0 { ((a.wrapping_rem(b) as i8) << 3 >> 3) as i32 } else { 0 as i32 })
+// CHECK-NEXT:     r = ((if b != 0 { ((a.wrapping_rem(b) as i8) << 3 >> 3) as i32 } else { 0i32 })
 // CHECK-NEXT:         as i8) << 3 >> 3;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
@@ -129,19 +129,13 @@ int main(void) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     r = ((((if b != 0 {
-// CHECK-NEXT:         (((a.wrapping_div(b) as u8) & 31) as u32) as i32
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0 as i32
-// CHECK-NEXT:     }) as i8) << 3 >> 3) as u8) & 31;
+// CHECK-NEXT:     r = ((((if b != 0 { (((a.wrapping_div(b) as u8) & 31) as u32) as i32 } else { 0i32 })
+// CHECK-NEXT:         as i8) << 3 >> 3) as u8) & 31;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     r = ((((if b != 0 {
-// CHECK-NEXT:         (((a.wrapping_rem(b) as u8) & 31) as u32) as i32
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0 as i32
-// CHECK-NEXT:     }) as i8) << 3 >> 3) as u8) & 31;
+// CHECK-NEXT:     r = ((((if b != 0 { (((a.wrapping_rem(b) as u8) & 31) as u32) as i32 } else { 0i32 })
+// CHECK-NEXT:         as i8) << 3 >> 3) as u8) & 31;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -193,12 +187,12 @@ int main(void) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     r = ((if b != 0 { ((a.wrapping_div(b) as i16) << 7 >> 7) as i32 } else { 0 as i32 })
+// CHECK-NEXT:     r = ((if b != 0 { ((a.wrapping_div(b) as i16) << 7 >> 7) as i32 } else { 0i32 })
 // CHECK-NEXT:         as i16) << 7 >> 7;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     r = ((if b != 0 { ((a.wrapping_rem(b) as i16) << 7 >> 7) as i32 } else { 0 as i32 })
+// CHECK-NEXT:     r = ((if b != 0 { ((a.wrapping_rem(b) as i16) << 7 >> 7) as i32 } else { 0i32 })
 // CHECK-NEXT:         as i16) << 7 >> 7;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
@@ -254,7 +248,7 @@ int main(void) {
 // CHECK-NEXT:     r = ((((if b != 0 {
 // CHECK-NEXT:         (((a.wrapping_div(b) as u16) & 511) as u32) as i32
 // CHECK-NEXT:     } else {
-// CHECK-NEXT:         0 as i32
+// CHECK-NEXT:         0i32
 // CHECK-NEXT:     }) as i16) << 7 >> 7) as u16) & 511;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
@@ -262,7 +256,7 @@ int main(void) {
 // CHECK-NEXT:     r = ((((if b != 0 {
 // CHECK-NEXT:         (((a.wrapping_rem(b) as u16) & 511) as u32) as i32
 // CHECK-NEXT:     } else {
-// CHECK-NEXT:         0 as i32
+// CHECK-NEXT:         0i32
 // CHECK-NEXT:     }) as i16) << 7 >> 7) as u16) & 511;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
@@ -315,19 +309,11 @@ int main(void) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     r = if b != 0 {
-// CHECK-NEXT:         (a.wrapping_div(b) as i64) << 31 >> 31
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         (0 as i64) << 31 >> 31
-// CHECK-NEXT:     };
+// CHECK-NEXT:     r = if b != 0 { (a.wrapping_div(b) as i64) << 31 >> 31 } else { 0i64 };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     r = if b != 0 {
-// CHECK-NEXT:         (a.wrapping_rem(b) as i64) << 31 >> 31
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         (0 as i64) << 31 >> 31
-// CHECK-NEXT:     };
+// CHECK-NEXT:     r = if b != 0 { (a.wrapping_rem(b) as i64) << 31 >> 31 } else { 0i64 };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -354,7 +340,7 @@ int main(void) {
 // CHECK-NEXT:     r = a;
 // CHECK-NEXT:     r = (r.wrapping_add(b) as i64) << 31 >> 31;
 // CHECK-NEXT:     r = (r.wrapping_sub(a) as i64) << 31 >> 31;
-// CHECK-NEXT:     r = (r.wrapping_mul((3 as i64) << 31 >> 31) as i64) << 31 >> 31;
+// CHECK-NEXT:     r = (r.wrapping_mul(3i64) as i64) << 31 >> 31;
 // CHECK-NEXT:     r ^= b;
 // CHECK-NEXT:     r |= a;
 // CHECK-NEXT:     r &= b;
@@ -379,19 +365,11 @@ int main(void) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     r = if b != 0 {
-// CHECK-NEXT:         (a.wrapping_div(b) as u64) & 8589934591
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         (((0 as i64) << 31 >> 31) as u64) & 8589934591
-// CHECK-NEXT:     };
+// CHECK-NEXT:     r = if b != 0 { (a.wrapping_div(b) as u64) & 8589934591 } else { 0u64 };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     r = if b != 0 {
-// CHECK-NEXT:         (a.wrapping_rem(b) as u64) & 8589934591
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         (((0 as i64) << 31 >> 31) as u64) & 8589934591
-// CHECK-NEXT:     };
+// CHECK-NEXT:     r = if b != 0 { (a.wrapping_rem(b) as u64) & 8589934591 } else { 0u64 };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -418,8 +396,7 @@ int main(void) {
 // CHECK-NEXT:     r = a;
 // CHECK-NEXT:     r = (r.wrapping_add(b) as u64) & 8589934591;
 // CHECK-NEXT:     r = (r.wrapping_sub(a) as u64) & 8589934591;
-// CHECK-NEXT:     r = (r.wrapping_mul((((3 as i64) << 31 >> 31) as u64) & 8589934591) as u64)
-// CHECK-NEXT:         & 8589934591;
+// CHECK-NEXT:     r = (r.wrapping_mul(3u64) as u64) & 8589934591;
 // CHECK-NEXT:     r ^= b;
 // CHECK-NEXT:     r |= a;
 // CHECK-NEXT:     r &= b;
@@ -1055,8 +1032,8 @@ int main(void) {
 // CHECK-NEXT:     4,
 // CHECK-NEXT:     32,
 // CHECK-NEXT:     bitint::A8,
-// CHECK-NEXT: >>::from_i128((5 as i32) as i128)
-// CHECK-NEXT:     .wrapping_add(<bitint::BInt<200, 4, 32, bitint::A8>>::from_i128((7 as i32) as i128));
+// CHECK-NEXT: >>::from_i128(5i32 as i128)
+// CHECK-NEXT:     .wrapping_add(<bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(7i32 as i128));
 // CHECK-NEXT: static mut g_cmp: bitint::BUint<100, 2, 16, bitint::A8> = <bitint::BUint<
 // CHECK-NEXT:     100,
 // CHECK-NEXT:     2,
@@ -1068,7 +1045,7 @@ int main(void) {
 // CHECK-NEXT:         2,
 // CHECK-NEXT:         16,
 // CHECK-NEXT:         bitint::A8,
-// CHECK-NEXT:     >>::from_bint(<bitint::BInt<100, 2, 16, bitint::A8>>::from_i128((3 as i32) as i128))
+// CHECK-NEXT:     >>::from_bint(<bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(3i32 as i128))
 // CHECK-NEXT:         .compare(
 // CHECK-NEXT:             <bitint::BUint<
 // CHECK-NEXT:                 100,
@@ -1076,26 +1053,23 @@ int main(void) {
 // CHECK-NEXT:                 16,
 // CHECK-NEXT:                 bitint::A8,
 // CHECK-NEXT:             >>::from_bint(
-// CHECK-NEXT:                 <bitint::BInt<100, 2, 16, bitint::A8>>::from_i128((4 as i32) as i128),
+// CHECK-NEXT:                 <bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(4i32 as i128),
 // CHECK-NEXT:             ),
 // CHECK-NEXT:         ) < 0) as u128,
 // CHECK-NEXT: );
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     s5((7 as i8) << 3 >> 3, (-3 as i8) << 3 >> 3);
-// CHECK-NEXT:     s5((-16 as i8) << 3 >> 3, (15 as i8) << 3 >> 3);
-// CHECK-NEXT:     u5((((31 as i8) << 3 >> 3) as u8) & 31, (((3 as i8) << 3 >> 3) as u8) & 31);
-// CHECK-NEXT:     u5((((2 as i8) << 3 >> 3) as u8) & 31, (((31 as i8) << 3 >> 3) as u8) & 31);
-// CHECK-NEXT:     s9((255 as i16) << 7 >> 7, (-256 as i16) << 7 >> 7);
-// CHECK-NEXT:     s9((-100 as i16) << 7 >> 7, (7 as i16) << 7 >> 7);
-// CHECK-NEXT:     u9((((511 as i16) << 7 >> 7) as u16) & 511, (((2 as i16) << 7 >> 7) as u16) & 511);
-// CHECK-NEXT:     u9((((3 as i16) << 7 >> 7) as u16) & 511, (((500 as i16) << 7 >> 7) as u16) & 511);
-// CHECK-NEXT:     s33((4294967295 as i64) << 31 >> 31, (-5 as i64) << 31 >> 31);
-// CHECK-NEXT:     u33(
-// CHECK-NEXT:         (8589934591 as u64) & (8589934591 as u64),
-// CHECK-NEXT:         (((3 as i64) << 31 >> 31) as u64) & 8589934591,
-// CHECK-NEXT:     );
-// CHECK-NEXT:     s64(9223372036854775807 as i64, 2 as i64);
-// CHECK-NEXT:     u64(18446744073709551615 as u64, 5 as u64);
+// CHECK-NEXT:     s5(7i8, -3i8);
+// CHECK-NEXT:     s5(-16i8, 15i8);
+// CHECK-NEXT:     u5(31u8, 3u8);
+// CHECK-NEXT:     u5(2u8, 31u8);
+// CHECK-NEXT:     s9(255i16, -256i16);
+// CHECK-NEXT:     s9(-100i16, 7i16);
+// CHECK-NEXT:     u9(511u16, 2u16);
+// CHECK-NEXT:     u9(3u16, 500u16);
+// CHECK-NEXT:     s33(4294967295i64, -5i64);
+// CHECK-NEXT:     u33(8589934591u64, 3u64);
+// CHECK-NEXT:     s64(9223372036854775807i64, 2i64);
+// CHECK-NEXT:     u64(18446744073709551615u64, 5u64);
 // CHECK-NEXT:     s100(
 // CHECK-NEXT:         <bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(123456789 as i128),
 // CHECK-NEXT:         <bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(-987 as i128),

@@ -59,9 +59,9 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut c: cursor = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     fill(unsafe { &mut (*std::ptr::addr_of_mut!(c)) }, 1 as u8);
+// CHECK-NEXT:     fill(unsafe { &mut (*std::ptr::addr_of_mut!(c)) }, 1u8);
 // CHECK-NEXT:     let mut total: i32 = 0;
-// CHECK-NEXT:     for i in 0 as i32..8 as i32 {
+// CHECK-NEXT:     for i in 0i32..8i32 {
 // CHECK-NEXT:         total += (c.buf[i as usize] as u32) as i32;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("{}", total);

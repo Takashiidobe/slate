@@ -33,10 +33,10 @@ int main(void) {
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut op: Option<unsafe extern "C-unwind" fn(i32) -> i32> = None;
-// CHECK-NEXT:     let mut total: i32 = maybe_apply(op, 4 as i32);
+// CHECK-NEXT:     let mut total: i32 = maybe_apply(op, 4i32);
 // CHECK-NEXT:     op = Some(bump);
 // CHECK-NEXT:     if op != None {
-// CHECK-NEXT:         total += maybe_apply(op, 5 as i32);
+// CHECK-NEXT:         total += maybe_apply(op, 5i32);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if op == None {
 // CHECK-NEXT:         return 2;

@@ -24,7 +24,7 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut conditional: Conditional = Conditional { ctx: 0 };
 // CHECK-NEXT:     conditional.ctx = 5;
-// CHECK-NEXT:     println!("{} {}", (conditional.ctx as u32) as i32, 4 as i32);
+// CHECK-NEXT:     println!("{} {}", (conditional.ctx as u32) as i32, 4i32);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

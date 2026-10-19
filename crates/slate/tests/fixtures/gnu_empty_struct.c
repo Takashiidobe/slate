@@ -28,7 +28,7 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let value: GNUEmpty = GNUEmpty {};
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%zu %zu\n".as_ptr(), 0 as u64, empty_size(value)) };
+// CHECK-NEXT:     unsafe { printf(c"%zu %zu\n".as_ptr(), 0u64, empty_size(value)) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

@@ -247,7 +247,7 @@ int main(void) {
 // CHECK-NEXT:             std::ptr::addr_of_mut!(formatted),
 // CHECK-NEXT:             c"%s:%d".as_ptr(),
 // CHECK-NEXT:             c"gnu".as_ptr() as *mut i8,
-// CHECK-NEXT:             23 as i32,
+// CHECK-NEXT:             23i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) == 6) as i32;
 // CHECK-NEXT:     total += [[V_1]];
@@ -265,7 +265,7 @@ int main(void) {
 // CHECK-NEXT:     let [[V_3:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_3]] + (!stream.is_null() as i32);
 // CHECK-NEXT:     let [[V_4:__v[0-9]+]]: i32 = ((unsafe {
-// CHECK-NEXT:         fprintf(stream, c"%s-%d".as_ptr(), c"slate".as_ptr() as *mut i8, 24 as i32)
+// CHECK-NEXT:         fprintf(stream, c"%s-%d".as_ptr(), c"slate".as_ptr() as *mut i8, 24i32)
 // CHECK-NEXT:     }) == 8) as i32;
 // CHECK-NEXT:     total += [[V_4]];
 // CHECK-NEXT:     let [[V_5:__v[0-9]+]]: i32 = ((unsafe { __fwriting(stream) }) != 0) as i32;
@@ -302,7 +302,7 @@ int main(void) {
 // CHECK-NEXT:         getdelim(
 // CHECK-NEXT:             std::ptr::addr_of_mut!(line),
 // CHECK-NEXT:             std::ptr::addr_of_mut!(capacity),
-// CHECK-NEXT:             124 as i32,
+// CHECK-NEXT:             124i32,
 // CHECK-NEXT:             stream,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) == 6) as i32;
@@ -344,7 +344,7 @@ int main(void) {
 // CHECK-NEXT:     let [[V_18:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_18]] + (!stream.is_null() as i32);
 // CHECK-NEXT:     let [[V_19:__v[0-9]+]]: i32 = ((unsafe {
-// CHECK-NEXT:         fprintf(stream, c"%s:%d".as_ptr(), c"cookie".as_ptr() as *mut i8, 7 as i32)
+// CHECK-NEXT:         fprintf(stream, c"%s:%d".as_ptr(), c"cookie".as_ptr() as *mut i8, 7i32)
 // CHECK-NEXT:     }) == 8) as i32;
 // CHECK-NEXT:     total += [[V_19]];
 // CHECK-NEXT:     let [[V_20:__v[0-9]+]]: i32 = ((unsafe { fclose(stream) }) == 0) as i32;
@@ -357,7 +357,7 @@ int main(void) {
 // CHECK-NEXT:             memcmp(
 // CHECK-NEXT:                 cookie.bytes.as_mut_ptr() as *const (),
 // CHECK-NEXT:                 b"cookie:7\0".as_ptr() as *const (),
-// CHECK-NEXT:                 8 as u64,
+// CHECK-NEXT:                 8u64,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         }) == 0) as i32);
 // CHECK-NEXT:     total
@@ -370,7 +370,7 @@ int main(void) {
 // CHECK-NEXT:     let arguments: u64 = unsafe {
 // CHECK-NEXT:         parse_printf_format(
 // CHECK-NEXT:             c"%2$d %1$s".as_ptr(),
-// CHECK-NEXT:             4 as u64,
+// CHECK-NEXT:             4u64,
 // CHECK-NEXT:             types.0.as_mut_ptr() as *mut i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };

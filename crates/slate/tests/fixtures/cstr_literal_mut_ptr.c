@@ -45,8 +45,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%s %s %s\n".as_ptr(),
-// CHECK-NEXT:             mutable_pick(0 as i32),
-// CHECK-NEXT:             const_pick(0 as i32),
+// CHECK-NEXT:             mutable_pick(0i32),
+// CHECK-NEXT:             const_pick(0i32),
 // CHECK-NEXT:             bytes_pick() as *mut i8,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };

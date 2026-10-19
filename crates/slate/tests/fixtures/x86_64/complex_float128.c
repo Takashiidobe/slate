@@ -105,14 +105,8 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     show(c"tinydiv".as_ptr(), div(tiny, tiny));
 // CHECK-NEXT:     let precise: f128 = mul(
-// CHECK-NEXT:             make(
-// CHECK-NEXT:                 1f128 + 7.88860905221011805411728565282786229E-31f128,
-// CHECK-NEXT:                 (0 as i32) as f128,
-// CHECK-NEXT:             ),
-// CHECK-NEXT:             make(
-// CHECK-NEXT:                 1f128 - 7.88860905221011805411728565282786229E-31f128,
-// CHECK-NEXT:                 (0 as i32) as f128,
-// CHECK-NEXT:             ),
+// CHECK-NEXT:             make(1f128 + 7.88860905221011805411728565282786229E-31f128, 0i32 as f128),
+// CHECK-NEXT:             make(1f128 - 7.88860905221011805411728565282786229E-31f128, 0i32 as f128),
 // CHECK-NEXT:         )
 // CHECK-NEXT:         .re;
 // CHECK-NEXT:     println!(

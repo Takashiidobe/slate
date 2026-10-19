@@ -110,7 +110,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
-// CHECK-NEXT: static mut global_count: i32 = 10 as i32;
+// CHECK-NEXT: static mut global_count: i32 = 10;
 // CHECK-NEXT: static mut calls: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT: fn next_slot(slots: *mut i32) -> *mut i32 {
 // CHECK-NEXT:     unsafe {
@@ -119,7 +119,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { slots.offset(calls as isize) }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut u: u32 = (2147483647 as u32).wrapping_mul(2 as u32).wrapping_add(1);
+// CHECK-NEXT:     let mut u: u32 = 4294967295u32;
 // CHECK-NEXT:     let mut before: u32 = 0;
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: u32 = u;
 // CHECK-NEXT:     u = [[V_0]].wrapping_add(1);
@@ -154,37 +154,33 @@ int main(void) {
 // CHECK-NEXT:     let mut d: f64 = 1.5f64;
 // CHECK-NEXT:     let mut d1: f64 = 0 as f64;
 // CHECK-NEXT:     let [[V_4:__v[0-9]+]]: f64 = d;
-// CHECK-NEXT:     d = [[V_4]] + ((1 as i32) as f64);
+// CHECK-NEXT:     d = [[V_4]] + (1i32 as f64);
 // CHECK-NEXT:     d1 = [[V_4]];
 // CHECK-NEXT:     let mut d2: f64 = 0 as f64;
-// CHECK-NEXT:     let [[V_5:__v[0-9]+]]: f64 = d + ((1 as i32) as f64);
+// CHECK-NEXT:     let [[V_5:__v[0-9]+]]: f64 = d + (1i32 as f64);
 // CHECK-NEXT:     d = [[V_5]];
 // CHECK-NEXT:     d2 = [[V_5]];
 // CHECK-NEXT:     let mut d3: f64 = 0 as f64;
 // CHECK-NEXT:     let [[V_6:__v[0-9]+]]: f64 = d;
-// CHECK-NEXT:     d = [[V_6]] - ((1 as i32) as f64);
+// CHECK-NEXT:     d = [[V_6]] - (1i32 as f64);
 // CHECK-NEXT:     d3 = [[V_6]];
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%g %g %g %g\n".as_ptr(), d1, d2, d3, d) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let mut f: f32 = -0.5f32;
 // CHECK-NEXT:     let mut f1: f32 = 0 as f32;
-// CHECK-NEXT:     let [[V_7:__v[0-9]+]]: f32 = f + ((1 as i32) as f32);
+// CHECK-NEXT:     let [[V_7:__v[0-9]+]]: f32 = f + (1i32 as f32);
 // CHECK-NEXT:     f = [[V_7]];
 // CHECK-NEXT:     f1 = [[V_7]];
 // CHECK-NEXT:     let mut f2: f32 = 0 as f32;
 // CHECK-NEXT:     let [[V_8:__v[0-9]+]]: f32 = f;
-// CHECK-NEXT:     f = [[V_8]] + ((1 as i32) as f32);
+// CHECK-NEXT:     f = [[V_8]] + (1i32 as f32);
 // CHECK-NEXT:     f2 = [[V_8]];
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%g %g %g\n".as_ptr(), f1 as f64, f2 as f64, f as f64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 5]> = __SlateAlign16([
-// CHECK-NEXT:         0 as i32,
-// CHECK-NEXT:         10 as i32,
-// CHECK-NEXT:         20 as i32,
-// CHECK-NEXT:         30 as i32,
-// CHECK-NEXT:         40 as i32,
+// CHECK-NEXT:         0i32, 10i32, 20i32, 30i32, 40i32,
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let mut p: *mut i32 = values.0.as_mut_ptr() as *mut i32;
 // CHECK-NEXT:     let [[V_9:__v[0-9]+]]: *mut i32 = p;
@@ -238,12 +234,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     r = [[V_20]];
 // CHECK-NEXT:     println!("{} {} {}", r, i, values.0[2]);
-// CHECK-NEXT:     let mut slots: __SlateAlign16<[i32; 4]> = __SlateAlign16([
-// CHECK-NEXT:         0 as i32,
-// CHECK-NEXT:         0 as i32,
-// CHECK-NEXT:         0 as i32,
-// CHECK-NEXT:         0 as i32,
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let mut slots: __SlateAlign16<[i32; 4]> = __SlateAlign16([0i32, 0i32, 0i32, 0i32]);
 // CHECK-NEXT:     let [[V_21:__v[0-9]+]]: *mut i32 = next_slot(slots.0.as_mut_ptr() as *mut i32);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *[[V_21]] = *[[V_21]] + 1;
@@ -258,7 +249,7 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let mut counter: Counter = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: Counter = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]].hits = 0 as i32;
+// CHECK-NEXT:         [[T_0]].hits = 0i32;
 // CHECK-NEXT:         [[T_0]].total = 0.0f64;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
@@ -268,7 +259,7 @@ int main(void) {
 // CHECK-NEXT:         (*cp).hits = (*cp).hits + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*cp).total = (*cp).total + ((1 as i32) as f64);
+// CHECK-NEXT:         (*cp).total = (*cp).total + (1i32 as f64);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut hits: i32 = 0;
 // CHECK-NEXT:     let [[V_23:__v[0-9]+]]: i32 = unsafe { (*cp).hits };
@@ -292,7 +283,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     g2 = [[V_25]];
 // CHECK-NEXT:     println!("{} {}", g1, g2);
-// CHECK-NEXT:     let mut flag: bool = (0 as i32) != (0 as i32);
+// CHECK-NEXT:     let mut flag: bool = 0i32 != 0i32;
 // CHECK-NEXT:     flag = (flag as i32) + 1 != 0;
 // CHECK-NEXT:     let mut still: bool = false;
 // CHECK-NEXT:     let [[V_26:__v[0-9]+]]: bool = flag;

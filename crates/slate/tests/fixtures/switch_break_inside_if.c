@@ -56,10 +56,10 @@ int main(void) {
 // CHECK-NEXT:     result
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     println!("{}", classify(0 as i32, 1 as i32));
-// CHECK-NEXT:     println!("{}", classify(0 as i32, 0 as i32));
-// CHECK-NEXT:     println!("{}", classify(1 as i32, 0 as i32));
-// CHECK-NEXT:     println!("{}", classify(5 as i32, 0 as i32));
+// CHECK-NEXT:     println!("{}", classify(0i32, 1i32));
+// CHECK-NEXT:     println!("{}", classify(0i32, 0i32));
+// CHECK-NEXT:     println!("{}", classify(1i32, 0i32));
+// CHECK-NEXT:     println!("{}", classify(5i32, 0i32));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

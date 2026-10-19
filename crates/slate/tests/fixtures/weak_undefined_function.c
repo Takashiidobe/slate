@@ -27,7 +27,7 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut result: i32 = 7;
 // CHECK-NEXT:     if (unsafe { missing }) != None {
-// CHECK-NEXT:         result = unsafe { missing.unwrap()(3 as i32) };
+// CHECK-NEXT:         result = unsafe { missing.unwrap()(3i32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if (unsafe { also_missing }) != None {
 // CHECK-NEXT:         unsafe { also_missing.unwrap()() };

@@ -34,12 +34,7 @@ int main(void) {
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let values: __SlateAlign16<[i32; 4]> = __SlateAlign16([
-// CHECK-NEXT:         2 as i32,
-// CHECK-NEXT:         4 as i32,
-// CHECK-NEXT:         6 as i32,
-// CHECK-NEXT:         8 as i32,
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let values: __SlateAlign16<[i32; 4]> = __SlateAlign16([2i32, 4i32, 6i32, 8i32]);
 // CHECK-NEXT:     println!("{}", sum_items(& values.0));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

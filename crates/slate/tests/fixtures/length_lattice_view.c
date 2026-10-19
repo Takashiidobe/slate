@@ -26,13 +26,7 @@ int main(void) {
 // CHECK-NEXT:     s
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let a: __SlateAlign16<[i32; 5]> = __SlateAlign16([
-// CHECK-NEXT:         1 as i32,
-// CHECK-NEXT:         2 as i32,
-// CHECK-NEXT:         3 as i32,
-// CHECK-NEXT:         4 as i32,
-// CHECK-NEXT:         5 as i32,
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let a: __SlateAlign16<[i32; 5]> = __SlateAlign16([1i32, 2i32, 3i32, 4i32, 5i32]);
 // CHECK-NEXT:     sum_n(&a.0)
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

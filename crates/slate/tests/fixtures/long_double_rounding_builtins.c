@@ -204,7 +204,7 @@ int main(void) {
 // CHECK-NEXT:         LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 253, 191]),
 // CHECK-NEXT:         LongDouble([0, 0, 0, 0, 0, 0, 0, 224, 1, 64]),
 // CHECK-NEXT:     ];
-// CHECK-NEXT:     for i in 0 as i32..5 as i32 {
+// CHECK-NEXT:     for i in 0i32..5i32 {
 // CHECK-NEXT:         let x: LongDouble = unsafe {
 // CHECK-NEXT:             std::ptr::read_volatile(
 // CHECK-NEXT:                 (values.as_mut_ptr() as *mut LongDouble).offset(i as isize),

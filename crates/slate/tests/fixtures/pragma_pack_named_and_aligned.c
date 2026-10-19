@@ -51,10 +51,7 @@ int main(void) {
 // CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {} {} {} {}", 8 as i32, 5 as i32, 8 as i32, 8 as i32, 16 as i32, 16 as
-// CHECK-NEXT:         i32, 1 as i32
-// CHECK-NEXT:     );
+// CHECK-NEXT:     println!("{} {} {} {} {} {} {}", 8i32, 5i32, 8i32, 8i32, 16i32, 16i32, 1i32);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

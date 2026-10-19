@@ -250,10 +250,10 @@ int main(void) {
 // CHECK-NEXT: static mut gs: S = S {
 // CHECK-NEXT:     x: {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]] = {
-// CHECK-NEXT:             let [[T_1:__t[0-9]+]] = 100 as i32;
+// CHECK-NEXT:             let [[T_1:__t[0-9]+]] = 100i32;
 // CHECK-NEXT:             let [[T_2:__t[0-9]+]] = num_complex::Complex {
-// CHECK-NEXT:                 re: 0 as i32,
-// CHECK-NEXT:                 im: 200 as i32,
+// CHECK-NEXT:                 re: 0i32,
+// CHECK-NEXT:                 im: 200i32,
 // CHECK-NEXT:             };
 // CHECK-NEXT:             num_complex::Complex {
 // CHECK-NEXT:                 re: [[T_1]] + [[T_2]].re,
@@ -267,10 +267,10 @@ int main(void) {
 // CHECK-NEXT:     },
 // CHECK-NEXT:     y: {
 // CHECK-NEXT:         let [[T_3:__t[0-9]+]] = {
-// CHECK-NEXT:             let [[T_4:__t[0-9]+]] = 3 as i32;
+// CHECK-NEXT:             let [[T_4:__t[0-9]+]] = 3i32;
 // CHECK-NEXT:             let [[T_5:__t[0-9]+]] = num_complex::Complex {
-// CHECK-NEXT:                 re: 0 as i32,
-// CHECK-NEXT:                 im: 4 as i32,
+// CHECK-NEXT:                 re: 0i32,
+// CHECK-NEXT:                 im: 4i32,
 // CHECK-NEXT:             };
 // CHECK-NEXT:             num_complex::Complex {
 // CHECK-NEXT:                 re: [[T_4]] - [[T_5]].re,
@@ -292,8 +292,8 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let a: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 0, 64]);
 // CHECK-NEXT:     let b: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 224, 1, 192]);
-// CHECK-NEXT:     let im: LongDouble = make(5 as i32).im;
-// CHECK-NEXT:     let re: LongDouble = make(5 as i32).re;
+// CHECK-NEXT:     let im: LongDouble = make(5i32).im;
+// CHECK-NEXT:     let re: LongDouble = make(5i32).re;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(

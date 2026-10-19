@@ -36,9 +36,9 @@ int main(void) {
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     println!("{}", sum_odds(10 as i32));
-// CHECK-NEXT:     println!("{}", sum_odds(1 as i32));
-// CHECK-NEXT:     println!("{}", sum_odds(0 as i32));
+// CHECK-NEXT:     println!("{}", sum_odds(10i32));
+// CHECK-NEXT:     println!("{}", sum_odds(1i32));
+// CHECK-NEXT:     println!("{}", sum_odds(0i32));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

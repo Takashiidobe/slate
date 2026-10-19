@@ -126,8 +126,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {}", classify(0 as i32), classify(2 as i32), classify(9 as i32),
-// CHECK-NEXT:         classify(5 as i32)
+// CHECK-NEXT:         "{} {} {} {}", classify(0i32), classify(2i32), classify(9i32), classify(5i32)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

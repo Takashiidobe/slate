@@ -204,16 +204,16 @@ int main(void) {
 // CHECK-NEXT:     let digits: *mut i8 = unsafe {
 // CHECK-NEXT:         __slate_qecvt__rpi8_f80_i32_pi32_pi32(
 // CHECK-NEXT:             value,
-// CHECK-NEXT:             6 as i32,
+// CHECK-NEXT:             6i32,
 // CHECK-NEXT:             std::ptr::addr_of_mut!(decpt),
 // CHECK-NEXT:             std::ptr::addr_of_mut!(sign),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut buffer: __SlateAlign16<[i8; 64]> = __SlateAlign16([0 as i8; 64]);
+// CHECK-NEXT:     let mut buffer: __SlateAlign16<[i8; 64]> = __SlateAlign16([0i8; 64]);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __slate_qgcvt__rpi8_f80_i32_pi8(
-// CHECK-NEXT:             -value / __slate_f80_from_i32(4 as i32),
-// CHECK-NEXT:             8 as i32,
+// CHECK-NEXT:             -value / __slate_f80_from_i32(4i32),
+// CHECK-NEXT:             8i32,
 // CHECK-NEXT:             buffer.0.as_mut_ptr() as *mut i8,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };

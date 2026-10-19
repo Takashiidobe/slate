@@ -93,7 +93,7 @@ int main(void) {
 // CHECK-NEXT:         return 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { fprintf(f, c"value: %d\n".as_ptr(), 7 as i32) };
+// CHECK-NEXT:     unsafe { fprintf(f, c"value: %d\n".as_ptr(), 7i32) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     unsafe { fclose(f) };
 // CHECK-NEXT:     unsafe { remove(c"slate_fprintf_non_standard.tmp".as_ptr()) };

@@ -59,8 +59,8 @@ int main(void) {
 // CHECK-NEXT:     right: u32,
 // CHECK-NEXT:     count: u64,
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut global_u32: u32 = 4000000000 as u32;
-// CHECK-NEXT: static mut global_size: u64 = ((7 as i32) as i64) as u64;
+// CHECK-NEXT: static mut global_u32: u32 = 4000000000;
+// CHECK-NEXT: static mut global_size: u64 = 7;
 // CHECK-NEXT: fn add_i32(a: i32, b: i16) -> i32 {
 // CHECK-NEXT:     let sum: i32 = a + (b as i32);
 // CHECK-NEXT:     sum
@@ -71,10 +71,10 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn use_fixed_types() -> i32 {
 // CHECK-NEXT:     let small: i8 = -5;
-// CHECK-NEXT:     let byte: u8 = ((250 as i32) as i8) as u8;
+// CHECK-NEXT:     let byte: u8 = 250u8;
 // CHECK-NEXT:     let short_value: i16 = 1200;
-// CHECK-NEXT:     let ushort_value: u16 = ((65000 as i32) as i16) as u16;
-// CHECK-NEXT:     let signed_value: i32 = add_i32(100000 as i32, short_value);
+// CHECK-NEXT:     let ushort_value: u16 = 65000u16;
+// CHECK-NEXT:     let signed_value: i32 = add_i32(100000i32, short_value);
 // CHECK-NEXT:     let wide: u64 = widen_u32(unsafe { global_u32 });
 // CHECK-NEXT:     let mut pair: FixedPair = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     pair.left = short_value;
@@ -86,8 +86,8 @@ int main(void) {
 // CHECK-NEXT:         .wrapping_add(wide) as u32) as i32
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     println!("{}", add_i32(10 as i32, 20 as i16));
-// CHECK-NEXT:     unsafe { printf(c"%lu\n".as_ptr(), widen_u32(5 as u32)) };
+// CHECK-NEXT:     println!("{}", add_i32(10i32, 20i16));
+// CHECK-NEXT:     unsafe { printf(c"%lu\n".as_ptr(), widen_u32(5u32)) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!("{}", use_fixed_types());
 // CHECK-NEXT:     0

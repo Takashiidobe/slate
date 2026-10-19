@@ -131,21 +131,21 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let a: u128 = pair_out();
-// CHECK-NEXT:     let b: u128 = pair_inout((4 as u128) << (64 as i32) | (!(0 as u64) as u128));
+// CHECK-NEXT:     let b: u128 = pair_inout((4 as u128) << 64i32 | (18446744073709551615u64 as u128));
 // CHECK-NEXT:     let mut big: [[SLATERECORD_0]] = [[SLATERECORD_0]] { a: 1, b: 2, c: 3 };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lu %lu\n".as_ptr(), (a >> (64 as i32)) as u64, a as u64) };
+// CHECK-NEXT:     unsafe { printf(c"%lu %lu\n".as_ptr(), (a >> 64i32) as u64, a as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lu %lu\n".as_ptr(), (b >> (64 as i32)) as u64, b as u64) };
+// CHECK-NEXT:     unsafe { printf(c"%lu %lu\n".as_ptr(), (b >> 64i32) as u64, b as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%lu %lu %d\n".as_ptr(),
-// CHECK-NEXT:             pair_in_high((11 as u128) << (64 as i32) | 12),
-// CHECK-NEXT:             single_a(39 as u64),
-// CHECK-NEXT:             any_operands(40 as i32, &(*std::ptr::addr_of_mut!(big))),
+// CHECK-NEXT:             pair_in_high((11 as u128) << 64i32 | 12),
+// CHECK-NEXT:             single_a(39u64),
+// CHECK-NEXT:             any_operands(40i32, &(*std::ptr::addr_of_mut!(big))),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

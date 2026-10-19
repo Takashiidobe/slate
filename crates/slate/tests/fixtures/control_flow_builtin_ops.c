@@ -59,7 +59,7 @@ int main(void) {
 // CHECK-NEXT:     -1
 // CHECK-NEXT: }
 // CHECK-NEXT: fn assume_true(x: i32) -> i32 {
-// CHECK-NEXT:     unsafe { std::hint::assert_unchecked((1 as i32) != (0 as i32)) };
+// CHECK-NEXT:     unsafe { std::hint::assert_unchecked(1i32 != 0i32) };
 // CHECK-NEXT:     x + 1
 // CHECK-NEXT: }
 // CHECK-NEXT: fn guarded_trap(x: i32) -> i32 {

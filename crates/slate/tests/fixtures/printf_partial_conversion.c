@@ -17,10 +17,10 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     println!("first {}", 1 as i32);
-// CHECK-NEXT:     unsafe { printf(c"dynamic %*d\n".as_ptr(), 5 as i32, 2 as i32) };
+// CHECK-NEXT:     println!("first {}", 1i32);
+// CHECK-NEXT:     unsafe { printf(c"dynamic %*d\n".as_ptr(), 5i32, 2i32) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     println!("last {}", 3 as i32);
+// CHECK-NEXT:     println!("last {}", 3i32);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

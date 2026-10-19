@@ -222,11 +222,7 @@ int main(void) {
 // CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
 // CHECK-NEXT:     fn exit(__status: i32);
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut c23_embedded: [u8; 3] = [
-// CHECK-NEXT:     ((67 as i32) as i8) as u8,
-// CHECK-NEXT:     ((50 as i32) as i8) as u8,
-// CHECK-NEXT:     ((51 as i32) as i8) as u8,
-// CHECK-NEXT: ];
+// CHECK-NEXT: static mut c23_embedded: [u8; 3] = [67, 50, 51];
 // CHECK-NEXT: #[repr(C, align(32))]
 // CHECK-NEXT: struct __SlateAlign32<T>(T);
 // CHECK-NEXT: #[repr(C)]
@@ -235,18 +231,18 @@ int main(void) {
 // CHECK-NEXT:     first: i32,
 // CHECK-NEXT:     second: i32,
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut c23_deprecated_value: i32 = 41 as i32;
-// CHECK-NEXT: static mut c23_maybe_unused_value: i32 = 43 as i32;
+// CHECK-NEXT: static mut c23_deprecated_value: i32 = 41;
+// CHECK-NEXT: static mut c23_maybe_unused_value: i32 = 43;
 // CHECK-NEXT: fn c23_nodiscard_value() -> i32 {
 // CHECK-NEXT:     47
 // CHECK-NEXT: }
 // CHECK-NEXT: fn c23_never_return() {
-// CHECK-NEXT:     unsafe { std::process::exit(99 as i32) };
+// CHECK-NEXT:     unsafe { std::process::exit(99i32) };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[thread_local]
-// CHECK-NEXT: static mut c23_thread_value: i32 = 53 as i32;
+// CHECK-NEXT: static mut c23_thread_value: i32 = 53;
 // CHECK-NEXT: static mut c23_never_flag: i32 = unsafe { std::mem::zeroed() };
-// CHECK-NEXT: static mut c23_file_constant: i32 = 59 as i32;
+// CHECK-NEXT: static mut c23_file_constant: i32 = 59;
 // CHECK-NEXT: fn c23_unnamed_parameter([[V_0:__v[0-9]+]]: i32, value: i32) -> i32 {
 // CHECK-NEXT:     value
 // CHECK-NEXT: }
@@ -289,12 +285,12 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let local_constant: i32 = 61;
-// CHECK-NEXT:     let aligned_value: __SlateAlign32<i32> = __SlateAlign32(3 as i32);
+// CHECK-NEXT:     let aligned_value: __SlateAlign32<i32> = __SlateAlign32(3i32);
 // CHECK-NEXT:     let inferred_value: i32 = 67;
 // CHECK-NEXT:     let same_type_value: i32 = 71;
 // CHECK-NEXT:     let unqualified_value: i32 = 79;
 // CHECK-NEXT:     let α: i32 = 5;
-// CHECK-NEXT:     let signed_precise: i32 = (-12345 as i32) << 15 >> 15;
+// CHECK-NEXT:     let signed_precise: i32 = -12345i32;
 // CHECK-NEXT:     let unsigned_precise: u32 = 100000;
 // CHECK-NEXT:     let binary_value: i32 = 165;
 // CHECK-NEXT:     let utf8_character: u8 = 90;
@@ -331,7 +327,7 @@ int main(void) {
 // CHECK-NEXT:         .wrapping_add(((((wide_value as u64) == 8589934591) as i32) as i64) as u64)
 // CHECK-NEXT:         .wrapping_add((static_compound_value as i64) as u64)
 // CHECK-NEXT:         .wrapping_add(7)
-// CHECK-NEXT:         .wrapping_add((((11 as i32) + (13 as i32)) as i64) as u64)
+// CHECK-NEXT:         .wrapping_add(24u64)
 // CHECK-NEXT:         .wrapping_add(1)
 // CHECK-NEXT:         .wrapping_add(2)
 // CHECK-NEXT:         .wrapping_add(3)
@@ -343,10 +339,10 @@ int main(void) {
 // CHECK-NEXT:         + (((unsafe { c23_embedded[2] }) as u32) as i32);
 // CHECK-NEXT:     let type_total: i32 = (null_value.is_null() as i32) + (null_pointer.is_null() as i32)
 // CHECK-NEXT:         + (boolean_value as i32) + (!false_value as i32) + unsafe { c23_thread_value };
-// CHECK-NEXT:     let control_total: i32 = c23_unnamed_parameter(89 as i32, 97 as i32)
-// CHECK-NEXT:         + c23_label_declaration(101 as i32) + c23_switch_fallthrough(1 as i32)
-// CHECK-NEXT:         + unsafe { c23_relaxed_variadic(103 as i32, 107 as i32) };
-// CHECK-NEXT:     let removal_total: i32 = ((202311 as i64) == (202311 as i64)) as i32;
+// CHECK-NEXT:     let control_total: i32 = c23_unnamed_parameter(89i32, 97i32)
+// CHECK-NEXT:         + c23_label_declaration(101i32) + c23_switch_fallthrough(1i32)
+// CHECK-NEXT:         + unsafe { c23_relaxed_variadic(103i32, 107i32) };
+// CHECK-NEXT:     let removal_total: i32 = (202311i64 == 202311i64) as i32;
 // CHECK-NEXT:     if (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(c23_never_flag)) }) != 0 {
 // CHECK-NEXT:         c23_never_return();
 // CHECK-NEXT:     }
@@ -357,7 +353,7 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut utf8_text: [u8; 3] = [206 as u8, 169 as u8, 0 as u8];
+// CHECK-NEXT: static mut utf8_text: [u8; 3] = [206, 169, 0];
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

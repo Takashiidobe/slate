@@ -30,7 +30,7 @@ int main(void) {
 // CHECK-NEXT: fn elapsed() -> u64 {
 // CHECK-NEXT:     let start: u64 = unsafe { __slate_intrinsic_9e72945d5c6a2d09() };
 // CHECK-NEXT:     let mut sink: i32 = 0;
-// CHECK-NEXT:     for i in 0 as i32..1000 as i32 {
+// CHECK-NEXT:     for i in 0i32..1000i32 {
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(sink)) };
 // CHECK-NEXT:         unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(sink), [[V_0]] + i) };
 // CHECK-NEXT:     }
@@ -38,7 +38,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let ticks: u64 = elapsed();
-// CHECK-NEXT:     println!("{}", (ticks > 0 && ticks < (1 as u64) << (40 as i32)) as i32);
+// CHECK-NEXT:     println!("{}", (ticks > 0 && ticks < 1099511627776u64) as i32);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

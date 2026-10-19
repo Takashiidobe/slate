@@ -110,10 +110,10 @@ int main(void) {
 // CHECK-NEXT:     s.a = 5;
 // CHECK-NEXT:     s.b = 4660;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%zu %zu\n".as_ptr(), 16 as u64, 16 as u64) };
+// CHECK-NEXT:     unsafe { printf(c"%zu %zu\n".as_ptr(), 16u64, 16u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%zu %zu\n".as_ptr(), 0 as u64, 4 as u64) };
+// CHECK-NEXT:     unsafe { printf(c"%zu %zu\n".as_ptr(), 0u64, 4u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%d %x\n".as_ptr(), s.a as i32, s.b) };

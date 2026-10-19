@@ -72,18 +72,18 @@ int main(void) {
 // CHECK-NEXT:             (strncmp(
 // CHECK-NEXT:                 alpha.as_mut_ptr() as *const i8,
 // CHECK-NEXT:                 beta.as_mut_ptr() as *const i8,
-// CHECK-NEXT:                 2 as u64,
+// CHECK-NEXT:                 2u64,
 // CHECK-NEXT:             ) == 0) as i32,
 // CHECK-NEXT:             (memcmp(
 // CHECK-NEXT:                 bytes_a.as_mut_ptr() as *const (),
 // CHECK-NEXT:                 bytes_b.as_mut_ptr() as *const (),
-// CHECK-NEXT:                 1 as u64,
+// CHECK-NEXT:                 1u64,
 // CHECK-NEXT:             ) == 0) as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     let first: *mut i8 = unsafe { strchr(hay.as_mut_ptr() as *const i8, 97 as i32) };
-// CHECK-NEXT:     let last: *mut i8 = unsafe { strrchr(hay.as_mut_ptr() as *const i8, 97 as i32) };
+// CHECK-NEXT:     let first: *mut i8 = unsafe { strchr(hay.as_mut_ptr() as *const i8, 97i32) };
+// CHECK-NEXT:     let last: *mut i8 = unsafe { strrchr(hay.as_mut_ptr() as *const i8, 97i32) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
@@ -102,11 +102,9 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     let __slate_printf_arg0 = !unsafe { strchr(hay.as_mut_ptr() as *const i8, 0 as i32) }
+// CHECK-NEXT:     let __slate_printf_arg0 = !unsafe { strchr(hay.as_mut_ptr() as *const i8, 0i32) }
 // CHECK-NEXT:         .is_null() as i32;
-// CHECK-NEXT:     let __slate_printf_arg1 = unsafe {
-// CHECK-NEXT:         strchr(hay.as_mut_ptr() as *const i8, 122 as i32)
-// CHECK-NEXT:     }
+// CHECK-NEXT:     let __slate_printf_arg1 = unsafe { strchr(hay.as_mut_ptr() as *const i8, 122i32) }
 // CHECK-NEXT:         .is_null() as i32;
 // CHECK-NEXT:     println!("{} {}", __slate_printf_arg0, __slate_printf_arg1);
 // CHECK-NEXT:     let __slate_printf_arg0 = !unsafe {

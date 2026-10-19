@@ -23,16 +23,14 @@ int main(void) {
 // CHECK-NEXT:     fn free(__ptr: *mut ());
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut p: *mut i32 = (unsafe { malloc((4 as u64).wrapping_mul(2 as u64)) })
-// CHECK-NEXT:         as *mut i32;
+// CHECK-NEXT:     let mut p: *mut i32 = (unsafe { malloc(8u64) }) as *mut i32;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *p.offset(0 as isize) = 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *p.offset(1 as isize) = 2;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     p = (unsafe { realloc(p as *mut (), (4 as u64).wrapping_mul(4 as u64)) })
-// CHECK-NEXT:         as *mut i32;
+// CHECK-NEXT:     p = (unsafe { realloc(p as *mut (), 16u64) }) as *mut i32;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *p.offset(2 as isize) = 3;
 // CHECK-NEXT:     }

@@ -22,7 +22,7 @@ int main(void) {
 // CHECK-NEXT:     a * b
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     println!("{}", imul(- (4 as i32), 7 as i32));
+// CHECK-NEXT:     println!("{}", imul(- 4i32, 7i32));
 // CHECK-NEXT:     let u: u32 = 100000;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%u\n".as_ptr(), u.wrapping_mul(u)) };

@@ -177,7 +177,7 @@ int main(void) {
 // CHECK-NEXT:         println!("grid {} = {}", limit, grid(limit));
 // CHECK-NEXT:         limit += 7;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     for n in 0 as i32..6 as i32 {
+// CHECK-NEXT:     for n in 0i32..6i32 {
 // CHECK-NEXT:         println!("dispatch {} = {}", n, dispatch(n));
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut n: i32 = 1;

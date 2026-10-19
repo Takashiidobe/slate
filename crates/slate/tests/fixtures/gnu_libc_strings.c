@@ -139,7 +139,7 @@ int main(void) {
 // CHECK-NEXT:         mempcpy(
 // CHECK-NEXT:             destination.0.as_mut_ptr() as *mut (),
 // CHECK-NEXT:             b"slate\0".as_ptr() as *const (),
-// CHECK-NEXT:             6 as u64,
+// CHECK-NEXT:             6u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) as *mut i8;
 // CHECK-NEXT:     let mut token_score: i32 = 0;
@@ -154,24 +154,23 @@ int main(void) {
 // CHECK-NEXT:         token_score = token_score * 10
 // CHECK-NEXT:             + (((unsafe { strlen(token as *const i8) }) as u32) as i32);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { memfrob(obscured.as_mut_ptr() as *mut (), 3 as u64) };
-// CHECK-NEXT:     unsafe { memfrob(obscured.as_mut_ptr() as *mut (), 3 as u64) };
+// CHECK-NEXT:     unsafe { memfrob(obscured.as_mut_ptr() as *mut (), 3u64) };
+// CHECK-NEXT:     unsafe { memfrob(obscured.as_mut_ptr() as *mut (), 3u64) };
 // CHECK-NEXT:     ((((((unsafe { end.offset_from(destination.0.as_mut_ptr() as *mut i8) }) as i64)
 // CHECK-NEXT:         as i32)
 // CHECK-NEXT:         + (((unsafe {
 // CHECK-NEXT:             strcmp(destination.0.as_mut_ptr() as *const i8, c"slate".as_ptr())
 // CHECK-NEXT:         }) == 0) as i32)) as i64)
 // CHECK-NEXT:         + ((unsafe {
-// CHECK-NEXT:             (memrchr(repeated.as_ptr() as *const (), 97 as i32, 4 as u64) as *const i8)
+// CHECK-NEXT:             (memrchr(repeated.as_ptr() as *const (), 97i32, 4u64) as *const i8)
 // CHECK-NEXT:                 .offset_from(repeated.as_ptr() as *const i8)
 // CHECK-NEXT:         }) as i64)
 // CHECK-NEXT:         + ((unsafe {
-// CHECK-NEXT:             (rawmemchr(repeated.as_ptr() as *const (), 99 as i32) as *const i8)
+// CHECK-NEXT:             (rawmemchr(repeated.as_ptr() as *const (), 99i32) as *const i8)
 // CHECK-NEXT:                 .offset_from(repeated.as_ptr() as *const i8)
 // CHECK-NEXT:         }) as i64)
 // CHECK-NEXT:         + ((unsafe {
-// CHECK-NEXT:             strchrnul(c"abc".as_ptr(), 122 as i32)
-// CHECK-NEXT:                 .offset_from(c"abc".as_ptr() as *mut i8)
+// CHECK-NEXT:             strchrnul(c"abc".as_ptr(), 122i32).offset_from(c"abc".as_ptr() as *mut i8)
 // CHECK-NEXT:         }) as i64)
 // CHECK-NEXT:         + ((!unsafe { strcasestr(c"GNU Library".as_ptr(), c"library".as_ptr()) }
 // CHECK-NEXT:             .is_null() as i32) as i64)
@@ -179,9 +178,9 @@ int main(void) {
 // CHECK-NEXT:             as i32) as i64)
 // CHECK-NEXT:         + ((((unsafe { strcmp(obscured.as_mut_ptr() as *const i8, c"gnu".as_ptr()) })
 // CHECK-NEXT:             == 0) as i32) as i64) + (token_score as i64)
-// CHECK-NEXT:         + ((((unsafe { strcmp(strerrorname_np(22 as i32), c"EINVAL".as_ptr()) }) == 0)
+// CHECK-NEXT:         + ((((unsafe { strcmp(strerrorname_np(22i32), c"EINVAL".as_ptr()) }) == 0)
 // CHECK-NEXT:             as i32) as i64)
-// CHECK-NEXT:         + ((!unsafe { strerrordesc_np(22 as i32) }.is_null() as i32) as i64)) as i32
+// CHECK-NEXT:         + ((!unsafe { strerrordesc_np(22i32) }.is_null() as i32) as i64)) as i32
 // CHECK-NEXT: }
 // CHECK-NEXT: fn gnu_argz_extensions() -> i32 {
 // CHECK-NEXT:     let mut argz: *mut i8 = std::ptr::null_mut::<i8>();
@@ -192,7 +191,7 @@ int main(void) {
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i32 = ((unsafe {
 // CHECK-NEXT:         argz_create_sep(
 // CHECK-NEXT:             c"one:two:three".as_ptr(),
-// CHECK-NEXT:             58 as i32,
+// CHECK-NEXT:             58i32,
 // CHECK-NEXT:             std::ptr::addr_of_mut!(argz),
 // CHECK-NEXT:             std::ptr::addr_of_mut!(length),
 // CHECK-NEXT:         )
@@ -228,7 +227,7 @@ int main(void) {
 // CHECK-NEXT:     total += (replacements == 1) as i32;
 // CHECK-NEXT:     let [[V_6:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_6]] + (((unsafe { argz_count(argz as *const i8, length) }) == 4) as i32);
-// CHECK-NEXT:     unsafe { argz_stringify(argz, length, 44 as i32) };
+// CHECK-NEXT:     unsafe { argz_stringify(argz, length, 44i32) };
 // CHECK-NEXT:     let [[V_7:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_7]]
 // CHECK-NEXT:         + (((unsafe { strcmp(argz as *const i8, c"one,two,THREE,four".as_ptr()) }) == 0)

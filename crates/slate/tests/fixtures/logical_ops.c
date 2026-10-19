@@ -30,7 +30,7 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut hits: i32 = 0 as i32;
+// CHECK-NEXT: static mut hits: i32 = 0;
 // CHECK-NEXT: fn mark(value: i32) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         hits = hits + 1;
@@ -59,22 +59,22 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         hits = 0;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     println!("{} {}", logical_and(0 as i32, 1 as i32), unsafe { hits });
+// CHECK-NEXT:     println!("{} {}", logical_and(0i32, 1i32), unsafe { hits });
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         hits = 0;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     println!("{} {}", logical_and(2 as i32, 3 as i32), unsafe { hits });
+// CHECK-NEXT:     println!("{} {}", logical_and(2i32, 3i32), unsafe { hits });
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         hits = 0;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     println!("{} {}", logical_or(5 as i32, 0 as i32), unsafe { hits });
+// CHECK-NEXT:     println!("{} {}", logical_or(5i32, 0i32), unsafe { hits });
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         hits = 0;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     println!("{} {}", logical_or(0 as i32, 7 as i32), unsafe { hits });
+// CHECK-NEXT:     println!("{} {}", logical_or(0i32, 7i32), unsafe { hits });
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", ! ((0 as i32) != (0 as i32)) as i32, ! ((4 as i32) != (0 as i32)) as
-// CHECK-NEXT:         i32, ! (! ((9 as i32) != (0 as i32))) as i32
+// CHECK-NEXT:         "{} {} {}", ! (0i32 != 0i32) as i32, ! (4i32 != 0i32) as i32, ! (! (9i32 !=
+// CHECK-NEXT:         0i32)) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

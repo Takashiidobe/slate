@@ -381,13 +381,13 @@ int main(void) {
 // CHECK-NEXT:     total += [[V_29]];
 // CHECK-NEXT:     let [[V_30:__v[0-9]+]]: i32 = ((unsafe { j1(1.0f64) }) > 0.4f64) as i32;
 // CHECK-NEXT:     total += [[V_30]];
-// CHECK-NEXT:     let [[V_31:__v[0-9]+]]: i32 = ((unsafe { jn(2 as i32, 1.0f64) }) > 0.1f64) as i32;
+// CHECK-NEXT:     let [[V_31:__v[0-9]+]]: i32 = ((unsafe { jn(2i32, 1.0f64) }) > 0.1f64) as i32;
 // CHECK-NEXT:     total += [[V_31]];
 // CHECK-NEXT:     let [[V_32:__v[0-9]+]]: i32 = ((unsafe { y0(1.0f64) }) > 0.08f64) as i32;
 // CHECK-NEXT:     total += [[V_32]];
 // CHECK-NEXT:     let [[V_33:__v[0-9]+]]: i32 = ((unsafe { y1(1.0f64) }) < 0.0f64) as i32;
 // CHECK-NEXT:     total += [[V_33]];
-// CHECK-NEXT:     let [[V_34:__v[0-9]+]]: i32 = ((unsafe { yn(2 as i32, 1.0f64) }) < 0.0f64) as i32;
+// CHECK-NEXT:     let [[V_34:__v[0-9]+]]: i32 = ((unsafe { yn(2i32, 1.0f64) }) < 0.0f64) as i32;
 // CHECK-NEXT:     total += [[V_34]];
 // CHECK-NEXT:     let [[V_35:__v[0-9]+]]: i32 = ((unsafe { j0f(1.0f32) }) > 0.7f32) as i32;
 // CHECK-NEXT:     total += [[V_35]];
@@ -397,11 +397,11 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn gnu_fenv_extensions() -> i32 {
 // CHECK-NEXT:     let mut total: i32 = 0;
-// CHECK-NEXT:     let [[V_37:__v[0-9]+]]: i32 = ((unsafe { feenableexcept(4 as i32) }) != -1) as i32;
+// CHECK-NEXT:     let [[V_37:__v[0-9]+]]: i32 = ((unsafe { feenableexcept(4i32) }) != -1) as i32;
 // CHECK-NEXT:     total += [[V_37]];
 // CHECK-NEXT:     let [[V_38:__v[0-9]+]]: i32 = ((unsafe { fegetexcept() }) & 4 != 0) as i32;
 // CHECK-NEXT:     total += [[V_38]];
-// CHECK-NEXT:     let [[V_39:__v[0-9]+]]: i32 = ((unsafe { fedisableexcept(4 as i32) }) != -1) as i32;
+// CHECK-NEXT:     let [[V_39:__v[0-9]+]]: i32 = ((unsafe { fedisableexcept(4i32) }) != -1) as i32;
 // CHECK-NEXT:     total += [[V_39]];
 // CHECK-NEXT:     let [[V_40:__v[0-9]+]]: i32 = ((unsafe { fegetexcept() }) & 4 == 0) as i32;
 // CHECK-NEXT:     total += [[V_40]];

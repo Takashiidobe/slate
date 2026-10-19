@@ -43,13 +43,8 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
-// CHECK-NEXT: static mut counter: i32 = 3 as i32;
-// CHECK-NEXT: static mut hidden: __SlateAlign16<[i32; 4]> = __SlateAlign16([
-// CHECK-NEXT:     1 as i32,
-// CHECK-NEXT:     2 as i32,
-// CHECK-NEXT:     3 as i32,
-// CHECK-NEXT:     4 as i32,
-// CHECK-NEXT: ]);
+// CHECK-NEXT: static mut counter: i32 = 3;
+// CHECK-NEXT: static mut hidden: __SlateAlign16<[i32; 4]> = __SlateAlign16([1i32, 2i32, 3i32, 4i32]);
 // CHECK-NEXT: fn aligned_function() {}
 // CHECK-NEXT: fn plain_function() {}
 // CHECK-NEXT: fn llabs(value: i64) -> i64 {
@@ -63,20 +58,20 @@ int main(void) {
 // CHECK-NEXT:         hidden.0[2] = 30;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("{} {}", unsafe { counter }, unsafe { hidden.0[2] });
-// CHECK-NEXT:     println!("{} {}", 64 as i32, 4 as i32);
+// CHECK-NEXT:     println!("{} {}", 64i32, 4i32);
 // CHECK-NEXT:     let values: __SlateAlign16<[i32; 6]> = __SlateAlign16([
-// CHECK-NEXT:         0 as i32,
-// CHECK-NEXT:         -(1 as i32),
-// CHECK-NEXT:         1 as i32,
-// CHECK-NEXT:         255 as i32,
-// CHECK-NEXT:         -(256 as i32),
-// CHECK-NEXT:         1073741824 as i32,
+// CHECK-NEXT:         0i32,
+// CHECK-NEXT:         -1i32,
+// CHECK-NEXT:         1i32,
+// CHECK-NEXT:         255i32,
+// CHECK-NEXT:         -256i32,
+// CHECK-NEXT:         1073741824i32,
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let wide: __SlateAlign16<[i64; 4]> = __SlateAlign16([
-// CHECK-NEXT:         0 as i64,
-// CHECK-NEXT:         -(1 as i64),
-// CHECK-NEXT:         (1 as i64) << (40 as i32),
-// CHECK-NEXT:         -((1 as i64) << (40 as i32)),
+// CHECK-NEXT:         0i64,
+// CHECK-NEXT:         -1i64,
+// CHECK-NEXT:         1099511627776i64,
+// CHECK-NEXT:         -1099511627776i64,
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let mut i: i32 = 0;

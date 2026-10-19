@@ -138,7 +138,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%d %d %d %d %ld\n".as_ptr(),
-// CHECK-NEXT:             core(7 as i32, 2 as i32),
+// CHECK-NEXT:             core(7i32, 2i32),
 // CHECK-NEXT:             x,
 // CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(y)),
 // CHECK-NEXT:             constant,

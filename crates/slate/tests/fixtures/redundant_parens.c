@@ -32,7 +32,7 @@ int main() {
 // CHECK-NEXT:         r += 10;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let t: i32 = if a > b { a - b } else { b - a };
-// CHECK-NEXT:     let m: i32 = (a & b) + (a << (1 as i32));
+// CHECK-NEXT:     let m: i32 = (a & b) + (a << 1i32);
 // CHECK-NEXT:     r + t + m
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

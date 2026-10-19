@@ -32,8 +32,8 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut global_bias: i32 = 3 as i32;
-// CHECK-NEXT: static mut atomic_counter: i32 = 4 as i32;
+// CHECK-NEXT: static mut global_bias: i32 = 3;
+// CHECK-NEXT: static mut atomic_counter: i32 = 4;
 // CHECK-NEXT: fn add_const_param(value: i32) -> i32 {
 // CHECK-NEXT:     let local_bias: i32 = 5;
 // CHECK-NEXT:     value + local_bias + unsafe { global_bias }
@@ -60,12 +60,12 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut left: i32 = 7;
 // CHECK-NEXT:     let mut right: i32 = 11;
-// CHECK-NEXT:     println!("{}", add_const_param(2 as i32));
+// CHECK-NEXT:     println!("{}", add_const_param(2i32));
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{}", add_restrict_pointers(unsafe { & (* std::ptr::addr_of_mut!(left)) }, unsafe
 // CHECK-NEXT:         { & (* std::ptr::addr_of_mut!(right)) })
 // CHECK-NEXT:     );
-// CHECK-NEXT:     println!("{}", add_atomic_value(6 as i32));
+// CHECK-NEXT:     println!("{}", add_atomic_value(6i32));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

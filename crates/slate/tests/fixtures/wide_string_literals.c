@@ -29,18 +29,7 @@ int main(void) {
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: static mut __slate_str19: [i32; 12] = [
-// CHECK-NEXT:     104 as i32,
-// CHECK-NEXT:     101 as i32,
-// CHECK-NEXT:     108 as i32,
-// CHECK-NEXT:     108 as i32,
-// CHECK-NEXT:     111 as i32,
-// CHECK-NEXT:     32 as i32,
-// CHECK-NEXT:     119 as i32,
-// CHECK-NEXT:     111 as i32,
-// CHECK-NEXT:     114 as i32,
-// CHECK-NEXT:     108 as i32,
-// CHECK-NEXT:     100 as i32,
-// CHECK-NEXT:     0 as i32,
+// CHECK-NEXT:     104, 101, 108, 108, 111, 32, 119, 111, 114, 108, 100, 0,
 // CHECK-NEXT: ];
 // CHECK-NEXT: static mut greeting: *const i32 = (unsafe {
 // CHECK-NEXT:     std::ptr::addr_of_mut!(__slate_str19) as *mut i32
@@ -51,12 +40,7 @@ int main(void) {
 // CHECK-NEXT:     let u32: *const u32 = (unsafe { std::ptr::addr_of_mut!(__slate_str21) as *mut u32 })
 // CHECK-NEXT:         as *const u32;
 // CHECK-NEXT:     let mut buf: __SlateAlign16<[i32; 6]> = __SlateAlign16([
-// CHECK-NEXT:         108 as i32,
-// CHECK-NEXT:         111 as i32,
-// CHECK-NEXT:         99 as i32,
-// CHECK-NEXT:         97 as i32,
-// CHECK-NEXT:         108 as i32,
-// CHECK-NEXT:         0 as i32,
+// CHECK-NEXT:         108i32, 111i32, 99i32, 97i32, 108i32, 0i32,
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     buf.0[0] = 76;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -81,7 +65,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%ls %zu\n".as_ptr(), buf.0.as_mut_ptr() as *mut i32, 16 as u64) };
+// CHECK-NEXT:     unsafe { printf(c"%ls %zu\n".as_ptr(), buf.0.as_mut_ptr() as *mut i32, 16u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {}", unsafe { __slate_str26[1] }, (unsafe { *
@@ -90,10 +74,10 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut __slate_str20: [u16; 4] = [233 as u16, 116 as u16, 233 as u16, 0 as u16];
-// CHECK-NEXT: static mut __slate_str21: [u32; 3] = [128512 as u32, 33 as u32, 0 as u32];
-// CHECK-NEXT: static mut __slate_str26: [i32; 3] = [97 as i32, 98 as i32, 0 as i32];
-// CHECK-NEXT: static mut __slate_str27: [i32; 4] = [120 as i32, 121 as i32, 122 as i32, 0 as i32];
+// CHECK-NEXT: static mut __slate_str20: [u16; 4] = [233, 116, 233, 0];
+// CHECK-NEXT: static mut __slate_str21: [u32; 3] = [128512, 33, 0];
+// CHECK-NEXT: static mut __slate_str26: [i32; 3] = [97, 98, 0];
+// CHECK-NEXT: static mut __slate_str27: [i32; 4] = [120, 121, 122, 0];
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

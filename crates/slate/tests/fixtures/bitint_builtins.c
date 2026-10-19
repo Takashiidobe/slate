@@ -792,15 +792,15 @@ int main(void) {
 // CHECK-NEXT:     if a != 0 {
 // CHECK-NEXT:         print!(
 // CHECK-NEXT:             "{} {} ", (((a as u8) & 31).leading_zeros() - 3) as i32, ((a as u8) & 31)
-// CHECK-NEXT:             .trailing_zeros().min(5 as u32) as i32
+// CHECK-NEXT:             .trailing_zeros().min(5u32) as i32
 // CHECK-NEXT:         );
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {}", { let [[T_0]] = a; let [[T_1]] = - (1 as i32); if [[T_0]] == 0 { [[T_1]] } else {
-// CHECK-NEXT:         ((([[T_0]] as u8) & 31).leading_zeros() - 3) as i32 } }, { let [[T_2]] = a; let [[T_3]] =
-// CHECK-NEXT:         - (2 as i32); if [[T_2]] == 0 { [[T_3]] } else { (([[T_2]] as u8) & 31).trailing_zeros()
-// CHECK-NEXT:         .min(5 as u32) as i32 } }
+// CHECK-NEXT:         "{} {}", { let [[T_0]] = a; let [[T_1]] = - 1i32; if [[T_0]] == 0 { [[T_1]] } else { ((([[T_0]]
+// CHECK-NEXT:         as u8) & 31).leading_zeros() - 3) as i32 } }, { let [[T_2]] = a; let [[T_3]] = - 2i32;
+// CHECK-NEXT:         if [[T_2]] == 0 { [[T_3]] } else { (([[T_2]] as u8) & 31).trailing_zeros().min(5u32) as
+// CHECK-NEXT:         i32 } }
 // CHECK-NEXT:     );
 // CHECK-NEXT: }
 // CHECK-NEXT: fn c_u9(a: u16) {
@@ -809,15 +809,15 @@ int main(void) {
 // CHECK-NEXT:     if a != 0 {
 // CHECK-NEXT:         print!(
 // CHECK-NEXT:             "{} {} ", (((a as u16) & 511).leading_zeros() - 7) as i32, ((a as u16) & 511)
-// CHECK-NEXT:             .trailing_zeros().min(9 as u32) as i32
+// CHECK-NEXT:             .trailing_zeros().min(9u32) as i32
 // CHECK-NEXT:         );
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {}", { let [[T_0]] = a; let [[T_1]] = - (1 as i32); if [[T_0]] == 0 { [[T_1]] } else {
-// CHECK-NEXT:         ((([[T_0]] as u16) & 511).leading_zeros() - 7) as i32 } }, { let [[T_2]] = a; let [[T_3]]
-// CHECK-NEXT:         = - (2 as i32); if [[T_2]] == 0 { [[T_3]] } else { (([[T_2]] as u16) & 511)
-// CHECK-NEXT:         .trailing_zeros().min(9 as u32) as i32 } }
+// CHECK-NEXT:         "{} {}", { let [[T_0]] = a; let [[T_1]] = - 1i32; if [[T_0]] == 0 { [[T_1]] } else { ((([[T_0]]
+// CHECK-NEXT:         as u16) & 511).leading_zeros() - 7) as i32 } }, { let [[T_2]] = a; let [[T_3]] = -
+// CHECK-NEXT:         2i32; if [[T_2]] == 0 { [[T_3]] } else { (([[T_2]] as u16) & 511).trailing_zeros()
+// CHECK-NEXT:         .min(9u32) as i32 } }
 // CHECK-NEXT:     );
 // CHECK-NEXT: }
 // CHECK-NEXT: fn c_u33(a: u64) {
@@ -826,15 +826,15 @@ int main(void) {
 // CHECK-NEXT:     if a != 0 {
 // CHECK-NEXT:         print!(
 // CHECK-NEXT:             "{} {} ", (((a as u64) & 8589934591).leading_zeros() - 31) as i32, ((a as
-// CHECK-NEXT:             u64) & 8589934591).trailing_zeros().min(33 as u32) as i32
+// CHECK-NEXT:             u64) & 8589934591).trailing_zeros().min(33u32) as i32
 // CHECK-NEXT:         );
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {}", { let [[T_0]] = a; let [[T_1]] = - (1 as i32); if [[T_0]] == 0 { [[T_1]] } else {
-// CHECK-NEXT:         ((([[T_0]] as u64) & 8589934591).leading_zeros() - 31) as i32 } }, { let [[T_2]] = a;
-// CHECK-NEXT:         let [[T_3]] = - (2 as i32); if [[T_2]] == 0 { [[T_3]] } else { (([[T_2]] as u64) &
-// CHECK-NEXT:         8589934591).trailing_zeros().min(33 as u32) as i32 } }
+// CHECK-NEXT:         "{} {}", { let [[T_0]] = a; let [[T_1]] = - 1i32; if [[T_0]] == 0 { [[T_1]] } else { ((([[T_0]]
+// CHECK-NEXT:         as u64) & 8589934591).leading_zeros() - 31) as i32 } }, { let [[T_2]] = a; let [[T_3]]
+// CHECK-NEXT:         = - 2i32; if [[T_2]] == 0 { [[T_3]] } else { (([[T_2]] as u64) & 8589934591)
+// CHECK-NEXT:         .trailing_zeros().min(33u32) as i32 } }
 // CHECK-NEXT:     );
 // CHECK-NEXT: }
 // CHECK-NEXT: fn c_u64(a: u64) {
@@ -845,9 +845,9 @@ int main(void) {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {}", { let [[T_0]] = a; let [[T_1]] = - (1 as i32); if [[T_0]] == 0 { [[T_1]] } else {
-// CHECK-NEXT:         [[T_0]].leading_zeros() as i32 } }, { let [[T_2]] = a; let [[T_3]] = - (2 as i32); if [[T_2]]
-// CHECK-NEXT:         == 0 { [[T_3]] } else { [[T_2]].trailing_zeros() as i32 } }
+// CHECK-NEXT:         "{} {}", { let [[T_0]] = a; let [[T_1]] = - 1i32; if [[T_0]] == 0 { [[T_1]] } else { [[T_0]]
+// CHECK-NEXT:         .leading_zeros() as i32 } }, { let [[T_2]] = a; let [[T_3]] = - 2i32; if [[T_2]] == 0 {
+// CHECK-NEXT:         [[T_3]] } else { [[T_2]].trailing_zeros() as i32 } }
 // CHECK-NEXT:     );
 // CHECK-NEXT: }
 // CHECK-NEXT: fn c_u100(mut a: bitint::BUint<100, 2, 16, bitint::A8>) {
@@ -858,11 +858,10 @@ int main(void) {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {}", { let [[T_0]] = a; let [[T_1]] = - (1 as i32); if [[T_0]] == < bitint::BUint <
-// CHECK-NEXT:         100, 2, 16, bitint::A8 >>::from_u128(0) { [[T_1]] } else { [[T_0]].leading_zeros() as
-// CHECK-NEXT:         i32 } }, { let [[T_2]] = a; let [[T_3]] = - (2 as i32); if [[T_2]] == < bitint::BUint <
-// CHECK-NEXT:         100, 2, 16, bitint::A8 >>::from_u128(0) { [[T_3]] } else { [[T_2]].trailing_zeros() as
-// CHECK-NEXT:         i32 } }
+// CHECK-NEXT:         "{} {}", { let [[T_0]] = a; let [[T_1]] = - 1i32; if [[T_0]] == < bitint::BUint < 100, 2,
+// CHECK-NEXT:         16, bitint::A8 >>::from_u128(0) { [[T_1]] } else { [[T_0]].leading_zeros() as i32 } },
+// CHECK-NEXT:         { let [[T_2]] = a; let [[T_3]] = - 2i32; if [[T_2]] == < bitint::BUint < 100, 2, 16,
+// CHECK-NEXT:         bitint::A8 >>::from_u128(0) { [[T_3]] } else { [[T_2]].trailing_zeros() as i32 } }
 // CHECK-NEXT:     );
 // CHECK-NEXT: }
 // CHECK-NEXT: fn c_u200(mut a: bitint::BUint<200, 4, 32, bitint::A8>) {
@@ -873,11 +872,10 @@ int main(void) {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {}", { let [[T_0]] = a; let [[T_1]] = - (1 as i32); if [[T_0]] == < bitint::BUint <
-// CHECK-NEXT:         200, 4, 32, bitint::A8 >>::from_u128(0) { [[T_1]] } else { [[T_0]].leading_zeros() as
-// CHECK-NEXT:         i32 } }, { let [[T_2]] = a; let [[T_3]] = - (2 as i32); if [[T_2]] == < bitint::BUint <
-// CHECK-NEXT:         200, 4, 32, bitint::A8 >>::from_u128(0) { [[T_3]] } else { [[T_2]].trailing_zeros() as
-// CHECK-NEXT:         i32 } }
+// CHECK-NEXT:         "{} {}", { let [[T_0]] = a; let [[T_1]] = - 1i32; if [[T_0]] == < bitint::BUint < 200, 4,
+// CHECK-NEXT:         32, bitint::A8 >>::from_u128(0) { [[T_1]] } else { [[T_0]].leading_zeros() as i32 } },
+// CHECK-NEXT:         { let [[T_2]] = a; let [[T_3]] = - 2i32; if [[T_2]] == < bitint::BUint < 200, 4, 32,
+// CHECK-NEXT:         bitint::A8 >>::from_u128(0) { [[T_3]] } else { [[T_2]].trailing_zeros() as i32 } }
 // CHECK-NEXT:     );
 // CHECK-NEXT: }
 // CHECK-NEXT: fn c_uint(a: u32) {
@@ -888,9 +886,9 @@ int main(void) {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {}", { let [[T_0]] = a; let [[T_1]] = - (1 as i32); if [[T_0]] == 0 { [[T_1]] } else {
-// CHECK-NEXT:         [[T_0]].leading_zeros() as i32 } }, { let [[T_2]] = a; let [[T_3]] = - (2 as i32); if [[T_2]]
-// CHECK-NEXT:         == 0 { [[T_3]] } else { [[T_2]].trailing_zeros() as i32 } }
+// CHECK-NEXT:         "{} {}", { let [[T_0]] = a; let [[T_1]] = - 1i32; if [[T_0]] == 0 { [[T_1]] } else { [[T_0]]
+// CHECK-NEXT:         .leading_zeros() as i32 } }, { let [[T_2]] = a; let [[T_3]] = - 2i32; if [[T_2]] == 0 {
+// CHECK-NEXT:         [[T_3]] } else { [[T_2]].trailing_zeros() as i32 } }
 // CHECK-NEXT:     );
 // CHECK-NEXT: }
 // CHECK-NEXT: fn sat_i(a: i32, b: i32) {
@@ -901,22 +899,22 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT: }
 // CHECK-NEXT: fn sat_s5(a: i8, b: i8) {
-// CHECK-NEXT:     let x: i8 = a.saturating_add(b).clamp(-16 as i8, 15 as i8);
-// CHECK-NEXT:     let y: i8 = a.saturating_sub(b).clamp(-16 as i8, 15 as i8);
+// CHECK-NEXT:     let x: i8 = a.saturating_add(b).clamp(-16i8, 15i8);
+// CHECK-NEXT:     let y: i8 = a.saturating_sub(b).clamp(-16i8, 15i8);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%lld %lld\n".as_ptr(), x as i64, y as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT: }
 // CHECK-NEXT: fn sat_u5(a: u8, b: u8) {
-// CHECK-NEXT:     let x: u8 = a.saturating_add(b).clamp(0 as u8, 31 as u8);
-// CHECK-NEXT:     let y: u8 = a.saturating_sub(b).clamp(0 as u8, 31 as u8);
+// CHECK-NEXT:     let x: u8 = a.saturating_add(b).clamp(0u8, 31u8);
+// CHECK-NEXT:     let y: u8 = a.saturating_sub(b).clamp(0u8, 31u8);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%llu %llu\n".as_ptr(), x as u64, y as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT: }
 // CHECK-NEXT: fn sat_s9(a: i16, b: i16) {
-// CHECK-NEXT:     let x: i16 = a.saturating_add(b).clamp(-256 as i16, 255 as i16);
-// CHECK-NEXT:     let y: i16 = a.saturating_sub(b).clamp(-256 as i16, 255 as i16);
+// CHECK-NEXT:     let x: i16 = a.saturating_add(b).clamp(-256i16, 255i16);
+// CHECK-NEXT:     let y: i16 = a.saturating_sub(b).clamp(-256i16, 255i16);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%lld %lld\n".as_ptr(), x as i64, y as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -952,18 +950,18 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     s5((15 as i8) << 3 >> 3, (1 as i8) << 3 >> 3);
-// CHECK-NEXT:     s5((-16 as i8) << 3 >> 3, (1 as i8) << 3 >> 3);
-// CHECK-NEXT:     s5((7 as i8) << 3 >> 3, (7 as i8) << 3 >> 3);
-// CHECK-NEXT:     u5((((31 as i8) << 3 >> 3) as u8) & 31, (((1 as i8) << 3 >> 3) as u8) & 31);
-// CHECK-NEXT:     u5((((0 as i8) << 3 >> 3) as u8) & 31, (((1 as i8) << 3 >> 3) as u8) & 31);
-// CHECK-NEXT:     u5((((9 as i8) << 3 >> 3) as u8) & 31, (((9 as i8) << 3 >> 3) as u8) & 31);
-// CHECK-NEXT:     s9_mixed((255 as i16) << 7 >> 7, (((127 as i8) << 1 >> 1) as u8) & 127);
-// CHECK-NEXT:     s9_mixed((-256 as i16) << 7 >> 7, (((100 as i8) << 1 >> 1) as u8) & 127);
-// CHECK-NEXT:     s33((4294967295 as i64) << 31 >> 31, (4294967295 as i64) << 31 >> 31);
-// CHECK-NEXT:     s33((-4294967296 as i64) << 31 >> 31, (1 as i64) << 31 >> 31);
-// CHECK-NEXT:     s64(9223372036854775807 as i64, 1 as i64);
-// CHECK-NEXT:     s64((-(9223372036854775807 as i64) - (1 as i64)) as i64, 2 as i64);
+// CHECK-NEXT:     s5(15i8, 1i8);
+// CHECK-NEXT:     s5(-16i8, 1i8);
+// CHECK-NEXT:     s5(7i8, 7i8);
+// CHECK-NEXT:     u5(31u8, 1u8);
+// CHECK-NEXT:     u5(0u8, 1u8);
+// CHECK-NEXT:     u5(9u8, 9u8);
+// CHECK-NEXT:     s9_mixed(255i16, 127u8);
+// CHECK-NEXT:     s9_mixed(-256i16, 100u8);
+// CHECK-NEXT:     s33(4294967295i64, 4294967295i64);
+// CHECK-NEXT:     s33(-4294967296i64, 1i64);
+// CHECK-NEXT:     s64(9223372036854775807i64, 1i64);
+// CHECK-NEXT:     s64(-9223372036854775808i64, 2i64);
 // CHECK-NEXT:     s100(
 // CHECK-NEXT:         <bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(9223372036854775807 as i128),
 // CHECK-NEXT:         <bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(9223372036854775807 as i128),
@@ -996,20 +994,20 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     s200_to_int(
 // CHECK-NEXT:         <bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(2147483647 as i128),
-// CHECK-NEXT:         1 as i32,
+// CHECK-NEXT:         1i32,
 // CHECK-NEXT:     );
-// CHECK-NEXT:     s200_to_int(<bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(5 as i128), 6 as i32);
-// CHECK-NEXT:     int_to_s200(2147483647 as i32, 2147483647 as i64);
+// CHECK-NEXT:     s200_to_int(<bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(5 as i128), 6i32);
+// CHECK-NEXT:     int_to_s200(2147483647i32, 2147483647i64);
 // CHECK-NEXT:     b128(
 // CHECK-NEXT:         <bitint::BInt<128, 2, 16, bitint::A8>>::from_i128(1 as i128),
 // CHECK-NEXT:         <bitint::BInt<128, 2, 16, bitint::A8>>::from_i128(2 as i128),
 // CHECK-NEXT:     );
-// CHECK-NEXT:     c_u5((((0 as i8) << 3 >> 3) as u8) & 31);
-// CHECK-NEXT:     c_u5((((1 as i8) << 3 >> 3) as u8) & 31);
-// CHECK-NEXT:     c_u5((((22 as i8) << 3 >> 3) as u8) & 31);
-// CHECK-NEXT:     c_u9((((256 as i16) << 7 >> 7) as u16) & 511);
-// CHECK-NEXT:     c_u33((8589934591 as u64) & (8589934591 as u64));
-// CHECK-NEXT:     c_u64(9223372036854775808 as u64);
+// CHECK-NEXT:     c_u5(0u8);
+// CHECK-NEXT:     c_u5(1u8);
+// CHECK-NEXT:     c_u5(22u8);
+// CHECK-NEXT:     c_u9(256u16);
+// CHECK-NEXT:     c_u33(8589934591u64);
+// CHECK-NEXT:     c_u64(9223372036854775808u64);
 // CHECK-NEXT:     c_u100(
 // CHECK-NEXT:         <bitint::BUint<
 // CHECK-NEXT:             100,
@@ -1030,15 +1028,15 @@ int main(void) {
 // CHECK-NEXT:         >>::from_bint(<bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(1 as i128)),
 // CHECK-NEXT:     );
 // CHECK-NEXT:     c_u200(<bitint::BUint<200, 4, 32, bitint::A8>>::from_u128(3000000000000 as u128));
-// CHECK-NEXT:     c_uint(40 as u32);
-// CHECK-NEXT:     sat_i(2147483647 as i32, 5 as i32);
-// CHECK-NEXT:     sat_i(-(2147483647 as i32) - (1 as i32), 5 as i32);
-// CHECK-NEXT:     sat_s5((15 as i8) << 3 >> 3, (5 as i8) << 3 >> 3);
-// CHECK-NEXT:     sat_s5((-16 as i8) << 3 >> 3, (5 as i8) << 3 >> 3);
-// CHECK-NEXT:     sat_u5((((30 as i8) << 3 >> 3) as u8) & 31, (((5 as i8) << 3 >> 3) as u8) & 31);
-// CHECK-NEXT:     sat_u5((((3 as i8) << 3 >> 3) as u8) & 31, (((5 as i8) << 3 >> 3) as u8) & 31);
-// CHECK-NEXT:     sat_s9((255 as i16) << 7 >> 7, (5 as i16) << 7 >> 7);
-// CHECK-NEXT:     sat_s9((-256 as i16) << 7 >> 7, (5 as i16) << 7 >> 7);
+// CHECK-NEXT:     c_uint(40u32);
+// CHECK-NEXT:     sat_i(2147483647i32, 5i32);
+// CHECK-NEXT:     sat_i(-2147483648i32, 5i32);
+// CHECK-NEXT:     sat_s5(15i8, 5i8);
+// CHECK-NEXT:     sat_s5(-16i8, 5i8);
+// CHECK-NEXT:     sat_u5(30u8, 5u8);
+// CHECK-NEXT:     sat_u5(3u8, 5u8);
+// CHECK-NEXT:     sat_s9(255i16, 5i16);
+// CHECK-NEXT:     sat_s9(-256i16, 5i16);
 // CHECK-NEXT:     sat_s100(
 // CHECK-NEXT:         <bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(9223372036854775807 as i128),
 // CHECK-NEXT:         <bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(5 as i128),

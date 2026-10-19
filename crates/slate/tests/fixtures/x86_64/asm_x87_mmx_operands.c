@@ -466,7 +466,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%.1f\n".as_ptr(), from_int(-(42 as i32))) };
+// CHECK-NEXT:     unsafe { printf(c"%.1f\n".as_ptr(), from_int(-42i32)) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
@@ -478,13 +478,10 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%llx\n".as_ptr(),
-// CHECK-NEXT:             add_words(281483566841860 as u64, 4503737069535231 as u64),
-// CHECK-NEXT:         )
+// CHECK-NEXT:         printf(c"%llx\n".as_ptr(), add_words(281483566841860u64, 4503737069535231u64))
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     println!("{}", add_dwords(5 as i32, - (7 as i32)));
+// CHECK-NEXT:     println!("{}", add_dwords(5i32, - 7i32));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

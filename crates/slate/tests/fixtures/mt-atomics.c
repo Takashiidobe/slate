@@ -45,12 +45,12 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
-// CHECK-NEXT: static mut counter: i32 = 0 as i32;
+// CHECK-NEXT: static mut counter: i32 = 0;
 // CHECK-NEXT: extern "C-unwind" fn worker(arg: *mut ()) -> *mut () {
 // CHECK-NEXT:     let mut i: i32 = 0;
 // CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: while i < 100000 {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             let [[T_0:__t[0-9]+]] = 1 as i32;
+// CHECK-NEXT:             let [[T_0:__t[0-9]+]] = 1i32;
 // CHECK-NEXT:             let [[T_1:__t[0-9]+]] = std::sync::atomic::AtomicI32::from_ptr(
 // CHECK-NEXT:                     std::ptr::addr_of_mut!(counter) as *mut i32,
 // CHECK-NEXT:                 )
@@ -62,8 +62,8 @@ int main(void) {
 // CHECK-NEXT:     std::ptr::null_mut::<()>()
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut threads: __SlateAlign16<[u64; 4]> = __SlateAlign16([0 as u64; 4]);
-// CHECK-NEXT:     for i in 0 as i32..4 as i32 {
+// CHECK-NEXT:     let mut threads: __SlateAlign16<[u64; 4]> = __SlateAlign16([0u64; 4]);
+// CHECK-NEXT:     for i in 0i32..4i32 {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             pthread_create(
 // CHECK-NEXT:                 (threads.0.as_mut_ptr() as *mut u64).offset(i as isize),
@@ -73,7 +73,7 @@ int main(void) {
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     for i in 0 as i32..4 as i32 {
+// CHECK-NEXT:     for i in 0i32..4i32 {
 // CHECK-NEXT:         unsafe { pthread_join(threads.0[i as usize], std::ptr::null_mut::<*mut ()>()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!(

@@ -85,23 +85,16 @@ int main(void) {
 // CHECK-NEXT: struct __SlateAlign256<T>(T);
 // CHECK-NEXT: #[repr(C, align(4096))]
 // CHECK-NEXT: struct __SlateAlign4096<T>(T);
-// CHECK-NEXT: static mut counter: __SlateAlign64<i32> = __SlateAlign64(3 as i32);
-// CHECK-NEXT: static mut values: __SlateAlign32<[u32; 3]> = __SlateAlign32([
-// CHECK-NEXT:     (4 as i32) as u32,
-// CHECK-NEXT:     (5 as i32) as u32,
-// CHECK-NEXT:     (6 as i32) as u32,
-// CHECK-NEXT: ]);
+// CHECK-NEXT: static mut counter: __SlateAlign64<i32> = __SlateAlign64(3i32);
+// CHECK-NEXT: static mut values: __SlateAlign32<[u32; 3]> = __SlateAlign32([4u32, 5u32, 6u32]);
 // CHECK-NEXT: static mut weights: __SlateAlign128<[f64; 2]> = __SlateAlign128([0.5f64, 1.5f64]);
-// CHECK-NEXT: static mut origin: __SlateAlign16<Point> = __SlateAlign16(Point {
-// CHECK-NEXT:     x: 7 as i32,
-// CHECK-NEXT:     y: 8 as i32,
-// CHECK-NEXT: });
+// CHECK-NEXT: static mut origin: __SlateAlign16<Point> = __SlateAlign16(Point { x: 7i32, y: 8i32 });
 // CHECK-NEXT: static mut page: __SlateAlign4096<[i8; 16]> = __SlateAlign4096(unsafe {
 // CHECK-NEXT:     std::mem::zeroed()
 // CHECK-NEXT: });
 // CHECK-NEXT: static mut small: __SlateAlign16<i8> = __SlateAlign16(unsafe { std::mem::zeroed() });
 // CHECK-NEXT: static mut values_tail: *mut u32 = unsafe {
-// CHECK-NEXT:     unsafe { std::ptr::addr_of_mut!(values.0) as *mut u32 }.offset((2 as i32) as isize)
+// CHECK-NEXT:     unsafe { std::ptr::addr_of_mut!(values.0) as *mut u32 }.offset(2i32 as isize)
 // CHECK-NEXT: };
 // CHECK-NEXT: static mut origin_ptr: *mut Point = unsafe { std::ptr::addr_of_mut!(origin.0) };
 // CHECK-NEXT: static mut counter_ptr: *mut i32 = unsafe { std::ptr::addr_of_mut!(counter.0) };
@@ -122,7 +115,7 @@ int main(void) {
 // CHECK-NEXT:         calls.0 = calls.0 + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     (unsafe { calls.0 })
-// CHECK-NEXT:         + aligned((unsafe { std::ptr::addr_of_mut!(calls.0) }) as *const (), 256 as u64)
+// CHECK-NEXT:         + aligned((unsafe { std::ptr::addr_of_mut!(calls.0) }) as *const (), 256u64)
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut calls: __SlateAlign256<i32> = __SlateAlign256(unsafe { std::mem::zeroed() });
 // CHECK-NEXT: fn __slate_main() -> i32 {
@@ -164,13 +157,12 @@ int main(void) {
 // CHECK-NEXT:     bump();
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {} {} {}", aligned((unsafe { std::ptr::addr_of_mut!(counter.0) }) as *
-// CHECK-NEXT:         const (), 64 as u64), aligned((unsafe { std::ptr::addr_of_mut!(values.0) as * mut
-// CHECK-NEXT:         u32 }) as * const (), 32 as u64), aligned((unsafe {
-// CHECK-NEXT:         std::ptr::addr_of_mut!(weights.0) as * mut f64 }) as * const (), 128 as u64),
-// CHECK-NEXT:         aligned((unsafe { std::ptr::addr_of_mut!(origin.0) }) as * const (), 16 as u64),
-// CHECK-NEXT:         aligned((unsafe { std::ptr::addr_of_mut!(page.0) as * mut i8 }) as * const (),
-// CHECK-NEXT:         4096 as u64), aligned((unsafe { std::ptr::addr_of_mut!(small.0) }) as * const (),
-// CHECK-NEXT:         16 as u64)
+// CHECK-NEXT:         const (), 64u64), aligned((unsafe { std::ptr::addr_of_mut!(values.0) as * mut u32
+// CHECK-NEXT:         }) as * const (), 32u64), aligned((unsafe { std::ptr::addr_of_mut!(weights.0) as
+// CHECK-NEXT:         * mut f64 }) as * const (), 128u64), aligned((unsafe {
+// CHECK-NEXT:         std::ptr::addr_of_mut!(origin.0) }) as * const (), 16u64), aligned((unsafe {
+// CHECK-NEXT:         std::ptr::addr_of_mut!(page.0) as * mut i8 }) as * const (), 4096u64),
+// CHECK-NEXT:         aligned((unsafe { std::ptr::addr_of_mut!(small.0) }) as * const (), 16u64)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
@@ -203,7 +195,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%zu %zu %zu\n".as_ptr(), 4 as u64, 12 as u64, 8 as u64) };
+// CHECK-NEXT:     unsafe { printf(c"%zu %zu %zu\n".as_ptr(), 4u64, 12u64, 8u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     (unsafe { counter.0 }) % 9
 // CHECK-NEXT: }

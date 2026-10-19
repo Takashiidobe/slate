@@ -23,13 +23,7 @@ int main(void) {
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: fn sum_fixed() -> i32 {
-// CHECK-NEXT:     let a: __SlateAlign16<[i32; 5]> = __SlateAlign16([
-// CHECK-NEXT:         1 as i32,
-// CHECK-NEXT:         2 as i32,
-// CHECK-NEXT:         3 as i32,
-// CHECK-NEXT:         4 as i32,
-// CHECK-NEXT:         5 as i32,
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let a: __SlateAlign16<[i32; 5]> = __SlateAlign16([1i32, 2i32, 3i32, 4i32, 5i32]);
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     for i in a.0.iter().copied() {
 // CHECK-NEXT:         total += i;

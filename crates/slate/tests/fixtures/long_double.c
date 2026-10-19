@@ -574,7 +574,7 @@ int main(void) {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"i128=%lld u128_hi=%llu u128_lo=%llu\n".as_ptr(),
 // CHECK-NEXT:             i128 as i64,
-// CHECK-NEXT:             (u128 >> (64 as i32)) as u64,
+// CHECK-NEXT:             (u128 >> 64i32) as u64,
 // CHECK-NEXT:             (u128 & 18446744073709551615) as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -792,7 +792,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     });
 // CHECK-NEXT:     print_ld(c"ldexp".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_ldexpl__rf80_f80_i32(LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]), 4 as i32)
+// CHECK-NEXT:         __slate_ldexpl__rf80_f80_i32(LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]), 4i32)
 // CHECK-NEXT:     });
 // CHECK-NEXT:     let mut exp: i32 = 0;
 // CHECK-NEXT:     print_ld(c"frexp".as_ptr(), unsafe {
@@ -807,12 +807,12 @@ int main(void) {
 // CHECK-NEXT:         __slate_f80_is_fp_class(LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]), 3) as i32,
 // CHECK-NEXT:         if __slate_f80_is_fp_class(LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]), 516) {
 // CHECK-NEXT:             if __slate_f80_signbit(LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127])) {
-// CHECK-NEXT:                 -1 as i32
+// CHECK-NEXT:                 -1i32
 // CHECK-NEXT:             } else {
-// CHECK-NEXT:                 1 as i32
+// CHECK-NEXT:                 1i32
 // CHECK-NEXT:             }
 // CHECK-NEXT:         } else {
-// CHECK-NEXT:             0 as i32
+// CHECK-NEXT:             0i32
 // CHECK-NEXT:         },
 // CHECK-NEXT:         __slate_f80_signbit(LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 191])) as i32,
 // CHECK-NEXT:         __slate_f80_signbit(LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63])) as i32,
@@ -862,10 +862,10 @@ int main(void) {
 // CHECK-NEXT:     });
 // CHECK-NEXT:     println!("remquo_quo={}", quo);
 // CHECK-NEXT:     print_ld(c"scalbn".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_scalbnl__rf80_f80_i32(std::ptr::read_volatile(std::ptr::addr_of!(ten)), 3 as i32)
+// CHECK-NEXT:         __slate_scalbnl__rf80_f80_i32(std::ptr::read_volatile(std::ptr::addr_of!(ten)), 3i32)
 // CHECK-NEXT:     });
 // CHECK-NEXT:     print_ld(c"scalbln".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_scalblnl__rf80_f80_i64(std::ptr::read_volatile(std::ptr::addr_of!(ten)), 3 as i64)
+// CHECK-NEXT:         __slate_scalblnl__rf80_f80_i64(std::ptr::read_volatile(std::ptr::addr_of!(ten)), 3i64)
 // CHECK-NEXT:     });
 // CHECK-NEXT:     print_ld(c"nextafter".as_ptr(), unsafe {
 // CHECK-NEXT:         __slate_nextafterl__rf80_f80_f80(
@@ -982,12 +982,12 @@ int main(void) {
 // CHECK-NEXT:             516
 // CHECK-NEXT:         ) {
 // CHECK-NEXT:             if __slate_f80_signbit(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vinf)) }) {
-// CHECK-NEXT:                 -1 as i32
+// CHECK-NEXT:                 -1i32
 // CHECK-NEXT:             } else {
-// CHECK-NEXT:                 1 as i32
+// CHECK-NEXT:                 1i32
 // CHECK-NEXT:             }
 // CHECK-NEXT:         } else {
-// CHECK-NEXT:             0 as i32
+// CHECK-NEXT:             0i32
 // CHECK-NEXT:         },
 // CHECK-NEXT:         __slate_f80_is_fp_class(
 // CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vone)) },
@@ -1081,12 +1081,7 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "ldbl_mant_dig={} ldbl_dig={} ldbl_min_exp={} ldbl_max_exp={} ldbl_min_10_exp={} ldbl_max_10_exp={}",
-// CHECK-NEXT:         64 as i32,
-// CHECK-NEXT:         18 as i32,
-// CHECK-NEXT:         -(16381 as i32),
-// CHECK-NEXT:         16384 as i32,
-// CHECK-NEXT:         -(4931 as i32),
-// CHECK-NEXT:         4932 as i32
+// CHECK-NEXT:         64i32, 18i32, -16381i32, 16384i32, -4931i32, 4932i32
 // CHECK-NEXT:     );
 // CHECK-NEXT: }
 // CHECK-EMPTY:

@@ -45,7 +45,7 @@ int main(void) {
 // CHECK-NEXT:     a.wrapping_mul(b)
 // CHECK-NEXT: }
 // CHECK-NEXT: fn print128(v: u128) {
-// CHECK-NEXT:     let hi: u64 = (v >> (64 as i32)) as u64;
+// CHECK-NEXT:     let hi: u64 = (v >> 64i32) as u64;
 // CHECK-NEXT:     let lo: u64 = v as u64;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%llu:%llu\n".as_ptr(), hi, lo) };

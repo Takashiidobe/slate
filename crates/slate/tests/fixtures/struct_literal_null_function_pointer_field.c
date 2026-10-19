@@ -41,7 +41,7 @@ int main(void) {
 // CHECK-NEXT: fn report(mut h: Handlers) -> i32 {
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     if h.onEvent != None {
-// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = unsafe { h.onEvent.unwrap()(1 as i32) };
+// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = unsafe { h.onEvent.unwrap()(1i32) };
 // CHECK-NEXT:         total += [[V_0]];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if !h.counter.is_null() {

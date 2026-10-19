@@ -135,8 +135,8 @@ int main(void) {
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut line: __SlateAlign16<[i8; 64]> = __SlateAlign16([0 as i8; 64]);
-// CHECK-NEXT:     while !unsafe { fgets(line.0.as_mut_ptr() as *mut i8, 64 as i32, g) }.is_null() {
+// CHECK-NEXT:     let mut line: __SlateAlign16<[i8; 64]> = __SlateAlign16([0i8; 64]);
+// CHECK-NEXT:     while !unsafe { fgets(line.0.as_mut_ptr() as *mut i8, 64i32, g) }.is_null() {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { fputs(line.0.as_mut_ptr() as *const i8, stdout) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };

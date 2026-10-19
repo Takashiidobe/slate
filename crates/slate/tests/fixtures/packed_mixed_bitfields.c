@@ -27,14 +27,14 @@ int main(void) {
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut bits: MixedBits = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: MixedBits = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]].tag = 0 as u8;
+// CHECK-NEXT:         [[T_0]].tag = 0u8;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     bits.tag = ((165 as i32) as i8) as u8;
-// CHECK-NEXT:     bits.__slate_bits_0.__set_low(7 as u32);
-// CHECK-NEXT:     bits.__slate_bits_0.__set_delta(-(17 as i32));
-// CHECK-NEXT:     bits.__slate_bits_1.__set_wide(30370190968 as u64);
-// CHECK-NEXT:     bits.__slate_bits_1.__set_tail(109517 as u32);
+// CHECK-NEXT:     bits.tag = 165u8;
+// CHECK-NEXT:     bits.__slate_bits_0.__set_low(7u32);
+// CHECK-NEXT:     bits.__slate_bits_0.__set_delta(-17i32);
+// CHECK-NEXT:     bits.__slate_bits_1.__set_wide(30370190968u64);
+// CHECK-NEXT:     bits.__slate_bits_1.__set_tail(109517u32);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
@@ -44,7 +44,7 @@ int main(void) {
 // CHECK-NEXT:             bits.__slate_bits_0.__get_delta(),
 // CHECK-NEXT:             bits.__slate_bits_1.__get_wide(),
 // CHECK-NEXT:             bits.__slate_bits_1.__get_tail() as i32,
-// CHECK-NEXT:             11 as u64,
+// CHECK-NEXT:             11u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

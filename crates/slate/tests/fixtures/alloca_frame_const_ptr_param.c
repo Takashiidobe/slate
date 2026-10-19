@@ -35,7 +35,7 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut p: [[SLATERECORD_0]] = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     p.windowLog = 5;
-// CHECK-NEXT:     let mut buf: [i8; 8] = [0 as i8; 8];
+// CHECK-NEXT:     let mut buf: [i8; 8] = [0i8; 8];
 // CHECK-NEXT:     let mut out: u32 = 0;
 // CHECK-NEXT:     use_params(
 // CHECK-NEXT:         unsafe { &(*(std::ptr::addr_of_mut!(p) as *const [[SLATERECORD_0]])) },

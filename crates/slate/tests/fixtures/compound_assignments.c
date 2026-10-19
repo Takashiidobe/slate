@@ -39,9 +39,9 @@ int main(void) {
 // CHECK-NEXT:     println!("{}", a);
 // CHECK-NEXT:     a %= 7;
 // CHECK-NEXT:     println!("{}", a);
-// CHECK-NEXT:     a <<= 3 as i32;
+// CHECK-NEXT:     a <<= 3i32;
 // CHECK-NEXT:     println!("{}", a);
-// CHECK-NEXT:     a >>= 2 as i32;
+// CHECK-NEXT:     a >>= 2i32;
 // CHECK-NEXT:     println!("{}", a);
 // CHECK-NEXT:     a &= 6;
 // CHECK-NEXT:     println!("{}", a);

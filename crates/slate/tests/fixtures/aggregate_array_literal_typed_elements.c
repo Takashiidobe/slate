@@ -56,7 +56,7 @@ int main(void) {
 // CHECK-NEXT:         },
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let mut total: i32 = 0;
-// CHECK-NEXT:     for i in 0 as i32..1 as i32 {
+// CHECK-NEXT:     for i in 0i32..1i32 {
 // CHECK-NEXT:         if pairs.0[i as usize].name.is_null() && pairs.0[i as usize].value.is_null() {
 // CHECK-NEXT:             total += 1;
 // CHECK-NEXT:         }
@@ -66,7 +66,7 @@ int main(void) {
 // CHECK-NEXT: fn count_true_flags() -> i32 {
 // CHECK-NEXT:     let values: [bool; 2] = [true as bool, false as bool];
 // CHECK-NEXT:     let mut total: i32 = 0;
-// CHECK-NEXT:     for i in 0..((2 as u64) / (1 as u64)) {
+// CHECK-NEXT:     for i in 0..2u64 {
 // CHECK-NEXT:         if values[i as usize] {
 // CHECK-NEXT:             total += 1;
 // CHECK-NEXT:         }

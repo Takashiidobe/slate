@@ -41,8 +41,8 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut hidden_static: i32 = 5 as i32;
-// CHECK-NEXT: static mut live_static: i32 = 7 as i32;
+// CHECK-NEXT: static mut hidden_static: i32 = 5;
+// CHECK-NEXT: static mut live_static: i32 = 7;
 // CHECK-NEXT: fn compute() -> i32 {
 // CHECK-NEXT:     42
 // CHECK-NEXT: }

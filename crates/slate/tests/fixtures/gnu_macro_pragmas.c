@@ -23,8 +23,8 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut macro_inner: i32 = 11 as i32;
-// CHECK-NEXT: static mut macro_outer: i32 = 7 as i32;
+// CHECK-NEXT: static mut macro_inner: i32 = 11;
+// CHECK-NEXT: static mut macro_outer: i32 = 7;
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!("{} {}", unsafe { macro_inner }, unsafe { macro_outer });
 // CHECK-NEXT:     0

@@ -35,9 +35,9 @@ int main(void) {
 // CHECK-NEXT:     x + 3
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let a: i32 = old_api(1 as i32);
-// CHECK-NEXT:     let b: i32 = old_api_msg(2 as i32);
-// CHECK-NEXT:     let c: i32 = must_check(3 as i32);
+// CHECK-NEXT:     let a: i32 = old_api(1i32);
+// CHECK-NEXT:     let b: i32 = old_api_msg(2i32);
+// CHECK-NEXT:     let c: i32 = must_check(3i32);
 // CHECK-NEXT:     println!("{} {} {}", a, b, c);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

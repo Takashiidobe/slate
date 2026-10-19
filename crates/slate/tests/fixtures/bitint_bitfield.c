@@ -322,7 +322,7 @@ int main(void) {
 // CHECK-NEXT:         };
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     });
-// CHECK-NEXT:     for i in 0 as i32..6 as i32 {
+// CHECK-NEXT:     for i in 0i32..6i32 {
 // CHECK-NEXT:         let [[T_2]] = <bitint::BUint<
 // CHECK-NEXT:             156,
 // CHECK-NEXT:             3,
@@ -355,7 +355,7 @@ int main(void) {
 // CHECK-NEXT:             3,
 // CHECK-NEXT:             24,
 // CHECK-NEXT:             bitint::A8,
-// CHECK-NEXT:         >>::from_i128((if i & 1 != 0 { -(1 as i32) } else { 1 as i32 }) as i128);
+// CHECK-NEXT:         >>::from_i128((if i & 1 != 0 { -1i32 } else { 1i32 }) as i128);
 // CHECK-NEXT:         s.0[i as usize].__slate_bits_0.__set_b([[T_3]]);
 // CHECK-NEXT:         let [[T_4]] = <bitint::BInt<156, 3, 24, bitint::A8>>::from_i128(-1 as i128);
 // CHECK-NEXT:         t.0[i as usize].__slate_bits_0.__set_a([[T_4]]);
@@ -384,10 +384,10 @@ int main(void) {
 // CHECK-NEXT:         s.0.as_mut_ptr() as *mut S156,
 // CHECK-NEXT:         t.0.as_mut_ptr() as *mut T156,
 // CHECK-NEXT:         r.0.as_mut_ptr() as *mut T156,
-// CHECK-NEXT:         5 as i32,
+// CHECK-NEXT:         5i32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{}", ret.to_i128() as i32);
-// CHECK-NEXT:     for i in 0 as i32..5 as i32 {
+// CHECK-NEXT:     for i in 0i32..5i32 {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             printf(
@@ -403,10 +403,10 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut m: Mixed = {
 // CHECK-NEXT:         let mut [[T_7:__t[0-9]+]]: Mixed = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_7]].__slate_bits_0.__set_tag(0 as i32);
+// CHECK-NEXT:         [[T_7]].__slate_bits_0.__set_tag(0i32);
 // CHECK-NEXT:         [[T_7]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     m.__slate_bits_0.__set_tag(-(9 as i32));
+// CHECK-NEXT:     m.__slate_bits_0.__set_tag(-9i32);
 // CHECK-NEXT:     let [[T_8:__t[0-9]+]] = <bitint::BInt<
 // CHECK-NEXT:         100,
 // CHECK-NEXT:         2,
@@ -414,7 +414,7 @@ int main(void) {
 // CHECK-NEXT:         bitint::A8,
 // CHECK-NEXT:     >>::from_i128(-123456789012345 as i128);
 // CHECK-NEXT:     m.__slate_bits_0.__set_mid([[T_8]]);
-// CHECK-NEXT:     m.__slate_bits_0.__set_flag(1 as u8);
+// CHECK-NEXT:     m.__slate_bits_0.__set_flag(1u8);
 // CHECK-NEXT:     let [[T_9:__t[0-9]+]] = <bitint::BUint<
 // CHECK-NEXT:         200,
 // CHECK-NEXT:         4,
@@ -438,7 +438,7 @@ int main(void) {
 // CHECK-NEXT:             ),
 // CHECK-NEXT:         );
 // CHECK-NEXT:     m.__slate_bits_0.__set_top([[V_3]]);
-// CHECK-NEXT:     let [[T_10:__t[0-9]+]] = (-50 as i8) << 1 >> 1;
+// CHECK-NEXT:     let [[T_10:__t[0-9]+]] = -50i8;
 // CHECK-NEXT:     m.__slate_bits_1.__set_small([[T_10]]);
 // CHECK-NEXT:     dump(unsafe { &mut (*std::ptr::addr_of_mut!(m)) });
 // CHECK-NEXT:     let mut copy: Mixed = m;
@@ -461,7 +461,7 @@ int main(void) {
 // CHECK-NEXT:             >>::from_bint(<bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(5 as i128)),
 // CHECK-NEXT:         );
 // CHECK-NEXT:     copy.__slate_bits_0.__set_top([[V_7]]);
-// CHECK-NEXT:     let [[T_11:__t[0-9]+]] = (63 as i8) << 1 >> 1;
+// CHECK-NEXT:     let [[T_11:__t[0-9]+]] = 63i8;
 // CHECK-NEXT:     copy.__slate_bits_1.__set_small([[T_11]]);
 // CHECK-NEXT:     dump(unsafe { &mut (*std::ptr::addr_of_mut!(copy)) });
 // CHECK-NEXT:     dump(unsafe { &mut (*std::ptr::addr_of_mut!(m)) });
@@ -510,8 +510,8 @@ int main(void) {
 // CHECK-NEXT:             c"%d %llx %zu %zu\n".as_ptr(),
 // CHECK-NEXT:             n.__slate_bits_0.__get_x().to_i128() as i32,
 // CHECK-NEXT:             n.__slate_bits_0.__get_y().to_u128() as u64,
-// CHECK-NEXT:             40 as u64,
-// CHECK-NEXT:             24 as u64,
+// CHECK-NEXT:             40u64,
+// CHECK-NEXT:             24u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

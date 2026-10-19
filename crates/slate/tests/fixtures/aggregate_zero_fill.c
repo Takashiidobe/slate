@@ -74,7 +74,7 @@ int main(void) {
 // CHECK-NEXT:     if s.id != 0 {
 // CHECK-NEXT:         total += unsafe { *s.target };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     for i in 0 as i32..4 as i32 {
+// CHECK-NEXT:     for i in 0i32..4i32 {
 // CHECK-NEXT:         total = total * 3 + s.data[i as usize];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
@@ -82,8 +82,8 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let partial: __SlateAlign16<[i32; 5]> = __SlateAlign16({
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [i32; 5] = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]][0] = 1 as i32;
-// CHECK-NEXT:         [[T_0]][1] = 2 as i32;
+// CHECK-NEXT:         [[T_0]][0] = 1i32;
+// CHECK-NEXT:         [[T_0]][1] = 2i32;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     });
 // CHECK-NEXT:     let mut sum: i32 = 0;
@@ -94,26 +94,26 @@ int main(void) {
 // CHECK-NEXT:     let mut seed: i32 = 9;
 // CHECK-NEXT:     let zero: Sample = {
 // CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: Sample = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_1]].id = 0 as i32;
+// CHECK-NEXT:         [[T_1]].id = 0i32;
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let some: Sample = {
 // CHECK-NEXT:         let mut [[T_2:__t[0-9]+]]: Sample = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_2]].id = 3 as i32;
+// CHECK-NEXT:         [[T_2]].id = 3i32;
 // CHECK-NEXT:         [[T_2]].target = std::ptr::addr_of_mut!(seed);
 // CHECK-NEXT:         [[T_2]].data = {
 // CHECK-NEXT:             let mut [[T_3:__t[0-9]+]]: [i32; 4] = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:             [[T_3]][2] = 5 as i32;
+// CHECK-NEXT:             [[T_3]][2] = 5i32;
 // CHECK-NEXT:             [[T_3]]
 // CHECK-NEXT:         };
 // CHECK-NEXT:         [[T_2]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let full: Sample = {
 // CHECK-NEXT:         let mut [[T_4:__t[0-9]+]]: Sample = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_4]].id = 4 as i32;
+// CHECK-NEXT:         [[T_4]].id = 4i32;
 // CHECK-NEXT:         [[T_4]].scale = 1.5f64;
 // CHECK-NEXT:         [[T_4]].target = std::ptr::addr_of_mut!(seed);
-// CHECK-NEXT:         [[T_4]].data = [1 as i32, 2 as i32, 3 as i32, 4 as i32];
+// CHECK-NEXT:         [[T_4]].data = [1i32, 2i32, 3i32, 4i32];
 // CHECK-NEXT:         [[T_4]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     println!("{} {} {}", checksum(zero), checksum(some), checksum(full));
@@ -121,17 +121,17 @@ int main(void) {
 // CHECK-NEXT:         let mut [[T_5:__t[0-9]+]]: [Cell; 4] = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:         [[T_5]][1] = {
 // CHECK-NEXT:             let mut [[T_6:__t[0-9]+]]: Cell = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:             [[T_6]].value = 7 as i64;
+// CHECK-NEXT:             [[T_6]].value = 7i64;
 // CHECK-NEXT:             [[T_6]]
 // CHECK-NEXT:         };
 // CHECK-NEXT:         [[T_5]][3] = {
 // CHECK-NEXT:             let mut [[T_7:__t[0-9]+]]: Cell = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:             [[T_7]].tag = 122 as i8;
+// CHECK-NEXT:             [[T_7]].tag = 122i8;
 // CHECK-NEXT:             [[T_7]]
 // CHECK-NEXT:         };
 // CHECK-NEXT:         [[T_5]]
 // CHECK-NEXT:     });
-// CHECK-NEXT:     for i in 0 as i32..4 as i32 {
+// CHECK-NEXT:     for i in 0i32..4i32 {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             printf(

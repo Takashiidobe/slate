@@ -52,10 +52,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 4]> = __SlateAlign16([
-// CHECK-NEXT:         10 as i32,
-// CHECK-NEXT:         20 as i32,
-// CHECK-NEXT:         30 as i32,
-// CHECK-NEXT:         40 as i32,
+// CHECK-NEXT:         10i32, 20i32, 30i32, 40i32,
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let mut p: *mut i32 = values.0.as_mut_ptr() as *mut i32;
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut i32 = unsafe {

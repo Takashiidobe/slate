@@ -51,14 +51,13 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let add_i: i32 = ((2147483647 as i32) - (5 as i32)).saturating_add(10 as i32);
+// CHECK-NEXT:     let add_i: i32 = 2147483642i32.saturating_add(10i32);
 // CHECK-NEXT:     println!("{}", add_i);
-// CHECK-NEXT:     let add_i_no_sat: i32 = (2 as i32).saturating_add(3 as i32);
+// CHECK-NEXT:     let add_i_no_sat: i32 = 2i32.saturating_add(3i32);
 // CHECK-NEXT:     println!("{}", add_i_no_sat);
-// CHECK-NEXT:     let sub_s: i16 = ((-(32767 as i32) - (1 as i32) + 5) as i16)
-// CHECK-NEXT:         .saturating_sub(10 as i16);
+// CHECK-NEXT:     let sub_s: i16 = (-32763i16).saturating_sub(10i16);
 // CHECK-NEXT:     println!("{}", sub_s as i32);
-// CHECK-NEXT:     let sub_u: u32 = (5 as u32).saturating_sub(10 as u32);
+// CHECK-NEXT:     let sub_u: u32 = 5u32.saturating_sub(10u32);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%u\n".as_ptr(), sub_u) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -94,16 +93,16 @@ int main(void) {
 // CHECK-NEXT:         bitint::BInt < 200, 4, 32, bitint::A8 >>::from_i128(0 as i128))) == 0) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let va: std::simd::Simd<i32, 4> = std::simd::Simd::from_array([
-// CHECK-NEXT:         2147483647 as i32,
-// CHECK-NEXT:         1 as i32,
-// CHECK-NEXT:         -(2147483647 as i32) - (1 as i32),
-// CHECK-NEXT:         0 as i32,
+// CHECK-NEXT:         2147483647i32,
+// CHECK-NEXT:         1i32,
+// CHECK-NEXT:         -2147483648i32,
+// CHECK-NEXT:         0i32,
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let vb: std::simd::Simd<i32, 4> = std::simd::Simd::from_array([
-// CHECK-NEXT:         10 as i32,
-// CHECK-NEXT:         1 as i32,
-// CHECK-NEXT:         -(10 as i32),
-// CHECK-NEXT:         0 as i32,
+// CHECK-NEXT:         10i32,
+// CHECK-NEXT:         1i32,
+// CHECK-NEXT:         -10i32,
+// CHECK-NEXT:         0i32,
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let vr: std::simd::Simd<i32, 4> = std::simd::num::SimdInt::saturating_add(va, vb);
 // CHECK-NEXT:     println!("{} {} {} {}", vr[0], vr[1], vr[2], vr[3]);

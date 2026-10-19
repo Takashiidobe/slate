@@ -168,7 +168,7 @@ int main(void) {
 // CHECK-NEXT:             core::ffi::VaList<'static>,
 // CHECK-NEXT:         >(__va_args.clone())
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut total: f64 = (0 as i32) as f64;
+// CHECK-NEXT:     let mut total: f64 = 0i32 as f64;
 // CHECK-NEXT:     for i in 0..count {
 // CHECK-NEXT:         let kind: i32 = unsafe { ap.next_arg::<i32>() };
 // CHECK-NEXT:         if kind == 0 {
@@ -235,18 +235,18 @@ int main(void) {
 // CHECK-NEXT:     high
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut buffer: __SlateAlign16<[i8; 64]> = __SlateAlign16([0 as i8; 64]);
+// CHECK-NEXT:     let mut buffer: __SlateAlign16<[i8; 64]> = __SlateAlign16([0i8; 64]);
 // CHECK-NEXT:     let written: i32 = unsafe {
-// CHECK-NEXT:         report(c"%s=%d %.1f\n".as_ptr(), c"value".as_ptr() as *mut i8, 42 as i32, 2.5f64)
+// CHECK-NEXT:         report(c"%s=%d %.1f\n".as_ptr(), c"value".as_ptr() as *mut i8, 42i32, 2.5f64)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let rendered: i32 = unsafe {
 // CHECK-NEXT:         render(
 // CHECK-NEXT:             buffer.0.as_mut_ptr() as *mut i8,
-// CHECK-NEXT:             64 as u64,
+// CHECK-NEXT:             64u64,
 // CHECK-NEXT:             c"[%d|%s|%c]".as_ptr(),
-// CHECK-NEXT:             7 as i32,
+// CHECK-NEXT:             7i32,
 // CHECK-NEXT:             c"seven".as_ptr() as *mut i8,
-// CHECK-NEXT:             120 as i32,
+// CHECK-NEXT:             120i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
@@ -257,33 +257,26 @@ int main(void) {
 // CHECK-NEXT:             buffer.0.as_mut_ptr() as *mut i8,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%ld\n".as_ptr(),
-// CHECK-NEXT:             sum_ints(5 as i32, 1 as i32, 2 as i32, 3 as i32, 4 as i32, 5 as i32),
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { printf(c"%ld\n".as_ptr(), sum_ints(5i32, 1i32, 2i32, 3i32, 4i32, 5i32)) };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%.2f\n".as_ptr(),
 // CHECK-NEXT:             mixed(
-// CHECK-NEXT:                 4 as i32,
-// CHECK-NEXT:                 0 as i32,
-// CHECK-NEXT:                 10 as i32,
-// CHECK-NEXT:                 1 as i32,
+// CHECK-NEXT:                 4i32,
+// CHECK-NEXT:                 0i32,
+// CHECK-NEXT:                 10i32,
+// CHECK-NEXT:                 1i32,
 // CHECK-NEXT:                 0.5f64,
-// CHECK-NEXT:                 2 as i32,
+// CHECK-NEXT:                 2i32,
 // CHECK-NEXT:                 c"A".as_ptr() as *mut i8,
-// CHECK-NEXT:                 3 as i32,
-// CHECK-NEXT:                 1000000000000 as i64,
+// CHECK-NEXT:                 3i32,
+// CHECK-NEXT:                 1000000000000i64,
 // CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(c"%d\n".as_ptr(), sum_twice(3 as i32, 4 as i32, 5 as i32, 6 as i32))
-// CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { printf(c"%u\n".as_ptr(), unsigned_pair(0 as i32, 4000000000 as u32)) };
-// CHECK-NEXT:     ((unsafe { sum_ints(3 as i32, 10 as i32, 20 as i32, 30 as i32) }) % 13) as i32
+// CHECK-NEXT:     unsafe { printf(c"%d\n".as_ptr(), sum_twice(3i32, 4i32, 5i32, 6i32)) };
+// CHECK-NEXT:     unsafe { printf(c"%u\n".as_ptr(), unsigned_pair(0i32, 4000000000u32)) };
+// CHECK-NEXT:     ((unsafe { sum_ints(3i32, 10i32, 20i32, 30i32) }) % 13) as i32
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(

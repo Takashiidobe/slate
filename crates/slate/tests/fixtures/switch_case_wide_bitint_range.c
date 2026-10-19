@@ -183,8 +183,8 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {} {} {}", classify(0 as i32), classify(13 as i32), classify(19 as
-// CHECK-NEXT:         i32), classify(5 as i32), probe(2 as i32), probe(9 as i32)
+// CHECK-NEXT:         "{} {} {} {} {} {}", classify(0i32), classify(13i32), classify(19i32),
+// CHECK-NEXT:         classify(5i32), probe(2i32), probe(9i32)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

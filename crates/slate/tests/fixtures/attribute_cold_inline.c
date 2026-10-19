@@ -32,7 +32,7 @@ int main(void) {
 // CHECK-NEXT:     x - 1
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let a: i32 = cold_path(3 as i32);
+// CHECK-NEXT:     let a: i32 = cold_path(3i32);
 // CHECK-NEXT:     let b: i32 = always_inlined(a);
 // CHECK-NEXT:     let c: i32 = never_inlined(b);
 // CHECK-NEXT:     println!("{} {} {}", a, b, c);

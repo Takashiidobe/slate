@@ -21,8 +21,8 @@ int main(void) {
 // CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let a: i128 = (1 as i128) << (126 as i32);
-// CHECK-NEXT:     let b: i128 = (1 as i128) << (126 as i32);
+// CHECK-NEXT:     let a: i128 = (1 as i128) << 126i32;
+// CHECK-NEXT:     let b: i128 = (1 as i128) << 126i32;
 // CHECK-NEXT:     let mut r: i128 = 0;
 // CHECK-NEXT:     let mut o: i32 = ({
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: bitint::BInt<258, 5, 40, bitint::A8> = <bitint::BInt<
@@ -45,7 +45,7 @@ int main(void) {
 // CHECK-NEXT:         [[T_2]].compare(<bitint::BInt<258, 5, 40, bitint::A8>>::from_i128([[T_3]] as i128))
 // CHECK-NEXT:             != 0
 // CHECK-NEXT:     }) as i32;
-// CHECK-NEXT:     println!("{} {}", o, (r >> (100 as i32)) as i32);
+// CHECK-NEXT:     println!("{} {}", o, (r >> 100i32) as i32);
 // CHECK-NEXT:     let ua: u128 = !0;
 // CHECK-NEXT:     let mut ur: u128 = 0;
 // CHECK-NEXT:     o = ({
@@ -91,7 +91,7 @@ int main(void) {
 // CHECK-NEXT:         [[T_10]].compare(<bitint::BInt<258, 5, 40, bitint::A8>>::from_u128([[T_11]] as u128))
 // CHECK-NEXT:             != 0
 // CHECK-NEXT:     }) as i32;
-// CHECK-NEXT:     println!("{} {}", o, ((ur >> (120 as i32)) as u32) as i32);
+// CHECK-NEXT:     println!("{} {}", o, ((ur >> 120i32) as u32) as i32);
 // CHECK-NEXT:     o = ({
 // CHECK-NEXT:         let [[T_12:__t[0-9]+]]: bitint::BInt<258, 5, 40, bitint::A8> = <bitint::BInt<
 // CHECK-NEXT:             258,

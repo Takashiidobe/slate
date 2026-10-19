@@ -31,7 +31,7 @@ int main(void) {
 // CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut a1: i32 = 1 as i32;
+// CHECK-NEXT: static mut a1: i32 = 1;
 // CHECK-EMPTY:
 // CHECK-NEXT: fn s1() -> i32 {
 // CHECK-NEXT:     unsafe { a1 }
@@ -42,7 +42,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: // ---- second section ----
-// CHECK-NEXT: static mut a2: i32 = 2 as i32;
+// CHECK-NEXT: static mut a2: i32 = 2;
 // CHECK-EMPTY:
 // CHECK-NEXT: /// second static
 // CHECK-NEXT: fn s2() -> i32 {

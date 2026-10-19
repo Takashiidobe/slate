@@ -19,7 +19,7 @@ int main(void) {
 // CHECK-NEXT:     c
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
-// CHECK-NEXT:     println!("{}", add(2 as i32, 3 as i32));
+// CHECK-NEXT:     println!("{}", add(2i32, 3i32));
 // CHECK-NEXT:     0
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

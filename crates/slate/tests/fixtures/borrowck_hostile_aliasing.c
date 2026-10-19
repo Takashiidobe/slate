@@ -191,21 +191,21 @@ int main(void) {
 // CHECK-NEXT: fn circular_list() -> i32 {
 // CHECK-NEXT:     let mut a: Node = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: Node = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]].val = 1 as i32;
+// CHECK-NEXT:         [[T_0]].val = 1i32;
 // CHECK-NEXT:         [[T_0]].next = std::ptr::null_mut::<Node>();
 // CHECK-NEXT:         [[T_0]].prev = std::ptr::null_mut::<Node>();
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut b: Node = {
 // CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: Node = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_1]].val = 2 as i32;
+// CHECK-NEXT:         [[T_1]].val = 2i32;
 // CHECK-NEXT:         [[T_1]].next = std::ptr::null_mut::<Node>();
 // CHECK-NEXT:         [[T_1]].prev = std::ptr::null_mut::<Node>();
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut c: Node = {
 // CHECK-NEXT:         let mut [[T_2:__t[0-9]+]]: Node = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_2]].val = 3 as i32;
+// CHECK-NEXT:         [[T_2]].val = 3i32;
 // CHECK-NEXT:         [[T_2]].next = std::ptr::null_mut::<Node>();
 // CHECK-NEXT:         [[T_2]].prev = std::ptr::null_mut::<Node>();
 // CHECK-NEXT:         [[T_2]]
@@ -218,7 +218,7 @@ int main(void) {
 // CHECK-NEXT:     c.prev = std::ptr::addr_of_mut!(b);
 // CHECK-NEXT:     let mut cur: *mut Node = std::ptr::addr_of_mut!(a);
 // CHECK-NEXT:     let mut sum: i32 = 0;
-// CHECK-NEXT:     for i in 0 as i32..6 as i32 {
+// CHECK-NEXT:     for i in 0i32..6i32 {
 // CHECK-NEXT:         sum += unsafe { (*cur).val };
 // CHECK-NEXT:         cur = unsafe { (*cur).next };
 // CHECK-NEXT:     }
@@ -239,7 +239,7 @@ int main(void) {
 // CHECK-NEXT: fn parent_pointer_tree() -> i32 {
 // CHECK-NEXT:     let mut root: Tree = {
 // CHECK-NEXT:         let mut [[T_0]]: Tree = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]].val = 1 as i32;
+// CHECK-NEXT:         [[T_0]].val = 1i32;
 // CHECK-NEXT:         [[T_0]].parent = std::ptr::null_mut::<Tree>();
 // CHECK-NEXT:         [[T_0]].left = std::ptr::null_mut::<Tree>();
 // CHECK-NEXT:         [[T_0]].right = std::ptr::null_mut::<Tree>();
@@ -247,7 +247,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut left: Tree = {
 // CHECK-NEXT:         let mut [[T_1]]: Tree = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_1]].val = 2 as i32;
+// CHECK-NEXT:         [[T_1]].val = 2i32;
 // CHECK-NEXT:         [[T_1]].parent = std::ptr::addr_of_mut!(root);
 // CHECK-NEXT:         [[T_1]].left = std::ptr::null_mut::<Tree>();
 // CHECK-NEXT:         [[T_1]].right = std::ptr::null_mut::<Tree>();
@@ -255,7 +255,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut right: Tree = {
 // CHECK-NEXT:         let mut [[T_2]]: Tree = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_2]].val = 3 as i32;
+// CHECK-NEXT:         [[T_2]].val = 3i32;
 // CHECK-NEXT:         [[T_2]].parent = std::ptr::addr_of_mut!(root);
 // CHECK-NEXT:         [[T_2]].left = std::ptr::null_mut::<Tree>();
 // CHECK-NEXT:         [[T_2]].right = std::ptr::null_mut::<Tree>();
@@ -281,7 +281,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn self_referential_struct() -> i32 {
 // CHECK-NEXT:     let mut buf: Buf = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     for i in 0 as i32..8 as i32 {
+// CHECK-NEXT:     for i in 0i32..8i32 {
 // CHECK-NEXT:         buf.data[i as usize] = (97 + i) as i8;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     buf.cursor = unsafe { (buf.data.as_mut_ptr() as *mut i8).offset(3 as isize) };
@@ -308,11 +308,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn overlapping_array_pointers() -> i32 {
 // CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 5]> = __SlateAlign16([
-// CHECK-NEXT:         1 as i32,
-// CHECK-NEXT:         2 as i32,
-// CHECK-NEXT:         3 as i32,
-// CHECK-NEXT:         4 as i32,
-// CHECK-NEXT:         5 as i32,
+// CHECK-NEXT:         1i32, 2i32, 3i32, 4i32, 5i32,
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     reverse_in_place(
 // CHECK-NEXT:         unsafe { (values.0.as_mut_ptr() as *mut i32).offset(0 as isize) },

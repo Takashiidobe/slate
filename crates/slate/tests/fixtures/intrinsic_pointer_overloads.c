@@ -29,7 +29,7 @@ int main(void) {
 // CHECK-NEXT:     let second: *mut () = unsafe { __slate_intrinsic_3b4650fdfadac1ac() };
 // CHECK-NEXT:     let mut buffer: __SlateAlign16<[u8; 16]> = __SlateAlign16({
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [u8; 16] = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]][0] = 0 as u8;
+// CHECK-NEXT:         [[T_0]][0] = 0u8;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     });
 // CHECK-NEXT:     unsafe {

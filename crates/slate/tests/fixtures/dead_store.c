@@ -17,8 +17,8 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
-// CHECK-NEXT:     let kept: i32 = noisy(5 as i32);
-// CHECK-NEXT:     noisy(9 as i32);
+// CHECK-NEXT:     let kept: i32 = noisy(5i32);
+// CHECK-NEXT:     noisy(9i32);
 // CHECK-NEXT:     println!("{}", kept);
 // CHECK-NEXT:     0
 // CHECK: {{^}}}

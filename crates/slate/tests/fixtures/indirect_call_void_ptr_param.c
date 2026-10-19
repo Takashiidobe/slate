@@ -48,12 +48,12 @@ int main(void) {
 // CHECK-NEXT:     d: *mut Data,
 // CHECK-NEXT: ) {
 // CHECK-NEXT:     if flag != 0 {
-// CHECK-NEXT:         unsafe { handler.unwrap()(std::ptr::addr_of!(c) as *const (), 0 as i32) };
+// CHECK-NEXT:         unsafe { handler.unwrap()(std::ptr::addr_of!(c) as *const (), 0i32) };
 // CHECK-NEXT:         return;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { handler.unwrap()(d as *const (), 42 as i32) };
+// CHECK-NEXT:     unsafe { handler.unwrap()(d as *const (), 42i32) };
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut c: i8 = (0 as i32) as i8;
+// CHECK-NEXT: static mut c: i8 = 0;
 // CHECK-NEXT: extern "C-unwind" fn print_handler(p: *const (), extra: i32) {
 // CHECK-NEXT:     if extra == 0 {
 // CHECK-NEXT:         println!("zero {}", (unsafe { * (p as * const i8) }) as i32);
@@ -63,8 +63,8 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut d: Data = Data { value: 7 };
-// CHECK-NEXT:     process(1 as i32, Some(print_handler), std::ptr::addr_of_mut!(d));
-// CHECK-NEXT:     process(0 as i32, Some(print_handler), std::ptr::addr_of_mut!(d));
+// CHECK-NEXT:     process(1i32, Some(print_handler), std::ptr::addr_of_mut!(d));
+// CHECK-NEXT:     process(0i32, Some(print_handler), std::ptr::addr_of_mut!(d));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

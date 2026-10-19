@@ -62,12 +62,8 @@ int main(void) {
 // CHECK-NEXT:     color: u32,
 // CHECK-NEXT:     size: u8,
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut favorite: u32 = ((5 as i32) as u32) as u32;
-// CHECK-NEXT: static mut levels: [i32; 3] = [
-// CHECK-NEXT:     (-3 as i32) as i32,
-// CHECK-NEXT:     (-2 as i32) as i32,
-// CHECK-NEXT:     (7 as i32) as i32,
-// CHECK-NEXT: ];
+// CHECK-NEXT: static mut favorite: u32 = 5;
+// CHECK-NEXT: static mut levels: [i32; 3] = [-3, -2, 7];
 // CHECK-NEXT: fn next(color: u32) -> u32 {
 // CHECK-NEXT:     if (color as u32) == 0 {
 // CHECK-NEXT:         return 4;
@@ -86,14 +82,14 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut lamp: Lamp = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: Lamp = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]].state = 1 as u32;
-// CHECK-NEXT:         [[T_0]].color = 4 as u32;
-// CHECK-NEXT:         [[T_0]].size = 250 as u8;
+// CHECK-NEXT:         [[T_0]].state = 1u32;
+// CHECK-NEXT:         [[T_0]].color = 4u32;
+// CHECK-NEXT:         [[T_0]].size = 250u8;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut color: u32 = 0;
 // CHECK-NEXT:     let mut sum: i32 = 0;
-// CHECK-NEXT:     for i in 0 as i32..4 as i32 {
+// CHECK-NEXT:     for i in 0i32..4i32 {
 // CHECK-NEXT:         color = next(color);
 // CHECK-NEXT:         sum = (sum as u32).wrapping_add(color as u32) as i32;
 // CHECK-NEXT:     }
@@ -109,7 +105,7 @@ int main(void) {
 // CHECK-NEXT:         "{} {} {} {}", (unsafe { favorite }) as u32, (unsafe { levels[0] }) as i32,
 // CHECK-NEXT:         (unsafe { levels[1] }) as i32, (unsafe { levels[2] }) as i32
 // CHECK-NEXT:     );
-// CHECK-NEXT:     unsafe { printf(c"%zu %zu %zu\n".as_ptr(), 4 as u64, 1 as u64, 12 as u64) };
+// CHECK-NEXT:     unsafe { printf(c"%zu %zu %zu\n".as_ptr(), 4u64, 1u64, 12u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     (((unsafe { levels[0] }) as i32) as u32).wrapping_add((unsafe { favorite }) as u32)
 // CHECK-NEXT:         as i32

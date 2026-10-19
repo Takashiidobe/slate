@@ -44,14 +44,9 @@ int main(void) {
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     loop {
-// CHECK-NEXT:         let x: u8 = ((147 as i32) as i8) as u8;
+// CHECK-NEXT:         let x: u8 = 147u8;
 // CHECK-NEXT:         let counts: __SlateAlign16<[u32; 6]> = __SlateAlign16([
-// CHECK-NEXT:             0 as u32,
-// CHECK-NEXT:             1 as u32,
-// CHECK-NEXT:             ((8 as i32) - (1 as i32)) as u32,
-// CHECK-NEXT:             8 as u32,
-// CHECK-NEXT:             ((8 as i32) + (1 as i32)) as u32,
-// CHECK-NEXT:             255 as u32,
+// CHECK-NEXT:             0u32, 1u32, 7u32, 8u32, 9u32, 255u32,
 // CHECK-NEXT:         ]);
 // CHECK-NEXT:         for i in counts.0.iter().copied() {
 // CHECK-NEXT:             let n: u32 = i;
@@ -59,7 +54,7 @@ int main(void) {
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 printf(
 // CHECK-NEXT:                     c"%u %u %llu %llu\n".as_ptr(),
-// CHECK-NEXT:                     8 as i32,
+// CHECK-NEXT:                     8i32,
 // CHECK-NEXT:                     n,
 // CHECK-NEXT:                     x.rotate_left((n as u8) as u32) as u64,
 // CHECK-NEXT:                     x.rotate_right((n as u8) as u32) as u64,
@@ -67,19 +62,14 @@ int main(void) {
 // CHECK-NEXT:             };
 // CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:         if !(0i32 != 0i32) {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     loop {
-// CHECK-NEXT:         let x: u16 = ((37175 as i32) as i16) as u16;
+// CHECK-NEXT:         let x: u16 = 37175u16;
 // CHECK-NEXT:         let counts: __SlateAlign16<[u32; 6]> = __SlateAlign16([
-// CHECK-NEXT:             0 as u32,
-// CHECK-NEXT:             1 as u32,
-// CHECK-NEXT:             ((16 as i32) - (1 as i32)) as u32,
-// CHECK-NEXT:             16 as u32,
-// CHECK-NEXT:             ((16 as i32) + (1 as i32)) as u32,
-// CHECK-NEXT:             255 as u32,
+// CHECK-NEXT:             0u32, 1u32, 15u32, 16u32, 17u32, 255u32,
 // CHECK-NEXT:         ]);
 // CHECK-NEXT:         for i in counts.0.iter().copied() {
 // CHECK-NEXT:             let n: u32 = i;
@@ -87,7 +77,7 @@ int main(void) {
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 printf(
 // CHECK-NEXT:                     c"%u %u %llu %llu\n".as_ptr(),
-// CHECK-NEXT:                     16 as i32,
+// CHECK-NEXT:                     16i32,
 // CHECK-NEXT:                     n,
 // CHECK-NEXT:                     x.rotate_left((n as u16) as u32) as u64,
 // CHECK-NEXT:                     x.rotate_right((n as u16) as u32) as u64,
@@ -95,19 +85,14 @@ int main(void) {
 // CHECK-NEXT:             };
 // CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:         if !(0i32 != 0i32) {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     loop {
 // CHECK-NEXT:         let x: u32 = 2436344781;
 // CHECK-NEXT:         let counts: __SlateAlign16<[u32; 6]> = __SlateAlign16([
-// CHECK-NEXT:             0 as u32,
-// CHECK-NEXT:             1 as u32,
-// CHECK-NEXT:             ((32 as i32) - (1 as i32)) as u32,
-// CHECK-NEXT:             32 as u32,
-// CHECK-NEXT:             ((32 as i32) + (1 as i32)) as u32,
-// CHECK-NEXT:             255 as u32,
+// CHECK-NEXT:             0u32, 1u32, 31u32, 32u32, 33u32, 255u32,
 // CHECK-NEXT:         ]);
 // CHECK-NEXT:         for i in counts.0.iter().copied() {
 // CHECK-NEXT:             let n: u32 = i;
@@ -115,7 +100,7 @@ int main(void) {
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 printf(
 // CHECK-NEXT:                     c"%u %u %llu %llu\n".as_ptr(),
-// CHECK-NEXT:                     32 as i32,
+// CHECK-NEXT:                     32i32,
 // CHECK-NEXT:                     n,
 // CHECK-NEXT:                     x.rotate_left(n as u32) as u64,
 // CHECK-NEXT:                     x.rotate_right(n as u32) as u64,
@@ -123,19 +108,14 @@ int main(void) {
 // CHECK-NEXT:             };
 // CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:         if !(0i32 != 0i32) {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     loop {
 // CHECK-NEXT:         let x: u64 = 10464021160185111365;
 // CHECK-NEXT:         let counts: __SlateAlign16<[u32; 6]> = __SlateAlign16([
-// CHECK-NEXT:             0 as u32,
-// CHECK-NEXT:             1 as u32,
-// CHECK-NEXT:             ((64 as i32) - (1 as i32)) as u32,
-// CHECK-NEXT:             64 as u32,
-// CHECK-NEXT:             ((64 as i32) + (1 as i32)) as u32,
-// CHECK-NEXT:             255 as u32,
+// CHECK-NEXT:             0u32, 1u32, 63u32, 64u32, 65u32, 255u32,
 // CHECK-NEXT:         ]);
 // CHECK-NEXT:         for i in counts.0.iter().copied() {
 // CHECK-NEXT:             let n: u32 = i;
@@ -143,7 +123,7 @@ int main(void) {
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 printf(
 // CHECK-NEXT:                     c"%u %u %llu %llu\n".as_ptr(),
-// CHECK-NEXT:                     64 as i32,
+// CHECK-NEXT:                     64i32,
 // CHECK-NEXT:                     n,
 // CHECK-NEXT:                     x.rotate_left((n as u64) as u32),
 // CHECK-NEXT:                     x.rotate_right((n as u64) as u32),
@@ -151,7 +131,7 @@ int main(void) {
 // CHECK-NEXT:             };
 // CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !((0 as i32) != (0 as i32)) {
+// CHECK-NEXT:         if !(0i32 != 0i32) {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }

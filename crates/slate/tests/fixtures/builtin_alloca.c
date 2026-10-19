@@ -252,7 +252,7 @@ int main(void) {
 // CHECK-NEXT:     let __slate_alloca_mark = __slate_alloca::Mark::new();
 // CHECK-NEXT:     let buf: *mut u8 = (__slate_alloca::alloca(16 as usize, 16usize) as *mut ())
 // CHECK-NEXT:         as *mut u8;
-// CHECK-NEXT:     unsafe { std::ptr::write_bytes(buf as *mut u8, 3 as u8, 16 as usize) };
+// CHECK-NEXT:     unsafe { std::ptr::write_bytes(buf as *mut u8, 3u8, 16 as usize) };
 // CHECK-NEXT:     (((unsafe { *buf.offset(0 as isize) }) as u32) as i32)
 // CHECK-NEXT:         + (((unsafe { *buf.offset(15 as isize) }) as u32) as i32)
 // CHECK-NEXT: }
@@ -260,9 +260,7 @@ int main(void) {
 // CHECK-NEXT:     let __slate_alloca_mark = __slate_alloca::Mark::new();
 // CHECK-NEXT:     let buf: *mut u8 = (__slate_alloca::alloca(((n as i64) as u64) as usize, 16usize)
 // CHECK-NEXT:         as *mut ()) as *mut u8;
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::ptr::write_bytes(buf as *mut u8, 7 as u8, ((n as i64) as u64) as usize)
-// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { std::ptr::write_bytes(buf as *mut u8, 7u8, ((n as i64) as u64) as usize) };
 // CHECK-NEXT:     (((unsafe { *buf.offset(0 as isize) }) as u32) as i32)
 // CHECK-NEXT:         + (((unsafe { *buf.offset((n - 1) as isize) }) as u32) as i32)
 // CHECK-NEXT: }
@@ -270,9 +268,7 @@ int main(void) {
 // CHECK-NEXT:     let __slate_alloca_mark = __slate_alloca::Mark::new();
 // CHECK-NEXT:     let buf: *mut u8 = (__slate_alloca::alloca(((n as i64) as u64) as usize, 16usize)
 // CHECK-NEXT:         as *mut ()) as *mut u8;
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::ptr::write_bytes(buf as *mut u8, 9 as u8, ((n as i64) as u64) as usize)
-// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { std::ptr::write_bytes(buf as *mut u8, 9u8, ((n as i64) as u64) as usize) };
 // CHECK-NEXT:     (((unsafe { *buf.offset(0 as isize) }) as u32) as i32)
 // CHECK-NEXT:         + (((unsafe { *buf.offset((n - 1) as isize) }) as u32) as i32)
 // CHECK-NEXT: }
@@ -281,7 +277,7 @@ int main(void) {
 // CHECK-NEXT:     let mut slots: __SlateAlign16<[*mut i32; 8]> = __SlateAlign16([0 as *mut i32; 8]);
 // CHECK-NEXT:     for i in 0..n {
 // CHECK-NEXT:         slots.0[i as usize] = (__slate_alloca::alloca(
-// CHECK-NEXT:             (4 as u64).wrapping_mul(((i + 1) as i64) as u64) as usize,
+// CHECK-NEXT:             4u64.wrapping_mul(((i + 1) as i64) as u64) as usize,
 // CHECK-NEXT:             16usize,
 // CHECK-NEXT:         ) as *mut ()) as *mut i32;
 // CHECK-NEXT:         let mut j: i32 = 0;
@@ -321,7 +317,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     if argc < min {
 // CHECK-NEXT:         f.args = (__slate_alloca::alloca(
-// CHECK-NEXT:             (4 as u64).wrapping_mul((min as i64) as u64) as usize,
+// CHECK-NEXT:             4u64.wrapping_mul((min as i64) as u64) as usize,
 // CHECK-NEXT:             16usize,
 // CHECK-NEXT:         ) as *mut ()) as *mut i32;
 // CHECK-NEXT:         for i in 0..argc {
@@ -401,8 +397,8 @@ int main(void) {
 // CHECK-NEXT:             as *mut u8;
 // CHECK-NEXT:         let b: *mut u8 = (__slate_alloca::alloca(600000 as usize, 16usize) as *mut ())
 // CHECK-NEXT:             as *mut u8;
-// CHECK-NEXT:         unsafe { std::ptr::write_bytes(a as *mut u8, 1 as u8, 600000 as usize) };
-// CHECK-NEXT:         unsafe { std::ptr::write_bytes(b as *mut u8, 2 as u8, 600000 as usize) };
+// CHECK-NEXT:         unsafe { std::ptr::write_bytes(a as *mut u8, 1u8, 600000 as usize) };
+// CHECK-NEXT:         unsafe { std::ptr::write_bytes(b as *mut u8, 2u8, 600000 as usize) };
 // CHECK-NEXT:         total
 // CHECK-NEXT:             += ((((unsafe { *a.offset(599999 as isize) }) as u32) as i32)
 // CHECK-NEXT:                 + (((unsafe { *b.offset(0 as isize) }) as u32) as i32)) as i64;
@@ -411,38 +407,27 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn repeated_large() -> i64 {
 // CHECK-NEXT:     let mut total: i64 = 0;
-// CHECK-NEXT:     for i in 0 as i32..4 as i32 {
-// CHECK-NEXT:         let [[V_3:__v[0-9]+]]: i64 = large_alloca(1 as i32);
+// CHECK-NEXT:     for i in 0i32..4i32 {
+// CHECK-NEXT:         let [[V_3:__v[0-9]+]]: i64 = large_alloca(1i32);
 // CHECK-NEXT:         total += [[V_3]];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut argv: [i32; 2] = [4, 5];
-// CHECK-NEXT:     let mut scratch: [i8; 8] = [0 as i8; 8];
-// CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", const_alloca(), dyn_alloca(10 as i32), uninitialized_alloca(12 as
-// CHECK-NEXT:         i32)
-// CHECK-NEXT:     );
-// CHECK-NEXT:     println!("{}", loop_alloca(8 as i32));
-// CHECK-NEXT:     let __slate_printf_arg0 = branch_alloca(
-// CHECK-NEXT:         2 as i32,
-// CHECK-NEXT:         argv.as_mut_ptr() as *const i32,
-// CHECK-NEXT:         5 as i32,
-// CHECK-NEXT:     );
-// CHECK-NEXT:     let __slate_printf_arg1 = branch_alloca(
-// CHECK-NEXT:         2 as i32,
-// CHECK-NEXT:         argv.as_mut_ptr() as *const i32,
-// CHECK-NEXT:         1 as i32,
-// CHECK-NEXT:     );
+// CHECK-NEXT:     let mut scratch: [i8; 8] = [0i8; 8];
+// CHECK-NEXT:     println!("{} {} {}", const_alloca(), dyn_alloca(10i32), uninitialized_alloca(12i32));
+// CHECK-NEXT:     println!("{}", loop_alloca(8i32));
+// CHECK-NEXT:     let __slate_printf_arg0 = branch_alloca(2i32, argv.as_mut_ptr() as *const i32, 5i32);
+// CHECK-NEXT:     let __slate_printf_arg1 = branch_alloca(2i32, argv.as_mut_ptr() as *const i32, 1i32);
 // CHECK-NEXT:     println!("{} {}", __slate_printf_arg0, __slate_printf_arg1);
-// CHECK-NEXT:     let __slate_printf_arg0 = ternary_alloca(scratch.as_mut_ptr() as *mut i8, 8 as i32);
+// CHECK-NEXT:     let __slate_printf_arg0 = ternary_alloca(scratch.as_mut_ptr() as *mut i8, 8i32);
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {}", __slate_printf_arg0, ternary_alloca(std::ptr::null_mut::< i8 > (), 20 as
-// CHECK-NEXT:         i32)
+// CHECK-NEXT:         "{} {}", __slate_printf_arg0, ternary_alloca(std::ptr::null_mut::< i8 > (),
+// CHECK-NEXT:         20i32)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{} {}", zero_alloca(), aligned_alloca());
-// CHECK-NEXT:     println!("{}", recursive_alloca(100 as i32));
+// CHECK-NEXT:     println!("{}", recursive_alloca(100i32));
 // CHECK-NEXT:     unsafe { printf(c"%ld\n".as_ptr(), repeated_large()) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0

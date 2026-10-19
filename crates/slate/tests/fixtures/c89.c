@@ -413,10 +413,10 @@ int main(void) {
 // CHECK-NEXT:         pub __slate_pad_2: u8,
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut c89_external_value: i32 = 11 as i32;
-// CHECK-NEXT: static mut c89_const_global: i32 = 17 as i32;
-// CHECK-NEXT: static mut c89_volatile_global: i32 = 19 as i32;
-// CHECK-NEXT: static mut c89_joined_value: i32 = 23 as i32;
+// CHECK-NEXT: static mut c89_external_value: i32 = 11;
+// CHECK-NEXT: static mut c89_const_global: i32 = 17;
+// CHECK-NEXT: static mut c89_volatile_global: i32 = 19;
+// CHECK-NEXT: static mut c89_joined_value: i32 = 23;
 // CHECK-NEXT: extern "C-unwind" fn c89_add(left: i32, right: i32) -> i32 {
 // CHECK-NEXT:     left + right
 // CHECK-NEXT: }
@@ -446,7 +446,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { calls }
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut calls: i32 = 0 as i32;
+// CHECK-NEXT: static mut calls: i32 = 0;
 // CHECK-NEXT: fn c89_control_flow(value: i32) -> i32 {
 // CHECK-NEXT:     let mut index: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     let mut result: i32 = unsafe { std::mem::zeroed() };
@@ -500,11 +500,11 @@ int main(void) {
 // CHECK-NEXT:     let mut point: C89Point = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     let mut bits: C89Bits = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     let mut number: C89Number = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut array: __SlateAlign16<[i32; 4]> = __SlateAlign16([0 as i32; 4]);
+// CHECK-NEXT:     let mut array: __SlateAlign16<[i32; 4]> = __SlateAlign16([0i32; 4]);
 // CHECK-NEXT:     let mut copied_value: i32 = 0;
 // CHECK-NEXT:     let mut source_value: i32 = 43;
 // CHECK-NEXT:     let mut arithmetic: i32 = 0;
-// CHECK-NEXT:     let mut bitwise: i32 = ((1 as i32) << (5 as i32) | 3) ^ 2;
+// CHECK-NEXT:     let mut bitwise: i32 = 33i32;
 // CHECK-NEXT:     let mut logical: i32 = 0;
 // CHECK-NEXT:     let mut conditional: i32 = 0;
 // CHECK-NEXT:     let mut comma_value: i32 = 0;
@@ -516,8 +516,8 @@ int main(void) {
 // CHECK-NEXT:     let long_double_value: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 1, 64]);
 // CHECK-NEXT:     point.x = 31;
 // CHECK-NEXT:     point.y = 37;
-// CHECK-NEXT:     bits.__slate_bits_0.__set_low(6 as u32);
-// CHECK-NEXT:     bits.__slate_bits_0.__set_high(-(3 as i32));
+// CHECK-NEXT:     bits.__slate_bits_0.__set_low(6u32);
+// CHECK-NEXT:     bits.__slate_bits_0.__set_high(-3i32);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         number.integer = 41;
 // CHECK-NEXT:     }
@@ -536,29 +536,25 @@ int main(void) {
 // CHECK-NEXT:     arithmetic /= 17;
 // CHECK-NEXT:     arithmetic %= 3;
 // CHECK-NEXT:     bitwise &= 31;
-// CHECK-NEXT:     logical = (signed_value < 0 && unsigned_value > 0 || (0 as i32) != (0 as i32))
-// CHECK-NEXT:         as i32;
+// CHECK-NEXT:     logical = (signed_value < 0 && unsigned_value > 0 || 0i32 != 0i32) as i32;
 // CHECK-NEXT:     conditional = if logical != 0 { 47 } else { 0 };
 // CHECK-NEXT:     automatic_value += 1;
 // CHECK-NEXT:     comma_value = automatic_value + 49;
 // CHECK-NEXT:     static_calls = c89_static_local() * 10 + c89_static_local();
-// CHECK-NEXT:     variadic_total = unsafe {
-// CHECK-NEXT:         c89_variadic_sum(4 as i32, 2 as i32, 3 as i32, 5 as i32, 7 as i32)
-// CHECK-NEXT:     };
-// CHECK-NEXT:     control_total = c89_control_flow(4 as i32);
+// CHECK-NEXT:     variadic_total = unsafe { c89_variadic_sum(4i32, 2i32, 3i32, 5i32, 7i32) };
+// CHECK-NEXT:     control_total = c89_control_flow(4i32);
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}",
 // CHECK-NEXT:         unsafe { c89_external_value }, unsafe { c89_const_global }, unsafe {
 // CHECK-NEXT:         std::ptr::read_volatile(std::ptr::addr_of!(c89_volatile_global)) }, unsafe {
-// CHECK-NEXT:         c89_joined_value }, 13 as i32, standard_macro, signed_value, (unsigned_value as
-// CHECK-NEXT:         u32) as i32, signed_character as i32, float_value as i32, double_value as i32,
+// CHECK-NEXT:         c89_joined_value }, 13i32, standard_macro, signed_value, (unsigned_value as u32)
+// CHECK-NEXT:         as i32, signed_character as i32, float_value as i32, double_value as i32,
 // CHECK-NEXT:         __slate_f80_to_i32(long_double_value), wide_character, color as u32, point.x +
 // CHECK-NEXT:         point.y, bits.__slate_bits_0.__get_low() as i32, bits.__slate_bits_0
 // CHECK-NEXT:         .__get_high(), unsafe { number.integer }, (unsafe { * const_pointer.offset(0 as
 // CHECK-NEXT:         isize) }) + unsafe { * const_pointer.offset(3 as isize) }, copied_value, unsafe {
-// CHECK-NEXT:         operation.unwrap() (53 as i32, 6 as i32) }, arithmetic, bitwise, logical,
-// CHECK-NEXT:         conditional, comma_value, string_length, static_calls, variadic_total +
-// CHECK-NEXT:         control_total
+// CHECK-NEXT:         operation.unwrap() (53i32, 6i32) }, arithmetic, bitwise, logical, conditional,
+// CHECK-NEXT:         comma_value, string_length, static_calls, variadic_total + control_total
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

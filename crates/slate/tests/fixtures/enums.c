@@ -26,12 +26,12 @@ int main(void) {
 // CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     println!("{}", 0 as i32);
-// CHECK-NEXT:     println!("{}", 1 as i32);
-// CHECK-NEXT:     println!("{}", 5 as i32);
-// CHECK-NEXT:     println!("{}", 6 as i32);
-// CHECK-NEXT:     println!("{}", - 2 as i32);
-// CHECK-NEXT:     println!("{}", - 1 as i32);
+// CHECK-NEXT:     println!("{}", 0i32);
+// CHECK-NEXT:     println!("{}", 1i32);
+// CHECK-NEXT:     println!("{}", 5i32);
+// CHECK-NEXT:     println!("{}", 6i32);
+// CHECK-NEXT:     println!("{}", - 2i32);
+// CHECK-NEXT:     println!("{}", - 1i32);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

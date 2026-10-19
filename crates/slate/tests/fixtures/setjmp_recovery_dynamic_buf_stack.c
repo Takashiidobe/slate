@@ -57,7 +57,7 @@ int main(void) {
 // CHECK-NEXT:     __saved_mask: [[SLATERECORD_0]],
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut jb_stack: *mut [__jmp_buf_tag; 1] = unsafe { std::mem::zeroed() };
-// CHECK-NEXT: static mut jb_top: i32 = 0 as i32;
+// CHECK-NEXT: static mut jb_top: i32 = 0;
 // CHECK-NEXT: fn inner(fail: i32) {
 // CHECK-NEXT:     if fail != 0 {
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = (unsafe { jb_top }) - 1;
@@ -68,7 +68,7 @@ int main(void) {
 // CHECK-NEXT:             longjmp(
 // CHECK-NEXT:                 (*unsafe { jb_stack }.offset([[V_0]] as isize)).as_mut_ptr()
 // CHECK-NEXT:                     as *mut __jmp_buf_tag,
-// CHECK-NEXT:                 42 as i32,
+// CHECK-NEXT:                 42i32,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
@@ -93,12 +93,11 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         jb_stack = malloc((200 as u64).wrapping_mul(8 as u64))
-// CHECK-NEXT:             as *mut [__jmp_buf_tag; 1];
+// CHECK-NEXT:         jb_stack = malloc(1600u64) as *mut [__jmp_buf_tag; 1];
 // CHECK-NEXT:     }
-// CHECK-NEXT:     run_case(0 as i32, 0 as i32);
-// CHECK-NEXT:     run_case(1 as i32, 1 as i32);
-// CHECK-NEXT:     run_case(2 as i32, 0 as i32);
+// CHECK-NEXT:     run_case(0i32, 0i32);
+// CHECK-NEXT:     run_case(1i32, 1i32);
+// CHECK-NEXT:     run_case(2i32, 0i32);
 // CHECK-NEXT:     unsafe { free(jb_stack as *mut ()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

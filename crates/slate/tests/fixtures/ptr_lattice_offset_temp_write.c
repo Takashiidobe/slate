@@ -33,10 +33,10 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut buf: __SlateAlign16<[i32; 4]> = __SlateAlign16({
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [i32; 4] = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]][0] = 0 as i32;
+// CHECK-NEXT:         [[T_0]][0] = 0i32;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     });
-// CHECK-NEXT:     fill(&mut buf.0, 7 as i32);
+// CHECK-NEXT:     fill(&mut buf.0, 7i32);
 // CHECK-NEXT:     println!("{} {} {} {}", buf.0[0], buf.0[1], buf.0[2], buf.0[3]);
 // CHECK-NEXT:     buf.0[0] + buf.0[1] + buf.0[2] + buf.0[3]
 // CHECK-NEXT: }

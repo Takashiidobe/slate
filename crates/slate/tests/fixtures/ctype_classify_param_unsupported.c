@@ -24,7 +24,7 @@ int main(void) {
 // CHECK-NEXT:         as i32) & 1024
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     if classify(65 as i8) != 0 {
+// CHECK-NEXT:     if classify(65i8) != 0 {
 // CHECK-NEXT:         println!("yes");
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         println!("no");

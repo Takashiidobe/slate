@@ -45,12 +45,10 @@ int main(void) {
 // CHECK-NEXT:     values: [i32; 0],
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     if (8 as u64) != (8 as u64) {
+// CHECK-NEXT:     if 8u64 != 8u64 {
 // CHECK-NEXT:         return 1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let flexible: *mut FlexibleArray = (unsafe {
-// CHECK-NEXT:         malloc((8 as u64).wrapping_add((3 as u64).wrapping_mul(4 as u64)))
-// CHECK-NEXT:     }) as *mut FlexibleArray;
+// CHECK-NEXT:     let flexible: *mut FlexibleArray = (unsafe { malloc(20u64) }) as *mut FlexibleArray;
 // CHECK-NEXT:     if flexible.is_null() {
 // CHECK-NEXT:         return 2;
 // CHECK-NEXT:     }

@@ -52,8 +52,8 @@ int main(void) {
 // CHECK-NEXT:     p.left
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     println!("{}", sum_pair(4 as i32, 5 as i32));
-// CHECK-NEXT:     println!("{}", overwrite_left(3 as i32, 8 as i32));
+// CHECK-NEXT:     println!("{}", sum_pair(4i32, 5i32));
+// CHECK-NEXT:     println!("{}", overwrite_left(3i32, 8i32));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

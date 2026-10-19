@@ -59,11 +59,11 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%d %ld %d %d %d\n".as_ptr(),
-// CHECK-NEXT:             identity(9 as i32),
-// CHECK-NEXT:             add(30 as i64, 12 as i64),
+// CHECK-NEXT:             identity(9i32),
+// CHECK-NEXT:             add(30i64, 12i64),
 // CHECK-NEXT:             forty_two(),
 // CHECK-NEXT:             declared(),
-// CHECK-NEXT:             fp.unwrap()(3 as i32),
+// CHECK-NEXT:             fp.unwrap()(3i32),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

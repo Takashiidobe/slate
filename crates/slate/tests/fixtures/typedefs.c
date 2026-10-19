@@ -49,16 +49,16 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let x: i32 = 40;
-// CHECK-NEXT:     let y: u8 = ((200 as i32) as i8) as u8;
+// CHECK-NEXT:     let y: u8 = 200u8;
 // CHECK-NEXT:     let z: i64 = 9000000000;
 // CHECK-NEXT:     let mut bx: Box = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     bx.value = add_alias(x, 2 as i32);
+// CHECK-NEXT:     bx.value = add_alias(x, 2i32);
 // CHECK-NEXT:     bx.tag = y;
 // CHECK-NEXT:     println!("{}", bx.value);
 // CHECK-NEXT:     println!("{}", (bx.tag as u32) as i32);
 // CHECK-NEXT:     unsafe { printf(c"%lld\n".as_ptr(), z) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     println!("{}", 4 as i32);
+// CHECK-NEXT:     println!("{}", 4i32);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

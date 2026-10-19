@@ -18,7 +18,7 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let width: i32 = 3;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%*c\n".as_ptr(), width, 97 as i32) };
+// CHECK-NEXT:     unsafe { printf(c"%*c\n".as_ptr(), width, 97i32) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

@@ -43,7 +43,7 @@ int main(void) {
 // CHECK-NEXT:     let b: *mut () = first_word_offset(
 // CHECK-NEXT:         (unsafe { (std::ptr::addr_of_mut!(buf.0) as *mut u8).offset(8 as isize) })
 // CHECK-NEXT:             as *mut (),
-// CHECK-NEXT:         8 as u64,
+// CHECK-NEXT:         8u64,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {}", (a == ((unsafe { std::ptr::addr_of_mut!(buf.0) as * mut u8 }) as * mut

@@ -32,7 +32,7 @@ int main(void) {
 // CHECK-NEXT:     p
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
-// CHECK-NEXT:     let q: *mut i32 = make(4 as i32);
+// CHECK-NEXT:     let q: *mut i32 = make(4i32);
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {}", unsafe { * q.offset(0 as isize) }, unsafe { * q.offset(3 as isize) }
 // CHECK-NEXT:     );

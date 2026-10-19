@@ -40,7 +40,7 @@ int main(void) {
 // CHECK-NEXT:     out
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     println!("{} {} {}", pick(4 as i32), pick(9 as i32), pick(2 as i32));
+// CHECK-NEXT:     println!("{} {} {}", pick(4i32), pick(9i32), pick(2i32));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

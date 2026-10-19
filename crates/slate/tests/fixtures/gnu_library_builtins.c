@@ -55,13 +55,13 @@ int main(void) {
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let buffer: *mut i8 = (unsafe { __builtin_malloc(32 as u64) }) as *mut i8;
+// CHECK-NEXT:     let buffer: *mut i8 = (unsafe { __builtin_malloc(32u64) }) as *mut i8;
 // CHECK-NEXT:     unsafe { __builtin_strcpy(buffer, c"slate".as_ptr()) };
-// CHECK-NEXT:     let mut copy: [i8; 8] = [0 as i8; 8];
+// CHECK-NEXT:     let mut copy: [i8; 8] = [0i8; 8];
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         __builtin_strncpy(copy.as_mut_ptr() as *mut i8, buffer as *const i8, 8 as u64)
+// CHECK-NEXT:         __builtin_strncpy(copy.as_mut_ptr() as *mut i8, buffer as *const i8, 8u64)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut formatted: __SlateAlign16<[i8; 32]> = __SlateAlign16([0 as i8; 32]);
+// CHECK-NEXT:     let mut formatted: __SlateAlign16<[i8; 32]> = __SlateAlign16([0i8; 32]);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __builtin_sprintf(
 // CHECK-NEXT:             formatted.0.as_mut_ptr() as *mut i8,
@@ -70,11 +70,11 @@ int main(void) {
 // CHECK-NEXT:             (__builtin_strlen(buffer as *const i8) as u32) as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut bounded: [i8; 4] = [0 as i8; 4];
+// CHECK-NEXT:     let mut bounded: [i8; 4] = [0i8; 4];
 // CHECK-NEXT:     let wanted: i32 = unsafe {
 // CHECK-NEXT:         __builtin_snprintf(
 // CHECK-NEXT:             bounded.as_mut_ptr() as *mut i8,
-// CHECK-NEXT:             4 as u64,
+// CHECK-NEXT:             4u64,
 // CHECK-NEXT:             c"%s".as_ptr(),
 // CHECK-NEXT:             formatted.0.as_mut_ptr() as *mut i8,
 // CHECK-NEXT:         )
@@ -82,7 +82,7 @@ int main(void) {
 // CHECK-NEXT:     let found: *const i8 = (unsafe {
 // CHECK-NEXT:         __builtin_memchr(
 // CHECK-NEXT:             formatted.0.as_mut_ptr() as *const (),
-// CHECK-NEXT:             45 as i32,
+// CHECK-NEXT:             45i32,
 // CHECK-NEXT:             __builtin_strlen(formatted.0.as_mut_ptr() as *const i8),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) as *const i8;
@@ -99,21 +99,20 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {} {} {}", { let [[T_0:__t[0-9]+]] = 0 as i32; if [[T_0]] == 0 { 0 as i32 } else {
-// CHECK-NEXT:         ([[T_0]].trailing_zeros() as i32) + 1 } }, { let [[T_1:__t[0-9]+]] = 12 as i32; if [[T_1]] == 0 { 0
-// CHECK-NEXT:         as i32 } else { ([[T_1]].trailing_zeros() as i32) + 1 } }, { let [[T_2:__t[0-9]+]] = -
-// CHECK-NEXT:         (2147483647 as i32) - (1 as i32); if [[T_2]] == 0 { 0 as i32 } else { ([[T_2]]
-// CHECK-NEXT:         .trailing_zeros() as i32) + 1 } }, { let [[T_3:__t[0-9]+]] = (1 as i64) << (20 as i32); if
-// CHECK-NEXT:         [[T_3]] == 0 { 0 as i32 } else { ([[T_3]].trailing_zeros() as i32) + 1 } }, { let [[T_4:__t[0-9]+]]
-// CHECK-NEXT:         = (1 as i64) << (40 as i32); if [[T_4]] == 0 { 0 as i32 } else { ([[T_4]]
-// CHECK-NEXT:         .trailing_zeros() as i32) + 1 } }, { let [[T_5:__t[0-9]+]] = 0 as i64; if [[T_5]] == 0 { 0 as i32
-// CHECK-NEXT:         } else { ([[T_5]].trailing_zeros() as i32) + 1 } }
+// CHECK-NEXT:         "{} {} {} {} {} {}", { let [[T_0:__t[0-9]+]] = 0i32; if [[T_0]] == 0 { 0i32 } else { ([[T_0]]
+// CHECK-NEXT:         .trailing_zeros() as i32) + 1 } }, { let [[T_1:__t[0-9]+]] = 12i32; if [[T_1]] == 0 { 0i32 } else
+// CHECK-NEXT:         { ([[T_1]].trailing_zeros() as i32) + 1 } }, { let [[T_2:__t[0-9]+]] = - 2147483648i32; if [[T_2]]
+// CHECK-NEXT:         == 0 { 0i32 } else { ([[T_2]].trailing_zeros() as i32) + 1 } }, { let [[T_3:__t[0-9]+]] =
+// CHECK-NEXT:         1048576i64; if [[T_3]] == 0 { 0i32 } else { ([[T_3]].trailing_zeros() as i32) + 1 } },
+// CHECK-NEXT:         { let [[T_4:__t[0-9]+]] = 1099511627776i64; if [[T_4]] == 0 { 0i32 } else { ([[T_4]]
+// CHECK-NEXT:         .trailing_zeros() as i32) + 1 } }, { let [[T_5:__t[0-9]+]] = 0i64; if [[T_5]] == 0 { 0i32 } else
+// CHECK-NEXT:         { ([[T_5]].trailing_zeros() as i32) + 1 } }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __builtin_printf(
 // CHECK-NEXT:             c"%d %ld\n".as_ptr(),
-// CHECK-NEXT:             (-(7 as i32)).wrapping_abs(),
-// CHECK-NEXT:             (-(9 as i64)).wrapping_abs(),
+// CHECK-NEXT:             (-7i32).wrapping_abs(),
+// CHECK-NEXT:             (-9i64).wrapping_abs(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

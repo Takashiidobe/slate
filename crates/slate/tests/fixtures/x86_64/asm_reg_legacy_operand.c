@@ -53,8 +53,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%u %u\n".as_ptr(),
-// CHECK-NEXT:             legacy_add(40 as u32, 2 as u32),
-// CHECK-NEXT:             (legacy_low_byte(4660 as u32) as u32) as i32,
+// CHECK-NEXT:             legacy_add(40u32, 2u32),
+// CHECK-NEXT:             (legacy_low_byte(4660u32) as u32) as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

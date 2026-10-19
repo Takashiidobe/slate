@@ -168,12 +168,7 @@ int main(void) {
 // CHECK-NEXT: fn show(name: *const i8, x: u128) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%s %016llx%016llx\n".as_ptr(),
-// CHECK-NEXT:             name,
-// CHECK-NEXT:             (x >> (64 as i32)) as u64,
-// CHECK-NEXT:             x as u64,
-// CHECK-NEXT:         )
+// CHECK-NEXT:         printf(c"%s %016llx%016llx\n".as_ptr(), name, (x >> 64i32) as u64, x as u64)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT: }
@@ -240,12 +235,12 @@ int main(void) {
 // CHECK-NEXT:         __slate_vector::Align32,
 // CHECK-NEXT:     > = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     let a: __slate_vector::__SlateVector<u128, 2, __slate_vector::Align32> = __slate_vector::__SlateVector::from_array([
-// CHECK-NEXT:         (1 as u128) << (100 as i32) | 7,
+// CHECK-NEXT:         (1 as u128) << 100i32 | 7,
 // CHECK-NEXT:         !(0 as u128),
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let mut b: __slate_vector::__SlateVector<u128, 2, __slate_vector::Align32> = __slate_vector::__SlateVector::from_array([
 // CHECK-NEXT:         3 as u128,
-// CHECK-NEXT:         (5 as u128) << (70 as i32),
+// CHECK-NEXT:         (5 as u128) << 70i32,
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let m: __slate_vector::__SlateVector<u128, 2, __slate_vector::Align32> = mix(a, b);
 // CHECK-NEXT:     show(c"m0".as_ptr(), m[0]);
@@ -296,7 +291,7 @@ int main(void) {
 // CHECK-NEXT:                     std::ptr::addr_of_mut!([[SLATE_COMPOUND_4]])
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             };
-// CHECK-NEXT:     for i in 0 as i32..4 as i32 {
+// CHECK-NEXT:     for i in 0i32..4i32 {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { printf(c"s[%d]=%lld\n".as_ptr(), i, s[i as usize] as i64) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
@@ -306,8 +301,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { printf(c"s[2]=%lld\n".as_ptr(), s[2] as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let mut narrow: std::simd::Simd<u64, 2> = std::simd::Simd::from_array([
-// CHECK-NEXT:         18446744073709551615 as u64,
-// CHECK-NEXT:         3 as u64,
+// CHECK-NEXT:         18446744073709551615u64, 3u64,
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let mut wide: __slate_vector::__SlateVector<u128, 2, __slate_vector::Align32> = __slate_vector::__SlateVector::from_array(
 // CHECK-NEXT:         narrow.to_array().map(|__lane| __lane as u128),
@@ -331,7 +325,7 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let mut h: holder = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: holder = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]].tag = 120 as i8;
+// CHECK-NEXT:         [[T_0]].tag = 120i8;
 // CHECK-NEXT:         [[T_0]].lanes = __slate_vector::__SlateVector::from_array([9 as u128, 10 as u128]);
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
@@ -350,14 +344,7 @@ int main(void) {
 // CHECK-NEXT:     show(c"h1".as_ptr(), h.lanes[1]);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%zu %zu %zu %zu %zu\n".as_ptr(),
-// CHECK-NEXT:             32 as u64,
-// CHECK-NEXT:             32 as u64,
-// CHECK-NEXT:             64 as u64,
-// CHECK-NEXT:             64 as u64,
-// CHECK-NEXT:             64 as u64,
-// CHECK-NEXT:         )
+// CHECK-NEXT:         printf(c"%zu %zu %zu %zu %zu\n".as_ptr(), 32u64, 32u64, 64u64, 64u64, 64u64)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0

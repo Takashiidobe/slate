@@ -132,7 +132,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut total: i32 = 0;
-// CHECK-NEXT:     for n in 0 as i32..12 as i32 {
+// CHECK-NEXT:     for n in 0i32..12i32 {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             calls = 0;
 // CHECK-NEXT:         }

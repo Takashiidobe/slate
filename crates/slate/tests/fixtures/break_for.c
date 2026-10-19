@@ -39,8 +39,8 @@ int main(void) {
 // CHECK-NEXT:     -1
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     println!("{}", first_multiple(50 as i32, 7 as i32));
-// CHECK-NEXT:     println!("{}", first_multiple(3 as i32, 7 as i32));
+// CHECK-NEXT:     println!("{}", first_multiple(50i32, 7i32));
+// CHECK-NEXT:     println!("{}", first_multiple(3i32, 7i32));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

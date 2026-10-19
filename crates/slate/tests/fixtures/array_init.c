@@ -29,17 +29,11 @@ int main(void) {
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let a: __SlateAlign16<[i32; 5]> = __SlateAlign16([
-// CHECK-NEXT:         1 as i32,
-// CHECK-NEXT:         2 as i32,
-// CHECK-NEXT:         3 as i32,
-// CHECK-NEXT:         4 as i32,
-// CHECK-NEXT:         5 as i32,
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let a: __SlateAlign16<[i32; 5]> = __SlateAlign16([1i32, 2i32, 3i32, 4i32, 5i32]);
 // CHECK-NEXT:     let partial: __SlateAlign16<[i32; 4]> = __SlateAlign16({
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [i32; 4] = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]][0] = 7 as i32;
-// CHECK-NEXT:         [[T_0]][1] = 8 as i32;
+// CHECK-NEXT:         [[T_0]][0] = 7i32;
+// CHECK-NEXT:         [[T_0]][1] = 8i32;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     });
 // CHECK-NEXT:     let mut s: [i8; 6] = [104, 101, 108, 108, 111, 0];

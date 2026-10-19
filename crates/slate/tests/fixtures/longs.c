@@ -30,7 +30,7 @@ int main(void) {
 // CHECK-NEXT:     let a: i64 = 5000000000;
 // CHECK-NEXT:     let ua: u64 = 9000000000;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%ld\n".as_ptr(), ladd(a, 1 as i64)) };
+// CHECK-NEXT:     unsafe { printf(c"%ld\n".as_ptr(), ladd(a, 1i64)) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%lu\n".as_ptr(), ua) };

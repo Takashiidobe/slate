@@ -258,9 +258,9 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {} {} {} {} {}", unsafe { gnu_basic_asm_function() },
-// CHECK-NEXT:         gnu_function_basic_asm(), gnu_extended_asm(7 as i32), gnu_numeric_operands(19 as
-// CHECK-NEXT:         i32, 4 as i32), gnu_local_label(), gnu_asm_goto(0 as i32), gnu_asm_goto_output(5
-// CHECK-NEXT:         as i32), gnu_asm_goto_output(0 as i32)
+// CHECK-NEXT:         gnu_function_basic_asm(), gnu_extended_asm(7i32), gnu_numeric_operands(19i32,
+// CHECK-NEXT:         4i32), gnu_local_label(), gnu_asm_goto(0i32), gnu_asm_goto_output(5i32),
+// CHECK-NEXT:         gnu_asm_goto_output(0i32)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

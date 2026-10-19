@@ -33,9 +33,9 @@ int main(void) {
 // CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut cached_value: i32 = 0 as i32;
+// CHECK-NEXT: static mut cached_value: i32 = 0;
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut computed: i32 = 0 as i32;
+// CHECK-NEXT: static mut computed: i32 = 0;
 // CHECK-EMPTY:
 // CHECK-NEXT: fn compute() -> i32 {
 // CHECK-NEXT:     42

@@ -70,20 +70,16 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut nums: __SlateAlign16<[i32; 5]> = __SlateAlign16([
-// CHECK-NEXT:         4 as i32,
-// CHECK-NEXT:         1 as i32,
-// CHECK-NEXT:         5 as i32,
-// CHECK-NEXT:         3 as i32,
-// CHECK-NEXT:         2 as i32,
+// CHECK-NEXT:         4i32, 1i32, 5i32, 3i32, 2i32,
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let mut key: i32 = 3;
-// CHECK-NEXT:     unsafe { qsort(nums.0.as_mut_ptr() as *mut (), 5 as u64, 4 as u64, Some(cmp_int)) };
+// CHECK-NEXT:     unsafe { qsort(nums.0.as_mut_ptr() as *mut (), 5u64, 4u64, Some(cmp_int)) };
 // CHECK-NEXT:     let hit: *mut i32 = (unsafe {
 // CHECK-NEXT:         bsearch(
 // CHECK-NEXT:             std::ptr::addr_of_mut!(key) as *const (),
 // CHECK-NEXT:             nums.0.as_mut_ptr() as *const (),
-// CHECK-NEXT:             5 as u64,
-// CHECK-NEXT:             4 as u64,
+// CHECK-NEXT:             5u64,
+// CHECK-NEXT:             4u64,
 // CHECK-NEXT:             Some(cmp_int),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) as *mut i32;
@@ -94,22 +90,19 @@ int main(void) {
 // CHECK-NEXT:         Item { key: 2, value: 20 },
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let mut needle: Item = Item { key: 4, value: 0 };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         qsort(items.0.as_mut_ptr() as *mut (), 4 as u64, 8 as u64, Some(cmp_item))
-// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { qsort(items.0.as_mut_ptr() as *mut (), 4u64, 8u64, Some(cmp_item)) };
 // CHECK-NEXT:     let found: *mut Item = (unsafe {
 // CHECK-NEXT:         bsearch(
 // CHECK-NEXT:             std::ptr::addr_of_mut!(needle) as *const (),
 // CHECK-NEXT:             items.0.as_mut_ptr() as *const (),
-// CHECK-NEXT:             4 as u64,
-// CHECK-NEXT:             8 as u64,
+// CHECK-NEXT:             4u64,
+// CHECK-NEXT:             8u64,
 // CHECK-NEXT:             Some(cmp_item),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) as *mut Item;
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {}", nums.0[0], nums.0[4], if ! hit.is_null() { unsafe { * hit } } else
-// CHECK-NEXT:         { - (1 as i32) }, if ! found.is_null() { unsafe { (* found).value } } else { - (1
-// CHECK-NEXT:         as i32) }
+// CHECK-NEXT:         { - 1i32 }, if ! found.is_null() { unsafe { (* found).value } } else { - 1i32 }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

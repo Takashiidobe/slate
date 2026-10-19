@@ -66,7 +66,7 @@ int main(void) {
 // CHECK-NEXT:                 += ((word.count_ones() as i32) * 100 + (word.trailing_zeros() as i32))
 // CHECK-NEXT:                     as i64;
 // CHECK-NEXT:             if (!(!(word & 1 != 0)) as i64) != 0 {
-// CHECK-NEXT:                 total += ((word >> (32 as i32)).count_ones() as i32) as i64;
+// CHECK-NEXT:                 total += ((word >> 32i32).count_ones() as i32) as i64;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             total
 // CHECK-NEXT:                 += ((((word as u32) | 2147483648).trailing_zeros() as i32)
@@ -79,18 +79,9 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let words: __SlateAlign16<[u64; 12]> = __SlateAlign16([
-// CHECK-NEXT:         0 as u64,
-// CHECK-NEXT:         1 as u64,
-// CHECK-NEXT:         9223372036854775808 as u64,
-// CHECK-NEXT:         18446744073709551615 as u64,
-// CHECK-NEXT:         67818912035696640 as u64,
-// CHECK-NEXT:         12345 as u64,
-// CHECK-NEXT:         11400714819323198485 as u64,
-// CHECK-NEXT:         2 as u64,
-// CHECK-NEXT:         4294967296 as u64,
-// CHECK-NEXT:         2147483647 as u64,
-// CHECK-NEXT:         6 as u64,
-// CHECK-NEXT:         6148914691236517205 as u64,
+// CHECK-NEXT:         0u64, 1u64, 9223372036854775808u64, 18446744073709551615u64,
+// CHECK-NEXT:         67818912035696640u64, 12345u64, 11400714819323198485u64, 2u64, 4294967296u64,
+// CHECK-NEXT:         2147483647u64, 6u64, 6148914691236517205u64,
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%ld\n".as_ptr(), weigh(&words.0)) };

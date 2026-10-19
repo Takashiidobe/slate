@@ -46,12 +46,12 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%s\n".as_ptr(), describe(0 as i32)) };
+// CHECK-NEXT:     unsafe { printf(c"%s\n".as_ptr(), describe(0i32)) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%s\n".as_ptr(), describe(1 as i32)) };
+// CHECK-NEXT:     unsafe { printf(c"%s\n".as_ptr(), describe(1i32)) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     println!("{}", pick(3 as i32, 4 as i32));
+// CHECK-NEXT:     println!("{}", pick(3i32, 4i32));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

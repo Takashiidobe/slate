@@ -32,37 +32,9 @@ int main(void) {
 // CHECK-NEXT:     let mut leading: [i8; 10] = [32, 32, 45, 49, 55, 116, 97, 105, 108, 0];
 // CHECK-NEXT:     let mut empty: [i8; 1] = [0];
 // CHECK-NEXT:     let mut large: __SlateAlign16<[i8; 31]> = __SlateAlign16([
-// CHECK-NEXT:         57 as i8,
-// CHECK-NEXT:         57 as i8,
-// CHECK-NEXT:         57 as i8,
-// CHECK-NEXT:         57 as i8,
-// CHECK-NEXT:         57 as i8,
-// CHECK-NEXT:         57 as i8,
-// CHECK-NEXT:         57 as i8,
-// CHECK-NEXT:         57 as i8,
-// CHECK-NEXT:         57 as i8,
-// CHECK-NEXT:         57 as i8,
-// CHECK-NEXT:         57 as i8,
-// CHECK-NEXT:         57 as i8,
-// CHECK-NEXT:         57 as i8,
-// CHECK-NEXT:         57 as i8,
-// CHECK-NEXT:         57 as i8,
-// CHECK-NEXT:         57 as i8,
-// CHECK-NEXT:         57 as i8,
-// CHECK-NEXT:         57 as i8,
-// CHECK-NEXT:         57 as i8,
-// CHECK-NEXT:         57 as i8,
-// CHECK-NEXT:         57 as i8,
-// CHECK-NEXT:         57 as i8,
-// CHECK-NEXT:         57 as i8,
-// CHECK-NEXT:         57 as i8,
-// CHECK-NEXT:         57 as i8,
-// CHECK-NEXT:         57 as i8,
-// CHECK-NEXT:         57 as i8,
-// CHECK-NEXT:         57 as i8,
-// CHECK-NEXT:         57 as i8,
-// CHECK-NEXT:         57 as i8,
-// CHECK-NEXT:         0 as i8,
+// CHECK-NEXT:         57i8, 57i8, 57i8, 57i8, 57i8, 57i8, 57i8, 57i8, 57i8, 57i8, 57i8, 57i8, 57i8,
+// CHECK-NEXT:         57i8, 57i8, 57i8, 57i8, 57i8, 57i8, 57i8, 57i8, 57i8, 57i8, 57i8, 57i8, 57i8,
+// CHECK-NEXT:         57i8, 57i8, 57i8, 57i8, 0i8,
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let mut flt: [i8; 13] = [32, 32, 45, 51, 46, 53, 101, 50, 114, 101, 115, 116, 0];
 // CHECK-NEXT:     let mut end_source: [i8; 7] = [49, 50, 116, 97, 105, 108, 0];
@@ -75,34 +47,30 @@ int main(void) {
 // CHECK-NEXT:             strtol(
 // CHECK-NEXT:                 whole_long.as_mut_ptr() as *const i8,
 // CHECK-NEXT:                 std::ptr::null_mut::<*mut i8>(),
-// CHECK-NEXT:                 10 as i32,
+// CHECK-NEXT:                 10i32,
 // CHECK-NEXT:             ),
 // CHECK-NEXT:             strtoul(
 // CHECK-NEXT:                 whole_unsigned.as_mut_ptr() as *const i8,
 // CHECK-NEXT:                 std::ptr::null_mut::<*mut i8>(),
-// CHECK-NEXT:                 10 as i32,
+// CHECK-NEXT:                 10i32,
 // CHECK-NEXT:             ),
 // CHECK-NEXT:             atol(leading.as_mut_ptr() as *const i8),
 // CHECK-NEXT:             strtol(
 // CHECK-NEXT:                 large.0.as_mut_ptr() as *const i8,
 // CHECK-NEXT:                 std::ptr::null_mut::<*mut i8>(),
-// CHECK-NEXT:                 10 as i32,
+// CHECK-NEXT:                 10i32,
 // CHECK-NEXT:             ),
 // CHECK-NEXT:             strtoul(
 // CHECK-NEXT:                 empty.as_mut_ptr() as *const i8,
 // CHECK-NEXT:                 std::ptr::null_mut::<*mut i8>(),
-// CHECK-NEXT:                 10 as i32,
+// CHECK-NEXT:                 10i32,
 // CHECK-NEXT:             ),
 // CHECK-NEXT:             strtod(flt.as_mut_ptr() as *const i8, std::ptr::null_mut::<*mut i8>()),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let raw: i64 = unsafe {
-// CHECK-NEXT:         strtol(
-// CHECK-NEXT:             end_source.as_mut_ptr() as *const i8,
-// CHECK-NEXT:             std::ptr::addr_of_mut!(end),
-// CHECK-NEXT:             10 as i32,
-// CHECK-NEXT:         )
+// CHECK-NEXT:         strtol(end_source.as_mut_ptr() as *const i8, std::ptr::addr_of_mut!(end), 10i32)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%ld %c\n".as_ptr(), raw, *end as i32) };

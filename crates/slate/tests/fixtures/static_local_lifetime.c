@@ -125,7 +125,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
-// CHECK-NEXT: static mut global_base: i32 = 100 as i32;
+// CHECK-NEXT: static mut global_base: i32 = 100;
 // CHECK-NEXT: fn counter() -> i32 {
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = (unsafe { [[COUNT_0:count_[0-9]+]] }) + 1;
 // CHECK-NEXT:     unsafe {
@@ -141,7 +141,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     [[V_1]]
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut [[COUNT_1]]: i32 = 50 as i32;
+// CHECK-NEXT: static mut [[COUNT_1]]: i32 = 50;
 // CHECK-NEXT: fn history(value: i32) -> *mut i32 {
 // CHECK-NEXT:     let [[V_2:__v[0-9]+]]: i32 = unsafe { next };
 // CHECK-NEXT:     unsafe {
@@ -165,7 +165,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { std::ptr::addr_of_mut!(point) }
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut point: Point = Point { x: 1 as i32, y: 2 as i32 };
+// CHECK-NEXT: static mut point: Point = Point { x: 1i32, y: 2i32 };
 // CHECK-NEXT: fn base_pointer() -> *mut i32 {
 // CHECK-NEXT:     unsafe { pointer }
 // CHECK-NEXT: }
@@ -207,7 +207,7 @@ int main(void) {
 // CHECK-NEXT: ]);
 // CHECK-NEXT: fn loop_scoped() -> i32 {
 // CHECK-NEXT:     let mut total: i32 = 0;
-// CHECK-NEXT:     for i in 0 as i32..3 as i32 {
+// CHECK-NEXT:     for i in 0i32..3i32 {
 // CHECK-NEXT:         let [[V_5:__v[0-9]+]]: i32 = unsafe { seen };
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             seen = [[V_5]] + 1;
@@ -217,7 +217,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut seen: i32 = 7 as i32;
+// CHECK-NEXT: static mut seen: i32 = 7;
 // CHECK-NEXT: fn tally() -> i32 {
 // CHECK-NEXT:     let [[V_7:__v[0-9]+]]: i32 = unsafe { [[COUNTER_0:counter_[0-9]+]] };
 // CHECK-NEXT:     unsafe {
@@ -225,7 +225,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     [[V_7]]
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut [[COUNTER_0]]: i32 = 100 as i32;
+// CHECK-NEXT: static mut [[COUNTER_0]]: i32 = 100;
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let c1: i32 = counter();
 // CHECK-NEXT:     let c2: i32 = counter();
@@ -241,27 +241,27 @@ int main(void) {
 // CHECK-NEXT:         history(i * 10);
 // CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[SLOTS_0:slots_[0-9]+]]: *mut i32 = history(70 as i32);
+// CHECK-NEXT:     let [[SLOTS_0:slots_[0-9]+]]: *mut i32 = history(70i32);
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {}", unsafe { * [[SLOTS_0]].offset(0 as isize) }, unsafe { * [[SLOTS_0]]
 // CHECK-NEXT:         .offset(1 as isize) }, unsafe { * [[SLOTS_0]].offset(2 as isize) }, unsafe { *
 // CHECK-NEXT:         [[SLOTS_0]].offset(3 as isize) }
 // CHECK-NEXT:     );
-// CHECK-NEXT:     moved(3 as i32);
-// CHECK-NEXT:     let [[POINT_0:point_[0-9]+]]: *mut Point = moved(4 as i32);
+// CHECK-NEXT:     moved(3i32);
+// CHECK-NEXT:     let [[POINT_0:point_[0-9]+]]: *mut Point = moved(4i32);
 // CHECK-NEXT:     println!("{} {}", unsafe { (* [[POINT_0]]).x }, unsafe { (* [[POINT_0]]).y });
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*[[POINT_0]]).x = 0;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     println!("{}", unsafe { (* moved(1 as i32)).x });
+// CHECK-NEXT:     println!("{}", unsafe { (* moved(1i32)).x });
 // CHECK-NEXT:     let [[V_8:__v[0-9]+]]: *mut i32 = base_pointer();
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *[[V_8]] = *[[V_8]] + 5;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let through: i32 = unsafe { *base_pointer() };
 // CHECK-NEXT:     println!("{} {}", unsafe { global_base }, through);
-// CHECK-NEXT:     let deep1: i32 = depth(4 as i32);
-// CHECK-NEXT:     let deep2: i32 = depth(2 as i32);
+// CHECK-NEXT:     let deep1: i32 = depth(4i32);
+// CHECK-NEXT:     let deep2: i32 = depth(2i32);
 // CHECK-NEXT:     println!("{} {}", deep1, deep2);
 // CHECK-NEXT:     running_mean(1.0f64);
 // CHECK-NEXT:     running_mean(2.0f64);
@@ -269,7 +269,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { printf(c"%g\n".as_ptr(), running_mean(6.0f64)) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%s %s\n".as_ptr(), name_of(2 as i32), name_of(0 as i32)) };
+// CHECK-NEXT:     unsafe { printf(c"%s %s\n".as_ptr(), name_of(2i32), name_of(0i32)) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let first: i32 = loop_scoped();
 // CHECK-NEXT:     let second: i32 = loop_scoped();

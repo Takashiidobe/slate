@@ -23,8 +23,8 @@ int main(void) {
 // CHECK-NEXT:     a | b
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     println!("{}", ior(12 as i32, 10 as i32));
-// CHECK-NEXT:     println!("{}", ior(- (8 as i32), 3 as i32));
+// CHECK-NEXT:     println!("{}", ior(12i32, 10i32));
+// CHECK-NEXT:     println!("{}", ior(- 8i32, 3i32));
 // CHECK-NEXT:     let u: u32 = 240;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%u\n".as_ptr(), u | 15) };

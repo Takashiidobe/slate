@@ -50,7 +50,7 @@ int main(void) {
 // CHECK-NEXT:     42
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut flag: bool = (1 as i32) != (0 as i32);
+// CHECK-NEXT:     let mut flag: bool = 1i32 != 0i32;
 // CHECK-NEXT:     let mut byte: i8 = -2;
 // CHECK-NEXT:     let mut tied: u32 = 0;
 // CHECK-NEXT:     let mut input: i32 = -4;
@@ -58,7 +58,7 @@ int main(void) {
 // CHECK-NEXT:     let mut word: word = word { value: 40 };
 // CHECK-NEXT:     let mut half: half = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: half = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]].value = 9 as u16;
+// CHECK-NEXT:         [[T_0]].value = 9u16;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut r#fn: Option<unsafe extern "C-unwind" fn() -> i32> = Some(answer);

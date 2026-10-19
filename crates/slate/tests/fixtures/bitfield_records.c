@@ -262,17 +262,17 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut global: Flags = {
 // CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: Flags = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     [[T_0]].__slate_bits_0.__set_x((5 as i32) as u32);
-// CHECK-NEXT:     [[T_0]].__slate_bits_0.__set_set_x((2 as i32) as u32);
-// CHECK-NEXT:     [[T_0]].__slate_bits_0.__set_a(-(3 as i32));
-// CHECK-NEXT:     [[T_0]].__slate_bits_0.__set_A((9 as i32) as u32);
-// CHECK-NEXT:     [[T_0]].__slate_bits_0.__set_type(-(11 as i32));
-// CHECK-NEXT:     [[T_0]].__slate_bits_0.__set_ready((1 as i32) != (0 as i32));
-// CHECK-NEXT:     [[T_0]].tag = (103 as i32) as i8;
-// CHECK-NEXT:     [[T_0]].__slate_bits_1.__set__flags2(-(200 as i32));
-// CHECK-NEXT:     [[T_0]].__slate_bits_2.__set_wide(-(5000000000 as i64));
-// CHECK-NEXT:     [[T_0]].__slate_bits_2.__set_last((1 as i32) != (0 as i32));
-// CHECK-NEXT:     [[T_0]].after = (77 as i32) as i16;
+// CHECK-NEXT:     [[T_0]].__slate_bits_0.__set_x(5u32);
+// CHECK-NEXT:     [[T_0]].__slate_bits_0.__set_set_x(2u32);
+// CHECK-NEXT:     [[T_0]].__slate_bits_0.__set_a(-3i32);
+// CHECK-NEXT:     [[T_0]].__slate_bits_0.__set_A(9u32);
+// CHECK-NEXT:     [[T_0]].__slate_bits_0.__set_type(-11i32);
+// CHECK-NEXT:     [[T_0]].__slate_bits_0.__set_ready(1i32 != 0i32);
+// CHECK-NEXT:     [[T_0]].tag = 103i8;
+// CHECK-NEXT:     [[T_0]].__slate_bits_1.__set__flags2(-200i32);
+// CHECK-NEXT:     [[T_0]].__slate_bits_2.__set_wide(-5000000000i64);
+// CHECK-NEXT:     [[T_0]].__slate_bits_2.__set_last(1i32 != 0i32);
+// CHECK-NEXT:     [[T_0]].after = 77i16;
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
 // CHECK-NEXT: fn bump(flags: *mut Flags) {
@@ -296,24 +296,24 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut local: Flags = {
 // CHECK-NEXT:         let mut [[T_0]]: Flags = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]].__slate_bits_0.__set_x(0 as u32);
+// CHECK-NEXT:         [[T_0]].__slate_bits_0.__set_x(0u32);
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     local.__slate_bits_0.__set_x(9 as u32);
-// CHECK-NEXT:     local.__slate_bits_0.__set_set_x(7 as u32);
-// CHECK-NEXT:     local.__slate_bits_0.__set_a(-(8 as i32));
-// CHECK-NEXT:     local.__slate_bits_0.__set_A(15 as u32);
-// CHECK-NEXT:     local.__slate_bits_0.__set_type(15 as i32);
-// CHECK-NEXT:     let [[T_1]] = (1 as i32) != (0 as i32);
+// CHECK-NEXT:     local.__slate_bits_0.__set_x(9u32);
+// CHECK-NEXT:     local.__slate_bits_0.__set_set_x(7u32);
+// CHECK-NEXT:     local.__slate_bits_0.__set_a(-8i32);
+// CHECK-NEXT:     local.__slate_bits_0.__set_A(15u32);
+// CHECK-NEXT:     local.__slate_bits_0.__set_type(15i32);
+// CHECK-NEXT:     let [[T_1]] = 1i32 != 0i32;
 // CHECK-NEXT:     local.__slate_bits_0.__set_ready([[T_1]]);
 // CHECK-NEXT:     local.tag = 116;
-// CHECK-NEXT:     local.__slate_bits_1.__set__flags2(8388607 as i32);
-// CHECK-NEXT:     local.__slate_bits_2.__set_wide(549755813887 as i64);
-// CHECK-NEXT:     let [[T_2:__t[0-9]+]] = (1 as i32) != (0 as i32);
+// CHECK-NEXT:     local.__slate_bits_1.__set__flags2(8388607i32);
+// CHECK-NEXT:     local.__slate_bits_2.__set_wide(549755813887i64);
+// CHECK-NEXT:     let [[T_2:__t[0-9]+]] = 1i32 != 0i32;
 // CHECK-NEXT:     local.__slate_bits_2.__set_last([[T_2]]);
 // CHECK-NEXT:     local.after = -2;
-// CHECK-NEXT:     let assigned: i32 = (((12 as u8) & (7 as u8)) as u32) as i32;
-// CHECK-NEXT:     local.__slate_bits_0.__set_x(12 as u32);
+// CHECK-NEXT:     let assigned: i32 = 4i32;
+// CHECK-NEXT:     local.__slate_bits_0.__set_x(12u32);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
@@ -330,7 +330,7 @@ int main(void) {
 // CHECK-NEXT:             local.__slate_bits_2.__get_wide(),
 // CHECK-NEXT:             local.__slate_bits_2.__get_last() as i32,
 // CHECK-NEXT:             local.after as i32,
-// CHECK-NEXT:             24 as i32,
+// CHECK-NEXT:             24i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -380,13 +380,13 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         overlay.parts.__slate_bits_0.__set_high(74565 as u32);
+// CHECK-NEXT:         overlay.parts.__slate_bits_0.__set_high(74565u32);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         overlay.__slate_bits_0.__set_signed_bits(-(1 as i32));
+// CHECK-NEXT:         overlay.__slate_bits_0.__set_signed_bits(-1i32);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%x %d\n".as_ptr(), overlay.whole, 4 as i32) };
+// CHECK-NEXT:     unsafe { printf(c"%x %d\n".as_ptr(), overlay.whole, 4i32) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { fprintf(stdout, c"%s\n".as_ptr(), c"file ok".as_ptr() as *mut i8) };

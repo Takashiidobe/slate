@@ -1632,9 +1632,9 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     compute(1 as i64);
+// CHECK-NEXT:     compute(1i64);
 // CHECK-NEXT:     let mut sum: i64 = 0;
-// CHECK-NEXT:     for i in 0 as i32..400 as i32 {
+// CHECK-NEXT:     for i in 0i32..400i32 {
 // CHECK-NEXT:         sum += unsafe { results.0[i as usize] };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());

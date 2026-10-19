@@ -36,7 +36,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     [[V_0]]
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut c: i32 = 97 as i32;
+// CHECK-NEXT: static mut c: i32 = 97;
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let upper: i32 = 81;
 // CHECK-NEXT:     let lower: i32 = 113;

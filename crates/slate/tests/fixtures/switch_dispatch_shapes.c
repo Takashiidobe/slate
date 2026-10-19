@@ -122,7 +122,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
-// CHECK-NEXT: static mut calls: i32 = 0 as i32;
+// CHECK-NEXT: static mut calls: i32 = 0;
 // CHECK-NEXT: fn next_value(value: i32) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         calls = calls + 1;
@@ -186,7 +186,7 @@ int main(void) {
 // CHECK-NEXT: fn run(ops: *const u32) -> i32 {
 // CHECK-NEXT:     let mut acc: i32 = 1;
 // CHECK-NEXT:     let mut i: i32 = 0;
-// CHECK-NEXT:     while (1 as i32) != (0 as i32) {
+// CHECK-NEXT:     while 1i32 != 0i32 {
 // CHECK-NEXT:         '[[SLATE_CONTINUE_0:__slate_continue_[0-9]+]]: {
 // CHECK-NEXT:             let op: u32 = unsafe { *ops.offset(i as isize) };
 // CHECK-NEXT:             i += 1;
@@ -227,22 +227,14 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut ops: __SlateAlign16<[u32; 5]> = __SlateAlign16([
-// CHECK-NEXT:         0 as u32,
-// CHECK-NEXT:         1 as u32,
-// CHECK-NEXT:         2 as u32,
-// CHECK-NEXT:         0 as u32,
-// CHECK-NEXT:         3 as u32,
+// CHECK-NEXT:         0u32, 1u32, 2u32, 0u32, 3u32,
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let values: __SlateAlign16<[i32; 5]> = __SlateAlign16([
-// CHECK-NEXT:         3 as i32,
-// CHECK-NEXT:         8 as i32,
-// CHECK-NEXT:         1 as i32,
-// CHECK-NEXT:         12 as i32,
-// CHECK-NEXT:         7 as i32,
+// CHECK-NEXT:         3i32, 8i32, 1i32, 12i32, 7i32,
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let mut picked: i32 = 0;
 // CHECK-NEXT:     '[[SLATE_BREAK_4:__slate_break_[0-9]+]]: {
-// CHECK-NEXT:         match next_value(2 as i32) {
+// CHECK-NEXT:         match next_value(2i32) {
 // CHECK-NEXT:             1 => {
 // CHECK-NEXT:                 picked = 1;
 // CHECK-NEXT:             }
@@ -253,20 +245,15 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {} {}", stacked(2 as i32), stacked(9 as i32), stacked(4 as i32),
-// CHECK-NEXT:         stacked(42 as i32), stacked(0 as i32)
+// CHECK-NEXT:         "{} {} {} {} {}", stacked(2i32), stacked(9i32), stacked(4i32), stacked(42i32),
+// CHECK-NEXT:         stacked(0i32)
 // CHECK-NEXT:     );
-// CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", no_default(97 as i8), no_default(122 as i8), no_default(113 as i8)
-// CHECK-NEXT:     );
-// CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", nested(0 as i32, 0 as i32), nested(0 as i32, 5 as i32), nested(1 as
-// CHECK-NEXT:         i32, 0 as i32)
-// CHECK-NEXT:     );
+// CHECK-NEXT:     println!("{} {} {}", no_default(97i8), no_default(122i8), no_default(113i8));
+// CHECK-NEXT:     println!("{} {} {}", nested(0i32, 0i32), nested(0i32, 5i32), nested(1i32, 0i32));
 // CHECK-NEXT:     let __slate_printf_arg0 = run(ops.0.as_mut_ptr() as *const u32);
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", __slate_printf_arg0, first_over(& values.0, 10 as i32), first_over(&
-// CHECK-NEXT:         values.0, 50 as i32)
+// CHECK-NEXT:         "{} {} {}", __slate_printf_arg0, first_over(& values.0, 10i32), first_over(&
+// CHECK-NEXT:         values.0, 50i32)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{} {}", picked, unsafe { calls });
 // CHECK-NEXT:     0

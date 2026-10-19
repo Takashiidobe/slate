@@ -30,7 +30,7 @@ int main(void) {
 // CHECK-NEXT:     let copy: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(qualified)) };
 // CHECK-NEXT:     let preserved: i32 = 12;
 // CHECK-NEXT:     let pointer: *mut i32 = std::ptr::null_mut::<i32>();
-// CHECK-NEXT:     let narrow: u8 = (((100 as i8) << 1 >> 1) as u8) & 127;
+// CHECK-NEXT:     let narrow: u8 = 100u8;
 // CHECK-NEXT:     let unqualified: i32 = 1;
 // CHECK-NEXT:     let still_qualified: i32 = 1;
 // CHECK-NEXT:     println!(

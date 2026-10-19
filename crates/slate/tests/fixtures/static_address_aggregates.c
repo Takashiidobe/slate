@@ -44,21 +44,15 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut values: __SlateAlign16<[i32; 5]> = __SlateAlign16([
-// CHECK-NEXT:     11 as i32,
-// CHECK-NEXT:     22 as i32,
-// CHECK-NEXT:     33 as i32,
-// CHECK-NEXT:     44 as i32,
-// CHECK-NEXT:     55 as i32,
+// CHECK-NEXT:     11i32, 22i32, 33i32, 44i32, 55i32,
 // CHECK-NEXT: ]);
 // CHECK-NEXT: static mut middle: *const i32 = (unsafe {
-// CHECK-NEXT:     unsafe { std::ptr::addr_of_mut!(values.0) as *mut i32 }
-// CHECK-NEXT:         .offset((((8 as i32) - (2 as i32)) / (3 as i32)) as isize)
+// CHECK-NEXT:     unsafe { std::ptr::addr_of_mut!(values.0) as *mut i32 }.offset(2i32 as isize)
 // CHECK-NEXT: }) as *const i32;
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: static mut end: *const i32 = (unsafe {
-// CHECK-NEXT:     unsafe { std::ptr::addr_of_mut!(values.0) as *mut i32 }
-// CHECK-NEXT:         .offset(((2 as i32) * (3 as i32) - (1 as i32)) as isize)
+// CHECK-NEXT:     unsafe { std::ptr::addr_of_mut!(values.0) as *mut i32 }.offset(5i32 as isize)
 // CHECK-NEXT: }) as *const i32;
 // CHECK-NEXT: extern "C-unwind" fn twice(x: i32) -> i32 {
 // CHECK-NEXT:     x * 2
@@ -74,8 +68,7 @@ int main(void) {
 // CHECK-NEXT: static mut entries: __SlateAlign16<[Entry; 2]> = __SlateAlign16([
 // CHECK-NEXT:     Entry {
 // CHECK-NEXT:         value: (unsafe {
-// CHECK-NEXT:             unsafe { std::ptr::addr_of_mut!(values.0) as *mut i32 }
-// CHECK-NEXT:                 .offset(((7 as i32) - (6 as i32)) as isize)
+// CHECK-NEXT:             unsafe { std::ptr::addr_of_mut!(values.0) as *mut i32 }.offset(1i32 as isize)
 // CHECK-NEXT:         }) as *const i32,
 // CHECK-NEXT:         callback: Some(twice),
 // CHECK-NEXT:         opaque: unsafe {
@@ -88,8 +81,7 @@ int main(void) {
 // CHECK-NEXT:     },
 // CHECK-NEXT:     Entry {
 // CHECK-NEXT:         value: (unsafe {
-// CHECK-NEXT:             unsafe { std::ptr::addr_of_mut!(values.0) as *mut i32 }
-// CHECK-NEXT:                 .offset(((1 as i32) + (2 as i32)) as isize)
+// CHECK-NEXT:             unsafe { std::ptr::addr_of_mut!(values.0) as *mut i32 }.offset(3i32 as isize)
 // CHECK-NEXT:         }) as *const i32,
 // CHECK-NEXT:         callback: unsafe {
 // CHECK-NEXT:             std::mem::transmute::<
@@ -123,7 +115,7 @@ int main(void) {
 // CHECK-NEXT:         [[T_0]][0] = Entry {
 // CHECK-NEXT:             value: (unsafe {
 // CHECK-NEXT:                 unsafe { std::ptr::addr_of_mut!(values.0) as *mut i32 }
-// CHECK-NEXT:                     .offset(((9 as i32) / (3 as i32)) as isize)
+// CHECK-NEXT:                     .offset(3i32 as isize)
 // CHECK-NEXT:             }) as *const i32,
 // CHECK-NEXT:             callback: Some(twice),
 // CHECK-NEXT:             opaque: unsafe {
@@ -137,8 +129,7 @@ int main(void) {
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     },
 // CHECK-NEXT:     tail: (unsafe {
-// CHECK-NEXT:         unsafe { std::ptr::addr_of_mut!(values.0) as *mut i32 }
-// CHECK-NEXT:             .offset(((1 as i32) << (2 as i32)) as isize)
+// CHECK-NEXT:         unsafe { std::ptr::addr_of_mut!(values.0) as *mut i32 }.offset(4i32 as isize)
 // CHECK-NEXT:     }) as *const i32,
 // CHECK-NEXT: };
 // CHECK-NEXT: fn __slate_main() -> i32 {
@@ -172,18 +163,18 @@ int main(void) {
 // CHECK-NEXT:             *entries.0[0].value,
 // CHECK-NEXT:             *entries.0[1].value,
 // CHECK-NEXT:             entries.0[0].name,
-// CHECK-NEXT:             callback.unwrap()(6 as i32),
-// CHECK-NEXT:             external.unwrap()(-(9 as i32)),
+// CHECK-NEXT:             callback.unwrap()(6i32),
+// CHECK-NEXT:             external.unwrap()(-9i32),
 // CHECK-NEXT:             *group.nested[0].value,
 // CHECK-NEXT:             *group.tail,
 // CHECK-NEXT:             *(addresses.0[0] as *mut i32),
-// CHECK-NEXT:             local.unwrap()(4 as i32),
+// CHECK-NEXT:             local.unwrap()(4i32),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     !unsafe { group.nested[1].value }.is_null() as i32
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut flag: i32 = 7 as i32;
+// CHECK-NEXT: static mut flag: i32 = 7;
 // CHECK-NEXT: static mut addresses: __SlateAlign16<[*mut (); 2]> = __SlateAlign16([
 // CHECK-NEXT:     (unsafe { std::ptr::addr_of_mut!(flag) }) as *mut (),
 // CHECK-NEXT:     unsafe {

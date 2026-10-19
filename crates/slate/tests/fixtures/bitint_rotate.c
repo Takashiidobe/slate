@@ -68,33 +68,33 @@ int main(void) {
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: static mut counts: __SlateAlign16<[i32; 24]> = __SlateAlign16([
-// CHECK-NEXT:     0 as i32,
-// CHECK-NEXT:     1 as i32,
-// CHECK-NEXT:     2 as i32,
-// CHECK-NEXT:     3 as i32,
-// CHECK-NEXT:     4 as i32,
-// CHECK-NEXT:     5 as i32,
-// CHECK-NEXT:     7 as i32,
-// CHECK-NEXT:     9 as i32,
-// CHECK-NEXT:     31 as i32,
-// CHECK-NEXT:     33 as i32,
-// CHECK-NEXT:     63 as i32,
-// CHECK-NEXT:     64 as i32,
-// CHECK-NEXT:     65 as i32,
-// CHECK-NEXT:     100 as i32,
-// CHECK-NEXT:     127 as i32,
-// CHECK-NEXT:     130 as i32,
-// CHECK-NEXT:     199 as i32,
-// CHECK-NEXT:     257 as i32,
-// CHECK-NEXT:     -(1 as i32),
-// CHECK-NEXT:     -(3 as i32),
-// CHECK-NEXT:     -(5 as i32),
-// CHECK-NEXT:     -(64 as i32),
-// CHECK-NEXT:     -(101 as i32),
-// CHECK-NEXT:     1000 as i32,
+// CHECK-NEXT:     0i32,
+// CHECK-NEXT:     1i32,
+// CHECK-NEXT:     2i32,
+// CHECK-NEXT:     3i32,
+// CHECK-NEXT:     4i32,
+// CHECK-NEXT:     5i32,
+// CHECK-NEXT:     7i32,
+// CHECK-NEXT:     9i32,
+// CHECK-NEXT:     31i32,
+// CHECK-NEXT:     33i32,
+// CHECK-NEXT:     63i32,
+// CHECK-NEXT:     64i32,
+// CHECK-NEXT:     65i32,
+// CHECK-NEXT:     100i32,
+// CHECK-NEXT:     127i32,
+// CHECK-NEXT:     130i32,
+// CHECK-NEXT:     199i32,
+// CHECK-NEXT:     257i32,
+// CHECK-NEXT:     -1i32,
+// CHECK-NEXT:     -3i32,
+// CHECK-NEXT:     -5i32,
+// CHECK-NEXT:     -64i32,
+// CHECK-NEXT:     -101i32,
+// CHECK-NEXT:     1000i32,
 // CHECK-NEXT: ]);
 // CHECK-NEXT: fn r_uchar() {
-// CHECK-NEXT:     let x: u8 = ((165 as i32) as i8) as u8;
+// CHECK-NEXT:     let x: u8 = 165u8;
 // CHECK-NEXT:     let mut i: u32 = 0;
 // CHECK-NEXT:     while (i as u64) < 96 / 4 {
 // CHECK-NEXT:         let l: u8 = x
@@ -112,7 +112,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn r_ushort() {
-// CHECK-NEXT:     let x: u16 = ((35889 as i32) as i16) as u16;
+// CHECK-NEXT:     let x: u16 = 35889u16;
 // CHECK-NEXT:     let mut i: u32 = 0;
 // CHECK-NEXT:     while (i as u64) < 96 / 4 {
 // CHECK-NEXT:         let l: u16 = x
@@ -166,7 +166,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn r_u5() {
-// CHECK-NEXT:     let x: u8 = (((21 as i8) << 3 >> 3) as u8) & 31;
+// CHECK-NEXT:     let x: u8 = 21u8;
 // CHECK-NEXT:     let mut i: u32 = 0;
 // CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: while (i as u64) < 96 / 4 {
 // CHECK-NEXT:         let l: u8 = {
@@ -186,7 +186,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn r_u9() {
-// CHECK-NEXT:     let x: u16 = (((421 as i16) << 7 >> 7) as u16) & 511;
+// CHECK-NEXT:     let x: u16 = 421u16;
 // CHECK-NEXT:     let mut i: u32 = 0;
 // CHECK-NEXT:     '[[SLATE_BREAK_1:__slate_break_[0-9]+]]: while (i as u64) < 96 / 4 {
 // CHECK-NEXT:         let l: u16 = {

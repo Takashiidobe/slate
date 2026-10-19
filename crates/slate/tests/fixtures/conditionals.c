@@ -61,11 +61,11 @@ int main(void) {
 // CHECK-NEXT:     r
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     println!("{}", classify(- (5 as i32)));
-// CHECK-NEXT:     println!("{}", classify(0 as i32));
-// CHECK-NEXT:     println!("{}", classify(42 as i32));
-// CHECK-NEXT:     println!("{}", clamp_low(3 as i32));
-// CHECK-NEXT:     println!("{}", clamp_low(20 as i32));
+// CHECK-NEXT:     println!("{}", classify(- 5i32));
+// CHECK-NEXT:     println!("{}", classify(0i32));
+// CHECK-NEXT:     println!("{}", classify(42i32));
+// CHECK-NEXT:     println!("{}", clamp_low(3i32));
+// CHECK-NEXT:     println!("{}", clamp_low(20i32));
 // CHECK-NEXT:     let x: i32 = 7;
 // CHECK-NEXT:     let mut label: i32 = 0;
 // CHECK-NEXT:     if x % 2 == 0 {

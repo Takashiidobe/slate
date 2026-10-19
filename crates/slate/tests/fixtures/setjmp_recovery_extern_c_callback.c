@@ -54,9 +54,9 @@ int main(void) {
 // CHECK-NEXT: static mut env: __SlateAlign16<[__jmp_buf_tag; 1]> = __SlateAlign16(unsafe {
 // CHECK-NEXT:     std::mem::zeroed()
 // CHECK-NEXT: });
-// CHECK-NEXT: static mut failures: i32 = 0 as i32;
+// CHECK-NEXT: static mut failures: i32 = 0;
 // CHECK-NEXT: fn fail_now() {
-// CHECK-NEXT:     unsafe { longjmp(std::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag, 1 as i32) };
+// CHECK-NEXT:     unsafe { longjmp(std::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag, 1i32) };
 // CHECK-NEXT: }
 // CHECK-NEXT: extern "C-unwind" fn check(ok: i32) {
 // CHECK-NEXT:     if !(ok != 0) {
@@ -76,7 +76,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let r#fn: Option<unsafe extern "C-unwind" fn(i32)> = Some(check);
-// CHECK-NEXT:     run_case(r#fn, 0 as i32);
+// CHECK-NEXT:     run_case(r#fn, 0i32);
 // CHECK-NEXT:     println!("failures: {}", unsafe { failures });
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

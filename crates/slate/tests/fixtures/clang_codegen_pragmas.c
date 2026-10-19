@@ -46,7 +46,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn loop_sum() -> i32 {
 // CHECK-NEXT:     let mut s: i32 = 0;
-// CHECK-NEXT:     for i in 0 as i32..8 as i32 {
+// CHECK-NEXT:     for i in 0i32..8i32 {
 // CHECK-NEXT:         s += i;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     s
@@ -59,7 +59,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%d %d %d %f\n".as_ptr(),
-// CHECK-NEXT:             add_noopt(1 as i32, 2 as i32),
+// CHECK-NEXT:             add_noopt(1i32, 2i32),
 // CHECK-NEXT:             hidden_fn(),
 // CHECK-NEXT:             loop_sum(),
 // CHECK-NEXT:             fma_like(2.0f64, 3.0f64, 4.0f64),

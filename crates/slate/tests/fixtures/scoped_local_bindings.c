@@ -97,7 +97,7 @@ int read_static_total(void) { return total; }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut total: i32 = 100 as i32;
+// CHECK-NEXT: static mut total: i32 = 100;
 // CHECK-NEXT: fn fill(out: &mut i32, value: i32) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *(out as *mut i32) = value;
@@ -132,7 +132,7 @@ int read_static_total(void) { return total; }
 // CHECK-NEXT:         outer_seen += x;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     outer_seen += [[X_0]];
-// CHECK-NEXT:     for i in 0 as i32..2 as i32 {
+// CHECK-NEXT:     for i in 0i32..2i32 {
 // CHECK-NEXT:         let x: i32 = i + 7;
 // CHECK-NEXT:         outer_seen += x;
 // CHECK-NEXT:     }
@@ -155,7 +155,7 @@ int read_static_total(void) { return total; }
 // CHECK-NEXT:     let r#mod: i32 = 7;
 // CHECK-NEXT:     let keywords: i32 = r#type + r#match * r#loop + r#ref * r#fn + r#impl - r#mod;
 // CHECK-NEXT:     let mut filled: i32 = 0;
-// CHECK-NEXT:     fill(unsafe { &mut (*std::ptr::addr_of_mut!(filled)) }, 77 as i32);
+// CHECK-NEXT:     fill(unsafe { &mut (*std::ptr::addr_of_mut!(filled)) }, 77i32);
 // CHECK-NEXT:     let mut a: i64 = 0;
 // CHECK-NEXT:     let mut b: i64 = 0;
 // CHECK-NEXT:     fill_pair(
@@ -169,7 +169,7 @@ int read_static_total(void) { return total; }
 // CHECK-NEXT:         chosen = 20;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut sum: i32 = 0;
-// CHECK-NEXT:     for round in 0 as i32..3 as i32 {
+// CHECK-NEXT:     for round in 0i32..3i32 {
 // CHECK-NEXT:         let mut fresh: i32 = 1;
 // CHECK-NEXT:         fresh += round;
 // CHECK-NEXT:         sum += fresh;
@@ -181,7 +181,7 @@ int read_static_total(void) { return total; }
 // CHECK-NEXT:         sum += step;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("{} {} {} {} {}", x, outer_seen, first, second, third);
-// CHECK-NEXT:     println!("{} {} {}", [[TOTAL_0]], keywords, shadow_params(2 as i32, 3 as i32));
+// CHECK-NEXT:     println!("{} {} {}", [[TOTAL_0]], keywords, shadow_params(2i32, 3i32));
 // CHECK-NEXT:     unsafe { printf(c"%d %ld %ld %d %d\n".as_ptr(), filled, a, b, chosen, sum) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     [[TOTAL_0]] + x & 63

@@ -49,9 +49,8 @@ int main(void) {
 // CHECK-NEXT:     (unsafe { (pointer as *mut i8).offset(4 as isize) }) as *mut ()
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let values: *mut i32 = allocate((3 as u64).wrapping_mul(4 as u64), 4 as u64)
-// CHECK-NEXT:         as *mut i32;
-// CHECK-NEXT:     let zeroed: *mut i32 = allocate_array(2 as u64, 4 as u64) as *mut i32;
+// CHECK-NEXT:     let values: *mut i32 = allocate(12u64, 4u64) as *mut i32;
+// CHECK-NEXT:     let zeroed: *mut i32 = allocate_array(2u64, 4u64) as *mut i32;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *values.offset(0 as isize) = 7;
 // CHECK-NEXT:     }

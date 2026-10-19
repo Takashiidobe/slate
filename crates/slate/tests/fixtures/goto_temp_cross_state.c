@@ -60,11 +60,11 @@ int main(void) {
 // CHECK-NEXT:         "{} {}",
 // CHECK-NEXT:         compute(
 // CHECK-NEXT:             unsafe { &(*(std::ptr::addr_of_mut!(s) as *const [[SLATERECORD_2]])) },
-// CHECK-NEXT:             0 as i32
+// CHECK-NEXT:             0i32
 // CHECK-NEXT:         ),
 // CHECK-NEXT:         compute(
 // CHECK-NEXT:             unsafe { &(*(std::ptr::addr_of_mut!(s) as *const [[SLATERECORD_2]])) },
-// CHECK-NEXT:             1 as i32
+// CHECK-NEXT:             1i32
 // CHECK-NEXT:         )
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0

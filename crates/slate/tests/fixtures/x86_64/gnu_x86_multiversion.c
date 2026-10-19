@@ -50,9 +50,8 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {}", unsafe { gnu_target_default(10 as i32) }, unsafe {
-// CHECK-NEXT:         gnu_target_sse2(10 as i32) }, gnu_target_clones(10 as i32), gnu_cpu_dispatch(10
-// CHECK-NEXT:         as i32)
+// CHECK-NEXT:         "{} {} {} {}", unsafe { gnu_target_default(10i32) }, unsafe {
+// CHECK-NEXT:         gnu_target_sse2(10i32) }, gnu_target_clones(10i32), gnu_cpu_dispatch(10i32)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

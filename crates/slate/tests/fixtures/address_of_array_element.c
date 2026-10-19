@@ -29,12 +29,7 @@ int main(void) {
 // CHECK-NEXT:     read_pointer(pointer)
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 4]> = __SlateAlign16([
-// CHECK-NEXT:         2 as i32,
-// CHECK-NEXT:         4 as i32,
-// CHECK-NEXT:         6 as i32,
-// CHECK-NEXT:         8 as i32,
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 4]> = __SlateAlign16([2i32, 4i32, 6i32, 8i32]);
 // CHECK-NEXT:     let p: *mut i32 = unsafe { (values.0.as_mut_ptr() as *mut i32).offset(1 as isize) };
 // CHECK-NEXT:     let q: *mut i32 = unsafe { (values.0.as_mut_ptr() as *mut i32).offset(3 as isize) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());

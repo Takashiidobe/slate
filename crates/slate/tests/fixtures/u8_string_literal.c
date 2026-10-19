@@ -29,7 +29,7 @@ int main(void) {
 // CHECK-NEXT:             ((text[0] as u8) as u32) as i32,
 // CHECK-NEXT:             ((text[1] as u8) as u32) as i32,
 // CHECK-NEXT:             ((text[2] as u8) as u32) as i32,
-// CHECK-NEXT:             3 as u64,
+// CHECK-NEXT:             3u64,
 // CHECK-NEXT:             alignment,
 // CHECK-NEXT:             repeated,
 // CHECK-NEXT:         )
@@ -37,7 +37,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut text: [i8; 3] = [-50 as i8, -87 as i8, 0 as i8];
+// CHECK-NEXT: static mut text: [i8; 3] = [-50, -87, 0];
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

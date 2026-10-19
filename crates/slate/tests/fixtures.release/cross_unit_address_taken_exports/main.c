@@ -49,11 +49,11 @@ int main(void) {
 // CHECK-NEXT:             add as *const (),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { bump(std::ptr::addr_of_mut!(c), add(2 as i32, 3 as i32)) };
+// CHECK-NEXT:     unsafe { bump(std::ptr::addr_of_mut!(c), add(2i32, 3i32)) };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         unsafe { api.bump }.unwrap()(
 // CHECK-NEXT:             std::ptr::addr_of_mut!(c),
-// CHECK-NEXT:             unsafe { api.sub }.unwrap()(10 as i32, 4 as i32),
+// CHECK-NEXT:             unsafe { api.sub }.unwrap()(10i32, 4i32),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     println!(
@@ -65,10 +65,10 @@ int main(void) {
 // CHECK-NEXT:                     sub as *const (),
 // CHECK-NEXT:                 )
 // CHECK-NEXT:             },
-// CHECK-NEXT:             9 as i32,
-// CHECK-NEXT:             2 as i32
+// CHECK-NEXT:             9i32,
+// CHECK-NEXT:             2i32
 // CHECK-NEXT:         ),
-// CHECK-NEXT:         apply(unsafe { api.add }, 4 as i32, 5 as i32)
+// CHECK-NEXT:         apply(unsafe { api.add }, 4i32, 5i32)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe { printf(c"%s %s\n".as_ptr(), name(), unsafe { api.name }.unwrap()()) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

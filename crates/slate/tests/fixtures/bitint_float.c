@@ -281,11 +281,11 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     s5((7 as i8) << 3 >> 3, 3.9f64, -2.5f32);
-// CHECK-NEXT:     s5((-16 as i8) << 3 >> 3, -15.5f64, 14.9f32);
-// CHECK-NEXT:     s9((255 as i16) << 7 >> 7, -200.7f64, 100.3f32);
-// CHECK-NEXT:     s33((4294967295 as i64) << 31 >> 31, 123456789.9f64, -77.7f32);
-// CHECK-NEXT:     s64(-9223372036854775807 as i64, 4e18f64, -4e18f32);
+// CHECK-NEXT:     s5(7i8, 3.9f64, -2.5f32);
+// CHECK-NEXT:     s5(-16i8, -15.5f64, 14.9f32);
+// CHECK-NEXT:     s9(255i16, -200.7f64, 100.3f32);
+// CHECK-NEXT:     s33(4294967295i64, 123456789.9f64, -77.7f32);
+// CHECK-NEXT:     s64(-9223372036854775807i64, 4e18f64, -4e18f32);
 // CHECK-NEXT:     s100(
 // CHECK-NEXT:         <bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(123456789012345 as i128),
 // CHECK-NEXT:         1e25f64,

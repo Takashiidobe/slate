@@ -70,7 +70,7 @@ int main(void) {
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: fn array_pick(index: i32) -> i32 {
-// CHECK-NEXT:     let mut values: [i32; 3] = [0 as i32; 3];
+// CHECK-NEXT:     let mut values: [i32; 3] = [0i32; 3];
 // CHECK-NEXT:     values[0] = 6;
 // CHECK-NEXT:     values[1] = 1;
 // CHECK-NEXT:     values[2] = values[0] + values[1];
@@ -87,11 +87,11 @@ int main(void) {
 // CHECK-NEXT:     unsafe { p.left }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     println!("{}", helper(7 as i32, 2 as i32));
-// CHECK-NEXT:     println!("{}", loop_sum(2 as i32));
-// CHECK-NEXT:     println!("{}", array_pick(1 as i32));
-// CHECK-NEXT:     println!("{}", union_pick(8 as i32, 9 as i32));
-// CHECK-NEXT:     println!("{}", 6 as i32);
+// CHECK-NEXT:     println!("{}", helper(7i32, 2i32));
+// CHECK-NEXT:     println!("{}", loop_sum(2i32));
+// CHECK-NEXT:     println!("{}", array_pick(1i32));
+// CHECK-NEXT:     println!("{}", union_pick(8i32, 9i32));
+// CHECK-NEXT:     println!("{}", 6i32);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

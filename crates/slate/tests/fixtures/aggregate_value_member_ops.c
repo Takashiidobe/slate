@@ -79,7 +79,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let p: Pair = Pair { left: 2, right: 3 };
-// CHECK-NEXT:     let q: Pair = replace_left(p, 7 as i32);
+// CHECK-NEXT:     let q: Pair = replace_left(p, 7i32);
 // CHECK-NEXT:     let n: Nested = Nested {
 // CHECK-NEXT:         inner: Pair { left: 4, right: 5 },
 // CHECK-NEXT:         tag: 6,

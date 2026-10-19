@@ -77,7 +77,7 @@ int main(void) {
 // CHECK-NEXT:     v: {{\[\[}}[i32; 4]; 3]; 2],
 // CHECK-NEXT: }
 // CHECK-NEXT: fn fill(t: &mut table) {
-// CHECK-NEXT:     for i in 0 as i32..4 as i32 {
+// CHECK-NEXT:     for i in 0i32..4i32 {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *((*((*(t as *mut table)).rows.as_mut_ptr() as *mut [i8; 3])
 // CHECK-NEXT:                 .offset(i as isize))
@@ -108,9 +108,9 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn fill_cube(c: &mut cube) {
-// CHECK-NEXT:     for i in 0 as i32..2 as i32 {
-// CHECK-NEXT:         for j in 0 as i32..3 as i32 {
-// CHECK-NEXT:             for k in 0 as i32..4 as i32 {
+// CHECK-NEXT:     for i in 0i32..2i32 {
+// CHECK-NEXT:         for j in 0i32..3i32 {
+// CHECK-NEXT:             for k in 0i32..4i32 {
 // CHECK-NEXT:                 unsafe {
 // CHECK-NEXT:                     *((*((*((*(c as *mut cube)).v.as_mut_ptr() as *mut {{\[\[}}i32; 4]; 3])
 // CHECK-NEXT:                         .offset(i as isize))
@@ -129,8 +129,8 @@ int main(void) {
 // CHECK-NEXT:             .as_mut_ptr() as *mut [i32; 4]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut total: i32 = 0;
-// CHECK-NEXT:     for j in 0 as i32..3 as i32 {
-// CHECK-NEXT:         for k in 0 as i32..4 as i32 {
+// CHECK-NEXT:     for j in 0i32..3i32 {
+// CHECK-NEXT:         for k in 0i32..4i32 {
 // CHECK-NEXT:             let [[V_0:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:             total = [[V_0]]
 // CHECK-NEXT:                 + unsafe {
@@ -145,8 +145,8 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut t: table = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     fill(unsafe { &mut (*std::ptr::addr_of_mut!(t)) });
-// CHECK-NEXT:     fill_via_ptr(unsafe { &mut (*std::ptr::addr_of_mut!(t)) }, 2 as i32);
-// CHECK-NEXT:     for i in 0 as i32..4 as i32 {
+// CHECK-NEXT:     fill_via_ptr(unsafe { &mut (*std::ptr::addr_of_mut!(t)) }, 2i32);
+// CHECK-NEXT:     for i in 0i32..4i32 {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { printf(c"%s\n".as_ptr(), t.rows[i as usize].as_mut_ptr() as *mut i8) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };

@@ -58,21 +58,10 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut tail: __SlateStorage_tail = {
 // CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: __SlateStorage_tail = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     [[T_0]].count = 3 as i32;
-// CHECK-NEXT:     [[T_0]].tag = (120 as i32) as i8;
+// CHECK-NEXT:     [[T_0]].count = 3i32;
+// CHECK-NEXT:     [[T_0]].tag = 120i8;
 // CHECK-NEXT:     [[T_0]].name = [
-// CHECK-NEXT:         104 as i8,
-// CHECK-NEXT:         101 as i8,
-// CHECK-NEXT:         108 as i8,
-// CHECK-NEXT:         108 as i8,
-// CHECK-NEXT:         111 as i8,
-// CHECK-NEXT:         32 as i8,
-// CHECK-NEXT:         119 as i8,
-// CHECK-NEXT:         111 as i8,
-// CHECK-NEXT:         114 as i8,
-// CHECK-NEXT:         108 as i8,
-// CHECK-NEXT:         100 as i8,
-// CHECK-NEXT:         0 as i8,
+// CHECK-NEXT:         104i8, 101i8, 108i8, 108i8, 111i8, 32i8, 119i8, 111i8, 114i8, 108i8, 100i8, 0i8,
 // CHECK-NEXT:     ];
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
@@ -107,13 +96,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut bytes: __SlateStorage_bytes = {
 // CHECK-NEXT:     let mut [[T_0]]: __SlateStorage_bytes = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     [[T_0]].bytes = [
-// CHECK-NEXT:         (1 as i32) as i8,
-// CHECK-NEXT:         (2 as i32) as i8,
-// CHECK-NEXT:         (3 as i32) as i8,
-// CHECK-NEXT:         (4 as i32) as i8,
-// CHECK-NEXT:         (5 as i32) as i8,
-// CHECK-NEXT:     ];
+// CHECK-NEXT:     [[T_0]].bytes = [1i8, 2i8, 3i8, 4i8, 5i8];
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
 // CHECK-NEXT: #[repr(C, packed)]
@@ -124,13 +107,13 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut packed: __SlateStorage_packed = {
 // CHECK-NEXT:     let mut [[T_0]]: __SlateStorage_packed = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     [[T_0]].a = (7 as i32) as i8;
-// CHECK-NEXT:     [[T_0]].values = [10 as i32, 20 as i32, 30 as i32];
+// CHECK-NEXT:     [[T_0]].a = 7i8;
+// CHECK-NEXT:     [[T_0]].values = [10i32, 20i32, 30i32];
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%zu %zu %zu\n".as_ptr(), 8 as u64, 2 as u64, 1 as u64) };
+// CHECK-NEXT:     unsafe { printf(c"%zu %zu %zu\n".as_ptr(), 8u64, 2u64, 1u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
@@ -171,7 +154,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     for i in 0 as i32..5 as i32 {
+// CHECK-NEXT:     for i in 0i32..5i32 {
 // CHECK-NEXT:         print!(
 // CHECK-NEXT:             "{} ", (unsafe { * (std::ptr::addr_of_mut!((* (std::ptr::addr_of_mut!(bytes)
 // CHECK-NEXT:             as * mut Bytes)).bytes) as * mut i8).offset(i as isize) }) as i32

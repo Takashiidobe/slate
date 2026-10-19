@@ -28,12 +28,8 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(32))]
 // CHECK-NEXT: struct __SlateAlign32<T>(T);
-// CHECK-NEXT: static mut values: [u32; 3] = [(1 as i32) as u32, (2 as i32) as u32, (3 as i32) as u32];
-// CHECK-NEXT: static mut aligned_values: __SlateAlign32<[u32; 3]> = __SlateAlign32([
-// CHECK-NEXT:     (4 as i32) as u32,
-// CHECK-NEXT:     (5 as i32) as u32,
-// CHECK-NEXT:     (6 as i32) as u32,
-// CHECK-NEXT: ]);
+// CHECK-NEXT: static mut values: [u32; 3] = [1, 2, 3];
+// CHECK-NEXT: static mut aligned_values: __SlateAlign32<[u32; 3]> = __SlateAlign32([4u32, 5u32, 6u32]);
 // CHECK-NEXT: fn update(items: *mut u32) -> u32 {
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut u32 = unsafe { items.offset(0 as isize) };
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: u32 = unsafe { *[[V_0]] };

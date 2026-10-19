@@ -38,22 +38,22 @@ int main(void) {
 // CHECK-NEXT:     size: i32,
 // CHECK-NEXT:     is_unsigned: bool,
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut from_int: bool = (5 as i32) != (0 as i32);
-// CHECK-NEXT: static mut from_zero: bool = (0 as i32) != (0 as i32);
-// CHECK-NEXT: static mut less: i32 = ((1 as i32) < (2 as i32)) as i32;
-// CHECK-NEXT: static mut greater: i32 = ((-(1 as i32) as u32) > (2 as u32)) as i32;
-// CHECK-NEXT: static mut equal: i32 = ((3 as i32) == (3 as i32)) as i32;
-// CHECK-NEXT: static mut both: i32 = ((1 as i32) != (0 as i32) && (0 as i32) != (0 as i32)) as i32;
-// CHECK-NEXT: static mut either: i32 = ((0 as i32) != (0 as i32) || (7 as i32) != (0 as i32)) as i32;
+// CHECK-NEXT: static mut from_int: bool = 5i32 != 0i32;
+// CHECK-NEXT: static mut from_zero: bool = 0i32 != 0i32;
+// CHECK-NEXT: static mut less: i32 = (1i32 < 2i32) as i32;
+// CHECK-NEXT: static mut greater: i32 = (4294967295u32 > 2u32) as i32;
+// CHECK-NEXT: static mut equal: i32 = (3i32 == 3i32) as i32;
+// CHECK-NEXT: static mut both: i32 = (1i32 != 0i32 && 0i32 != 0i32) as i32;
+// CHECK-NEXT: static mut either: i32 = (0i32 != 0i32 || 7i32 != 0i32) as i32;
 // CHECK-NEXT: static mut float_order: i32 = (1.5f64 < 2.5f64) as i32;
 // CHECK-NEXT: static mut uchar: *mut [[SLATERECORD_0]] = unsafe {
 // CHECK-NEXT:     std::ptr::addr_of_mut!([[SLATE_COMPOUND_0:__slate_compound_[0-9]+]])
 // CHECK-NEXT: };
 // CHECK-NEXT: static mut plain: [[SLATERECORD_0]] = {
 // CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: [[SLATERECORD_0]] = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     [[T_0]].kind = 2 as i32;
-// CHECK-NEXT:     [[T_0]].size = 4 as i32;
-// CHECK-NEXT:     [[T_0]].is_unsigned = (0 as i32) != (0 as i32);
+// CHECK-NEXT:     [[T_0]].kind = 2i32;
+// CHECK-NEXT:     [[T_0]].size = 4i32;
+// CHECK-NEXT:     [[T_0]].is_unsigned = 0i32 != 0i32;
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
 // CHECK-NEXT: fn __slate_main() -> i32 {
@@ -70,9 +70,9 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut [[SLATE_COMPOUND_0]]: [[SLATERECORD_0]] = {
 // CHECK-NEXT:     let mut [[T_0]]: [[SLATERECORD_0]] = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     [[T_0]].kind = 1 as i32;
-// CHECK-NEXT:     [[T_0]].size = 1 as i32;
-// CHECK-NEXT:     [[T_0]].is_unsigned = (1 as i32) != (0 as i32);
+// CHECK-NEXT:     [[T_0]].kind = 1i32;
+// CHECK-NEXT:     [[T_0]].size = 1i32;
+// CHECK-NEXT:     [[T_0]].is_unsigned = 1i32 != 0i32;
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
 // CHECK-NEXT: #[unsafe(no_mangle)]

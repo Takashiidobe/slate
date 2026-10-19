@@ -52,10 +52,10 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut buf: __SlateAlign16<[i8; 16]> = __SlateAlign16({
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [i8; 16] = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]][0] = 0 as i8;
+// CHECK-NEXT:         [[T_0]][0] = 0i8;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     });
-// CHECK-NEXT:     unsafe { fgets(buf.0.as_mut_ptr() as *mut i8, 16 as i32, g) };
+// CHECK-NEXT:     unsafe { fgets(buf.0.as_mut_ptr() as *mut i8, 16i32, g) };
 // CHECK-NEXT:     unsafe { fclose(g) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { fputs(buf.0.as_mut_ptr() as *const i8, stdout) };

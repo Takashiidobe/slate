@@ -101,6 +101,7 @@ pub(in crate::backend) fn apply_local(
     for item in &mut program.items {
         apply_item(item, &passes);
     }
+    rules::const_fold::fold_initializers(&mut program.items);
     prelude::inject(program, target);
     printf_format::rewrite(program);
     let passes = [RuleRegistry::build(rules::unsafe_registry())];

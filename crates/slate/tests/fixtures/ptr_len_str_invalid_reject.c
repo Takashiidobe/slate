@@ -35,8 +35,8 @@ int main(void) {
 // CHECK-NEXT:     value
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut bytes: [u8; 3] = [((195 as i32) as i8) as u8, ((169 as i32) as i8) as u8, 0];
-// CHECK-NEXT:     let value: i32 = first_byte(bytes.as_ptr() as *const u8, 1 as i32);
+// CHECK-NEXT:     let mut bytes: [u8; 3] = [195u8, 169u8, 0];
+// CHECK-NEXT:     let value: i32 = first_byte(bytes.as_ptr() as *const u8, 1i32);
 // CHECK-NEXT:     println!("{}", value);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

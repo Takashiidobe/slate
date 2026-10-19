@@ -43,7 +43,7 @@ int main(int argc, char **argv, char **envp) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::write_bytes(
 // CHECK-NEXT:             (*argv.offset(0 as isize) as *mut ()) as *mut u8,
-// CHECK-NEXT:             0 as u8,
+// CHECK-NEXT:             0u8,
 // CHECK-NEXT:             len as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -51,18 +51,16 @@ int main(int argc, char **argv, char **envp) {
 // CHECK-NEXT:         std::ptr::copy_nonoverlapping(
 // CHECK-NEXT:             c"renamed".as_ptr() as *const u8,
 // CHECK-NEXT:             (*argv.offset(0 as isize) as *mut ()) as *mut u8,
-// CHECK-NEXT:             (if len < 7 { len } else { 7 as u64 }) as usize,
+// CHECK-NEXT:             (if len < 7 { len } else { 7u64 }) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut buf: __SlateAlign16<[i8; 64]> = __SlateAlign16({
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [i8; 64] = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]][0] = 0 as i8;
+// CHECK-NEXT:         [[T_0]][0] = 0i8;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     });
-// CHECK-NEXT:     let fd: i32 = unsafe { open(c"/proc/self/cmdline".as_ptr(), 0 as i32) };
-// CHECK-NEXT:     let n: i64 = unsafe {
-// CHECK-NEXT:         read(fd, buf.0.as_mut_ptr() as *mut (), (64 as u64).wrapping_sub(1 as u64))
-// CHECK-NEXT:     };
+// CHECK-NEXT:     let fd: i32 = unsafe { open(c"/proc/self/cmdline".as_ptr(), 0i32) };
+// CHECK-NEXT:     let n: i64 = unsafe { read(fd, buf.0.as_mut_ptr() as *mut (), 63u64) };
 // CHECK-NEXT:     unsafe { close(fd) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {

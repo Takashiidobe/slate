@@ -43,8 +43,8 @@ int square(int x) { return x * x; }
 // CHECK-NEXT:     is_odd(n - 1)
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     println!("{} {}", is_odd(7 as i32), is_even(10 as i32));
-// CHECK-NEXT:     println!("{}", square(5 as i32));
+// CHECK-NEXT:     println!("{} {}", is_odd(7i32), is_even(10i32));
+// CHECK-NEXT:     println!("{}", square(5i32));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: fn square(x: i32) -> i32 {

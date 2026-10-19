@@ -118,7 +118,7 @@ int main(void) {
 // CHECK-NEXT:     d = [[V_2]] * 2;
 // CHECK-NEXT:     let mut e: i32 = 0;
 // CHECK-NEXT:     b = 11;
-// CHECK-NEXT:     e = twice(11 as i32);
+// CHECK-NEXT:     e = twice(11i32);
 // CHECK-NEXT:     let [[V_3:__v[0-9]+]]: *mut i32 = unsafe {
 // CHECK-NEXT:         (std::ptr::addr_of_mut!(slots.0) as *mut i32).offset(idx() as isize)
 // CHECK-NEXT:     };
@@ -155,7 +155,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut buffer: __SlateAlign16<[i32; 4]> = __SlateAlign16({
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [i32; 4] = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]][0] = 0 as i32;
+// CHECK-NEXT:         [[T_0]][0] = 0i32;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     });
 // CHECK-NEXT:     let mut out: *mut i32 = buffer.0.as_mut_ptr() as *mut i32;
@@ -170,13 +170,13 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut second: Node = {
 // CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: Node = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_1]].value = 2 as i32;
+// CHECK-NEXT:         [[T_1]].value = 2i32;
 // CHECK-NEXT:         [[T_1]].next = std::ptr::null_mut::<Node>();
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut first: Node = {
 // CHECK-NEXT:         let mut [[T_2:__t[0-9]+]]: Node = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_2]].value = 1 as i32;
+// CHECK-NEXT:         [[T_2]].value = 1i32;
 // CHECK-NEXT:         [[T_2]].next = std::ptr::addr_of_mut!(second);
 // CHECK-NEXT:         [[T_2]]
 // CHECK-NEXT:     };
@@ -210,8 +210,8 @@ int main(void) {
 // CHECK-NEXT:         [[V_13]] = [[V_15]];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     picked = [[V_13]];
-// CHECK-NEXT:     let narrow: u8 = ((300 as i32) as i8) as u8;
-// CHECK-NEXT:     let widened: i32 = (((((300 as i32) as i8) as u8) as u32) as i32) + 1;
+// CHECK-NEXT:     let narrow: u8 = 44u8;
+// CHECK-NEXT:     let widened: i32 = 45i32;
 // CHECK-NEXT:     println!("{} {} {} {} {} {}", a, b, c, d, e, unsafe { calls });
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {} {} {} {}", unsafe { slots.0[0] }, unsafe { slots.0[1] }, unsafe {

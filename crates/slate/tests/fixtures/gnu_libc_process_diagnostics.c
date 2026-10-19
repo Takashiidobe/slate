@@ -76,15 +76,15 @@ int main(void) {
 // CHECK-NEXT:     let mut captured: i32 = -1;
 // CHECK-NEXT:     unsafe { on_exit(Some(handle_exit), std::ptr::addr_of_mut!(captured) as *mut ()) };
 // CHECK-NEXT:     let mcheck_enabled: i32 = ((unsafe { mcheck(None) }) == 0) as i32;
-// CHECK-NEXT:     let block: *mut () = unsafe { malloc(16 as u64) };
+// CHECK-NEXT:     let block: *mut () = unsafe { malloc(16u64) };
 // CHECK-NEXT:     let probe: i32 = unsafe { mprobe(block) };
 // CHECK-NEXT:     println!("mcheck:{} {}", mcheck_enabled, ((probe as i32) == 0) as i32);
 // CHECK-NEXT:     unsafe { free(block) };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         error_one_per_line = 0;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { error(0 as i32, 0 as i32, c"first message".as_ptr()) };
-// CHECK-NEXT:     unsafe { error(0 as i32, 0 as i32, c"second message".as_ptr()) };
+// CHECK-NEXT:     unsafe { error(0i32, 0i32, c"first message".as_ptr()) };
+// CHECK-NEXT:     unsafe { error(0i32, 0i32, c"second message".as_ptr()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"count_after_two:%u\n".as_ptr(), error_message_count) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -93,19 +93,19 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         error_at_line(
-// CHECK-NEXT:             0 as i32,
-// CHECK-NEXT:             0 as i32,
+// CHECK-NEXT:             0i32,
+// CHECK-NEXT:             0i32,
 // CHECK-NEXT:             c"sample.c".as_ptr(),
-// CHECK-NEXT:             42 as u32,
+// CHECK-NEXT:             42u32,
 // CHECK-NEXT:             c"deduped message".as_ptr(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         error_at_line(
-// CHECK-NEXT:             0 as i32,
-// CHECK-NEXT:             0 as i32,
+// CHECK-NEXT:             0i32,
+// CHECK-NEXT:             0i32,
 // CHECK-NEXT:             c"sample.c".as_ptr(),
-// CHECK-NEXT:             42 as u32,
+// CHECK-NEXT:             42u32,
 // CHECK-NEXT:             c"deduped message".as_ptr(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -114,17 +114,17 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         error_at_line(
-// CHECK-NEXT:             0 as i32,
-// CHECK-NEXT:             0 as i32,
+// CHECK-NEXT:             0i32,
+// CHECK-NEXT:             0i32,
 // CHECK-NEXT:             c"sample.c".as_ptr(),
-// CHECK-NEXT:             43 as u32,
+// CHECK-NEXT:             43u32,
 // CHECK-NEXT:             c"different line".as_ptr(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"count_after_new_line:%u\n".as_ptr(), error_message_count) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     unsafe { error(5 as i32, 0 as i32, c"fatal message".as_ptr()) };
+// CHECK-NEXT:     unsafe { error(5i32, 0i32, c"fatal message".as_ptr()) };
 // CHECK-NEXT:     println!("unreachable");
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

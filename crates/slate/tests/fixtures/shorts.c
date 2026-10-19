@@ -27,9 +27,9 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let s: i16 = 30000;
-// CHECK-NEXT:     let us: u16 = ((60000 as i32) as i16) as u16;
+// CHECK-NEXT:     let us: u16 = 60000u16;
 // CHECK-NEXT:     let neg: i16 = -12345;
-// CHECK-NEXT:     println!("{}", sadd(s, - 30000 as i16) as i32);
+// CHECK-NEXT:     println!("{}", sadd(s, - 30000i16) as i32);
 // CHECK-NEXT:     println!("{}", (us as u32) as i32);
 // CHECK-NEXT:     println!("{}", neg as i32);
 // CHECK-NEXT:     0

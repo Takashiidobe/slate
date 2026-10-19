@@ -23,9 +23,8 @@ int main(void) {
 // CHECK-NEXT:         address_taken,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {}", add(5 as i32, 10 as i32), get_used(1 as i32, 2 as i32),
-// CHECK-NEXT:         remove_two(3 as i32, 4 as i32, 5 as i32), unsafe { indirect.unwrap() (8 as i32, 9
-// CHECK-NEXT:         as i32) }
+// CHECK-NEXT:         "{} {} {} {}", add(5i32, 10i32), get_used(1i32, 2i32), remove_two(3i32, 4i32,
+// CHECK-NEXT:         5i32), unsafe { indirect.unwrap() (8i32, 9i32) }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK: {{^}}}

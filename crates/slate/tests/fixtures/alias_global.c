@@ -10,7 +10,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: static mut real_global: i32 = 12 as i32;
+// CHECK-NEXT: static mut real_global: i32 = 12;
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let result: i32 = unsafe { real_global };
 // CHECK-NEXT:     result

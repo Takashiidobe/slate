@@ -72,7 +72,7 @@ int main(void) {
 // CHECK-NEXT:     value: i32,
 // CHECK-NEXT:     small: u16,
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut shared: i32 = 7 as i32;
+// CHECK-NEXT: static mut shared: i32 = 7;
 // CHECK-NEXT: static mut calls: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT: extern "C-unwind" fn callback(x: i32) -> i32 {
 // CHECK-NEXT:     x + 5
@@ -84,21 +84,21 @@ int main(void) {
 // CHECK-NEXT:     (p as *const i32) as *mut i32
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut a: u8 = ((231 as i32) as i8) as u8;
+// CHECK-NEXT:     let mut a: u8 = 231u8;
 // CHECK-NEXT:     let mut b: i16 = -1234;
 // CHECK-NEXT:     let mut c: i32 = -765432;
 // CHECK-NEXT:     let mut d: u64 = 18364758544493064720;
 // CHECK-NEXT:     let mut p: *mut i32 = std::ptr::addr_of_mut!(c);
 // CHECK-NEXT:     let mut cp: *const i32 = std::ptr::addr_of_mut!(c) as *const i32;
 // CHECK-NEXT:     let mut r#fn: Option<unsafe extern "C-unwind" fn(i32) -> i32> = Some(callback);
-// CHECK-NEXT:     let mut flag: bool = (1 as i32) != (0 as i32);
+// CHECK-NEXT:     let mut flag: bool = 1i32 != 0i32;
 // CHECK-NEXT:     let mut v: i32 = 17;
-// CHECK-NEXT:     let mut s: u16 = ((65000 as i32) as i16) as u16;
+// CHECK-NEXT:     let mut s: u16 = 65000u16;
 // CHECK-NEXT:     let mut wide: u64 = d;
 // CHECK-NEXT:     let mut counters: Counters = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: Counters = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]].value = 3 as i32;
-// CHECK-NEXT:         [[T_0]].small = 9 as u16;
+// CHECK-NEXT:         [[T_0]].value = 3i32;
+// CHECK-NEXT:         [[T_0]].small = 9u16;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let av: i32 = ((unsafe {
@@ -160,7 +160,7 @@ int main(void) {
 // CHECK-NEXT:     if (unsafe { *cpv }) != c {
 // CHECK-NEXT:         [[V_0]] = true as bool;
 // CHECK-NEXT:     } else {
-// CHECK-NEXT:         [[V_0]] = (unsafe { fnv.unwrap()(7 as i32) }) != 12;
+// CHECK-NEXT:         [[V_0]] = (unsafe { fnv.unwrap()(7i32) }) != 12;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if [[V_0]]
 // CHECK-NEXT:         || !unsafe {
@@ -211,7 +211,7 @@ int main(void) {
 // CHECK-NEXT:             std::sync::atomic::AtomicI32::from_ptr_raw(
 // CHECK-NEXT:                 std::ptr::addr_of_mut!(v) as *mut i32,
 // CHECK-NEXT:             ),
-// CHECK-NEXT:             29 as i32,
+// CHECK-NEXT:             29i32,
 // CHECK-NEXT:             std::sync::atomic::Ordering::SeqCst,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -219,20 +219,20 @@ int main(void) {
 // CHECK-NEXT:         std::sync::atomic::AtomicI32::from_ptr(
 // CHECK-NEXT:                 std::ptr::addr_of_mut!(shared) as *mut i32,
 // CHECK-NEXT:             )
-// CHECK-NEXT:             .store(11 as i32, std::sync::atomic::Ordering::Release)
+// CHECK-NEXT:             .store(11i32, std::sync::atomic::Ordering::Release)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::sync::atomic::AtomicI32::from_ptr(
 // CHECK-NEXT:                 std::ptr::addr_of_mut!(counters.value) as *mut i32,
 // CHECK-NEXT:             )
-// CHECK-NEXT:             .store(13 as i32, std::sync::atomic::Ordering::Relaxed)
+// CHECK-NEXT:             .store(13i32, std::sync::atomic::Ordering::Relaxed)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::sync::atomic::AtomicU16::store_volatile(
 // CHECK-NEXT:             std::sync::atomic::AtomicU16::from_ptr_raw(
 // CHECK-NEXT:                 std::ptr::addr_of_mut!(counters.small) as *mut u16,
 // CHECK-NEXT:             ),
-// CHECK-NEXT:             19 as u16,
+// CHECK-NEXT:             19u16,
 // CHECK-NEXT:             std::sync::atomic::Ordering::Release,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };

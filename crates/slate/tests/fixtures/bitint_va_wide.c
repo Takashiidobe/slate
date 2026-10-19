@@ -198,7 +198,7 @@ int main(void) {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%lld\n".as_ptr(),
 // CHECK-NEXT:             vsum(
-// CHECK-NEXT:                 5 as i32,
+// CHECK-NEXT:                 5i32,
 // CHECK-NEXT:                 <bitint::BInt<
 // CHECK-NEXT:                     100,
 // CHECK-NEXT:                     2,
@@ -223,7 +223,7 @@ int main(void) {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%lld\n".as_ptr(),
 // CHECK-NEXT:             vwide(
-// CHECK-NEXT:                 2 as i32,
+// CHECK-NEXT:                 2i32,
 // CHECK-NEXT:                 <bitint::BUint<
 // CHECK-NEXT:                     300,
 // CHECK-NEXT:                     5,

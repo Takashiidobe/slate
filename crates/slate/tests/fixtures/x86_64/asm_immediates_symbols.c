@@ -28,7 +28,7 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut values: [i32; 3] = [17 as i32, 29 as i32, 41 as i32];
+// CHECK-NEXT: static mut values: [i32; 3] = [17, 29, 41];
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.answer")]
 // CHECK-NEXT: extern "C-unwind" fn answer() -> i32 {
 // CHECK-NEXT:     53

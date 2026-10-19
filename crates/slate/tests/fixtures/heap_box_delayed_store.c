@@ -20,7 +20,7 @@ int main(void) {
 // CHECK-NEXT:     fn free(__ptr: *mut ());
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let p: *mut i32 = (unsafe { malloc(4 as u64) }) as *mut i32;
+// CHECK-NEXT:     let p: *mut i32 = (unsafe { malloc(4u64) }) as *mut i32;
 // CHECK-NEXT:     let mut marker: i32 = 7;
 // CHECK-NEXT:     marker += 1;
 // CHECK-NEXT:     unsafe {

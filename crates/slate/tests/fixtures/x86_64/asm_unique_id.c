@@ -138,12 +138,12 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%d %d %u %d %d %d\n".as_ptr(),
-// CHECK-NEXT:             count_down(0 as i32),
-// CHECK-NEXT:             count_down(7 as i32),
-// CHECK-NEXT:             clamp_sum(16 as u32),
+// CHECK-NEXT:             count_down(0i32),
+// CHECK-NEXT:             count_down(7i32),
+// CHECK-NEXT:             clamp_sum(16u32),
 // CHECK-NEXT:             first_char(),
-// CHECK-NEXT:             with_own_label(-(42 as i32)),
-// CHECK-NEXT:             with_own_label(500 as i32),
+// CHECK-NEXT:             with_own_label(-42i32),
+// CHECK-NEXT:             with_own_label(500i32),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

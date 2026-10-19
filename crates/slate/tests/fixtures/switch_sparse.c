@@ -45,7 +45,7 @@ int main(void) {
 // CHECK-NEXT:     out
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     println!("{} {} {}", map(- (3 as i32)), map(100 as i32), map(0 as i32));
+// CHECK-NEXT:     println!("{} {} {}", map(- 3i32), map(100i32), map(0i32));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

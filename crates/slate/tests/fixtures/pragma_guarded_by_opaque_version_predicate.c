@@ -21,7 +21,7 @@ int main(void) {
 // CHECK-NEXT:     x + 41
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     println!("{}", msvc_arm_guarded_pragma(1 as i32));
+// CHECK-NEXT:     println!("{}", msvc_arm_guarded_pragma(1i32));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

@@ -20,7 +20,7 @@ int main(void) {
 // CHECK-NEXT:     fn free(__ptr: *mut ());
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let p: *mut i32 = (unsafe { malloc((4 as u64).wrapping_mul(3 as u64)) }) as *mut i32;
+// CHECK-NEXT:     let p: *mut i32 = (unsafe { malloc(12u64) }) as *mut i32;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *p.offset(0 as isize) = 1;
 // CHECK-NEXT:     }

@@ -34,15 +34,15 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut object: OverAligned = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: OverAligned = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]].value = 7 as i32;
+// CHECK-NEXT:         [[T_0]].value = 7i32;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut local: __SlateAlign64<i32> = __SlateAlign64(11 as i32);
+// CHECK-NEXT:     let mut local: __SlateAlign64<i32> = __SlateAlign64(11i32);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%zu %zu %zu %d %d\n".as_ptr(),
-// CHECK-NEXT:             32 as u64,
+// CHECK-NEXT:             32u64,
 // CHECK-NEXT:             (std::ptr::addr_of_mut!(object) as u64) % 32,
 // CHECK-NEXT:             (std::ptr::addr_of_mut!(local.0) as u64) % 64,
 // CHECK-NEXT:             object.value,

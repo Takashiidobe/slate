@@ -465,8 +465,8 @@ int main(void) {
 // CHECK-NEXT: ///
 // CHECK-NEXT: /// computation.
 // CHECK-NEXT: fn check_bitint3() {
-// CHECK-NEXT:     let x: i8 = (1 as i8) << 5 >> 5;
-// CHECK-NEXT:     let y: i8 = (-2 as i8) << 5 >> 5;
+// CHECK-NEXT:     let x: i8 = 1i8;
+// CHECK-NEXT:     let y: i8 = -2i8;
 // CHECK-NEXT:     let sum: i8 = (x.wrapping_add(y) as i8) << 5 >> 5;
 // CHECK-NEXT:     if (sum.wrapping_sub(y) as i8) << 5 >> 5 != x {
 // CHECK-NEXT:         unsafe { abort() };
@@ -477,8 +477,8 @@ int main(void) {
 // CHECK-NEXT:     if !(y < x) {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let ux: u8 = (((5 as i8) << 5 >> 5) as u8) & 7;
-// CHECK-NEXT:     let uy: u8 = (((2 as i8) << 5 >> 5) as u8) & 7;
+// CHECK-NEXT:     let ux: u8 = 5u8;
+// CHECK-NEXT:     let uy: u8 = 2u8;
 // CHECK-NEXT:     let usum: u8 = (ux.wrapping_add(uy) as u8) & 7;
 // CHECK-NEXT:     if (usum.wrapping_sub(uy) as u8) & 7 != ux {
 // CHECK-NEXT:         unsafe { abort() };
@@ -668,7 +668,7 @@ int main(void) {
 // CHECK-NEXT:         ));
 // CHECK-NEXT:     w.u = [[V_3]];
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%zu\n".as_ptr(), 40 as u64) };
+// CHECK-NEXT:     unsafe { printf(c"%zu\n".as_ptr(), 40u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%lld\n".as_ptr(), w.s.to_i128() as i64) };

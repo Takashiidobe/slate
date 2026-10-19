@@ -36,7 +36,7 @@ int main(void) {
 // CHECK-NEXT:         memcmp(
 // CHECK-NEXT:             equal_a.as_mut_ptr() as *const (),
 // CHECK-NEXT:             equal_b.as_mut_ptr() as *const (),
-// CHECK-NEXT:             4 as u64,
+// CHECK-NEXT:             4u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) == 0) as i32;
 // CHECK-NEXT:     let mut unequal_a: [u8; 4] = [1, 2, 3, 4];
@@ -45,7 +45,7 @@ int main(void) {
 // CHECK-NEXT:         memcmp(
 // CHECK-NEXT:             unequal_a.as_mut_ptr() as *const (),
 // CHECK-NEXT:             unequal_b.as_mut_ptr() as *const (),
-// CHECK-NEXT:             4 as u64,
+// CHECK-NEXT:             4u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) == 0) as i32;
 // CHECK-NEXT:     let mut partial_a: [u8; 8] = [1, 2, 3, 4, 9, 9, 9, 9];
@@ -54,7 +54,7 @@ int main(void) {
 // CHECK-NEXT:         memcmp(
 // CHECK-NEXT:             partial_a.as_mut_ptr() as *const (),
 // CHECK-NEXT:             partial_b.as_mut_ptr() as *const (),
-// CHECK-NEXT:             4 as u64,
+// CHECK-NEXT:             4u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) == 0) as i32;
 // CHECK-NEXT:     let mut dyn_a: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];

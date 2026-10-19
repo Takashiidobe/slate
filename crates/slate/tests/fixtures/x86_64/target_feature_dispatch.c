@@ -499,38 +499,38 @@ int main(void) {
 // CHECK-NEXT: unsafe fn reverse_bytes_avx2(bytes: *mut u8) {
 // CHECK-NEXT:     let mask: std::simd::Simd<i64, 4> = unsafe {
 // CHECK-NEXT:         _mm256_setr_epi8(
-// CHECK-NEXT:             15 as i8,
-// CHECK-NEXT:             14 as i8,
-// CHECK-NEXT:             13 as i8,
-// CHECK-NEXT:             12 as i8,
-// CHECK-NEXT:             11 as i8,
-// CHECK-NEXT:             10 as i8,
-// CHECK-NEXT:             9 as i8,
-// CHECK-NEXT:             8 as i8,
-// CHECK-NEXT:             7 as i8,
-// CHECK-NEXT:             6 as i8,
-// CHECK-NEXT:             5 as i8,
-// CHECK-NEXT:             4 as i8,
-// CHECK-NEXT:             3 as i8,
-// CHECK-NEXT:             2 as i8,
-// CHECK-NEXT:             1 as i8,
-// CHECK-NEXT:             0 as i8,
-// CHECK-NEXT:             15 as i8,
-// CHECK-NEXT:             14 as i8,
-// CHECK-NEXT:             13 as i8,
-// CHECK-NEXT:             12 as i8,
-// CHECK-NEXT:             11 as i8,
-// CHECK-NEXT:             10 as i8,
-// CHECK-NEXT:             9 as i8,
-// CHECK-NEXT:             8 as i8,
-// CHECK-NEXT:             7 as i8,
-// CHECK-NEXT:             6 as i8,
-// CHECK-NEXT:             5 as i8,
-// CHECK-NEXT:             4 as i8,
-// CHECK-NEXT:             3 as i8,
-// CHECK-NEXT:             2 as i8,
-// CHECK-NEXT:             1 as i8,
-// CHECK-NEXT:             0 as i8,
+// CHECK-NEXT:             15i8,
+// CHECK-NEXT:             14i8,
+// CHECK-NEXT:             13i8,
+// CHECK-NEXT:             12i8,
+// CHECK-NEXT:             11i8,
+// CHECK-NEXT:             10i8,
+// CHECK-NEXT:             9i8,
+// CHECK-NEXT:             8i8,
+// CHECK-NEXT:             7i8,
+// CHECK-NEXT:             6i8,
+// CHECK-NEXT:             5i8,
+// CHECK-NEXT:             4i8,
+// CHECK-NEXT:             3i8,
+// CHECK-NEXT:             2i8,
+// CHECK-NEXT:             1i8,
+// CHECK-NEXT:             0i8,
+// CHECK-NEXT:             15i8,
+// CHECK-NEXT:             14i8,
+// CHECK-NEXT:             13i8,
+// CHECK-NEXT:             12i8,
+// CHECK-NEXT:             11i8,
+// CHECK-NEXT:             10i8,
+// CHECK-NEXT:             9i8,
+// CHECK-NEXT:             8i8,
+// CHECK-NEXT:             7i8,
+// CHECK-NEXT:             6i8,
+// CHECK-NEXT:             5i8,
+// CHECK-NEXT:             4i8,
+// CHECK-NEXT:             3i8,
+// CHECK-NEXT:             2i8,
+// CHECK-NEXT:             1i8,
+// CHECK-NEXT:             0i8,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let v: std::simd::Simd<i64, 4> = unsafe {
@@ -546,7 +546,7 @@ int main(void) {
 // CHECK-NEXT: fn reverse_bytes_scalar(bytes: *mut u8) {
 // CHECK-NEXT:     let mut lane: i32 = 0;
 // CHECK-NEXT:     while lane < 32 {
-// CHECK-NEXT:         for i in 0 as i32..8 as i32 {
+// CHECK-NEXT:         for i in 0i32..8i32 {
 // CHECK-NEXT:             let t: u8 = unsafe { *bytes.offset((lane + i) as isize) };
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 *bytes.offset((lane + i) as isize) = *bytes
@@ -604,15 +604,15 @@ int main(void) {
 // CHECK-NEXT:     Some(add_scalar)
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut words: __SlateAlign16<[u64; 37]> = __SlateAlign16([0 as u64; 37]);
-// CHECK-NEXT:     for i in 0 as u64..37 as u64 {
-// CHECK-NEXT:         words.0[i as usize] = (11400714819323198485 as u64)
-// CHECK-NEXT:             .wrapping_mul(i.wrapping_add(1)) ^ i << (40 as i32);
+// CHECK-NEXT:     let mut words: __SlateAlign16<[u64; 37]> = __SlateAlign16([0u64; 37]);
+// CHECK-NEXT:     for i in 0u64..37u64 {
+// CHECK-NEXT:         words.0[i as usize] = 11400714819323198485u64.wrapping_mul(i.wrapping_add(1))
+// CHECK-NEXT:             ^ i << 40i32;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut bits: i64 = 0;
 // CHECK-NEXT:     let mut [[V_1:__v[0-9]+]]: i64;
 // CHECK-NEXT:     if std::arch::is_x86_feature_detected!("popcnt") {
-// CHECK-NEXT:         [[V_1]] = unsafe { popcount_hw(words.0.as_mut_ptr() as *const u64, 37 as u64) };
+// CHECK-NEXT:         [[V_1]] = unsafe { popcount_hw(words.0.as_mut_ptr() as *const u64, 37u64) };
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         [[V_1]] = popcount_scalar(&words.0);
 // CHECK-NEXT:     }
@@ -620,37 +620,35 @@ int main(void) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"bits %lld %lld\n".as_ptr(), bits, popcount_scalar(&words.0)) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     let mut a: __SlateAlign16<[i32; 45]> = __SlateAlign16([0 as i32; 45]);
-// CHECK-NEXT:     let mut b: __SlateAlign16<[i32; 45]> = __SlateAlign16([0 as i32; 45]);
-// CHECK-NEXT:     let mut out: __SlateAlign16<[i32; 45]> = __SlateAlign16([0 as i32; 45]);
-// CHECK-NEXT:     for i in 0 as i32..45 as i32 {
+// CHECK-NEXT:     let mut a: __SlateAlign16<[i32; 45]> = __SlateAlign16([0i32; 45]);
+// CHECK-NEXT:     let mut b: __SlateAlign16<[i32; 45]> = __SlateAlign16([0i32; 45]);
+// CHECK-NEXT:     let mut out: __SlateAlign16<[i32; 45]> = __SlateAlign16([0i32; 45]);
+// CHECK-NEXT:     for i in 0i32..45i32 {
 // CHECK-NEXT:         a.0[i as usize] = i * 7 - 100;
 // CHECK-NEXT:         b.0[i as usize] = 1000 - i * i;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let add: Option<
 // CHECK-NEXT:         unsafe extern "C-unwind" fn(*mut i32, *const i32, *const i32, u64),
 // CHECK-NEXT:     > = select_add();
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::ptr::write_bytes(out.0.as_mut_ptr() as *mut u8, 0 as u8, 180 as usize)
-// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { std::ptr::write_bytes(out.0.as_mut_ptr() as *mut u8, 0u8, 180 as usize) };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         add
 // CHECK-NEXT:             .unwrap()(
 // CHECK-NEXT:             out.0.as_mut_ptr() as *mut i32,
 // CHECK-NEXT:             a.0.as_mut_ptr() as *const i32,
 // CHECK-NEXT:             b.0.as_mut_ptr() as *const i32,
-// CHECK-NEXT:             45 as u64,
+// CHECK-NEXT:             45u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut sum: i64 = 0;
-// CHECK-NEXT:     for i in 0 as i32..45 as i32 {
+// CHECK-NEXT:     for i in 0i32..45i32 {
 // CHECK-NEXT:         sum = sum * 31 + (out.0[i as usize] as i64);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"add %lld %d %d\n".as_ptr(), sum, out.0[0], out.0[44]) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     let mut bytes: __SlateAlign16<[u8; 32]> = __SlateAlign16([0 as u8; 32]);
-// CHECK-NEXT:     for i in 0 as i32..32 as i32 {
+// CHECK-NEXT:     let mut bytes: __SlateAlign16<[u8; 32]> = __SlateAlign16([0u8; 32]);
+// CHECK-NEXT:     for i in 0i32..32i32 {
 // CHECK-NEXT:         bytes.0[i as usize] = ((i * 3) as i8) as u8;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if std::arch::is_x86_feature_detected!("avx2") {
@@ -658,13 +656,13 @@ int main(void) {
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         reverse_bytes_scalar(bytes.0.as_mut_ptr() as *mut u8);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     for i in 0 as i32..32 as i32 {
+// CHECK-NEXT:     for i in 0i32..32i32 {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             printf(
 // CHECK-NEXT:                 c"%d%c".as_ptr(),
 // CHECK-NEXT:                 (bytes.0[i as usize] as u32) as i32,
-// CHECK-NEXT:                 if i == 31 { 10 as i32 } else { 32 as i32 },
+// CHECK-NEXT:                 if i == 31 { 10i32 } else { 32i32 },
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };

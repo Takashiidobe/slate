@@ -48,7 +48,7 @@ int main(void) {
 // CHECK-NEXT: };
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let p: *mut () = unsafe {
-// CHECK-NEXT:         unsafe { alloc.realloc_fn }.unwrap()(std::ptr::null_mut::<()>(), 8 as u64)
+// CHECK-NEXT:         unsafe { alloc.realloc_fn }.unwrap()(std::ptr::null_mut::<()>(), 8u64)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { unsafe { alloc.free_fn }.unwrap()(p) };
 // CHECK-NEXT:     println!("ok");

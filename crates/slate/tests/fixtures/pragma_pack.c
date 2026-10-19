@@ -59,8 +59,8 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let packed: PackedOne = PackedOne { tag: 29, value: 31 };
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {} {} {} {} {} {} {} {}", 8 as i32, 4 as i32, 6 as i32, 2 as i32, 2 as
-// CHECK-NEXT:         i32, 5 as i32, 1 as i32, 1 as i32, 6 as i32, 2 as i32, 4 as i32
+// CHECK-NEXT:         "{} {} {} {} {} {} {} {} {} {} {}", 8i32, 4i32, 6i32, 2i32, 2i32, 5i32, 1i32,
+// CHECK-NEXT:         1i32, 6i32, 2i32, 4i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     if ((packed.tag as u32) as i32) == 29 && packed.value == 31 { 0 } else { 1 }
 // CHECK-NEXT: }

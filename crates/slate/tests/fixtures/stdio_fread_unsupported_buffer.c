@@ -130,11 +130,11 @@ int main(void) {
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let buf: *mut i8 = (unsafe { malloc(16 as u64) }) as *mut i8;
+// CHECK-NEXT:     let buf: *mut i8 = (unsafe { malloc(16u64) }) as *mut i8;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *buf.offset(0 as isize) = 0;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let n: u64 = unsafe { fread(buf as *mut (), 1 as u64, 10 as u64, g) };
+// CHECK-NEXT:     let n: u64 = unsafe { fread(buf as *mut (), 1u64, 10u64, g) };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *buf.offset(n as isize) = 0;
 // CHECK-NEXT:     }

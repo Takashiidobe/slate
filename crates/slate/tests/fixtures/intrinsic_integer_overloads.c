@@ -41,10 +41,10 @@ int main(void) {
 // CHECK-NEXT:     2309737967
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let small: u16 = unsafe { __slate_intrinsic_1a0c079c71348b00(35243 as u16) };
+// CHECK-NEXT:     let small: u16 = unsafe { __slate_intrinsic_1a0c079c71348b00(35243u16) };
 // CHECK-NEXT:     let medium: u32 = unsafe { __slate_intrinsic_e94e9cf815168b51(input()) };
 // CHECK-NEXT:     let large: u64 = unsafe {
-// CHECK-NEXT:         __slate_intrinsic_5c27152fac4a123f(9920249030613615975 as u64)
+// CHECK-NEXT:         __slate_intrinsic_5c27152fac4a123f(9920249030613615975u64)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
