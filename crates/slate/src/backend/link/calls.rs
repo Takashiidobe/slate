@@ -45,14 +45,18 @@ pub(in crate::backend) fn rust_bound(
 
 pub(in crate::backend) fn bind_calls(
     programs: &mut [Program],
-    bound: &BTreeSet<FnKey>,
+    rust_bound: &BTreeSet<FnKey>,
+    c_bound: &BTreeSet<FnKey>,
     modules: &[Path],
 ) {
-    if bound.is_empty() {
+    if rust_bound.is_empty() && c_bound.is_empty() {
         return;
     }
-    let by_name: BTreeMap<&str, &FnKey> =
-        bound.iter().map(|key| (key.name.as_str(), key)).collect();
+    let by_name: BTreeMap<&str, &FnKey> = rust_bound
+        .iter()
+        .chain(c_bound)
+        .map(|key| (key.name.as_str(), key))
+        .collect();
     let mut imported = BTreeSet::new();
     for (unit, program) in programs.iter_mut().enumerate() {
         let mut uses = BTreeSet::new();
@@ -90,11 +94,10 @@ pub(in crate::backend) fn bind_calls(
                 continue;
             };
             let key = FnKey::new(unit, f.name.clone());
-            if !bound.contains(&key) {
-                continue;
+            if rust_bound.contains(&key) {
+                f.attrs.retain(|attr| *attr != Attr::NoMangle);
+                f.abi = None;
             }
-            f.attrs.retain(|attr| *attr != Attr::NoMangle);
-            f.abi = None;
             if imported.contains(&key) {
                 f.vis = Visibility::Pub;
             }

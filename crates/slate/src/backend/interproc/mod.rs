@@ -51,11 +51,12 @@ pub(in crate::backend) fn run(programs: &mut [Program], exports: &Exports) -> Op
         return None;
     };
     let types = link::SharedTypes::plan(programs);
-    let liftable = liftable_exports(programs, address_taken);
+    let (liftable, c_abi) = export_candidates(programs, address_taken);
     let rust_bound = link::rust_bound(programs, &liftable, &types);
+    let c_bound = link::rust_bound(programs, &c_abi, &types);
     string_params::run(programs, &rust_bound);
     pointer_lattice::apply(programs, &liftable, &rust_bound);
-    link::bind_calls(programs, &rust_bound, modules);
+    link::bind_calls(programs, &rust_bound, &c_bound, modules);
     types.hoist(programs)
 }
 
@@ -158,10 +159,13 @@ pub(in crate::backend) fn for_each_extern_fn<'a>(
     }
 }
 
-fn liftable_exports(programs: &[Program], address_taken: &BTreeSet<String>) -> BTreeSet<FnKey> {
+fn export_candidates(
+    programs: &[Program],
+    address_taken: &BTreeSet<String>,
+) -> (BTreeSet<FnKey>, BTreeSet<FnKey>) {
     let defs = fn_defs(programs);
     let exported = exported_symbols(&defs);
-    let mut pinned: BTreeSet<&str> = address_taken.iter().map(String::as_str).collect();
+    let mut pinned = BTreeSet::new();
     for program in programs {
         for item in &program.items {
             if let Item::GlobalAsm(asm) = item {
@@ -185,13 +189,22 @@ fn liftable_exports(programs: &[Program], address_taken: &BTreeSet<String>) -> B
             }
         });
     }
-    exported
-        .into_iter()
-        .filter_map(|(symbol, keys)| match keys.as_slice() {
-            [key] if !pinned.contains(symbol) && is_liftable_export(defs[key]) => Some(key.clone()),
-            _ => None,
-        })
-        .collect()
+    let mut liftable = BTreeSet::new();
+    let mut c_abi = BTreeSet::new();
+    for (symbol, keys) in exported {
+        let [key] = keys.as_slice() else {
+            continue;
+        };
+        if pinned.contains(symbol) || !is_path_bindable(defs[key]) {
+            continue;
+        }
+        if address_taken.contains(symbol) || !is_liftable_export(defs[key]) {
+            c_abi.insert(key.clone());
+        } else {
+            liftable.insert(key.clone());
+        }
+    }
+    (liftable, c_abi)
 }
 
 fn mentions_symbol(template: &str, symbol: &str) -> bool {
@@ -200,9 +213,8 @@ fn mentions_symbol(template: &str, symbol: &str) -> bool {
         .any(|word| word == symbol)
 }
 
-fn is_liftable_export(f: &FnDef) -> bool {
+fn is_path_bindable(f: &FnDef) -> bool {
     f.name != "main"
-        && !f.unsafe_
         && f.abi == Some(Abi::CUnwind)
         && Known::from_symbol(&f.name).is_none()
         && f.attrs.iter().all(|attr| {
@@ -214,8 +226,17 @@ fn is_liftable_export(f: &FnDef) -> bool {
                     | Attr::MustUse
                     | Attr::Deprecated(_)
                     | Attr::Allow(_)
+                    | Attr::LinkSection(_)
             )
         })
+}
+
+fn is_liftable_export(f: &FnDef) -> bool {
+    !f.unsafe_
+        && !f
+            .attrs
+            .iter()
+            .any(|attr| matches!(attr, Attr::LinkSection(_)))
 }
 
 fn decl_matches(decl: &ExternFnDecl, def: &FnDef) -> bool {

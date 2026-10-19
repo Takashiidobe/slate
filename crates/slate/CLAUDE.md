@@ -39,9 +39,10 @@ unit. Executable projects (one unit defines `main`) may also lift exported
 functions to pointer-ABI-identical types (`&T`, `&mut T`, `Box<T>`) and retype
 other units' extern decls; address-taken, `main`, libc-named, and
 specially-linked symbols keep their C signature. They also move structurally
-identical types into `src/__slate_types.rs`, imported by each unit, and call a
-lifted export by Rust path instead of an extern decl when every decl matches
-its definition (`src/backend/link/`). Library projects only change `static`
+identical types into `src/__slate_types.rs`, imported by each unit, and call an
+export by Rust path instead of an extern decl when every decl matches its
+definition (`src/backend/link/`); an address-taken export keeps its C ABI and
+symbol. Library projects only change `static`
 functions, so exported signatures never change.
 `tests/fixtures.release/` fixtures go through `translate-project` and a
 `cargo build --release` (`release_build_differential`), for behavior that only

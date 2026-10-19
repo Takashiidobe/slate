@@ -70,7 +70,12 @@ conversions and layout remain slate-parser responsibilities.
   cross-unit decl matches its definition type for type under those groups is
   bound by path: it loses `no_mangle` and `extern "C-unwind"`, callers'
   decls become `use crate::__slate_unit_<stem>::f;`, and string_params and
-  length_lattice treat it as a candidate like a `static` function.
+  length_lattice treat it as a candidate like a `static` function. An export
+  that cannot be lifted (address-taken, `unsafe`, or with a `link_section`) is
+  still bound by path under the same decl check, but keeps `no_mangle`,
+  `extern "C-unwind"` and its C params, because its address may reach C code:
+  sqlite passes `&sqlite3Apis` to `dlsym`'d extension entry points, so the
+  fn-pointer fields that store these functions cannot change ABI.
   Rewrites are always on: there is no raw lowering mode.
 - Function identity: lowering records every function whose address it emits;
   `frontend/distinct_functions.rs` marks the address-taken definitions that
