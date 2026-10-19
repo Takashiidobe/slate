@@ -52,7 +52,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut local: counter = counter { value: 1 };
-// CHECK-NEXT:     add_twice(unsafe { &mut (*std::ptr::addr_of_mut!(local)) }, 2 as i32);
+// CHECK-NEXT:     add_twice(unsafe { &mut (*std::ptr::addr_of_mut!(local)) }, 2i32);
 // CHECK-NEXT:     println!("{}", unsafe {
 // CHECK-NEXT:         counter_get(&(*(std::ptr::addr_of_mut!(local) as *const counter)))
 // CHECK-NEXT:     });

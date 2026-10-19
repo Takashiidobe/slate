@@ -61,6 +61,67 @@ impl Tables<'_> {
 }
 
 impl FunctionLowerer<'_, '_> {
+    pub(super) fn lower_elementwise_abs(
+        &mut self,
+        value: &ir::Value,
+        arguments: &[ir::Value],
+    ) -> Result<Expr> {
+        let [operand] = arguments else {
+            return Err(unsupported_value(value));
+        };
+        let vector = self.tables.vector_element(&value.ty);
+        let element = match vector {
+            Some(element) => element,
+            None => match self.tables.resolve_type(&value.ty) {
+                ir::Type::Numeric(numeric) => *numeric,
+                _ => return Err(unsupported_value(value)),
+            },
+        };
+        let lane = |recv: Expr| -> Result<Expr> {
+            let method = match element {
+                ir::NumericType::Integer {
+                    signed: true,
+                    bit_precise: false,
+                    ..
+                } => "wrapping_abs",
+                ir::NumericType::Integer {
+                    signed: false,
+                    bit_precise: false,
+                    ..
+                } => return Ok(recv),
+                ir::NumericType::Float(ir::FloatType::F32 | ir::FloatType::F64) => "abs",
+                _ => return Err(unsupported_value(value)),
+            };
+            Ok(Expr::MethodCall {
+                recv: Box::new(recv),
+                method: method.into(),
+                args: Vec::new(),
+            })
+        };
+        let lowered = self.lower_value(operand)?;
+        if vector.is_none() {
+            return lane(lowered);
+        }
+        let constructor = vector_constructor(&self.lower_type(&value.ty)?, "from_array");
+        let lanes = Expr::MethodCall {
+            recv: Box::new(lowered),
+            method: "to_array".into(),
+            args: Vec::new(),
+        };
+        Ok(Expr::Call {
+            func: Box::new(constructor),
+            args: vec![Expr::MethodCall {
+                recv: Box::new(lanes),
+                method: "map".into(),
+                args: vec![Expr::Closure {
+                    params: vec!["__lane".into()],
+                    body: Box::new(lane(Expr::Var("__lane".into()))?),
+                }],
+            }],
+            binding: CallBinding::Generated,
+        })
+    }
+
     pub(super) fn lower_shuffle(
         &mut self,
         value: &ir::Value,
