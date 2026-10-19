@@ -180,12 +180,9 @@ impl FunctionLowerer<'_, '_> {
         &mut self,
         function: &slate_parser::ast::Span<ir::Function>,
     ) -> Result<(rust::Abi, rust::ExternDecl)> {
-        let ir::Parameters::Prototype { fixed, variadic } = &function.parameters else {
-            return Err(Construct::Function {
-                name: function.name.clone(),
-                detail: "unprototyped declaration".into(),
-            }
-            .into());
+        let (fixed, variadic) = match &function.parameters {
+            ir::Parameters::Prototype { fixed, variadic } => (fixed.as_slice(), variadic),
+            ir::Parameters::Unprototyped => (&[][..], &true),
         };
         let abi = self.tables.function_abi(function)?;
         if self.tables.function_has_vector(function) {

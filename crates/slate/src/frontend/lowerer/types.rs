@@ -658,8 +658,8 @@ impl FunctionLowerer<'_, '_> {
                     return_type,
                     parameters,
                     variadic,
-                    prototyped: true,
                     convention,
+                    ..
                 } = &**pointee
                 else {
                     return Err(unsupported_type(ty));

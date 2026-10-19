@@ -65,11 +65,45 @@ impl FunctionLowerer<'_, '_> {
                     Expr::Var(name.rust.as_str().into())
                 }
             }
-            ir::Callee::Indirect(pointer) => Expr::MethodCall {
-                recv: Box::new(self.lower_value(pointer)?),
-                method: "unwrap".into(),
-                args: Vec::new(),
-            },
+            ir::Callee::Indirect(pointer) => {
+                let mut recv = self.lower_value(pointer)?;
+                if let ir::Type::Function {
+                    prototyped: false,
+                    return_type,
+                    ..
+                } = self.tables.resolve_type(signature)
+                {
+                    let from = self.lower_type(&pointer.ty)?;
+                    let rust::Type::FnPtr { abi, .. } = from else {
+                        return Err(unsupported_type(&pointer.ty));
+                    };
+                    let params = arguments
+                        .iter()
+                        .map(|argument| self.lower_type(&argument.ty))
+                        .collect::<Result<Vec<_>>>()?;
+                    let ret = match return_type {
+                        Some(ret) => self.lower_type(ret)?,
+                        None => rust::Type::Unit,
+                    };
+                    let to = rust::Type::FnPtr {
+                        abi,
+                        params,
+                        ret: Box::new(ret),
+                    };
+                    if to != from {
+                        recv = Expr::Transmute {
+                            from,
+                            to,
+                            expr: Box::new(recv),
+                        };
+                    }
+                }
+                Expr::MethodCall {
+                    recv: Box::new(recv),
+                    method: "unwrap".into(),
+                    args: Vec::new(),
+                }
+            }
         };
         let variadic_start = match self.tables.resolve_type(signature) {
             ir::Type::Function {
