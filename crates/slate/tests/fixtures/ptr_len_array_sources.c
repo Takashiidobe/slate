@@ -63,35 +63,44 @@ int main(void) {
 }
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
-// CHECK-LABEL: {{^}}fn sum_values(values: *const i32, len: i32) -> i32 {
+// CHECK-LABEL: {{^}}fn sum_values(values: &[i32]) -> i32 {
 // CHECK-NEXT:     let mut sum: i32 = 0;
-// CHECK-NEXT:     for i in 0..len {
-// CHECK-NEXT:         sum += unsafe { *values.offset(i as isize) };
+// CHECK-NEXT:     let mut i: i32 = 0;
+// CHECK-NEXT:     while i < (values.len() as i32) {
+// CHECK-NEXT:         sum += unsafe { values[i as usize] };
+// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     sum
 // CHECK: {{^}}}
-// CHECK-LABEL: {{^}}fn bump_values(values: *mut i32, len: i32) {
-// CHECK-NEXT:     let __values_view = unsafe {
-// CHECK-NEXT:         std::slice::from_raw_parts_mut(values as *mut i32, len as usize)
-// CHECK-NEXT:     };
-// CHECK-NEXT:     for i in 0..len {
+// CHECK-LABEL: {{^}}fn bump_values(values: &mut [i32]) {
+// CHECK-NEXT:     let mut i: i32 = 0;
+// CHECK-NEXT:     while i < (values.len() as i32) {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             __values_view[i as usize] = __values_view[i as usize] + 1;
+// CHECK-NEXT:             values[i as usize] = values[i as usize] + 1;
 // CHECK-NEXT:         }
+// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn sum_prefix(values: *const i32, len: i32) -> i32 {
+// CHECK-NEXT:     let __values_view = unsafe {
+// CHECK-NEXT:         std::slice::from_raw_parts(values as *const i32, len as usize)
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let mut sum: i32 = 0;
 // CHECK-NEXT:     for i in 0..len {
-// CHECK-NEXT:         sum += unsafe { *values.offset(i as isize) };
+// CHECK-NEXT:         sum += unsafe { __values_view[i as usize] };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     sum
 // CHECK: {{^}}}
-// CHECK-LABEL: {{^}}fn score_text(text: *const u8, len: i32) -> i32 {
-// CHECK-NEXT:     unsafe { strlen(text as *const i8) };
+// CHECK-LABEL: {{^}}fn score_text(text: &str) -> i32 {
+// CHECK-NEXT:     unsafe { text.len() };
 // CHECK-NEXT:     let mut score: i32 = 0;
-// CHECK-NEXT:     for i in 0..len {
-// CHECK-NEXT:         score += ((unsafe { *text.offset(i as isize) }) as u32) as i32;
+// CHECK-NEXT:     let mut i: i32 = 0;
+// CHECK-NEXT:     while i < (text.len() as i32) {
+// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = score;
+// CHECK-NEXT:         score = [[V_0]]
+// CHECK-NEXT:             + (((unsafe { *(text.as_ptr() as *const u8).offset(i as isize) }) as u32)
+// CHECK-NEXT:                 as i32);
+// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     score
 // CHECK: {{^}}}

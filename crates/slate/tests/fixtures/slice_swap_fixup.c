@@ -60,54 +60,62 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
-// CHECK-NEXT: fn pairwise_swap(items: *mut i32, len: i32) {
-// CHECK-NEXT:     for i in 0..len {
-// CHECK-NEXT:         for j in 0..len {
-// CHECK-NEXT:             if (unsafe { *items.offset(i as isize) })
-// CHECK-NEXT:                 > unsafe { *items.offset(j as isize) }
-// CHECK-NEXT:             {
-// CHECK-NEXT:                 let tmp: i32 = unsafe { *items.offset(i as isize) };
+// CHECK-NEXT: fn pairwise_swap(items: &mut [i32]) {
+// CHECK-NEXT:     let mut i: i32 = 0;
+// CHECK-NEXT:     while i < (items.len() as i32) {
+// CHECK-NEXT:         let mut j: i32 = 0;
+// CHECK-NEXT:         while j < (items.len() as i32) {
+// CHECK-NEXT:             if (unsafe { items[i as usize] }) > unsafe { items[j as usize] } {
+// CHECK-NEXT:                 let tmp: i32 = unsafe { items[i as usize] };
 // CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     *items.offset(i as isize) = *items.offset(j as isize);
+// CHECK-NEXT:                     items[i as usize] = items[j as usize];
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     *items.offset(j as isize) = tmp;
+// CHECK-NEXT:                     items[j as usize] = tmp;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
+// CHECK-NEXT:             j += 1;
 // CHECK-NEXT:         }
+// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
-// CHECK-NEXT: fn pairwise_swap_tmp_reused(items: *mut i32, len: i32) {
-// CHECK-NEXT:     for i in 0..len {
-// CHECK-NEXT:         for j in 0..len {
-// CHECK-NEXT:             if (unsafe { *items.offset(i as isize) })
-// CHECK-NEXT:                 > unsafe { *items.offset(j as isize) }
-// CHECK-NEXT:             {
-// CHECK-NEXT:                 let tmp: i32 = unsafe { *items.offset(i as isize) };
+// CHECK-NEXT: fn pairwise_swap_tmp_reused(items: &mut [i32]) {
+// CHECK-NEXT:     let mut i: i32 = 0;
+// CHECK-NEXT:     while i < (items.len() as i32) {
+// CHECK-NEXT:         let mut j: i32 = 0;
+// CHECK-NEXT:         while j < (items.len() as i32) {
+// CHECK-NEXT:             if (unsafe { items[i as usize] }) > unsafe { items[j as usize] } {
+// CHECK-NEXT:                 let tmp: i32 = unsafe { items[i as usize] };
 // CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     *items.offset(i as isize) = *items.offset(j as isize);
+// CHECK-NEXT:                     items[i as usize] = items[j as usize];
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     *items.offset(j as isize) = tmp;
+// CHECK-NEXT:                     items[j as usize] = tmp;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 println!("tmp={}", tmp);
 // CHECK-NEXT:             }
+// CHECK-NEXT:             j += 1;
 // CHECK-NEXT:         }
+// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
-// CHECK-NEXT: fn nested_self_swap(items: *mut i32, len: i32) {
-// CHECK-NEXT:     for i in 0..len {
-// CHECK-NEXT:         for j in 0..len {
-// CHECK-NEXT:             if (unsafe { *items.offset(i as isize) }) > 0 {
-// CHECK-NEXT:                 let tmp: i32 = unsafe { *items.offset(j as isize) };
+// CHECK-NEXT: fn nested_self_swap(items: &mut [i32]) {
+// CHECK-NEXT:     let mut i: i32 = 0;
+// CHECK-NEXT:     while i < (items.len() as i32) {
+// CHECK-NEXT:         let mut j: i32 = 0;
+// CHECK-NEXT:         while j < (items.len() as i32) {
+// CHECK-NEXT:             if (unsafe { items[i as usize] }) > 0 {
+// CHECK-NEXT:                 let tmp: i32 = unsafe { items[j as usize] };
 // CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     *items.offset(j as isize) = *items.offset(j as isize);
+// CHECK-NEXT:                     items[j as usize] = items[j as usize];
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     *items.offset(j as isize) = tmp;
+// CHECK-NEXT:                     items[j as usize] = tmp;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
+// CHECK-NEXT:             j += 1;
 // CHECK-NEXT:         }
+// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
@@ -118,13 +126,13 @@ int main(void) {
 // CHECK-NEXT:         1 as i32,
 // CHECK-NEXT:         2 as i32,
 // CHECK-NEXT:     ]);
-// CHECK-NEXT:     pairwise_swap(a.0.as_mut_ptr() as *mut i32, 5 as i32);
+// CHECK-NEXT:     pairwise_swap(&mut a.0);
 // CHECK-NEXT:     println!("{} {} {} {} {}", a.0[0], a.0[1], a.0[2], a.0[3], a.0[4]);
 // CHECK-NEXT:     let mut b: [i32; 3] = [3, 1, 2];
-// CHECK-NEXT:     pairwise_swap_tmp_reused(b.as_mut_ptr() as *mut i32, 3 as i32);
+// CHECK-NEXT:     pairwise_swap_tmp_reused(&mut b);
 // CHECK-NEXT:     println!("{} {} {}", b[0], b[1], b[2]);
 // CHECK-NEXT:     let mut c: [i32; 3] = [7, 8, 9];
-// CHECK-NEXT:     nested_self_swap(c.as_mut_ptr() as *mut i32, 3 as i32);
+// CHECK-NEXT:     nested_self_swap(&mut c);
 // CHECK-NEXT:     println!("{} {} {}", c[0], c[1], c[2]);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

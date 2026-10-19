@@ -63,9 +63,13 @@ int main(void) {
 // CHECK-NEXT:         30 as i32,
 // CHECK-NEXT:         40 as i32,
 // CHECK-NEXT:     ]);
-// CHECK-NEXT:     let r: i32 = sum_fixed(arr.0.as_mut_ptr() as *mut i32);
+// CHECK-NEXT:     let r: i32 = sum_fixed(unsafe {
+// CHECK-NEXT:         std::slice::from_raw_parts(arr.0.as_mut_ptr() as *const i32, 4usize)
+// CHECK-NEXT:     });
 // CHECK-NEXT:     let mut a: [i32; 3] = [1, 2, 3];
-// CHECK-NEXT:     scale_fixed(a.as_mut_ptr() as *mut i32);
+// CHECK-NEXT:     scale_fixed(unsafe {
+// CHECK-NEXT:         std::slice::from_raw_parts_mut(a.as_mut_ptr() as *mut i32, 3usize)
+// CHECK-NEXT:     });
 // CHECK-NEXT:     let m: *mut i32 = (unsafe { malloc((3 as u64).wrapping_mul(4 as u64)) }) as *mut i32;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *m.offset(0 as isize) = 5;
@@ -76,7 +80,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *m.offset(2 as isize) = 7;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let r2: i32 = sum3(m);
+// CHECK-NEXT:     let r2: i32 = sum3(unsafe { std::slice::from_raw_parts(m as *const i32, 3usize) });
 // CHECK-NEXT:     unsafe { free(m as *mut ()) };
 // CHECK-NEXT:     let mut big: __SlateAlign16<[i32; 6]> = __SlateAlign16([
 // CHECK-NEXT:         1 as i32,

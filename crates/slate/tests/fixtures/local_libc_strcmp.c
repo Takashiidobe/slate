@@ -28,28 +28,47 @@ int main(void) {
 // CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
 // CHECK-NEXT:     fn strcmp(__s1: *const i8, __s2: *const i8) -> i32;
 // CHECK-NEXT: }
-// CHECK-NEXT: fn cmp_texts(a: *const i8, alen: i32, b: *const i8, blen: i32) -> i32 {
+// CHECK-NEXT: fn cmp_texts(a: &str, b: &str) -> i32 {
 // CHECK-NEXT:     let mut sa: i32 = 0;
 // CHECK-NEXT:     let mut sb: i32 = 0;
-// CHECK-NEXT:     for i in 0..alen {
-// CHECK-NEXT:         sa += (unsafe { *a.offset(i as isize) }) as i32;
+// CHECK-NEXT:     {
+// CHECK-NEXT:         let mut i: i32 = 0;
+// CHECK-NEXT:         while i < (a.len() as i32) {
+// CHECK-NEXT:             let [[V_0:__v[0-9]+]]: i32 = sa;
+// CHECK-NEXT:             sa = [[V_0]]
+// CHECK-NEXT:                 + ((unsafe { *(a.as_ptr() as *const i8).offset(i as isize) }) as i32);
+// CHECK-NEXT:             i += 1;
+// CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     for i in 0..blen {
-// CHECK-NEXT:         sb += (unsafe { *b.offset(i as isize) }) as i32;
+// CHECK-NEXT:     let mut i: i32 = 0;
+// CHECK-NEXT:     while i < (b.len() as i32) {
+// CHECK-NEXT:         let [[V_1:__v[0-9]+]]: i32 = sb;
+// CHECK-NEXT:         sb = [[V_1]] + ((unsafe { *(b.as_ptr() as *const i8).offset(i as isize) }) as i32);
+// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let order: i32 = unsafe { strcmp(a, b) };
+// CHECK-NEXT:     let order: i32 = unsafe { a.cmp(b) as i32 };
 // CHECK-NEXT:     let sign: i32 = ((order > 0) as i32) - ((order < 0) as i32);
-// CHECK-NEXT:     let eq: i32 = ((unsafe { strcmp(a, b) }) == 0) as i32;
+// CHECK-NEXT:     let eq: i32 = ((unsafe { strcmp(a.as_ptr() as *const i8, b.as_ptr() as *const i8) })
+// CHECK-NEXT:         == 0) as i32;
 // CHECK-NEXT:     sign * 1000 + eq * 100 + (sa - sb)
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut x: [i8; 4] = [97, 98, 99, 0];
 // CHECK-NEXT:     let mut y: [i8; 4] = [97, 98, 100, 0];
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", cmp_texts(x.as_ptr() as * const i8, 3 as i32, y.as_ptr() as * const
-// CHECK-NEXT:         i8, 3 as i32), cmp_texts(y.as_ptr() as * const i8, 3 as i32, x.as_ptr() as *
-// CHECK-NEXT:         const i8, 3 as i32), cmp_texts(x.as_ptr() as * const i8, 3 as i32, x.as_ptr() as
-// CHECK-NEXT:         * const i8, 3 as i32)
+// CHECK-NEXT:         "{} {} {}", cmp_texts(unsafe {
+// CHECK-NEXT:         std::str::from_utf8_unchecked(std::slice::from_raw_parts(x.as_ptr() as * const
+// CHECK-NEXT:         u8, 3 as usize)) }, unsafe {
+// CHECK-NEXT:         std::str::from_utf8_unchecked(std::slice::from_raw_parts(y.as_ptr() as * const
+// CHECK-NEXT:         u8, 3 as usize)) }), cmp_texts(unsafe {
+// CHECK-NEXT:         std::str::from_utf8_unchecked(std::slice::from_raw_parts(y.as_ptr() as * const
+// CHECK-NEXT:         u8, 3 as usize)) }, unsafe {
+// CHECK-NEXT:         std::str::from_utf8_unchecked(std::slice::from_raw_parts(x.as_ptr() as * const
+// CHECK-NEXT:         u8, 3 as usize)) }), cmp_texts(unsafe {
+// CHECK-NEXT:         std::str::from_utf8_unchecked(std::slice::from_raw_parts(x.as_ptr() as * const
+// CHECK-NEXT:         u8, 3 as usize)) }, unsafe {
+// CHECK-NEXT:         std::str::from_utf8_unchecked(std::slice::from_raw_parts(x.as_ptr() as * const
+// CHECK-NEXT:         u8, 3 as usize)) })
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

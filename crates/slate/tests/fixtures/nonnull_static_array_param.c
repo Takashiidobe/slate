@@ -22,10 +22,10 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
-// CHECK-NEXT: fn sum4(arr: *mut i32) -> i32 {
+// CHECK-NEXT: fn sum4(arr: &[i32]) -> i32 {
 // CHECK-NEXT:     let mut s: i32 = 0;
 // CHECK-NEXT:     for i in 0 as i32..4 as i32 {
-// CHECK-NEXT:         s += unsafe { *arr.offset(i as isize) };
+// CHECK-NEXT:         s += unsafe { arr[i as usize] };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     s
 // CHECK-NEXT: }
@@ -36,7 +36,9 @@ int main(void) {
 // CHECK-NEXT:         3 as i32,
 // CHECK-NEXT:         4 as i32,
 // CHECK-NEXT:     ]);
-// CHECK-NEXT:     let __slate_printf_arg0 = sum4(values.0.as_mut_ptr() as *mut i32);
+// CHECK-NEXT:     let __slate_printf_arg0 = sum4(unsafe {
+// CHECK-NEXT:         std::slice::from_raw_parts(values.0.as_mut_ptr() as *const i32, 4usize)
+// CHECK-NEXT:     });
 // CHECK-NEXT:     println!("{}", __slate_printf_arg0);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

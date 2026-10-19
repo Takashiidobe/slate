@@ -1,3 +1,4 @@
+use std::cell::Cell;
 use std::collections::{BTreeMap, BTreeSet, VecDeque};
 
 use crate::backend::interproc::pointer_lattice::{PointerBinding, PointerFact, ResolvedPtrType};
@@ -85,6 +86,7 @@ struct SignatureCandidate {
 #[derive(Debug, Clone, Copy)]
 enum CallProof {
     Exact,
+    WholeArray,
     Forwarded(usize),
 }
 
@@ -155,7 +157,7 @@ fn apply_signature_lifts(
     for site in &sites {
         call_counts[site.target] += 1;
         match site.proof {
-            Some(CallProof::Exact) => {}
+            Some(CallProof::Exact | CallProof::WholeArray) => {}
             Some(CallProof::Forwarded(source)) => {
                 forwarded_counts[source] += 1;
                 dependents[source].push(site.target);
@@ -195,6 +197,25 @@ fn apply_signature_lifts(
                 "ptr_len call {} -> {} target={} proof={:?}",
                 site.caller, site.callee, site.target, site.proof
             );
+        }
+    }
+
+    let mut active_by_function: BTreeMap<&FnKey, Vec<usize>> = BTreeMap::new();
+    for (id, candidate) in candidates.iter().enumerate() {
+        if active[id] {
+            active_by_function
+                .entry(&candidate.function)
+                .or_default()
+                .push(id);
+        }
+    }
+    for ids in active_by_function.values() {
+        let ptrs: BTreeSet<usize> = ids.iter().map(|&id| candidates[id].ptr_index).collect();
+        let lens: BTreeSet<usize> = ids.iter().map(|&id| candidates[id].len_index).collect();
+        if ptrs.len() < ids.len() || lens.len() < ids.len() {
+            for &id in ids {
+                active[id] = false;
+            }
         }
     }
 
@@ -249,6 +270,7 @@ fn apply_signature_lifts(
             symbols,
             accepted: &accepted,
             candidates: &candidates,
+            pairings,
         };
         apply_signature_items(&mut program.items, &ctx, &mut proofs);
     }
@@ -260,6 +282,7 @@ struct SignatureCtx<'a> {
     symbols: &'a Symbols,
     accepted: &'a BTreeMap<FnKey, Vec<usize>>,
     candidates: &'a [SignatureCandidate],
+    pairings: &'a BTreeMap<PointerBinding, Pairing>,
 }
 
 fn collect_global_arrays(items: &[Item]) -> ArrayCatalog {
@@ -291,6 +314,12 @@ fn array_source(ty: &Type) -> Option<ArraySource> {
         Type::Generic { name, args }
             if name == "aligned::Aligned"
                 && let [_, inner] = args.as_slice() =>
+        {
+            array_source(inner)
+        }
+        Type::Generic { name, args }
+            if name.starts_with("__SlateAlign")
+                && let [inner] = args.as_slice() =>
         {
             array_source(inner)
         }
@@ -379,6 +408,8 @@ fn signature_call_sites(
         let defs = collect_value_defs(&f.body);
         let mut arrays = global_arrays[caller.unit].clone();
         collect_local_arrays(&f.body, &mut arrays);
+        let mut local_arrays = ArrayCatalog::default();
+        collect_local_arrays(&f.body, &mut local_arrays);
         let mut calls = Vec::new();
         for indent in &f.body {
             indent.collect_calls(&mut calls);
@@ -425,7 +456,21 @@ fn signature_call_sites(
                         }
                     };
                     if exact {
-                        return Some(CallProof::Exact);
+                        let whole =
+                            matches!(candidate.kind, BufferKind::Shared | BufferKind::Mutable)
+                                && array_place(ptr_arg).is_some_and(|(_, root)| {
+                                    local_arrays.contains_key(root)
+                                        && args
+                                            .iter()
+                                            .map(|arg| expr_read_count(arg, root))
+                                            .sum::<usize>()
+                                            == 1
+                                });
+                        return Some(if whole {
+                            CallProof::WholeArray
+                        } else {
+                            CallProof::Exact
+                        });
                     }
                     by_function
                         .get(caller)
@@ -501,12 +546,7 @@ fn exact_allocation_pair(
         return false;
     };
     let resolved_size = resolved_expr(size, defs, 0);
-    let Expr::Binary {
-        op: BinOp::Mul,
-        lhs,
-        rhs,
-    } = peel_value(&resolved_size)
-    else {
+    let Some((lhs, rhs)) = mul_operands(&resolved_size) else {
         return false;
     };
     if std::env::var_os("SLATE_PTR_LEN_DEBUG").is_some() {
@@ -520,6 +560,40 @@ fn exact_allocation_pair(
     }
     (same_value(lhs, len_arg, defs) && resolved_integer(rhs, defs, 0) == Some(elem_size))
         || (same_value(rhs, len_arg, defs) && resolved_integer(lhs, defs, 0) == Some(elem_size))
+}
+
+fn array_place(ptr_arg: &Expr) -> Option<(&Expr, &str)> {
+    let Expr::MethodCall { recv, method, args } = peel_value(ptr_arg) else {
+        return None;
+    };
+    if !args.is_empty() || !matches!(method.as_str(), "as_ptr" | "as_mut_ptr") {
+        return None;
+    }
+    match &**recv {
+        Expr::Var(root) => Some((recv, root.as_str())),
+        Expr::TupleField { base, index: 0 } => match &**base {
+            Expr::Var(root) => Some((recv, root.as_str())),
+            _ => None,
+        },
+        _ => None,
+    }
+}
+
+fn mul_operands(expr: &Expr) -> Option<(&Expr, &Expr)> {
+    match peel_value(expr) {
+        Expr::Binary {
+            op: BinOp::Mul,
+            lhs,
+            rhs,
+        } => Some((lhs, rhs)),
+        Expr::MethodCall { recv, method, args } if method == "wrapping_mul" => {
+            match args.as_slice() {
+                [rhs] => Some((recv, rhs)),
+                _ => None,
+            }
+        }
+        _ => None,
+    }
 }
 
 fn exact_array_pair(
@@ -552,7 +626,11 @@ fn array_root_name(
     match peel_value(expr) {
         Expr::Var(name) if arrays.contains_key(name.as_str()) => Some(name.to_string()),
         Expr::Var(name) => array_root_name(defs.get(name.as_str())?, defs, arrays, depth + 1),
-        Expr::ArrayPtr { array, .. } => array_root_name(array, defs, arrays, depth + 1),
+        Expr::ArrayPtr { array, .. }
+        | Expr::TupleField {
+            base: array,
+            index: 0,
+        } => array_root_name(array, defs, arrays, depth + 1),
         Expr::MethodCall { recv, method, args }
             if args.is_empty() && matches!(method.as_str(), "as_ptr" | "as_mut_ptr") =>
         {
@@ -1090,8 +1168,19 @@ fn apply_signature_fn(
                 }),
                 ty: f.params[candidate.len_index].ty.clone(),
             };
+            if matches!(candidate.kind, BufferKind::Shared | BufferKind::Mutable) {
+                substitute_slice_param(
+                    &mut f.body,
+                    &candidate.ptr_param,
+                    &raw,
+                    ctx.pairings.get(&candidate.binding),
+                );
+            } else {
+                for indent in &mut f.body {
+                    indent.substitute_var(&candidate.ptr_param, &raw);
+                }
+            }
             for indent in &mut f.body {
-                indent.substitute_var(&candidate.ptr_param, &raw);
                 indent.substitute_var(&candidate.len_param, &len);
             }
             f.params[candidate.ptr_index].ty = match candidate.kind {
@@ -1232,6 +1321,13 @@ fn rewrite_signature_expr(
                     return;
                 };
                 let bridge = match proof {
+                    CallProof::WholeArray => match array_place(&ptr_arg) {
+                        Some((place, _)) => Expr::Ref {
+                            mutable: candidate.kind.mutable(),
+                            expr: Box::new(place.clone()),
+                        },
+                        None => buffer_bridge(ptr_arg, len_arg, candidate),
+                    },
                     CallProof::Exact => buffer_bridge(ptr_arg, len_arg, candidate),
                     CallProof::Forwarded(source) => {
                         Expr::Var(Ident::new(ctx.candidates[source].ptr_param.as_str()))
@@ -1476,24 +1572,30 @@ fn collect_fn(
     }
 
     let let_exprs = collect_let_exprs(&f.body);
-    let mut bound_pairs: Vec<(String, String)> = Vec::new();
-    collect_loop_bounds(&f.body, &let_exprs, &mut bound_pairs);
-
-    let mut offsets = Vec::new();
-    for indent in &f.body {
-        indent.collect_offset_calls(&mut offsets);
-    }
+    let mut loop_bounds = Vec::new();
+    collect_loop_bounds(&f.body, &let_exprs, &mut loop_bounds);
+    let bound_pairs: Vec<_> = loop_bounds
+        .into_iter()
+        .filter_map(|(idx, len, body)| {
+            let mut offsets = Vec::new();
+            for indent in body {
+                indent.collect_offset_calls(&mut offsets);
+            }
+            Some((idx, peeled_var(&len)?.to_string(), body, offsets))
+        })
+        .collect();
 
     if bound_pairs.is_empty() {
         return;
     }
 
     for (ptr_param, ptr_local, kind) in &buffer_ptrs {
+        let mut pairings = Vec::new();
         for (len_param, len_local) in &int_params {
             if ptr_param == len_param {
                 continue;
             }
-            let matched_idx = bound_pairs.iter().find_map(|(idx, len)| {
+            let matched_idx = bound_pairs.iter().find_map(|(idx, len, _, offsets)| {
                 let matches_len = len == len_local;
                 let matches_offset = offsets.iter().any(|(recv, _, index)| {
                     resolve_var(&let_exprs, recv.as_str()) == ptr_local.as_str()
@@ -1507,7 +1609,7 @@ fn collect_fn(
             };
             let guard_reads = bound_pairs
                 .iter()
-                .filter(|(_, len)| len == len_local)
+                .filter(|(_, len, ..)| len == len_local)
                 .count();
             if count_var_reads(&f.body, len_local) != guard_reads {
                 continue;
@@ -1518,20 +1620,32 @@ fn collect_fn(
                 continue;
             }
             let temp_names = matched_offset_temps(&f.body, &let_exprs, ptr_local, &idx_name);
-            let writes = is_written_through(&f.body, &temp_names);
-            if temp_names.is_empty() || (writes && !kind.mutable()) {
+            let sites = ViewSites::new(&temp_names, ptr_local, &idx_name);
+            let site_count = sites.count(&f.body);
+            let bounded_site_count: usize = bound_pairs
+                .iter()
+                .filter(|(idx, len, ..)| *idx == idx_name && len == len_local)
+                .map(|(_, _, body, _)| sites.count(body))
+                .sum();
+            if site_count == 0
+                || site_count != bounded_site_count
+                || (is_written_through(&f.body, &sites) && !kind.mutable())
+            {
                 continue;
             }
+            pairings.push(Pairing {
+                len_param: len_param.clone(),
+                idx_name,
+                kind: *kind,
+            });
+        }
+        if let [pairing] = pairings.as_slice() {
             out.insert(
                 PointerBinding {
                     function: FnKey::new(unit, f.name.clone()),
                     name: ptr_param.clone(),
                 },
-                Pairing {
-                    len_param: len_param.clone(),
-                    idx_name,
-                    kind: *kind,
-                },
+                pairing.clone(),
             );
         }
     }
@@ -1613,15 +1727,134 @@ fn matched_offset_temps_with_types(
         .collect()
 }
 
-fn is_written_through(body: &[Stmt], temp_names: &[String]) -> bool {
-    body.iter()
-        .any(|indent| stmt_writes_temp(indent, temp_names))
+struct ViewSites<'a> {
+    temps: &'a [String],
+    ptr: &'a str,
+    idx: Option<&'a str>,
+    hits: Cell<usize>,
 }
 
-fn stmt_writes_temp(stmt: &Stmt, temp_names: &[String]) -> bool {
-    let is_temp_deref = |target: &Expr| matches!(peel_cast(target), Expr::Unary{op: UnaryOp::Deref, expr} if matches!(&**expr, Expr::Var(v) if temp_names.iter().any(|t| t == v.as_str())));
+impl<'a> ViewSites<'a> {
+    fn new(temps: &'a [String], ptr: &'a str, idx: &'a str) -> Self {
+        Self {
+            temps,
+            ptr,
+            idx: Some(idx),
+            hits: Cell::new(0),
+        }
+    }
+
+    fn any_index(ptr: &'a str) -> Self {
+        Self {
+            temps: &[],
+            ptr,
+            idx: None,
+            hits: Cell::new(0),
+        }
+    }
+
+    fn index_of(&self, pointer: &Expr) -> Option<Expr> {
+        let pointer = peel_unsafe_blocks(pointer);
+        if let Some(idx) = self.idx
+            && let Expr::Var(name) = pointer
+            && self.temps.iter().any(|temp| temp == name.as_str())
+        {
+            return Some(Expr::Var(Ident::new(idx)));
+        }
+        let Expr::MethodCall { recv, method, args } = pointer else {
+            return None;
+        };
+        let [index] = args.as_slice() else {
+            return None;
+        };
+        if !matches!(method.as_str(), "offset" | "add")
+            || !matches!(&**recv, Expr::Var(name) if name.as_str() == self.ptr)
+        {
+            return None;
+        }
+        match self.idx {
+            Some(idx) => (peeled_var(index) == Some(idx)).then(|| Expr::Var(Ident::new(idx))),
+            None => Some(match index {
+                Expr::Cast {
+                    expr,
+                    ty: Type::Prim(Prim::Isize),
+                } => (**expr).clone(),
+                _ => index.clone(),
+            }),
+        }
+    }
+
+    fn matches(&self, pointer: &Expr) -> bool {
+        self.index_of(pointer).is_some()
+    }
+
+    fn count(&self, body: &[Stmt]) -> usize {
+        let mut probe = body.to_vec();
+        for stmt in &mut probe {
+            rewrite_stmt(stmt, self, "");
+        }
+        self.hits.replace(0)
+    }
+}
+
+fn peel_unsafe_blocks(expr: &Expr) -> &Expr {
+    match expr {
+        Expr::Unsafe(block) if block.stmts.is_empty() => match &block.tail {
+            Some(tail) => peel_unsafe_blocks(tail),
+            None => expr,
+        },
+        _ => expr,
+    }
+}
+
+fn substitute_slice_param(body: &mut Vec<Stmt>, ptr: &str, raw: &Expr, pairing: Option<&Pairing>) {
+    let placeholder = format!("__{}_slice", ptr.trim_start_matches("r#"));
+    if let Some(pairing) = pairing {
+        let let_exprs = collect_let_exprs(body);
+        let temps = matched_offset_temps(body, &let_exprs, ptr, &pairing.idx_name);
+        let sites = ViewSites::new(&temps, ptr, &pairing.idx_name);
+        for stmt in body.iter_mut() {
+            rewrite_stmt(stmt, &sites, &placeholder);
+        }
+        let dead: Vec<String> = temps
+            .into_iter()
+            .filter(|temp| count_var_reads(body, temp) == 0)
+            .collect();
+        remove_lets(body, &dead);
+    }
+    let sites = ViewSites::any_index(ptr);
+    for stmt in body.iter_mut() {
+        rewrite_stmt(stmt, &sites, &placeholder);
+    }
+    let slice = Expr::Var(Ident::new(ptr));
+    for stmt in body.iter_mut() {
+        stmt.substitute_var(ptr, raw);
+        stmt.substitute_var(&placeholder, &slice);
+    }
+}
+
+fn remove_lets(body: &mut Vec<Stmt>, names: &[String]) {
+    if names.is_empty() {
+        return;
+    }
+    body.retain(|stmt| !matches!(stmt, Stmt::Let { name, .. } if names.contains(name)));
+    for stmt in body {
+        for child in stmt.child_bodies_mut() {
+            remove_lets(child, names);
+        }
+    }
+}
+
+fn is_written_through(body: &[Stmt], sites: &ViewSites) -> bool {
+    body.iter().any(|indent| stmt_writes_temp(indent, sites))
+}
+
+fn stmt_writes_temp(stmt: &Stmt, sites: &ViewSites) -> bool {
     match stmt {
-        Stmt::Assign { target, .. } | Stmt::CompoundAssign { target, .. } => is_temp_deref(target),
+        Stmt::Assign { target, .. } | Stmt::CompoundAssign { target, .. } => matches!(
+            peel_cast(target),
+            Expr::Unary { op: UnaryOp::Deref, expr } if sites.matches(expr)
+        ),
         Stmt::LetIf {
             then_body,
             else_body,
@@ -1631,18 +1864,14 @@ fn stmt_writes_temp(stmt: &Stmt, temp_names: &[String]) -> bool {
             then_body,
             else_body,
             ..
-        } => is_written_through(then_body, temp_names) || is_written_through(else_body, temp_names),
+        } => is_written_through(then_body, sites) || is_written_through(else_body, sites),
         Stmt::Loop { body, .. }
         | Stmt::Scope { body }
         | Stmt::LabeledBlock { body, .. }
-        | Stmt::For { body, .. } => is_written_through(body, temp_names),
-        Stmt::Match { arms, .. } => arms
-            .iter()
-            .any(|arm| is_written_through(&arm.body, temp_names)),
-        Stmt::While { body, .. } | Stmt::Unsafe { body } => {
-            is_written_through(&body.stmts, temp_names)
-        }
-        Stmt::Block(body) => is_written_through(&body.stmts, temp_names),
+        | Stmt::For { body, .. } => is_written_through(body, sites),
+        Stmt::Match { arms, .. } => arms.iter().any(|arm| is_written_through(&arm.body, sites)),
+        Stmt::While { body, .. } | Stmt::Unsafe { body } => is_written_through(&body.stmts, sites),
+        Stmt::Block(body) => is_written_through(&body.stmts, sites),
         _ => false,
     }
 }
@@ -1659,12 +1888,13 @@ fn apply_view(f: &mut FnDef, ptr_name: &str, elem_ty: &Type, pairing: &Pairing) 
     let ptr_local = shadow_local_name(&f.body, ptr_name).unwrap_or_else(|| ptr_name.to_string());
     let matched =
         matched_offset_temps_with_types(&f.body, &let_exprs, &ptr_local, &pairing.idx_name);
-    if matched.is_empty() {
+    let temp_names: Vec<String> = matched.iter().map(|(temp, _)| temp.clone()).collect();
+    let sites = ViewSites::new(&temp_names, &ptr_local, &pairing.idx_name);
+    if sites.count(&f.body) == 0 {
         return;
     }
-    let temp_names: Vec<String> = matched.iter().map(|(temp, _)| temp.clone()).collect();
 
-    let view_name = format!("__{ptr_name}_view");
+    let view_name = format!("__{}_view", ptr_name.trim_start_matches("r#"));
     let insert_at = 0;
 
     let view_elem_ty = if matches!(elem_ty, Type::CLib(clib) if *clib == CLibType::VOID) {
@@ -1715,30 +1945,30 @@ fn apply_view(f: &mut FnDef, ptr_name: &str, elem_ty: &Type, pairing: &Pairing) 
     f.body.insert(insert_at, view_let);
 
     for indent in &mut f.body {
-        rewrite_stmt(indent, &temp_names, &view_name, &pairing.idx_name);
+        rewrite_stmt(indent, &sites, &view_name);
     }
 }
 
-fn rewrite_stmt(stmt: &mut Stmt, temp_names: &[String], view_name: &str, idx_name: &str) {
+fn rewrite_stmt(stmt: &mut Stmt, sites: &ViewSites, view_name: &str) {
     match stmt {
         Stmt::Let {
             init: Some(init), ..
-        } => rewrite_expr(init, temp_names, view_name, idx_name),
+        } => rewrite_expr(init, sites, view_name),
         Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
-            rewrite_expr(target, temp_names, view_name, idx_name);
-            rewrite_expr(value, temp_names, view_name, idx_name);
+            rewrite_expr(target, sites, view_name);
+            rewrite_expr(value, sites, view_name);
         }
         Stmt::Expr(expr) | Stmt::Return(Some(expr)) => {
-            rewrite_expr(expr, temp_names, view_name, idx_name);
+            rewrite_expr(expr, sites, view_name);
         }
         Stmt::If {
             cond,
             then_body,
             else_body,
         } => {
-            rewrite_expr(cond, temp_names, view_name, idx_name);
+            rewrite_expr(cond, sites, view_name);
             for indent in then_body.iter_mut().chain(else_body.iter_mut()) {
-                rewrite_stmt(indent, temp_names, view_name, idx_name);
+                rewrite_stmt(indent, sites, view_name);
             }
         }
         Stmt::LetIf {
@@ -1749,47 +1979,47 @@ fn rewrite_stmt(stmt: &mut Stmt, temp_names: &[String], view_name: &str, idx_nam
             else_value,
             ..
         } => {
-            rewrite_expr(cond, temp_names, view_name, idx_name);
+            rewrite_expr(cond, sites, view_name);
             for indent in then_body.iter_mut() {
-                rewrite_stmt(indent, temp_names, view_name, idx_name);
+                rewrite_stmt(indent, sites, view_name);
             }
-            rewrite_expr(then_value, temp_names, view_name, idx_name);
+            rewrite_expr(then_value, sites, view_name);
             for indent in else_body.iter_mut() {
-                rewrite_stmt(indent, temp_names, view_name, idx_name);
+                rewrite_stmt(indent, sites, view_name);
             }
-            rewrite_expr(else_value, temp_names, view_name, idx_name);
+            rewrite_expr(else_value, sites, view_name);
         }
         Stmt::Loop { body, .. }
         | Stmt::Scope { body }
         | Stmt::LabeledBlock { body, .. }
         | Stmt::For { body, .. } => {
             for indent in body {
-                rewrite_stmt(indent, temp_names, view_name, idx_name);
+                rewrite_stmt(indent, sites, view_name);
             }
         }
         Stmt::While { cond, body, .. } => {
-            rewrite_expr(cond, temp_names, view_name, idx_name);
+            rewrite_expr(cond, sites, view_name);
             for indent in &mut body.stmts {
-                rewrite_stmt(indent, temp_names, view_name, idx_name);
+                rewrite_stmt(indent, sites, view_name);
             }
             if let Some(tail) = &mut body.tail {
-                rewrite_expr(tail, temp_names, view_name, idx_name);
+                rewrite_expr(tail, sites, view_name);
             }
         }
         Stmt::Unsafe { body } | Stmt::Block(body) => {
             let body: &mut Block = body;
             for indent in &mut body.stmts {
-                rewrite_stmt(indent, temp_names, view_name, idx_name);
+                rewrite_stmt(indent, sites, view_name);
             }
             if let Some(tail) = &mut body.tail {
-                rewrite_expr(tail, temp_names, view_name, idx_name);
+                rewrite_expr(tail, sites, view_name);
             }
         }
         Stmt::Match { expr, arms } => {
-            rewrite_expr(expr, temp_names, view_name, idx_name);
+            rewrite_expr(expr, sites, view_name);
             for arm in arms {
                 for indent in &mut arm.body {
-                    rewrite_stmt(indent, temp_names, view_name, idx_name);
+                    rewrite_stmt(indent, sites, view_name);
                 }
             }
         }
@@ -1797,18 +2027,18 @@ fn rewrite_stmt(stmt: &mut Stmt, temp_names: &[String], view_name: &str, idx_nam
     }
 }
 
-fn rewrite_expr(expr: &mut Expr, temp_names: &[String], view_name: &str, idx_name: &str) {
+fn rewrite_expr(expr: &mut Expr, sites: &ViewSites, view_name: &str) {
     if let Expr::Unary {
         op: UnaryOp::Deref,
         expr: inner,
     } = expr
-        && let Some(t) = peeled_var(inner)
-        && temp_names.iter().any(|name| name == t)
+        && let Some(index) = sites.index_of(inner)
     {
+        sites.hits.set(sites.hits.get() + 1);
         *expr = Expr::Index {
             base: Box::new(Expr::Var(Ident::new(view_name))),
             index: Box::new(Expr::Cast {
-                expr: Box::new(Expr::Var(Ident::new(idx_name))),
+                expr: Box::new(index),
                 ty: Type::Prim(Prim::Usize),
             }),
         };
@@ -1818,67 +2048,67 @@ fn rewrite_expr(expr: &mut Expr, temp_names: &[String], view_name: &str, idx_nam
         Expr::Unary { expr, .. }
         | Expr::Cast { expr, .. }
         | Expr::Ref { expr, .. }
-        | Expr::AddrOf { expr, .. } => rewrite_expr(expr, temp_names, view_name, idx_name),
+        | Expr::AddrOf { expr, .. } => rewrite_expr(expr, sites, view_name),
         Expr::Block(block) | Expr::Unsafe(block) => {
             for stmt in &mut block.stmts {
-                rewrite_stmt(stmt, temp_names, view_name, idx_name);
+                rewrite_stmt(stmt, sites, view_name);
             }
             if let Some(tail) = &mut block.tail {
-                rewrite_expr(tail, temp_names, view_name, idx_name);
+                rewrite_expr(tail, sites, view_name);
             }
         }
         Expr::Binary { lhs, rhs, .. } => {
-            rewrite_expr(lhs, temp_names, view_name, idx_name);
-            rewrite_expr(rhs, temp_names, view_name, idx_name);
+            rewrite_expr(lhs, sites, view_name);
+            rewrite_expr(rhs, sites, view_name);
         }
         Expr::Call { func, args, .. } => {
-            rewrite_expr(func, temp_names, view_name, idx_name);
+            rewrite_expr(func, sites, view_name);
             for arg in args {
-                rewrite_expr(arg, temp_names, view_name, idx_name);
+                rewrite_expr(arg, sites, view_name);
             }
         }
         Expr::MethodCall { recv, args, .. } | Expr::MethodCallGeneric { recv, args, .. } => {
-            rewrite_expr(recv, temp_names, view_name, idx_name);
+            rewrite_expr(recv, sites, view_name);
             for arg in args {
-                rewrite_expr(arg, temp_names, view_name, idx_name);
+                rewrite_expr(arg, sites, view_name);
             }
         }
         Expr::Index { base, index } => {
-            rewrite_expr(base, temp_names, view_name, idx_name);
-            rewrite_expr(index, temp_names, view_name, idx_name);
+            rewrite_expr(base, sites, view_name);
+            rewrite_expr(index, sites, view_name);
         }
         Expr::Field { base, .. } | Expr::TupleField { base, .. } => {
-            rewrite_expr(base, temp_names, view_name, idx_name);
+            rewrite_expr(base, sites, view_name);
         }
         _ => {}
     }
 }
 
-fn collect_loop_bounds(
-    body: &[Stmt],
+fn collect_loop_bounds<'a>(
+    body: &'a [Stmt],
     let_exprs: &BTreeMap<String, Expr>,
-    out: &mut Vec<(String, String)>,
+    out: &mut Vec<(String, Expr, &'a [Stmt])>,
 ) {
     for indent in body {
         collect_loop_bounds_stmt(indent, let_exprs, out);
     }
 }
 
-fn collect_loop_bounds_stmt(
-    stmt: &Stmt,
+fn collect_loop_bounds_stmt<'a>(
+    stmt: &'a Stmt,
     let_exprs: &BTreeMap<String, Expr>,
-    out: &mut Vec<(String, String)>,
+    out: &mut Vec<(String, Expr, &'a [Stmt])>,
 ) {
     match stmt {
         Stmt::Loop { body, .. } => {
-            if let Some(pair) = loop_break_guard(body, let_exprs) {
-                out.push(pair);
+            if let Some((idx, len)) = loop_break_guard(body, let_exprs) {
+                out.push((idx, len, body));
             }
             collect_loop_bounds(body, let_exprs, out);
         }
         Stmt::While { cond, body, .. } => {
-            if let Some(pair) = lt_pair(cond, let_exprs) {
-                out.push(pair);
+            if let Some((idx, len)) = lt_pair(cond, let_exprs) {
+                out.push((idx, len, &body.stmts));
             }
             collect_loop_bounds(&body.stmts, let_exprs, out);
         }
@@ -1912,7 +2142,7 @@ fn collect_loop_bounds_stmt(
     }
 }
 
-fn loop_break_guard(body: &[Stmt], let_exprs: &BTreeMap<String, Expr>) -> Option<(String, String)> {
+fn loop_break_guard(body: &[Stmt], let_exprs: &BTreeMap<String, Expr>) -> Option<(String, Expr)> {
     body.iter().find_map(|indent| {
         let Stmt::If {
             cond,
@@ -1942,7 +2172,7 @@ fn loop_break_guard(body: &[Stmt], let_exprs: &BTreeMap<String, Expr>) -> Option
     })
 }
 
-fn lt_pair(expr: &Expr, let_exprs: &BTreeMap<String, Expr>) -> Option<(String, String)> {
+fn lt_pair(expr: &Expr, let_exprs: &BTreeMap<String, Expr>) -> Option<(String, Expr)> {
     let resolved = resolve_full(expr, let_exprs, 0);
     let Expr::Binary {
         op: BinOp::Lt,
@@ -1953,11 +2183,11 @@ fn lt_pair(expr: &Expr, let_exprs: &BTreeMap<String, Expr>) -> Option<(String, S
         return None;
     };
     let idx = peeled_var(lhs)?;
-    let len = peeled_var(rhs)?;
-    Some((
-        resolve_var(let_exprs, idx).to_string(),
-        resolve_var(let_exprs, len).to_string(),
-    ))
+    let len = match peeled_var(rhs) {
+        Some(len) => Expr::Var(Ident::new(resolve_var(let_exprs, len))),
+        None => (**rhs).clone(),
+    };
+    Some((resolve_var(let_exprs, idx).to_string(), len))
 }
 
 fn peeled_var(expr: &Expr) -> Option<&str> {
@@ -2342,15 +2572,13 @@ fn const_candidates(
         let mut bound_pairs = Vec::new();
         collect_loop_bounds(&f.body, &let_exprs, &mut bound_pairs);
         let mut idx_bounds: BTreeMap<String, u64> = BTreeMap::new();
-        for (idx, len_name) in &bound_pairs {
-            let Some(n) =
-                resolved_integer(&Expr::Var(Ident::new(len_name.as_str())), &value_defs, 0)
-            else {
+        for (idx, len, _) in &bound_pairs {
+            let Some(n) = resolved_integer(len, &value_defs, 0) else {
                 continue;
             };
             idx_bounds
                 .entry(idx.clone())
-                .and_modify(|cur| *cur = (*cur).min(n))
+                .and_modify(|cur| *cur = (*cur).max(n))
                 .or_insert(n);
         }
         if idx_bounds.is_empty() {
@@ -2539,12 +2767,7 @@ fn source_len_at_least(
         return total >= need.saturating_mul(elem_size);
     }
     let resolved_size = resolved_expr(size, defs, 0);
-    let Expr::Binary {
-        op: BinOp::Mul,
-        lhs,
-        rhs,
-    } = peel_value(&resolved_size)
-    else {
+    let Some((lhs, rhs)) = mul_operands(&resolved_size) else {
         return false;
     };
     (resolved_integer(rhs, defs, 0) == Some(elem_size)
@@ -2585,9 +2808,7 @@ fn retype_const_fn(f: &mut FnDef, cands: &[ConstCandidate]) {
                 inner: Box::new(candidate.elem_ty.clone()),
             },
         };
-        for indent in &mut f.body {
-            indent.substitute_var(&candidate.ptr_param, &raw);
-        }
+        substitute_slice_param(&mut f.body, &candidate.ptr_param, &raw, None);
         f.params[candidate.ptr_index].ty = Type::Ref {
             mutable: candidate.kind.mutable(),
             inner: Box::new(Type::Slice(Box::new(candidate.elem_ty.clone()))),

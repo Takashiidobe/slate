@@ -23,21 +23,25 @@ int main(void) {
 // CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
 // CHECK-NEXT:     fn malloc(__size: u64) -> *mut ();
 // CHECK-NEXT: }
-// CHECK-NEXT: fn fill_values(values: *mut i32, len: i32) {
-// CHECK-NEXT:     for i in 0..len {
+// CHECK-NEXT: fn fill_values(values: &mut [i32]) {
+// CHECK-NEXT:     let mut i: i32 = 0;
+// CHECK-NEXT:     while i < (values.len() as i32) {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *values.offset(i as isize) = i * 3;
+// CHECK-NEXT:             values[i as usize] = i * 3;
 // CHECK-NEXT:         }
+// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
-// CHECK-NEXT: fn forward_fill(values: *mut i32, len: i32) {
-// CHECK-NEXT:     fill_values(values, len);
+// CHECK-NEXT: fn forward_fill(values: &mut [i32]) {
+// CHECK-NEXT:     fill_values(values);
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let len: i32 = 5;
 // CHECK-NEXT:     let values: *mut i32 = (unsafe { malloc(((len as i64) as u64).wrapping_mul(4)) })
 // CHECK-NEXT:         as *mut i32;
-// CHECK-NEXT:     forward_fill(values, len);
+// CHECK-NEXT:     forward_fill(unsafe {
+// CHECK-NEXT:         std::slice::from_raw_parts_mut(values as *mut i32, len as usize)
+// CHECK-NEXT:     });
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {}", unsafe { * values.offset(1 as isize) }, unsafe { * values.offset(4 as
 // CHECK-NEXT:         isize) }

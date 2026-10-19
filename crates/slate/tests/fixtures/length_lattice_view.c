@@ -16,22 +16,24 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
-// CHECK-NEXT: fn sum_n(p: *mut i32, n: i32) -> i32 {
+// CHECK-NEXT: fn sum_n(p: &[i32]) -> i32 {
 // CHECK-NEXT:     let mut s: i32 = 0;
-// CHECK-NEXT:     for i in 0..n {
-// CHECK-NEXT:         s += unsafe { *p.offset(i as isize) };
+// CHECK-NEXT:     let mut i: i32 = 0;
+// CHECK-NEXT:     while i < (p.len() as i32) {
+// CHECK-NEXT:         s += unsafe { p[i as usize] };
+// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     s
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut a: __SlateAlign16<[i32; 5]> = __SlateAlign16([
+// CHECK-NEXT:     let a: __SlateAlign16<[i32; 5]> = __SlateAlign16([
 // CHECK-NEXT:         1 as i32,
 // CHECK-NEXT:         2 as i32,
 // CHECK-NEXT:         3 as i32,
 // CHECK-NEXT:         4 as i32,
 // CHECK-NEXT:         5 as i32,
 // CHECK-NEXT:     ]);
-// CHECK-NEXT:     sum_n(a.0.as_mut_ptr() as *mut i32, 5 as i32)
+// CHECK-NEXT:     sum_n(&a.0)
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(

@@ -24,10 +24,13 @@ int main(void) {
 // CHECK-NEXT:     fn strlen(__s: *const i8) -> u64;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn first_byte(bytes: *const u8, len: i32) -> i32 {
+// CHECK-NEXT:     let __bytes_view = unsafe {
+// CHECK-NEXT:         std::slice::from_raw_parts(bytes as *const u8, len as usize)
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { strlen(bytes as *const i8) };
 // CHECK-NEXT:     let mut value: i32 = 0;
 // CHECK-NEXT:     for i in 0..len {
-// CHECK-NEXT:         value += ((unsafe { *bytes.offset(i as isize) }) as u32) as i32;
+// CHECK-NEXT:         value += ((unsafe { __bytes_view[i as usize] }) as u32) as i32;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     value
 // CHECK-NEXT: }

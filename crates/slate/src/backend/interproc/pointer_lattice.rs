@@ -986,6 +986,18 @@ impl ClassifyCtx<'_> {
                         self.observe(&canonical, PointerFact::observe_write);
                     }
                 } else {
+                    if is_write
+                        && let Expr::MethodCall { recv, method, .. } =
+                            peel_cast(peel_unsafe_tail(expr))
+                        && matches!(
+                            method.as_str(),
+                            "add" | "offset" | "wrapping_add" | "sub" | "wrapping_sub"
+                        )
+                        && let Some(name) = read_var_name(recv)
+                        && let Some(canonical) = self.canonical_of(name.as_str())
+                    {
+                        self.observe(&canonical, PointerFact::observe_write);
+                    }
                     self.expr(expr);
                 }
             }

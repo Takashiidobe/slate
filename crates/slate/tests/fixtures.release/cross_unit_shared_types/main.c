@@ -110,12 +110,10 @@ int main(void) {
 // CHECK-NEXT:         [[T_3]].weight = 21 as i32;
 // CHECK-NEXT:         [[T_3]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let __slate_printf_arg1 =
-// CHECK-NEXT:         unsafe { shape_area_sum(shapes.0.as_mut_ptr() as *const shape, 3 as i32) };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {}",
 // CHECK-NEXT:         unsafe { registry_count(registry as *const registry) },
-// CHECK-NEXT:         __slate_printf_arg1
+// CHECK-NEXT:         unsafe { shape_area_sum(&shapes.0) }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(

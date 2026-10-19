@@ -67,9 +67,12 @@ int main(void) {
 // CHECK-NEXT:     values: unsafe { std::ptr::addr_of_mut!([[SLATE_COMPOUND_3:__slate_compound_[0-9]+]]) as *mut i32 },
 // CHECK-NEXT: };
 // CHECK-NEXT: fn sum(values: *const i32, count: i32) -> i32 {
+// CHECK-NEXT:     let __values_view = unsafe {
+// CHECK-NEXT:         std::slice::from_raw_parts(values as *const i32, count as usize)
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     for i in 0..count {
-// CHECK-NEXT:         total += unsafe { *values.offset(i as isize) };
+// CHECK-NEXT:         total += unsafe { __values_view[i as usize] };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }

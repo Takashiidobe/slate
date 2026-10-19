@@ -23,23 +23,24 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
-// CHECK-NEXT: fn weighted_sum(items: *mut i32, len: i32) -> i32 {
+// CHECK-NEXT: fn weighted_sum(items: &[i32]) -> i32 {
 // CHECK-NEXT:     let mut total: i32 = 0;
-// CHECK-NEXT:     for i in 0..len {
-// CHECK-NEXT:         let item: i32 = unsafe { *items.offset(i as isize) };
+// CHECK-NEXT:     let mut i: i32 = 0;
+// CHECK-NEXT:     while i < (items.len() as i32) {
+// CHECK-NEXT:         let item: i32 = unsafe { items[i as usize] };
 // CHECK-NEXT:         total += item * i;
+// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 4]> = __SlateAlign16([
+// CHECK-NEXT:     let values: __SlateAlign16<[i32; 4]> = __SlateAlign16([
 // CHECK-NEXT:         2 as i32,
 // CHECK-NEXT:         4 as i32,
 // CHECK-NEXT:         6 as i32,
 // CHECK-NEXT:         8 as i32,
 // CHECK-NEXT:     ]);
-// CHECK-NEXT:     let __slate_printf_arg0 = weighted_sum(values.0.as_mut_ptr() as *mut i32, 4 as i32);
-// CHECK-NEXT:     println!("{}", __slate_printf_arg0);
+// CHECK-NEXT:     println!("{}", weighted_sum(& values.0));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

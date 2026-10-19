@@ -136,13 +136,18 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x.wrapping_add(1)
 // CHECK-NEXT: }
-// CHECK-NEXT: fn input_barrier(mut p: *const u8, n: i32) -> i32 {
+// CHECK-NEXT: fn input_barrier(p: &[u8]) -> i32 {
 // CHECK-NEXT:     let mut sum: i32 = 0;
-// CHECK-NEXT:     for i in 0..n {
-// CHECK-NEXT:         sum += ((unsafe { *p.offset(i as isize) }) as u32) as i32;
+// CHECK-NEXT:     let mut i: i32 = 0;
+// CHECK-NEXT:     while i < (p.len() as i32) {
+// CHECK-NEXT:         sum += ((unsafe { p[i as usize] }) as u32) as i32;
+// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         core::arch::asm!("\n# {0:r}", in (reg) p as u64, options(nostack, att_syntax));
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "\n# {0:r}", in (reg) (p.as_ptr() as * const u8) as u64, options(nostack,
+// CHECK-NEXT:             att_syntax)
+// CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     sum
 // CHECK-NEXT: }
@@ -152,6 +157,8 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn verify_volatile(x: *const u8, y: *const u8, n: i32) -> i32 {
+// CHECK-NEXT:     let __y_view = unsafe { std::slice::from_raw_parts(y as *const u8, n as usize) };
+// CHECK-NEXT:     let __x_view = unsafe { std::slice::from_raw_parts(x as *const u8, n as usize) };
 // CHECK-NEXT:     let mut d: u16 = 0;
 // CHECK-NEXT:     for i in 0..n {
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: u16 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(d)) };
@@ -159,8 +166,8 @@ int main(void) {
 // CHECK-NEXT:             std::ptr::write_volatile(
 // CHECK-NEXT:                 std::ptr::addr_of_mut!(d),
 // CHECK-NEXT:                 (((([[V_0]] as u32) as i32)
-// CHECK-NEXT:                     | ((*x.offset(i as isize) as u32) as i32)
-// CHECK-NEXT:                         ^ ((*y.offset(i as isize) as u32) as i32)) as i16) as u16,
+// CHECK-NEXT:                     | ((__x_view[i as usize] as u32) as i32)
+// CHECK-NEXT:                         ^ ((__y_view[i as usize] as u32) as i32)) as i16) as u16,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
@@ -179,12 +186,14 @@ int main(void) {
 // CHECK-NEXT:         & (((unsafe { std::ptr::read_volatile(std::ptr::addr_of!(d)) }) as u32) as i32)
 // CHECK-NEXT:             - 1 >> (8 as i32)) - 1
 // CHECK-NEXT: }
-// CHECK-NEXT: fn nonvolatile_guard(x: *const u8, n: i32) -> i32 {
+// CHECK-NEXT: fn nonvolatile_guard(x: &[u8]) -> i32 {
 // CHECK-NEXT:     let mut d: u8 = 0;
 // CHECK-NEXT:     let mut e: u16 = 0;
-// CHECK-NEXT:     for i in 0..n {
-// CHECK-NEXT:         d = ((((d as u32) as i32) | (((unsafe { *x.offset(i as isize) }) as u32) as i32))
-// CHECK-NEXT:             as i8) as u8;
+// CHECK-NEXT:     let mut i: i32 = 0;
+// CHECK-NEXT:     while i < (x.len() as i32) {
+// CHECK-NEXT:         d = ((((d as u32) as i32) | (((unsafe { x[i as usize] }) as u32) as i32)) as i8)
+// CHECK-NEXT:             as u8;
+// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     e = d as u16;
 // CHECK-NEXT:     unsafe {
@@ -197,15 +206,18 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     (1 & ((e as u32) as i32) - 1 >> (8 as i32)) - 1
 // CHECK-NEXT: }
-// CHECK-NEXT: fn no_unroll(mut p: *const f32, n: i32) -> i32 {
+// CHECK-NEXT: fn no_unroll(p: &[f32]) -> i32 {
 // CHECK-NEXT:     let mut sum: f32 = (0 as i32) as f32;
-// CHECK-NEXT:     for i in 0..n {
+// CHECK-NEXT:     let mut i: i32 = 0;
+// CHECK-NEXT:     while i < (p.len() as i32) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             core::arch::asm!(
-// CHECK-NEXT:                 "\n# {0:r}", in (reg) p as u64, options(nostack, att_syntax)
+// CHECK-NEXT:                 "\n# {0:r}", in (reg) (p.as_ptr() as * const f32) as u64,
+// CHECK-NEXT:                 options(nostack, att_syntax)
 // CHECK-NEXT:             );
 // CHECK-NEXT:         }
-// CHECK-NEXT:         sum += unsafe { *p.offset(i as isize) };
+// CHECK-NEXT:         sum += unsafe { p[i as usize] };
+// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     sum as i32
 // CHECK-NEXT: }
@@ -242,37 +254,27 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     let __slate_printf_arg0 = input_barrier(bytes.as_mut_ptr() as *const u8, 4 as i32);
-// CHECK-NEXT:     println!("{}", __slate_printf_arg0);
+// CHECK-NEXT:     println!("{}", input_barrier(& bytes));
 // CHECK-NEXT:     let mut zeros: [u8; 4] = {
 // CHECK-NEXT:         let mut [[T_0]]: [u8; 4] = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]][0] = 0 as u8;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut floats: [f32; 3] = [1.5f32, 2.5f32, 3.0f32];
+// CHECK-NEXT:     let floats: [f32; 3] = [1.5f32, 2.5f32, 3.0f32];
 // CHECK-NEXT:     spin_pause_memory();
-// CHECK-NEXT:     let __slate_printf_arg0_1 = verify_volatile(
+// CHECK-NEXT:     let __slate_printf_arg0 = verify_volatile(
 // CHECK-NEXT:         bytes.as_mut_ptr() as *const u8,
 // CHECK-NEXT:         bytes.as_mut_ptr() as *const u8,
 // CHECK-NEXT:         4 as i32,
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let __slate_printf_arg1_1 = verify_volatile(
+// CHECK-NEXT:     let __slate_printf_arg1 = verify_volatile(
 // CHECK-NEXT:         bytes.as_mut_ptr() as *const u8,
 // CHECK-NEXT:         zeros.as_mut_ptr() as *const u8,
 // CHECK-NEXT:         4 as i32,
 // CHECK-NEXT:     );
-// CHECK-NEXT:     println!("{} {}", __slate_printf_arg0_1, __slate_printf_arg1_1);
-// CHECK-NEXT:     let __slate_printf_arg0_2 = nonvolatile_guard(
-// CHECK-NEXT:         zeros.as_mut_ptr() as *const u8,
-// CHECK-NEXT:         4 as i32,
-// CHECK-NEXT:     );
-// CHECK-NEXT:     let __slate_printf_arg1 = nonvolatile_guard(
-// CHECK-NEXT:         bytes.as_mut_ptr() as *const u8,
-// CHECK-NEXT:         4 as i32,
-// CHECK-NEXT:     );
-// CHECK-NEXT:     println!("{} {}", __slate_printf_arg0_2, __slate_printf_arg1);
-// CHECK-NEXT:     let __slate_printf_arg0 = no_unroll(floats.as_mut_ptr() as *const f32, 3 as i32);
-// CHECK-NEXT:     println!("{}", __slate_printf_arg0);
+// CHECK-NEXT:     println!("{} {}", __slate_printf_arg0, __slate_printf_arg1);
+// CHECK-NEXT:     println!("{} {}", nonvolatile_guard(& zeros), nonvolatile_guard(& bytes));
+// CHECK-NEXT:     println!("{}", no_unroll(& floats));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

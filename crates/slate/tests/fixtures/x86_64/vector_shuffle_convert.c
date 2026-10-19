@@ -234,9 +234,10 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn fold(lanes: *const i64, count: i32) -> i64 {
+// CHECK-NEXT:     let __lanes_view = unsafe { std::slice::from_raw_parts(lanes as *const i64, count as usize) };
 // CHECK-NEXT:     let mut h: i64 = 17;
 // CHECK-NEXT:     for i in 0..count {
-// CHECK-NEXT:         h = h * 1000003 + unsafe { *lanes.offset(i as isize) };
+// CHECK-NEXT:         h = h * 1000003 + unsafe { __lanes_view[i as usize] };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     h
 // CHECK-NEXT: }

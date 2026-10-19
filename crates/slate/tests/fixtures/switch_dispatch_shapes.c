@@ -213,13 +213,15 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { std::mem::zeroed() }
 // CHECK-NEXT: }
-// CHECK-NEXT: fn first_over(values: *const i32, count: i32, limit: i32) -> i32 {
+// CHECK-NEXT: fn first_over(values: &[i32], limit: i32) -> i32 {
 // CHECK-NEXT:     let mut found: i32 = -1;
-// CHECK-NEXT:     for i in 0..count {
-// CHECK-NEXT:         if (unsafe { *values.offset(i as isize) }) > limit {
+// CHECK-NEXT:     let mut i: i32 = 0;
+// CHECK-NEXT:     while i < (values.len() as i32) {
+// CHECK-NEXT:         if (unsafe { values[i as usize] }) > limit {
 // CHECK-NEXT:             found = i;
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
+// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     found
 // CHECK-NEXT: }
@@ -231,7 +233,7 @@ int main(void) {
 // CHECK-NEXT:         0 as u32,
 // CHECK-NEXT:         3 as u32,
 // CHECK-NEXT:     ]);
-// CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 5]> = __SlateAlign16([
+// CHECK-NEXT:     let values: __SlateAlign16<[i32; 5]> = __SlateAlign16([
 // CHECK-NEXT:         3 as i32,
 // CHECK-NEXT:         8 as i32,
 // CHECK-NEXT:         1 as i32,
@@ -262,17 +264,10 @@ int main(void) {
 // CHECK-NEXT:         i32, 0 as i32)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let __slate_printf_arg0 = run(ops.0.as_mut_ptr() as *const u32);
-// CHECK-NEXT:     let __slate_printf_arg1 = first_over(
-// CHECK-NEXT:         values.0.as_mut_ptr() as *const i32,
-// CHECK-NEXT:         5 as i32,
-// CHECK-NEXT:         10 as i32,
+// CHECK-NEXT:     println!(
+// CHECK-NEXT:         "{} {} {}", __slate_printf_arg0, first_over(& values.0, 10 as i32), first_over(&
+// CHECK-NEXT:         values.0, 50 as i32)
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let __slate_printf_arg2 = first_over(
-// CHECK-NEXT:         values.0.as_mut_ptr() as *const i32,
-// CHECK-NEXT:         5 as i32,
-// CHECK-NEXT:         50 as i32,
-// CHECK-NEXT:     );
-// CHECK-NEXT:     println!("{} {} {}", __slate_printf_arg0, __slate_printf_arg1, __slate_printf_arg2);
 // CHECK-NEXT:     println!("{} {}", picked, unsafe { calls });
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

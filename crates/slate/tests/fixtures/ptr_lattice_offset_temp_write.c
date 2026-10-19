@@ -21,11 +21,13 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
-// CHECK-NEXT: fn fill(p: *mut i32, n: i32, val: i32) {
-// CHECK-NEXT:     for i in 0..n {
+// CHECK-NEXT: fn fill(p: &mut [i32], val: i32) {
+// CHECK-NEXT:     let mut i: i32 = 0;
+// CHECK-NEXT:     while i < (p.len() as i32) {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *p.offset(i as isize) = val;
+// CHECK-NEXT:             p[i as usize] = val;
 // CHECK-NEXT:         }
+// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
@@ -34,7 +36,7 @@ int main(void) {
 // CHECK-NEXT:         [[T_0]][0] = 0 as i32;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     });
-// CHECK-NEXT:     fill(buf.0.as_mut_ptr() as *mut i32, 4 as i32, 7 as i32);
+// CHECK-NEXT:     fill(&mut buf.0, 7 as i32);
 // CHECK-NEXT:     println!("{} {} {} {}", buf.0[0], buf.0[1], buf.0[2], buf.0[3]);
 // CHECK-NEXT:     buf.0[0] + buf.0[1] + buf.0[2] + buf.0[3]
 // CHECK-NEXT: }

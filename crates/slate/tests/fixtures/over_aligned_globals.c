@@ -108,10 +108,12 @@ int main(void) {
 // CHECK-NEXT: fn aligned(pointer: *const (), alignment: u64) -> i32 {
 // CHECK-NEXT:     ((pointer as u64) % alignment == 0) as i32
 // CHECK-NEXT: }
-// CHECK-NEXT: fn total(items: *const u32, count: i32) -> u32 {
+// CHECK-NEXT: fn total(items: &[u32]) -> u32 {
 // CHECK-NEXT:     let mut sum: u32 = 0;
-// CHECK-NEXT:     for i in 0..count {
-// CHECK-NEXT:         sum = sum.wrapping_add(unsafe { *items.offset(i as isize) });
+// CHECK-NEXT:     let mut i: i32 = 0;
+// CHECK-NEXT:     while i < (items.len() as i32) {
+// CHECK-NEXT:         sum = sum.wrapping_add(unsafe { items[i as usize] });
+// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     sum
 // CHECK-NEXT: }
@@ -177,7 +179,12 @@ int main(void) {
 // CHECK-NEXT:             values.0[0],
 // CHECK-NEXT:             values.0[1],
 // CHECK-NEXT:             values.0[2],
-// CHECK-NEXT:             total((std::ptr::addr_of_mut!(values.0) as *mut u32) as *const u32, 3 as i32),
+// CHECK-NEXT:             total(
+// CHECK-NEXT:                 std::slice::from_raw_parts(
+// CHECK-NEXT:                     (std::ptr::addr_of_mut!(values.0) as *mut u32) as *const u32,
+// CHECK-NEXT:                     3 as usize,
+// CHECK-NEXT:                 ),
+// CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

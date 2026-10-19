@@ -56,10 +56,11 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     [[V_6]]
 // CHECK-NEXT: }
-// CHECK-NEXT: fn weigh(words: *const u64, count: i32) -> i64 {
+// CHECK-NEXT: fn weigh(words: &[u64]) -> i64 {
 // CHECK-NEXT:     let mut total: i64 = 0;
-// CHECK-NEXT:     for i in 0..count {
-// CHECK-NEXT:         let word: u64 = unsafe { *words.offset(i as isize) };
+// CHECK-NEXT:     let mut i: i32 = 0;
+// CHECK-NEXT:     while i < (words.len() as i32) {
+// CHECK-NEXT:         let word: u64 = unsafe { words[i as usize] };
 // CHECK-NEXT:         if (!(!(word == 0)) as i64) == 0 {
 // CHECK-NEXT:             total
 // CHECK-NEXT:                 += ((word.count_ones() as i32) * 100 + (word.trailing_zeros() as i32))
@@ -72,11 +73,12 @@ int main(void) {
 // CHECK-NEXT:                     + ((word as u32).count_ones() as i32)) as i64;
 // CHECK-NEXT:             total += (word.trailing_zeros() as i32) as i64;
 // CHECK-NEXT:         }
+// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut words: __SlateAlign16<[u64; 12]> = __SlateAlign16([
+// CHECK-NEXT:     let words: __SlateAlign16<[u64; 12]> = __SlateAlign16([
 // CHECK-NEXT:         0 as u64,
 // CHECK-NEXT:         1 as u64,
 // CHECK-NEXT:         9223372036854775808 as u64,
@@ -91,9 +93,7 @@ int main(void) {
 // CHECK-NEXT:         6148914691236517205 as u64,
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(c"%ld\n".as_ptr(), weigh(words.0.as_mut_ptr() as *const u64, 12 as i32))
-// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { printf(c"%ld\n".as_ptr(), weigh(&words.0)) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let e: i64 = (next() as i64) + ((next() * 10) as i64);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());

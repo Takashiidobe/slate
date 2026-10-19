@@ -430,14 +430,16 @@ int main(void) {
 // CHECK-NEXT:             .write_unaligned(__A);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
-// CHECK-NEXT: fn popcount_scalar(words: *const u64, count: u64) -> i64 {
+// CHECK-NEXT: fn popcount_scalar(words: &[u64]) -> i64 {
 // CHECK-NEXT:     let mut bits: i64 = 0;
-// CHECK-NEXT:     for i in 0..count {
-// CHECK-NEXT:         let mut word: u64 = unsafe { *words.offset(i as isize) };
+// CHECK-NEXT:     let mut i: u64 = 0;
+// CHECK-NEXT:     while i < (words.len() as u64) {
+// CHECK-NEXT:         let mut word: u64 = unsafe { words[i as usize] };
 // CHECK-NEXT:         while word != 0 {
 // CHECK-NEXT:             word &= word.wrapping_sub(1);
 // CHECK-NEXT:             bits += 1;
 // CHECK-NEXT:         }
+// CHECK-NEXT:         i = i.wrapping_add(1);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     bits
 // CHECK-NEXT: }
@@ -612,17 +614,11 @@ int main(void) {
 // CHECK-NEXT:     if std::arch::is_x86_feature_detected!("popcnt") {
 // CHECK-NEXT:         [[V_1]] = unsafe { popcount_hw(words.0.as_mut_ptr() as *const u64, 37 as u64) };
 // CHECK-NEXT:     } else {
-// CHECK-NEXT:         [[V_1]] = popcount_scalar(words.0.as_mut_ptr() as *const u64, 37 as u64);
+// CHECK-NEXT:         [[V_1]] = popcount_scalar(&words.0);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     bits = [[V_1]];
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"bits %lld %lld\n".as_ptr(),
-// CHECK-NEXT:             bits,
-// CHECK-NEXT:             popcount_scalar(words.0.as_mut_ptr() as *const u64, 37 as u64),
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { printf(c"bits %lld %lld\n".as_ptr(), bits, popcount_scalar(&words.0)) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let mut a: __SlateAlign16<[i32; 45]> = __SlateAlign16([0 as i32; 45]);
 // CHECK-NEXT:     let mut b: __SlateAlign16<[i32; 45]> = __SlateAlign16([0 as i32; 45]);

@@ -23,11 +23,11 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
-// CHECK-NEXT: fn sum_items(items: *mut i32, printable: i32, length: i32) -> i32 {
+// CHECK-NEXT: fn sum_items(items: &[i32], printable: i32, length: i32) -> i32 {
 // CHECK-NEXT:     println!("this is another number: {} {}", printable, length);
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     for i in 0 as i32..4 as i32 {
-// CHECK-NEXT:         total += unsafe { *items.offset(i as isize) };
+// CHECK-NEXT:         total += unsafe { items[i as usize] };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
@@ -39,7 +39,9 @@ int main(void) {
 // CHECK-NEXT:         8 as i32,
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let __slate_printf_arg0 = sum_items(
-// CHECK-NEXT:         values.0.as_mut_ptr() as *mut i32,
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             std::slice::from_raw_parts(values.0.as_mut_ptr() as *const i32, 4usize)
+// CHECK-NEXT:         },
 // CHECK-NEXT:         5 as i32,
 // CHECK-NEXT:         4 as i32,
 // CHECK-NEXT:     );

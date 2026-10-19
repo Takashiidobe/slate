@@ -27,20 +27,29 @@ int main(void) {
 // CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
 // CHECK-NEXT:     fn strlen(__s: *const i8) -> u64;
 // CHECK-NEXT: }
-// CHECK-NEXT: fn score_text(bytes: *const u8, len: i32) -> i32 {
-// CHECK-NEXT:     unsafe { strlen(bytes as *const i8) };
+// CHECK-NEXT: fn score_text(bytes: &str) -> i32 {
+// CHECK-NEXT:     unsafe { bytes.len() };
 // CHECK-NEXT:     let mut score: i32 = 0;
-// CHECK-NEXT:     for i in 0..len {
-// CHECK-NEXT:         score += ((unsafe { *bytes.offset(i as isize) }) as u32) as i32;
+// CHECK-NEXT:     let mut i: i32 = 0;
+// CHECK-NEXT:     while i < (bytes.len() as i32) {
+// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = score;
+// CHECK-NEXT:         score = [[V_0]]
+// CHECK-NEXT:             + (((unsafe { *(bytes.as_ptr() as *const u8).offset(i as isize) }) as u32)
+// CHECK-NEXT:                 as i32);
+// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     score
 // CHECK-NEXT: }
-// CHECK-NEXT: fn forward_text(bytes: *const u8, len: i32) -> i32 {
-// CHECK-NEXT:     score_text(bytes, len)
+// CHECK-NEXT: fn forward_text(bytes: &str) -> i32 {
+// CHECK-NEXT:     score_text(bytes)
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut bytes: [u8; 4] = [97, 98, 99, 0];
-// CHECK-NEXT:     let score: i32 = forward_text(bytes.as_ptr() as *const u8, 3 as i32);
+// CHECK-NEXT:     let score: i32 = forward_text(unsafe {
+// CHECK-NEXT:         std::str::from_utf8_unchecked(
+// CHECK-NEXT:             std::slice::from_raw_parts(bytes.as_ptr() as *const u8, 3 as usize),
+// CHECK-NEXT:         )
+// CHECK-NEXT:     });
 // CHECK-NEXT:     println!("{}", score);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

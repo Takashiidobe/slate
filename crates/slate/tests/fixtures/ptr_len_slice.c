@@ -30,21 +30,22 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
-// CHECK-NEXT: fn sum(items: *mut i32, len: i32) -> i32 {
+// CHECK-NEXT: fn sum(items: &[i32]) -> i32 {
 // CHECK-NEXT:     let mut total: i32 = 0;
-// CHECK-NEXT:     for i in 0..len {
-// CHECK-NEXT:         total += unsafe { *items.offset(i as isize) };
+// CHECK-NEXT:     let mut i: i32 = 0;
+// CHECK-NEXT:     while i < (items.len() as i32) {
+// CHECK-NEXT:         total += unsafe { items[i as usize] };
+// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
-// CHECK-NEXT: fn bump(items: *mut i32, len: i32) {
-// CHECK-NEXT:     let __items_view = unsafe {
-// CHECK-NEXT:         std::slice::from_raw_parts_mut(items as *mut i32, len as usize)
-// CHECK-NEXT:     };
-// CHECK-NEXT:     for i in 0..len {
+// CHECK-NEXT: fn bump(items: &mut [i32]) {
+// CHECK-NEXT:     let mut i: i32 = 0;
+// CHECK-NEXT:     while i < (items.len() as i32) {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             __items_view[i as usize] = __items_view[i as usize] + 1;
+// CHECK-NEXT:             items[i as usize] = items[i as usize] + 1;
 // CHECK-NEXT:         }
+// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
@@ -54,9 +55,8 @@ int main(void) {
 // CHECK-NEXT:         6 as i32,
 // CHECK-NEXT:         8 as i32,
 // CHECK-NEXT:     ]);
-// CHECK-NEXT:     let __slate_printf_arg0 = sum(values.0.as_mut_ptr() as *mut i32, 4 as i32);
-// CHECK-NEXT:     println!("{}", __slate_printf_arg0);
-// CHECK-NEXT:     bump(values.0.as_mut_ptr() as *mut i32, 4 as i32);
+// CHECK-NEXT:     println!("{}", sum(& values.0));
+// CHECK-NEXT:     bump(&mut values.0);
 // CHECK-NEXT:     println!("{} {}", values.0[0], values.0[3]);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

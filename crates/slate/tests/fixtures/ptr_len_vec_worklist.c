@@ -33,20 +33,24 @@ int main(void) {
 // CHECK-NEXT:     fn malloc(__size: u64) -> *mut ();
 // CHECK-NEXT:     fn free(__ptr: *mut ());
 // CHECK-NEXT: }
-// CHECK-NEXT: fn consume_values(values: *mut i32, len: i32) -> i32 {
+// CHECK-NEXT: fn consume_values(mut values: Vec<i32>) -> i32 {
 // CHECK-NEXT:     let mut sum: i32 = 0;
-// CHECK-NEXT:     for i in 0..len {
-// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: *mut i32 = unsafe { values.offset(i as isize) };
+// CHECK-NEXT:     let mut i: i32 = 0;
+// CHECK-NEXT:     while i < (values.len() as i32) {
+// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: *mut i32 = unsafe {
+// CHECK-NEXT:             (values.as_mut_ptr() as *mut i32).offset(i as isize)
+// CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *[[V_0]] = *[[V_0]] + 1;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         sum += unsafe { *values.offset(i as isize) };
+// CHECK-NEXT:         let [[V_1:__v[0-9]+]]: i32 = sum;
+// CHECK-NEXT:         sum = [[V_1]] + unsafe { *(values.as_mut_ptr() as *mut i32).offset(i as isize) };
+// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { free(values as *mut ()) };
 // CHECK-NEXT:     sum
 // CHECK-NEXT: }
-// CHECK-NEXT: fn forward_consume(values: *mut i32, len: i32) -> i32 {
-// CHECK-NEXT:     consume_values(values, len)
+// CHECK-NEXT: fn forward_consume(values: Vec<i32>) -> i32 {
+// CHECK-NEXT:     consume_values(values)
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let len: i32 = 4;
@@ -57,7 +61,9 @@ int main(void) {
 // CHECK-NEXT:             *values.offset(i as isize) = i * 2;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let sum: i32 = forward_consume(values, len);
+// CHECK-NEXT:     let sum: i32 = forward_consume(unsafe {
+// CHECK-NEXT:         Vec::from_raw_parts(values as *mut i32, len as usize, len as usize)
+// CHECK-NEXT:     });
 // CHECK-NEXT:     println!("{}", sum);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

@@ -34,17 +34,21 @@ int main(void) {
 // CHECK-NEXT:     fn memcpy(__dest: *mut (), __src: *const (), __n: u64) -> *mut ();
 // CHECK-NEXT:     fn strlen(__s: *const i8) -> u64;
 // CHECK-NEXT: }
-// CHECK-NEXT: fn consume_text(text: *mut i8, len: i32) -> i32 {
-// CHECK-NEXT:     unsafe { strlen(text as *const i8) };
+// CHECK-NEXT: fn consume_text(mut text: String) -> i32 {
+// CHECK-NEXT:     unsafe { strlen(text.as_mut_ptr() as *const i8) };
 // CHECK-NEXT:     let mut score: i32 = 0;
-// CHECK-NEXT:     for i in 0..len {
-// CHECK-NEXT:         score += (((unsafe { *text.offset(i as isize) }) as u8) as u32) as i32;
+// CHECK-NEXT:     let mut i: i32 = 0;
+// CHECK-NEXT:     while i < (text.len() as i32) {
+// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = score;
+// CHECK-NEXT:         score = [[V_0]]
+// CHECK-NEXT:             + ((((unsafe { *(text.as_mut_ptr() as *mut i8).offset(i as isize) }) as u8)
+// CHECK-NEXT:                 as u32) as i32);
+// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { free(text as *mut ()) };
 // CHECK-NEXT:     score
 // CHECK-NEXT: }
-// CHECK-NEXT: fn forward_text_owner(text: *mut i8, len: i32) -> i32 {
-// CHECK-NEXT:     consume_text(text, len)
+// CHECK-NEXT: fn forward_text_owner(text: String) -> i32 {
+// CHECK-NEXT:     consume_text(text)
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let len: i32 = 4;
@@ -57,7 +61,9 @@ int main(void) {
 // CHECK-NEXT:             ((len as i64) as u64) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let score: i32 = forward_text_owner(text, len);
+// CHECK-NEXT:     let score: i32 = forward_text_owner(unsafe {
+// CHECK-NEXT:         String::from_raw_parts(text as *mut u8, len as usize, len as usize)
+// CHECK-NEXT:     });
 // CHECK-NEXT:     println!("{}", score);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

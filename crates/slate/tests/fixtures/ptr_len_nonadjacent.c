@@ -23,27 +23,24 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
-// CHECK-NEXT: fn sum_items(items: *mut i32, printable: i32, length: i32) -> i32 {
+// CHECK-NEXT: fn sum_items(items: &[i32], printable: i32) -> i32 {
 // CHECK-NEXT:     println!("this is another number: {}", printable);
 // CHECK-NEXT:     let mut total: i32 = 0;
-// CHECK-NEXT:     for i in 0..length {
-// CHECK-NEXT:         total += unsafe { *items.offset(i as isize) };
+// CHECK-NEXT:     let mut i: i32 = 0;
+// CHECK-NEXT:     while i < (items.len() as i32) {
+// CHECK-NEXT:         total += unsafe { items[i as usize] };
+// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 4]> = __SlateAlign16([
+// CHECK-NEXT:     let values: __SlateAlign16<[i32; 4]> = __SlateAlign16([
 // CHECK-NEXT:         2 as i32,
 // CHECK-NEXT:         4 as i32,
 // CHECK-NEXT:         6 as i32,
 // CHECK-NEXT:         8 as i32,
 // CHECK-NEXT:     ]);
-// CHECK-NEXT:     let __slate_printf_arg0 = sum_items(
-// CHECK-NEXT:         values.0.as_mut_ptr() as *mut i32,
-// CHECK-NEXT:         5 as i32,
-// CHECK-NEXT:         4 as i32,
-// CHECK-NEXT:     );
-// CHECK-NEXT:     println!("{}", __slate_printf_arg0);
+// CHECK-NEXT:     println!("{}", sum_items(& values.0, 5 as i32));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
