@@ -62,9 +62,7 @@ dependency and must match. `dylink_linux` always runs. `dylink_windows` builds
 with `cl.exe` under wine and the translated host for `x86_64-pc-windows-msvc`
 (linked by `lld-link` against msvc-wine's libs), and skips with a message when
 `wine`, `lld-link`, msvc-wine, or `rustup target add x86_64-pc-windows-msvc` is
-missing; `SLATE_DYLINK_REQUIRE_WINDOWS=1` turns the skip into a failure. Windows
-hosts declare `LoadLibraryA` themselves because `windows.h`'s `FARPROC` needs
-slate-8x0b.
+missing; `SLATE_DYLINK_REQUIRE_WINDOWS=1` turns the skip into a failure.
 
 ## Toolchain
 
