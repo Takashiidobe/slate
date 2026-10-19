@@ -19,6 +19,16 @@ pub struct Run {
     exit: Option<i32>,
 }
 
+impl Run {
+    pub fn stdout(&self) -> &[u8] {
+        &self.stdout
+    }
+
+    pub fn exit(&self) -> Option<i32> {
+        self.exit
+    }
+}
+
 pub struct CrossTarget {
     pub rust_triple: &'static str,
     pub cc: String,
@@ -715,7 +725,15 @@ pub fn build_batch(
 }
 
 pub fn build_project_release(crate_dir: &Path) -> Result<PathBuf, String> {
-    let output = Command::new(cargo())
+    build_project_release_for_target(crate_dir, None)
+}
+
+pub fn build_project_release_for_target(
+    crate_dir: &Path,
+    cross: Option<&CrossTarget>,
+) -> Result<PathBuf, String> {
+    let mut command = Command::new(cargo());
+    command
         .args([
             "build",
             "--release",
@@ -725,7 +743,17 @@ pub fn build_project_release(crate_dir: &Path) -> Result<PathBuf, String> {
         ])
         .arg(crate_dir.join("Cargo.toml"))
         .arg("--target-dir")
-        .arg(test_target_dir_for_project(crate_dir))
+        .arg(test_target_dir_for_project(crate_dir));
+    if let Some(cross) = cross {
+        command
+            .arg("--target")
+            .arg(cross.rust_triple)
+            .env(&cross.cargo_linker_env, &cross.linker);
+        for (key, value) in &cross.cargo_env {
+            command.env(key, value);
+        }
+    }
+    let output = command
         .output()
         .map_err(|e| format!("spawn {}: {e}", cargo()))?;
     let build = parse_batch_build(&output);
