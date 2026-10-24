@@ -5,6 +5,7 @@
 - [ABI signatures](#abi-signatures)
   - [`native_c` means trust rustc](#native_c-means-trust-rustc)
   - [`x86_win32`](#x86_win32)
+  - [x86-64 `vectorcall`](#x86-64-vectorcall)
   - [Vectors](#vectors)
   - [Transparent unions](#transparent-unions)
 - [Calling conventions](#calling-conventions)
@@ -110,6 +111,34 @@ i686-pc-windows-msvc cdecl (clang's `X86_32ABIInfo` with
   empty record result is `void`.
 - Fixture: `clang/windows/i686/abi_target.c`.
 
+### x86-64 `vectorcall`
+
+rustc's `extern "vectorcall"` uses win64 rules on both x86-64 OSes, with no
+HVA registers: records of 1, 2, 4, or 8 bytes become integers, everything
+else is `byref`/`sret` (an empty result is dropped), and `i128`/`f128` are
+`byref`. The convention keeps `sysv64`/`win64` in the signature, but
+`native_c` on a `vectorcall` signature means that win64 model agrees with
+the C compiler (`AbiClassifier::x64_vectorcall_parts`):
+
+- Linux: clang classifies with SysV, so records and complex print their
+  full SysV shape (`coerce<i64, i32>`, `byval`, `sret`) unless it equals
+  the win64 one (`struct{int a,b}`, `struct{char a}`, a large `sret`). An
+  empty record argument is `void`. `__int128` is `coerce<i64, i64>` and
+  `__float128` is `coerce<f128>`.
+- Windows: win64 shapes, except homogeneous vector aggregates as clang's
+  `WinX86_64ABIInfo` finds them: one to four members of one base kind and
+  size (a non-decimal, non-x87 float, or a 16/32/64-byte vector), complex
+  counting as two, no bit-fields, zero-length arrays, or padding; empty
+  record fields are skipped. An HVA result is `coerce<...>`. Arguments
+  share six XMM registers in two passes: a float or vector argument in the
+  first six positions takes one, then each HVA in order takes one register
+  per member if enough remain (`coerce<f64, f64>`,
+  `coerce<vector<f32, 4>, ...>`) and is `byref` otherwise.
+- Not modelled: a SysV record of 16 bytes or less with a vector member stays
+  `native_c` (the eightbyte classifier has no vector leaves), and i686
+  `vectorcall` keeps the cdecl shapes.
+- Fixtures: `clang/{linux,windows}/x86_64/abi_vectorcall.c`.
+
 ### Vectors
 
 Classification follows the effective x86 ISA (`TargetInfo.x86_isa`), the
@@ -186,8 +215,8 @@ scalar`): the first N integer-class registers (`eax`, `edx`, `ecx`) carry
 - The convention is recorded, not modeled: stack cleanup, `inreg`
   registers, vectorcall XMM/HVA assignment, and decoration (`_f@8`,
   `@f@8`, `f@@8`) are left to rustc's `extern "stdcall"` etc. Pass shapes
-  are the platform's cdecl ones. Known gap: x86-64 `vectorcall`, where
-  rustc matches neither clang shape (`slate-parser-x74n`).
+  are the platform's cdecl ones, except x86-64 `vectorcall` (see
+  [x86-64 `vectorcall`](#x86-64-vectorcall)).
 - Fixtures: `clang/{windows,linux}/i686/calling_conventions.c`,
   `clang/linux/x86_64/calling_conventions_ignored.c`,
   `clang/{windows,linux}/x86_64/calling_convention_vectorcall.c`,

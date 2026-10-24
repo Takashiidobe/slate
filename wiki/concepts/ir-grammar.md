@@ -244,13 +244,18 @@ convention    = "sysv64" | "win64" | "x86_cdecl" | "x86_win32" | "aapcs64" | "wi
 abi_pass      = "void" | "scalar" | "direct" | "native_c"
               | "coerce<" chunk { ", " chunk } ">"
               | "byval<align=" int ">" | "byref<align=" int ">" | "sret<align=" int ">" ;
-chunk         = "i" digits | float_type | "pair<" float_type ">" | "quad<" float_type ">" ;
+chunk         = "i" digits | float_type | "pair<" float_type ">" | "quad<" float_type ">"
+              | "vector<" numeric ", " int ">" ;
 ```
 
 - `native_c`: rustc's `extern "C"` passes a same-layout `repr(C)` type exactly
   as the C compiler does. Other record and complex shapes are explicit because
   rustc would differ.
 - `pair<T>` / `quad<T>`: two or four `T` lanes in one SSE eightbyte.
+- `vector<T, N>`: one vector register holding an x86-64 `vectorcall` HVA
+  member.
+- `void` as an argument: nothing is passed (an empty record under x86-64
+  `vectorcall` on SysV).
 - `direct`: passed in registers as its own type, no coercion or memory copy;
   used by vectors that fit the target's vector registers.
 

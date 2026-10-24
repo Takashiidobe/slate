@@ -151,9 +151,10 @@ impl<'a> AbiClassifier<'a> {
                     .map(|chunk| match chunk {
                         AbiChunk::Integer(_) => Some(VaClass::Integer),
                         AbiChunk::Float(FloatType::F128) => Some(VaClass::SseWide),
-                        AbiChunk::Float(_) | AbiChunk::FloatPair(_) | AbiChunk::FloatQuad(_) => {
-                            Some(VaClass::Sse)
-                        }
+                        AbiChunk::Float(_)
+                        | AbiChunk::FloatPair(_)
+                        | AbiChunk::FloatQuad(_)
+                        | AbiChunk::Vector { .. } => Some(VaClass::Sse),
                     })
                     .collect::<Option<Vec<_>>>();
                 classes.map_or(VaPassing::Memory, VaPassing::Registers)
@@ -272,15 +273,34 @@ impl<'a> AbiClassifier<'a> {
         calling: CallConv,
     ) -> Result<AbiSignature, ResolveError> {
         let convention = self.abi_convention(variadic, calling);
+        let operands: Vec<AbiOperand> = parameters
+            .iter()
+            .enumerate()
+            .map(|(index, operand)| {
+                (index < fixed_count)
+                    .then(|| self.transparent_first_member(&operand.ty))
+                    .flatten()
+                    .unwrap_or_else(|| operand.clone())
+            })
+            .collect();
+        if calling == CallConv::X86Vectorcall
+            && matches!(convention, AbiConvention::SysV64 | AbiConvention::Win64)
+        {
+            let (arguments, result) =
+                self.x64_vectorcall_parts(return_type, &operands, convention)?;
+            return Ok(AbiSignature {
+                convention,
+                calling,
+                regparm: 0,
+                arguments,
+                result,
+            });
+        }
         let mut free_vector_registers = WIN32_VECTOR_REGISTERS;
-        let arguments = parameters
+        let arguments = operands
             .iter()
             .enumerate()
             .map(|(index, operand)| -> Result<AbiPass, ResolveError> {
-                let first_member = (index < fixed_count)
-                    .then(|| self.transparent_first_member(&operand.ty))
-                    .flatten();
-                let operand = &first_member.unwrap_or_else(|| operand.clone());
                 let pass = self.abi_pass(operand, false, convention)?;
                 if convention == AbiConvention::X86Win32 {
                     self.win32_argument(
@@ -341,6 +361,248 @@ impl<'a> AbiClassifier<'a> {
             }
             convention => convention,
         }
+    }
+
+    fn x64_vectorcall_parts(
+        &self,
+        return_type: Option<&AbiOperand>,
+        arguments: &[AbiOperand],
+        convention: AbiConvention,
+    ) -> Result<(Vec<AbiPass>, AbiPass), ResolveError> {
+        if convention == AbiConvention::SysV64 {
+            let arguments = arguments
+                .iter()
+                .map(|operand| self.sysv_vectorcall_pass(operand, false))
+                .collect::<Result<_, _>>()?;
+            let result = match return_type {
+                Some(operand) => self.sysv_vectorcall_pass(operand, true)?,
+                None => AbiPass::Void,
+            };
+            return Ok((arguments, result));
+        }
+        let result = match return_type {
+            Some(operand) => match self.vectorcall_hva(operand)? {
+                Some(chunks) => AbiPass::Coerce(chunks),
+                None => self.abi_pass(operand, true, convention)?,
+            },
+            None => AbiPass::Void,
+        };
+        let hvas = arguments
+            .iter()
+            .map(|operand| self.vectorcall_hva(operand))
+            .collect::<Result<Vec<_>, _>>()?;
+        let mut free_vector_registers = VECTORCALL_X64_VECTOR_REGISTERS;
+        for (operand, hva) in arguments
+            .iter()
+            .zip(&hvas)
+            .take(VECTORCALL_X64_VECTOR_REGISTERS)
+        {
+            if hva.is_none()
+                && free_vector_registers > 0
+                && self.vectorcall_register_type(&operand.ty)?.is_some()
+            {
+                free_vector_registers -= 1;
+            }
+        }
+        let arguments = arguments
+            .iter()
+            .zip(hvas)
+            .map(|(operand, hva)| -> Result<AbiPass, ResolveError> {
+                let Some(chunks) = hva else {
+                    return self.abi_pass(operand, false, convention);
+                };
+                if free_vector_registers >= chunks.len() {
+                    free_vector_registers -= chunks.len();
+                    return Ok(AbiPass::Coerce(chunks));
+                }
+                let pass = AbiPass::ByReference {
+                    align: self.layout(operand)?.alignment_bytes,
+                };
+                Ok(if pass == self.rust_win64_pass(operand, false)? {
+                    AbiPass::NativeC
+                } else {
+                    pass
+                })
+            })
+            .collect::<Result<_, _>>()?;
+        Ok((arguments, result))
+    }
+
+    fn sysv_vectorcall_pass(
+        &self,
+        operand: &AbiOperand,
+        result: bool,
+    ) -> Result<AbiPass, ResolveError> {
+        match self.types.unaliased(&operand.ty) {
+            Type::Numeric(NumericType::Integer {
+                width: 128,
+                bit_precise: false,
+                ..
+            }) => return Ok(AbiPass::Coerce(vec![AbiChunk::Integer(64); 2])),
+            Type::Numeric(NumericType::Float(FloatType::F128)) => {
+                return Ok(AbiPass::Coerce(vec![AbiChunk::Float(FloatType::F128)]));
+            }
+            _ => {}
+        }
+        let c = match self.abi_pass(operand, result, AbiConvention::SysV64)? {
+            AbiPass::NativeC => {
+                let layout = self.layout(operand)?;
+                let shape = if layout.size_bytes > 16 {
+                    Some(SysvShape::Memory)
+                } else {
+                    self.sysv_c_shape(
+                        &operand.ty,
+                        layout.size_bytes,
+                        self.flexible_in_memory(&operand.ty),
+                        result,
+                    )?
+                };
+                let Some(shape) = shape else {
+                    return Ok(AbiPass::NativeC);
+                };
+                sysv_pass(shape, layout.alignment_bytes, result)
+            }
+            pass if self.is_record_or_complex(&operand.ty) => pass,
+            pass => return Ok(pass),
+        };
+        Ok(if c == self.rust_win64_pass(operand, result)? {
+            AbiPass::NativeC
+        } else {
+            c
+        })
+    }
+
+    fn rust_win64_pass(&self, operand: &AbiOperand, result: bool) -> Result<AbiPass, ResolveError> {
+        let layout = self.layout(operand)?;
+        let align = layout.alignment_bytes;
+        Ok(match layout.size_bytes {
+            0 if result => AbiPass::Void,
+            size @ (1 | 2 | 4 | 8) => AbiPass::Coerce(vec![AbiChunk::Integer((size * 8) as u32)]),
+            _ if result => AbiPass::SRet { align },
+            _ => AbiPass::ByReference { align },
+        })
+    }
+
+    fn vectorcall_hva(&self, operand: &AbiOperand) -> Result<Option<Vec<AbiChunk>>, ResolveError> {
+        if operand.atomic || !self.is_record_or_complex(&operand.ty) {
+            return Ok(None);
+        }
+        let mut base = None;
+        let Some(count) = self.hva_members(&operand.ty, &mut base)? else {
+            return Ok(None);
+        };
+        Ok(base.map(|(chunk, _)| vec![chunk; count]))
+    }
+
+    fn hva_members(
+        &self,
+        ty: &Type,
+        base: &mut Option<(AbiChunk, u64)>,
+    ) -> Result<Option<usize>, ResolveError> {
+        let count = match self.types.unaliased(ty) {
+            Type::Array {
+                element,
+                length: Some(length),
+            } if length > 0 => self
+                .hva_members(&element, base)?
+                .zip(usize::try_from(length).ok())
+                .and_then(|(count, length)| count.checked_mul(length)),
+            Type::Defined(id) => {
+                let TypeDefinitionKind::Record {
+                    kind,
+                    fields: Some(fields),
+                    ..
+                } = &self.types.definitions[id.0 as usize].kind
+                else {
+                    return Ok(None);
+                };
+                let mut members = 0;
+                for field in fields {
+                    if field.bit_width.is_some() {
+                        return Ok(None);
+                    }
+                    let mut element = self.types.unaliased(&field.ty);
+                    while let Type::Array {
+                        element: inner,
+                        length: Some(length),
+                    } = &element
+                    {
+                        if *length == 0 {
+                            return Ok(None);
+                        }
+                        element = self.types.unaliased(inner);
+                    }
+                    if self.is_empty_record(&element) {
+                        continue;
+                    }
+                    let Some(field_members) = self.hva_members(&field.ty, base)? else {
+                        return Ok(None);
+                    };
+                    members = match kind {
+                        RecordKind::Struct => members + field_members,
+                        RecordKind::Union => members.max(field_members),
+                    };
+                }
+                let Some((_, base_size)) = *base else {
+                    return Ok(None);
+                };
+                let size = self.types.qualified_storage(ty.clone(), false)?.size_bytes;
+                (base_size * members as u64 == size).then_some(members)
+            }
+            Type::Complex(component) => {
+                self.hva_base(&Type::Numeric(component), base)?.then_some(2)
+            }
+            other => self.hva_base(&other, base)?.then_some(1),
+        };
+        Ok(count.filter(|count| (1..=4).contains(count)))
+    }
+
+    fn hva_base(
+        &self,
+        ty: &Type,
+        base: &mut Option<(AbiChunk, u64)>,
+    ) -> Result<bool, ResolveError> {
+        let Some((chunk, size)) = self.vectorcall_register_type(ty)? else {
+            return Ok(false);
+        };
+        let is_vector = |chunk: &AbiChunk| matches!(chunk, AbiChunk::Vector { .. });
+        Ok(match base {
+            Some((existing, existing_size)) => {
+                *existing_size == size && is_vector(existing) == is_vector(&chunk)
+            }
+            None => {
+                *base = Some((chunk, size));
+                true
+            }
+        })
+    }
+
+    fn vectorcall_register_type(&self, ty: &Type) -> Result<Option<(AbiChunk, u64)>, ResolveError> {
+        let chunk = match self.types.unaliased(ty) {
+            Type::Numeric(NumericType::Float(format))
+                if !format.is_decimal() && format != FloatType::F80 =>
+            {
+                AbiChunk::Float(format)
+            }
+            Type::Vector { element, lanes } => AbiChunk::Vector { element, lanes },
+            _ => return Ok(None),
+        };
+        let size = self.types.qualified_storage(ty.clone(), false)?.size_bytes;
+        Ok(
+            (matches!(chunk, AbiChunk::Float(_)) || matches!(size, 16 | 32 | 64))
+                .then_some((chunk, size)),
+        )
+    }
+
+    fn flexible_in_memory(&self, ty: &Type) -> bool {
+        !self.types.flavor().is_gcc()
+            && matches!(
+                self.types.unaliased(ty),
+                Type::Defined(id) if matches!(
+                    &self.types.definitions[id.0 as usize].kind,
+                    TypeDefinitionKind::Record { fields: Some(fields), .. } if has_flexible_array(fields)
+                )
+            )
     }
 
     fn win32_argument(
@@ -760,30 +1022,37 @@ impl<'a> AbiClassifier<'a> {
         if record.size > 16 {
             return Ok(AbiPass::NativeC);
         }
-        let mut c_leaves = Vec::new();
+        let Some(c) = self.sysv_c_shape(record.ty, record.size, flexible_in_memory, result)? else {
+            return Ok(AbiPass::NativeC);
+        };
         let mut rust_leaves = Vec::new();
-        if !self.sysv_leaves(record.ty, 0, false, &mut c_leaves)?
-            || !self.sysv_leaves(record.ty, 0, true, &mut rust_leaves)?
-        {
+        if !self.sysv_leaves(record.ty, 0, true, &mut rust_leaves)? {
             return Ok(AbiPass::NativeC);
         }
-        let c = if flexible_in_memory {
+        Ok(
+            if Some(&c) == sysv_classify(&rust_leaves, record.size, result).as_ref() {
+                AbiPass::NativeC
+            } else {
+                sysv_pass(c, record.align, result)
+            },
+        )
+    }
+
+    fn sysv_c_shape(
+        &self,
+        ty: &Type,
+        size: u64,
+        flexible_in_memory: bool,
+        result: bool,
+    ) -> Result<Option<SysvShape>, ResolveError> {
+        let mut leaves = Vec::new();
+        if !self.sysv_leaves(ty, 0, false, &mut leaves)? {
+            return Ok(None);
+        }
+        Ok(if flexible_in_memory {
             Some(SysvShape::Memory)
         } else {
-            sysv_classify(&c_leaves, record.size, result)
-        };
-        let rust = sysv_classify(&rust_leaves, record.size, result);
-        Ok(match c {
-            Some(shape) if Some(&shape) != rust.as_ref() => match shape {
-                SysvShape::Memory if result => AbiPass::SRet {
-                    align: record.align,
-                },
-                SysvShape::Memory => AbiPass::ByValue {
-                    align: record.align,
-                },
-                SysvShape::Chunks(chunks) => AbiPass::Coerce(chunks),
-            },
-            _ => AbiPass::NativeC,
+            sysv_classify(&leaves, size, result)
         })
     }
 
@@ -1251,7 +1520,17 @@ fn sysv_sse_chunk(in_word: &[&SysvLeaf]) -> Option<AbiChunk> {
     }
 }
 
+fn sysv_pass(shape: SysvShape, align: u32, result: bool) -> AbiPass {
+    match shape {
+        SysvShape::Memory if result => AbiPass::SRet { align },
+        SysvShape::Memory => AbiPass::ByValue { align },
+        SysvShape::Chunks(chunks) if chunks.is_empty() => AbiPass::Void,
+        SysvShape::Chunks(chunks) => AbiPass::Coerce(chunks),
+    }
+}
+
 const WIN32_VECTOR_REGISTERS: usize = 3;
+const VECTORCALL_X64_VECTOR_REGISTERS: usize = 6;
 
 fn integer_chunks(size: u64, width: u32) -> AbiPass {
     let bytes = u64::from(width / 8);

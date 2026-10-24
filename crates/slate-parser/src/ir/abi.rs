@@ -1,4 +1,4 @@
-use super::FloatType;
+use super::{FloatType, NumericType};
 use std::fmt;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -122,6 +122,7 @@ pub enum AbiChunk {
     Float(FloatType),
     FloatPair(FloatType),
     FloatQuad(FloatType),
+    Vector { element: NumericType, lanes: u32 },
 }
 
 impl fmt::Display for AbiChunk {
@@ -131,6 +132,7 @@ impl fmt::Display for AbiChunk {
             Self::Float(format) => write!(f, "{format}"),
             Self::FloatPair(format) => write!(f, "pair<{format}>"),
             Self::FloatQuad(format) => write!(f, "quad<{format}>"),
+            Self::Vector { element, lanes } => write!(f, "vector<{element}, {lanes}>"),
         }
     }
 }
