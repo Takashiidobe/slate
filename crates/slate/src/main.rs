@@ -63,7 +63,18 @@ struct SysrootRawArgs {
     args: Vec<String>,
 }
 
+const MAIN_STACK_BYTES: usize = 256 << 20;
+
 fn main() -> ExitCode {
+    std::thread::Builder::new()
+        .stack_size(MAIN_STACK_BYTES)
+        .spawn(run_cli)
+        .ok()
+        .and_then(|handle| handle.join().ok())
+        .unwrap_or(ExitCode::FAILURE)
+}
+
+fn run_cli() -> ExitCode {
     let _ = rayon::ThreadPoolBuilder::new()
         .stack_size(WORKER_STACK_BYTES)
         .build_global();

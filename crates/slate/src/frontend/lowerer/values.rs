@@ -421,7 +421,7 @@ impl FunctionLowerer<'_, '_> {
     }
 
     pub(super) fn lower_value(&mut self, value: &ir::Value) -> Result<Expr> {
-        self.lower_value_node(value)
+        stacker::maybe_grow(512 << 10, 16 << 20, || self.lower_value_node(value))
             .map_err(|error| error.at(Site::of(&value.node)))
     }
 
