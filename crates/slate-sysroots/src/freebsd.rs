@@ -1,5 +1,5 @@
 use crate::download::fetch;
-use crate::install::install_staged;
+use crate::install::{MANIFEST_FILE, install_staged};
 use crate::{DoctorCheck, Paths, Target};
 use std::fs::{self, File};
 use std::io;
@@ -8,21 +8,29 @@ use xz2::read::XzDecoder;
 
 const RELEASE: &str = "15.1-RELEASE";
 
+fn url(target: Target) -> String {
+    let (arch, _) = release(target);
+    format!("https://download.freebsd.org/releases/{arch}/{RELEASE}/base.txz")
+}
+
+pub(crate) fn manifest(target: Target) -> String {
+    let (_, sha256) = release(target);
+    format!(
+        "Target: {}\nOperating system: FreeBSD {RELEASE}\nContents: headers only, from the FreeBSD base set\nSource URL: {}\nSource SHA-256: {sha256}\n",
+        target.triple(),
+        url(target)
+    )
+}
+
 pub(crate) fn install(paths: &Paths, target: Target) -> io::Result<PathBuf> {
-    let (arch, sha256) = release(target);
-    let url = format!("https://download.freebsd.org/releases/{arch}/{RELEASE}/base.txz");
-    install_staged(paths, target, validate, |root| {
+    let (_, sha256) = release(target);
+    let url = url(target);
+    install_staged(paths, target, Some(&manifest(target)), validate, |root| {
         fs::create_dir(root)?;
         let filename = format!("{RELEASE}-{}-base.txz", arch_name(target));
         let archive = fetch(&paths.cache.join("freebsd"), &filename, &url, sha256)?;
         extract_headers(&archive, root)?;
-        fs::write(
-            root.join("SYSROOT-MANIFEST.txt"),
-            format!(
-                "Target: {}\nOperating system: FreeBSD {RELEASE}\nContents: headers only, from the FreeBSD base set\nSource URL: {url}\nSource SHA-256: {sha256}\n",
-                target.triple()
-            ),
-        )?;
+        fs::write(root.join(MANIFEST_FILE), manifest(target))?;
         Ok(())
     })
 }

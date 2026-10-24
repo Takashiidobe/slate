@@ -29,6 +29,31 @@ pub struct DoctorCheck {
     pub present: bool,
 }
 
+fn pinned_manifest(target: Target) -> Option<String> {
+    match target {
+        Target::X86_64UnknownLinuxGnu
+        | Target::Aarch64UnknownLinuxGnu
+        | Target::I686UnknownLinuxGnu
+        | Target::Armv7UnknownLinuxGnueabi
+        | Target::Armv7UnknownLinuxGnueabihf => Some(linux_gnu::manifest(target)),
+        Target::X86_64UnknownLinuxMusl | Target::Aarch64UnknownLinuxMusl => {
+            Some(linux_musl::manifest(target))
+        }
+        Target::X86_64UnknownFreebsd | Target::Aarch64UnknownFreebsd => {
+            Some(freebsd::manifest(target))
+        }
+        Target::X86_64LinuxAndroid | Target::Aarch64LinuxAndroid => {
+            Some(android_bionic::manifest(target))
+        }
+        Target::I686PcWindowsMsvc
+        | Target::X86_64PcWindowsMsvc
+        | Target::Aarch64PcWindowsMsvc
+        | Target::Thumbv7aPcWindowsMsvc
+        | Target::X86_64AppleDarwin
+        | Target::Aarch64AppleDarwin => None,
+    }
+}
+
 impl Paths {
     pub fn discover() -> io::Result<Self> {
         let dirs = ProjectDirs::from("", "", "Slate")
@@ -145,23 +170,35 @@ impl Paths {
 
     pub fn doctor(&self, target: Target) -> Vec<DoctorCheck> {
         let root = self.sysroot_path(target);
+        let mut checks = self.doctor_layout(&root, target);
+        if let Some(expected) = pinned_manifest(target) {
+            checks.push(DoctorCheck {
+                label: "sysroot up to date with pinned versions (✗ = out of date: run `slate sysroot install`)",
+                present: install::manifest_matches(&root, &expected),
+                path: root.join(install::MANIFEST_FILE),
+            });
+        }
+        checks
+    }
+
+    fn doctor_layout(&self, root: &std::path::Path, target: Target) -> Vec<DoctorCheck> {
         match target {
             Target::I686PcWindowsMsvc
             | Target::X86_64PcWindowsMsvc
             | Target::Aarch64PcWindowsMsvc
-            | Target::Thumbv7aPcWindowsMsvc => windows_msvc::doctor(&root, target),
+            | Target::Thumbv7aPcWindowsMsvc => windows_msvc::doctor(root, target),
             Target::X86_64UnknownLinuxGnu
             | Target::Aarch64UnknownLinuxGnu
             | Target::I686UnknownLinuxGnu
             | Target::Armv7UnknownLinuxGnueabi
-            | Target::Armv7UnknownLinuxGnueabihf => linux_gnu::doctor(&root, target),
+            | Target::Armv7UnknownLinuxGnueabihf => linux_gnu::doctor(root, target),
             Target::X86_64UnknownLinuxMusl | Target::Aarch64UnknownLinuxMusl => {
-                linux_musl::doctor(&root, target)
+                linux_musl::doctor(root, target)
             }
-            Target::X86_64AppleDarwin | Target::Aarch64AppleDarwin => darwin::doctor(&root),
-            Target::X86_64UnknownFreebsd | Target::Aarch64UnknownFreebsd => freebsd::doctor(&root),
+            Target::X86_64AppleDarwin | Target::Aarch64AppleDarwin => darwin::doctor(root),
+            Target::X86_64UnknownFreebsd | Target::Aarch64UnknownFreebsd => freebsd::doctor(root),
             Target::X86_64LinuxAndroid | Target::Aarch64LinuxAndroid => {
-                android_bionic::doctor(&root, target)
+                android_bionic::doctor(root, target)
             }
         }
     }

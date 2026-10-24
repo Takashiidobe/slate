@@ -5,14 +5,21 @@ use std::time::{SystemTime, UNIX_EPOCH};
 
 use crate::{Paths, Target};
 
+pub(crate) const MANIFEST_FILE: &str = "SYSROOT-MANIFEST.txt";
+
+pub(crate) fn manifest_matches(root: &Path, expected: &str) -> bool {
+    fs::read_to_string(root.join(MANIFEST_FILE)).is_ok_and(|installed| installed == expected)
+}
+
 pub(crate) fn install_staged(
     paths: &Paths,
     target: Target,
+    manifest: Option<&str>,
     validate: impl Fn(&Path) -> io::Result<()>,
     build: impl FnOnce(&Path) -> io::Result<()>,
 ) -> io::Result<PathBuf> {
     let output = paths.sysroot_path(target);
-    install_staged_at(&output, validate, build)
+    install_pinned_at(&output, manifest, validate, build)
 }
 
 pub(crate) fn install_staged_at(
@@ -20,7 +27,18 @@ pub(crate) fn install_staged_at(
     validate: impl Fn(&Path) -> io::Result<()>,
     build: impl FnOnce(&Path) -> io::Result<()>,
 ) -> io::Result<PathBuf> {
-    if output.exists() {
+    install_pinned_at(output, None, validate, build)
+}
+
+pub(crate) fn install_pinned_at(
+    output: &Path,
+    manifest: Option<&str>,
+    validate: impl Fn(&Path) -> io::Result<()>,
+    build: impl FnOnce(&Path) -> io::Result<()>,
+) -> io::Result<PathBuf> {
+    let current =
+        |output: &Path| manifest.is_none_or(|expected| manifest_matches(output, expected));
+    if output.exists() && current(output) {
         validate(output)?;
         return Ok(output.to_path_buf());
     }
@@ -30,7 +48,7 @@ pub(crate) fn install_staged_at(
     let name = output.file_name().expect("installation path has a name");
     let name = name.to_string_lossy();
     let _lock = InstallLock::acquire(&parent.join(format!("{name}.lock")))?;
-    if output.exists() {
+    if output.exists() && current(output) {
         validate(output)?;
         return Ok(output.to_path_buf());
     }
@@ -41,7 +59,16 @@ pub(crate) fn install_staged_at(
     let result = (|| {
         build(&root)?;
         validate(&root)?;
-        fs::rename(&root, output)?;
+        if output.exists() {
+            let previous = staging.join("previous");
+            fs::rename(output, &previous)?;
+            if let Err(error) = fs::rename(&root, output) {
+                let _ = fs::rename(&previous, output);
+                return Err(error);
+            }
+        } else {
+            fs::rename(&root, output)?;
+        }
         Ok(output.to_path_buf())
     })();
     let _ = fs::remove_dir_all(&staging);

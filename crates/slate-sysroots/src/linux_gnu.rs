@@ -1,5 +1,5 @@
 use crate::download::fetch;
-use crate::install::install_staged;
+use crate::install::{MANIFEST_FILE, install_staged};
 use crate::{DoctorCheck, Paths, Target};
 use std::fs::{self, File};
 use std::io;
@@ -167,10 +167,27 @@ fn release(target: Target) -> &'static Release {
     }
 }
 
+pub(crate) fn manifest(target: Target) -> String {
+    let release = release(target);
+    format!(
+        "Target: {}\nLibc: glibc {} (Debian cross-toolchain-base)\nLinux UAPI headers: {}\nSource: {} packages from {SNAPSHOT}\nPackages:\n{}",
+        target.triple(),
+        release.glibc,
+        release.linux_headers,
+        release.debian,
+        release
+            .packages
+            .iter()
+            .map(|package| format!("  {}\n", package.filename))
+            .collect::<String>()
+    )
+}
+
 pub(crate) fn install(paths: &Paths, target: Target) -> io::Result<PathBuf> {
     install_staged(
         paths,
         target,
+        Some(&manifest(target)),
         |root| validate(root, target),
         |root| {
             fs::create_dir(root)?;
@@ -181,21 +198,7 @@ pub(crate) fn install(paths: &Paths, target: Target) -> io::Result<PathBuf> {
                 let archive = fetch(&cache, package.filename, &url, package.sha256)?;
                 extract_deb_data(&archive, root)?;
             }
-            fs::write(
-                root.join("SYSROOT-MANIFEST.txt"),
-                format!(
-                    "Target: {}\nLibc: glibc {} (Debian cross-toolchain-base)\nLinux UAPI headers: {}\nSource: {} packages from {SNAPSHOT}\nPackages:\n{}",
-                    target.triple(),
-                    release.glibc,
-                    release.linux_headers,
-                    release.debian,
-                    release
-                        .packages
-                        .iter()
-                        .map(|package| format!("  {}\n", package.filename))
-                        .collect::<String>()
-                ),
-            )?;
+            fs::write(root.join(MANIFEST_FILE), manifest(target))?;
             Ok(())
         },
     )

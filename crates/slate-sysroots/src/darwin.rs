@@ -81,7 +81,7 @@ pub(crate) fn install_with_sdk(paths: &Paths, target: Target, sdk: &Path) -> io:
             ),
         ));
     }
-    install_staged(paths, target, validate, |root| {
+    install_staged(paths, target, None, validate, |root| {
         fs::create_dir(root)?;
         link_sdk(&sdk, &root.join("SDK"))?;
         fs::write(

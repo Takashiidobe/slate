@@ -39,9 +39,9 @@ cannot supply link libraries or startup files.
 
 | Command                                          | Effect                                                                                                                            |
 | ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------- |
-| `install <target>`                               | Acquire the target sysroot and print its installed path. For macOS, register a local SDK.                                         |
+| `install <target>`                               | Acquire the target sysroot and print its installed path. An existing install whose `SYSROOT-MANIFEST.txt` differs from the pinned versions is replaced. For macOS, register a local SDK. |
 | `install compiler-headers <compiler> [selector]` | Acquire compiler headers and print their include paths. MSVC installs the selected Windows sysroots and reuses their CRT headers. |
-| `doctor <target>`                                | Check the target's expected header and library paths, where applicable. Windows checks also detect CRT/UCRT version mismatches.   |
+| `doctor <target>`                                | Check the target's expected header and library paths, where applicable. Windows checks also detect CRT/UCRT version mismatches. Linux, Android, and FreeBSD also fail when the install's manifest is out of date with the pinned versions; run `install` to update it. Windows and macOS have no pinned manifest. |
 | `doctor compiler-headers <compiler> [selector]`  | Check the selected compiler bundle's required headers and accompanying license or manifest files.                                 |
 | `path <target>`                                  | Validate the target installation and print its sysroot path.                                                                      |
 | `path compiler-headers <compiler> [selector]`    | Validate the selected compiler bundle and print its include path.                                                                 |

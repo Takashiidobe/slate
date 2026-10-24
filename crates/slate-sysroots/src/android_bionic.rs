@@ -1,5 +1,5 @@
 use crate::download::fetch;
-use crate::install::install_staged;
+use crate::install::{MANIFEST_FILE, install_staged};
 use crate::{DoctorCheck, Paths, Target};
 use std::fs::{self, File};
 use std::io::{self, Read};
@@ -20,10 +20,18 @@ const ARCH_DIRS: [&str; 5] = [
     "x86_64-linux-android",
 ];
 
+pub(crate) fn manifest(target: Target) -> String {
+    format!(
+        "Target: {}\nOperating system: Android (Bionic)\nNDK: r30 ({NDK_REVISION})\nAndroid API level: 21\nContents: C system headers only; link libraries and runtime files omitted\nSource URL: {NDK_URL}\nSource SHA-256: {NDK_SHA256}\n",
+        target.triple()
+    )
+}
+
 pub(crate) fn install(paths: &Paths, target: Target) -> io::Result<PathBuf> {
     install_staged(
         paths,
         target,
+        Some(&manifest(target)),
         |root| validate(root, target),
         |root| {
             let archive = fetch(
@@ -33,13 +41,7 @@ pub(crate) fn install(paths: &Paths, target: Target) -> io::Result<PathBuf> {
                 NDK_SHA256,
             )?;
             extract_headers(&archive, target, root)?;
-            fs::write(
-                root.join("SYSROOT-MANIFEST.txt"),
-                format!(
-                    "Target: {}\nOperating system: Android (Bionic)\nNDK: r30 ({NDK_REVISION})\nAndroid API level: 21\nContents: C system headers only; link libraries and runtime files omitted\nSource URL: {NDK_URL}\nSource SHA-256: {NDK_SHA256}\n",
-                    target.triple()
-                ),
-            )?;
+            fs::write(root.join(MANIFEST_FILE), manifest(target))?;
             Ok(())
         },
     )

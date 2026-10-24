@@ -1,5 +1,5 @@
 use crate::download::fetch;
-use crate::install::install_staged;
+use crate::install::{MANIFEST_FILE, install_staged};
 use crate::{DoctorCheck, Paths, Target};
 use std::fs::{self, File};
 use std::io;
@@ -9,13 +9,27 @@ use xz2::read::XzDecoder;
 const RELEASE: &str = "20261001";
 const BASE_URL: &str = "https://github.com/cross-tools/musl-cross/releases/download/20261001";
 
+fn filename(target: Target) -> String {
+    format!("{}.tar.xz", target.triple())
+}
+
+pub(crate) fn manifest(target: Target) -> String {
+    format!(
+        "Target: {}\nLibc: musl (cross-tools/musl-cross release {RELEASE})\nSource URL: {BASE_URL}/{}\nSource SHA-256: {}\nContents: prebuilt libc sysroot and license notices\n",
+        target.triple(),
+        filename(target),
+        sha256(target)
+    )
+}
+
 pub(crate) fn install(paths: &Paths, target: Target) -> io::Result<PathBuf> {
     install_staged(
         paths,
         target,
+        Some(&manifest(target)),
         |root| validate(root, target),
         |root| {
-            let filename = format!("{}.tar.xz", target.triple());
+            let filename = filename(target);
             let url = format!("{BASE_URL}/{filename}");
             let archive = fetch(
                 &paths.cache.join("linux/musl"),
@@ -24,14 +38,7 @@ pub(crate) fn install(paths: &Paths, target: Target) -> io::Result<PathBuf> {
                 sha256(target),
             )?;
             extract_sysroot(&archive, target, root)?;
-            fs::write(
-                root.join("SYSROOT-MANIFEST.txt"),
-                format!(
-                    "Target: {}\nLibc: musl (cross-tools/musl-cross release {RELEASE})\nSource URL: {url}\nSource SHA-256: {}\nContents: prebuilt libc sysroot and license notices\n",
-                    target.triple(),
-                    sha256(target)
-                ),
-            )?;
+            fs::write(root.join(MANIFEST_FILE), manifest(target))?;
             Ok(())
         },
     )

@@ -31,6 +31,7 @@ pub(crate) fn install_with(
     install_staged(
         paths,
         target,
+        None,
         |root| validate(root, target),
         |root| {
             let versions = fetch(root)?;

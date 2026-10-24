@@ -61,6 +61,15 @@ fn fake_splat(root: &Path, arch: &str) {
     fs::write(root.join(format!("crt/lib/{arch}/msvcrt.lib")), "").unwrap();
 }
 
+fn write_pinned_manifest(paths: &Paths, target: Target) {
+    let root = paths.sysroot_path(target);
+    fs::write(
+        root.join("SYSROOT-MANIFEST.txt"),
+        crate::pinned_manifest(target).unwrap(),
+    )
+    .unwrap();
+}
+
 fn versions() -> windows_msvc::Versions {
     windows_msvc::Versions {
         crt: "14.51.36244".into(),
@@ -360,6 +369,7 @@ fn android_targets_copy_only_their_architecture_headers() {
         assert_eq!(target.triple().parse::<Target>().unwrap(), target);
         let root = paths.sysroot_path(target);
         crate::android_bionic::extract_headers(&archive, target, &root).unwrap();
+        write_pinned_manifest(&paths, target);
         assert_eq!(paths.resolve(target).unwrap(), root);
         assert!(paths.doctor(target).iter().all(|check| check.present));
         assert_eq!(
@@ -390,6 +400,7 @@ fn freebsd_targets_have_header_only_layout() {
         fs::write(root.join("usr/include/stdio.h"), "").unwrap();
         fs::write(root.join("usr/include/sys/types.h"), "").unwrap();
         fs::write(root.join("COPYRIGHT"), "").unwrap();
+        write_pinned_manifest(&paths, target);
         assert_eq!(paths.resolve(target).unwrap(), root);
         assert_eq!(
             paths.include_paths(target).unwrap(),
@@ -509,6 +520,7 @@ fn linux_targets_resolve_prebuilt_header_layouts() {
             fs::create_dir_all(root.join("lib")).unwrap();
             fs::write(root.join(format!("lib/ld-musl-{arch}.so.1")), "").unwrap();
         }
+        write_pinned_manifest(&paths, target);
 
         assert!(paths.doctor(target).iter().all(|check| check.present));
         assert_eq!(paths.resolve(target).unwrap(), root);
@@ -544,4 +556,99 @@ fn doctor_rejects_ucrt_older_than_crt() {
     )
     .unwrap();
     assert!(paths.doctor(target).iter().all(|check| check.present));
+}
+
+#[test]
+fn doctor_reports_sysroot_older_than_pinned_versions() {
+    let temp = TestDir::new();
+    let paths = temp.paths();
+    let target = Target::X86_64UnknownFreebsd;
+    let root = paths.sysroot_path(target);
+    fs::create_dir_all(root.join("usr/include/sys")).unwrap();
+    fs::write(root.join("usr/include/stdio.h"), "").unwrap();
+    fs::write(root.join("usr/include/sys/types.h"), "").unwrap();
+    fs::write(root.join("COPYRIGHT"), "").unwrap();
+
+    fs::write(root.join("SYSROOT-MANIFEST.txt"), "Target: old pin\n").unwrap();
+    let checks = paths.doctor(target);
+    let failing: Vec<_> = checks.iter().filter(|check| !check.present).collect();
+    assert_eq!(failing.len(), 1);
+    assert!(failing[0].label.contains("out of date"));
+
+    write_pinned_manifest(&paths, target);
+    assert!(paths.doctor(target).iter().all(|check| check.present));
+}
+
+#[test]
+fn install_replaces_sysroot_whose_manifest_is_out_of_date() {
+    let temp = TestDir::new();
+    let output = temp.0.join("data/sysroots/target");
+    fs::create_dir_all(&output).unwrap();
+    fs::write(output.join("SYSROOT-MANIFEST.txt"), "old").unwrap();
+    fs::write(output.join("old-only.h"), "").unwrap();
+
+    let installed = crate::install::install_pinned_at(
+        &output,
+        Some("new"),
+        |_| Ok(()),
+        |root| {
+            fs::create_dir(root)?;
+            fs::write(root.join("SYSROOT-MANIFEST.txt"), "new")?;
+            fs::write(root.join("new-only.h"), "")
+        },
+    )
+    .unwrap();
+
+    assert_eq!(installed, output);
+    assert_eq!(
+        fs::read_to_string(output.join("SYSROOT-MANIFEST.txt")).unwrap(),
+        "new"
+    );
+    assert!(output.join("new-only.h").exists());
+    assert!(!output.join("old-only.h").exists());
+    assert_eq!(
+        fs::read_dir(output.parent().unwrap())
+            .unwrap()
+            .filter_map(Result::ok)
+            .filter(|entry| entry.file_name().to_string_lossy().starts_with('.'))
+            .count(),
+        0
+    );
+}
+
+#[test]
+fn install_keeps_sysroot_whose_manifest_is_current() {
+    let temp = TestDir::new();
+    let output = temp.0.join("data/sysroots/target");
+    fs::create_dir_all(&output).unwrap();
+    fs::write(output.join("SYSROOT-MANIFEST.txt"), "same").unwrap();
+
+    crate::install::install_pinned_at(
+        &output,
+        Some("same"),
+        |_| Ok(()),
+        |_| Err(std::io::Error::other("rebuilt a current sysroot")),
+    )
+    .unwrap();
+}
+
+#[test]
+fn failed_rebuild_keeps_the_previous_sysroot() {
+    let temp = TestDir::new();
+    let output = temp.0.join("data/sysroots/target");
+    fs::create_dir_all(&output).unwrap();
+    fs::write(output.join("SYSROOT-MANIFEST.txt"), "old").unwrap();
+
+    let result = crate::install::install_pinned_at(
+        &output,
+        Some("new"),
+        |_| Ok(()),
+        |_| Err(std::io::Error::other("download failed")),
+    );
+
+    assert!(result.is_err());
+    assert_eq!(
+        fs::read_to_string(output.join("SYSROOT-MANIFEST.txt")).unwrap(),
+        "old"
+    );
 }
