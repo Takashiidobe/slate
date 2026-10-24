@@ -91,6 +91,7 @@ struct Dependencies {
     cleanup: bool,
     rounding: bool,
     x86_interrupt: bool,
+    vectorcall: bool,
     win64_va: bool,
     sysv_va: bool,
     i386_va: bool,
@@ -852,6 +853,9 @@ impl<'m> ModuleLowerer<'m> {
         }
         if dependencies.x86_interrupt {
             features.push(rust::CrateAttr::Feature(rust::Feature::AbiX86Interrupt));
+        }
+        if dependencies.vectorcall {
+            features.push(rust::CrateAttr::Feature(rust::Feature::AbiVectorcall));
         }
         if dependencies.asm_unwind {
             features.push(rust::CrateAttr::Feature(rust::Feature::AsmUnwind));

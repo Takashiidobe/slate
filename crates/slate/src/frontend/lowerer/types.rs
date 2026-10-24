@@ -664,11 +664,24 @@ impl FunctionLowerer<'_, '_> {
                 else {
                     return Err(unsupported_type(ty));
                 };
-                let Some(abi) = self.tables.convention_abi(*convention).filter(|abi| {
-                    *abi == rust::Abi::CUnwind || !self.tables.function_type_passes_long_double(ty)
-                }) else {
+                let Some(abi) = self
+                    .tables
+                    .convention_abi(*convention)
+                    .filter(|abi| match abi {
+                        rust::Abi::CUnwind => true,
+                        rust::Abi::VectorcallUnwind => {
+                            !*variadic
+                                && parameters
+                                    .iter()
+                                    .chain(return_type.as_deref())
+                                    .all(|ty| self.tables.vectorcall_scalar(ty))
+                        }
+                        _ => !self.tables.function_type_passes_long_double(ty),
+                    })
+                else {
                     return Err(unsupported_type(ty));
                 };
+                self.dependencies.vectorcall |= abi == rust::Abi::VectorcallUnwind;
                 let abi = match (self.tables.function_type_has_vector(ty), variadic) {
                     (false, _) => abi,
                     (true, false) => rust::Abi::Rust,

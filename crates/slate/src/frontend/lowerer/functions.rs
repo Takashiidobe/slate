@@ -128,8 +128,26 @@ impl Tables<'_> {
             (ir::CallConv::C, _) => Some(rust::Abi::CUnwind),
             (ir::CallConv::Win64, TargetFamily::X86_64) => Some(rust::Abi::Win64Unwind),
             (ir::CallConv::SysV64, TargetFamily::X86_64) => Some(rust::Abi::SysV64Unwind),
+            (ir::CallConv::X86Vectorcall, TargetFamily::X86_64) => {
+                Some(rust::Abi::VectorcallUnwind)
+            }
             _ => None,
         }
+    }
+
+    pub(super) fn vectorcall_scalar(&self, ty: &ir::Type) -> bool {
+        matches!(
+            self.resolve_type(ty),
+            ir::Type::Bool
+                | ir::Type::Pointer { .. }
+                | ir::Type::Numeric(
+                    ir::NumericType::Integer {
+                        width: ..=64,
+                        bit_precise: false,
+                        ..
+                    } | ir::NumericType::Float(ir::FloatType::F32 | ir::FloatType::F64)
+                )
+        )
     }
 
     pub(super) fn function_abi(&self, function: &ir::Function) -> Result<rust::Abi> {
@@ -163,8 +181,22 @@ impl Tables<'_> {
         {
             return unsupported(format!("variadic {convention} definition"));
         }
+        if let Some(signature) = &function.abi
+            && abi == rust::Abi::VectorcallUnwind
+            && !rustc_spells_vectorcall(signature)
+        {
+            return unsupported(format!(
+                "{convention} pass shapes rustc diverges on: {signature}"
+            ));
+        }
         Ok(abi)
     }
+}
+
+fn rustc_spells_vectorcall(signature: &ir::AbiSignature) -> bool {
+    let native = |pass: &ir::AbiPass| matches!(pass, ir::AbiPass::Scalar | ir::AbiPass::NativeC);
+    signature.arguments.iter().all(native)
+        && (native(&signature.result) || signature.result == ir::AbiPass::Void)
 }
 
 pub(super) fn ifunc_symbol(function: &ir::Function) -> Option<String> {
@@ -185,6 +217,7 @@ impl FunctionLowerer<'_, '_> {
             ir::Parameters::Unprototyped => (&[][..], &true),
         };
         let abi = self.tables.function_abi(function)?;
+        self.dependencies.vectorcall |= abi == rust::Abi::VectorcallUnwind;
         if self.tables.function_has_vector(function) {
             return Err(Construct::Function {
                 name: function.name.clone(),
@@ -273,6 +306,7 @@ impl FunctionLowerer<'_, '_> {
         } else {
             self.tables.function_abi(function)?
         };
+        self.dependencies.vectorcall |= abi == rust::Abi::VectorcallUnwind;
         self.target_features = self.tables.enabled_target_features(function)?;
         let ret = self.lower_return(function)?;
         let mut params = fixed

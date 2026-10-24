@@ -230,6 +230,7 @@ impl Lint {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Feature {
+    AbiVectorcall,
     AbiX86Interrupt,
     AtomicVolatile,
     ArmTargetFeature,
@@ -252,6 +253,7 @@ pub enum Feature {
 impl Feature {
     pub fn spelling(self) -> &'static str {
         match self {
+            Feature::AbiVectorcall => "abi_vectorcall",
             Feature::AbiX86Interrupt => "abi_x86_interrupt",
             Feature::AtomicVolatile => "atomic_volatile",
             Feature::ArmTargetFeature => "arm_target_feature",
@@ -321,6 +323,7 @@ pub enum Abi {
     CUnwind,
     Win64Unwind,
     SysV64Unwind,
+    VectorcallUnwind,
     X86Interrupt,
     Rust,
 }
@@ -331,6 +334,7 @@ impl Abi {
             Abi::CUnwind => "C-unwind",
             Abi::Win64Unwind => "win64-unwind",
             Abi::SysV64Unwind => "sysv64-unwind",
+            Abi::VectorcallUnwind => "vectorcall-unwind",
             Abi::X86Interrupt => "x86-interrupt",
             Abi::Rust => "Rust",
         }
@@ -341,6 +345,7 @@ impl Abi {
             Abi::CUnwind | Abi::Rust => "C",
             Abi::Win64Unwind => "win64",
             Abi::SysV64Unwind => "sysv64",
+            Abi::VectorcallUnwind => "vectorcall",
             Abi::X86Interrupt => "x86-interrupt",
         }
     }
