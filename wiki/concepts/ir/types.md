@@ -320,7 +320,8 @@ difference. Differences from Itanium and `ms_struct`:
     identifier only.
   - Errors: no initializer, a braced one, `typedef`, `void`, and the name in
     its own initializer. A bit-field initializer is an error, except C23
-    `auto` under gcc, which deduces an internal bit-field type slate can't
-    represent (`Unimplemented`).
+    `auto` under gcc, which deduces the bit-field's declared type (`int` or
+    `unsigned` here), the same type `_Generic` and `typeof` see
+    (`gcc-dg/c23-auto-1.c`).
   - `auto n = nullptr` deduces `nullptr_t`; `auto *p = nullptr` is rejected
     as in clang (`c23_auto_inference.c`, `gcc_auto_inference.c`).

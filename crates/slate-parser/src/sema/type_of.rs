@@ -264,12 +264,10 @@ impl TypeResolver {
                 "variable declared with deduced type cannot appear in its own initializer",
             ));
         }
-        if self.typed(expr)?.bits.is_some() {
-            return Err(if self.flavor().is_gcc() {
-                ResolveError::Unimplemented("deduced type of a bit-field initializer")
-            } else {
-                ResolveError::Rejected("cannot use a bit-field as a deduced-type initializer")
-            });
+        if !self.flavor().is_gcc() && self.typed(expr)?.bits.is_some() {
+            return Err(ResolveError::Rejected(
+                "cannot use a bit-field as a deduced-type initializer",
+            ));
         }
         Ok(expr)
     }
