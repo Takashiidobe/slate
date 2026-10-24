@@ -176,7 +176,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     (((unsafe { strlen(buf.as_mut_ptr() as *const i8) }) as u32) as i32) * 1000
-// CHECK-NEXT:         + ((unsafe { *(buf.as_mut_ptr() as *mut i8).offset(0 as isize) }) as i32)
+// CHECK-NEXT:         + ((unsafe { *(buf.as_mut_ptr() as *mut i8).add(0) }) as i32)
 // CHECK-NEXT: }
 // CHECK-NEXT: fn const_bound() -> i32 {
 // CHECK-NEXT:     let bufflen: i32 = 16;

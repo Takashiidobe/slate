@@ -42,10 +42,7 @@ int main(void) {
 // CHECK-NEXT:     forward_fill(unsafe {
 // CHECK-NEXT:         std::slice::from_raw_parts_mut(values as *mut i32, len as usize)
 // CHECK-NEXT:     });
-// CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {}", unsafe { * values.offset(1 as isize) }, unsafe { * values.offset(4 as
-// CHECK-NEXT:         isize) }
-// CHECK-NEXT:     );
+// CHECK-NEXT:     println!("{} {}", unsafe { * values.add(1) }, unsafe { * values.add(4) });
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

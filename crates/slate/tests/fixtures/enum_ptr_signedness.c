@@ -34,8 +34,8 @@ int main(void) {
 // CHECK-NEXT:     let mut data: [u32; 3] = [0, 1, 2];
 // CHECK-NEXT:     let mut p: palette = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     p.start = data.as_mut_ptr() as *mut u32;
-// CHECK-NEXT:     p.top = unsafe { (data.as_mut_ptr() as *mut u32).offset(3 as isize) };
-// CHECK-NEXT:     let c: u32 = unsafe { *p.start.offset(1 as isize) };
+// CHECK-NEXT:     p.top = unsafe { (data.as_mut_ptr() as *mut u32).add(3) };
+// CHECK-NEXT:     let c: u32 = unsafe { *p.start.add(1) };
 // CHECK-NEXT:     println!("{}", (c as u32) as i32);
 // CHECK-NEXT:     println!("{}", ((unsafe { p.top.offset_from(p.start as * mut u32) }) as i64) as i32);
 // CHECK-NEXT:     0

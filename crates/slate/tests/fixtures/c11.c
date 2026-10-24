@@ -797,7 +797,7 @@ int main(void) {
 // CHECK-NEXT:         })
 // CHECK-NEXT:             .values
 // CHECK-NEXT:             .as_mut_ptr() as *mut i32)
-// CHECK-NEXT:             .offset(1 as isize)
+// CHECK-NEXT:             .add(1)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *std::ptr::addr_of_mut!(c11_atomic_total) = 5;

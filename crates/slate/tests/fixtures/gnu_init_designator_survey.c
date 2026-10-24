@@ -120,11 +120,10 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {}", unsafe { * (std::ptr::addr_of_mut!((* (std::ptr::addr_of_mut!(sized)
-// CHECK-NEXT:         as * mut Sized)).data) as * mut i32).offset(0 as isize) }, unsafe { *
+// CHECK-NEXT:         as * mut Sized)).data) as * mut i32).add(0) }, unsafe { *
 // CHECK-NEXT:         (std::ptr::addr_of_mut!((* (std::ptr::addr_of_mut!(sized) as * mut Sized)).data)
-// CHECK-NEXT:         as * mut i32).offset(1 as isize) }, unsafe { * (std::ptr::addr_of_mut!((*
-// CHECK-NEXT:         (std::ptr::addr_of_mut!(sized) as * mut Sized)).data) as * mut i32).offset(2 as
-// CHECK-NEXT:         isize) }
+// CHECK-NEXT:         as * mut i32).add(1) }, unsafe { * (std::ptr::addr_of_mut!((*
+// CHECK-NEXT:         (std::ptr::addr_of_mut!(sized) as * mut Sized)).data) as * mut i32).add(2) }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe { printf(c"%zu\n".as_ptr(), 4u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

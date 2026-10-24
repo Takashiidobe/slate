@@ -184,17 +184,17 @@ int main(void) {
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let mut p: *mut i32 = values.0.as_mut_ptr() as *mut i32;
 // CHECK-NEXT:     let [[V_9:__v[0-9]+]]: *mut i32 = p;
-// CHECK-NEXT:     p = unsafe { [[V_9]].offset(1 as isize) };
+// CHECK-NEXT:     p = unsafe { [[V_9]].add(1) };
 // CHECK-NEXT:     let at_p: i32 = unsafe { *p };
 // CHECK-NEXT:     let mut at_next: i32 = 0;
 // CHECK-NEXT:     let [[V_10:__v[0-9]+]]: *mut i32 = p;
-// CHECK-NEXT:     let [[V_11:__v[0-9]+]]: *mut i32 = unsafe { [[V_10]].offset(1 as isize) };
+// CHECK-NEXT:     let [[V_11:__v[0-9]+]]: *mut i32 = unsafe { [[V_10]].add(1) };
 // CHECK-NEXT:     p = [[V_11]];
 // CHECK-NEXT:     at_next = unsafe { *[[V_11]] };
 // CHECK-NEXT:     println!("{} {} {}", unsafe { * [[V_9]] }, at_p, at_next);
 // CHECK-NEXT:     let mut was: i32 = 0;
 // CHECK-NEXT:     let [[V_12:__v[0-9]+]]: *mut i32 = p;
-// CHECK-NEXT:     p = unsafe { [[V_12]].offset(-(1 as isize)) };
+// CHECK-NEXT:     p = unsafe { [[V_12]].sub(1) };
 // CHECK-NEXT:     was = ((unsafe { [[V_12]].offset_from(values.0.as_mut_ptr() as *mut i32) }) as i64)
 // CHECK-NEXT:         as i32;
 // CHECK-NEXT:     let __slate_printf_arg1 = ((unsafe {
@@ -207,7 +207,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("{}", [[V_13]]);
 // CHECK-NEXT:     let [[V_14:__v[0-9]+]]: *mut i32 = p;
-// CHECK-NEXT:     p = unsafe { [[V_14]].offset(-(1 as isize)) };
+// CHECK-NEXT:     p = unsafe { [[V_14]].sub(1) };
 // CHECK-NEXT:     println!("{}", unsafe { * [[V_14]] });
 // CHECK-NEXT:     println!("{}", values.0[1]);
 // CHECK-NEXT:     let mut i: i32 = 1;

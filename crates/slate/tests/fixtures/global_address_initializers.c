@@ -144,17 +144,17 @@ int main(void) {
 // CHECK-NEXT:         *[[V_0]] = *[[V_0]] + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *unsafe { table_ptr }.offset(0 as isize) = 10;
+// CHECK-NEXT:         *unsafe { table_ptr }.add(0) = 10;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: *mut i32 = unsafe { table_third };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *[[V_1]] = *[[V_1]] + 20;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *((*table_whole).as_mut_ptr() as *mut i32).offset(3 as isize) = 40;
+// CHECK-NEXT:         *((*table_whole).as_mut_ptr() as *mut i32).add(3) = 40;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *unsafe { grid_row }.offset(2 as isize) = 60;
+// CHECK-NEXT:         *unsafe { grid_row }.add(2) = 60;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *pair_right = 90;
@@ -163,7 +163,7 @@ int main(void) {
 // CHECK-NEXT:         (*pair_ptr).left = 80;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *unsafe { name_ptr }.offset(0 as isize) = 83;
+// CHECK-NEXT:         *unsafe { name_ptr }.add(0) = 83;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let [[V_2:__v[0-9]+]]: *mut i32 = unsafe { *counter_ptr_ptr };
 // CHECK-NEXT:     unsafe {
@@ -185,7 +185,7 @@ int main(void) {
 // CHECK-NEXT:     while it != unsafe { table_end } {
 // CHECK-NEXT:         sum += unsafe { *it };
 // CHECK-NEXT:         let [[V_5:__v[0-9]+]]: *mut i32 = it;
-// CHECK-NEXT:         it = unsafe { [[V_5]].offset(1 as isize) };
+// CHECK-NEXT:         it = unsafe { [[V_5]].add(1) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {} {}", unsafe { counter }, unsafe { * fixed_counter }, unsafe { table

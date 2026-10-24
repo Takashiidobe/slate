@@ -181,7 +181,7 @@ int main(void) {
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 if kind == 2 {
 // CHECK-NEXT:                     let text: *const i8 = unsafe { ap.next_arg::<*const i8>() };
-// CHECK-NEXT:                     total += ((unsafe { *text.offset(0 as isize) }) as i32) as f64;
+// CHECK-NEXT:                     total += ((unsafe { *text.add(0) }) as i32) as f64;
 // CHECK-NEXT:                 } else {
 // CHECK-NEXT:                     let [[V_3:__v[0-9]+]]: f64 = (unsafe { ap.next_arg::<i64>() }) as f64;
 // CHECK-NEXT:                     total += [[V_3]];

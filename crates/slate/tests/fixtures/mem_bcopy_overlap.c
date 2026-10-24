@@ -22,7 +22,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __builtin_bcopy(
 // CHECK-NEXT:             buf.as_mut_ptr() as *const (),
-// CHECK-NEXT:             (buf.as_mut_ptr() as *mut i8).offset(2 as isize) as *mut (),
+// CHECK-NEXT:             (buf.as_mut_ptr() as *mut i8).add(2) as *mut (),
 // CHECK-NEXT:             4u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };

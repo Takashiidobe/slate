@@ -195,7 +195,7 @@ int main(void) {
 // CHECK-NEXT:                     2i32,
 // CHECK-NEXT:                 );
 // CHECK-NEXT:                 let [[V_6:__v[0-9]+]]: *mut u64 = ((*[[SLATE_SLOT_0]]).as_mut_ptr() as *mut u64)
-// CHECK-NEXT:                     .offset(0 as isize);
+// CHECK-NEXT:                     .add(0);
 // CHECK-NEXT:                 let [[V_7:__v[0-9]+]]: u64 = *[[V_6]];
 // CHECK-NEXT:                 *[[V_6]] = [[V_7]].wrapping_add([[V_5]]);
 // CHECK-NEXT:                 let [[V_8:__v[0-9]+]]: i32 = count + 1;

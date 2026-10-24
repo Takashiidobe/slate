@@ -142,7 +142,7 @@ int main(void) {
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: u32 = b;
 // CHECK-NEXT:     b = [[V_1]].wrapping_add(1);
 // CHECK-NEXT:     let mut [[V_2:__v[0-9]+]]: *mut u32 = p;
-// CHECK-NEXT:     p = unsafe { [[V_2]].offset(1 as isize) };
+// CHECK-NEXT:     p = unsafe { [[V_2]].add(1) };
 // CHECK-NEXT:     overflow = ({
 // CHECK-NEXT:         let [[T_12:__t[0-9]+]]: i128 = [[V_0]] as i128;
 // CHECK-NEXT:         let [[T_13:__t[0-9]+]]: i128 = [[V_1]] as i128;

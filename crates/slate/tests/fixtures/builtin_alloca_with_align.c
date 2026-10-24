@@ -200,7 +200,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { std::ptr::write_bytes(b as *mut u8, 3u8, ((n as i64) as u64) as usize) };
 // CHECK-NEXT:     unsafe { std::ptr::write_bytes(c as *mut u8, 4u8, ((n as i64) as u64) as usize) };
 // CHECK-NEXT:     ok
-// CHECK-NEXT:         * (((unsafe { *small.offset(2 as isize) }) as i32)
+// CHECK-NEXT:         * (((unsafe { *small.add(2) }) as i32)
 // CHECK-NEXT:             + ((unsafe { *a.offset((n - 1) as isize) }) as i32)
 // CHECK-NEXT:             + ((unsafe { *b.offset((n - 1) as isize) }) as i32)
 // CHECK-NEXT:             + ((unsafe { *c.offset((n - 1) as isize) }) as i32))
@@ -232,7 +232,7 @@ int main(void) {
 // CHECK-NEXT:         ) as *mut ()) as *mut u8;
 // CHECK-NEXT:         unsafe { std::ptr::write_bytes(p as *mut u8, 5u8, 1100000 as usize) };
 // CHECK-NEXT:         let [[V_8:__v[0-9]+]]: i32 = aligned_to(p as *mut (), 256u64)
-// CHECK-NEXT:             * (((unsafe { *p.offset(1099999 as isize) }) as u32) as i32);
+// CHECK-NEXT:             * (((unsafe { *p.add(1099999) }) as u32) as i32);
 // CHECK-NEXT:         total += [[V_8]] as i64;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total

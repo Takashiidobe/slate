@@ -57,9 +57,7 @@ int main(void) {
 // CHECK-NEXT: static mut flags: [u32; 1] = [2];
 // CHECK-NEXT: static mut calls: i32 = 0;
 // CHECK-NEXT: fn mark() -> u32 {
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: *mut u32 = unsafe {
-// CHECK-NEXT:         (std::ptr::addr_of_mut!(flags) as *mut u32).offset(0 as isize)
-// CHECK-NEXT:     };
+// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: *mut u32 = unsafe { (std::ptr::addr_of_mut!(flags) as *mut u32).add(0) };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *[[V_1]] = *[[V_1]] | 128;
 // CHECK-NEXT:     }
@@ -69,7 +67,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         calls = calls + 1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { p.offset(1 as isize) }
+// CHECK-NEXT:     unsafe { p.add(1) }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut self_: node = unsafe { std::mem::zeroed() };
@@ -86,13 +84,13 @@ int main(void) {
 // CHECK-NEXT:         {
 // CHECK-NEXT:             let mut [[T_1:__t[0-9]+]]: node = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:             [[T_1]].value = 1i32;
-// CHECK-NEXT:             [[T_1]].next = unsafe { (ring.0.as_mut_ptr() as *mut node).offset(1 as isize) };
+// CHECK-NEXT:             [[T_1]].next = unsafe { (ring.0.as_mut_ptr() as *mut node).add(1) };
 // CHECK-NEXT:             [[T_1]]
 // CHECK-NEXT:         },
 // CHECK-NEXT:         {
 // CHECK-NEXT:             let mut [[T_2:__t[0-9]+]]: node = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:             [[T_2]].value = 2i32;
-// CHECK-NEXT:             [[T_2]].next = unsafe { (ring.0.as_mut_ptr() as *mut node).offset(0 as isize) };
+// CHECK-NEXT:             [[T_2]].next = unsafe { (ring.0.as_mut_ptr() as *mut node).add(0) };
 // CHECK-NEXT:             [[T_2]]
 // CHECK-NEXT:         },
 // CHECK-NEXT:     ];
@@ -101,9 +99,7 @@ int main(void) {
 // CHECK-NEXT:         ring.0[0].next).value }, unsafe { (* ring.0[1].next).value }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let [[V_2:__v[0-9]+]]: u32 = mark();
-// CHECK-NEXT:     let [[V_3:__v[0-9]+]]: *mut u32 = unsafe {
-// CHECK-NEXT:         (std::ptr::addr_of_mut!(flags) as *mut u32).offset(0 as isize)
-// CHECK-NEXT:     };
+// CHECK-NEXT:     let [[V_3:__v[0-9]+]]: *mut u32 = unsafe { (std::ptr::addr_of_mut!(flags) as *mut u32).add(0) };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *[[V_3]] = *[[V_3]] | [[V_2]];
 // CHECK-NEXT:     }
@@ -118,7 +114,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     i += 1;
 // CHECK-NEXT:     let [[V_4:__v[0-9]+]]: *mut i32 = p;
-// CHECK-NEXT:     p = unsafe { [[V_4]].offset(1 as isize) };
+// CHECK-NEXT:     p = unsafe { [[V_4]].add(1) };
 // CHECK-NEXT:     println!("{} {} {}", unsafe { calls }, i, unsafe { * p });
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

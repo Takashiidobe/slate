@@ -48,8 +48,8 @@ int main(void) {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%zu %d %d\n".as_ptr(),
 // CHECK-NEXT:             wcslen(greeting),
-// CHECK-NEXT:             *unsafe { greeting }.offset(5 as isize),
-// CHECK-NEXT:             *unsafe { greeting }.offset(10 as isize),
+// CHECK-NEXT:             *unsafe { greeting }.add(5),
+// CHECK-NEXT:             *unsafe { greeting }.add(10),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -57,10 +57,10 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%x %x %x %x\n".as_ptr(),
-// CHECK-NEXT:             (*u16.offset(0 as isize) as u32) as i32,
-// CHECK-NEXT:             (*u16.offset(2 as isize) as u32) as i32,
-// CHECK-NEXT:             *u32.offset(0 as isize),
-// CHECK-NEXT:             *u32.offset(1 as isize),
+// CHECK-NEXT:             (*u16.add(0) as u32) as i32,
+// CHECK-NEXT:             (*u16.add(2) as u32) as i32,
+// CHECK-NEXT:             *u32.add(0),
+// CHECK-NEXT:             *u32.add(1),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -69,8 +69,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {}", unsafe { __slate_str26[1] }, (unsafe { *
-// CHECK-NEXT:         ((std::ptr::addr_of_mut!(__slate_str27) as * mut i32) as * const i8).offset(4 as
-// CHECK-NEXT:         isize) }) as i32
+// CHECK-NEXT:         ((std::ptr::addr_of_mut!(__slate_str27) as * mut i32) as * const i8).add(4) }) as
+// CHECK-NEXT:         i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

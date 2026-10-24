@@ -62,10 +62,10 @@ int main(void) {
 // CHECK-NEXT:     suite.tests = (unsafe { malloc(16u64) })
 // CHECK-NEXT:         as *mut Option<unsafe extern "C-unwind" fn()>;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *suite.tests.offset(0 as isize) = Some(test_a);
+// CHECK-NEXT:         *suite.tests.add(0) = Some(test_a);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *suite.tests.offset(1 as isize) = Some(test_b);
+// CHECK-NEXT:         *suite.tests.add(1) = Some(test_b);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     suite.ntests = 2;
 // CHECK-NEXT:     let mut i: i32 = 0;

@@ -85,16 +85,15 @@ int main(void) {
 // CHECK-NEXT:         (*[[V_0]]).x = (*[[V_0]]).x + 10;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *unsafe { primes }.offset(3 as isize) = 11;
+// CHECK-NEXT:         *unsafe { primes }.add(3) = 11;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {}", unsafe { (* origin).x }, unsafe { (* origin).y }, unsafe { *
-// CHECK-NEXT:         unsafe { primes } .offset(3 as isize) }, sum((unsafe { primes }) as * const i32,
-// CHECK-NEXT:         4i32)
+// CHECK-NEXT:         unsafe { primes } .add(3) }, sum((unsafe { primes }) as * const i32, 4i32)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {}", unsafe { (* pair.first).x }, unsafe { (* pair.first).y }, unsafe { *
-// CHECK-NEXT:         unsafe { pair.values } .offset(1 as isize) }
+// CHECK-NEXT:         unsafe { pair.values } .add(1) }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let mut i: i32 = 0;
 // CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: while i < 3 {

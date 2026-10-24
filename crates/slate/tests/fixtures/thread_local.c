@@ -58,10 +58,7 @@ int main(void) {
 // CHECK-NEXT: static mut block_value: i32 = 7;
 // CHECK-NEXT: extern "C-unwind" fn worker(argument: *mut ()) -> i32 {
 // CHECK-NEXT:     let values: *mut i32 = argument as *mut i32;
-// CHECK-NEXT:     update_values(
-// CHECK-NEXT:         unsafe { *values.offset(0 as isize) },
-// CHECK-NEXT:         unsafe { *values.offset(1 as isize) },
-// CHECK-NEXT:     )
+// CHECK-NEXT:     update_values(unsafe { *values.add(0) }, unsafe { *values.add(1) })
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut thread: u64 = 0;

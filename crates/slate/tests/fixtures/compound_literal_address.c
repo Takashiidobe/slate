@@ -52,9 +52,9 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%c %lu %c %lu\n".as_ptr(),
-// CHECK-NEXT:             *first.data.offset(0 as isize) as i32,
+// CHECK-NEXT:             *first.data.add(0) as i32,
 // CHECK-NEXT:             first.length,
-// CHECK-NEXT:             *second.data.offset(0 as isize) as i32,
+// CHECK-NEXT:             *second.data.add(0) as i32,
 // CHECK-NEXT:             second.length,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };

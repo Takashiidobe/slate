@@ -17,6 +17,7 @@ mod null_compare;
 mod param_spills;
 mod pattern_range;
 mod peel_casts;
+mod ptr_offset;
 mod pure_stmts;
 mod raw_ptr_alias;
 mod remove_mut;
@@ -68,6 +69,7 @@ pub(super) fn registry(target: &slate_parser::target_info::TargetInfo) -> Vec<Bo
         Box::new(peel_casts::PeelCasts),
         Box::new(constant_index_casts::ConstantIndexCasts),
         Box::new(null_compare::NullCompare),
+        Box::new(ptr_offset::PtrOffset),
         Box::new(pattern_range::MatchRangeFold),
         Box::new(cstr_literal::CStrLiteral {
             c_char: if target.char_signed {

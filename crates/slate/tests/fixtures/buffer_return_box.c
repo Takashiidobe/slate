@@ -84,9 +84,8 @@ int main(void) {
 // CHECK-NEXT:     let raw: *mut i32 = make_raw(2i32);
 // CHECK-NEXT:     let raw2: *mut i32 = make_raw(2i32);
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {} {} {}", unsafe { * q.offset(3 as isize) }, unsafe { * r.offset(7 as
-// CHECK-NEXT:         isize) }, ! m.is_null() as i32, ! a.is_null() as i32, read_first(raw), unsafe { *
-// CHECK-NEXT:         raw2.offset(1 as isize) }
+// CHECK-NEXT:         "{} {} {} {} {} {}", unsafe { * q.add(3) }, unsafe { * r.add(7) }, ! m.is_null()
+// CHECK-NEXT:         as i32, ! a.is_null() as i32, read_first(raw), unsafe { * raw2.add(1) }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe { free(q as *mut ()) };
 // CHECK-NEXT:     unsafe { free(r as *mut ()) };

@@ -63,17 +63,17 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     buf.start = storage.0.as_mut_ptr() as *mut i32;
 // CHECK-NEXT:     buf.pointer = storage.0.as_mut_ptr() as *mut i32;
-// CHECK-NEXT:     buf.end = unsafe { (storage.0.as_mut_ptr() as *mut i32).offset(4 as isize) };
+// CHECK-NEXT:     buf.end = unsafe { (storage.0.as_mut_ptr() as *mut i32).add(4) };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *buf.pointer = point.x + point.y;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut i32 = buf.pointer;
-// CHECK-NEXT:     buf.pointer = unsafe { [[V_0]].offset(1 as isize) };
+// CHECK-NEXT:     buf.pointer = unsafe { [[V_0]].add(1) };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *buf.pointer = point.x * point.y;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: *mut i32 = buf.pointer;
-// CHECK-NEXT:     buf.pointer = unsafe { [[V_1]].offset(1 as isize) };
+// CHECK-NEXT:     buf.pointer = unsafe { [[V_1]].add(1) };
 // CHECK-NEXT:     println!("{} {}", storage.0[0], storage.0[1]);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(c"%ld\n".as_ptr(), buf.pointer.offset_from(buf.start as *mut i32) as i64)

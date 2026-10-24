@@ -91,19 +91,19 @@ int main(void) {
 // CHECK-NEXT: extern "C-unwind" fn worker(argument: *mut ()) -> *mut () {
 // CHECK-NEXT:     let out: *mut i64 = argument as *mut i64;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *out.offset(0 as isize) = thread_index;
+// CHECK-NEXT:         *out.add(0) = thread_index;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         thread_index = 42;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *out.offset(1 as isize) = unsafe { reusable_buffer }.is_null() as i64;
+// CHECK-NEXT:         *out.add(1) = unsafe { reusable_buffer }.is_null() as i64;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *out.offset(2 as isize) = reusable_used as i64;
+// CHECK-NEXT:         *out.add(2) = reusable_used as i64;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *out.offset(3 as isize) = detect() as i64;
+// CHECK-NEXT:         *out.add(3) = detect() as i64;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     std::ptr::null_mut::<()>()
 // CHECK-NEXT: }

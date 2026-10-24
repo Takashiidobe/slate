@@ -150,10 +150,8 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
-// CHECK-NEXT:         += (unsafe { *values.offset(0 as isize) })
-// CHECK-NEXT:             + unsafe { *values.offset(1 as isize) }
-// CHECK-NEXT:             + unsafe { *values.offset(2 as isize) }
-// CHECK-NEXT:             + unsafe { *values.offset(3 as isize) };
+// CHECK-NEXT:         += (unsafe { *values.add(0) }) + unsafe { *values.add(1) }
+// CHECK-NEXT:             + unsafe { *values.add(2) } + unsafe { *values.add(3) };
 // CHECK-NEXT:     let [[V_9:__v[0-9]+]]: i32 = ((unsafe { malloc_usable_size(values as *mut ()) }) >= 16u64)
 // CHECK-NEXT:         as i32;
 // CHECK-NEXT:     total += [[V_9]];
@@ -208,9 +206,8 @@ int main(void) {
 // CHECK-NEXT:         let __h: *mut obstack = std::ptr::addr_of_mut!(storage);
 // CHECK-NEXT:         let __o: *mut obstack = __h;
 // CHECK-NEXT:         let __len: i32 = 3;
-// CHECK-NEXT:         if (unsafe {
-// CHECK-NEXT:             unsafe { (*__o).next_free }.offset(__len as isize).offset(1 as isize)
-// CHECK-NEXT:         }) > unsafe { (*__o).chunk_limit }
+// CHECK-NEXT:         if (unsafe { unsafe { (*__o).next_free }.offset(__len as isize).add(1) })
+// CHECK-NEXT:             > unsafe { (*__o).chunk_limit }
 // CHECK-NEXT:         {
 // CHECK-NEXT:             unsafe { _obstack_newchunk(__o, __len + 1) };
 // CHECK-NEXT:         }
@@ -227,7 +224,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:         let [[V_17:__v[0-9]+]]: *mut i8 = unsafe { (*__o).next_free };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             (*__o).next_free = [[V_17]].offset(1 as isize);
+// CHECK-NEXT:             (*__o).next_free = [[V_17]].add(1);
 // CHECK-NEXT:         }
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *[[V_17]] = 0;
@@ -281,9 +278,8 @@ int main(void) {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let __o: *mut obstack = __h;
 // CHECK-NEXT:         let __len: i32 = 4;
-// CHECK-NEXT:         if (unsafe {
-// CHECK-NEXT:             unsafe { (*__o).next_free }.offset(__len as isize).offset(1 as isize)
-// CHECK-NEXT:         }) > unsafe { (*__o).chunk_limit }
+// CHECK-NEXT:         if (unsafe { unsafe { (*__o).next_free }.offset(__len as isize).add(1) })
+// CHECK-NEXT:             > unsafe { (*__o).chunk_limit }
 // CHECK-NEXT:         {
 // CHECK-NEXT:             unsafe { _obstack_newchunk(__o, __len + 1) };
 // CHECK-NEXT:         }
@@ -300,7 +296,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:         let [[V_21:__v[0-9]+]]: *mut i8 = unsafe { (*__o).next_free };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             (*__o).next_free = [[V_21]].offset(1 as isize);
+// CHECK-NEXT:             (*__o).next_free = [[V_21]].add(1);
 // CHECK-NEXT:         }
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *[[V_21]] = 0;

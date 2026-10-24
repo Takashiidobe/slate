@@ -87,7 +87,7 @@ int main(void) {
 // CHECK-NEXT:     let mut p: *mut i32 = std::ptr::addr_of_mut!(x);
 // CHECK-NEXT:     let mut y: i32 = 4;
 // CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: *mut i32 = p;
-// CHECK-NEXT:     p = unsafe { [[V_0]].offset(1 as isize) };
+// CHECK-NEXT:     p = unsafe { [[V_0]].add(1) };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u32;
 // CHECK-NEXT:         core::arch::asm!(

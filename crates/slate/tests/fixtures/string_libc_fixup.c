@@ -90,7 +90,7 @@ int main(void) {
 // CHECK-NEXT:             c"%c %c %d %d %d %d %zu %zu\n".as_ptr(),
 // CHECK-NEXT:             *first as i32,
 // CHECK-NEXT:             *last as i32,
-// CHECK-NEXT:             (last == first.offset(4 as isize)) as i32,
+// CHECK-NEXT:             (last == first.add(4)) as i32,
 // CHECK-NEXT:             !strstr(hay.as_mut_ptr() as *const i8, sub.as_mut_ptr() as *const i8)
 // CHECK-NEXT:                 .is_null() as i32,
 // CHECK-NEXT:             !strstr(hay.as_mut_ptr() as *const i8, empty.as_mut_ptr() as *const i8)

@@ -610,7 +610,7 @@ int main(void) {
 // CHECK-NEXT:             .fetch_update(
 // CHECK-NEXT:                 std::sync::atomic::Ordering::SeqCst,
 // CHECK-NEXT:                 std::sync::atomic::Ordering::SeqCst,
-// CHECK-NEXT:                 |[[T_44:__t[0-9]+]]| Some(([[T_44]] as *mut i32).offset(1 as isize) as *mut i32),
+// CHECK-NEXT:                 |[[T_44:__t[0-9]+]]| Some(([[T_44]] as *mut i32).add(1) as *mut i32),
 // CHECK-NEXT:             )
 // CHECK-NEXT:             .unwrap_or_else(|[[T_44]]| [[T_44]]);
 // CHECK-NEXT:         [[T_43]] as *mut i32
@@ -622,10 +622,10 @@ int main(void) {
 // CHECK-NEXT:             .fetch_update(
 // CHECK-NEXT:                 std::sync::atomic::Ordering::SeqCst,
 // CHECK-NEXT:                 std::sync::atomic::Ordering::SeqCst,
-// CHECK-NEXT:                 |[[T_46:__t[0-9]+]]| Some(([[T_46]] as *mut i32).offset(1 as isize) as *mut i32),
+// CHECK-NEXT:                 |[[T_46:__t[0-9]+]]| Some(([[T_46]] as *mut i32).add(1) as *mut i32),
 // CHECK-NEXT:             )
 // CHECK-NEXT:             .unwrap_or_else(|[[T_46]]| [[T_46]]);
-// CHECK-NEXT:         ([[T_45]] as *mut i32).offset(1 as isize)
+// CHECK-NEXT:         ([[T_45]] as *mut i32).add(1)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_47:__t[0-9]+]] = std::sync::atomic::AtomicPtr::from_ptr(
@@ -634,7 +634,7 @@ int main(void) {
 // CHECK-NEXT:             .fetch_update(
 // CHECK-NEXT:                 std::sync::atomic::Ordering::SeqCst,
 // CHECK-NEXT:                 std::sync::atomic::Ordering::SeqCst,
-// CHECK-NEXT:                 |[[T_48:__t[0-9]+]]| Some(([[T_48]] as *mut i32).offset(1 as isize) as *mut i32),
+// CHECK-NEXT:                 |[[T_48:__t[0-9]+]]| Some(([[T_48]] as *mut i32).add(1) as *mut i32),
 // CHECK-NEXT:             )
 // CHECK-NEXT:             .unwrap_or_else(|[[T_48]]| [[T_48]]);
 // CHECK-NEXT:         [[T_47]] as *mut i32
@@ -646,7 +646,7 @@ int main(void) {
 // CHECK-NEXT:             .fetch_update(
 // CHECK-NEXT:                 std::sync::atomic::Ordering::SeqCst,
 // CHECK-NEXT:                 std::sync::atomic::Ordering::SeqCst,
-// CHECK-NEXT:                 |[[T_50:__t[0-9]+]]| Some(([[T_50]] as *mut i32).offset(-(1 as isize)) as *mut i32),
+// CHECK-NEXT:                 |[[T_50:__t[0-9]+]]| Some(([[T_50]] as *mut i32).sub(1) as *mut i32),
 // CHECK-NEXT:             )
 // CHECK-NEXT:             .unwrap_or_else(|[[T_50]]| [[T_50]]);
 // CHECK-NEXT:         [[T_49]] as *mut i32

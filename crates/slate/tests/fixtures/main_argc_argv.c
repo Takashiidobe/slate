@@ -22,10 +22,10 @@ int main(int argc, char **argv) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main(argc: i32, argv: *mut *mut i8) -> i32 {
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", argc, ! unsafe { * argv.offset(0 as isize) } .is_null() as i32,
-// CHECK-NEXT:         unsafe { * argv.offset(argc as isize) } .is_null() as i32
+// CHECK-NEXT:         "{} {} {}", argc, ! unsafe { * argv.add(0) } .is_null() as i32, unsafe { * argv
+// CHECK-NEXT:         .offset(argc as isize) } .is_null() as i32
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let length: u64 = unsafe { strlen(*argv.offset(0 as isize) as *const i8) };
+// CHECK-NEXT:     let length: u64 = unsafe { strlen(*argv.add(0) as *const i8) };
 // CHECK-NEXT:     println!("{}", (length > 0) as i32);
 // CHECK-NEXT:     for i in 1..argc {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());

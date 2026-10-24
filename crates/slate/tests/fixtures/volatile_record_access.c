@@ -92,13 +92,11 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::write_volatile(
-// CHECK-NEXT:             (state.counters.as_mut_ptr() as *mut u16).offset(2 as isize),
+// CHECK-NEXT:             (state.counters.as_mut_ptr() as *mut u16).add(2),
 // CHECK-NEXT:             100u16,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut u16 = unsafe {
-// CHECK-NEXT:         (state.counters.as_mut_ptr() as *mut u16).offset(2 as isize)
-// CHECK-NEXT:     };
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut u16 = unsafe { (state.counters.as_mut_ptr() as *mut u16).add(2) };
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: u16 = unsafe { std::ptr::read_volatile([[V_0]]) };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::write_volatile([[V_0]], (((([[V_1]] as u32) as i32) + 23) as i16) as u16)
@@ -116,9 +114,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     if (((unsafe {
-// CHECK-NEXT:         std::ptr::read_volatile(
-// CHECK-NEXT:             (state.counters.as_mut_ptr() as *mut u16).offset(2 as isize),
-// CHECK-NEXT:         )
+// CHECK-NEXT:         std::ptr::read_volatile((state.counters.as_mut_ptr() as *mut u16).add(2))
 // CHECK-NEXT:     }) as u32) as i32) != 123 || target != 11
 // CHECK-NEXT:         || (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(global)) }) != 26
 // CHECK-NEXT:         || (unsafe { calls }) != 1
@@ -135,9 +131,8 @@ int main(void) {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%d %u %d %d\n".as_ptr(),
 // CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(global)),
-// CHECK-NEXT:             (std::ptr::read_volatile(
-// CHECK-NEXT:                 (state.counters.as_mut_ptr() as *mut u16).offset(2 as isize),
-// CHECK-NEXT:             ) as u32) as i32,
+// CHECK-NEXT:             (std::ptr::read_volatile((state.counters.as_mut_ptr() as *mut u16).add(2))
+// CHECK-NEXT:                 as u32) as i32,
 // CHECK-NEXT:             target,
 // CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!((* all).before)),
 // CHECK-NEXT:         )

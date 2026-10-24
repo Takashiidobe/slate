@@ -126,15 +126,13 @@ int main(void) {
 // CHECK-NEXT:     for i in 0i32..3i32 {
 // CHECK-NEXT:         s += a[i as usize];
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *q.offset(2 as isize) = 10;
+// CHECK-NEXT:             *q.add(2) = 10;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     s
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn through_pointer(p: *const i32, t: &mut Tail) -> i32 {
-// CHECK-NEXT:     (unsafe { *p.offset(1 as isize) })
-// CHECK-NEXT:         + unsafe {
-// CHECK-NEXT:             *((*(t as *mut Tail)).data.as_mut_ptr() as *mut i32).offset(0 as isize)
-// CHECK-NEXT:         }
+// CHECK-NEXT:     (unsafe { *p.add(1) })
+// CHECK-NEXT:         + unsafe { *((*(t as *mut Tail)).data.as_mut_ptr() as *mut i32).add(0) }
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

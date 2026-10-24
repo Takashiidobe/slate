@@ -228,18 +228,18 @@ int main(void) {
 // CHECK-NEXT:     n: i32,
 // CHECK-NEXT: ) -> bitint::BInt<156, 3, 24, bitint::A8> {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let [[T_0:__t[0-9]+]] = (*p.offset(0 as isize))
+// CHECK-NEXT:         let [[T_0:__t[0-9]+]] = (*p.add(0))
 // CHECK-NEXT:             .__slate_bits_0
 // CHECK-NEXT:             .__get_a()
-// CHECK-NEXT:             .wrapping_add((*q.offset(0 as isize)).__slate_bits_0.__get_b());
-// CHECK-NEXT:         (*r.offset(0 as isize)).__slate_bits_0.__set_b([[T_0]]);
+// CHECK-NEXT:             .wrapping_add((*q.add(0)).__slate_bits_0.__get_b());
+// CHECK-NEXT:         (*r.add(0)).__slate_bits_0.__set_b([[T_0]]);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let [[T_1:__t[0-9]+]] = (*p.offset(1 as isize))
+// CHECK-NEXT:         let [[T_1:__t[0-9]+]] = (*p.add(1))
 // CHECK-NEXT:             .__slate_bits_0
 // CHECK-NEXT:             .__get_a()
-// CHECK-NEXT:             .wrapping_mul((*q.offset(1 as isize)).__slate_bits_0.__get_b());
-// CHECK-NEXT:         (*r.offset(1 as isize)).__slate_bits_0.__set_b([[T_1]]);
+// CHECK-NEXT:             .wrapping_mul((*q.add(1)).__slate_bits_0.__get_b());
+// CHECK-NEXT:         (*r.add(1)).__slate_bits_0.__set_b([[T_1]]);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_2:__t[0-9]+]] = <bitint::BInt<
@@ -248,12 +248,12 @@ int main(void) {
 // CHECK-NEXT:             24,
 // CHECK-NEXT:             bitint::A8,
 // CHECK-NEXT:         >>::from_u128(
-// CHECK-NEXT:             ((*p.offset(2 as isize))
+// CHECK-NEXT:             ((*p.add(2))
 // CHECK-NEXT:                 .__slate_bits_0
 // CHECK-NEXT:                 .__get_a()
-// CHECK-NEXT:                 .compare((*q.offset(2 as isize)).__slate_bits_0.__get_b()) == 0) as u128,
+// CHECK-NEXT:                 .compare((*q.add(2)).__slate_bits_0.__get_b()) == 0) as u128,
 // CHECK-NEXT:         );
-// CHECK-NEXT:         (*r.offset(2 as isize)).__slate_bits_0.__set_a([[T_2]]);
+// CHECK-NEXT:         (*r.add(2)).__slate_bits_0.__set_a([[T_2]]);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_3:__t[0-9]+]] = <bitint::BInt<
@@ -262,16 +262,16 @@ int main(void) {
 // CHECK-NEXT:             24,
 // CHECK-NEXT:             bitint::A8,
 // CHECK-NEXT:         >>::from_u128(
-// CHECK-NEXT:             ((*p.offset(3 as isize))
+// CHECK-NEXT:             ((*p.add(3))
 // CHECK-NEXT:                 .__slate_bits_0
 // CHECK-NEXT:                 .__get_a()
-// CHECK-NEXT:                 .compare((*q.offset(3 as isize)).__slate_bits_0.__get_b()) < 0) as u128,
+// CHECK-NEXT:                 .compare((*q.add(3)).__slate_bits_0.__get_b()) < 0) as u128,
 // CHECK-NEXT:         );
-// CHECK-NEXT:         (*r.offset(3 as isize)).__slate_bits_0.__set_a([[T_3]]);
+// CHECK-NEXT:         (*r.add(3)).__slate_bits_0.__set_a([[T_3]]);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let [[T_4:__t[0-9]+]] = (*p.offset(4 as isize)).__slate_bits_0.__get_a().shl_bits(n as usize);
-// CHECK-NEXT:         (*r.offset(4 as isize)).__slate_bits_0.__set_b([[T_4]]);
+// CHECK-NEXT:         let [[T_4:__t[0-9]+]] = (*p.add(4)).__slate_bits_0.__get_a().shl_bits(n as usize);
+// CHECK-NEXT:         (*r.add(4)).__slate_bits_0.__set_b([[T_4]]);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     return <bitint::BInt<
 // CHECK-NEXT:         156,
@@ -279,8 +279,8 @@ int main(void) {
 // CHECK-NEXT:         24,
 // CHECK-NEXT:         bitint::A8,
 // CHECK-NEXT:     >>::from_buint(
-// CHECK-NEXT:         unsafe { (*p.offset(5 as isize)).__slate_bits_0.__get_a() }
-// CHECK-NEXT:             .wrapping_add(unsafe { (*q.offset(5 as isize)).__slate_bits_0.__get_b() }),
+// CHECK-NEXT:         unsafe { (*p.add(5)).__slate_bits_0.__get_a() }
+// CHECK-NEXT:             .wrapping_add(unsafe { (*q.add(5)).__slate_bits_0.__get_b() }),
 // CHECK-NEXT:     );
 // CHECK-NEXT: }
 // CHECK-NEXT: fn dump(m: &mut Mixed) {

@@ -39,18 +39,14 @@ int main(int argc, char **argv, char **envp) {
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: fn __slate_main(argc: i32, argv: *mut *mut i8, envp: *mut *mut i8) -> i32 {
 // CHECK-NEXT:     println!("envp {} argc {}", (envp == unsafe { environ }) as i32, argc);
-// CHECK-NEXT:     let len: u64 = unsafe { strlen(*argv.offset(0 as isize) as *const i8) };
+// CHECK-NEXT:     let len: u64 = unsafe { strlen(*argv.add(0) as *const i8) };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::ptr::write_bytes(
-// CHECK-NEXT:             (*argv.offset(0 as isize) as *mut ()) as *mut u8,
-// CHECK-NEXT:             0u8,
-// CHECK-NEXT:             len as usize,
-// CHECK-NEXT:         )
+// CHECK-NEXT:         std::ptr::write_bytes((*argv.add(0) as *mut ()) as *mut u8, 0u8, len as usize)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::copy_nonoverlapping(
 // CHECK-NEXT:             c"renamed".as_ptr() as *const u8,
-// CHECK-NEXT:             (*argv.offset(0 as isize) as *mut ()) as *mut u8,
+// CHECK-NEXT:             (*argv.add(0) as *mut ()) as *mut u8,
 // CHECK-NEXT:             (if len < 7 { len } else { 7u64 }) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -68,9 +64,9 @@ int main(int argc, char **argv, char **envp) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "environ after argv {}", (unsafe { * unsafe { environ } .offset(0 as isize) }
-// CHECK-NEXT:         .is_null() || (unsafe { * unsafe { environ } .offset(0 as isize) }) > unsafe { *
-// CHECK-NEXT:         argv.offset((argc - 1) as isize) }) as i32
+// CHECK-NEXT:         "environ after argv {}", (unsafe { * unsafe { environ } .add(0) } .is_null() ||
+// CHECK-NEXT:         (unsafe { * unsafe { environ } .add(0) }) > unsafe { * argv.offset((argc - 1) as
+// CHECK-NEXT:         isize) }) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

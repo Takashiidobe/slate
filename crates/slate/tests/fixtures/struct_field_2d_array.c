@@ -82,19 +82,19 @@ int main(void) {
 // CHECK-NEXT:             *((*((*(t as *mut table)).rows.as_mut_ptr() as *mut [i8; 3])
 // CHECK-NEXT:                 .offset(i as isize))
 // CHECK-NEXT:                 .as_mut_ptr() as *mut i8)
-// CHECK-NEXT:                 .offset(0 as isize) = (97 + i) as i8;
+// CHECK-NEXT:                 .add(0) = (97 + i) as i8;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *((*((*(t as *mut table)).rows.as_mut_ptr() as *mut [i8; 3])
 // CHECK-NEXT:                 .offset(i as isize))
 // CHECK-NEXT:                 .as_mut_ptr() as *mut i8)
-// CHECK-NEXT:                 .offset(1 as isize) = (48 + i) as i8;
+// CHECK-NEXT:                 .add(1) = (48 + i) as i8;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *((*((*(t as *mut table)).rows.as_mut_ptr() as *mut [i8; 3])
 // CHECK-NEXT:                 .offset(i as isize))
 // CHECK-NEXT:                 .as_mut_ptr() as *mut i8)
-// CHECK-NEXT:                 .offset(2 as isize) = 0;
+// CHECK-NEXT:                 .add(2) = 0;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
@@ -103,8 +103,7 @@ int main(void) {
 // CHECK-NEXT:         (*(t as *mut table)).rows.as_mut_ptr() as *mut [i8; 3]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *((*row.offset(i as isize).offset(0 as isize)).as_mut_ptr() as *mut i8)
-// CHECK-NEXT:             .offset(0 as isize) = 88;
+// CHECK-NEXT:         *((*row.offset(i as isize).add(0)).as_mut_ptr() as *mut i8).add(0) = 88;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn fill_cube(c: &mut cube) {
@@ -125,8 +124,8 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn sum_cube_via_ptr(c: &mut cube) -> i32 {
 // CHECK-NEXT:     let plane: *mut [i32; 4] = unsafe {
-// CHECK-NEXT:         (*((*(c as *mut cube)).v.as_mut_ptr() as *mut {{\[\[}}i32; 4]; 3]).offset(1 as isize))
-// CHECK-NEXT:             .as_mut_ptr() as *mut [i32; 4]
+// CHECK-NEXT:         (*((*(c as *mut cube)).v.as_mut_ptr() as *mut {{\[\[}}i32; 4]; 3]).add(1)).as_mut_ptr()
+// CHECK-NEXT:             as *mut [i32; 4]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     for j in 0i32..3i32 {
@@ -134,8 +133,7 @@ int main(void) {
 // CHECK-NEXT:             let [[V_0:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:             total = [[V_0]]
 // CHECK-NEXT:                 + unsafe {
-// CHECK-NEXT:                     *((*plane.offset(j as isize).offset(0 as isize)).as_mut_ptr()
-// CHECK-NEXT:                         as *mut i32)
+// CHECK-NEXT:                     *((*plane.offset(j as isize).add(0)).as_mut_ptr() as *mut i32)
 // CHECK-NEXT:                         .offset(k as isize)
 // CHECK-NEXT:                 };
 // CHECK-NEXT:         }

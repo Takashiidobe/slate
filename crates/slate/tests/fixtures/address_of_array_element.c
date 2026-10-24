@@ -23,15 +23,13 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn read_array_element_through_call() -> i32 {
 // CHECK-NEXT:     let mut values: [i32; 1] = [10];
-// CHECK-NEXT:     let pointer: *mut i32 = unsafe {
-// CHECK-NEXT:         (values.as_mut_ptr() as *mut i32).offset(0 as isize)
-// CHECK-NEXT:     };
+// CHECK-NEXT:     let pointer: *mut i32 = unsafe { (values.as_mut_ptr() as *mut i32).add(0) };
 // CHECK-NEXT:     read_pointer(pointer)
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 4]> = __SlateAlign16([2i32, 4i32, 6i32, 8i32]);
-// CHECK-NEXT:     let p: *mut i32 = unsafe { (values.0.as_mut_ptr() as *mut i32).offset(1 as isize) };
-// CHECK-NEXT:     let q: *mut i32 = unsafe { (values.0.as_mut_ptr() as *mut i32).offset(3 as isize) };
+// CHECK-NEXT:     let p: *mut i32 = unsafe { (values.0.as_mut_ptr() as *mut i32).add(1) };
+// CHECK-NEXT:     let q: *mut i32 = unsafe { (values.0.as_mut_ptr() as *mut i32).add(3) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(

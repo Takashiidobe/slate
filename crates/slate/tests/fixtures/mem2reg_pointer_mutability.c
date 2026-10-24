@@ -24,7 +24,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn set_cell(row: &mut Row) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *((*(row as *mut Row)).cells.as_mut_ptr() as *mut i32).offset(1 as isize) = 9;
+// CHECK-NEXT:         *((*(row as *mut Row)).cells.as_mut_ptr() as *mut i32).add(1) = 9;
 // CHECK-NEXT:     }
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

@@ -46,21 +46,21 @@ int main(void) {
 // CHECK-NEXT:     unsafe { calloc(count, size) }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn offset_aligned(pointer: *mut ()) -> *mut () {
-// CHECK-NEXT:     (unsafe { (pointer as *mut i8).offset(4 as isize) }) as *mut ()
+// CHECK-NEXT:     (unsafe { (pointer as *mut i8).add(4) }) as *mut ()
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let values: *mut i32 = allocate(12u64, 4u64) as *mut i32;
 // CHECK-NEXT:     let zeroed: *mut i32 = allocate_array(2u64, 4u64) as *mut i32;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *values.offset(0 as isize) = 7;
+// CHECK-NEXT:         *values.add(0) = 7;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *values.offset(1 as isize) = 9;
+// CHECK-NEXT:         *values.add(1) = 9;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let second: *mut i32 = offset_aligned(values as *mut ()) as *mut i32;
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", unsafe { * values.offset(0 as isize) }, unsafe { * second }, unsafe {
-// CHECK-NEXT:         * zeroed.offset(1 as isize) }
+// CHECK-NEXT:         "{} {} {}", unsafe { * values.add(0) }, unsafe { * second }, unsafe { * zeroed
+// CHECK-NEXT:         .add(1) }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe { free(zeroed as *mut ()) };
 // CHECK-NEXT:     unsafe { free(values as *mut ()) };

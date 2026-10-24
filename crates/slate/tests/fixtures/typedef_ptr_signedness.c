@@ -36,14 +36,14 @@ int main(void) {
 // CHECK-NEXT:     let mut data: [u8; 4] = [65, 66, 67, 0];
 // CHECK-NEXT:     let mut b: buffer = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     b.start = data.as_mut_ptr() as *mut u8;
-// CHECK-NEXT:     b.end = unsafe { (data.as_mut_ptr() as *mut u8).offset(3 as isize) };
+// CHECK-NEXT:     b.end = unsafe { (data.as_mut_ptr() as *mut u8).add(3) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%c%c%c\n".as_ptr(),
-// CHECK-NEXT:             (*b.start.offset(0 as isize) as u32) as i32,
-// CHECK-NEXT:             (*b.start.offset(1 as isize) as u32) as i32,
-// CHECK-NEXT:             (*b.start.offset(2 as isize) as u32) as i32,
+// CHECK-NEXT:             (*b.start.add(0) as u32) as i32,
+// CHECK-NEXT:             (*b.start.add(1) as u32) as i32,
+// CHECK-NEXT:             (*b.start.add(2) as u32) as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

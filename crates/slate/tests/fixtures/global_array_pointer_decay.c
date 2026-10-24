@@ -31,16 +31,15 @@ int main(void) {
 // CHECK-NEXT: static mut values: [u32; 3] = [1, 2, 3];
 // CHECK-NEXT: static mut aligned_values: __SlateAlign32<[u32; 3]> = __SlateAlign32([4u32, 5u32, 6u32]);
 // CHECK-NEXT: fn update(items: *mut u32) -> u32 {
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut u32 = unsafe { items.offset(0 as isize) };
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut u32 = unsafe { items.add(0) };
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: u32 = unsafe { *[[V_0]] };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *[[V_0]] = [[V_1]].wrapping_add(10);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { *items.offset(0 as isize) }
-// CHECK-NEXT:         .wrapping_add(unsafe { *items.offset(2 as isize) })
+// CHECK-NEXT:     unsafe { *items.add(0) }.wrapping_add(unsafe { *items.add(2) })
 // CHECK-NEXT: }
 // CHECK-NEXT: fn middle(items: *mut [u32; 3]) -> u32 {
-// CHECK-NEXT:     unsafe { *((*items).as_mut_ptr() as *mut u32).offset(1 as isize) }
+// CHECK-NEXT:     unsafe { *((*items).as_mut_ptr() as *mut u32).add(1) }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let first: u32 = update(unsafe { std::ptr::addr_of_mut!(values) as *mut u32 });

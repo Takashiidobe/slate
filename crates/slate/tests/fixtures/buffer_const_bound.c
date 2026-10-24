@@ -67,13 +67,13 @@ int main(void) {
 // CHECK-NEXT:     });
 // CHECK-NEXT:     let m: *mut i32 = (unsafe { malloc(12u64) }) as *mut i32;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *m.offset(0 as isize) = 5;
+// CHECK-NEXT:         *m.add(0) = 5;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *m.offset(1 as isize) = 6;
+// CHECK-NEXT:         *m.add(1) = 6;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *m.offset(2 as isize) = 7;
+// CHECK-NEXT:         *m.add(2) = 7;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let r2: i32 = sum3(unsafe { std::slice::from_raw_parts(m as *const i32, 3usize) });
 // CHECK-NEXT:     unsafe { free(m as *mut ()) };

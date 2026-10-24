@@ -92,7 +92,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         calls = calls + 10;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { (std::ptr::addr_of_mut!(slots.0) as *mut i32).offset(2 as isize) }
+// CHECK-NEXT:     unsafe { (std::ptr::addr_of_mut!(slots.0) as *mut i32).add(2) }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn produce() -> i32 {
 // CHECK-NEXT:     unsafe {
@@ -145,7 +145,7 @@ int main(void) {
 // CHECK-NEXT:     let mut length: i32 = 0;
 // CHECK-NEXT:     loop {
 // CHECK-NEXT:         let [[V_6:__v[0-9]+]]: *const i8 = cursor;
-// CHECK-NEXT:         cursor = unsafe { [[V_6]].offset(1 as isize) };
+// CHECK-NEXT:         cursor = unsafe { [[V_6]].add(1) };
 // CHECK-NEXT:         let [[V_7:__v[0-9]+]]: i8 = unsafe { *[[V_6]] };
 // CHECK-NEXT:         ch = [[V_7]];
 // CHECK-NEXT:         if !([[V_7]] != 0) {
@@ -162,7 +162,7 @@ int main(void) {
 // CHECK-NEXT:     let mut i: i32 = 1;
 // CHECK-NEXT:     while i <= 3 {
 // CHECK-NEXT:         let [[V_8:__v[0-9]+]]: *mut i32 = out;
-// CHECK-NEXT:         out = unsafe { [[V_8]].offset(1 as isize) };
+// CHECK-NEXT:         out = unsafe { [[V_8]].add(1) };
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *[[V_8]] = i * i;
 // CHECK-NEXT:         }

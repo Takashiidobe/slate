@@ -551,10 +551,10 @@ int main(void) {
 // CHECK-NEXT:         as i32, signed_character as i32, float_value as i32, double_value as i32,
 // CHECK-NEXT:         __slate_f80_to_i32(long_double_value), wide_character, color as u32, point.x +
 // CHECK-NEXT:         point.y, bits.__slate_bits_0.__get_low() as i32, bits.__slate_bits_0
-// CHECK-NEXT:         .__get_high(), unsafe { number.integer }, (unsafe { * const_pointer.offset(0 as
-// CHECK-NEXT:         isize) }) + unsafe { * const_pointer.offset(3 as isize) }, copied_value, unsafe {
-// CHECK-NEXT:         operation.unwrap() (53i32, 6i32) }, arithmetic, bitwise, logical, conditional,
-// CHECK-NEXT:         comma_value, string_length, static_calls, variadic_total + control_total
+// CHECK-NEXT:         .__get_high(), unsafe { number.integer }, (unsafe { * const_pointer.add(0) }) +
+// CHECK-NEXT:         unsafe { * const_pointer.add(3) }, copied_value, unsafe { operation.unwrap()
+// CHECK-NEXT:         (53i32, 6i32) }, arithmetic, bitwise, logical, conditional, comma_value,
+// CHECK-NEXT:         string_length, static_calls, variadic_total + control_total
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

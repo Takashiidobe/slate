@@ -62,7 +62,7 @@ int main(void) {
 // CHECK-NEXT:             .fetch_update(
 // CHECK-NEXT:                 std::sync::atomic::Ordering::AcqRel,
 // CHECK-NEXT:                 std::sync::atomic::Ordering::Acquire,
-// CHECK-NEXT:                 |[[T_3:__t[0-9]+]]| Some(([[T_3]] as *mut i32).offset(2 as isize) as *mut i32),
+// CHECK-NEXT:                 |[[T_3:__t[0-9]+]]| Some(([[T_3]] as *mut i32).add(2) as *mut i32),
 // CHECK-NEXT:             )
 // CHECK-NEXT:             .unwrap_or_else(|[[T_3]]| [[T_3]]);
 // CHECK-NEXT:         [[T_2]] as *mut i32
@@ -75,7 +75,7 @@ int main(void) {
 // CHECK-NEXT:             .load(std::sync::atomic::Ordering::SeqCst) as *mut i32
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: *mut i32 = unsafe {
-// CHECK-NEXT:         let [[T_4:__t[0-9]+]] = (values.0.as_mut_ptr() as *mut i32).offset(1 as isize);
+// CHECK-NEXT:         let [[T_4:__t[0-9]+]] = (values.0.as_mut_ptr() as *mut i32).add(1);
 // CHECK-NEXT:         let [[T_5:__t[0-9]+]] = std::sync::atomic::AtomicPtr::from_ptr(
 // CHECK-NEXT:                 std::ptr::addr_of_mut!(p) as *mut *mut i32,
 // CHECK-NEXT:             )

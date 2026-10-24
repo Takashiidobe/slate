@@ -43,9 +43,7 @@ int main(void) {
 // CHECK-NEXT:         (*(c as *mut cursor)).p = (*(c as *mut cursor)).buf.as_mut_ptr() as *mut u8;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     while (unsafe { (*(c as *mut cursor)).p })
-// CHECK-NEXT:         < unsafe {
-// CHECK-NEXT:             ((*(c as *mut cursor)).buf.as_mut_ptr() as *mut u8).offset(8 as isize)
-// CHECK-NEXT:         }
+// CHECK-NEXT:         < unsafe { ((*(c as *mut cursor)).buf.as_mut_ptr() as *mut u8).add(8) }
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *(*(c as *mut cursor)).p = n;
@@ -53,7 +51,7 @@ int main(void) {
 // CHECK-NEXT:         n = ((((n as u32) as i32) + 1) as i8) as u8;
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: *mut u8 = unsafe { (*c).p };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             (*c).p = [[V_0]].offset(1 as isize);
+// CHECK-NEXT:             (*c).p = [[V_0]].add(1);
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }

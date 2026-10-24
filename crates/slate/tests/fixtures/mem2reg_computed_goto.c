@@ -30,7 +30,7 @@ int main(void) {
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 1 => {
 // CHECK-NEXT:                     let [[V_0:__v[0-9]+]]: *mut i32 = position;
-// CHECK-NEXT:                     position = [[V_0]].offset(1 as isize);
+// CHECK-NEXT:                     position = [[V_0]].add(1);
 // CHECK-NEXT:                     match labels.0[*position as usize] as usize {
 // CHECK-NEXT:                         4 => {
 // CHECK-NEXT:                             __slate_state = 1usize;

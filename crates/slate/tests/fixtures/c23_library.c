@@ -602,8 +602,8 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut total: i32 = (stop
-// CHECK-NEXT:         == ((unsafe { (destination.as_mut_ptr() as *mut i8).offset(3 as isize) })
-// CHECK-NEXT:             as *mut ()) && (destination[2] as i32) == 99) as i32;
+// CHECK-NEXT:         == ((unsafe { (destination.as_mut_ptr() as *mut i8).add(3) }) as *mut ())
+// CHECK-NEXT:         && (destination[2] as i32) == 99) as i32;
 // CHECK-NEXT:     unsafe { memset_explicit(secret.as_mut_ptr() as *mut (), 0i32, 7u64) };
 // CHECK-NEXT:     total += ((secret[0] as i32) == 0 && (secret[5] as i32) == 0) as i32;
 // CHECK-NEXT:     let first_copy: *mut i8 = unsafe { strdup(c"c23".as_ptr()) };

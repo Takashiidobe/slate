@@ -27,12 +27,12 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut x: *mut i32 = std::ptr::null_mut::<i32>();
 // CHECK-NEXT:     x = alloc();
-// CHECK-NEXT:     x = unsafe { x.offset(1 as isize) };
+// CHECK-NEXT:     x = unsafe { x.add(1) };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *x = 10;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("{}", unsafe { * x });
-// CHECK-NEXT:     unsafe { free(x.offset(-(1 as isize)) as *mut ()) };
+// CHECK-NEXT:     unsafe { free(x.sub(1) as *mut ()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

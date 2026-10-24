@@ -131,7 +131,7 @@ int main(void) {
 // CHECK-NEXT:         *[[V_0]] = [[V_1]].wrapping_add(600);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let [[V_2:__v[0-9]+]]: *mut f64 = unsafe {
-// CHECK-NEXT:         (std::ptr::addr_of_mut!(weights.0) as *mut f64).offset(0 as isize)
+// CHECK-NEXT:         (std::ptr::addr_of_mut!(weights.0) as *mut f64).add(0)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let [[V_3:__v[0-9]+]]: f64 = (unsafe { *[[V_2]] }) * 4.0f64;
 // CHECK-NEXT:     unsafe {

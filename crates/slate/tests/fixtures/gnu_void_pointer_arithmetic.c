@@ -48,17 +48,16 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let start: *mut () = (unsafe { std::ptr::addr_of_mut!(bytes.0) as *mut u8 })
 // CHECK-NEXT:         as *mut ();
-// CHECK-NEXT:     let end: *mut () = (unsafe {
-// CHECK-NEXT:         (std::ptr::addr_of_mut!(bytes.0) as *mut u8).offset(16 as isize)
-// CHECK-NEXT:     }) as *mut ();
-// CHECK-NEXT:     let middle: *const () = ((unsafe { (start as *const u8).offset(5 as isize) })
-// CHECK-NEXT:         as *mut ()) as *const ();
+// CHECK-NEXT:     let end: *mut () = (unsafe { (std::ptr::addr_of_mut!(bytes.0) as *mut u8).add(16) })
+// CHECK-NEXT:         as *mut ();
+// CHECK-NEXT:     let middle: *const () = ((unsafe { (start as *const u8).add(5) }) as *mut ())
+// CHECK-NEXT:         as *const ();
 // CHECK-NEXT:     let mut cursor: *mut () = end;
-// CHECK-NEXT:     cursor = (unsafe { (cursor as *const u8).offset(-(3 as isize)) }) as *mut ();
-// CHECK-NEXT:     cursor = (unsafe { (cursor as *const u8).offset(-(2 as isize)) }) as *mut ();
-// CHECK-NEXT:     cursor = (unsafe { (cursor as *const u8).offset(1 as isize) }) as *mut ();
-// CHECK-NEXT:     cursor = (unsafe { (cursor as *const u8).offset(1 as isize) }) as *mut ();
-// CHECK-NEXT:     cursor = (unsafe { (cursor as *const u8).offset(-(1 as isize)) }) as *mut ();
+// CHECK-NEXT:     cursor = (unsafe { (cursor as *const u8).sub(3) }) as *mut ();
+// CHECK-NEXT:     cursor = (unsafe { (cursor as *const u8).sub(2) }) as *mut ();
+// CHECK-NEXT:     cursor = (unsafe { (cursor as *const u8).add(1) }) as *mut ();
+// CHECK-NEXT:     cursor = (unsafe { (cursor as *const u8).add(1) }) as *mut ();
+// CHECK-NEXT:     cursor = (unsafe { (cursor as *const u8).sub(1) }) as *mut ();
 // CHECK-NEXT:     let span: i64 = (unsafe { (end as *const u8).offset_from(start as *const u8) })
 // CHECK-NEXT:         as i64;
 // CHECK-NEXT:     let back: i64 = (unsafe { (start as *const u8).offset_from(end as *const u8) })

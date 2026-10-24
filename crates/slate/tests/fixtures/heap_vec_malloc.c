@@ -22,17 +22,16 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let p: *mut i32 = (unsafe { malloc(12u64) }) as *mut i32;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *p.offset(0 as isize) = 1;
+// CHECK-NEXT:         *p.add(0) = 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *p.offset(1 as isize) = 2;
+// CHECK-NEXT:         *p.add(1) = 2;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *p.offset(2 as isize) = 3;
+// CHECK-NEXT:         *p.add(2) = 3;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{}", (unsafe { * p.offset(0 as isize) }) + unsafe { * p.offset(1 as isize) } +
-// CHECK-NEXT:         unsafe { * p.offset(2 as isize) }
+// CHECK-NEXT:         "{}", (unsafe { * p.add(0) }) + unsafe { * p.add(1) } + unsafe { * p.add(2) }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe { free(p as *mut ()) };
 // CHECK-NEXT:     0

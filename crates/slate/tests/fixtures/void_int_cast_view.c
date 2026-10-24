@@ -17,7 +17,7 @@ int main(void) {
 // CHECK-LABEL: {{^}}fn sum_ints(src: *const (), n: u64) -> i32 {
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     for i in 0..n {
-// CHECK-NEXT:         total += unsafe { *(src as *const i32).offset(i as isize) };
+// CHECK-NEXT:         total += unsafe { *(src as *const i32).add(i as usize) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK: {{^}}}

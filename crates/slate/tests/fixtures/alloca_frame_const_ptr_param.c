@@ -41,7 +41,7 @@ int main(void) {
 // CHECK-NEXT:         unsafe { &(*(std::ptr::addr_of_mut!(p) as *const [[SLATERECORD_0]])) },
 // CHECK-NEXT:         unsafe { &mut (*std::ptr::addr_of_mut!(out)) },
 // CHECK-NEXT:         buf.as_mut_ptr() as *const i8,
-// CHECK-NEXT:         (unsafe { (buf.as_mut_ptr() as *mut i8).offset(4 as isize) }) as *const i8,
+// CHECK-NEXT:         (unsafe { (buf.as_mut_ptr() as *mut i8).add(4) }) as *const i8,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     out as i32
 // CHECK-NEXT: }

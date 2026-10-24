@@ -591,7 +591,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let [[V_4:__v[0-9]+]]: i32 = !unsafe {
 // CHECK-NEXT:         tfind(
-// CHECK-NEXT:             (values.0.as_mut_ptr() as *mut i32).offset(2 as isize) as *const (),
+// CHECK-NEXT:             (values.0.as_mut_ptr() as *mut i32).add(2) as *const (),
 // CHECK-NEXT:             std::ptr::addr_of_mut!(tree) as *const *mut (),
 // CHECK-NEXT:             Some(gnu_compare_entries),
 // CHECK-NEXT:         )

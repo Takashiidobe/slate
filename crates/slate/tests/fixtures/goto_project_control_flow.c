@@ -109,11 +109,11 @@ int main(void) {
 // CHECK-NEXT:                         } else {
 // CHECK-NEXT:                             if [[T_0]] == 32 {
 // CHECK-NEXT:                                 let [[V_1:__v[0-9]+]]: *const i8 = s;
-// CHECK-NEXT:                                 s = [[V_1]].offset(1 as isize);
+// CHECK-NEXT:                                 s = [[V_1]].add(1);
 // CHECK-NEXT:                             } else {
 // CHECK-NEXT:                                 if [[T_0]] == 9 {
 // CHECK-NEXT:                                     let [[V_2:__v[0-9]+]]: *const i8 = s;
-// CHECK-NEXT:                                     s = [[V_2]].offset(1 as isize);
+// CHECK-NEXT:                                     s = [[V_2]].add(1);
 // CHECK-NEXT:                                 } else {
 // CHECK-NEXT:                                     if [[T_0]] == 110 {
 // CHECK-NEXT:                                         return 5;

@@ -243,9 +243,8 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let [[SLOTS_0:slots_[0-9]+]]: *mut i32 = history(70i32);
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {}", unsafe { * [[SLOTS_0]].offset(0 as isize) }, unsafe { * [[SLOTS_0]]
-// CHECK-NEXT:         .offset(1 as isize) }, unsafe { * [[SLOTS_0]].offset(2 as isize) }, unsafe { *
-// CHECK-NEXT:         [[SLOTS_0]].offset(3 as isize) }
+// CHECK-NEXT:         "{} {} {} {}", unsafe { * [[SLOTS_0]].add(0) }, unsafe { * [[SLOTS_0]].add(1) }, unsafe
+// CHECK-NEXT:         { * [[SLOTS_0]].add(2) }, unsafe { * [[SLOTS_0]].add(3) }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     moved(3i32);
 // CHECK-NEXT:     let [[POINT_0:point_[0-9]+]]: *mut Point = moved(4i32);

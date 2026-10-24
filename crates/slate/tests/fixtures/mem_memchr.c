@@ -68,9 +68,7 @@ int main(void) {
 // CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(partial_count)),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) as *mut u8;
-// CHECK-NEXT:     let offset_base: *mut u8 = unsafe {
-// CHECK-NEXT:         (buf.as_mut_ptr() as *mut u8).offset(2 as isize)
-// CHECK-NEXT:     };
+// CHECK-NEXT:     let offset_base: *mut u8 = unsafe { (buf.as_mut_ptr() as *mut u8).add(2) };
 // CHECK-NEXT:     let offset: *mut u8 = (unsafe {
 // CHECK-NEXT:         __builtin_memchr(offset_base as *const (), needle, 2u64)
 // CHECK-NEXT:     }) as *mut u8;

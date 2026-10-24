@@ -94,39 +94,28 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut buffer: __SlateAlign16<[i8; 64]> = __SlateAlign16([0i8; 64]);
 // CHECK-NEXT:     unsafe { std::ptr::write_bytes(buffer.0.as_mut_ptr() as *mut u8, 0u8, 64 as usize) };
-// CHECK-NEXT:     store(
-// CHECK-NEXT:         (unsafe { (buffer.0.as_mut_ptr() as *mut i8).offset(1 as isize) }) as *mut i32,
-// CHECK-NEXT:         42i32,
-// CHECK-NEXT:     );
+// CHECK-NEXT:     store((unsafe { (buffer.0.as_mut_ptr() as *mut i8).add(1) }) as *mut i32, 42i32);
 // CHECK-NEXT:     let __slate_printf_arg0 = load(
-// CHECK-NEXT:         (unsafe { (buffer.0.as_mut_ptr() as *mut i8).offset(1 as isize) }) as *mut i32,
+// CHECK-NEXT:         (unsafe { (buffer.0.as_mut_ptr() as *mut i8).add(1) }) as *mut i32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{}", __slate_printf_arg0);
-// CHECK-NEXT:     set((unsafe { (buffer.0.as_mut_ptr() as *mut i8).offset(3 as isize) }) as *mut S);
+// CHECK-NEXT:     set((unsafe { (buffer.0.as_mut_ptr() as *mut i8).add(3) }) as *mut S);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%lld\n".as_ptr(),
-// CHECK-NEXT:             sum((buffer.0.as_mut_ptr() as *mut i8).offset(3 as isize) as *mut S),
+// CHECK-NEXT:             sum((buffer.0.as_mut_ptr() as *mut i8).add(3) as *mut S),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     put(
-// CHECK-NEXT:         (unsafe { (buffer.0.as_mut_ptr() as *mut i8).offset(17 as isize) }) as *mut W,
-// CHECK-NEXT:         1i32,
-// CHECK-NEXT:         5i64,
-// CHECK-NEXT:     );
-// CHECK-NEXT:     put(
-// CHECK-NEXT:         (unsafe { (buffer.0.as_mut_ptr() as *mut i8).offset(17 as isize) }) as *mut W,
-// CHECK-NEXT:         0i32,
-// CHECK-NEXT:         4i64,
-// CHECK-NEXT:     );
+// CHECK-NEXT:     put((unsafe { (buffer.0.as_mut_ptr() as *mut i8).add(17) }) as *mut W, 1i32, 5i64);
+// CHECK-NEXT:     put((unsafe { (buffer.0.as_mut_ptr() as *mut i8).add(17) }) as *mut W, 0i32, 4i64);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%lld %lld\n".as_ptr(),
-// CHECK-NEXT:             lane((buffer.0.as_mut_ptr() as *mut i8).offset(17 as isize) as *mut W, 0i32),
-// CHECK-NEXT:             lane((buffer.0.as_mut_ptr() as *mut i8).offset(17 as isize) as *mut W, 1i32),
+// CHECK-NEXT:             lane((buffer.0.as_mut_ptr() as *mut i8).add(17) as *mut W, 0i32),
+// CHECK-NEXT:             lane((buffer.0.as_mut_ptr() as *mut i8).add(17) as *mut W, 1i32),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

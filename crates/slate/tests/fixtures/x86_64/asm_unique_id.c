@@ -118,8 +118,7 @@ int main(void) {
 // CHECK-NEXT:         );
 // CHECK-NEXT:         text = unsafe { std::mem::transmute::<u64, *const i8>([[T_0]] as u64) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     ((unsafe { *text.offset(0 as isize) }) as i32)
-// CHECK-NEXT:         + ((unsafe { *text.offset(4 as isize) }) as i32)
+// CHECK-NEXT:     ((unsafe { *text.add(0) }) as i32) + ((unsafe { *text.add(4) }) as i32)
 // CHECK-NEXT: }
 // CHECK-NEXT: fn with_own_label(mut value: i32) -> i32 {
 // CHECK-NEXT:     unsafe {

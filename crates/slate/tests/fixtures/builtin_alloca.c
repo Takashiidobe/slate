@@ -253,15 +253,15 @@ int main(void) {
 // CHECK-NEXT:     let buf: *mut u8 = (__slate_alloca::alloca(16 as usize, 16usize) as *mut ())
 // CHECK-NEXT:         as *mut u8;
 // CHECK-NEXT:     unsafe { std::ptr::write_bytes(buf as *mut u8, 3u8, 16 as usize) };
-// CHECK-NEXT:     (((unsafe { *buf.offset(0 as isize) }) as u32) as i32)
-// CHECK-NEXT:         + (((unsafe { *buf.offset(15 as isize) }) as u32) as i32)
+// CHECK-NEXT:     (((unsafe { *buf.add(0) }) as u32) as i32)
+// CHECK-NEXT:         + (((unsafe { *buf.add(15) }) as u32) as i32)
 // CHECK-NEXT: }
 // CHECK-NEXT: fn dyn_alloca(n: i32) -> i32 {
 // CHECK-NEXT:     let __slate_alloca_mark = __slate_alloca::Mark::new();
 // CHECK-NEXT:     let buf: *mut u8 = (__slate_alloca::alloca(((n as i64) as u64) as usize, 16usize)
 // CHECK-NEXT:         as *mut ()) as *mut u8;
 // CHECK-NEXT:     unsafe { std::ptr::write_bytes(buf as *mut u8, 7u8, ((n as i64) as u64) as usize) };
-// CHECK-NEXT:     (((unsafe { *buf.offset(0 as isize) }) as u32) as i32)
+// CHECK-NEXT:     (((unsafe { *buf.add(0) }) as u32) as i32)
 // CHECK-NEXT:         + (((unsafe { *buf.offset((n - 1) as isize) }) as u32) as i32)
 // CHECK-NEXT: }
 // CHECK-NEXT: fn uninitialized_alloca(n: i32) -> i32 {
@@ -269,7 +269,7 @@ int main(void) {
 // CHECK-NEXT:     let buf: *mut u8 = (__slate_alloca::alloca(((n as i64) as u64) as usize, 16usize)
 // CHECK-NEXT:         as *mut ()) as *mut u8;
 // CHECK-NEXT:     unsafe { std::ptr::write_bytes(buf as *mut u8, 9u8, ((n as i64) as u64) as usize) };
-// CHECK-NEXT:     (((unsafe { *buf.offset(0 as isize) }) as u32) as i32)
+// CHECK-NEXT:     (((unsafe { *buf.add(0) }) as u32) as i32)
 // CHECK-NEXT:         + (((unsafe { *buf.offset((n - 1) as isize) }) as u32) as i32)
 // CHECK-NEXT: }
 // CHECK-NEXT: fn loop_alloca(n: i32) -> i32 {
@@ -400,8 +400,8 @@ int main(void) {
 // CHECK-NEXT:         unsafe { std::ptr::write_bytes(a as *mut u8, 1u8, 600000 as usize) };
 // CHECK-NEXT:         unsafe { std::ptr::write_bytes(b as *mut u8, 2u8, 600000 as usize) };
 // CHECK-NEXT:         total
-// CHECK-NEXT:             += ((((unsafe { *a.offset(599999 as isize) }) as u32) as i32)
-// CHECK-NEXT:                 + (((unsafe { *b.offset(0 as isize) }) as u32) as i32)) as i64;
+// CHECK-NEXT:             += ((((unsafe { *a.add(599999) }) as u32) as i32)
+// CHECK-NEXT:                 + (((unsafe { *b.add(0) }) as u32) as i32)) as i64;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }

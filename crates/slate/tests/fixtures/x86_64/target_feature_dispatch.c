@@ -447,7 +447,7 @@ int main(void) {
 // CHECK-NEXT: unsafe fn popcount_hw(words: *const u64, count: u64) -> i64 {
 // CHECK-NEXT:     let mut bits: i64 = 0;
 // CHECK-NEXT:     for i in 0..count {
-// CHECK-NEXT:         bits += (unsafe { *words.offset(i as isize) }.count_ones() as i32) as i64;
+// CHECK-NEXT:         bits += (unsafe { *words.add(i as usize) }.count_ones() as i32) as i64;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     bits
 // CHECK-NEXT: }
@@ -460,7 +460,7 @@ int main(void) {
 // CHECK-NEXT: ) {
 // CHECK-NEXT:     for i in 0..count {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *out.offset(i as isize) = *a.offset(i as isize) + *b.offset(i as isize);
+// CHECK-NEXT:             *out.add(i as usize) = *a.add(i as usize) + *b.add(i as usize);
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
@@ -475,14 +475,14 @@ int main(void) {
 // CHECK-NEXT:     let mut i: u64 = 0;
 // CHECK-NEXT:     while i.wrapping_add(8) <= count {
 // CHECK-NEXT:         let va: std::simd::Simd<i64, 4> = unsafe {
-// CHECK-NEXT:             _mm256_loadu_si256(a.offset(i as isize) as *const std::simd::Simd<i64, 4>)
+// CHECK-NEXT:             _mm256_loadu_si256(a.add(i as usize) as *const std::simd::Simd<i64, 4>)
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let vb: std::simd::Simd<i64, 4> = unsafe {
-// CHECK-NEXT:             _mm256_loadu_si256(b.offset(i as isize) as *const std::simd::Simd<i64, 4>)
+// CHECK-NEXT:             _mm256_loadu_si256(b.add(i as usize) as *const std::simd::Simd<i64, 4>)
 // CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             _mm256_storeu_si256(
-// CHECK-NEXT:                 out.offset(i as isize) as *mut std::simd::Simd<i64, 4>,
+// CHECK-NEXT:                 out.add(i as usize) as *mut std::simd::Simd<i64, 4>,
 // CHECK-NEXT:                 _mm256_add_epi32(va, vb),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
@@ -490,7 +490,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     while i < count {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *out.offset(i as isize) = *a.offset(i as isize) + *b.offset(i as isize);
+// CHECK-NEXT:             *out.add(i as usize) = *a.add(i as usize) + *b.add(i as usize);
 // CHECK-NEXT:         }
 // CHECK-NEXT:         i = i.wrapping_add(1);
 // CHECK-NEXT:     }
@@ -570,22 +570,19 @@ int main(void) {
 // CHECK-NEXT:     let mut i: u64 = 0;
 // CHECK-NEXT:     while i.wrapping_add(16) <= count {
 // CHECK-NEXT:         let va: std::simd::Simd<i64, 8> = unsafe {
-// CHECK-NEXT:             _mm512_loadu_si512(a.offset(i as isize) as *const ())
+// CHECK-NEXT:             _mm512_loadu_si512(a.add(i as usize) as *const ())
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let vb: std::simd::Simd<i64, 8> = unsafe {
-// CHECK-NEXT:             _mm512_loadu_si512(b.offset(i as isize) as *const ())
+// CHECK-NEXT:             _mm512_loadu_si512(b.add(i as usize) as *const ())
 // CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             _mm512_storeu_si512(
-// CHECK-NEXT:                 out.offset(i as isize) as *mut (),
-// CHECK-NEXT:                 _mm512_add_epi32(va, vb),
-// CHECK-NEXT:             )
+// CHECK-NEXT:             _mm512_storeu_si512(out.add(i as usize) as *mut (), _mm512_add_epi32(va, vb))
 // CHECK-NEXT:         };
 // CHECK-NEXT:         i = i.wrapping_add(16);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     while i < count {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *out.offset(i as isize) = *a.offset(i as isize) + *b.offset(i as isize);
+// CHECK-NEXT:             *out.add(i as usize) = *a.add(i as usize) + *b.add(i as usize);
 // CHECK-NEXT:         }
 // CHECK-NEXT:         i = i.wrapping_add(1);
 // CHECK-NEXT:     }

@@ -60,7 +60,7 @@ int main(void) {
 // CHECK-NEXT:     let source: *mut u8 = data as *mut u8;
 // CHECK-NEXT:     for i in 0..size {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *buffer.offset(i as isize) = *source.offset(i as isize);
+// CHECK-NEXT:             *buffer.add(i as usize) = *source.add(i as usize);
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {

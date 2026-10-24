@@ -108,7 +108,7 @@ int main(void) {
 // CHECK-NEXT:             })
 // CHECK-NEXT:                 .a
 // CHECK-NEXT:                 .as_mut_ptr() as *mut i32)
-// CHECK-NEXT:                 .offset(5 as isize),
+// CHECK-NEXT:                 .add(5),
 // CHECK-NEXT:             total,
 // CHECK-NEXT:             *((*{
 // CHECK-NEXT:                 [[SLATE_COMPOUND_2]] = make(4i32);
@@ -116,7 +116,7 @@ int main(void) {
 // CHECK-NEXT:             })
 // CHECK-NEXT:                 .tag
 // CHECK-NEXT:                 .as_mut_ptr() as *mut i8)
-// CHECK-NEXT:                 .offset(0 as isize) as i32,
+// CHECK-NEXT:                 .add(0) as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -127,7 +127,7 @@ int main(void) {
 // CHECK-NEXT:         })
 // CHECK-NEXT:             .a
 // CHECK-NEXT:             .as_mut_ptr() as *mut i32)
-// CHECK-NEXT:             .offset(2 as isize)
+// CHECK-NEXT:             .add(2)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let __slate_printf_arg1 = unsafe {
 // CHECK-NEXT:         *((*{
@@ -138,13 +138,13 @@ int main(void) {
 // CHECK-NEXT:                 })
 // CHECK-NEXT:                     .a
 // CHECK-NEXT:                     .as_mut_ptr() as *mut i32)
-// CHECK-NEXT:                     .offset(3 as isize),
+// CHECK-NEXT:                     .add(3),
 // CHECK-NEXT:             );
 // CHECK-NEXT:             std::ptr::addr_of_mut!([[SLATE_COMPOUND_5]])
 // CHECK-NEXT:         })
 // CHECK-NEXT:             .a
 // CHECK-NEXT:             .as_mut_ptr() as *mut i32)
-// CHECK-NEXT:             .offset(2 as isize)
+// CHECK-NEXT:             .add(2)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     println!("{} {}", __slate_printf_arg0, __slate_printf_arg1);
 // CHECK-NEXT:     0

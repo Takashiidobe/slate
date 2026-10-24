@@ -86,9 +86,9 @@ int main(void) {
 // CHECK-NEXT:     let wide: u64 = if y > 0 { 4000000000 } else { 1 };
 // CHECK-NEXT:     let mut buffer: [i32; 3] = [10, 20, 30];
 // CHECK-NEXT:     let cursor: *mut i32 = if x != 0 {
-// CHECK-NEXT:         unsafe { (buffer.as_mut_ptr() as *mut i32).offset(2 as isize) }
+// CHECK-NEXT:         unsafe { (buffer.as_mut_ptr() as *mut i32).add(2) }
 // CHECK-NEXT:     } else {
-// CHECK-NEXT:         unsafe { (buffer.as_mut_ptr() as *mut i32).offset(0 as isize) }
+// CHECK-NEXT:         unsafe { (buffer.as_mut_ptr() as *mut i32).add(0) }
 // CHECK-NEXT:     };
 // CHECK-NEXT:     if (if x > 2 { (y > 2) as i32 } else { (y < 2) as i32 }) != 0 {
 // CHECK-NEXT:         total += 1000;

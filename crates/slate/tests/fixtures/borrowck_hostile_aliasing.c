@@ -284,12 +284,12 @@ int main(void) {
 // CHECK-NEXT:     for i in 0i32..8i32 {
 // CHECK-NEXT:         buf.data[i as usize] = (97 + i) as i8;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     buf.cursor = unsafe { (buf.data.as_mut_ptr() as *mut i8).offset(3 as isize) };
+// CHECK-NEXT:     buf.cursor = unsafe { (buf.data.as_mut_ptr() as *mut i8).add(3) };
 // CHECK-NEXT:     let [[V_3:__v[0-9]+]]: *mut i8 = buf.cursor;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *[[V_3]] = ((*[[V_3]] as i32) + 1) as i8;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     (buf.data[3] as i32) + ((unsafe { *buf.cursor.offset(0 as isize) }) as i32) - 2 * 97
+// CHECK-NEXT:     (buf.data[3] as i32) + ((unsafe { *buf.cursor.add(0) }) as i32) - 2 * 97
 // CHECK-NEXT: }
 // CHECK-NEXT: fn reverse_in_place(mut lo: *mut i32, mut hi: *mut i32) {
 // CHECK-NEXT:     while lo < hi {
@@ -301,9 +301,9 @@ int main(void) {
 // CHECK-NEXT:             *hi = t;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         let [[V_4:__v[0-9]+]]: *mut i32 = lo;
-// CHECK-NEXT:         lo = unsafe { [[V_4]].offset(1 as isize) };
+// CHECK-NEXT:         lo = unsafe { [[V_4]].add(1) };
 // CHECK-NEXT:         let [[V_5:__v[0-9]+]]: *mut i32 = hi;
-// CHECK-NEXT:         hi = unsafe { [[V_5]].offset(-(1 as isize)) };
+// CHECK-NEXT:         hi = unsafe { [[V_5]].sub(1) };
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn overlapping_array_pointers() -> i32 {
@@ -311,8 +311,8 @@ int main(void) {
 // CHECK-NEXT:         1i32, 2i32, 3i32, 4i32, 5i32,
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     reverse_in_place(
-// CHECK-NEXT:         unsafe { (values.0.as_mut_ptr() as *mut i32).offset(0 as isize) },
-// CHECK-NEXT:         unsafe { (values.0.as_mut_ptr() as *mut i32).offset(4 as isize) },
+// CHECK-NEXT:         unsafe { (values.0.as_mut_ptr() as *mut i32).add(0) },
+// CHECK-NEXT:         unsafe { (values.0.as_mut_ptr() as *mut i32).add(4) },
 // CHECK-NEXT:     );
 // CHECK-NEXT:     values.0[0] * 10000 + values.0[1] * 1000 + values.0[2] * 100 + values.0[3] * 10
 // CHECK-NEXT:         + values.0[4]

@@ -39,7 +39,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::write_bytes(
-// CHECK-NEXT:             ((dst.0.as_mut_ptr() as *mut i8).offset(5 as isize) as *mut ()) as *mut u8,
+// CHECK-NEXT:             ((dst.0.as_mut_ptr() as *mut i8).add(5) as *mut ()) as *mut u8,
 // CHECK-NEXT:             65u8,
 // CHECK-NEXT:             3 as usize,
 // CHECK-NEXT:         )

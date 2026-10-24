@@ -92,31 +92,20 @@ int main(void) {
 // CHECK-NEXT:     let address: u64 = p as u64;
 // CHECK-NEXT:     let back: *mut i32 = address as *mut i32;
 // CHECK-NEXT:     println!("{} {}", (back == p) as i32, unsafe { * back });
-// CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{}", (((unsafe { p.offset(3 as isize) }) as u64).wrapping_sub(address) as u32)
-// CHECK-NEXT:         as i32
-// CHECK-NEXT:     );
-// CHECK-NEXT:     let signed_address: i64 = (unsafe { p.offset(2 as isize) }) as i64;
+// CHECK-NEXT:     println!("{}", (((unsafe { p.add(3) }) as u64).wrapping_sub(address) as u32) as i32);
+// CHECK-NEXT:     let signed_address: i64 = (unsafe { p.add(2) }) as i64;
 // CHECK-NEXT:     println!("{}", unsafe { * (signed_address as * mut i32) });
-// CHECK-NEXT:     let opaque: *mut () = (unsafe {
-// CHECK-NEXT:         (values.0.as_mut_ptr() as *mut i32).offset(1 as isize)
-// CHECK-NEXT:     }) as *mut ();
+// CHECK-NEXT:     let opaque: *mut () = (unsafe { (values.0.as_mut_ptr() as *mut i32).add(1) })
+// CHECK-NEXT:         as *mut ();
 // CHECK-NEXT:     let read_only: *const i32 = opaque as *const i32;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *(read_only as *mut i32) = *(read_only as *mut i32) + 5;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("{}", values.0[1]);
-// CHECK-NEXT:     let bytes: *mut u8 = (unsafe {
-// CHECK-NEXT:         (values.0.as_mut_ptr() as *mut i32).offset(0 as isize)
-// CHECK-NEXT:     }) as *mut u8;
+// CHECK-NEXT:     let bytes: *mut u8 = (unsafe { (values.0.as_mut_ptr() as *mut i32).add(0) })
+// CHECK-NEXT:         as *mut u8;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%u %u\n".as_ptr(),
-// CHECK-NEXT:             *bytes.offset(0 as isize) as u32,
-// CHECK-NEXT:             *bytes.offset(1 as isize) as u32,
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { printf(c"%u %u\n".as_ptr(), *bytes.add(0) as u32, *bytes.add(1) as u32) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let null: *mut () = std::ptr::null_mut::<()>();
 // CHECK-NEXT:     println!(

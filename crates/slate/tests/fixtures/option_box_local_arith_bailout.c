@@ -37,12 +37,12 @@ int main(void) {
 // CHECK-NEXT:         p = (unsafe { malloc(16u64) }) as *mut i32;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if !p.is_null() {
-// CHECK-NEXT:         p = unsafe { p.offset(1 as isize) };
+// CHECK-NEXT:         p = unsafe { p.add(1) };
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *p = 41;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         println!("{}", unsafe { * p });
-// CHECK-NEXT:         unsafe { free(p.offset(-(1 as isize)) as *mut ()) };
+// CHECK-NEXT:         unsafe { free(p.sub(1) as *mut ()) };
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         println!("no alloc");
 // CHECK-NEXT:     }

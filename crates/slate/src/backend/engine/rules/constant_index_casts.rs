@@ -26,7 +26,7 @@ fn literal_value(expr: &Expr) -> Option<i128> {
     }
 }
 
-fn representable_literal(expr: &Expr) -> Option<Expr> {
+pub(super) fn representable_literal(expr: &Expr) -> Option<Expr> {
     if literal_value(expr).is_some() {
         return Some(expr.clone());
     }

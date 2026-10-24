@@ -33,9 +33,7 @@ int main(void) {
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let q: *mut i32 = make(4i32);
-// CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {}", unsafe { * q.offset(0 as isize) }, unsafe { * q.offset(3 as isize) }
-// CHECK-NEXT:     );
+// CHECK-NEXT:     println!("{} {}", unsafe { * q.add(0) }, unsafe { * q.add(3) });
 // CHECK-NEXT:     unsafe { free(q as *mut ()) };
 // CHECK-NEXT:     0
 // CHECK: {{^}}}

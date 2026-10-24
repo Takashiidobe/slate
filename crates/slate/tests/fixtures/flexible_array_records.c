@@ -275,13 +275,13 @@ int main(void) {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         return 4;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if (((unsafe { (bytes.offset(1 as isize) as *mut i8).offset_from(bytes as *mut i8) })
-// CHECK-NEXT:         as i64) as u64) != 16
+// CHECK-NEXT:     if (((unsafe { (bytes.add(1) as *mut i8).offset_from(bytes as *mut i8) }) as i64)
+// CHECK-NEXT:         as u64) != 16
 // CHECK-NEXT:     {
 // CHECK-NEXT:         return 5;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if (((unsafe { (wide.offset(1 as isize) as *mut i8).offset_from(wide as *mut i8) })
-// CHECK-NEXT:         as i64) as u64) != 16
+// CHECK-NEXT:     if (((unsafe { (wide.add(1) as *mut i8).offset_from(wide as *mut i8) }) as i64)
+// CHECK-NEXT:         as u64) != 16
 // CHECK-NEXT:     {
 // CHECK-NEXT:         return 6;
 // CHECK-NEXT:     }
@@ -329,21 +329,19 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let result: i32 = ((unsafe {
 // CHECK-NEXT:         (*(std::ptr::addr_of!((* (list as * const List)).entries) as *const Entry)
-// CHECK-NEXT:             .offset(4 as isize))
+// CHECK-NEXT:             .add(4))
 // CHECK-NEXT:             .value
 // CHECK-NEXT:     }) != 52
 // CHECK-NEXT:         || (unsafe {
 // CHECK-NEXT:             (*(std::ptr::addr_of!((* (list as * const List)).entries) as *const Entry)
-// CHECK-NEXT:                 .offset(3 as isize))
+// CHECK-NEXT:                 .add(3))
 // CHECK-NEXT:                 .tag
 // CHECK-NEXT:         }) != 10
-// CHECK-NEXT:         || (((unsafe {
-// CHECK-NEXT:             *(std::ptr::addr_of_mut!((* bytes).bytes) as *mut u8).offset(8 as isize)
-// CHECK-NEXT:         }) as u32) as i32) != 24 || (unsafe { (*bytes).head }) != 2.5f64
+// CHECK-NEXT:         || (((unsafe { *(std::ptr::addr_of_mut!((* bytes).bytes) as *mut u8).add(8) })
+// CHECK-NEXT:             as u32) as i32) != 24 || (unsafe { (*bytes).head }) != 2.5f64
 // CHECK-NEXT:         || (unsafe { (*bytes).tag }) != 17
 // CHECK-NEXT:         || (unsafe {
-// CHECK-NEXT:             *(std::ptr::addr_of_mut!((* wide).values) as *mut LongDouble)
-// CHECK-NEXT:                 .offset(2 as isize)
+// CHECK-NEXT:             *(std::ptr::addr_of_mut!((* wide).values) as *mut LongDouble).add(2)
 // CHECK-NEXT:         }) != LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 0, 64])
 // CHECK-NEXT:         || ((unsafe { (*wide).tag }) as i32) != 4) as i32;
 // CHECK-NEXT:     unsafe { free(wide as *mut ()) };

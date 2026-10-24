@@ -41,9 +41,7 @@ int main(void) {
 // CHECK-NEXT:     let mut i: u32 = 0;
 // CHECK-NEXT:     while (i as u64) < 56 / 8 {
 // CHECK-NEXT:         let __slate_printf_arg0 = unsafe {
-// CHECK-NEXT:             std::ptr::read_volatile(
-// CHECK-NEXT:                 (values.0.as_mut_ptr() as *mut u64).offset(i as isize),
-// CHECK-NEXT:             )
+// CHECK-NEXT:             std::ptr::read_volatile((values.0.as_mut_ptr() as *mut u64).add(i as usize))
 // CHECK-NEXT:         }
 // CHECK-NEXT:             .leading_zeros() as i32;
 // CHECK-NEXT:         print!("{} ", __slate_printf_arg0);
