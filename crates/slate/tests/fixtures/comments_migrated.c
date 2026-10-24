@@ -78,7 +78,7 @@ int main(void) {
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             acc += n; // leading dispatched add
 // CHECK-NEXT:             tmp = acc * 2; // trailing dispatched assign
-// CHECK-NEXT:             if !(acc < 100) {
+// CHECK-NEXT:             if acc >= 100 {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }

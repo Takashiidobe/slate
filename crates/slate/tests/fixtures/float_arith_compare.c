@@ -74,8 +74,8 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{} {}", compare_all(- 0.0f64, 0.0f64), compare_all(inf, - inf));
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", ! (nan != 0.0f64) as i32, if nan != 0.0f64 { 1i32 } else { 0i32 }, if
-// CHECK-NEXT:         - 0.0f64 != 0.0f64 { 1i32 } else { 0i32 }
+// CHECK-NEXT:         "{} {} {}", (nan == 0.0f64) as i32, if nan != 0.0f64 { 1i32 } else { 0i32 }, if -
+// CHECK-NEXT:         0.0f64 != 0.0f64 { 1i32 } else { 0i32 }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(c"%g %g %d\n".as_ptr(), inf, -inf, (inf - inf == inf - inf) as i32)

@@ -37,7 +37,7 @@ int main(void) {
 // CHECK-NEXT:     alloc()
 // CHECK-NEXT: }
 // CHECK-NEXT: fn b() -> *mut i32 {
-// CHECK-NEXT:     if 1i32 != 0i32 {
+// CHECK-NEXT:     if true {
 // CHECK-NEXT:         return a();
 // CHECK-NEXT:     }
 // CHECK-NEXT:     alloc()

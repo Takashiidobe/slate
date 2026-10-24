@@ -307,8 +307,8 @@ int main(void) {
 // CHECK-NEXT:     let wide_value: u64 = 8589934591;
 // CHECK-NEXT:     let null_value: *mut () = std::ptr::null_mut::<()>();
 // CHECK-NEXT:     let null_pointer: *mut i32 = std::ptr::null_mut::<i32>();
-// CHECK-NEXT:     let boolean_value: bool = true as bool;
-// CHECK-NEXT:     let false_value: bool = false as bool;
+// CHECK-NEXT:     let boolean_value: bool = true;
+// CHECK-NEXT:     let false_value: bool = false;
 // CHECK-NEXT:     let static_compound_value: i32 = 83;
 // CHECK-NEXT:     let language_total: i32 = (((((unsafe { c23_file_constant }) + local_constant
 // CHECK-NEXT:         + inferred_value + same_type_value + unqualified_value + (signed_precise as i32)
@@ -342,7 +342,7 @@ int main(void) {
 // CHECK-NEXT:     let control_total: i32 = c23_unnamed_parameter(89i32, 97i32)
 // CHECK-NEXT:         + c23_label_declaration(101i32) + c23_switch_fallthrough(1i32)
 // CHECK-NEXT:         + unsafe { c23_relaxed_variadic(103i32, 107i32) };
-// CHECK-NEXT:     let removal_total: i32 = (202311i64 == 202311i64) as i32;
+// CHECK-NEXT:     let removal_total: i32 = true as i32;
 // CHECK-NEXT:     if (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(c23_never_flag)) }) != 0 {
 // CHECK-NEXT:         c23_never_return();
 // CHECK-NEXT:     }

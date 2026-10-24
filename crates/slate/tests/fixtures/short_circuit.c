@@ -65,7 +65,7 @@ int main(void) {
 // CHECK-NEXT:     (a != 0 && (b != 0 || c != 0)) as i32
 // CHECK-NEXT: }
 // CHECK-NEXT: fn negated(a: i32, b: i32) -> i32 {
-// CHECK-NEXT:     (!(a != 0 && b != 0) || !(a != 0)) as i32
+// CHECK-NEXT:     (!(a != 0 && b != 0) || a == 0) as i32
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut n: i32 = 0;
@@ -76,13 +76,13 @@ int main(void) {
 // CHECK-NEXT:     if n > 5 {
 // CHECK-NEXT:         [[V_0]] = bump(unsafe { &mut (*std::ptr::addr_of_mut!(n)) }, 1i32) != 0;
 // CHECK-NEXT:     } else {
-// CHECK-NEXT:         [[V_0]] = false as bool;
+// CHECK-NEXT:         [[V_0]] = false;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     r1 = [[V_0]] as i32;
 // CHECK-NEXT:     let mut r2: i32 = 0;
 // CHECK-NEXT:     let mut [[V_1:__v[0-9]+]]: bool;
 // CHECK-NEXT:     if n < 5 {
-// CHECK-NEXT:         [[V_1]] = true as bool;
+// CHECK-NEXT:         [[V_1]] = true;
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         [[V_1]] = bump(unsafe { &mut (*std::ptr::addr_of_mut!(n)) }, 1i32) != 0;
 // CHECK-NEXT:     }
@@ -94,13 +94,13 @@ int main(void) {
 // CHECK-NEXT:         b = [[V_3]];
 // CHECK-NEXT:         [[V_2]] = [[V_3]] != 0;
 // CHECK-NEXT:     } else {
-// CHECK-NEXT:         [[V_2]] = false as bool;
+// CHECK-NEXT:         [[V_2]] = false;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     r3 = [[V_2]] as i32;
 // CHECK-NEXT:     let mut r4: i32 = 0;
 // CHECK-NEXT:     let mut [[V_4:__v[0-9]+]]: bool;
 // CHECK-NEXT:     if bump(unsafe { &mut (*std::ptr::addr_of_mut!(n)) }, 0i32) != 0 {
-// CHECK-NEXT:         [[V_4]] = true as bool;
+// CHECK-NEXT:         [[V_4]] = true;
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         let [[V_5:__v[0-9]+]]: i32 = bump(unsafe { &mut (*std::ptr::addr_of_mut!(n)) }, 9i32);
 // CHECK-NEXT:         b = [[V_5]];
@@ -116,7 +116,7 @@ int main(void) {
 // CHECK-NEXT:         i = [[V_8]] + 1;
 // CHECK-NEXT:         [[V_7]] = [[V_8]] > 0;
 // CHECK-NEXT:     } else {
-// CHECK-NEXT:         [[V_7]] = false as bool;
+// CHECK-NEXT:         [[V_7]] = false;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     r5 = [[V_7]] as i32;
 // CHECK-NEXT:     println!("{} {} {} {} {} n={} b={} i={}", r1, r2, r3, r4, r5, n, b, i);
@@ -124,14 +124,14 @@ int main(void) {
 // CHECK-NEXT:     if bump(unsafe { &mut (*std::ptr::addr_of_mut!(n)) }, 1i32) != 0 {
 // CHECK-NEXT:         [[V_9]] = bump(unsafe { &mut (*std::ptr::addr_of_mut!(n)) }, 2i32) != 0;
 // CHECK-NEXT:     } else {
-// CHECK-NEXT:         [[V_9]] = false as bool;
+// CHECK-NEXT:         [[V_9]] = false;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if [[V_9]] {
 // CHECK-NEXT:         println!("both n={}", n);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut [[V_10:__v[0-9]+]]: bool;
 // CHECK-NEXT:     if bump(unsafe { &mut (*std::ptr::addr_of_mut!(n)) }, 0i32) != 0 {
-// CHECK-NEXT:         [[V_10]] = true as bool;
+// CHECK-NEXT:         [[V_10]] = true;
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         [[V_10]] = bump(unsafe { &mut (*std::ptr::addr_of_mut!(n)) }, 0i32) != 0;
 // CHECK-NEXT:     }
@@ -144,7 +144,7 @@ int main(void) {
 // CHECK-NEXT:         if i < 10 {
 // CHECK-NEXT:             [[V_11]] = bump(unsafe { &mut (*std::ptr::addr_of_mut!(n)) }, 1i32) != 0;
 // CHECK-NEXT:         } else {
-// CHECK-NEXT:             [[V_11]] = false as bool;
+// CHECK-NEXT:             [[V_11]] = false;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         if ![[V_11]] {
 // CHECK-NEXT:             break;

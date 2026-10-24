@@ -25,7 +25,7 @@ int main(void) {
 // CHECK-NEXT:         printf(c"%zu %zu %zu %zu %zu\n".as_ptr(), 8u64, 16u64, 20u64, 24u64, 0u64)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     (20u64 != 20u64) as i32
+// CHECK-NEXT:     false as i32
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(

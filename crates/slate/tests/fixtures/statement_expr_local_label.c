@@ -34,7 +34,7 @@ int main(void) {
 // CHECK-NEXT:         value = 0;
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = value + 1;
 // CHECK-NEXT:         value = [[V_0]];
-// CHECK-NEXT:         if !([[V_0]] == 1) {
+// CHECK-NEXT:         if [[V_0]] != 1 {
 // CHECK-NEXT:             [[RESULT_0]] = -5;
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             [[RESULT_0]] = 17;
@@ -42,7 +42,7 @@ int main(void) {
 // CHECK-NEXT:         first = [[RESULT_0]];
 // CHECK-NEXT:         let [[V_1:__v[0-9]+]]: i32 = value + 1;
 // CHECK-NEXT:         value = [[V_1]];
-// CHECK-NEXT:         if !([[V_1]] == 9) {
+// CHECK-NEXT:         if [[V_1]] != 9 {
 // CHECK-NEXT:             result = -5;
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             result = 17;

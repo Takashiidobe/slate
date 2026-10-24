@@ -32,7 +32,7 @@ int main(void) {
 // CHECK-NEXT:     42
 // CHECK-NEXT: }
 // CHECK-NEXT: fn get_value() -> i32 {
-// CHECK-NEXT:     if !((unsafe { computed }) != 0) {
+// CHECK-NEXT:     if (unsafe { computed }) == 0 {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             cached_value = compute();
 // CHECK-NEXT:         }

@@ -101,7 +101,7 @@ int main(void) {
 // CHECK-NEXT:             if sum < 10 {
 // CHECK-NEXT:                 let [[V_1:__v[0-9]+]]: i32 = checks + 1;
 // CHECK-NEXT:                 checks = [[V_1]];
-// CHECK-NEXT:                 if !([[V_1]] < 20) {
+// CHECK-NEXT:                 if [[V_1]] >= 20 {
 // CHECK-NEXT:                     break;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             } else {

@@ -238,7 +238,7 @@ int main(void) {
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             (*__o1).next_free = if 8u64 < 8u64 {
+// CHECK-NEXT:             (*__o1).next_free = if false {
 // CHECK-NEXT:                 (*__o1).object_base
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 std::ptr::null_mut::<i8>()
@@ -246,7 +246,7 @@ int main(void) {
 // CHECK-NEXT:                 .offset(
 // CHECK-NEXT:                     ((unsafe { (*__o1).next_free }
 // CHECK-NEXT:                         .offset_from(
-// CHECK-NEXT:                             (if 8u64 < 8u64 {
+// CHECK-NEXT:                             (if false {
 // CHECK-NEXT:                                 (*__o1).object_base
 // CHECK-NEXT:                             } else {
 // CHECK-NEXT:                                 std::ptr::null_mut::<i8>()
@@ -311,7 +311,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*__o1).next_free = if 8u64 < 8u64 {
+// CHECK-NEXT:         (*__o1).next_free = if false {
 // CHECK-NEXT:             (*__o1).object_base
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             std::ptr::null_mut::<i8>()
@@ -319,7 +319,7 @@ int main(void) {
 // CHECK-NEXT:             .offset(
 // CHECK-NEXT:                 ((unsafe { (*__o1).next_free }
 // CHECK-NEXT:                     .offset_from(
-// CHECK-NEXT:                         (if 8u64 < 8u64 {
+// CHECK-NEXT:                         (if false {
 // CHECK-NEXT:                             (*__o1).object_base
 // CHECK-NEXT:                         } else {
 // CHECK-NEXT:                             std::ptr::null_mut::<i8>()

@@ -61,11 +61,11 @@ int main(void) {
 // CHECK-NEXT:     let mut i: i32 = 0;
 // CHECK-NEXT:     while i < (words.len() as i32) {
 // CHECK-NEXT:         let word: u64 = unsafe { words[i as usize] };
-// CHECK-NEXT:         if (!(!(word == 0)) as i64) == 0 {
+// CHECK-NEXT:         if word != 0 {
 // CHECK-NEXT:             total
 // CHECK-NEXT:                 += ((word.count_ones() as i32) * 100 + (word.trailing_zeros() as i32))
 // CHECK-NEXT:                     as i64;
-// CHECK-NEXT:             if (!(!(word & 1 != 0)) as i64) != 0 {
+// CHECK-NEXT:             if word & 1 != 0 {
 // CHECK-NEXT:                 total += ((word >> 32i32).count_ones() as i32) as i64;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             total
@@ -90,7 +90,7 @@ int main(void) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%ld %d\n".as_ptr(), e, calls) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     if (((unsafe { calls }) == 2) as i64) != 0 {
+// CHECK-NEXT:     if (unsafe { calls }) == 2 {
 // CHECK-NEXT:         println!("probable");
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0

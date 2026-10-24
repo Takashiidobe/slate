@@ -42,14 +42,14 @@ int main(void) {
 // CHECK-NEXT:     if a != 0 {
 // CHECK-NEXT:         [[V_0]] = mark(b) != 0;
 // CHECK-NEXT:     } else {
-// CHECK-NEXT:         [[V_0]] = false as bool;
+// CHECK-NEXT:         [[V_0]] = false;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     [[V_0]] as i32
 // CHECK-NEXT: }
 // CHECK-NEXT: fn logical_or(a: i32, b: i32) -> i32 {
 // CHECK-NEXT:     let mut [[V_1:__v[0-9]+]]: bool;
 // CHECK-NEXT:     if a != 0 {
-// CHECK-NEXT:         [[V_1]] = true as bool;
+// CHECK-NEXT:         [[V_1]] = true;
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         [[V_1]] = mark(b) != 0;
 // CHECK-NEXT:     }
@@ -72,10 +72,7 @@ int main(void) {
 // CHECK-NEXT:         hits = 0;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("{} {}", logical_or(0i32, 7i32), unsafe { hits });
-// CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", ! (0i32 != 0i32) as i32, ! (4i32 != 0i32) as i32, ! (! (9i32 !=
-// CHECK-NEXT:         0i32)) as i32
-// CHECK-NEXT:     );
+// CHECK-NEXT:     println!("{} {} {}", true as i32, false as i32, true as i32);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

@@ -862,7 +862,7 @@ int main(void) {
 // CHECK-NEXT:         concurrency_total += [[V_4]];
 // CHECK-NEXT:         unsafe { tss_delete(thread_key) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     concurrency_total += (4i32 >= 1i32) as i32;
+// CHECK-NEXT:     concurrency_total += true as i32;
 // CHECK-NEXT:     conversion_total = (((unsafe {
 // CHECK-NEXT:         mbrtoc16(
 // CHECK-NEXT:             std::ptr::addr_of_mut!(converted16),
@@ -924,9 +924,8 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     complex_total = (((unsafe { creal(complex_value) }) == 2.0f64) as i32)
 // CHECK-NEXT:         + (((unsafe { cimag(complex_value) }) == 3.0f64) as i32);
-// CHECK-NEXT:     limits_total = ((9i32 >= 6i32) as i32) + ((17i32 >= 10i32) as i32)
-// CHECK-NEXT:         + ((21i32 >= 10i32) as i32) + ((1e-45f32 > 0.0f32) as i32)
-// CHECK-NEXT:         + ((5e-324f64 > 0.0f64) as i32)
+// CHECK-NEXT:     limits_total = (true as i32) + (true as i32) + (true as i32)
+// CHECK-NEXT:         + ((1e-45f32 > 0.0f32) as i32) + ((5e-324f64 > 0.0f64) as i32)
 // CHECK-NEXT:         + ((LongDouble([1, 0, 0, 0, 0, 0, 0, 0, 0, 0])
 // CHECK-NEXT:             > LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0])) as i32)
 // CHECK-NEXT:         + ((1i32 >= -1i32) as i32) + ((1i32 >= -1i32) as i32) + ((1i32 >= -1i32) as i32);

@@ -92,8 +92,8 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let counter: i32 = 0;
 // CHECK-NEXT:     let x: i32 = 5;
-// CHECK-NEXT:     unsafe { std::hint::assert_unchecked(true as bool) };
-// CHECK-NEXT:     unsafe { std::hint::assert_unchecked(true as bool) };
+// CHECK-NEXT:     unsafe { std::hint::assert_unchecked(true) };
+// CHECK-NEXT:     unsafe { std::hint::assert_unchecked(true) };
 // CHECK-NEXT:     println!("{} {} {}", x, counter, positive_half(9i32));
 // CHECK-NEXT:     for i in 0i32..6i32 {
 // CHECK-NEXT:         print!("{} ", classify(i));

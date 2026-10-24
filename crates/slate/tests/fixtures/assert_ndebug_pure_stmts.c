@@ -62,7 +62,7 @@ int main(void) {
 // CHECK-NEXT:         result -= 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     // a small result is already final
-// CHECK-NEXT:     while 0i32 != 0i32 {}
+// CHECK-NEXT:     while false {}
 // CHECK-NEXT:     bump();
 // CHECK-NEXT:     result
 // CHECK: {{^}}}

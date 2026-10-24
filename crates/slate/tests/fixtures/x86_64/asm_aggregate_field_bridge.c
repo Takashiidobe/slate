@@ -111,10 +111,7 @@ int main(void) {
 // CHECK-NEXT:         [[T_0]].second = 2u16;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut flags: flags = flags {
-// CHECK-NEXT:         first: 1i32 != 0i32,
-// CHECK-NEXT:         second: 2,
-// CHECK-NEXT:     };
+// CHECK-NEXT:     let mut flags: flags = flags { first: true, second: 2 };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]]: u32;
 // CHECK-NEXT:         core::arch::asm!(
@@ -244,11 +241,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe { printf(c"%u %u\n".as_ptr(), (partial.byte as u32) as i32, partial.word) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let mut nested: nested = nested {
-// CHECK-NEXT:         inner: flags {
-// CHECK-NEXT:             first: 0i32 != 0i32,
-// CHECK-NEXT:             second: 3,
-// CHECK-NEXT:         },
-// CHECK-NEXT:         done: [1i32 != 0i32, 0i32 != 0i32],
+// CHECK-NEXT:         inner: flags { first: false, second: 3 },
+// CHECK-NEXT:         done: [true, false],
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_9:__t[0-9]+]]: u32;

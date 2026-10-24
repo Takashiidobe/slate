@@ -73,7 +73,7 @@ int main(void) {
 // CHECK-NEXT:     let mut value: i32 = 0;
 // CHECK-NEXT:     let mut expected: i32 = 20;
 // CHECK-NEXT:     let mut total: i32 = 0;
-// CHECK-NEXT:     let mut flag: bool = false as bool;
+// CHECK-NEXT:     let mut flag: bool = false;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(value) as *mut i32)
 // CHECK-NEXT:             .store(10i32, std::sync::atomic::Ordering::SeqCst)
@@ -240,7 +240,7 @@ int main(void) {
 // CHECK-NEXT:     let [[V_28:__v[0-9]+]]: i32 = [[V_27]];
 // CHECK-NEXT:     total += [[V_28]];
 // CHECK-NEXT:     let [[V_29:__v[0-9]+]]: bool = unsafe {
-// CHECK-NEXT:         let [[T_30:__t[0-9]+]] = true as bool;
+// CHECK-NEXT:         let [[T_30:__t[0-9]+]] = true;
 // CHECK-NEXT:         let [[T_31:__t[0-9]+]] = std::sync::atomic::AtomicBool::from_ptr(
 // CHECK-NEXT:                 std::ptr::addr_of_mut!(flag) as *mut bool,
 // CHECK-NEXT:             )
@@ -250,7 +250,7 @@ int main(void) {
 // CHECK-NEXT:     let [[V_30:__v[0-9]+]]: i32 = ![[V_29]] as i32;
 // CHECK-NEXT:     total += [[V_30]];
 // CHECK-NEXT:     let [[V_31:__v[0-9]+]]: bool = unsafe {
-// CHECK-NEXT:         let [[T_32:__t[0-9]+]] = true as bool;
+// CHECK-NEXT:         let [[T_32:__t[0-9]+]] = true;
 // CHECK-NEXT:         let [[T_33:__t[0-9]+]] = std::sync::atomic::AtomicBool::from_ptr(
 // CHECK-NEXT:                 std::ptr::addr_of_mut!(flag) as *mut bool,
 // CHECK-NEXT:             )
@@ -263,14 +263,14 @@ int main(void) {
 // CHECK-NEXT:         std::sync::atomic::AtomicBool::from_ptr(
 // CHECK-NEXT:                 std::ptr::addr_of_mut!(flag) as *mut bool,
 // CHECK-NEXT:             )
-// CHECK-NEXT:             .store(false as bool, std::sync::atomic::Ordering::SeqCst)
+// CHECK-NEXT:             .store(false, std::sync::atomic::Ordering::SeqCst)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let [[V_33:__v[0-9]+]]: i32 = total + (!flag as i32);
 // CHECK-NEXT:     total = [[V_33]];
 // CHECK-NEXT:     std::sync::atomic::fence(std::sync::atomic::Ordering::SeqCst);
 // CHECK-NEXT:     std::sync::atomic::compiler_fence(std::sync::atomic::Ordering::SeqCst);
-// CHECK-NEXT:     total += (true as bool) as i32;
-// CHECK-NEXT:     total += (true as bool) as i32;
+// CHECK-NEXT:     total += true as i32;
+// CHECK-NEXT:     total += true as i32;
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: fn gnu_builtin_sync() -> i32 {

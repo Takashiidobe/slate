@@ -52,14 +52,14 @@ int main(void) {
 // CHECK-NEXT:     fn __slate_intrinsic_46d8fd79c9d1f86c();
 // CHECK-NEXT: }
 // CHECK-NEXT: fn likely_nonzero(x: i32) -> i32 {
-// CHECK-NEXT:     if ((x != 0) as i64) != 0 {
+// CHECK-NEXT:     if x != 0 {
 // CHECK-NEXT:         unsafe { std::hint::assert_unchecked(x != 0) };
 // CHECK-NEXT:         return x + 10;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     -1
 // CHECK-NEXT: }
 // CHECK-NEXT: fn assume_true(x: i32) -> i32 {
-// CHECK-NEXT:     unsafe { std::hint::assert_unchecked(1i32 != 0i32) };
+// CHECK-NEXT:     unsafe { std::hint::assert_unchecked(true) };
 // CHECK-NEXT:     x + 1
 // CHECK-NEXT: }
 // CHECK-NEXT: fn guarded_trap(x: i32) -> i32 {

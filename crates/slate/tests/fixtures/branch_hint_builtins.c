@@ -73,7 +73,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn use_unpredictable(x: i32) -> i32 {
-// CHECK-NEXT:     if ((bump(x) > 0) as i64) != 0 {
+// CHECK-NEXT:     if bump(x) > 0 {
 // CHECK-NEXT:         return 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0

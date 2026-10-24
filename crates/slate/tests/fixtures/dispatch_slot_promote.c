@@ -68,7 +68,7 @@ int main(void) {
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             total += i;
 // CHECK-NEXT:             i += 1;
-// CHECK-NEXT:             if !(i < n) {
+// CHECK-NEXT:             if i >= n {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
@@ -84,7 +84,7 @@ int main(void) {
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             bump(&mut (*std::ptr::addr_of_mut!(x)));
 // CHECK-NEXT:             k += 1;
-// CHECK-NEXT:             if !(k < 3) {
+// CHECK-NEXT:             if k >= 3 {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
@@ -102,7 +102,7 @@ int main(void) {
 // CHECK-NEXT:             (*[[SLATE_SLOT_0]]).a += (*[[SLATE_SLOT_0]]).b;
 // CHECK-NEXT:             let [[V_0:__v[0-9]+]]: i32 = k + 1;
 // CHECK-NEXT:             k = [[V_0]];
-// CHECK-NEXT:             if !([[V_0]] < n) {
+// CHECK-NEXT:             if [[V_0]] >= n {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
@@ -120,7 +120,7 @@ int main(void) {
 // CHECK-NEXT:             *[[SLATE_SLOT_0]] *= 2;
 // CHECK-NEXT:             let [[V_0:__v[0-9]+]]: i32 = k + 1;
 // CHECK-NEXT:             k = [[V_0]];
-// CHECK-NEXT:             if !([[V_0]] < n) {
+// CHECK-NEXT:             if [[V_0]] >= n {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }

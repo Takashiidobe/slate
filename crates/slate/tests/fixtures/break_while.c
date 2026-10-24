@@ -26,7 +26,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn countdown(mut n: i32) -> i32 {
 // CHECK-NEXT:     let mut steps: i32 = 0;
-// CHECK-NEXT:     while 1i32 != 0i32 {
+// CHECK-NEXT:     while true {
 // CHECK-NEXT:         if n <= 0 {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }

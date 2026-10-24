@@ -89,9 +89,9 @@ int main(void) {
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         println!(
-// CHECK-NEXT:             "{}{}{}{}{} {}", ! (! x.is_nan()) as i32, ! (! ((if x.is_infinite() { if x
-// CHECK-NEXT:             .is_sign_negative() { - 1i32 } else { 1i32 } } else { 0i32 }) != 0)) as i32,
-// CHECK-NEXT:             ! (! x.is_finite()) as i32, ! (! x.is_normal()) as i32, ! (! x
+// CHECK-NEXT:             "{}{}{}{}{} {}", ! (! x.is_nan()) as i32, ((if x.is_infinite() { if x
+// CHECK-NEXT:             .is_sign_negative() { - 1i32 } else { 1i32 } } else { 0i32 }) != 0) as i32, !
+// CHECK-NEXT:             (! x.is_finite()) as i32, ! (! x.is_normal()) as i32, ! (! x
 // CHECK-NEXT:             .is_sign_negative()) as i32, if x.is_nan() { 0i32 } else { if x.is_infinite()
 // CHECK-NEXT:             { 1i32 } else { if x.is_normal() { 4i32 } else { if x.is_subnormal() { 3i32 }
 // CHECK-NEXT:             else { 2i32 } } } }
@@ -112,16 +112,16 @@ int main(void) {
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         println!(
-// CHECK-NEXT:             "{}{}{}{}{} {}", ! (! x.is_nan()) as i32, ! (! ((if x.is_infinite() { if x
-// CHECK-NEXT:             .is_sign_negative() { - 1i32 } else { 1i32 } } else { 0i32 }) != 0)) as i32,
-// CHECK-NEXT:             ! (! x.is_finite()) as i32, ! (! x.is_normal()) as i32, ! (! x
+// CHECK-NEXT:             "{}{}{}{}{} {}", ! (! x.is_nan()) as i32, ((if x.is_infinite() { if x
+// CHECK-NEXT:             .is_sign_negative() { - 1i32 } else { 1i32 } } else { 0i32 }) != 0) as i32, !
+// CHECK-NEXT:             (! x.is_finite()) as i32, ! (! x.is_normal()) as i32, ! (! x
 // CHECK-NEXT:             .is_sign_negative()) as i32, if x.is_nan() { 0i32 } else { if x.is_infinite()
 // CHECK-NEXT:             { 1i32 } else { if x.is_normal() { 4i32 } else { if x.is_subnormal() { 3i32 }
 // CHECK-NEXT:             else { 2i32 } } } }
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let result: i32 = once(unsafe { nan.value }).is_nan() as i32;
-// CHECK-NEXT:     println!("{} {}", ! (! (result != 0)) as i32, unsafe { calls });
+// CHECK-NEXT:     println!("{} {}", (result != 0) as i32, unsafe { calls });
 // CHECK-NEXT:     ((unsafe { calls }) != 1) as i32
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

@@ -34,12 +34,12 @@ inner:
 // CHECK-NEXT:             loop {
 // CHECK-NEXT:                 total += i * j;
 // CHECK-NEXT:                 j += 1;
-// CHECK-NEXT:                 if !(j < 3) {
+// CHECK-NEXT:                 if j >= 3 {
 // CHECK-NEXT:                     break;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
 // CHECK-NEXT:             i += 1;
-// CHECK-NEXT:             if !(i < 4) {
+// CHECK-NEXT:             if i >= 4 {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }

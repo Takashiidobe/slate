@@ -163,7 +163,7 @@ int main(void) {
 // CHECK-NEXT:                     steps += 5;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
-// CHECK-NEXT:             if !(n > 0) {
+// CHECK-NEXT:             if n <= 0 {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }

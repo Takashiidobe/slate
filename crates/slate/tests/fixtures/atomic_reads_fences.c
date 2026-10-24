@@ -91,7 +91,7 @@ int main(void) {
 // CHECK-NEXT:     let mut p: *mut i32 = std::ptr::addr_of_mut!(c);
 // CHECK-NEXT:     let mut cp: *const i32 = std::ptr::addr_of_mut!(c) as *const i32;
 // CHECK-NEXT:     let mut r#fn: Option<unsafe extern "C-unwind" fn(i32) -> i32> = Some(callback);
-// CHECK-NEXT:     let mut flag: bool = 1i32 != 0i32;
+// CHECK-NEXT:     let mut flag: bool = true;
 // CHECK-NEXT:     let mut v: i32 = 17;
 // CHECK-NEXT:     let mut s: u16 = 65000u16;
 // CHECK-NEXT:     let mut wide: u64 = d;
@@ -158,7 +158,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: bool;
 // CHECK-NEXT:     if (unsafe { *cpv }) != c {
-// CHECK-NEXT:         [[V_0]] = true as bool;
+// CHECK-NEXT:         [[V_0]] = true;
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         [[V_0]] = (unsafe { fnv.unwrap()(7i32) }) != 12;
 // CHECK-NEXT:     }

@@ -27,7 +27,7 @@ loop:
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             sum += i;
 // CHECK-NEXT:             i += 1;
-// CHECK-NEXT:             if !(i < 5) {
+// CHECK-NEXT:             if i >= 5 {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }

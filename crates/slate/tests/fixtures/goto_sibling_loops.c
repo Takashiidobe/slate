@@ -36,7 +36,7 @@ second:
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             sum += i;
 // CHECK-NEXT:             i += 1;
-// CHECK-NEXT:             if !(i < 5) {
+// CHECK-NEXT:             if i >= 5 {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
@@ -44,7 +44,7 @@ second:
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             prod *= k;
 // CHECK-NEXT:             k += 1;
-// CHECK-NEXT:             if !(k < 5) {
+// CHECK-NEXT:             if k >= 5 {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }

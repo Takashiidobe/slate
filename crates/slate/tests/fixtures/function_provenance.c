@@ -488,7 +488,7 @@ int main(void) {
 // CHECK-NEXT:         if ptr != (16i32 as *mut ()) {
 // CHECK-NEXT:             return 2;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -500,7 +500,7 @@ int main(void) {
 // CHECK-NEXT:         {
 // CHECK-NEXT:             return 3;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -510,7 +510,7 @@ int main(void) {
 // CHECK-NEXT:         {
 // CHECK-NEXT:             return 4;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -519,7 +519,7 @@ int main(void) {
 // CHECK-NEXT:         if (unsafe { project_state }) != 77 {
 // CHECK-NEXT:             return 5;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -532,7 +532,7 @@ int main(void) {
 // CHECK-NEXT:         {
 // CHECK-NEXT:             return 6;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -545,7 +545,7 @@ int main(void) {
 // CHECK-NEXT:         {
 // CHECK-NEXT:             return 7;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -558,7 +558,7 @@ int main(void) {
 // CHECK-NEXT:         {
 // CHECK-NEXT:             return 8;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -571,7 +571,7 @@ int main(void) {
 // CHECK-NEXT:         {
 // CHECK-NEXT:             return 9;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -579,7 +579,7 @@ int main(void) {
 // CHECK-NEXT:         if strlen(a.as_mut_ptr() as *const i8) != 5 {
 // CHECK-NEXT:             return 10;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -587,7 +587,7 @@ int main(void) {
 // CHECK-NEXT:         if (unsafe { strlen_call.unwrap()(a.as_mut_ptr() as *const i8) }) != 5 {
 // CHECK-NEXT:             return 10;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -597,7 +597,7 @@ int main(void) {
 // CHECK-NEXT:         {
 // CHECK-NEXT:             return 11;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -607,7 +607,7 @@ int main(void) {
 // CHECK-NEXT:         {
 // CHECK-NEXT:             return 12;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -620,7 +620,7 @@ int main(void) {
 // CHECK-NEXT:         {
 // CHECK-NEXT:             return 13;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -633,7 +633,7 @@ int main(void) {
 // CHECK-NEXT:         {
 // CHECK-NEXT:             return 14;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -641,7 +641,7 @@ int main(void) {
 // CHECK-NEXT:         if strcmp(a.as_mut_ptr() as *const i8, b.as_mut_ptr() as *const i8) != 11 {
 // CHECK-NEXT:             return 15;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -654,7 +654,7 @@ int main(void) {
 // CHECK-NEXT:         {
 // CHECK-NEXT:             return 16;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -667,7 +667,7 @@ int main(void) {
 // CHECK-NEXT:         {
 // CHECK-NEXT:             return 17;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -679,7 +679,7 @@ int main(void) {
 // CHECK-NEXT:         {
 // CHECK-NEXT:             return 18;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -691,7 +691,7 @@ int main(void) {
 // CHECK-NEXT:         {
 // CHECK-NEXT:             return 19;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -701,7 +701,7 @@ int main(void) {
 // CHECK-NEXT:         {
 // CHECK-NEXT:             return 20;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -711,7 +711,7 @@ int main(void) {
 // CHECK-NEXT:         {
 // CHECK-NEXT:             return 21;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -719,7 +719,7 @@ int main(void) {
 // CHECK-NEXT:         if strspn(a.as_mut_ptr() as *const i8, b.as_mut_ptr() as *const i8) != 31 {
 // CHECK-NEXT:             return 22;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -727,7 +727,7 @@ int main(void) {
 // CHECK-NEXT:         if strcspn(a.as_mut_ptr() as *const i8, b.as_mut_ptr() as *const i8) != 32 {
 // CHECK-NEXT:             return 23;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -735,7 +735,7 @@ int main(void) {
 // CHECK-NEXT:         if atoi(a.as_mut_ptr() as *const i8) != 41 {
 // CHECK-NEXT:             return 24;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -743,7 +743,7 @@ int main(void) {
 // CHECK-NEXT:         if atol(a.as_mut_ptr() as *const i8) != 42 {
 // CHECK-NEXT:             return 25;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -756,7 +756,7 @@ int main(void) {
 // CHECK-NEXT:         {
 // CHECK-NEXT:             return 26;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -769,7 +769,7 @@ int main(void) {
 // CHECK-NEXT:         {
 // CHECK-NEXT:             return 27;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -777,7 +777,7 @@ int main(void) {
 // CHECK-NEXT:         if strtod(a.as_mut_ptr() as *const i8, std::ptr::addr_of_mut!(end)) != 45.0f64 {
 // CHECK-NEXT:             return 28;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -785,7 +785,7 @@ int main(void) {
 // CHECK-NEXT:         if printf(a.as_mut_ptr() as *const i8) != 51 {
 // CHECK-NEXT:             return 29;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -793,7 +793,7 @@ int main(void) {
 // CHECK-NEXT:         if puts(a.as_mut_ptr() as *const i8) != 52 {
 // CHECK-NEXT:             return 30;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -805,7 +805,7 @@ int main(void) {
 // CHECK-NEXT:         if stream != (48i32 as *mut ()) {
 // CHECK-NEXT:             return 31;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -813,7 +813,7 @@ int main(void) {
 // CHECK-NEXT:         if fputs(a.as_mut_ptr() as *const i8, stream) != 54 {
 // CHECK-NEXT:             return 32;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -826,7 +826,7 @@ int main(void) {
 // CHECK-NEXT:         {
 // CHECK-NEXT:             return 33;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -840,7 +840,7 @@ int main(void) {
 // CHECK-NEXT:         {
 // CHECK-NEXT:             return 34;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -854,7 +854,7 @@ int main(void) {
 // CHECK-NEXT:         {
 // CHECK-NEXT:             return 35;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -862,7 +862,7 @@ int main(void) {
 // CHECK-NEXT:         if fclose(stream) != 58 {
 // CHECK-NEXT:             return 36;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -870,7 +870,7 @@ int main(void) {
 // CHECK-NEXT:         if fflush(stream) != 59 {
 // CHECK-NEXT:             return 37;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -878,7 +878,7 @@ int main(void) {
 // CHECK-NEXT:         if remove(a.as_mut_ptr() as *const i8) != 60 {
 // CHECK-NEXT:             return 38;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -887,7 +887,7 @@ int main(void) {
 // CHECK-NEXT:         {
 // CHECK-NEXT:             return 39;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -896,7 +896,7 @@ int main(void) {
 // CHECK-NEXT:         {
 // CHECK-NEXT:             return 40;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -904,7 +904,7 @@ int main(void) {
 // CHECK-NEXT:         if sin(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) }) != 63.0f64 {
 // CHECK-NEXT:             return 41;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -912,7 +912,7 @@ int main(void) {
 // CHECK-NEXT:         if cos(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) }) != 64.0f64 {
 // CHECK-NEXT:             return 42;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -920,7 +920,7 @@ int main(void) {
 // CHECK-NEXT:         if tan(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) }) != 65.0f64 {
 // CHECK-NEXT:             return 43;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -928,7 +928,7 @@ int main(void) {
 // CHECK-NEXT:         if log(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) }) != 66.0f64 {
 // CHECK-NEXT:             return 44;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -937,7 +937,7 @@ int main(void) {
 // CHECK-NEXT:         {
 // CHECK-NEXT:             return 45;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -946,7 +946,7 @@ int main(void) {
 // CHECK-NEXT:         {
 // CHECK-NEXT:             return 46;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -958,7 +958,7 @@ int main(void) {
 // CHECK-NEXT:         {
 // CHECK-NEXT:             return 47;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -967,7 +967,7 @@ int main(void) {
 // CHECK-NEXT:         {
 // CHECK-NEXT:             return 48;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -975,7 +975,7 @@ int main(void) {
 // CHECK-NEXT:         if exp(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) }) != 71.0f64 {
 // CHECK-NEXT:             return 49;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -984,7 +984,7 @@ int main(void) {
 // CHECK-NEXT:         {
 // CHECK-NEXT:             return 50;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -996,7 +996,7 @@ int main(void) {
 // CHECK-NEXT:         {
 // CHECK-NEXT:             return 51;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -1004,7 +1004,7 @@ int main(void) {
 // CHECK-NEXT:         if lround(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) }) != 74 {
 // CHECK-NEXT:             return 52;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -1012,7 +1012,7 @@ int main(void) {
 // CHECK-NEXT:         if llround(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) }) != 75 {
 // CHECK-NEXT:             return 53;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -1026,7 +1026,7 @@ int main(void) {
 // CHECK-NEXT:         {
 // CHECK-NEXT:             return 54;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -1034,7 +1034,7 @@ int main(void) {
 // CHECK-NEXT:         if pthread_join(thread, std::ptr::addr_of_mut!(ptr)) != 79 {
 // CHECK-NEXT:             return 55;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -1048,7 +1048,7 @@ int main(void) {
 // CHECK-NEXT:         if (unsafe { project_state }) != 76 {
 // CHECK-NEXT:             return 56;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -1063,7 +1063,7 @@ int main(void) {
 // CHECK-NEXT:         {
 // CHECK-NEXT:             return 57;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }

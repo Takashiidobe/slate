@@ -99,8 +99,8 @@ int main(void) {
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         println!("alpha-no");
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if !((((unsafe { *unsafe { *__ctype_b_loc() }.offset((digit as i32) as isize) })
-// CHECK-NEXT:         as u32) as i32) & 1024 != 0)
+// CHECK-NEXT:     if (((unsafe { *unsafe { *__ctype_b_loc() }.offset((digit as i32) as isize) })
+// CHECK-NEXT:         as u32) as i32) & 1024 == 0
 // CHECK-NEXT:     {
 // CHECK-NEXT:         println!("not-alpha-yes");
 // CHECK-NEXT:     } else {

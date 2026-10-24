@@ -1,4 +1,5 @@
 mod array_iter;
+mod bool_simplify;
 mod bool_ternary;
 mod compound_assign;
 pub(super) mod const_fold;
@@ -70,6 +71,7 @@ pub(super) fn registry(target: &slate_parser::target_info::TargetInfo) -> Vec<Bo
         Box::new(constant_index_casts::ConstantIndexCasts),
         Box::new(null_compare::NullCompare),
         Box::new(ptr_offset::PtrOffset),
+        Box::new(bool_simplify::BoolSimplify),
         Box::new(pattern_range::MatchRangeFold),
         Box::new(cstr_literal::CStrLiteral {
             c_char: if target.char_signed {

@@ -27,12 +27,10 @@ int main(void) {
 // CHECK-NEXT:     _Value: bool,
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut flag: atomic_flag = atomic_flag {
-// CHECK-NEXT:         _Value: 0i32 != 0i32,
-// CHECK-NEXT:     };
+// CHECK-NEXT:     let mut flag: atomic_flag = atomic_flag { _Value: false };
 // CHECK-NEXT:     let mut first: i32 = 0;
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: bool = unsafe {
-// CHECK-NEXT:         let [[T_0:__t[0-9]+]] = 1i32 != 0i32;
+// CHECK-NEXT:         let [[T_0:__t[0-9]+]] = true;
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]] = std::sync::atomic::AtomicBool::from_ptr(
 // CHECK-NEXT:                 std::ptr::addr_of_mut!((* std::ptr::addr_of_mut!(flag))._Value)
 // CHECK-NEXT:                     as *mut bool,
@@ -46,11 +44,11 @@ int main(void) {
 // CHECK-NEXT:                 std::ptr::addr_of_mut!((* std::ptr::addr_of_mut!(flag))._Value)
 // CHECK-NEXT:                     as *mut bool,
 // CHECK-NEXT:             )
-// CHECK-NEXT:             .store(0i32 != 0i32, std::sync::atomic::Ordering::Release)
+// CHECK-NEXT:             .store(false, std::sync::atomic::Ordering::Release)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut second: i32 = 0;
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: bool = unsafe {
-// CHECK-NEXT:         let [[T_2:__t[0-9]+]] = 1i32 != 0i32;
+// CHECK-NEXT:         let [[T_2:__t[0-9]+]] = true;
 // CHECK-NEXT:         let [[T_3:__t[0-9]+]] = std::sync::atomic::AtomicBool::from_ptr(
 // CHECK-NEXT:                 std::ptr::addr_of_mut!((* std::ptr::addr_of_mut!(flag))._Value)
 // CHECK-NEXT:                     as *mut bool,
@@ -61,7 +59,7 @@ int main(void) {
 // CHECK-NEXT:     second = [[V_1]] as i32;
 // CHECK-NEXT:     let mut third: i32 = 0;
 // CHECK-NEXT:     let [[V_2:__v[0-9]+]]: bool = unsafe {
-// CHECK-NEXT:         let [[T_4:__t[0-9]+]] = 1i32 != 0i32;
+// CHECK-NEXT:         let [[T_4:__t[0-9]+]] = true;
 // CHECK-NEXT:         let [[T_5:__t[0-9]+]] = std::sync::atomic::AtomicBool::from_ptr(
 // CHECK-NEXT:                 std::ptr::addr_of_mut!((* std::ptr::addr_of_mut!(flag))._Value)
 // CHECK-NEXT:                     as *mut bool,
@@ -75,11 +73,11 @@ int main(void) {
 // CHECK-NEXT:                 std::ptr::addr_of_mut!((* std::ptr::addr_of_mut!(flag))._Value)
 // CHECK-NEXT:                     as *mut bool,
 // CHECK-NEXT:             )
-// CHECK-NEXT:             .store(0i32 != 0i32, std::sync::atomic::Ordering::SeqCst)
+// CHECK-NEXT:             .store(false, std::sync::atomic::Ordering::SeqCst)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut fourth: i32 = 0;
 // CHECK-NEXT:     let [[V_3:__v[0-9]+]]: bool = unsafe {
-// CHECK-NEXT:         let [[T_6:__t[0-9]+]] = 1i32 != 0i32;
+// CHECK-NEXT:         let [[T_6:__t[0-9]+]] = true;
 // CHECK-NEXT:         let [[T_7:__t[0-9]+]] = std::sync::atomic::AtomicBool::from_ptr(
 // CHECK-NEXT:                 std::ptr::addr_of_mut!((* std::ptr::addr_of_mut!(flag))._Value)
 // CHECK-NEXT:                     as *mut bool,

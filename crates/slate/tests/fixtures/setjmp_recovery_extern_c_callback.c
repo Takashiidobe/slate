@@ -59,7 +59,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { longjmp(std::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag, 1i32) };
 // CHECK-NEXT: }
 // CHECK-NEXT: extern "C-unwind" fn check(ok: i32) {
-// CHECK-NEXT:     if !(ok != 0) {
+// CHECK-NEXT:     if ok == 0 {
 // CHECK-NEXT:         fail_now();
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("PASS");

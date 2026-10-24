@@ -66,7 +66,7 @@ int main(void) {
 // CHECK-NEXT:     if (holder.mode as u32) == 1 {
 // CHECK-NEXT:         [[V_0]] = increment(1i32) == 2;
 // CHECK-NEXT:     } else {
-// CHECK-NEXT:         [[V_0]] = false as bool;
+// CHECK-NEXT:         [[V_0]] = false;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if [[V_0]] && (unsafe { completed_count }) == 2 {
 // CHECK-NEXT:         0

@@ -51,7 +51,7 @@ int main(void) {
 // CHECK-NEXT:     loop {
 // CHECK-NEXT:         total += i;
 // CHECK-NEXT:         i += 1;
-// CHECK-NEXT:         if !(i <= n) {
+// CHECK-NEXT:         if i > n {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -61,7 +61,7 @@ int main(void) {
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     loop {
 // CHECK-NEXT:         total += 7;
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -75,7 +75,7 @@ int main(void) {
 // CHECK-NEXT:         if i % 2 != 0 {
 // CHECK-NEXT:             total += i;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if !(i < n) {
+// CHECK-NEXT:         if i >= n {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }

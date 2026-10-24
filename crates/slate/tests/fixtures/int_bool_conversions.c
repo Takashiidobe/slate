@@ -94,7 +94,7 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{} {}", to_bool_u8(0u8) as i32, to_bool_u8(200u8) as i32);
 // CHECK-NEXT:     println!("{} {}", to_bool_ll(1099511627776i64) as i32, to_bool_ll(0i64) as i32);
-// CHECK-NEXT:     let mut b: bool = 42i32 != 0i32;
+// CHECK-NEXT:     let mut b: bool = true;
 // CHECK-NEXT:     println!("{} {}", b as i32, from_bool(b));
 // CHECK-NEXT:     b = to_bool(0i32);
 // CHECK-NEXT:     let bi: i32 = b as i32;
@@ -120,7 +120,7 @@ int main(void) {
 // CHECK-NEXT:     uc = ((((uc as u32) as i32) + 1) as i8) as u8;
 // CHECK-NEXT:     println!("{}", (uc as u32) as i32);
 // CHECK-NEXT:     let c: bool = !b;
-// CHECK-NEXT:     println!("{} {}", c as i32, ! (bi != 0) as i32);
+// CHECK-NEXT:     println!("{} {}", c as i32, (bi == 0) as i32);
 // CHECK-NEXT:     (to_bool(3i32) as i32) + (to_bool(0i32) as i32)
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

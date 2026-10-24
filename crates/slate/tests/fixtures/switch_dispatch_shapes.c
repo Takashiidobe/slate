@@ -186,7 +186,7 @@ int main(void) {
 // CHECK-NEXT: fn run(ops: *const u32) -> i32 {
 // CHECK-NEXT:     let mut acc: i32 = 1;
 // CHECK-NEXT:     let mut i: i32 = 0;
-// CHECK-NEXT:     while 1i32 != 0i32 {
+// CHECK-NEXT:     while true {
 // CHECK-NEXT:         '[[SLATE_CONTINUE_0:__slate_continue_[0-9]+]]: {
 // CHECK-NEXT:             let op: u32 = unsafe { *ops.offset(i as isize) };
 // CHECK-NEXT:             i += 1;

@@ -580,7 +580,7 @@ int main(void) {
 // CHECK-NEXT:                     std::ptr::addr_of_mut!(atomic_character) as *mut u8,
 // CHECK-NEXT:                 )
 // CHECK-NEXT:                 .load(std::sync::atomic::Ordering::SeqCst)
-// CHECK-NEXT:         }) as u32) as i32) == 66) as i32) + ((2i32 > 0i32) as i32)
+// CHECK-NEXT:         }) as u32) as i32) == 66) as i32) + (true as i32)
 // CHECK-NEXT: }
 // CHECK-NEXT: fn c23_memory() -> i32 {
 // CHECK-NEXT:     let mut source: [i8; 7] = [97, 98, 99, 100, 101, 102, 0];
@@ -836,11 +836,9 @@ int main(void) {
 // CHECK-NEXT:         + ((LongDouble([255, 255, 255, 255, 255, 255, 255, 255, 254, 127])
 // CHECK-NEXT:             <= LongDouble([255, 255, 255, 255, 255, 255, 255, 255, 254, 127])) as i32)
 // CHECK-NEXT:         + ((1i32 >= -1i32) as i32) + ((1i32 >= -1i32) as i32) + ((1i32 >= -1i32) as i32)
-// CHECK-NEXT:         + ((4u64 == 4u64) as i32) + ((8u64 == 8u64) as i32) + ((16u64 == 16u64) as i32);
-// CHECK-NEXT:     let header_versions: i32 = ((202311i64 == 202311i64) as i32)
-// CHECK-NEXT:         + ((202311i64 == 202311i64) as i32) + ((202311i64 == 202311i64) as i32)
-// CHECK-NEXT:         + ((202311i64 == 202311i64) as i32) + ((202311i64 == 202311i64) as i32)
-// CHECK-NEXT:         + ((202311i64 == 202311i64) as i32) + ((202311i64 == 202311i64) as i32);
+// CHECK-NEXT:         + (true as i32) + (true as i32) + (true as i32);
+// CHECK-NEXT:     let header_versions: i32 = (true as i32) + (true as i32) + (true as i32)
+// CHECK-NEXT:         + (true as i32) + (true as i32) + (true as i32) + (true as i32);
 // CHECK-NEXT:     integer_widths + floating_limits + header_versions
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {

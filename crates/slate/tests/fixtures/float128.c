@@ -51,10 +51,10 @@ int main(void) {
 // CHECK-NEXT:     if (1.5f128 as f64) != 1.5f64 {
 // CHECK-NEXT:         return 5;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if 16u64 != 16u64 {
+// CHECK-NEXT:     if false {
 // CHECK-NEXT:         return 6;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if 16u64 != 16u64 {
+// CHECK-NEXT:     if false {
 // CHECK-NEXT:         return 7;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0

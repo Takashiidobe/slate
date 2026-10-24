@@ -50,7 +50,7 @@ int main(void) {
 // CHECK-NEXT:     42
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut flag: bool = 1i32 != 0i32;
+// CHECK-NEXT:     let mut flag: bool = true;
 // CHECK-NEXT:     let mut byte: i8 = -2;
 // CHECK-NEXT:     let mut tied: u32 = 0;
 // CHECK-NEXT:     let mut input: i32 = -4;

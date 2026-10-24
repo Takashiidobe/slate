@@ -36,7 +36,7 @@ overflow:
 // CHECK-NEXT:                 return 0;
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 i += 1;
-// CHECK-NEXT:                 if !(i < 5) {
+// CHECK-NEXT:                 if i >= 5 {
 // CHECK-NEXT:                     break;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }

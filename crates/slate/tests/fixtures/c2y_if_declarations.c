@@ -74,7 +74,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:         __slate_vla
 // CHECK-NEXT:     };
-// CHECK-NEXT:     if !((unsafe { *(arr.as_mut_ptr() as *mut i32).add(0) }) != 0) {
+// CHECK-NEXT:     if (unsafe { *(arr.as_mut_ptr() as *mut i32).add(0) }) == 0 {
 // CHECK-NEXT:         let __slate_printf_arg0 = unsafe { *(arr.as_mut_ptr() as *mut i32).add(2) };
 // CHECK-NEXT:         println!("zero {}", __slate_printf_arg0);
 // CHECK-NEXT:     } else {

@@ -61,7 +61,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%d %d %d %08x %016llx %d\n".as_ptr(),
-// CHECK-NEXT:             !(!((if std::ptr::read_volatile(std::ptr::addr_of!(infinity)).is_infinite() {
+// CHECK-NEXT:             ((if std::ptr::read_volatile(std::ptr::addr_of!(infinity)).is_infinite() {
 // CHECK-NEXT:                 if std::ptr::read_volatile(std::ptr::addr_of!(infinity))
 // CHECK-NEXT:                     .is_sign_negative()
 // CHECK-NEXT:                 {
@@ -71,8 +71,8 @@ int main(void) {
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 0i32
-// CHECK-NEXT:             }) != 0)) as i32,
-// CHECK-NEXT:             !(!((if std::ptr::read_volatile(std::ptr::addr_of!(huge)).is_infinite() {
+// CHECK-NEXT:             }) != 0) as i32,
+// CHECK-NEXT:             ((if std::ptr::read_volatile(std::ptr::addr_of!(huge)).is_infinite() {
 // CHECK-NEXT:                 if std::ptr::read_volatile(std::ptr::addr_of!(huge)).is_sign_negative() {
 // CHECK-NEXT:                     -1i32
 // CHECK-NEXT:                 } else {
@@ -80,7 +80,7 @@ int main(void) {
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 0i32
-// CHECK-NEXT:             }) != 0)) as i32,
+// CHECK-NEXT:             }) != 0) as i32,
 // CHECK-NEXT:             !(!std::ptr::read_volatile(std::ptr::addr_of!(nan)).is_nan()) as i32,
 // CHECK-NEXT:             f.bits,
 // CHECK-NEXT:             d.bits,

@@ -45,8 +45,8 @@ int main(void) {
 // CHECK-NEXT:     println!("{}", from_int(42i32) as i32);
 // CHECK-NEXT:     println!("{}", from_compare(2i32, 5i32) as i32);
 // CHECK-NEXT:     println!("{}", from_compare(9i32, 5i32) as i32);
-// CHECK-NEXT:     println!("{}", use_bool(2i32 != 0i32));
-// CHECK-NEXT:     println!("{}", use_bool(0i32 != 0i32));
+// CHECK-NEXT:     println!("{}", use_bool(true));
+// CHECK-NEXT:     println!("{}", use_bool(false));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

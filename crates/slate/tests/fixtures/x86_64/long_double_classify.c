@@ -341,11 +341,11 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn classify(x: LongDouble) -> i32 {
 // CHECK-NEXT:     (!(!__slate_f80_is_fp_class(x, 3)) as i32)
-// CHECK-NEXT:         | (!(!((if __slate_f80_is_fp_class(x, 516) {
+// CHECK-NEXT:         | (((if __slate_f80_is_fp_class(x, 516) {
 // CHECK-NEXT:             if __slate_f80_signbit(x) { -1i32 } else { 1i32 }
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             0i32
-// CHECK-NEXT:         }) != 0)) as i32) << 1i32 | (!(!__slate_f80_is_fp_class(x, 504)) as i32) << 2i32
+// CHECK-NEXT:         }) != 0) as i32) << 1i32 | (!(!__slate_f80_is_fp_class(x, 504)) as i32) << 2i32
 // CHECK-NEXT:         | (!(!__slate_f80_is_fp_class(x, 264)) as i32) << 3i32
 // CHECK-NEXT:         | (!(!__slate_f80_signbit(x)) as i32) << 4i32
 // CHECK-NEXT:         | (((if __slate_f80_is_fp_class(x, 3) {

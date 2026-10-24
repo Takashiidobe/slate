@@ -185,13 +185,13 @@ int main(void) {
 // CHECK-NEXT:     if aligned_to(a as *mut (), 8u64) != 0 {
 // CHECK-NEXT:         [[V_5]] = aligned_to(b as *mut (), 64u64) != 0;
 // CHECK-NEXT:     } else {
-// CHECK-NEXT:         [[V_5]] = false as bool;
+// CHECK-NEXT:         [[V_5]] = false;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut [[V_6:__v[0-9]+]]: bool;
 // CHECK-NEXT:     if [[V_5]] {
 // CHECK-NEXT:         [[V_6]] = aligned_to(c as *mut (), 4096u64) != 0;
 // CHECK-NEXT:     } else {
-// CHECK-NEXT:         [[V_6]] = false as bool;
+// CHECK-NEXT:         [[V_6]] = false;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let [[V_7:__v[0-9]+]]: i32 = [[V_6]] as i32;
 // CHECK-NEXT:     ok &= [[V_7]];

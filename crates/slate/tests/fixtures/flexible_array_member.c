@@ -45,7 +45,7 @@ int main(void) {
 // CHECK-NEXT:     values: [i32; 0],
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     if 8u64 != 8u64 {
+// CHECK-NEXT:     if false {
 // CHECK-NEXT:         return 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let flexible: *mut FlexibleArray = (unsafe { malloc(20u64) }) as *mut FlexibleArray;

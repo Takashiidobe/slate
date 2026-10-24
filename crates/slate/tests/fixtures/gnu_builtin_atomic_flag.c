@@ -17,10 +17,10 @@ int main(void) {
 // CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut flag: bool = false as bool;
+// CHECK-NEXT:     let mut flag: bool = false;
 // CHECK-NEXT:     let mut first: i32 = 0;
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: bool = unsafe {
-// CHECK-NEXT:         let [[T_0:__t[0-9]+]] = true as bool;
+// CHECK-NEXT:         let [[T_0:__t[0-9]+]] = true;
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]] = std::sync::atomic::AtomicBool::from_ptr(
 // CHECK-NEXT:                 std::ptr::addr_of_mut!(flag) as *mut bool,
 // CHECK-NEXT:             )
@@ -30,7 +30,7 @@ int main(void) {
 // CHECK-NEXT:     first = [[V_0]] as i32;
 // CHECK-NEXT:     let mut second: i32 = 0;
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: bool = unsafe {
-// CHECK-NEXT:         let [[T_2:__t[0-9]+]] = true as bool;
+// CHECK-NEXT:         let [[T_2:__t[0-9]+]] = true;
 // CHECK-NEXT:         let [[T_3:__t[0-9]+]] = std::sync::atomic::AtomicBool::from_ptr(
 // CHECK-NEXT:                 std::ptr::addr_of_mut!(flag) as *mut bool,
 // CHECK-NEXT:             )
@@ -42,7 +42,7 @@ int main(void) {
 // CHECK-NEXT:         std::sync::atomic::AtomicBool::from_ptr(
 // CHECK-NEXT:                 std::ptr::addr_of_mut!(flag) as *mut bool,
 // CHECK-NEXT:             )
-// CHECK-NEXT:             .store(false as bool, std::sync::atomic::Ordering::SeqCst)
+// CHECK-NEXT:             .store(false, std::sync::atomic::Ordering::SeqCst)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     println!("{} {} {}", first, second, ! flag as i32);
 // CHECK-NEXT:     0

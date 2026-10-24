@@ -144,19 +144,19 @@ int main(void) {
 // CHECK-NEXT:     if aligned(row.0.as_mut_ptr() as *const (), 16u64) != 0 {
 // CHECK-NEXT:         [[V_0]] = aligned(line.0.as_mut_ptr() as *const (), 64u64) != 0;
 // CHECK-NEXT:     } else {
-// CHECK-NEXT:         [[V_0]] = false as bool;
+// CHECK-NEXT:         [[V_0]] = false;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut [[V_1:__v[0-9]+]]: bool;
 // CHECK-NEXT:     if [[V_0]] {
 // CHECK-NEXT:         [[V_1]] = aligned(block.0.as_mut_ptr() as *const (), 16u64) != 0;
 // CHECK-NEXT:     } else {
-// CHECK-NEXT:         [[V_1]] = false as bool;
+// CHECK-NEXT:         [[V_1]] = false;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut [[V_2:__v[0-9]+]]: bool;
 // CHECK-NEXT:     if [[V_1]] {
 // CHECK-NEXT:         [[V_2]] = aligned(std::ptr::addr_of_mut!(word.0) as *const (), 16u64) != 0;
 // CHECK-NEXT:     } else {
-// CHECK-NEXT:         [[V_2]] = false as bool;
+// CHECK-NEXT:         [[V_2]] = false;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     ok = [[V_2]] as i32;
 // CHECK-NEXT:     let mut [[V_3:__v[0-9]+]]: bool;
@@ -164,7 +164,7 @@ int main(void) {
 // CHECK-NEXT:         [[V_3]] = sum_vectors(row.0.as_mut_ptr() as *const u64, 4i32)
 // CHECK-NEXT:             == 6u64.wrapping_add((depth as i64) as u64);
 // CHECK-NEXT:     } else {
-// CHECK-NEXT:         [[V_3]] = false as bool;
+// CHECK-NEXT:         [[V_3]] = false;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     ok = [[V_3]] as i32;
 // CHECK-NEXT:     if depth > 0 {
@@ -172,7 +172,7 @@ int main(void) {
 // CHECK-NEXT:         if ok != 0 {
 // CHECK-NEXT:             [[V_4]] = locals(depth - 1) != 0;
 // CHECK-NEXT:         } else {
-// CHECK-NEXT:             [[V_4]] = false as bool;
+// CHECK-NEXT:             [[V_4]] = false;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         ok = [[V_4]] as i32;
 // CHECK-NEXT:     }
@@ -187,7 +187,7 @@ int main(void) {
 // CHECK-NEXT:         count = 0;
 // CHECK-NEXT:         std::ptr::write([[SLATE_SLOT_0]], [10u64, 20u64]);
 // CHECK-NEXT:         loop {
-// CHECK-NEXT:             if !(aligned((*[[SLATE_SLOT_0]]).as_mut_ptr() as *const (), 16u64) != 0) {
+// CHECK-NEXT:             if aligned((*[[SLATE_SLOT_0]]).as_mut_ptr() as *const (), 16u64) == 0 {
 // CHECK-NEXT:                 return -1;
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 let [[V_5:__v[0-9]+]]: u64 = sum_vectors(
@@ -200,7 +200,7 @@ int main(void) {
 // CHECK-NEXT:                 *[[V_6]] = [[V_7]].wrapping_add([[V_5]]);
 // CHECK-NEXT:                 let [[V_8:__v[0-9]+]]: i32 = count + 1;
 // CHECK-NEXT:                 count = [[V_8]];
-// CHECK-NEXT:                 if !([[V_8]] < n) {
+// CHECK-NEXT:                 if [[V_8]] >= n {
 // CHECK-NEXT:                     break;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }

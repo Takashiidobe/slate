@@ -170,7 +170,7 @@ int main(void) {
 // CHECK-NEXT:     loop {
 // CHECK-NEXT:         let [[V_2:__v[0-9]+]]: i32 = count;
 // CHECK-NEXT:         count = [[V_2]] - 1;
-// CHECK-NEXT:         if !([[V_2]] > 0) {
+// CHECK-NEXT:         if [[V_2]] <= 0 {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         let [[V_3:__v[0-9]+]]: i64 = unsafe { ap.next_arg::<i64>() };

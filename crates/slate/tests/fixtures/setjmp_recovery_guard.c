@@ -74,7 +74,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT: }
 // CHECK-NEXT: fn inner_check(ok: i32) {
-// CHECK-NEXT:     if !(ok != 0) {
+// CHECK-NEXT:     if ok == 0 {
 // CHECK-NEXT:         unsafe { longjmp(std::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag, 1i32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
@@ -83,7 +83,7 @@ int main(void) {
 // CHECK-NEXT:         record_failure(c"case".as_ptr());
 // CHECK-NEXT:         return;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     inner_check(!(should_fail != 0) as i32);
+// CHECK-NEXT:     inner_check((should_fail == 0) as i32);
 // CHECK-NEXT:     println!("PASS: case {}", id);
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {

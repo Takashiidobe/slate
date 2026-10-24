@@ -471,7 +471,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             result -= 1;
-// CHECK-NEXT:             if !(result > 6) {
+// CHECK-NEXT:             if result <= 6 {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
@@ -536,7 +536,7 @@ int main(void) {
 // CHECK-NEXT:     arithmetic /= 17;
 // CHECK-NEXT:     arithmetic %= 3;
 // CHECK-NEXT:     bitwise &= 31;
-// CHECK-NEXT:     logical = (signed_value < 0 && unsigned_value > 0 || 0i32 != 0i32) as i32;
+// CHECK-NEXT:     logical = (signed_value < 0 && unsigned_value > 0 || false) as i32;
 // CHECK-NEXT:     conditional = if logical != 0 { 47 } else { 0 };
 // CHECK-NEXT:     automatic_value += 1;
 // CHECK-NEXT:     comma_value = automatic_value + 49;

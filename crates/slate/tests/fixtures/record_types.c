@@ -101,7 +101,7 @@ int main(void) {
 // CHECK-NEXT:     loop {
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = count;
 // CHECK-NEXT:         count = [[V_0]] - 1;
-// CHECK-NEXT:         if !([[V_0]] > 0) {
+// CHECK-NEXT:         if [[V_0]] <= 0 {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         total += unsafe { (*node).value };

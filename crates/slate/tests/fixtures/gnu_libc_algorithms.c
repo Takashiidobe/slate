@@ -464,7 +464,7 @@ int main(void) {
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         option = [[V_2]];
-// CHECK-NEXT:         if !([[V_2]] != -1) {
+// CHECK-NEXT:         if [[V_2]] == -1 {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         if option == 110 {

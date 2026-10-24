@@ -289,7 +289,7 @@ int main(void) {
 // CHECK-NEXT:         (*flags).__slate_bits_1.__set__flags2([[T_0]]);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let [[T_1:__t[0-9]+]] = !(((*flags).__slate_bits_0.__get_ready() as i32) != 0);
+// CHECK-NEXT:         let [[T_1:__t[0-9]+]] = ((*flags).__slate_bits_0.__get_ready() as i32) == 0;
 // CHECK-NEXT:         (*flags).__slate_bits_0.__set_ready([[T_1]]);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
@@ -304,12 +304,12 @@ int main(void) {
 // CHECK-NEXT:     local.__slate_bits_0.__set_a(-8i32);
 // CHECK-NEXT:     local.__slate_bits_0.__set_A(15u32);
 // CHECK-NEXT:     local.__slate_bits_0.__set_type(15i32);
-// CHECK-NEXT:     let [[T_1]] = 1i32 != 0i32;
+// CHECK-NEXT:     let [[T_1]] = true;
 // CHECK-NEXT:     local.__slate_bits_0.__set_ready([[T_1]]);
 // CHECK-NEXT:     local.tag = 116;
 // CHECK-NEXT:     local.__slate_bits_1.__set__flags2(8388607i32);
 // CHECK-NEXT:     local.__slate_bits_2.__set_wide(549755813887i64);
-// CHECK-NEXT:     let [[T_2:__t[0-9]+]] = 1i32 != 0i32;
+// CHECK-NEXT:     let [[T_2:__t[0-9]+]] = true;
 // CHECK-NEXT:     local.__slate_bits_2.__set_last([[T_2]]);
 // CHECK-NEXT:     local.after = -2;
 // CHECK-NEXT:     let assigned: i32 = 4i32;

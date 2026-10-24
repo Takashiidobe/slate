@@ -45,7 +45,7 @@ int main(void) {
 // CHECK-NEXT:                     continue;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 2 => {
-// CHECK-NEXT:                     if 0i32 != 0i32 {
+// CHECK-NEXT:                     if false {
 // CHECK-NEXT:                         __slate_state = 1usize;
 // CHECK-NEXT:                         continue;
 // CHECK-NEXT:                     } else {

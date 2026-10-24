@@ -48,7 +48,7 @@ int main(void) {
 // CHECK-NEXT:     x > 3
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn small(x: i32) -> bool {
-// CHECK-NEXT:     !(x > 3)
+// CHECK-NEXT:     x <= 3
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn both(c: bool, y: i32) -> bool {
 // CHECK-NEXT:     c && y > 0

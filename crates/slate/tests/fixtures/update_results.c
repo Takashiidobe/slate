@@ -283,7 +283,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     g2 = [[V_25]];
 // CHECK-NEXT:     println!("{} {}", g1, g2);
-// CHECK-NEXT:     let mut flag: bool = 0i32 != 0i32;
+// CHECK-NEXT:     let mut flag: bool = false;
 // CHECK-NEXT:     flag = (flag as i32) + 1 != 0;
 // CHECK-NEXT:     let mut still: bool = false;
 // CHECK-NEXT:     let [[V_26:__v[0-9]+]]: bool = flag;
@@ -299,7 +299,7 @@ int main(void) {
 // CHECK-NEXT:     loop {
 // CHECK-NEXT:         let [[V_27:__v[0-9]+]]: i32 = n;
 // CHECK-NEXT:         n = [[V_27]] - 1;
-// CHECK-NEXT:         if !([[V_27]] != 0) {
+// CHECK-NEXT:         if [[V_27]] == 0 {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         total += n;

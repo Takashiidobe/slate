@@ -78,7 +78,7 @@ int main(void) {
 // CHECK-NEXT:     color = (color as u32).wrapping_add(1) as u32;
 // CHECK-NEXT:     println!("{}", color as u32);
 // CHECK-NEXT:     println!("{} {}", flip(- 3i32) as i32, ((flip(3i32) as i32) < 0) as i32);
-// CHECK-NEXT:     unsafe { printf(c"%u %d\n".as_ptr(), 4294967295u32, (4294967295u32 > 0u32) as i32) };
+// CHECK-NEXT:     unsafe { printf(c"%u %d\n".as_ptr(), 4294967295u32, true as i32) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let wide: i64 = -3;
 // CHECK-NEXT:     let narrow: u8 = 253u8;

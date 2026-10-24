@@ -26,7 +26,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { std::process::exit(code) };
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     if 0i32 != 0i32 {
+// CHECK-NEXT:     if false {
 // CHECK-NEXT:         die(1i32);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("main");

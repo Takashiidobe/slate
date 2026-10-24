@@ -253,7 +253,7 @@ int main(void) {
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
 // CHECK-NEXT:         };
-// CHECK-NEXT:         if !(![[V_0]]) {
+// CHECK-NEXT:         if [[V_0]] {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         if expected != 0 {
@@ -363,7 +363,7 @@ int main(void) {
 // CHECK-NEXT:                 .fetch_add([[T_9]], std::sync::atomic::Ordering::Relaxed);
 // CHECK-NEXT:             [[T_6]]
 // CHECK-NEXT:         };
-// CHECK-NEXT:         if !(0i32 != 0i32) {
+// CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -752,10 +752,10 @@ int main(void) {
 // CHECK-NEXT:             .store(0i32, std::sync::atomic::Ordering::Release)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     println!("{} {} {} {} {}", swapped, observed, fetched, lock, legacy);
-// CHECK-NEXT:     let mut flag: bool = 0i32 != 0i32;
+// CHECK-NEXT:     let mut flag: bool = false;
 // CHECK-NEXT:     let mut was: bool = false;
 // CHECK-NEXT:     was = unsafe {
-// CHECK-NEXT:         let [[T_66:__t[0-9]+]] = true as bool;
+// CHECK-NEXT:         let [[T_66:__t[0-9]+]] = true;
 // CHECK-NEXT:         let [[T_67:__t[0-9]+]] = std::sync::atomic::AtomicBool::from_ptr(
 // CHECK-NEXT:                 std::ptr::addr_of_mut!(flag) as *mut bool,
 // CHECK-NEXT:             )
@@ -764,7 +764,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut now: bool = false;
 // CHECK-NEXT:     now = unsafe {
-// CHECK-NEXT:         let [[T_68:__t[0-9]+]] = true as bool;
+// CHECK-NEXT:         let [[T_68:__t[0-9]+]] = true;
 // CHECK-NEXT:         let [[T_69:__t[0-9]+]] = std::sync::atomic::AtomicBool::from_ptr(
 // CHECK-NEXT:                 std::ptr::addr_of_mut!(flag) as *mut bool,
 // CHECK-NEXT:             )

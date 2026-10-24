@@ -474,7 +474,7 @@ int main(void) {
 // CHECK-NEXT:     if (((x.wrapping_neg() as i8) << 5 >> 5).wrapping_neg() as i8) << 5 >> 5 != x {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if !(y < x) {
+// CHECK-NEXT:     if y >= x {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let ux: u8 = 5u8;
@@ -497,7 +497,7 @@ int main(void) {
 // CHECK-NEXT:     if x.wrapping_neg().wrapping_neg().compare(x) != 0 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if !(y.compare(x) < 0) {
+// CHECK-NEXT:     if y.compare(x) >= 0 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut ux: bitint::BUint<129, 3, 24, bitint::A8> =
@@ -526,7 +526,7 @@ int main(void) {
 // CHECK-NEXT:     if x.wrapping_neg().wrapping_neg().compare(x) != 0 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if !(y.compare(x) < 0) {
+// CHECK-NEXT:     if y.compare(x) >= 0 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut ux: bitint::BUint<512, 8, 64, bitint::A8> =
@@ -570,7 +570,7 @@ int main(void) {
 // CHECK-NEXT:     if x256.wrapping_neg().compare(y256) != 0 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if !(y256.compare(x256) < 0) {
+// CHECK-NEXT:     if y256.compare(x256) >= 0 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut ux256: bitint::BUint<256, 4, 32, bitint::A8> =
@@ -613,7 +613,7 @@ int main(void) {
 // CHECK-NEXT:     if x512.wrapping_neg().compare(y512) != 0 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if !(y512.compare(x512) < 0) {
+// CHECK-NEXT:     if y512.compare(x512) >= 0 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut ux512: bitint::BUint<512, 8, 64, bitint::A8> =
@@ -714,10 +714,10 @@ int main(void) {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if !(y256.compare(x256) < 0) {
+// CHECK-NEXT:     if y256.compare(x256) >= 0 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if !(x256.compare(y256) > 0) {
+// CHECK-NEXT:     if x256.compare(y256) <= 0 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     check_bitint3();

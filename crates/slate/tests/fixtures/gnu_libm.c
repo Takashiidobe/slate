@@ -375,7 +375,7 @@ int main(void) {
 // CHECK-NEXT:     if (unsafe { j0(1.0f64) }) == unsafe { j0(1.0f64) } {
 // CHECK-NEXT:         [[V_28]] = (unsafe { j0(1.0f64) }) > 0.7f64;
 // CHECK-NEXT:     } else {
-// CHECK-NEXT:         [[V_28]] = false as bool;
+// CHECK-NEXT:         [[V_28]] = false;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let [[V_29:__v[0-9]+]]: i32 = [[V_28]] as i32;
 // CHECK-NEXT:     total += [[V_29]];

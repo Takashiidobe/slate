@@ -148,7 +148,7 @@ int main(void) {
 // CHECK-NEXT:         cursor = unsafe { [[V_6]].add(1) };
 // CHECK-NEXT:         let [[V_7:__v[0-9]+]]: i8 = unsafe { *[[V_6]] };
 // CHECK-NEXT:         ch = [[V_7]];
-// CHECK-NEXT:         if !([[V_7]] != 0) {
+// CHECK-NEXT:         if [[V_7]] == 0 {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         length += ((ch as i32) == 111) as i32;

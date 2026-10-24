@@ -39,7 +39,7 @@ int main(void) {
 // CHECK-NEXT:         unsafe { putchar((data[i as usize] as u32) as i32) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let framed_ok: i32 = (8u64 == 8u64 && (((unsafe { framed[0] }) as u32) as i32) == 170
+// CHECK-NEXT:     let framed_ok: i32 = (true && (((unsafe { framed[0] }) as u32) as i32) == 170
 // CHECK-NEXT:         && (((unsafe { framed[1] }) as u32) as i32) == 187
 // CHECK-NEXT:         && (((unsafe { framed[2] }) as u32) as i32) == 67
 // CHECK-NEXT:         && (((unsafe { framed[3] }) as u32) as i32) == 50
@@ -47,9 +47,8 @@ int main(void) {
 // CHECK-NEXT:         && (((unsafe { framed[5] }) as u32) as i32) == 10
 // CHECK-NEXT:         && (((unsafe { framed[6] }) as u32) as i32) == 204
 // CHECK-NEXT:         && (((unsafe { framed[7] }) as u32) as i32) == 221) as i32;
-// CHECK-NEXT:     let empty_ok: i32 = (1u64 == 1u64 && (((unsafe { empty[0] }) as u32) as i32) == 238)
-// CHECK-NEXT:         as i32;
-// CHECK-NEXT:     if 4u64 == 4u64 && (((unsafe { data[0] }) as u32) as i32) == 67
+// CHECK-NEXT:     let empty_ok: i32 = (true && (((unsafe { empty[0] }) as u32) as i32) == 238) as i32;
+// CHECK-NEXT:     if true && (((unsafe { data[0] }) as u32) as i32) == 67
 // CHECK-NEXT:         && (((unsafe { data[1] }) as u32) as i32) == 50
 // CHECK-NEXT:         && (((unsafe { data[2] }) as u32) as i32) == 51
 // CHECK-NEXT:         && (((unsafe { data[3] }) as u32) as i32) == 10 && framed_ok != 0
