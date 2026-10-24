@@ -947,6 +947,7 @@ pub struct Parser<'a> {
     context: crate::parser::ParseContext<'a>,
     nesting: Cell<u32>,
     directive: bool,
+    msvc_condition: bool,
 }
 
 impl<'a> Parser<'a> {
@@ -1016,9 +1017,16 @@ impl<'a> Parser<'a> {
         dialect: &'a crate::dialect::Dialect,
         is_defined: &dyn Fn(&str) -> bool,
         unary_plus_uses: Option<&std::cell::RefCell<Vec<crate::ast::Loc>>>,
+        trailing_tokens: Option<&Cell<Option<usize>>>,
     ) -> Result<i64, LocatedConstExprError> {
-        Self::evaluate_directive(tokens, dialect, is_defined, unary_plus_uses)
-            .map(|value| i64::from(!value.is_zero()))
+        Self::evaluate_directive(
+            tokens,
+            dialect,
+            is_defined,
+            unary_plus_uses,
+            trailing_tokens,
+        )
+        .map(|value| i64::from(!value.is_zero()))
     }
 
     pub fn evaluate_directive_operand(
@@ -1026,7 +1034,7 @@ impl<'a> Parser<'a> {
         dialect: &'a crate::dialect::Dialect,
         is_defined: &dyn Fn(&str) -> bool,
     ) -> Result<WideInt, LocatedConstExprError> {
-        Self::evaluate_directive(tokens, dialect, is_defined, None)
+        Self::evaluate_directive(tokens, dialect, is_defined, None, None)
     }
 
     fn evaluate_directive(
@@ -1034,18 +1042,26 @@ impl<'a> Parser<'a> {
         dialect: &'a crate::dialect::Dialect,
         is_defined: &dyn Fn(&str) -> bool,
         unary_plus_uses: Option<&std::cell::RefCell<Vec<crate::ast::Loc>>>,
+        trailing_tokens: Option<&Cell<Option<usize>>>,
     ) -> Result<WideInt, LocatedConstExprError> {
         let mut parser = Self::new(tokens, crate::parser::ParseContext::Standalone(dialect));
         parser.directive = true;
+        parser.msvc_condition = trailing_tokens.is_some() && dialect.flavor().is_msvc();
         let at_position = |parser: &Self, error| LocatedConstExprError {
             token: Some(parser.failure_position(&error)),
             error,
         };
         let expression = parser
-            .parse_comma()
+            .parse_directive_operand()
             .map_err(|error| at_position(&parser, error))?;
-        if parser.peek().is_some() {
-            return Err(at_position(&parser, ConstExprError::UnexpectedTokens));
+        match (parser.peek(), trailing_tokens) {
+            (None, _) => {}
+            (Some(token), Some(trailing)) if parser.msvc_condition && *token != Token::RParen => {
+                trailing.set(Some(parser.position));
+            }
+            (Some(_), _) => {
+                return Err(at_position(&parser, ConstExprError::UnexpectedTokens));
+            }
         }
         let ctx = EvalContext {
             is_defined: Some(is_defined),
@@ -1442,6 +1458,7 @@ impl<'a> Parser<'a> {
             context,
             nesting: Cell::new(0),
             directive: false,
+            msvc_condition: false,
         }
     }
 
@@ -1527,6 +1544,14 @@ impl<'a> Parser<'a> {
         let token = self.tokens.value_owned(self.position);
         self.position += token.is_some() as usize;
         token
+    }
+
+    fn parse_directive_operand(&mut self) -> Result<Expr, ConstExprError> {
+        if self.msvc_condition {
+            self.parse_conditional()
+        } else {
+            self.parse_comma()
+        }
     }
 
     fn parse_comma(&mut self) -> Result<Expr, ConstExprError> {
@@ -1894,7 +1919,7 @@ impl<'a> Parser<'a> {
             Some(result) => result,
             None => self.parse_primary()?,
         };
-        loop {
+        while !self.msvc_condition {
             let kind = match self.peek() {
                 Some(Token::LParen) => {
                     self.take();
@@ -1966,7 +1991,7 @@ impl<'a> Parser<'a> {
             return self.parse_statement_expression();
         }
         if self.take() == Some(Token::LParen) {
-            let expression = self.parse_comma()?;
+            let expression = self.parse_directive_operand()?;
             self.expect(Token::RParen)?;
             return Ok(self.node(ExprKind::Paren(expression), start));
         }

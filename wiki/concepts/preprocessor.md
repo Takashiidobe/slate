@@ -258,6 +258,11 @@ token plus an interned `HideSet`; file tokens start empty.
 - `#if`: `expand_assertions` → `expand_condition` → `__has_embed` →
   `__has_include` → `expand_has_checks` →
   `const_expr::Parser::evaluate_with_defined`.
+  Under msvc the evaluator uses cl.exe's grammar (`msvc_condition`): no
+  comma and no postfix operators. Tokens left after the top-level
+  expression are ignored with an `extra-tokens` warning (C4067), so
+  `#if UNDEF(1)` is false
+  ([diagnostic-severity](diagnostic-severity.md)).
   `expand_condition` runs the stream expander over the directive, and a
   `defined` or `__has_*` name takes its operand unexpanded from the stream.
   Only names the flavor owns (`is_defined_operator`) are queries, in both

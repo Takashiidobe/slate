@@ -1449,14 +1449,24 @@ impl<'a> Preprocessor<'a> {
             self.warn_traditional_literal(token);
         }
         let unary_plus_uses = std::cell::RefCell::new(Vec::new());
+        let trailing_tokens = std::cell::Cell::new(None);
         let evaluated = const_expr::Parser::evaluate_with_defined(
             &expanded,
             self.dialect,
             &|macro_name| self.is_defined(macro_name),
             Some(&unary_plus_uses),
+            Some(&trailing_tokens),
         );
         for loc in unary_plus_uses.into_inner() {
             self.warn_traditional(loc, "traditional C rejects the unary plus operator".into());
+        }
+        if let Some(token) = trailing_tokens.get().and_then(|index| expanded.get(index)) {
+            self.warn(
+                token.expansion,
+                Warning::ExtraTokens,
+                "unexpected tokens following preprocessor directive - expected a newline".into(),
+                false,
+            );
         }
         evaluated.map(|value| value != 0).map_err(|located| {
             let loc = match located.token {

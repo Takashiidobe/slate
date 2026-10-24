@@ -28,10 +28,11 @@ pub enum Warning {
     Deprecated,
     Traditional,
     JumpSehFinally,
+    ExtraTokens,
 }
 
 impl Warning {
-    pub const ALL: [Self; 24] = [
+    pub const ALL: [Self; 25] = [
         Self::LongLong,
         Self::C99Compat,
         Self::ImplicitlyUnsignedLiteral,
@@ -56,6 +57,7 @@ impl Warning {
         Self::Deprecated,
         Self::Traditional,
         Self::JumpSehFinally,
+        Self::ExtraTokens,
     ];
 
     pub fn name(self) -> &'static str {
@@ -86,6 +88,7 @@ impl Warning {
             Self::Deprecated => "deprecated",
             Self::Traditional => "traditional",
             Self::JumpSehFinally => "jump-seh-finally",
+            Self::ExtraTokens => "extra-tokens",
         }
     }
 
