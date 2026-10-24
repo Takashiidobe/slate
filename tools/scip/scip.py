@@ -83,7 +83,7 @@ def innermost_function(definitions, line):
     return best[2] if best else None
 
 
-def load(scip_path, db_path, commit):
+def load(scip_path, db_path, commit, tree):
     pb2 = load_scip_pb2()
     index = pb2.Index()
     index.ParseFromString(scip_path.read_bytes())
@@ -154,21 +154,38 @@ def load(scip_path, db_path, commit):
     con.executescript(INDEXES)
     con.executemany(
         "INSERT INTO meta VALUES (?, ?)",
-        [("commit", commit), ("built_at", str(int(time.time())))],
+        [("commit", commit), ("tree", tree), ("built_at", str(int(time.time())))],
     )
     con.commit()
     con.close()
 
 
+def indexed_tree():
+    if not DB.exists():
+        return None
+    con = sqlite3.connect(DB)
+    row = con.execute("SELECT value FROM meta WHERE key = 'tree'").fetchone()
+    con.close()
+    return row[0] if row else None
+
+
 def build_once():
     commit = git("rev-parse", "HEAD")
+    tree = git("rev-parse", "HEAD^{tree}")
+    if tree == indexed_tree() and not git("status", "--porcelain", "--", "*.rs"):
+        con = sqlite3.connect(DB)
+        con.execute("UPDATE meta SET value = ? WHERE key = 'commit'", (commit,))
+        con.commit()
+        con.close()
+        print(f"tree unchanged; index relabeled to {commit[:12]}", flush=True)
+        return
     scip_tmp = OUT / "index.scip.tmp"
     db_tmp = OUT / "index.db.tmp"
     started = time.time()
     subprocess.run(
         ["rust-analyzer", "scip", str(ROOT), "--output", str(scip_tmp)], cwd=ROOT, check=True
     )
-    load(scip_tmp, db_tmp, commit)
+    load(scip_tmp, db_tmp, commit, tree)
     os.replace(db_tmp, DB)
     scip_tmp.unlink(missing_ok=True)
     print(f"indexed {commit[:12]} in {time.time() - started:.0f}s", flush=True)
