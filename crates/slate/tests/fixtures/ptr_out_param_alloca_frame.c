@@ -41,15 +41,13 @@ int main(void) {
 // CHECK-NEXT:     if ((unsafe { end.offset_from(ptr as *const i8) }) as i64) != 3 {
 // CHECK-NEXT:         return 1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: {
-// CHECK-NEXT:         match (unsafe { *ptr.add(0) }) as i32 {
-// CHECK-NEXT:             120 => {}
-// CHECK-NEXT:             88 => {
-// CHECK-NEXT:                 upper = 1;
-// CHECK-NEXT:             }
-// CHECK-NEXT:             _ => {
-// CHECK-NEXT:                 return 1;
-// CHECK-NEXT:             }
+// CHECK-NEXT:     match (unsafe { *ptr.add(0) }) as i32 {
+// CHECK-NEXT:         120 => {}
+// CHECK-NEXT:         88 => {
+// CHECK-NEXT:             upper = 1;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         _ => {
+// CHECK-NEXT:             return 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if upper != 0 {

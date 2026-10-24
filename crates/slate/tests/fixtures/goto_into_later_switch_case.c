@@ -46,18 +46,16 @@ int main() {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         '[[JOIN_0:__join_[0-9]+]]: {
 // CHECK-NEXT:             '[[JOIN_1:__join_[0-9]+]]: {
-// CHECK-NEXT:                 '[[JOIN_2:__join_[0-9]+]]: {
-// CHECK-NEXT:                     let [[T_0:__t[0-9]+]]: i32 = c;
-// CHECK-NEXT:                     if [[T_0]] != 1 {
-// CHECK-NEXT:                         if [[T_0]] != 2 {
-// CHECK-NEXT:                             if [[T_0]] == 3 {
-// CHECK-NEXT:                                 break '[[JOIN_0]];
+// CHECK-NEXT:                 let [[T_0:__t[0-9]+]]: i32 = c;
+// CHECK-NEXT:                 if [[T_0]] != 1 {
+// CHECK-NEXT:                     if [[T_0]] != 2 {
+// CHECK-NEXT:                         if [[T_0]] == 3 {
+// CHECK-NEXT:                             break '[[JOIN_0]];
+// CHECK-NEXT:                         } else {
+// CHECK-NEXT:                             if [[T_0]] == 4 {
+// CHECK-NEXT:                                 break '[[JOIN_1]];
 // CHECK-NEXT:                             } else {
-// CHECK-NEXT:                                 if [[T_0]] == 4 {
-// CHECK-NEXT:                                     break '[[JOIN_1]];
-// CHECK-NEXT:                                 } else {
-// CHECK-NEXT:                                     return -1;
-// CHECK-NEXT:                                 }
+// CHECK-NEXT:                                 return -1;
 // CHECK-NEXT:                             }
 // CHECK-NEXT:                         }
 // CHECK-NEXT:                     }

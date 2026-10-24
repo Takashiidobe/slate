@@ -42,6 +42,7 @@ pub(super) fn control_flow_registry() -> Vec<Box<dyn NodeRule>> {
         Box::new(structure_goto::reducible::StructureReducible),
         Box::new(label_elide::BreakToElse),
         Box::new(label_elide::TailBreakDrop),
+        Box::new(label_elide::LoopTailBreak),
         Box::new(label_elide::LabelElide),
         Box::new(label_elide::LoopLabelElide),
         Box::new(singleton_scopes::ScopeFlatten),

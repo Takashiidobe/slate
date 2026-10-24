@@ -46,34 +46,30 @@ int main() {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         '[[JOIN_0:__join_[0-9]+]]: {
 // CHECK-NEXT:             '[[JOIN_1:__join_[0-9]+]]: {
-// CHECK-NEXT:                 '[[JOIN_2:__join_[0-9]+]]: {
-// CHECK-NEXT:                     let [[T_0:__t[0-9]+]]: i128 = c.to_i128();
+// CHECK-NEXT:                 let [[T_0:__t[0-9]+]]: i128 = c.to_i128();
+// CHECK-NEXT:                 if [[T_0]] != <bitint::BInt<128, 2, 16, bitint::A8>>::from_u128(1).to_i128()
+// CHECK-NEXT:                 {
 // CHECK-NEXT:                     if [[T_0]]
-// CHECK-NEXT:                         != <bitint::BInt<128, 2, 16, bitint::A8>>::from_u128(1).to_i128()
+// CHECK-NEXT:                         != <bitint::BInt<128, 2, 16, bitint::A8>>::from_u128(2).to_i128()
 // CHECK-NEXT:                     {
 // CHECK-NEXT:                         if [[T_0]]
-// CHECK-NEXT:                             != <bitint::BInt<128, 2, 16, bitint::A8>>::from_u128(2)
+// CHECK-NEXT:                             == <bitint::BInt<
+// CHECK-NEXT:                                 128,
+// CHECK-NEXT:                                 2,
+// CHECK-NEXT:                                 16,
+// CHECK-NEXT:                                 bitint::A8,
+// CHECK-NEXT:                             >>::from_u128(99999999999999999999999999999)
 // CHECK-NEXT:                                 .to_i128()
 // CHECK-NEXT:                         {
+// CHECK-NEXT:                             break '[[JOIN_0]];
+// CHECK-NEXT:                         } else {
 // CHECK-NEXT:                             if [[T_0]]
-// CHECK-NEXT:                                 == <bitint::BInt<
-// CHECK-NEXT:                                     128,
-// CHECK-NEXT:                                     2,
-// CHECK-NEXT:                                     16,
-// CHECK-NEXT:                                     bitint::A8,
-// CHECK-NEXT:                                 >>::from_u128(99999999999999999999999999999)
+// CHECK-NEXT:                                 == <bitint::BInt<128, 2, 16, bitint::A8>>::from_u128(4)
 // CHECK-NEXT:                                     .to_i128()
 // CHECK-NEXT:                             {
-// CHECK-NEXT:                                 break '[[JOIN_0]];
+// CHECK-NEXT:                                 break '[[JOIN_1]];
 // CHECK-NEXT:                             } else {
-// CHECK-NEXT:                                 if [[T_0]]
-// CHECK-NEXT:                                     == <bitint::BInt<128, 2, 16, bitint::A8>>::from_u128(4)
-// CHECK-NEXT:                                         .to_i128()
-// CHECK-NEXT:                                 {
-// CHECK-NEXT:                                     break '[[JOIN_1]];
-// CHECK-NEXT:                                 } else {
-// CHECK-NEXT:                                     return -1;
-// CHECK-NEXT:                                 }
+// CHECK-NEXT:                                 return -1;
 // CHECK-NEXT:                             }
 // CHECK-NEXT:                         }
 // CHECK-NEXT:                     }

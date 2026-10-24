@@ -35,15 +35,13 @@ int main(void) {
 // CHECK-NEXT:     while i < 6 {
 // CHECK-NEXT:         '[[SLATE_CONTINUE_0:__slate_continue_[0-9]+]]: {
 // CHECK-NEXT:             let x: i32 = i % 3;
-// CHECK-NEXT:             '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: {
-// CHECK-NEXT:                 match x {
-// CHECK-NEXT:                     0..=2 => {
-// CHECK-NEXT:                         i += 1;
-// CHECK-NEXT:                         steps += 1;
-// CHECK-NEXT:                         break '[[SLATE_CONTINUE_0]];
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                     _ => {}
+// CHECK-NEXT:             match x {
+// CHECK-NEXT:                 0..=2 => {
+// CHECK-NEXT:                     i += 1;
+// CHECK-NEXT:                     steps += 1;
+// CHECK-NEXT:                     break '[[SLATE_CONTINUE_0]];
 // CHECK-NEXT:                 }
+// CHECK-NEXT:                 _ => {}
 // CHECK-NEXT:             }
 // CHECK-NEXT:             println!("unreachable {}", i);
 // CHECK-NEXT:             i += 1;

@@ -83,17 +83,15 @@ int main(void) {
 // CHECK-NEXT:     let mut sum: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     let mut __slate_state: usize = 10usize;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         '[[JOIN_0:__join_[0-9]+]]: {
-// CHECK-NEXT:             sum = 0;
-// CHECK-NEXT:             visits = 0;
-// CHECK-NEXT:             checks = 0;
-// CHECK-NEXT:             steps = 0;
-// CHECK-NEXT:             i = 0;
-// CHECK-NEXT:             if mode != 0 {
-// CHECK-NEXT:                 __slate_state = 8;
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 __slate_state = 9;
-// CHECK-NEXT:             }
+// CHECK-NEXT:         sum = 0;
+// CHECK-NEXT:         visits = 0;
+// CHECK-NEXT:         checks = 0;
+// CHECK-NEXT:         steps = 0;
+// CHECK-NEXT:         i = 0;
+// CHECK-NEXT:         if mode != 0 {
+// CHECK-NEXT:             __slate_state = 8;
+// CHECK-NEXT:         } else {
+// CHECK-NEXT:             __slate_state = 9;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             match __slate_state {
@@ -119,21 +117,19 @@ int main(void) {
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
-// CHECK-NEXT:         '__loop_1: loop {
+// CHECK-NEXT:         loop {
 // CHECK-NEXT:             let [[V_0:__v[0-9]+]]: i32 = checks + 1;
 // CHECK-NEXT:             checks = [[V_0]];
 // CHECK-NEXT:             if [[V_0]] != 0 && i < 4 {
 // CHECK-NEXT:                 if i != 1 {
-// CHECK-NEXT:                     '[[JOIN_1:__join_[0-9]+]]: {
-// CHECK-NEXT:                         let [[T_0:__t[0-9]+]]: i32 = i;
-// CHECK-NEXT:                         if [[T_0]] == 0 {
-// CHECK-NEXT:                             sum += 4;
+// CHECK-NEXT:                     let [[T_0:__t[0-9]+]]: i32 = i;
+// CHECK-NEXT:                     if [[T_0]] == 0 {
+// CHECK-NEXT:                         sum += 4;
+// CHECK-NEXT:                     } else {
+// CHECK-NEXT:                         if [[T_0]] == 2 {
+// CHECK-NEXT:                             sum += 5;
 // CHECK-NEXT:                         } else {
-// CHECK-NEXT:                             if [[T_0]] == 2 {
-// CHECK-NEXT:                                 sum += 5;
-// CHECK-NEXT:                             } else {
-// CHECK-NEXT:                                 break '__loop_1;
-// CHECK-NEXT:                             }
+// CHECK-NEXT:                             break;
 // CHECK-NEXT:                         }
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                     let [[V_1:__v[0-9]+]]: i32 = sum

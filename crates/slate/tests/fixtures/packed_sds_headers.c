@@ -286,37 +286,35 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *s.offset(-1 as isize) = r#type as i8;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: {
-// CHECK-NEXT:         match r#type {
-// CHECK-NEXT:             1 => {
-// CHECK-NEXT:                 let sh: *mut sdshdr8 = (unsafe { s.sub(3) }) as *mut sdshdr8;
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     (*sh).len = len as u8;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     (*sh).alloc = len.wrapping_add(15) as u8;
-// CHECK-NEXT:                 }
+// CHECK-NEXT:     match r#type {
+// CHECK-NEXT:         1 => {
+// CHECK-NEXT:             let sh: *mut sdshdr8 = (unsafe { s.sub(3) }) as *mut sdshdr8;
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 (*sh).len = len as u8;
 // CHECK-NEXT:             }
-// CHECK-NEXT:             2 => {
-// CHECK-NEXT:                 let sh: *mut sdshdr16 = (unsafe { s.sub(5) }) as *mut sdshdr16;
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     (*sh).len = len as u16;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     (*sh).alloc = len.wrapping_add(15) as u16;
-// CHECK-NEXT:                 }
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 (*sh).alloc = len.wrapping_add(15) as u8;
 // CHECK-NEXT:             }
-// CHECK-NEXT:             4 => {
-// CHECK-NEXT:                 let sh: *mut sdshdr64 = (unsafe { s.sub(17) }) as *mut sdshdr64;
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     (*sh).len = len;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     (*sh).alloc = len.wrapping_add(15);
-// CHECK-NEXT:                 }
-// CHECK-NEXT:             }
-// CHECK-NEXT:             _ => {}
 // CHECK-NEXT:         }
+// CHECK-NEXT:         2 => {
+// CHECK-NEXT:             let sh: *mut sdshdr16 = (unsafe { s.sub(5) }) as *mut sdshdr16;
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 (*sh).len = len as u16;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 (*sh).alloc = len.wrapping_add(15) as u16;
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
+// CHECK-NEXT:         4 => {
+// CHECK-NEXT:             let sh: *mut sdshdr64 = (unsafe { s.sub(17) }) as *mut sdshdr64;
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 (*sh).len = len;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 (*sh).alloc = len.wrapping_add(15);
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
+// CHECK-NEXT:         _ => {}
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::copy_nonoverlapping(
@@ -328,31 +326,29 @@ int main(void) {
 // CHECK-NEXT:     s
 // CHECK-NEXT: }
 // CHECK-NEXT: fn sdsinclen(s: *mut i8, inc: u64) {
-// CHECK-NEXT:     '[[SLATE_BREAK_1:__slate_break_[0-9]+]]: {
-// CHECK-NEXT:         match ((unsafe { *s.offset(-1 as isize) }) as i32) & 7 {
-// CHECK-NEXT:             1 => {
-// CHECK-NEXT:                 let [[V_0:__v[0-9]+]]: *mut sdshdr8 = (unsafe { s.sub(3) }) as *mut sdshdr8;
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     (*[[V_0]]).len = (((((*[[V_0]]).len as u32) as i32) as i64) as u64)
-// CHECK-NEXT:                         .wrapping_add(inc) as u8;
-// CHECK-NEXT:                 }
+// CHECK-NEXT:     match ((unsafe { *s.offset(-1 as isize) }) as i32) & 7 {
+// CHECK-NEXT:         1 => {
+// CHECK-NEXT:             let [[V_0:__v[0-9]+]]: *mut sdshdr8 = (unsafe { s.sub(3) }) as *mut sdshdr8;
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 (*[[V_0]]).len = (((((*[[V_0]]).len as u32) as i32) as i64) as u64)
+// CHECK-NEXT:                     .wrapping_add(inc) as u8;
 // CHECK-NEXT:             }
-// CHECK-NEXT:             2 => {
-// CHECK-NEXT:                 let [[V_1:__v[0-9]+]]: *mut sdshdr16 = (unsafe { s.sub(5) }) as *mut sdshdr16;
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     (*[[V_1]]).len = (((((*[[V_1]]).len as u32) as i32) as i64) as u64)
-// CHECK-NEXT:                         .wrapping_add(inc) as u16;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:             }
-// CHECK-NEXT:             4 => {
-// CHECK-NEXT:                 let [[V_2:__v[0-9]+]]: *mut sdshdr64 = (unsafe { s.sub(17) }) as *mut sdshdr64;
-// CHECK-NEXT:                 let [[V_3:__v[0-9]+]]: u64 = unsafe { (*[[V_2]]).len };
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     (*[[V_2]]).len = [[V_3]].wrapping_add(1);
-// CHECK-NEXT:                 }
-// CHECK-NEXT:             }
-// CHECK-NEXT:             _ => {}
 // CHECK-NEXT:         }
+// CHECK-NEXT:         2 => {
+// CHECK-NEXT:             let [[V_1:__v[0-9]+]]: *mut sdshdr16 = (unsafe { s.sub(5) }) as *mut sdshdr16;
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 (*[[V_1]]).len = (((((*[[V_1]]).len as u32) as i32) as i64) as u64)
+// CHECK-NEXT:                     .wrapping_add(inc) as u16;
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
+// CHECK-NEXT:         4 => {
+// CHECK-NEXT:             let [[V_2:__v[0-9]+]]: *mut sdshdr64 = (unsafe { s.sub(17) }) as *mut sdshdr64;
+// CHECK-NEXT:             let [[V_3:__v[0-9]+]]: u64 = unsafe { (*[[V_2]]).len };
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 (*[[V_2]]).len = [[V_3]].wrapping_add(1);
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
+// CHECK-NEXT:         _ => {}
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, packed)]

@@ -26,16 +26,14 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn pick(x: i32) -> i32 {
 // CHECK-NEXT:     let mut out: i32 = 5;
-// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: {
-// CHECK-NEXT:         match x {
-// CHECK-NEXT:             4 => {
-// CHECK-NEXT:                 out += 4;
-// CHECK-NEXT:             }
-// CHECK-NEXT:             9 => {
-// CHECK-NEXT:                 out += 9;
-// CHECK-NEXT:             }
-// CHECK-NEXT:             _ => {}
+// CHECK-NEXT:     match x {
+// CHECK-NEXT:         4 => {
+// CHECK-NEXT:             out += 4;
 // CHECK-NEXT:         }
+// CHECK-NEXT:         9 => {
+// CHECK-NEXT:             out += 9;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         _ => {}
 // CHECK-NEXT:     }
 // CHECK-NEXT:     out
 // CHECK-NEXT: }

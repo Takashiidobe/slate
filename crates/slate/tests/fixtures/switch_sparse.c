@@ -29,17 +29,15 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn map(x: i32) -> i32 {
 // CHECK-NEXT:     let mut out: i32 = 0;
-// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: {
-// CHECK-NEXT:         match x {
-// CHECK-NEXT:             -3 => {
-// CHECK-NEXT:                 out = 13;
-// CHECK-NEXT:             }
-// CHECK-NEXT:             100 => {
-// CHECK-NEXT:                 out = 1000;
-// CHECK-NEXT:             }
-// CHECK-NEXT:             _ => {
-// CHECK-NEXT:                 out = -1;
-// CHECK-NEXT:             }
+// CHECK-NEXT:     match x {
+// CHECK-NEXT:         -3 => {
+// CHECK-NEXT:             out = 13;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         100 => {
+// CHECK-NEXT:             out = 1000;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         _ => {
+// CHECK-NEXT:             out = -1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     out

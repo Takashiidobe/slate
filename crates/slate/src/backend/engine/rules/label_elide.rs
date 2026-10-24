@@ -5,6 +5,7 @@ use crate::backend::rust_ast::Label;
 
 pub(in crate::backend::engine) struct BreakToElse;
 pub(in crate::backend::engine) struct TailBreakDrop;
+pub(in crate::backend::engine) struct LoopTailBreak;
 pub(in crate::backend::engine) struct LabelElide;
 pub(in crate::backend::engine) struct LoopLabelElide;
 
@@ -40,6 +41,36 @@ fn reaches_label_end(arena: &Arena, container: NodeId, label: &Label) -> bool {
         return false;
     }
     reaches_label_end(arena, parent, label)
+}
+
+fn enclosing_loop(arena: &Arena, id: NodeId) -> Option<NodeId> {
+    let mut current = arena.parent(id)?;
+    loop {
+        match arena.get(current)? {
+            NodeKind::Loop { .. } | NodeKind::While { .. } | NodeKind::For { .. } => {
+                return Some(current);
+            }
+            NodeKind::If { .. }
+            | NodeKind::Match { .. }
+            | NodeKind::Scope { .. }
+            | NodeKind::Unsafe { tail: None, .. }
+            | NodeKind::Block { tail: None, .. } => current = arena.parent(current)?,
+            _ => return None,
+        }
+    }
+}
+
+fn loop_ends_label(arena: &Arena, looped: NodeId, label: &Label) -> bool {
+    let Some(parent) = arena.parent(looped) else {
+        return false;
+    };
+    let Some(kind) = arena.get(parent) else {
+        return false;
+    };
+    kind.child_lists()
+        .iter()
+        .any(|list| list.last() == Some(&looped))
+        && reaches_label_end(arena, parent, label)
 }
 
 fn position_in_parent(arena: &Arena, id: NodeId) -> Option<(NodeId, usize, usize, usize)> {
@@ -216,6 +247,10 @@ impl NodeRule for TailBreakDrop {
         &[NodeKindTag::Break]
     }
 
+    fn requeues_moved_nodes(&self) -> bool {
+        true
+    }
+
     fn matches(&self, arena: &FunctionOptimizer, id: NodeId) -> bool {
         let Some(NodeKind::Break(Some(label))) = arena.get(id) else {
             return false;
@@ -231,6 +266,41 @@ impl NodeRule for TailBreakDrop {
             return false;
         }
         arena.retire(id, None);
+        true
+    }
+}
+
+impl NodeRule for LoopTailBreak {
+    fn name(&self) -> &'static str {
+        "label_elide::loop_tail_break"
+    }
+
+    fn priority(&self) -> u32 {
+        6
+    }
+
+    fn kinds(&self) -> &'static [NodeKindTag] {
+        &[NodeKindTag::Break]
+    }
+
+    fn requeues_moved_nodes(&self) -> bool {
+        true
+    }
+
+    fn matches(&self, arena: &FunctionOptimizer, id: NodeId) -> bool {
+        let Some(NodeKind::Break(Some(label))) = arena.get(id) else {
+            return false;
+        };
+        enclosing_loop(arena, id).is_some_and(|looped| loop_ends_label(arena, looped, label))
+    }
+
+    fn apply(&self, arena: &mut FunctionOptimizer, id: NodeId) -> bool {
+        if !self.matches(arena, id) {
+            return false;
+        }
+        if let Some(NodeKind::Break(label)) = arena.get_mut(id) {
+            *label = None;
+        }
         true
     }
 }

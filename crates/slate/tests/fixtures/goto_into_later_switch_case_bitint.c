@@ -46,33 +46,31 @@ int main() {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         '[[JOIN_0:__join_[0-9]+]]: {
 // CHECK-NEXT:             '[[JOIN_1:__join_[0-9]+]]: {
-// CHECK-NEXT:                 '[[JOIN_2:__join_[0-9]+]]: {
-// CHECK-NEXT:                     let [[T_0:__t[0-9]+]]: bitint::BInt<200, 4, 32, bitint::A8> = c;
-// CHECK-NEXT:                     if [[T_0]] != <bitint::BInt<200, 4, 32, bitint::A8>>::from_u128(1) {
-// CHECK-NEXT:                         if [[T_0]] != <bitint::BInt<200, 4, 32, bitint::A8>>::from_u128(2) {
+// CHECK-NEXT:                 let [[T_0:__t[0-9]+]]: bitint::BInt<200, 4, 32, bitint::A8> = c;
+// CHECK-NEXT:                 if [[T_0]] != <bitint::BInt<200, 4, 32, bitint::A8>>::from_u128(1) {
+// CHECK-NEXT:                     if [[T_0]] != <bitint::BInt<200, 4, 32, bitint::A8>>::from_u128(2) {
+// CHECK-NEXT:                         if [[T_0]]
+// CHECK-NEXT:                             == <bitint::BInt<
+// CHECK-NEXT:                                 200,
+// CHECK-NEXT:                                 4,
+// CHECK-NEXT:                                 32,
+// CHECK-NEXT:                                 bitint::A8,
+// CHECK-NEXT:                             >>::from_le_bytes::<
+// CHECK-NEXT:                                 160,
+// CHECK-NEXT:                                 20,
+// CHECK-NEXT:                             >([
+// CHECK-NEXT:                                 121, 223, 226, 241, 116, 124, 91, 239, 146, 170, 195, 158,
+// CHECK-NEXT:                                 103, 173, 39, 229, 54, 137, 5, 0,
+// CHECK-NEXT:                             ])
+// CHECK-NEXT:                         {
+// CHECK-NEXT:                             break '[[JOIN_0]];
+// CHECK-NEXT:                         } else {
 // CHECK-NEXT:                             if [[T_0]]
-// CHECK-NEXT:                                 == <bitint::BInt<
-// CHECK-NEXT:                                     200,
-// CHECK-NEXT:                                     4,
-// CHECK-NEXT:                                     32,
-// CHECK-NEXT:                                     bitint::A8,
-// CHECK-NEXT:                                 >>::from_le_bytes::<
-// CHECK-NEXT:                                     160,
-// CHECK-NEXT:                                     20,
-// CHECK-NEXT:                                 >([
-// CHECK-NEXT:                                     121, 223, 226, 241, 116, 124, 91, 239, 146, 170, 195, 158,
-// CHECK-NEXT:                                     103, 173, 39, 229, 54, 137, 5, 0,
-// CHECK-NEXT:                                 ])
+// CHECK-NEXT:                                 == <bitint::BInt<200, 4, 32, bitint::A8>>::from_u128(4)
 // CHECK-NEXT:                             {
-// CHECK-NEXT:                                 break '[[JOIN_0]];
+// CHECK-NEXT:                                 break '[[JOIN_1]];
 // CHECK-NEXT:                             } else {
-// CHECK-NEXT:                                 if [[T_0]]
-// CHECK-NEXT:                                     == <bitint::BInt<200, 4, 32, bitint::A8>>::from_u128(4)
-// CHECK-NEXT:                                 {
-// CHECK-NEXT:                                     break '[[JOIN_1]];
-// CHECK-NEXT:                                 } else {
-// CHECK-NEXT:                                     return -1;
-// CHECK-NEXT:                                 }
+// CHECK-NEXT:                                 return -1;
 // CHECK-NEXT:                             }
 // CHECK-NEXT:                         }
 // CHECK-NEXT:                     }

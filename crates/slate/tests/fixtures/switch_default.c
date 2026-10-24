@@ -29,17 +29,15 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn classify(x: i32) -> i32 {
 // CHECK-NEXT:     let mut out: i32 = 0;
-// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: {
-// CHECK-NEXT:         match x {
-// CHECK-NEXT:             1 => {
-// CHECK-NEXT:                 out = 11;
-// CHECK-NEXT:             }
-// CHECK-NEXT:             2 => {
-// CHECK-NEXT:                 out = 22;
-// CHECK-NEXT:             }
-// CHECK-NEXT:             _ => {
-// CHECK-NEXT:                 out = 99;
-// CHECK-NEXT:             }
+// CHECK-NEXT:     match x {
+// CHECK-NEXT:         1 => {
+// CHECK-NEXT:             out = 11;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         2 => {
+// CHECK-NEXT:             out = 22;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         _ => {
+// CHECK-NEXT:             out = 99;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     out

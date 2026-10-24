@@ -30,14 +30,12 @@ done:
 // CHECK-NEXT:     let mut choose_b: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     let mut __slate_state: usize = 3usize;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         '[[JOIN_0:__join_[0-9]+]]: {
-// CHECK-NEXT:             choose_b = 0;
-// CHECK-NEXT:             x = 0;
-// CHECK-NEXT:             if std::ptr::read_volatile(std::ptr::addr_of!(choose_b)) != 0 {
-// CHECK-NEXT:                 __slate_state = 1;
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 __slate_state = 2;
-// CHECK-NEXT:             }
+// CHECK-NEXT:         choose_b = 0;
+// CHECK-NEXT:         x = 0;
+// CHECK-NEXT:         if std::ptr::read_volatile(std::ptr::addr_of!(choose_b)) != 0 {
+// CHECK-NEXT:             __slate_state = 1;
+// CHECK-NEXT:         } else {
+// CHECK-NEXT:             __slate_state = 2;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             match __slate_state {

@@ -46,16 +46,14 @@ done:
 // CHECK-NEXT:     let mut pick_a: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     let mut __slate_state: usize = 6usize;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         '[[JOIN_0:__join_[0-9]+]]: {
-// CHECK-NEXT:             pick_a = 1;
-// CHECK-NEXT:             pick_b = 0;
-// CHECK-NEXT:             x = 0;
-// CHECK-NEXT:             y = 0;
-// CHECK-NEXT:             if std::ptr::read_volatile(std::ptr::addr_of!(pick_a)) != 0 {
-// CHECK-NEXT:                 __slate_state = 4;
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 __slate_state = 5;
-// CHECK-NEXT:             }
+// CHECK-NEXT:         pick_a = 1;
+// CHECK-NEXT:         pick_b = 0;
+// CHECK-NEXT:         x = 0;
+// CHECK-NEXT:         y = 0;
+// CHECK-NEXT:         if std::ptr::read_volatile(std::ptr::addr_of!(pick_a)) != 0 {
+// CHECK-NEXT:             __slate_state = 4;
+// CHECK-NEXT:         } else {
+// CHECK-NEXT:             __slate_state = 5;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             match __slate_state {
