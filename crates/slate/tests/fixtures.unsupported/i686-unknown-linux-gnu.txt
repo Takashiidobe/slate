@@ -12,4 +12,3 @@ long_double_va_arg
 long_double_variadic_libc_name
 object_alignment
 saturating_arith
-shift_contracts

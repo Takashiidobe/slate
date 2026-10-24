@@ -19,7 +19,7 @@ int main(void) {
   printf("%d %d\n", counter, hidden[2]);
   printf("%d %d\n", (int)__alignof__(aligned_function), (int)__alignof__(plain_function));
   int  values[] = {0, -1, 1, 255, -256, 0x40000000};
-  long wide[]   = {0L, -1L, 1L << 40, -(1L << 40)};
+  long wide[]   = {0L, -1L, (long)(1LL << 40), (long)-(1LL << 40)};
   for (int i = 0; i < 6; i++)
     printf("%d %d\n", __builtin_clrsb(values[i]), __builtin_parity(values[i]));
   for (int i = 0; i < 4; i++)
