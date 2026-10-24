@@ -676,6 +676,7 @@ impl Checker<'_> {
         let symbol = symbol_attributes(
             attributes.filter(|attribute| applies(attribute, subject)),
             declarator.asm_label.as_ref(),
+            self.types.flavor().is_clang(),
         );
         let variable_array = matches!(
             self.types.ctypes.element(resolved),
@@ -821,7 +822,12 @@ impl Checker<'_> {
         self.report(at, result);
         self.report(
             at,
-            function_symbol(attributes.iter().copied(), asm_label).map(drop),
+            function_symbol(
+                attributes.iter().copied(),
+                asm_label,
+                self.types.flavor().is_clang(),
+            )
+            .map(drop),
         );
         for attribute in attributes {
             if let Attribute::Malloc {
@@ -842,13 +848,7 @@ impl Checker<'_> {
                 Attribute::NoInline => false,
                 _ => continue,
             };
-            if self
-                .inlining
-                .insert(id, always)
-                .is_some_and(|previous| previous != always)
-            {
-                self.reject(at, "conflicting always_inline and noinline attributes");
-            }
+            self.inlining.entry(id).or_insert(always);
         }
     }
 

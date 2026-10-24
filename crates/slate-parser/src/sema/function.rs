@@ -185,16 +185,9 @@ impl Lowerer {
                     } else {
                         Inlining::Never
                     };
-                    if matches!(
-                        (state.inlining, preference),
-                        (Some(Inlining::Always), Inlining::Never)
-                            | (Some(Inlining::Never), Inlining::Always)
-                    ) {
-                        return Err(ResolveError::Internal(
-                            "conflicting always_inline and noinline attributes",
-                        ));
+                    if !matches!(state.inlining, Some(Inlining::Always | Inlining::Never)) {
+                        state.inlining = Some(preference);
                     }
-                    state.inlining = Some(preference);
                 }
                 Attribute::NoReturn => state.noreturn = true,
                 Attribute::Naked => state.naked = true,

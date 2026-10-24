@@ -500,8 +500,12 @@ fn lower_item(
                 .types
                 .check_attributes(attributes.iter().copied(), Subject::Function)
                 .map_err(ResolveError::checked)?;
-            let mut symbol =
-                function_symbol(attributes.iter().copied(), None).map_err(ResolveError::checked)?;
+            let mut symbol = function_symbol(
+                attributes.iter().copied(),
+                None,
+                lower.types.flavor().is_clang(),
+            )
+            .map_err(ResolveError::checked)?;
             let name = function
                 .declarator
                 .name()
@@ -624,6 +628,7 @@ pub(super) fn applies(attribute: &Span<ast::Attribute>, subject: Subject) -> boo
 pub(super) fn symbol_attributes<'a>(
     attributes: impl IntoIterator<Item = &'a Span<ast::Attribute>>,
     asm_label: Option<&Span<ast::AsmLabel>>,
+    clang: bool,
 ) -> Result<SymbolAttributes, ResolveError> {
     let mut symbol = SymbolAttributes::default();
     let mut weakref = false;
@@ -634,15 +639,14 @@ pub(super) fn symbol_attributes<'a>(
     }
     for attribute in attributes {
         match &attribute.value {
-            ast::Attribute::Visibility(name) => {
-                symbol.visibility = Some(match name.as_str() {
-                    "default" => Visibility::Default,
-                    "hidden" => Visibility::Hidden,
-                    "protected" => Visibility::Protected,
-                    "internal" => Visibility::Internal,
-                    _ => return Err(ResolveError::Rejected("visibility")),
-                });
-            }
+            ast::Attribute::Visibility(name) => match name.as_str() {
+                "default" => symbol.visibility = Some(Visibility::Default),
+                "hidden" => symbol.visibility = Some(Visibility::Hidden),
+                "protected" => symbol.visibility = Some(Visibility::Protected),
+                "internal" => symbol.visibility = Some(Visibility::Internal),
+                _ if clang => {}
+                _ => return Err(ResolveError::Rejected("visibility")),
+            },
             ast::Attribute::TlsModel(name) => {
                 symbol.tls_model = Some(match name.as_str() {
                     "global-dynamic" => TlsModel::GlobalDynamic,
@@ -697,6 +701,7 @@ fn weak_reference(mut symbol: SymbolAttributes, bare: bool, defined: bool) -> Sy
 pub(super) fn function_symbol<'a>(
     attributes: impl IntoIterator<Item = &'a Span<ast::Attribute>> + Clone,
     asm_label: Option<&Span<ast::AsmLabel>>,
+    clang: bool,
 ) -> Result<SymbolAttributes, ResolveError> {
     if matches!(
         asm_label.map(|label| &label.value),
@@ -728,6 +733,7 @@ pub(super) fn function_symbol<'a>(
             )
         }),
         asm_label,
+        clang,
     )
 }
 
@@ -1354,9 +1360,12 @@ impl Lowerer {
                 self.types
                     .check_attributes(attributes.iter().copied(), Subject::Function)
                     .map_err(ResolveError::checked)?;
-                let mut symbol =
-                    function_symbol(attributes.iter().copied(), declarator.asm_label.as_ref())
-                        .map_err(ResolveError::checked)?;
+                let mut symbol = function_symbol(
+                    attributes.iter().copied(),
+                    declarator.asm_label.as_ref(),
+                    self.types.flavor().is_clang(),
+                )
+                .map_err(ResolveError::checked)?;
                 if attributes.iter().copied().any(is_bare_weakref) {
                     self.bare_weakrefs.insert(id);
                 }
@@ -1432,8 +1441,12 @@ impl Lowerer {
             if !global && linked && declarator.initializer.is_some() {
                 return Err(ResolveError::Internal("block scope extern initializer"));
             }
-            let mut symbol = symbol_attributes(attributes(), declarator.asm_label.as_ref())
-                .map_err(ResolveError::checked)?;
+            let mut symbol = symbol_attributes(
+                attributes(),
+                declarator.asm_label.as_ref(),
+                self.types.flavor().is_clang(),
+            )
+            .map_err(ResolveError::checked)?;
             if attributes().any(is_bare_weakref) {
                 self.bare_weakrefs.insert(id);
             }

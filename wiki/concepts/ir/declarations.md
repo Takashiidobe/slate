@@ -132,6 +132,11 @@ linkage and merged across redeclarations (first value wins, flags OR):
 `used`, `retain`, `tls_model`, `dllimport`/`dllexport`, `weakref`,
 `ifunc`, `selectany`.
 
+- An unknown `visibility("x")` argument is ignored on clang (it warns) and
+  rejected on gcc. Fixtures: `ir_visibility_bogus.c`.
+- Conflicting `always_inline`/`noinline` across declarations keep the first
+  and are accepted on clang and gcc. Fixture: `ir_inline_conflict.c`.
+
 - `weakref("t")` is not `weak` + `alias`: it defines no symbol, and its
   uses resolve to an `extern_weak` reference to `t`. It prints as `extern`
   with `[weakref="t"]`, needs internal linkage, and applies to functions
