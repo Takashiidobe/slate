@@ -2430,7 +2430,9 @@ impl TypeResolver {
                     | CTypeKind::SChar
                     | CTypeKind::UChar
                     | CTypeKind::Int { .. } => true,
-                    CTypeKind::Float(kind) => !kind.is_decimal(),
+                    CTypeKind::Float(kind) => {
+                        !kind.is_decimal() || self.dialect.flavor() == CompilerFlavor::Gcc
+                    }
                     _ => false,
                 };
                 if !valid {
