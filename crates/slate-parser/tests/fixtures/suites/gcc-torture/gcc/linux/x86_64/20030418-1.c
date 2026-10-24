@@ -22,11 +22,11 @@ void foo(int i)
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: Error:   × semantic analysis failed
 // DEFAULT: Error:
-// DEFAULT: × not implemented: GNU nested function
-// DEFAULT: ╭─[tests/fixtures/suites/gcc-torture/gcc/linux/x86_64/20030418-1.c:14:3]
-// DEFAULT: 13 │
-// DEFAULT: 14 │   void bar() { int x=j, y=i; }
-// DEFAULT: ·   ────────────────────────────
-// DEFAULT: 15 │
-// DEFAULT: ╰────
+// DEFAULT:   × not implemented: GNU nested function
+// DEFAULT:     ╭─[tests/fixtures/suites/gcc-torture/gcc/linux/x86_64/20030418-1.c:14:3]
+// DEFAULT:  13 │
+// DEFAULT:  14 │   void bar() { int x=j, y=i; }
+// DEFAULT:     ·   ────────────────────────────
+// DEFAULT:  15 │
+// DEFAULT:     ╰────
 // SLATE-FILECHECK-END DEFAULT

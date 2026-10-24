@@ -15,21 +15,21 @@ int packed_size = sizeof(struct Packed);
 
 // SLATE-FILECHECK-BEGIN WARN
 // WARN: -Wignored-attributes
-// WARN: ⚠ __declspec attribute 'weak' is not supported
-// WARN: ╭─[tests/fixtures/clang/windows/x86_64/declspec_support.c:5:12]
-// WARN: 4 │ __declspec(dllexport) int exported = 1;
-// WARN: 5 │ __declspec(weak) int weak_value;
-// WARN: ·            ────
-// WARN: 6 │
-// WARN: ╰────
+// WARN:   ⚠ __declspec attribute 'weak' is not supported
+// WARN:    ╭─[tests/fixtures/clang/windows/x86_64/declspec_support.c:5:12]
+// WARN:  4 │ __declspec(dllexport) int exported = 1;
+// WARN:  5 │ __declspec(weak) int weak_value;
+// WARN:    ·            ────
+// WARN:  6 │
+// WARN:    ╰────
 // WARN: -Wignored-attributes
-// WARN: ⚠ __declspec attribute 'packed' is not supported
-// WARN: ╭─[tests/fixtures/clang/windows/x86_64/declspec_support.c:7:19]
-// WARN: 6 │
-// WARN: 7 │ struct __declspec(packed) Packed {
-// WARN: ·                   ──────
-// WARN: 8 │   char c;
-// WARN: ╰────
+// WARN:   ⚠ __declspec attribute 'packed' is not supported
+// WARN:    ╭─[tests/fixtures/clang/windows/x86_64/declspec_support.c:7:19]
+// WARN:  6 │
+// WARN:  7 │ struct __declspec(packed) Packed {
+// WARN:    ·                   ──────
+// WARN:  8 │   char c;
+// WARN:    ╰────
 // SLATE-FILECHECK-END WARN
 // SLATE-FILECHECK-BEGIN IR-WARN
 // IR-WARN: module {

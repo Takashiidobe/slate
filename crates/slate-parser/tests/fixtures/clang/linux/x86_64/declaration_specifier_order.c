@@ -62,53 +62,53 @@ _BitInt(42) long wide_bit_int;
 
 // SLATE-FILECHECK-BEGIN LONG_LONG_LONG
 // LONG_LONG_LONG: Error:   × cannot combine `long` with previous declaration specifiers
-// LONG_LONG_LONG: ╰─▶ cannot combine `long` with previous declaration specifiers
-// LONG_LONG_LONG: ╭─[tests/fixtures/clang/linux/x86_64/declaration_specifier_order.c:36:11]
-// LONG_LONG_LONG: 35 │ #ifdef LONG_LONG_LONG
-// LONG_LONG_LONG: 36 │ long long long too_long;
-// LONG_LONG_LONG: ·           ────
-// LONG_LONG_LONG: 37 │ #endif
-// LONG_LONG_LONG: ╰────
+// LONG_LONG_LONG:   ╰─▶ cannot combine `long` with previous declaration specifiers
+// LONG_LONG_LONG:     ╭─[tests/fixtures/clang/linux/x86_64/declaration_specifier_order.c:36:11]
+// LONG_LONG_LONG:  35 │ #ifdef LONG_LONG_LONG
+// LONG_LONG_LONG:  36 │ long long long too_long;
+// LONG_LONG_LONG:     ·           ────
+// LONG_LONG_LONG:  37 │ #endif
+// LONG_LONG_LONG:     ╰────
 // SLATE-FILECHECK-END LONG_LONG_LONG
 // SLATE-FILECHECK-BEGIN SIGN_CONFLICT
 // SIGN_CONFLICT: Error:   × cannot combine `unsigned` with previous declaration specifiers
-// SIGN_CONFLICT: ╰─▶ cannot combine `unsigned` with previous declaration specifiers
-// SIGN_CONFLICT: ╭─[tests/fixtures/clang/linux/x86_64/declaration_specifier_order.c:39:12]
-// SIGN_CONFLICT: 38 │ #ifdef SIGN_CONFLICT
-// SIGN_CONFLICT: 39 │ int signed unsigned both;
-// SIGN_CONFLICT: ·            ────────
-// SIGN_CONFLICT: 40 │ #endif
-// SIGN_CONFLICT: ╰────
+// SIGN_CONFLICT:   ╰─▶ cannot combine `unsigned` with previous declaration specifiers
+// SIGN_CONFLICT:     ╭─[tests/fixtures/clang/linux/x86_64/declaration_specifier_order.c:39:12]
+// SIGN_CONFLICT:  38 │ #ifdef SIGN_CONFLICT
+// SIGN_CONFLICT:  39 │ int signed unsigned both;
+// SIGN_CONFLICT:     ·            ────────
+// SIGN_CONFLICT:  40 │ #endif
+// SIGN_CONFLICT:     ╰────
 // SLATE-FILECHECK-END SIGN_CONFLICT
 // SLATE-FILECHECK-BEGIN LONG_FLOAT
 // LONG_FLOAT: Error:   × cannot combine `long` with previous declaration specifiers
-// LONG_FLOAT: ╰─▶ cannot combine `long` with previous declaration specifiers
-// LONG_FLOAT: ╭─[tests/fixtures/clang/linux/x86_64/declaration_specifier_order.c:42:7]
-// LONG_FLOAT: 41 │ #ifdef LONG_FLOAT
-// LONG_FLOAT: 42 │ float long wide_float;
-// LONG_FLOAT: ·       ────
-// LONG_FLOAT: 43 │ #endif
-// LONG_FLOAT: ╰────
+// LONG_FLOAT:   ╰─▶ cannot combine `long` with previous declaration specifiers
+// LONG_FLOAT:     ╭─[tests/fixtures/clang/linux/x86_64/declaration_specifier_order.c:42:7]
+// LONG_FLOAT:  41 │ #ifdef LONG_FLOAT
+// LONG_FLOAT:  42 │ float long wide_float;
+// LONG_FLOAT:     ·       ────
+// LONG_FLOAT:  43 │ #endif
+// LONG_FLOAT:     ╰────
 // SLATE-FILECHECK-END LONG_FLOAT
 // SLATE-FILECHECK-BEGIN SIGNED_TYPEDEF
 // SIGNED_TYPEDEF: Error:   × cannot combine `unsigned` with previous declaration specifiers
-// SIGNED_TYPEDEF: ╰─▶ cannot combine `unsigned` with previous declaration specifiers
-// SIGNED_TYPEDEF: ╭─[tests/fixtures/clang/linux/x86_64/declaration_specifier_order.c:45:6]
-// SIGNED_TYPEDEF: 44 │ #ifdef SIGNED_TYPEDEF
-// SIGNED_TYPEDEF: 45 │ word unsigned signed_typedef;
-// SIGNED_TYPEDEF: ·      ────────
-// SIGNED_TYPEDEF: 46 │ #endif
-// SIGNED_TYPEDEF: ╰────
+// SIGNED_TYPEDEF:   ╰─▶ cannot combine `unsigned` with previous declaration specifiers
+// SIGNED_TYPEDEF:     ╭─[tests/fixtures/clang/linux/x86_64/declaration_specifier_order.c:45:6]
+// SIGNED_TYPEDEF:  44 │ #ifdef SIGNED_TYPEDEF
+// SIGNED_TYPEDEF:  45 │ word unsigned signed_typedef;
+// SIGNED_TYPEDEF:     ·      ────────
+// SIGNED_TYPEDEF:  46 │ #endif
+// SIGNED_TYPEDEF:     ╰────
 // SLATE-FILECHECK-END SIGNED_TYPEDEF
 // SLATE-FILECHECK-BEGIN WIDE_BIT_INT
 // WIDE_BIT_INT: Error:   × cannot combine `long` with previous declaration specifiers
-// WIDE_BIT_INT: ╰─▶ cannot combine `long` with previous declaration specifiers
-// WIDE_BIT_INT: ╭─[tests/fixtures/clang/linux/x86_64/declaration_specifier_order.c:48:13]
-// WIDE_BIT_INT: 47 │ #ifdef WIDE_BIT_INT
-// WIDE_BIT_INT: 48 │ _BitInt(42) long wide_bit_int;
-// WIDE_BIT_INT: ·             ────
-// WIDE_BIT_INT: 49 │ #endif
-// WIDE_BIT_INT: ╰────
+// WIDE_BIT_INT:   ╰─▶ cannot combine `long` with previous declaration specifiers
+// WIDE_BIT_INT:     ╭─[tests/fixtures/clang/linux/x86_64/declaration_specifier_order.c:48:13]
+// WIDE_BIT_INT:  47 │ #ifdef WIDE_BIT_INT
+// WIDE_BIT_INT:  48 │ _BitInt(42) long wide_bit_int;
+// WIDE_BIT_INT:     ·             ────
+// WIDE_BIT_INT:  49 │ #endif
+// WIDE_BIT_INT:     ╰────
 // SLATE-FILECHECK-END WIDE_BIT_INT
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: module {

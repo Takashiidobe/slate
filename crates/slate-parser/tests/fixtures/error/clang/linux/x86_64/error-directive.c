@@ -7,10 +7,10 @@ int value;
 
 // SLATE-FILECHECK-BEGIN PARSE
 // PARSE: Error:   × #error unsupported target
-// PARSE: ╭─[tests/fixtures/error/clang/linux/x86_64/error-directive.c:2:1]
-// PARSE: 1 │ #if 1
-// PARSE: 2 │ #error unsupported target
-// PARSE: · ─────────────────────────
-// PARSE: 3 │ #endif
-// PARSE: ╰────
+// PARSE:    ╭─[tests/fixtures/error/clang/linux/x86_64/error-directive.c:2:1]
+// PARSE:  1 │ #if 1
+// PARSE:  2 │ #error unsupported target
+// PARSE:    · ─────────────────────────
+// PARSE:  3 │ #endif
+// PARSE:    ╰────
 // SLATE-FILECHECK-END PARSE

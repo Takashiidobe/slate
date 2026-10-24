@@ -258,7 +258,7 @@ def render_warnings(
     if result.returncode:
         raise RuntimeError(f"expected {fixture} to parse successfully:\n{result.stderr}")
     return [
-        line.strip().replace(parsed_name, fixture.name)
+        line.rstrip().replace(parsed_name, fixture.name)
         for line in result.stderr.splitlines()
         if re.match(r"^\s*(?:-W[a-z0-9-]+$|\d+ │|│|×|⚠|╭─|·|╰─)", line)
     ]
@@ -292,7 +292,7 @@ def render_error(
     if result.returncode == 0:
         raise RuntimeError(f"expected {fixture} to fail parsing")
     return [
-        line.strip().replace(parsed_name, fixture.name)
+        line.rstrip().replace(parsed_name, fixture.name)
         for line in result.stderr.splitlines()
         if line.startswith("Error:")
         or re.match(r"^\s*(?:\d+ │|×|⚠|╭─|·|╰─)", line)

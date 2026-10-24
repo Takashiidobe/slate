@@ -15,21 +15,21 @@ void *mismatched(void) { return flag ? ints : floats; }
 
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: -Wpointer-integer-compare
-// DEFAULT: ⚠ comparison between pointer and integer
-// DEFAULT: ╭─[tests/fixtures/gcc/linux/x86_64/ir_lenient_operand_rules.c:5:29]
-// DEFAULT: 4 │
-// DEFAULT: 5 │ int ordered(void) { return (ints < 1) + (0 > ints); }
-// DEFAULT: ·                             ────────
-// DEFAULT: 6 │ int *masked(void) { return __atomic_fetch_and(&ints, 3, 5); }
-// DEFAULT: ╰────
+// DEFAULT:   ⚠ comparison between pointer and integer
+// DEFAULT:    ╭─[tests/fixtures/gcc/linux/x86_64/ir_lenient_operand_rules.c:5:29]
+// DEFAULT:  4 │
+// DEFAULT:  5 │ int ordered(void) { return (ints < 1) + (0 > ints); }
+// DEFAULT:    ·                             ────────
+// DEFAULT:  6 │ int *masked(void) { return __atomic_fetch_and(&ints, 3, 5); }
+// DEFAULT:    ╰────
 // DEFAULT: -Wincompatible-pointer-types
-// DEFAULT: ⚠ pointer type mismatch in conditional expression
-// DEFAULT: ╭─[tests/fixtures/gcc/linux/x86_64/ir_lenient_operand_rules.c:9:33]
-// DEFAULT: 8 │ void toggled(void) { __sync_fetch_and_xor(&ints, 1); }
-// DEFAULT: 9 │ void *mismatched(void) { return flag ? ints : floats; }
-// DEFAULT: ·                                 ────────────────────
-// DEFAULT: 10 │
-// DEFAULT: ╰────
+// DEFAULT:   ⚠ pointer type mismatch in conditional expression
+// DEFAULT:     ╭─[tests/fixtures/gcc/linux/x86_64/ir_lenient_operand_rules.c:9:33]
+// DEFAULT:   8 │ void toggled(void) { __sync_fetch_and_xor(&ints, 1); }
+// DEFAULT:   9 │ void *mismatched(void) { return flag ? ints : floats; }
+// DEFAULT:     ·                                 ────────────────────
+// DEFAULT:  10 │
+// DEFAULT:     ╰────
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN IR-DEFAULT
 // IR-DEFAULT: module {

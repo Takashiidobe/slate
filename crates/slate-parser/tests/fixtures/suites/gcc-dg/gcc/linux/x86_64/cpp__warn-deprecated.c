@@ -12,21 +12,21 @@
 
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: -Wdeprecated
-// DEFAULT: ⚠ '#assert' is a deprecated GCC extension
-// DEFAULT: ╭─[tests/fixtures/suites/gcc-dg/gcc/linux/x86_64/cpp__warn-deprecated.c:4:2]
-// DEFAULT: 3 │
-// DEFAULT: 4 │ #assert x(x)  // { dg-warning "'#assert' is a deprecated GCC extension .-Wdeprecated." }
-// DEFAULT: ·  ──────
-// DEFAULT: 5 │
-// DEFAULT: ╰────
+// DEFAULT:   ⚠ '#assert' is a deprecated GCC extension
+// DEFAULT:    ╭─[tests/fixtures/suites/gcc-dg/gcc/linux/x86_64/cpp__warn-deprecated.c:4:2]
+// DEFAULT:  3 │
+// DEFAULT:  4 │ #assert x(x)  // { dg-warning "'#assert' is a deprecated GCC extension .-Wdeprecated." }
+// DEFAULT:    ·  ──────
+// DEFAULT:  5 │
+// DEFAULT:    ╰────
 // DEFAULT: -Wdeprecated
-// DEFAULT: ⚠ assertions are a deprecated extension
-// DEFAULT: ╭─[tests/fixtures/suites/gcc-dg/gcc/linux/x86_64/cpp__warn-deprecated.c:6:5]
-// DEFAULT: 5 │
-// DEFAULT: 6 │ #if #x(x)     // { dg-warning "assertions are a deprecated extension .-Wdeprecated." }
-// DEFAULT: ·     ─
-// DEFAULT: 7 │ #endif
-// DEFAULT: ╰────
+// DEFAULT:   ⚠ assertions are a deprecated extension
+// DEFAULT:    ╭─[tests/fixtures/suites/gcc-dg/gcc/linux/x86_64/cpp__warn-deprecated.c:6:5]
+// DEFAULT:  5 │
+// DEFAULT:  6 │ #if #x(x)     // { dg-warning "assertions are a deprecated extension .-Wdeprecated." }
+// DEFAULT:    ·     ─
+// DEFAULT:  7 │ #endif
+// DEFAULT:    ╰────
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN IR-DEFAULT
 // IR-DEFAULT: module {

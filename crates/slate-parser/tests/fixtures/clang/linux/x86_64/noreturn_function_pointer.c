@@ -28,21 +28,21 @@ int run(struct efi_boot_services *services) {
 
 // SLATE-FILECHECK-BEGIN WARN
 // WARN: -Wignored-attributes
-// WARN: ⚠ 'noreturn' attribute ignored; it applies only to function types
-// WARN: ╭─[tests/fixtures/clang/linux/x86_64/noreturn_function_pointer.c:8:22]
-// WARN: 7 │   void (*after)(int) __attribute__((noreturn));
-// WARN: 8 │   int __attribute__((noreturn)) not_callable;
-// WARN: ·                      ────────
-// WARN: 9 │ };
-// WARN: ╰────
+// WARN:   ⚠ 'noreturn' attribute ignored; it applies only to function types
+// WARN:    ╭─[tests/fixtures/clang/linux/x86_64/noreturn_function_pointer.c:8:22]
+// WARN:  7 │   void (*after)(int) __attribute__((noreturn));
+// WARN:  8 │   int __attribute__((noreturn)) not_callable;
+// WARN:    ·                      ────────
+// WARN:  9 │ };
+// WARN:    ╰────
 // WARN: -Wignored-attributes
-// WARN: ⚠ 'noreturn' attribute ignored; it applies only to function types
-// WARN: ╭─[tests/fixtures/clang/linux/x86_64/noreturn_function_pointer.c:16:20]
-// WARN: 15 │ handler_fn __attribute__((noreturn)) typedef_table[2];
-// WARN: 16 │ int __attribute__((noreturn)) plain;
-// WARN: ·                    ────────
-// WARN: 17 │ void declared(void) __attribute__((noreturn));
-// WARN: ╰────
+// WARN:   ⚠ 'noreturn' attribute ignored; it applies only to function types
+// WARN:     ╭─[tests/fixtures/clang/linux/x86_64/noreturn_function_pointer.c:16:20]
+// WARN:  15 │ handler_fn __attribute__((noreturn)) typedef_table[2];
+// WARN:  16 │ int __attribute__((noreturn)) plain;
+// WARN:     ·                    ────────
+// WARN:  17 │ void declared(void) __attribute__((noreturn));
+// WARN:     ╰────
 // SLATE-FILECHECK-END WARN
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: module {

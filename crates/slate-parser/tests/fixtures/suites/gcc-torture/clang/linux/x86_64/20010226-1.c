@@ -30,14 +30,14 @@ int foo (void *a, int b)
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: Error:   × semantic analysis failed
 // DEFAULT: Error:
-// DEFAULT: × function definition is not allowed here
-// DEFAULT: ╭─[tests/fixtures/suites/gcc-torture/clang/linux/x86_64/20010226-1.c:17:7]
-// DEFAULT: 16 │         {
-// DEFAULT: 17 │ ╭─▶       void bar (void *c)
-// DEFAULT: 18 │ │         {
-// DEFAULT: 19 │ │       if (c == a)
-// DEFAULT: 20 │ │         f2 (c);
-// DEFAULT: 21 │ ╰─▶       }
-// DEFAULT: 22 │           f3 (a, bar);
-// DEFAULT: ╰────
+// DEFAULT:   × function definition is not allowed here
+// DEFAULT:     ╭─[tests/fixtures/suites/gcc-torture/clang/linux/x86_64/20010226-1.c:17:7]
+// DEFAULT:  16 │         {
+// DEFAULT:  17 │ ╭─▶       void bar (void *c)
+// DEFAULT:  18 │ │         {
+// DEFAULT:  19 │ │       if (c == a)
+// DEFAULT:  20 │ │         f2 (c);
+// DEFAULT:  21 │ ╰─▶       }
+// DEFAULT:  22 │           f3 (a, bar);
+// DEFAULT:     ╰────
 // SLATE-FILECHECK-END DEFAULT

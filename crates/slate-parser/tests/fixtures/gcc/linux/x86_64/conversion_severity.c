@@ -15,23 +15,23 @@ int *to_pointer(int value) { return value; }
 
 // SLATE-FILECHECK-BEGIN C89
 // C89: -Wint-conversion
-// C89: ⚠ incompatible integer to pointer conversion
-// C89: ╭─[tests/fixtures/gcc/linux/x86_64/conversion_severity.c:6:37]
-// C89: 5 │ #if defined(C89) || defined(GNU89)
-// C89: 6 │ int *to_pointer(int value) { return value; }
-// C89: ·                                     ─────
-// C89: 7 │ #endif
-// C89: ╰────
+// C89:   ⚠ incompatible integer to pointer conversion
+// C89:    ╭─[tests/fixtures/gcc/linux/x86_64/conversion_severity.c:6:37]
+// C89:  5 │ #if defined(C89) || defined(GNU89)
+// C89:  6 │ int *to_pointer(int value) { return value; }
+// C89:    ·                                     ─────
+// C89:  7 │ #endif
+// C89:    ╰────
 // SLATE-FILECHECK-END C89
 // SLATE-FILECHECK-BEGIN GNU89
 // GNU89: -Wint-conversion
-// GNU89: ⚠ incompatible integer to pointer conversion
-// GNU89: ╭─[tests/fixtures/gcc/linux/x86_64/conversion_severity.c:6:37]
-// GNU89: 5 │ #if defined(C89) || defined(GNU89)
-// GNU89: 6 │ int *to_pointer(int value) { return value; }
-// GNU89: ·                                     ─────
-// GNU89: 7 │ #endif
-// GNU89: ╰────
+// GNU89:   ⚠ incompatible integer to pointer conversion
+// GNU89:    ╭─[tests/fixtures/gcc/linux/x86_64/conversion_severity.c:6:37]
+// GNU89:  5 │ #if defined(C89) || defined(GNU89)
+// GNU89:  6 │ int *to_pointer(int value) { return value; }
+// GNU89:    ·                                     ─────
+// GNU89:  7 │ #endif
+// GNU89:    ╰────
 // SLATE-FILECHECK-END GNU89
 // SLATE-FILECHECK-BEGIN IR-C89
 // IR-C89: module {

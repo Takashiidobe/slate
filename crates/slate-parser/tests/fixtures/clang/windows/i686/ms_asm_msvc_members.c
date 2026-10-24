@@ -23,32 +23,32 @@ int type_keyword(void) { __asm mov eax, TYPE int }
 // SLATE-FILECHECK-BEGIN UNTYPED
 // UNTYPED: Error:   × semantic analysis failed
 // UNTYPED: Error:
-// UNTYPED: × `__asm` member of an untyped operand
-// UNTYPED: ╭─[tests/fixtures/clang/windows/i686/ms_asm_msvc_members.c:6:21]
-// UNTYPED: 5 │ #if defined(UNTYPED)
-// UNTYPED: 6 │ int untyped(void) { __asm mov eax, [ebx].last }
-// UNTYPED: ·                     ─────────────────────────
-// UNTYPED: 7 │ #endif
-// UNTYPED: ╰────
+// UNTYPED:   × `__asm` member of an untyped operand
+// UNTYPED:    ╭─[tests/fixtures/clang/windows/i686/ms_asm_msvc_members.c:6:21]
+// UNTYPED:  5 │ #if defined(UNTYPED)
+// UNTYPED:  6 │ int untyped(void) { __asm mov eax, [ebx].last }
+// UNTYPED:    ·                     ─────────────────────────
+// UNTYPED:  7 │ #endif
+// UNTYPED:    ╰────
 // SLATE-FILECHECK-END UNTYPED
 // SLATE-FILECHECK-BEGIN SCALAR
 // SCALAR: Error:   × semantic analysis failed
 // SCALAR: Error:
-// SCALAR: × no such struct or union member in `__asm`
-// SCALAR: ╭─[tests/fixtures/clang/windows/i686/ms_asm_msvc_members.c:10:20]
-// SCALAR: 9 │ #if defined(SCALAR)
-// SCALAR: 10 │ int scalar(void) { __asm mov eax, global.last }
-// SCALAR: ·                    ──────────────────────────
-// SCALAR: 11 │ #endif
-// SCALAR: ╰────
+// SCALAR:   × no such struct or union member in `__asm`
+// SCALAR:     ╭─[tests/fixtures/clang/windows/i686/ms_asm_msvc_members.c:10:20]
+// SCALAR:   9 │ #if defined(SCALAR)
+// SCALAR:  10 │ int scalar(void) { __asm mov eax, global.last }
+// SCALAR:     ·                    ──────────────────────────
+// SCALAR:  11 │ #endif
+// SCALAR:     ╰────
 // SLATE-FILECHECK-END SCALAR
 // SLATE-FILECHECK-BEGIN TYPE_KEYWORD
 // TYPE_KEYWORD: Error:   × expected `__asm` operand
-// TYPE_KEYWORD: ╰─▶ expected `__asm` operand
-// TYPE_KEYWORD: ╭─[tests/fixtures/clang/windows/i686/ms_asm_msvc_members.c:14:46]
-// TYPE_KEYWORD: 13 │ #if defined(TYPE_KEYWORD)
-// TYPE_KEYWORD: 14 │ int type_keyword(void) { __asm mov eax, TYPE int }
-// TYPE_KEYWORD: ·                                              ───
-// TYPE_KEYWORD: 15 │ #endif
-// TYPE_KEYWORD: ╰────
+// TYPE_KEYWORD:   ╰─▶ expected `__asm` operand
+// TYPE_KEYWORD:     ╭─[tests/fixtures/clang/windows/i686/ms_asm_msvc_members.c:14:46]
+// TYPE_KEYWORD:  13 │ #if defined(TYPE_KEYWORD)
+// TYPE_KEYWORD:  14 │ int type_keyword(void) { __asm mov eax, TYPE int }
+// TYPE_KEYWORD:     ·                                              ───
+// TYPE_KEYWORD:  15 │ #endif
+// TYPE_KEYWORD:     ╰────
 // SLATE-FILECHECK-END TYPE_KEYWORD

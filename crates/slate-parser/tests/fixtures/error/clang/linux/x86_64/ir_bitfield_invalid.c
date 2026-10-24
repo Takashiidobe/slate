@@ -23,33 +23,33 @@ unsigned long invalid(struct Flags *f) {
 // SLATE-FILECHECK-BEGIN SIZEOF
 // SIZEOF: Error:   × semantic analysis failed
 // SIZEOF: Error:
-// SIZEOF: × application of sizeof or alignof to a bit-field
-// SIZEOF: ╭─[tests/fixtures/error/clang/linux/x86_64/ir_bitfield_invalid.c:6:12]
-// SIZEOF: 5 │ #ifdef SIZEOF
-// SIZEOF: 6 │     return sizeof(f->low);
-// SIZEOF: ·            ──────────────
-// SIZEOF: 7 │ #endif
-// SIZEOF: ╰────
+// SIZEOF:   × application of sizeof or alignof to a bit-field
+// SIZEOF:    ╭─[tests/fixtures/error/clang/linux/x86_64/ir_bitfield_invalid.c:6:12]
+// SIZEOF:  5 │ #ifdef SIZEOF
+// SIZEOF:  6 │     return sizeof(f->low);
+// SIZEOF:    ·            ──────────────
+// SIZEOF:  7 │ #endif
+// SIZEOF:    ╰────
 // SLATE-FILECHECK-END SIZEOF
 // SLATE-FILECHECK-BEGIN ALIGNOF
 // ALIGNOF: Error:   × semantic analysis failed
 // ALIGNOF: Error:
-// ALIGNOF: × application of sizeof or alignof to a bit-field
-// ALIGNOF: ╭─[tests/fixtures/error/clang/linux/x86_64/ir_bitfield_invalid.c:9:12]
-// ALIGNOF: 8 │ #ifdef ALIGNOF
-// ALIGNOF: 9 │     return _Alignof(f->low);
-// ALIGNOF: ·            ────────────────
-// ALIGNOF: 10 │ #endif
-// ALIGNOF: ╰────
+// ALIGNOF:   × application of sizeof or alignof to a bit-field
+// ALIGNOF:     ╭─[tests/fixtures/error/clang/linux/x86_64/ir_bitfield_invalid.c:9:12]
+// ALIGNOF:   8 │ #ifdef ALIGNOF
+// ALIGNOF:   9 │     return _Alignof(f->low);
+// ALIGNOF:     ·            ────────────────
+// ALIGNOF:  10 │ #endif
+// ALIGNOF:     ╰────
 // SLATE-FILECHECK-END ALIGNOF
 // SLATE-FILECHECK-BEGIN ADDRESS
 // ADDRESS: Error:   × semantic analysis failed
 // ADDRESS: Error:
-// ADDRESS: × address of a bit-field
-// ADDRESS: ╭─[tests/fixtures/error/clang/linux/x86_64/ir_bitfield_invalid.c:12:27]
-// ADDRESS: 11 │ #ifdef ADDRESS
-// ADDRESS: 12 │     return (unsigned long)&f->low;
-// ADDRESS: ·                           ───────
-// ADDRESS: 13 │ #endif
-// ADDRESS: ╰────
+// ADDRESS:   × address of a bit-field
+// ADDRESS:     ╭─[tests/fixtures/error/clang/linux/x86_64/ir_bitfield_invalid.c:12:27]
+// ADDRESS:  11 │ #ifdef ADDRESS
+// ADDRESS:  12 │     return (unsigned long)&f->low;
+// ADDRESS:     ·                           ───────
+// ADDRESS:  13 │ #endif
+// ADDRESS:     ╰────
 // SLATE-FILECHECK-END ADDRESS

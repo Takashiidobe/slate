@@ -11,37 +11,37 @@ int unevaluated(int *p) {
 
 // SLATE-FILECHECK-BEGIN WARN
 // WARN: -Wpointer-integer-compare
-// WARN: ⚠ comparison between pointer and integer
-// WARN: ╭─[tests/fixtures/clang/linux/x86_64/ir_pointer_comparison.c:3:13]
-// WARN: 2 │ int compared(int *p, unsigned *u, long *l, void *v, int x) {
-// WARN: 3 │     return (p == x) + (p == u) + (p < l) + (p == v) + (p == 0);
-// WARN: ·             ──────
-// WARN: 4 │ }
-// WARN: ╰────
+// WARN:   ⚠ comparison between pointer and integer
+// WARN:    ╭─[tests/fixtures/clang/linux/x86_64/ir_pointer_comparison.c:3:13]
+// WARN:  2 │ int compared(int *p, unsigned *u, long *l, void *v, int x) {
+// WARN:  3 │     return (p == x) + (p == u) + (p < l) + (p == v) + (p == 0);
+// WARN:    ·             ──────
+// WARN:  4 │ }
+// WARN:    ╰────
 // WARN: -Wcompare-distinct-pointer-types
-// WARN: ⚠ comparison of distinct pointer types
-// WARN: ╭─[tests/fixtures/clang/linux/x86_64/ir_pointer_comparison.c:3:24]
-// WARN: 2 │ int compared(int *p, unsigned *u, long *l, void *v, int x) {
-// WARN: 3 │     return (p == x) + (p == u) + (p < l) + (p == v) + (p == 0);
-// WARN: ·                        ──────
-// WARN: 4 │ }
-// WARN: ╰────
+// WARN:   ⚠ comparison of distinct pointer types
+// WARN:    ╭─[tests/fixtures/clang/linux/x86_64/ir_pointer_comparison.c:3:24]
+// WARN:  2 │ int compared(int *p, unsigned *u, long *l, void *v, int x) {
+// WARN:  3 │     return (p == x) + (p == u) + (p < l) + (p == v) + (p == 0);
+// WARN:    ·                        ──────
+// WARN:  4 │ }
+// WARN:    ╰────
 // WARN: -Wcompare-distinct-pointer-types
-// WARN: ⚠ comparison of distinct pointer types
-// WARN: ╭─[tests/fixtures/clang/linux/x86_64/ir_pointer_comparison.c:3:35]
-// WARN: 2 │ int compared(int *p, unsigned *u, long *l, void *v, int x) {
-// WARN: 3 │     return (p == x) + (p == u) + (p < l) + (p == v) + (p == 0);
-// WARN: ·                                   ─────
-// WARN: 4 │ }
-// WARN: ╰────
+// WARN:   ⚠ comparison of distinct pointer types
+// WARN:    ╭─[tests/fixtures/clang/linux/x86_64/ir_pointer_comparison.c:3:35]
+// WARN:  2 │ int compared(int *p, unsigned *u, long *l, void *v, int x) {
+// WARN:  3 │     return (p == x) + (p == u) + (p < l) + (p == v) + (p == 0);
+// WARN:    ·                                   ─────
+// WARN:  4 │ }
+// WARN:    ╰────
 // WARN: -Wpointer-integer-compare
-// WARN: ⚠ comparison between pointer and integer
-// WARN: ╭─[tests/fixtures/clang/linux/x86_64/ir_pointer_comparison.c:6:19]
-// WARN: 5 │ int unevaluated(int *p) {
-// WARN: 6 │     return sizeof(p == 2);
-// WARN: ·                   ──────
-// WARN: 7 │ }
-// WARN: ╰────
+// WARN:   ⚠ comparison between pointer and integer
+// WARN:    ╭─[tests/fixtures/clang/linux/x86_64/ir_pointer_comparison.c:6:19]
+// WARN:  5 │ int unevaluated(int *p) {
+// WARN:  6 │     return sizeof(p == 2);
+// WARN:    ·                   ──────
+// WARN:  7 │ }
+// WARN:    ╰────
 // SLATE-FILECHECK-END WARN
 // SLATE-FILECHECK-BEGIN IR-WARN
 // IR-WARN: module {

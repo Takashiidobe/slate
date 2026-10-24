@@ -37,69 +37,69 @@ int use(void) { return imported + exported + bogus + scoped_bogus; }
 
 // SLATE-FILECHECK-BEGIN WARN
 // WARN: -Wunknown-attributes
-// WARN: ⚠ unknown attribute 'dllimport' ignored
-// WARN: ╭─[tests/fixtures/gcc/linux/aarch64/unknown_attributes.c:2:16]
-// WARN: 1 │
-// WARN: 2 │ __attribute__((dllimport)) int imported;
-// WARN: ·                ─────────
-// WARN: 3 │ __attribute__((dllexport)) int exported = 1;
-// WARN: ╰────
+// WARN:   ⚠ unknown attribute 'dllimport' ignored
+// WARN:    ╭─[tests/fixtures/gcc/linux/aarch64/unknown_attributes.c:2:16]
+// WARN:  1 │
+// WARN:  2 │ __attribute__((dllimport)) int imported;
+// WARN:    ·                ─────────
+// WARN:  3 │ __attribute__((dllexport)) int exported = 1;
+// WARN:    ╰────
 // WARN: -Wunknown-attributes
-// WARN: ⚠ unknown attribute 'dllexport' ignored
-// WARN: ╭─[tests/fixtures/gcc/linux/aarch64/unknown_attributes.c:3:16]
-// WARN: 2 │ __attribute__((dllimport)) int imported;
-// WARN: 3 │ __attribute__((dllexport)) int exported = 1;
-// WARN: ·                ─────────
-// WARN: 4 │ __attribute__((noipa)) void opaque(void) {}
-// WARN: ╰────
+// WARN:   ⚠ unknown attribute 'dllexport' ignored
+// WARN:    ╭─[tests/fixtures/gcc/linux/aarch64/unknown_attributes.c:3:16]
+// WARN:  2 │ __attribute__((dllimport)) int imported;
+// WARN:  3 │ __attribute__((dllexport)) int exported = 1;
+// WARN:    ·                ─────────
+// WARN:  4 │ __attribute__((noipa)) void opaque(void) {}
+// WARN:    ╰────
 // WARN: -Wunknown-attributes
-// WARN: ⚠ unknown attribute 'overloadable' ignored
-// WARN: ╭─[tests/fixtures/gcc/linux/aarch64/unknown_attributes.c:5:16]
-// WARN: 4 │ __attribute__((noipa)) void opaque(void) {}
-// WARN: 5 │ __attribute__((overloadable)) void overloaded(int);
-// WARN: ·                ────────────
-// WARN: 6 │ __attribute__((naked)) void bare(void);
-// WARN: ╰────
+// WARN:   ⚠ unknown attribute 'overloadable' ignored
+// WARN:    ╭─[tests/fixtures/gcc/linux/aarch64/unknown_attributes.c:5:16]
+// WARN:  4 │ __attribute__((noipa)) void opaque(void) {}
+// WARN:  5 │ __attribute__((overloadable)) void overloaded(int);
+// WARN:    ·                ────────────
+// WARN:  6 │ __attribute__((naked)) void bare(void);
+// WARN:    ╰────
 // WARN: -Wunknown-attributes
-// WARN: ⚠ unknown attribute 'naked' ignored
-// WARN: ╭─[tests/fixtures/gcc/linux/aarch64/unknown_attributes.c:6:16]
-// WARN: 5 │ __attribute__((overloadable)) void overloaded(int);
-// WARN: 6 │ __attribute__((naked)) void bare(void);
-// WARN: ·                ─────
-// WARN: 7 │ __attribute__((not_an_attribute)) int bogus;
-// WARN: ╰────
+// WARN:   ⚠ unknown attribute 'naked' ignored
+// WARN:    ╭─[tests/fixtures/gcc/linux/aarch64/unknown_attributes.c:6:16]
+// WARN:  5 │ __attribute__((overloadable)) void overloaded(int);
+// WARN:  6 │ __attribute__((naked)) void bare(void);
+// WARN:    ·                ─────
+// WARN:  7 │ __attribute__((not_an_attribute)) int bogus;
+// WARN:    ╰────
 // WARN: -Wunknown-attributes
-// WARN: ⚠ unknown attribute 'not_an_attribute' ignored
-// WARN: ╭─[tests/fixtures/gcc/linux/aarch64/unknown_attributes.c:7:16]
-// WARN: 6 │ __attribute__((naked)) void bare(void);
-// WARN: 7 │ __attribute__((not_an_attribute)) int bogus;
-// WARN: ·                ────────────────
-// WARN: 8 │ {{\[\[}}gnu::not_an_attribute]] int scoped_bogus;
-// WARN: ╰────
+// WARN:   ⚠ unknown attribute 'not_an_attribute' ignored
+// WARN:    ╭─[tests/fixtures/gcc/linux/aarch64/unknown_attributes.c:7:16]
+// WARN:  6 │ __attribute__((naked)) void bare(void);
+// WARN:  7 │ __attribute__((not_an_attribute)) int bogus;
+// WARN:    ·                ────────────────
+// WARN:  8 │ {{\[\[}}gnu::not_an_attribute]] int scoped_bogus;
+// WARN:    ╰────
 // WARN: -Wunknown-attributes
-// WARN: ⚠ unknown attribute 'gnu::not_an_attribute' ignored
-// WARN: ╭─[tests/fixtures/gcc/linux/aarch64/unknown_attributes.c:8:3]
-// WARN: 7 │ __attribute__((not_an_attribute)) int bogus;
-// WARN: 8 │ {{\[\[}}gnu::not_an_attribute]] int scoped_bogus;
-// WARN: ·   ─────────────────────
-// WARN: 9 │ {{\[\[}}clang::overloadable]] void clang_scoped(int);
-// WARN: ╰────
+// WARN:   ⚠ unknown attribute 'gnu::not_an_attribute' ignored
+// WARN:    ╭─[tests/fixtures/gcc/linux/aarch64/unknown_attributes.c:8:3]
+// WARN:  7 │ __attribute__((not_an_attribute)) int bogus;
+// WARN:  8 │ {{\[\[}}gnu::not_an_attribute]] int scoped_bogus;
+// WARN:    ·   ─────────────────────
+// WARN:  9 │ {{\[\[}}clang::overloadable]] void clang_scoped(int);
+// WARN:    ╰────
 // WARN: -Wunknown-attributes
-// WARN: ⚠ unknown attribute 'clang::overloadable' ignored
-// WARN: ╭─[tests/fixtures/gcc/linux/aarch64/unknown_attributes.c:9:3]
-// WARN: 8 │ {{\[\[}}gnu::not_an_attribute]] int scoped_bogus;
-// WARN: 9 │ {{\[\[}}clang::overloadable]] void clang_scoped(int);
-// WARN: ·   ───────────────────
-// WARN: 10 │ {{\[\[}}msvc::noinline]] void msvc_scoped(void);
-// WARN: ╰────
+// WARN:   ⚠ unknown attribute 'clang::overloadable' ignored
+// WARN:     ╭─[tests/fixtures/gcc/linux/aarch64/unknown_attributes.c:9:3]
+// WARN:   8 │ {{\[\[}}gnu::not_an_attribute]] int scoped_bogus;
+// WARN:   9 │ {{\[\[}}clang::overloadable]] void clang_scoped(int);
+// WARN:     ·   ───────────────────
+// WARN:  10 │ {{\[\[}}msvc::noinline]] void msvc_scoped(void);
+// WARN:     ╰────
 // WARN: -Wunknown-attributes
-// WARN: ⚠ unknown attribute 'msvc::noinline' ignored
-// WARN: ╭─[tests/fixtures/gcc/linux/aarch64/unknown_attributes.c:10:3]
-// WARN: 9 │ {{\[\[}}clang::overloadable]] void clang_scoped(int);
-// WARN: 10 │ {{\[\[}}msvc::noinline]] void msvc_scoped(void);
-// WARN: ·   ──────────────
-// WARN: 11 │
-// WARN: ╰────
+// WARN:   ⚠ unknown attribute 'msvc::noinline' ignored
+// WARN:     ╭─[tests/fixtures/gcc/linux/aarch64/unknown_attributes.c:10:3]
+// WARN:   9 │ {{\[\[}}clang::overloadable]] void clang_scoped(int);
+// WARN:  10 │ {{\[\[}}msvc::noinline]] void msvc_scoped(void);
+// WARN:     ·   ──────────────
+// WARN:  11 │
+// WARN:     ╰────
 // SLATE-FILECHECK-END WARN
 // SLATE-FILECHECK-BEGIN IR-WARN
 // IR-WARN: module {

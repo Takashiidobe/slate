@@ -8,13 +8,13 @@ int *to_pointer(int value) { return value; }
 
 // SLATE-FILECHECK-BEGIN WARN
 // WARN: -Wint-conversion
-// WARN: ⚠ incompatible integer to pointer conversion
-// WARN: ╭─[tests/fixtures/clang/linux/x86_64/conversion_no_error_downgrade.c:4:37]
-// WARN: 3 │ // both clang and gcc. -W<w> on its own leaves it an error.
-// WARN: 4 │ int *to_pointer(int value) { return value; }
-// WARN: ·                                     ─────
-// WARN: 5 │
-// WARN: ╰────
+// WARN:   ⚠ incompatible integer to pointer conversion
+// WARN:    ╭─[tests/fixtures/clang/linux/x86_64/conversion_no_error_downgrade.c:4:37]
+// WARN:  3 │ // both clang and gcc. -W<w> on its own leaves it an error.
+// WARN:  4 │ int *to_pointer(int value) { return value; }
+// WARN:    ·                                     ─────
+// WARN:  5 │
+// WARN:    ╰────
 // SLATE-FILECHECK-END WARN
 // SLATE-FILECHECK-BEGIN IR-WARN
 // IR-WARN: module {

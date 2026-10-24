@@ -17,45 +17,45 @@ int x;
 
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: -Wmacro-redefined
-// DEFAULT: ⚠ 'SPACED': macro redefinition
-// DEFAULT: ╭─[tests/fixtures/msvc/windows/x86_64/pp_macro_redefined_warnings.c:5:9]
-// DEFAULT: 4 │ #define SPACED 1+2
-// DEFAULT: 5 │ #define SPACED 1 + 2
-// DEFAULT: ·         ──────
-// DEFAULT: 6 │ #define CHANGED 1
-// DEFAULT: ╰────
+// DEFAULT:   ⚠ 'SPACED': macro redefinition
+// DEFAULT:    ╭─[tests/fixtures/msvc/windows/x86_64/pp_macro_redefined_warnings.c:5:9]
+// DEFAULT:  4 │ #define SPACED 1+2
+// DEFAULT:  5 │ #define SPACED 1 + 2
+// DEFAULT:    ·         ──────
+// DEFAULT:  6 │ #define CHANGED 1
+// DEFAULT:    ╰────
 // DEFAULT: -Wmacro-redefined
-// DEFAULT: ⚠ 'CHANGED': macro redefinition
-// DEFAULT: ╭─[tests/fixtures/msvc/windows/x86_64/pp_macro_redefined_warnings.c:7:9]
-// DEFAULT: 6 │ #define CHANGED 1
-// DEFAULT: 7 │ #define CHANGED 2
-// DEFAULT: ·         ───────
-// DEFAULT: 8 │ #define RENAMED(a) a
-// DEFAULT: ╰────
+// DEFAULT:   ⚠ 'CHANGED': macro redefinition
+// DEFAULT:    ╭─[tests/fixtures/msvc/windows/x86_64/pp_macro_redefined_warnings.c:7:9]
+// DEFAULT:  6 │ #define CHANGED 1
+// DEFAULT:  7 │ #define CHANGED 2
+// DEFAULT:    ·         ───────
+// DEFAULT:  8 │ #define RENAMED(a) a
+// DEFAULT:    ╰────
 // DEFAULT: -Wmacro-redefined
-// DEFAULT: ⚠ 'SHAPE': macro redefinition
-// DEFAULT: ╭─[tests/fixtures/msvc/windows/x86_64/pp_macro_redefined_warnings.c:11:9]
-// DEFAULT: 10 │ #define SHAPE 1
-// DEFAULT: 11 │ #define SHAPE() 1
-// DEFAULT: ·         ─────
-// DEFAULT: 12 │ #define __TIME__ "now"
-// DEFAULT: ╰────
+// DEFAULT:   ⚠ 'SHAPE': macro redefinition
+// DEFAULT:     ╭─[tests/fixtures/msvc/windows/x86_64/pp_macro_redefined_warnings.c:11:9]
+// DEFAULT:  10 │ #define SHAPE 1
+// DEFAULT:  11 │ #define SHAPE() 1
+// DEFAULT:     ·         ─────
+// DEFAULT:  12 │ #define __TIME__ "now"
+// DEFAULT:     ╰────
 // DEFAULT: -Wbuiltin-macro-redefined
-// DEFAULT: ⚠ macro name '__TIME__' is reserved, '#define' ignored
-// DEFAULT: ╭─[tests/fixtures/msvc/windows/x86_64/pp_macro_redefined_warnings.c:12:9]
-// DEFAULT: 11 │ #define SHAPE() 1
-// DEFAULT: 12 │ #define __TIME__ "now"
-// DEFAULT: ·         ────────
-// DEFAULT: 13 │ #undef __DATE__
-// DEFAULT: ╰────
+// DEFAULT:   ⚠ macro name '__TIME__' is reserved, '#define' ignored
+// DEFAULT:     ╭─[tests/fixtures/msvc/windows/x86_64/pp_macro_redefined_warnings.c:12:9]
+// DEFAULT:  11 │ #define SHAPE() 1
+// DEFAULT:  12 │ #define __TIME__ "now"
+// DEFAULT:     ·         ────────
+// DEFAULT:  13 │ #undef __DATE__
+// DEFAULT:     ╰────
 // DEFAULT: -Wbuiltin-macro-redefined
-// DEFAULT: ⚠ macro name '__DATE__' is reserved, '#undef' ignored
-// DEFAULT: ╭─[tests/fixtures/msvc/windows/x86_64/pp_macro_redefined_warnings.c:13:8]
-// DEFAULT: 12 │ #define __TIME__ "now"
-// DEFAULT: 13 │ #undef __DATE__
-// DEFAULT: ·        ────────
-// DEFAULT: 14 │ int x;
-// DEFAULT: ╰────
+// DEFAULT:   ⚠ macro name '__DATE__' is reserved, '#undef' ignored
+// DEFAULT:     ╭─[tests/fixtures/msvc/windows/x86_64/pp_macro_redefined_warnings.c:13:8]
+// DEFAULT:  12 │ #define __TIME__ "now"
+// DEFAULT:  13 │ #undef __DATE__
+// DEFAULT:     ·        ────────
+// DEFAULT:  14 │ int x;
+// DEFAULT:     ╰────
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN IR-DEFAULT
 // IR-DEFAULT: module {

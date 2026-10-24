@@ -9,29 +9,29 @@ int x;
 
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: -Wmacro-redefined
-// DEFAULT: ⚠ undefining '__STDC_HOSTED__'
-// DEFAULT: ╭─[tests/fixtures/gcc/linux/x86_64/pp_undef_warnings_not_pedantic.c:2:8]
-// DEFAULT: 1 │
-// DEFAULT: 2 │ #undef __STDC_HOSTED__
-// DEFAULT: ·        ───────────────
-// DEFAULT: 3 │ #undef __DATE__
-// DEFAULT: ╰────
+// DEFAULT:   ⚠ undefining '__STDC_HOSTED__'
+// DEFAULT:    ╭─[tests/fixtures/gcc/linux/x86_64/pp_undef_warnings_not_pedantic.c:2:8]
+// DEFAULT:  1 │
+// DEFAULT:  2 │ #undef __STDC_HOSTED__
+// DEFAULT:    ·        ───────────────
+// DEFAULT:  3 │ #undef __DATE__
+// DEFAULT:    ╰────
 // DEFAULT: -Wbuiltin-macro-redefined
-// DEFAULT: ⚠ undefining '__DATE__'
-// DEFAULT: ╭─[tests/fixtures/gcc/linux/x86_64/pp_undef_warnings_not_pedantic.c:3:8]
-// DEFAULT: 2 │ #undef __STDC_HOSTED__
-// DEFAULT: 3 │ #undef __DATE__
-// DEFAULT: ·        ────────
-// DEFAULT: 4 │ #undef __LINE__
-// DEFAULT: ╰────
+// DEFAULT:   ⚠ undefining '__DATE__'
+// DEFAULT:    ╭─[tests/fixtures/gcc/linux/x86_64/pp_undef_warnings_not_pedantic.c:3:8]
+// DEFAULT:  2 │ #undef __STDC_HOSTED__
+// DEFAULT:  3 │ #undef __DATE__
+// DEFAULT:    ·        ────────
+// DEFAULT:  4 │ #undef __LINE__
+// DEFAULT:    ╰────
 // DEFAULT: -Wmacro-redefined
-// DEFAULT: ⚠ undefining '__LINE__'
-// DEFAULT: ╭─[tests/fixtures/gcc/linux/x86_64/pp_undef_warnings_not_pedantic.c:4:8]
-// DEFAULT: 3 │ #undef __DATE__
-// DEFAULT: 4 │ #undef __LINE__
-// DEFAULT: ·        ────────
-// DEFAULT: 5 │ int x;
-// DEFAULT: ╰────
+// DEFAULT:   ⚠ undefining '__LINE__'
+// DEFAULT:    ╭─[tests/fixtures/gcc/linux/x86_64/pp_undef_warnings_not_pedantic.c:4:8]
+// DEFAULT:  3 │ #undef __DATE__
+// DEFAULT:  4 │ #undef __LINE__
+// DEFAULT:    ·        ────────
+// DEFAULT:  5 │ int x;
+// DEFAULT:    ╰────
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN IR-DEFAULT
 // IR-DEFAULT: module {

@@ -12,11 +12,11 @@ int pick_struct(struct s v) {
 // SLATE-FILECHECK-BEGIN PARSE
 // PARSE: Error:   × semantic analysis failed
 // PARSE: Error:
-// PARSE: × no matching function for call to overloaded function
-// PARSE: ╭─[tests/fixtures/error/clang/linux/x86_64/overloadable-no-match.c:8:10]
-// PARSE: 7 │ int pick_struct(struct s v) {
-// PARSE: 8 │   return pick(v);
-// PARSE: ·          ───────
-// PARSE: 9 │ }
-// PARSE: ╰────
+// PARSE:   × no matching function for call to overloaded function
+// PARSE:    ╭─[tests/fixtures/error/clang/linux/x86_64/overloadable-no-match.c:8:10]
+// PARSE:  7 │ int pick_struct(struct s v) {
+// PARSE:  8 │   return pick(v);
+// PARSE:    ·          ───────
+// PARSE:  9 │ }
+// PARSE:    ╰────
 // SLATE-FILECHECK-END PARSE

@@ -23,29 +23,29 @@
 
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: -Wbuiltin-macro-redefined
-// DEFAULT: ⚠ '__TIME__' redefined
-// DEFAULT: ╭─[tests/fixtures/suites/gcc-dg/gcc/linux/x86_64/cpp__warn-redefined.c:9:9]
-// DEFAULT: 8 │
-// DEFAULT: 9 │ #define __TIME__ "X"  // { dg-warning "'__TIME__' redefined .-Wbuiltin-macro-redefined." }
-// DEFAULT: ·         ────────
-// DEFAULT: 10 │
-// DEFAULT: ╰────
+// DEFAULT:   ⚠ '__TIME__' redefined
+// DEFAULT:     ╭─[tests/fixtures/suites/gcc-dg/gcc/linux/x86_64/cpp__warn-redefined.c:9:9]
+// DEFAULT:   8 │
+// DEFAULT:   9 │ #define __TIME__ "X"  // { dg-warning "'__TIME__' redefined .-Wbuiltin-macro-redefined." }
+// DEFAULT:     ·         ────────
+// DEFAULT:  10 │
+// DEFAULT:     ╰────
 // DEFAULT: -Wmacro-redefined
-// DEFAULT: ⚠ '__TIME__' redefined
-// DEFAULT: ╭─[tests/fixtures/suites/gcc-dg/gcc/linux/x86_64/cpp__warn-redefined.c:11:9]
-// DEFAULT: 10 │
-// DEFAULT: 11 │ #define __TIME__ "Y"  // { dg-bogus "-Wbuiltin-macro-redefined" }
-// DEFAULT: ·         ────────
-// DEFAULT: 12 │                       // { dg-warning "'__TIME__' redefined" "not-builtin-1" { target *-*-* } .-1 }
-// DEFAULT: ╰────
+// DEFAULT:   ⚠ '__TIME__' redefined
+// DEFAULT:     ╭─[tests/fixtures/suites/gcc-dg/gcc/linux/x86_64/cpp__warn-redefined.c:11:9]
+// DEFAULT:  10 │
+// DEFAULT:  11 │ #define __TIME__ "Y"  // { dg-bogus "-Wbuiltin-macro-redefined" }
+// DEFAULT:     ·         ────────
+// DEFAULT:  12 │                       // { dg-warning "'__TIME__' redefined" "not-builtin-1" { target *-*-* } .-1 }
+// DEFAULT:     ╰────
 // DEFAULT: -Wmacro-redefined
-// DEFAULT: ⚠ 'X' redefined
-// DEFAULT: ╭─[tests/fixtures/suites/gcc-dg/gcc/linux/x86_64/cpp__warn-redefined.c:16:9]
-// DEFAULT: 15 │ #define X "X"
-// DEFAULT: 16 │ #define X "Y"         // { dg-bogus "-Wbuiltin-macro-redefined" }
-// DEFAULT: ·         ─
-// DEFAULT: 17 │                       // { dg-warning "'X' redefined" "not-builtin-2" { target *-*-* } .-1 }
-// DEFAULT: ╰────
+// DEFAULT:   ⚠ 'X' redefined
+// DEFAULT:     ╭─[tests/fixtures/suites/gcc-dg/gcc/linux/x86_64/cpp__warn-redefined.c:16:9]
+// DEFAULT:  15 │ #define X "X"
+// DEFAULT:  16 │ #define X "Y"         // { dg-bogus "-Wbuiltin-macro-redefined" }
+// DEFAULT:     ·         ─
+// DEFAULT:  17 │                       // { dg-warning "'X' redefined" "not-builtin-2" { target *-*-* } .-1 }
+// DEFAULT:     ╰────
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN IR-DEFAULT
 // IR-DEFAULT: module {

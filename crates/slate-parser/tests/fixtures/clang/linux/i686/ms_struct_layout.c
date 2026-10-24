@@ -25,13 +25,13 @@ struct MS L { char c; long double d; };
 // SLATE-FILECHECK-BEGIN NPOT
 // NPOT: Error:   × semantic analysis failed
 // NPOT: Error:
-// NPOT: × ms_struct layout of a fundamental type whose size is not a power of two
-// NPOT: ╭─[tests/fixtures/clang/linux/i686/ms_struct_layout.c:16:1]
-// NPOT: 15 │ #ifdef NPOT
-// NPOT: 16 │ struct MS L { char c; long double d; };
-// NPOT: · ───────────────────────────────────────
-// NPOT: 17 │ #endif
-// NPOT: ╰────
+// NPOT:   × ms_struct layout of a fundamental type whose size is not a power of two
+// NPOT:     ╭─[tests/fixtures/clang/linux/i686/ms_struct_layout.c:16:1]
+// NPOT:  15 │ #ifdef NPOT
+// NPOT:  16 │ struct MS L { char c; long double d; };
+// NPOT:     · ───────────────────────────────────────
+// NPOT:  17 │ #endif
+// NPOT:     ╰────
 // SLATE-FILECHECK-END NPOT
 // SLATE-FILECHECK-BEGIN IR
 // IR: module {

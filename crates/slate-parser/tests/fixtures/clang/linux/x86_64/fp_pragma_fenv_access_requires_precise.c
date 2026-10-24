@@ -12,11 +12,11 @@ double imprecise(double a, double b) {
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: Error:   × semantic analysis failed
 // DEFAULT: Error:
-// DEFAULT: × '#pragma STDC FENV_ACCESS ON' is illegal when precise is disabled
-// DEFAULT: ╭─[tests/fixtures/clang/linux/x86_64/fp_pragma_fenv_access_requires_precise.c:4:1]
-// DEFAULT: 3 │   {
-// DEFAULT: 4 │ #pragma STDC FENV_ACCESS ON
-// DEFAULT: · ───────────────────────────
-// DEFAULT: 5 │     return a / b;
-// DEFAULT: ╰────
+// DEFAULT:   × '#pragma STDC FENV_ACCESS ON' is illegal when precise is disabled
+// DEFAULT:    ╭─[tests/fixtures/clang/linux/x86_64/fp_pragma_fenv_access_requires_precise.c:4:1]
+// DEFAULT:  3 │   {
+// DEFAULT:  4 │ #pragma STDC FENV_ACCESS ON
+// DEFAULT:    · ───────────────────────────
+// DEFAULT:  5 │     return a / b;
+// DEFAULT:    ╰────
 // SLATE-FILECHECK-END DEFAULT

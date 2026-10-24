@@ -29,11 +29,11 @@ __complex__ long long f ()
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: Error:   × semantic analysis failed
 // DEFAULT: Error:
-// DEFAULT: × unresolved ordinary name `g`
-// DEFAULT: ╭─[tests/fixtures/suites/gcc-torture/clang/linux/x86_64/20000804-1.c:23:3]
-// DEFAULT: 22 │   return v;
-// DEFAULT: 23 │   g (&v);
-// DEFAULT: ·   ─
-// DEFAULT: 24 │ }
-// DEFAULT: ╰────
+// DEFAULT:   × unresolved ordinary name `g`
+// DEFAULT:     ╭─[tests/fixtures/suites/gcc-torture/clang/linux/x86_64/20000804-1.c:23:3]
+// DEFAULT:  22 │   return v;
+// DEFAULT:  23 │   g (&v);
+// DEFAULT:     ·   ─
+// DEFAULT:  24 │ }
+// DEFAULT:     ╰────
 // SLATE-FILECHECK-END DEFAULT

@@ -28,13 +28,13 @@ void selected(int n) {
 // SLATE-FILECHECK-BEGIN DEFAULT_BRANCH
 // DEFAULT_BRANCH: Error:   × semantic analysis failed
 // DEFAULT_BRANCH: Error:
-// DEFAULT_BRANCH: × static assertion failed: pointer selects default
-// DEFAULT_BRANCH: ╭─[tests/fixtures/clang/linux/x86_64/static_assert_generic_selection.c:3:39]
-// DEFAULT_BRANCH: 2 │ #if defined(DEFAULT_BRANCH)
-// DEFAULT_BRANCH: 3 │ void pointer(char *p) { static_assert(_Generic(p, int: 1, default: 0), "pointer selects default"); }
-// DEFAULT_BRANCH: ·                                       ───────────────────────────────
-// DEFAULT_BRANCH: 4 │ #else
-// DEFAULT_BRANCH: ╰────
+// DEFAULT_BRANCH:   × static assertion failed: pointer selects default
+// DEFAULT_BRANCH:    ╭─[tests/fixtures/clang/linux/x86_64/static_assert_generic_selection.c:3:39]
+// DEFAULT_BRANCH:  2 │ #if defined(DEFAULT_BRANCH)
+// DEFAULT_BRANCH:  3 │ void pointer(char *p) { static_assert(_Generic(p, int: 1, default: 0), "pointer selects default"); }
+// DEFAULT_BRANCH:    ·                                       ───────────────────────────────
+// DEFAULT_BRANCH:  4 │ #else
+// DEFAULT_BRANCH:    ╰────
 // SLATE-FILECHECK-END DEFAULT_BRANCH
 // SLATE-FILECHECK-BEGIN VALID
 // VALID: module {

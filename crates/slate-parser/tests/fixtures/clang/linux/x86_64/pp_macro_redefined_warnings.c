@@ -33,93 +33,93 @@ int x;
 
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: -Wmacro-redefined
-// DEFAULT: ⚠ 'SPACED' macro redefined
-// DEFAULT: ╭─[tests/fixtures/clang/linux/x86_64/pp_macro_redefined_warnings.c:5:9]
-// DEFAULT: 4 │ #define SPACED 1+2
-// DEFAULT: 5 │ #define SPACED 1 + 2
-// DEFAULT: ·         ──────
-// DEFAULT: 6 │ #define CHANGED 1
-// DEFAULT: ╰────
+// DEFAULT:   ⚠ 'SPACED' macro redefined
+// DEFAULT:    ╭─[tests/fixtures/clang/linux/x86_64/pp_macro_redefined_warnings.c:5:9]
+// DEFAULT:  4 │ #define SPACED 1+2
+// DEFAULT:  5 │ #define SPACED 1 + 2
+// DEFAULT:    ·         ──────
+// DEFAULT:  6 │ #define CHANGED 1
+// DEFAULT:    ╰────
 // DEFAULT: -Wmacro-redefined
-// DEFAULT: ⚠ 'CHANGED' macro redefined
-// DEFAULT: ╭─[tests/fixtures/clang/linux/x86_64/pp_macro_redefined_warnings.c:7:9]
-// DEFAULT: 6 │ #define CHANGED 1
-// DEFAULT: 7 │ #define CHANGED 2
-// DEFAULT: ·         ───────
-// DEFAULT: 8 │ #define RENAMED(a) a
-// DEFAULT: ╰────
+// DEFAULT:   ⚠ 'CHANGED' macro redefined
+// DEFAULT:    ╭─[tests/fixtures/clang/linux/x86_64/pp_macro_redefined_warnings.c:7:9]
+// DEFAULT:  6 │ #define CHANGED 1
+// DEFAULT:  7 │ #define CHANGED 2
+// DEFAULT:    ·         ───────
+// DEFAULT:  8 │ #define RENAMED(a) a
+// DEFAULT:    ╰────
 // DEFAULT: -Wmacro-redefined
-// DEFAULT: ⚠ 'RENAMED' macro redefined
-// DEFAULT: ╭─[tests/fixtures/clang/linux/x86_64/pp_macro_redefined_warnings.c:9:9]
-// DEFAULT: 8 │ #define RENAMED(a) a
-// DEFAULT: 9 │ #define RENAMED(b) b
-// DEFAULT: ·         ───────
-// DEFAULT: 10 │ #define SHAPE 1
-// DEFAULT: ╰────
+// DEFAULT:   ⚠ 'RENAMED' macro redefined
+// DEFAULT:     ╭─[tests/fixtures/clang/linux/x86_64/pp_macro_redefined_warnings.c:9:9]
+// DEFAULT:   8 │ #define RENAMED(a) a
+// DEFAULT:   9 │ #define RENAMED(b) b
+// DEFAULT:     ·         ───────
+// DEFAULT:  10 │ #define SHAPE 1
+// DEFAULT:     ╰────
 // DEFAULT: -Wmacro-redefined
-// DEFAULT: ⚠ 'SHAPE' macro redefined
-// DEFAULT: ╭─[tests/fixtures/clang/linux/x86_64/pp_macro_redefined_warnings.c:11:9]
-// DEFAULT: 10 │ #define SHAPE 1
-// DEFAULT: 11 │ #define SHAPE() 1
-// DEFAULT: ·         ─────
-// DEFAULT: 12 │ #define TWICE
-// DEFAULT: ╰────
+// DEFAULT:   ⚠ 'SHAPE' macro redefined
+// DEFAULT:     ╭─[tests/fixtures/clang/linux/x86_64/pp_macro_redefined_warnings.c:11:9]
+// DEFAULT:  10 │ #define SHAPE 1
+// DEFAULT:  11 │ #define SHAPE() 1
+// DEFAULT:     ·         ─────
+// DEFAULT:  12 │ #define TWICE
+// DEFAULT:     ╰────
 // DEFAULT: -Wbuiltin-macro-redefined
-// DEFAULT: ⚠ redefining builtin macro
-// DEFAULT: ╭─[tests/fixtures/clang/linux/x86_64/pp_macro_redefined_warnings.c:17:9]
-// DEFAULT: 16 │ #define REDEFINED_AFTER_UNDEF 2
-// DEFAULT: 17 │ #define __TIME__ "now"
-// DEFAULT: ·         ────────
-// DEFAULT: 18 │ #define __TIME__ "later"
-// DEFAULT: ╰────
+// DEFAULT:   ⚠ redefining builtin macro
+// DEFAULT:     ╭─[tests/fixtures/clang/linux/x86_64/pp_macro_redefined_warnings.c:17:9]
+// DEFAULT:  16 │ #define REDEFINED_AFTER_UNDEF 2
+// DEFAULT:  17 │ #define __TIME__ "now"
+// DEFAULT:     ·         ────────
+// DEFAULT:  18 │ #define __TIME__ "later"
+// DEFAULT:     ╰────
 // DEFAULT: -Wmacro-redefined
-// DEFAULT: ⚠ '__TIME__' macro redefined
-// DEFAULT: ╭─[tests/fixtures/clang/linux/x86_64/pp_macro_redefined_warnings.c:18:9]
-// DEFAULT: 17 │ #define __TIME__ "now"
-// DEFAULT: 18 │ #define __TIME__ "later"
-// DEFAULT: ·         ────────
-// DEFAULT: 19 │ #undef __DATE__
-// DEFAULT: ╰────
+// DEFAULT:   ⚠ '__TIME__' macro redefined
+// DEFAULT:     ╭─[tests/fixtures/clang/linux/x86_64/pp_macro_redefined_warnings.c:18:9]
+// DEFAULT:  17 │ #define __TIME__ "now"
+// DEFAULT:  18 │ #define __TIME__ "later"
+// DEFAULT:     ·         ────────
+// DEFAULT:  19 │ #undef __DATE__
+// DEFAULT:     ╰────
 // DEFAULT: -Wbuiltin-macro-redefined
-// DEFAULT: ⚠ undefining builtin macro
-// DEFAULT: ╭─[tests/fixtures/clang/linux/x86_64/pp_macro_redefined_warnings.c:19:8]
-// DEFAULT: 18 │ #define __TIME__ "later"
-// DEFAULT: 19 │ #undef __DATE__
-// DEFAULT: ·        ────────
-// DEFAULT: 20 │ #define __LINE__ 1
-// DEFAULT: ╰────
+// DEFAULT:   ⚠ undefining builtin macro
+// DEFAULT:     ╭─[tests/fixtures/clang/linux/x86_64/pp_macro_redefined_warnings.c:19:8]
+// DEFAULT:  18 │ #define __TIME__ "later"
+// DEFAULT:  19 │ #undef __DATE__
+// DEFAULT:     ·        ────────
+// DEFAULT:  20 │ #define __LINE__ 1
+// DEFAULT:     ╰────
 // DEFAULT: -Wbuiltin-macro-redefined
-// DEFAULT: ⚠ redefining builtin macro
-// DEFAULT: ╭─[tests/fixtures/clang/linux/x86_64/pp_macro_redefined_warnings.c:20:9]
-// DEFAULT: 19 │ #undef __DATE__
-// DEFAULT: 20 │ #define __LINE__ 1
-// DEFAULT: ·         ────────
-// DEFAULT: 21 │ #undef __COUNTER__
-// DEFAULT: ╰────
+// DEFAULT:   ⚠ redefining builtin macro
+// DEFAULT:     ╭─[tests/fixtures/clang/linux/x86_64/pp_macro_redefined_warnings.c:20:9]
+// DEFAULT:  19 │ #undef __DATE__
+// DEFAULT:  20 │ #define __LINE__ 1
+// DEFAULT:     ·         ────────
+// DEFAULT:  21 │ #undef __COUNTER__
+// DEFAULT:     ╰────
 // DEFAULT: -Wbuiltin-macro-redefined
-// DEFAULT: ⚠ undefining builtin macro
-// DEFAULT: ╭─[tests/fixtures/clang/linux/x86_64/pp_macro_redefined_warnings.c:21:8]
-// DEFAULT: 20 │ #define __LINE__ 1
-// DEFAULT: 21 │ #undef __COUNTER__
-// DEFAULT: ·        ───────────
-// DEFAULT: 22 │ #define __STDC_EXTRA 1
-// DEFAULT: ╰────
+// DEFAULT:   ⚠ undefining builtin macro
+// DEFAULT:     ╭─[tests/fixtures/clang/linux/x86_64/pp_macro_redefined_warnings.c:21:8]
+// DEFAULT:  20 │ #define __LINE__ 1
+// DEFAULT:  21 │ #undef __COUNTER__
+// DEFAULT:     ·        ───────────
+// DEFAULT:  22 │ #define __STDC_EXTRA 1
+// DEFAULT:     ╰────
 // DEFAULT: -Wbuiltin-macro-redefined
-// DEFAULT: ⚠ undefining builtin macro
-// DEFAULT: ╭─[tests/fixtures/clang/linux/x86_64/pp_macro_redefined_warnings.c:27:8]
-// DEFAULT: 26 │ #define __STDC_FORMAT_MACROS 1
-// DEFAULT: 27 │ #undef __STDC_HOSTED__
-// DEFAULT: ·        ───────────────
-// DEFAULT: 28 │ #define __GNUC__ 99
-// DEFAULT: ╰────
+// DEFAULT:   ⚠ undefining builtin macro
+// DEFAULT:     ╭─[tests/fixtures/clang/linux/x86_64/pp_macro_redefined_warnings.c:27:8]
+// DEFAULT:  26 │ #define __STDC_FORMAT_MACROS 1
+// DEFAULT:  27 │ #undef __STDC_HOSTED__
+// DEFAULT:     ·        ───────────────
+// DEFAULT:  28 │ #define __GNUC__ 99
+// DEFAULT:     ╰────
 // DEFAULT: -Wmacro-redefined
-// DEFAULT: ⚠ '__GNUC__' macro redefined
-// DEFAULT: ╭─[tests/fixtures/clang/linux/x86_64/pp_macro_redefined_warnings.c:28:9]
-// DEFAULT: 27 │ #undef __STDC_HOSTED__
-// DEFAULT: 28 │ #define __GNUC__ 99
-// DEFAULT: ·         ────────
-// DEFAULT: 29 │ #undef __x86_64__
-// DEFAULT: ╰────
+// DEFAULT:   ⚠ '__GNUC__' macro redefined
+// DEFAULT:     ╭─[tests/fixtures/clang/linux/x86_64/pp_macro_redefined_warnings.c:28:9]
+// DEFAULT:  27 │ #undef __STDC_HOSTED__
+// DEFAULT:  28 │ #define __GNUC__ 99
+// DEFAULT:     ·         ────────
+// DEFAULT:  29 │ #undef __x86_64__
+// DEFAULT:     ╰────
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN IR-DEFAULT
 // IR-DEFAULT: module {

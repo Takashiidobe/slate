@@ -27,12 +27,12 @@ void x (A a) {
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: Error:   × semantic analysis failed
 // DEFAULT: Error:
-// DEFAULT: × function definition is not allowed here
-// DEFAULT: ╭─[tests/fixtures/suites/gcc-torture/clang/linux/x86_64/20031011-1.c:16:3]
-// DEFAULT: 15 │     void x (A a) {
-// DEFAULT: 16 │ ╭─▶   void y () {
-// DEFAULT: 17 │ │       a.a = 0;
-// DEFAULT: 18 │ ╰─▶   }
-// DEFAULT: 19 │
-// DEFAULT: ╰────
+// DEFAULT:   × function definition is not allowed here
+// DEFAULT:     ╭─[tests/fixtures/suites/gcc-torture/clang/linux/x86_64/20031011-1.c:16:3]
+// DEFAULT:  15 │     void x (A a) {
+// DEFAULT:  16 │ ╭─▶   void y () {
+// DEFAULT:  17 │ │       a.a = 0;
+// DEFAULT:  18 │ ╰─▶   }
+// DEFAULT:  19 │
+// DEFAULT:     ╰────
 // SLATE-FILECHECK-END DEFAULT

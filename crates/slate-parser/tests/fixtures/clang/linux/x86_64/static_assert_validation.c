@@ -94,134 +94,134 @@ void valid(int n) {
 // SLATE-FILECHECK-BEGIN FALSE_FILE
 // FALSE_FILE: Error:   × semantic analysis failed
 // FALSE_FILE: Error:
-// FALSE_FILE: × static assertion failed: file assertion failed
-// FALSE_FILE: ╭─[tests/fixtures/clang/linux/x86_64/static_assert_validation.c:3:16]
-// FALSE_FILE: 2 │ #if defined(FALSE_FILE)
-// FALSE_FILE: 3 │ _Static_assert(2 + 2 == 5, "file assertion failed");
-// FALSE_FILE: ·                ──────────
-// FALSE_FILE: 4 │ #elif defined(FALSE_BLOCK)
-// FALSE_FILE: ╰────
+// FALSE_FILE:   × static assertion failed: file assertion failed
+// FALSE_FILE:    ╭─[tests/fixtures/clang/linux/x86_64/static_assert_validation.c:3:16]
+// FALSE_FILE:  2 │ #if defined(FALSE_FILE)
+// FALSE_FILE:  3 │ _Static_assert(2 + 2 == 5, "file assertion failed");
+// FALSE_FILE:    ·                ──────────
+// FALSE_FILE:  4 │ #elif defined(FALSE_BLOCK)
+// FALSE_FILE:    ╰────
 // SLATE-FILECHECK-END FALSE_FILE
 // SLATE-FILECHECK-BEGIN FALSE_BLOCK
 // FALSE_BLOCK: Error:   × semantic analysis failed
 // FALSE_BLOCK: Error:
-// FALSE_BLOCK: × static assertion failed: unreachable still checked
-// FALSE_BLOCK: ╭─[tests/fixtures/clang/linux/x86_64/static_assert_validation.c:5:43]
-// FALSE_BLOCK: 4 │ #elif defined(FALSE_BLOCK)
-// FALSE_BLOCK: 5 │ void block(void) { if (0) { static_assert(0, "unreachable still checked"); } }
-// FALSE_BLOCK: ·                                           ─
-// FALSE_BLOCK: 6 │ #elif defined(NONCONSTANT)
-// FALSE_BLOCK: ╰────
+// FALSE_BLOCK:   × static assertion failed: unreachable still checked
+// FALSE_BLOCK:    ╭─[tests/fixtures/clang/linux/x86_64/static_assert_validation.c:5:43]
+// FALSE_BLOCK:  4 │ #elif defined(FALSE_BLOCK)
+// FALSE_BLOCK:  5 │ void block(void) { if (0) { static_assert(0, "unreachable still checked"); } }
+// FALSE_BLOCK:    ·                                           ─
+// FALSE_BLOCK:  6 │ #elif defined(NONCONSTANT)
+// FALSE_BLOCK:    ╰────
 // SLATE-FILECHECK-END FALSE_BLOCK
 // SLATE-FILECHECK-BEGIN NONCONSTANT
 // NONCONSTANT: Error:   × semantic analysis failed
 // NONCONSTANT: Error:
-// NONCONSTANT: × static assertion requires an integer constant expression: nonconstant or
-// NONCONSTANT: ╭─[tests/fixtures/clang/linux/x86_64/static_assert_validation.c:7:38]
-// NONCONSTANT: 6 │ #elif defined(NONCONSTANT)
-// NONCONSTANT: 7 │ void variable(int n) { static_assert(n, "not constant"); }
-// NONCONSTANT: ·                                      ─
-// NONCONSTANT: 8 │ #elif defined(DIVZERO)
-// NONCONSTANT: ╰────
+// NONCONSTANT:   × static assertion requires an integer constant expression: nonconstant or
+// NONCONSTANT:    ╭─[tests/fixtures/clang/linux/x86_64/static_assert_validation.c:7:38]
+// NONCONSTANT:  6 │ #elif defined(NONCONSTANT)
+// NONCONSTANT:  7 │ void variable(int n) { static_assert(n, "not constant"); }
+// NONCONSTANT:    ·                                      ─
+// NONCONSTANT:  8 │ #elif defined(DIVZERO)
+// NONCONSTANT:    ╰────
 // SLATE-FILECHECK-END NONCONSTANT
 // SLATE-FILECHECK-BEGIN DIVZERO
 // DIVZERO: Error:   × semantic analysis failed
 // DIVZERO: Error:
-// DIVZERO: × static assertion requires an integer constant expression: nonconstant or
-// DIVZERO: ╭─[tests/fixtures/clang/linux/x86_64/static_assert_validation.c:9:15]
-// DIVZERO: 8 │ #elif defined(DIVZERO)
-// DIVZERO: 9 │ static_assert(1 / 0, "undefined expression");
-// DIVZERO: ·               ─────
-// DIVZERO: 10 │ #elif defined(FLOAT)
-// DIVZERO: ╰────
+// DIVZERO:   × static assertion requires an integer constant expression: nonconstant or
+// DIVZERO:     ╭─[tests/fixtures/clang/linux/x86_64/static_assert_validation.c:9:15]
+// DIVZERO:   8 │ #elif defined(DIVZERO)
+// DIVZERO:   9 │ static_assert(1 / 0, "undefined expression");
+// DIVZERO:     ·               ─────
+// DIVZERO:  10 │ #elif defined(FLOAT)
+// DIVZERO:     ╰────
 // SLATE-FILECHECK-END DIVZERO
 // SLATE-FILECHECK-BEGIN FLOAT
 // FLOAT: Error:   × semantic analysis failed
 // FLOAT: Error:
-// FLOAT: × static assertion requires an integer constant expression: non-integer
-// FLOAT: ╭─[tests/fixtures/clang/linux/x86_64/static_assert_validation.c:11:15]
-// FLOAT: 10 │ #elif defined(FLOAT)
-// FLOAT: 11 │ static_assert(1.0, "integer required");
-// FLOAT: ·               ───
-// FLOAT: 12 │ #elif defined(SHADOW)
-// FLOAT: ╰────
+// FLOAT:   × static assertion requires an integer constant expression: non-integer
+// FLOAT:     ╭─[tests/fixtures/clang/linux/x86_64/static_assert_validation.c:11:15]
+// FLOAT:  10 │ #elif defined(FLOAT)
+// FLOAT:  11 │ static_assert(1.0, "integer required");
+// FLOAT:     ·               ───
+// FLOAT:  12 │ #elif defined(SHADOW)
+// FLOAT:     ╰────
 // SLATE-FILECHECK-END FLOAT
 // SLATE-FILECHECK-BEGIN SHADOW
 // SHADOW: Error:   × semantic analysis failed
 // SHADOW: Error:
-// SHADOW: × static assertion requires an integer constant expression: nonconstant or
-// SHADOW: ╭─[tests/fixtures/clang/linux/x86_64/static_assert_validation.c:14:50]
-// SHADOW: 13 │ enum { VALUE = 1 };
-// SHADOW: 14 │ void shadow(void) { int VALUE = 1; static_assert(VALUE, "object shadows enum"); }
-// SHADOW: ·                                                  ─────
-// SHADOW: 15 │ #elif defined(SHADOW_TAG)
-// SHADOW: ╰────
+// SHADOW:   × static assertion requires an integer constant expression: nonconstant or
+// SHADOW:     ╭─[tests/fixtures/clang/linux/x86_64/static_assert_validation.c:14:50]
+// SHADOW:  13 │ enum { VALUE = 1 };
+// SHADOW:  14 │ void shadow(void) { int VALUE = 1; static_assert(VALUE, "object shadows enum"); }
+// SHADOW:     ·                                                  ─────
+// SHADOW:  15 │ #elif defined(SHADOW_TAG)
+// SHADOW:     ╰────
 // SLATE-FILECHECK-END SHADOW
 // SLATE-FILECHECK-BEGIN SHADOW_TAG
 // SHADOW_TAG: Error:   × semantic analysis failed
 // SHADOW_TAG: Error:
-// SHADOW_TAG: × static assertion failed: inner tag
-// SHADOW_TAG: ╭─[tests/fixtures/clang/linux/x86_64/static_assert_validation.c:17:64]
-// SHADOW_TAG: 16 │ struct Tag { int a; };
-// SHADOW_TAG: 17 │ void tag(void) { struct Tag { long long a, b; }; static_assert(sizeof(struct Tag) == 4, "inner tag"); }
-// SHADOW_TAG: ·                                                                ───────────────────────
-// SHADOW_TAG: 18 │ #elif defined(CALL)
-// SHADOW_TAG: ╰────
+// SHADOW_TAG:   × static assertion failed: inner tag
+// SHADOW_TAG:     ╭─[tests/fixtures/clang/linux/x86_64/static_assert_validation.c:17:64]
+// SHADOW_TAG:  16 │ struct Tag { int a; };
+// SHADOW_TAG:  17 │ void tag(void) { struct Tag { long long a, b; }; static_assert(sizeof(struct Tag) == 4, "inner tag"); }
+// SHADOW_TAG:     ·                                                                ───────────────────────
+// SHADOW_TAG:  18 │ #elif defined(CALL)
+// SHADOW_TAG:     ╰────
 // SLATE-FILECHECK-END SHADOW_TAG
 // SLATE-FILECHECK-BEGIN CALL
 // CALL: Error:   × semantic analysis failed
 // CALL: Error:
-// CALL: × static assertion requires an integer constant expression: call to a
-// CALL: ╭─[tests/fixtures/clang/linux/x86_64/static_assert_validation.c:20:20]
-// CALL: 19 │ int f(void);
-// CALL: 20 │ static_assert(1 && f(), "call is never constant");
-// CALL: ·                    ───
-// CALL: 21 │ #elif defined(CALL_POINTER)
-// CALL: ╰────
+// CALL:   × static assertion requires an integer constant expression: call to a
+// CALL:     ╭─[tests/fixtures/clang/linux/x86_64/static_assert_validation.c:20:20]
+// CALL:  19 │ int f(void);
+// CALL:  20 │ static_assert(1 && f(), "call is never constant");
+// CALL:     ·                    ───
+// CALL:  21 │ #elif defined(CALL_POINTER)
+// CALL:     ╰────
 // SLATE-FILECHECK-END CALL
 // SLATE-FILECHECK-BEGIN CALL_POINTER
 // CALL_POINTER: Error:   × semantic analysis failed
 // CALL_POINTER: Error:
-// CALL_POINTER: × static assertion requires an integer constant expression: call to a
-// CALL_POINTER: ╭─[tests/fixtures/clang/linux/x86_64/static_assert_validation.c:23:15]
-// CALL_POINTER: 22 │ int (*fp)(void);
-// CALL_POINTER: 23 │ static_assert((fp)(), "call through pointer");
-// CALL_POINTER: ·               ──────
-// CALL_POINTER: 24 │ #elif defined(CALL_COMMA)
-// CALL_POINTER: ╰────
+// CALL_POINTER:   × static assertion requires an integer constant expression: call to a
+// CALL_POINTER:     ╭─[tests/fixtures/clang/linux/x86_64/static_assert_validation.c:23:15]
+// CALL_POINTER:  22 │ int (*fp)(void);
+// CALL_POINTER:  23 │ static_assert((fp)(), "call through pointer");
+// CALL_POINTER:     ·               ──────
+// CALL_POINTER:  24 │ #elif defined(CALL_COMMA)
+// CALL_POINTER:     ╰────
 // SLATE-FILECHECK-END CALL_POINTER
 // SLATE-FILECHECK-BEGIN CALL_COMMA
 // CALL_COMMA: Error:   × semantic analysis failed
 // CALL_COMMA: Error:
-// CALL_COMMA: × static assertion requires an integer constant expression: call to a
-// CALL_COMMA: ╭─[tests/fixtures/clang/linux/x86_64/static_assert_validation.c:26:19]
-// CALL_COMMA: 25 │ int f(void);
-// CALL_COMMA: 26 │ static_assert((1, f()), "comma operand call");
-// CALL_COMMA: ·                   ───
-// CALL_COMMA: 27 │ #elif defined(CALL_LIBRARY)
-// CALL_COMMA: ╰────
+// CALL_COMMA:   × static assertion requires an integer constant expression: call to a
+// CALL_COMMA:     ╭─[tests/fixtures/clang/linux/x86_64/static_assert_validation.c:26:19]
+// CALL_COMMA:  25 │ int f(void);
+// CALL_COMMA:  26 │ static_assert((1, f()), "comma operand call");
+// CALL_COMMA:     ·                   ───
+// CALL_COMMA:  27 │ #elif defined(CALL_LIBRARY)
+// CALL_COMMA:     ╰────
 // SLATE-FILECHECK-END CALL_COMMA
 // SLATE-FILECHECK-BEGIN CALL_LIBRARY
 // CALL_LIBRARY: Error:   × semantic analysis failed
 // CALL_LIBRARY: Error:
-// CALL_LIBRARY: × static assertion requires an integer constant expression: call to a
-// CALL_LIBRARY: ╭─[tests/fixtures/clang/linux/x86_64/static_assert_validation.c:29:15]
-// CALL_LIBRARY: 28 │ int abs(int);
-// CALL_LIBRARY: 29 │ static_assert(abs(-2) == 2, "abs does not fold");
-// CALL_LIBRARY: ·               ───────
-// CALL_LIBRARY: 30 │ #elif defined(CONCAT)
-// CALL_LIBRARY: ╰────
+// CALL_LIBRARY:   × static assertion requires an integer constant expression: call to a
+// CALL_LIBRARY:     ╭─[tests/fixtures/clang/linux/x86_64/static_assert_validation.c:29:15]
+// CALL_LIBRARY:  28 │ int abs(int);
+// CALL_LIBRARY:  29 │ static_assert(abs(-2) == 2, "abs does not fold");
+// CALL_LIBRARY:     ·               ───────
+// CALL_LIBRARY:  30 │ #elif defined(CONCAT)
+// CALL_LIBRARY:     ╰────
 // SLATE-FILECHECK-END CALL_LIBRARY
 // SLATE-FILECHECK-BEGIN CONCAT
 // CONCAT: Error:   × semantic analysis failed
 // CONCAT: Error:
-// CONCAT: × static assertion failed: pieces macro named joined
-// CONCAT: ╭─[tests/fixtures/clang/linux/x86_64/static_assert_validation.c:34:15]
-// CONCAT: 33 │ void concat(void) { static_assert(1, "block " u8"scope"); }
-// CONCAT: 34 │ static_assert(0, "pieces " NAMED(macro) L" joined");
-// CONCAT: ·               ─
-// CONCAT: 35 │ #else
-// CONCAT: ╰────
+// CONCAT:   × static assertion failed: pieces macro named joined
+// CONCAT:     ╭─[tests/fixtures/clang/linux/x86_64/static_assert_validation.c:34:15]
+// CONCAT:  33 │ void concat(void) { static_assert(1, "block " u8"scope"); }
+// CONCAT:  34 │ static_assert(0, "pieces " NAMED(macro) L" joined");
+// CONCAT:     ·               ─
+// CONCAT:  35 │ #else
+// CONCAT:     ╰────
 // SLATE-FILECHECK-END CONCAT
 // SLATE-FILECHECK-BEGIN VALID
 // VALID: module {

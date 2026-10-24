@@ -19,69 +19,69 @@ void f(void) {
 
 // SLATE-FILECHECK-BEGIN WARN
 // WARN: -Wignored-attributes
-// WARN: ⚠ 'aligned' attribute ignored when parsing type
-// WARN: ╭─[tests/fixtures/clang/linux/x86_64/type_name_aligned.c:3:39]
-// WARN: 2 │
-// WARN: 3 │ int leading = _Alignof(__attribute__((aligned(16))) char);
-// WARN: ·                                       ───────
-// WARN: 4 │ int trailing = _Alignof(char __attribute__((aligned(16))));
-// WARN: ╰────
+// WARN:   ⚠ 'aligned' attribute ignored when parsing type
+// WARN:    ╭─[tests/fixtures/clang/linux/x86_64/type_name_aligned.c:3:39]
+// WARN:  2 │
+// WARN:  3 │ int leading = _Alignof(__attribute__((aligned(16))) char);
+// WARN:    ·                                       ───────
+// WARN:  4 │ int trailing = _Alignof(char __attribute__((aligned(16))));
+// WARN:    ╰────
 // WARN: -Wignored-attributes
-// WARN: ⚠ 'aligned' attribute ignored when parsing type
-// WARN: ╭─[tests/fixtures/clang/linux/x86_64/type_name_aligned.c:4:45]
-// WARN: 3 │ int leading = _Alignof(__attribute__((aligned(16))) char);
-// WARN: 4 │ int trailing = _Alignof(char __attribute__((aligned(16))));
-// WARN: ·                                             ───────
-// WARN: 5 │ int unchanged_size = sizeof(__attribute__((aligned(16))) char[3]);
-// WARN: ╰────
+// WARN:   ⚠ 'aligned' attribute ignored when parsing type
+// WARN:    ╭─[tests/fixtures/clang/linux/x86_64/type_name_aligned.c:4:45]
+// WARN:  3 │ int leading = _Alignof(__attribute__((aligned(16))) char);
+// WARN:  4 │ int trailing = _Alignof(char __attribute__((aligned(16))));
+// WARN:    ·                                             ───────
+// WARN:  5 │ int unchanged_size = sizeof(__attribute__((aligned(16))) char[3]);
+// WARN:    ╰────
 // WARN: -Wignored-attributes
-// WARN: ⚠ 'aligned' attribute ignored when parsing type
-// WARN: ╭─[tests/fixtures/clang/linux/x86_64/type_name_aligned.c:5:44]
-// WARN: 4 │ int trailing = _Alignof(char __attribute__((aligned(16))));
-// WARN: 5 │ int unchanged_size = sizeof(__attribute__((aligned(16))) char[3]);
-// WARN: ·                                            ───────
-// WARN: 6 │ int whole_type = _Alignof(__attribute__((aligned(16))) char *);
-// WARN: ╰────
+// WARN:   ⚠ 'aligned' attribute ignored when parsing type
+// WARN:    ╭─[tests/fixtures/clang/linux/x86_64/type_name_aligned.c:5:44]
+// WARN:  4 │ int trailing = _Alignof(char __attribute__((aligned(16))));
+// WARN:  5 │ int unchanged_size = sizeof(__attribute__((aligned(16))) char[3]);
+// WARN:    ·                                            ───────
+// WARN:  6 │ int whole_type = _Alignof(__attribute__((aligned(16))) char *);
+// WARN:    ╰────
 // WARN: -Wignored-attributes
-// WARN: ⚠ 'aligned' attribute ignored when parsing type
-// WARN: ╭─[tests/fixtures/clang/linux/x86_64/type_name_aligned.c:6:42]
-// WARN: 5 │ int unchanged_size = sizeof(__attribute__((aligned(16))) char[3]);
-// WARN: 6 │ int whole_type = _Alignof(__attribute__((aligned(16))) char *);
-// WARN: ·                                          ───────
-// WARN: 7 │ int reduced = _Alignof(__attribute__((aligned(2))) int);
-// WARN: ╰────
+// WARN:   ⚠ 'aligned' attribute ignored when parsing type
+// WARN:    ╭─[tests/fixtures/clang/linux/x86_64/type_name_aligned.c:6:42]
+// WARN:  5 │ int unchanged_size = sizeof(__attribute__((aligned(16))) char[3]);
+// WARN:  6 │ int whole_type = _Alignof(__attribute__((aligned(16))) char *);
+// WARN:    ·                                          ───────
+// WARN:  7 │ int reduced = _Alignof(__attribute__((aligned(2))) int);
+// WARN:    ╰────
 // WARN: -Wignored-attributes
-// WARN: ⚠ 'aligned' attribute ignored when parsing type
-// WARN: ╭─[tests/fixtures/clang/linux/x86_64/type_name_aligned.c:7:39]
-// WARN: 6 │ int whole_type = _Alignof(__attribute__((aligned(16))) char *);
-// WARN: 7 │ int reduced = _Alignof(__attribute__((aligned(2))) int);
-// WARN: ·                                       ───────
-// WARN: 8 │ int biggest = _Alignof(__attribute__((aligned)) char);
-// WARN: ╰────
+// WARN:   ⚠ 'aligned' attribute ignored when parsing type
+// WARN:    ╭─[tests/fixtures/clang/linux/x86_64/type_name_aligned.c:7:39]
+// WARN:  6 │ int whole_type = _Alignof(__attribute__((aligned(16))) char *);
+// WARN:  7 │ int reduced = _Alignof(__attribute__((aligned(2))) int);
+// WARN:    ·                                       ───────
+// WARN:  8 │ int biggest = _Alignof(__attribute__((aligned)) char);
+// WARN:    ╰────
 // WARN: -Wignored-attributes
-// WARN: ⚠ 'aligned' attribute ignored when parsing type
-// WARN: ╭─[tests/fixtures/clang/linux/x86_64/type_name_aligned.c:8:39]
-// WARN: 7 │ int reduced = _Alignof(__attribute__((aligned(2))) int);
-// WARN: 8 │ int biggest = _Alignof(__attribute__((aligned)) char);
-// WARN: ·                                       ───────
-// WARN: 9 │ int through_typeof = _Alignof(__typeof__((__attribute__((aligned(16))) char)0));
-// WARN: ╰────
+// WARN:   ⚠ 'aligned' attribute ignored when parsing type
+// WARN:    ╭─[tests/fixtures/clang/linux/x86_64/type_name_aligned.c:8:39]
+// WARN:  7 │ int reduced = _Alignof(__attribute__((aligned(2))) int);
+// WARN:  8 │ int biggest = _Alignof(__attribute__((aligned)) char);
+// WARN:    ·                                       ───────
+// WARN:  9 │ int through_typeof = _Alignof(__typeof__((__attribute__((aligned(16))) char)0));
+// WARN:    ╰────
 // WARN: -Wignored-attributes
-// WARN: ⚠ 'aligned' attribute ignored when parsing type
-// WARN: ╭─[tests/fixtures/clang/linux/x86_64/type_name_aligned.c:9:58]
-// WARN: 8 │ int biggest = _Alignof(__attribute__((aligned)) char);
-// WARN: 9 │ int through_typeof = _Alignof(__typeof__((__attribute__((aligned(16))) char)0));
-// WARN: ·                                                          ───────
-// WARN: 10 │
-// WARN: ╰────
+// WARN:   ⚠ 'aligned' attribute ignored when parsing type
+// WARN:     ╭─[tests/fixtures/clang/linux/x86_64/type_name_aligned.c:9:58]
+// WARN:   8 │ int biggest = _Alignof(__attribute__((aligned)) char);
+// WARN:   9 │ int through_typeof = _Alignof(__typeof__((__attribute__((aligned(16))) char)0));
+// WARN:     ·                                                          ───────
+// WARN:  10 │
+// WARN:     ╰────
 // WARN: -Wignored-attributes
-// WARN: ⚠ 'aligned' attribute ignored when parsing type
-// WARN: ╭─[tests/fixtures/clang/linux/x86_64/type_name_aligned.c:12:36]
-// WARN: 11 │ void f(void) {
-// WARN: 12 │   char *literal = &(__attribute__((aligned(16))) char){1};
-// WARN: ·                                    ───────
-// WARN: 13 │   char *typedef_literal = &(aligned_char){2};
-// WARN: ╰────
+// WARN:   ⚠ 'aligned' attribute ignored when parsing type
+// WARN:     ╭─[tests/fixtures/clang/linux/x86_64/type_name_aligned.c:12:36]
+// WARN:  11 │ void f(void) {
+// WARN:  12 │   char *literal = &(__attribute__((aligned(16))) char){1};
+// WARN:     ·                                    ───────
+// WARN:  13 │   char *typedef_literal = &(aligned_char){2};
+// WARN:     ╰────
 // SLATE-FILECHECK-END WARN
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: module {

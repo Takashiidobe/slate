@@ -28,11 +28,11 @@ uname(name)
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: Error:   × semantic analysis failed
 // DEFAULT: Error:
-// DEFAULT: × unresolved ordinary name `sysctl`
-// DEFAULT: ╭─[tests/fixtures/suites/gcc-torture/gcc/linux/x86_64/20000403-1.c:17:6]
-// DEFAULT: 16 │     int oerrno;
-// DEFAULT: 17 │     if (sysctl(mib, 2, &name->sysname, &len, 0 , 0) == -1)
-// DEFAULT: ·         ──────
-// DEFAULT: 18 │       ;
-// DEFAULT: ╰────
+// DEFAULT:   × unresolved ordinary name `sysctl`
+// DEFAULT:     ╭─[tests/fixtures/suites/gcc-torture/gcc/linux/x86_64/20000403-1.c:17:6]
+// DEFAULT:  16 │     int oerrno;
+// DEFAULT:  17 │     if (sysctl(mib, 2, &name->sysname, &len, 0 , 0) == -1)
+// DEFAULT:     ·         ──────
+// DEFAULT:  18 │       ;
+// DEFAULT:     ╰────
 // SLATE-FILECHECK-END DEFAULT

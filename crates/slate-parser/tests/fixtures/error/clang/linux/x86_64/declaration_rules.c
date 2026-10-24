@@ -51,99 +51,99 @@ void g(void) { alias bad; }
 // SLATE-FILECHECK-BEGIN THREAD_FUNCTION
 // THREAD_FUNCTION: Error:   × semantic analysis failed
 // THREAD_FUNCTION: Error:
-// THREAD_FUNCTION: × thread-local function
-// THREAD_FUNCTION: ╭─[tests/fixtures/error/clang/linux/x86_64/declaration_rules.c:2:20]
-// THREAD_FUNCTION: 1 │ #if defined(THREAD_FUNCTION)
-// THREAD_FUNCTION: 2 │ _Thread_local void f(void);
-// THREAD_FUNCTION: ·                    ───────
-// THREAD_FUNCTION: 3 │ #elif defined(BLOCK_STATIC_FUNCTION)
-// THREAD_FUNCTION: ╰────
+// THREAD_FUNCTION:   × thread-local function
+// THREAD_FUNCTION:    ╭─[tests/fixtures/error/clang/linux/x86_64/declaration_rules.c:2:20]
+// THREAD_FUNCTION:  1 │ #if defined(THREAD_FUNCTION)
+// THREAD_FUNCTION:  2 │ _Thread_local void f(void);
+// THREAD_FUNCTION:    ·                    ───────
+// THREAD_FUNCTION:  3 │ #elif defined(BLOCK_STATIC_FUNCTION)
+// THREAD_FUNCTION:    ╰────
 // SLATE-FILECHECK-END THREAD_FUNCTION
 // SLATE-FILECHECK-BEGIN BLOCK_STATIC_FUNCTION
 // BLOCK_STATIC_FUNCTION: Error:   × semantic analysis failed
 // BLOCK_STATIC_FUNCTION: Error:
-// BLOCK_STATIC_FUNCTION: × block scope static function
-// BLOCK_STATIC_FUNCTION: ╭─[tests/fixtures/error/clang/linux/x86_64/declaration_rules.c:4:28]
-// BLOCK_STATIC_FUNCTION: 3 │ #elif defined(BLOCK_STATIC_FUNCTION)
-// BLOCK_STATIC_FUNCTION: 4 │ void g(void) { static void h(void); }
-// BLOCK_STATIC_FUNCTION: ·                            ───────
-// BLOCK_STATIC_FUNCTION: 5 │ #elif defined(THREAD_AUTO)
-// BLOCK_STATIC_FUNCTION: ╰────
+// BLOCK_STATIC_FUNCTION:   × block scope static function
+// BLOCK_STATIC_FUNCTION:    ╭─[tests/fixtures/error/clang/linux/x86_64/declaration_rules.c:4:28]
+// BLOCK_STATIC_FUNCTION:  3 │ #elif defined(BLOCK_STATIC_FUNCTION)
+// BLOCK_STATIC_FUNCTION:  4 │ void g(void) { static void h(void); }
+// BLOCK_STATIC_FUNCTION:    ·                            ───────
+// BLOCK_STATIC_FUNCTION:  5 │ #elif defined(THREAD_AUTO)
+// BLOCK_STATIC_FUNCTION:    ╰────
 // SLATE-FILECHECK-END BLOCK_STATIC_FUNCTION
 // SLATE-FILECHECK-BEGIN THREAD_AUTO
 // THREAD_AUTO: Error:   × semantic analysis failed
 // THREAD_AUTO: Error:
-// THREAD_AUTO: × thread-local automatic variable
-// THREAD_AUTO: ╭─[tests/fixtures/error/clang/linux/x86_64/declaration_rules.c:6:34]
-// THREAD_AUTO: 5 │ #elif defined(THREAD_AUTO)
-// THREAD_AUTO: 6 │ void g(void) { _Thread_local int x; }
-// THREAD_AUTO: ·                                  ─
-// THREAD_AUTO: 7 │ #elif defined(BLOCK_EXTERN_INIT)
-// THREAD_AUTO: ╰────
+// THREAD_AUTO:   × thread-local automatic variable
+// THREAD_AUTO:    ╭─[tests/fixtures/error/clang/linux/x86_64/declaration_rules.c:6:34]
+// THREAD_AUTO:  5 │ #elif defined(THREAD_AUTO)
+// THREAD_AUTO:  6 │ void g(void) { _Thread_local int x; }
+// THREAD_AUTO:    ·                                  ─
+// THREAD_AUTO:  7 │ #elif defined(BLOCK_EXTERN_INIT)
+// THREAD_AUTO:    ╰────
 // SLATE-FILECHECK-END THREAD_AUTO
 // SLATE-FILECHECK-BEGIN BLOCK_EXTERN_INIT
 // BLOCK_EXTERN_INIT: Error:   × semantic analysis failed
 // BLOCK_EXTERN_INIT: Error:
-// BLOCK_EXTERN_INIT: × block scope extern initializer
-// BLOCK_EXTERN_INIT: ╭─[tests/fixtures/error/clang/linux/x86_64/declaration_rules.c:8:27]
-// BLOCK_EXTERN_INIT: 7 │ #elif defined(BLOCK_EXTERN_INIT)
-// BLOCK_EXTERN_INIT: 8 │ void g(void) { extern int x = 1; }
-// BLOCK_EXTERN_INIT: ·                           ─────
-// BLOCK_EXTERN_INIT: 9 │ #elif defined(MULTIPLE_INIT)
-// BLOCK_EXTERN_INIT: ╰────
+// BLOCK_EXTERN_INIT:   × block scope extern initializer
+// BLOCK_EXTERN_INIT:    ╭─[tests/fixtures/error/clang/linux/x86_64/declaration_rules.c:8:27]
+// BLOCK_EXTERN_INIT:  7 │ #elif defined(BLOCK_EXTERN_INIT)
+// BLOCK_EXTERN_INIT:  8 │ void g(void) { extern int x = 1; }
+// BLOCK_EXTERN_INIT:    ·                           ─────
+// BLOCK_EXTERN_INIT:  9 │ #elif defined(MULTIPLE_INIT)
+// BLOCK_EXTERN_INIT:    ╰────
 // SLATE-FILECHECK-END BLOCK_EXTERN_INIT
 // SLATE-FILECHECK-BEGIN MULTIPLE_INIT
 // MULTIPLE_INIT: Error:   × semantic analysis failed
 // MULTIPLE_INIT: Error:
-// MULTIPLE_INIT: × multiple global initializers
-// MULTIPLE_INIT: ╭─[tests/fixtures/error/clang/linux/x86_64/declaration_rules.c:11:5]
-// MULTIPLE_INIT: 10 │ int x = 1;
-// MULTIPLE_INIT: 11 │ int x = 2;
-// MULTIPLE_INIT: ·     ─────
-// MULTIPLE_INIT: 12 │ #elif defined(CONSTEXPR)
-// MULTIPLE_INIT: ╰────
+// MULTIPLE_INIT:   × multiple global initializers
+// MULTIPLE_INIT:     ╭─[tests/fixtures/error/clang/linux/x86_64/declaration_rules.c:11:5]
+// MULTIPLE_INIT:  10 │ int x = 1;
+// MULTIPLE_INIT:  11 │ int x = 2;
+// MULTIPLE_INIT:     ·     ─────
+// MULTIPLE_INIT:  12 │ #elif defined(CONSTEXPR)
+// MULTIPLE_INIT:     ╰────
 // SLATE-FILECHECK-END MULTIPLE_INIT
 // SLATE-FILECHECK-BEGIN CONSTEXPR
 // CONSTEXPR: Error:   × semantic analysis failed
 // CONSTEXPR: Error:
-// CONSTEXPR: × constexpr object requires an initializer
-// CONSTEXPR: ╭─[tests/fixtures/error/clang/linux/x86_64/declaration_rules.c:13:15]
-// CONSTEXPR: 12 │ #elif defined(CONSTEXPR)
-// CONSTEXPR: 13 │ constexpr int c;
-// CONSTEXPR: ·               ─
-// CONSTEXPR: 14 │ #elif defined(VLA_INIT)
-// CONSTEXPR: ╰────
+// CONSTEXPR:   × constexpr object requires an initializer
+// CONSTEXPR:     ╭─[tests/fixtures/error/clang/linux/x86_64/declaration_rules.c:13:15]
+// CONSTEXPR:  12 │ #elif defined(CONSTEXPR)
+// CONSTEXPR:  13 │ constexpr int c;
+// CONSTEXPR:     ·               ─
+// CONSTEXPR:  14 │ #elif defined(VLA_INIT)
+// CONSTEXPR:     ╰────
 // SLATE-FILECHECK-END CONSTEXPR
 // SLATE-FILECHECK-BEGIN VLA_INIT
 // VLA_INIT: Error:   × semantic analysis failed
 // VLA_INIT: Error:
-// VLA_INIT: × variable length array initializer
-// VLA_INIT: ╭─[tests/fixtures/error/clang/linux/x86_64/declaration_rules.c:15:21]
-// VLA_INIT: 14 │ #elif defined(VLA_INIT)
-// VLA_INIT: 15 │ void g(int n) { int a[n] = {1}; }
-// VLA_INIT: ·                     ──────────
-// VLA_INIT: 16 │ #elif defined(INCOMPLETE_ENUM)
-// VLA_INIT: ╰────
+// VLA_INIT:   × variable length array initializer
+// VLA_INIT:     ╭─[tests/fixtures/error/clang/linux/x86_64/declaration_rules.c:15:21]
+// VLA_INIT:  14 │ #elif defined(VLA_INIT)
+// VLA_INIT:  15 │ void g(int n) { int a[n] = {1}; }
+// VLA_INIT:     ·                     ──────────
+// VLA_INIT:  16 │ #elif defined(INCOMPLETE_ENUM)
+// VLA_INIT:     ╰────
 // SLATE-FILECHECK-END VLA_INIT
 // SLATE-FILECHECK-BEGIN INCOMPLETE_ENUM
 // INCOMPLETE_ENUM: Error:   × semantic analysis failed
 // INCOMPLETE_ENUM: Error:
-// INCOMPLETE_ENUM: × conversion involving an incomplete enum type
-// INCOMPLETE_ENUM: ╭─[tests/fixtures/error/clang/linux/x86_64/declaration_rules.c:18:17]
-// INCOMPLETE_ENUM: 17 │ enum E;
-// INCOMPLETE_ENUM: 18 │ void g(int x) { (enum E)x; }
-// INCOMPLETE_ENUM: ·                 ─────────
-// INCOMPLETE_ENUM: 19 │ #elif defined(VOID_TYPEDEF)
-// INCOMPLETE_ENUM: ╰────
+// INCOMPLETE_ENUM:   × conversion involving an incomplete enum type
+// INCOMPLETE_ENUM:     ╭─[tests/fixtures/error/clang/linux/x86_64/declaration_rules.c:18:17]
+// INCOMPLETE_ENUM:  17 │ enum E;
+// INCOMPLETE_ENUM:  18 │ void g(int x) { (enum E)x; }
+// INCOMPLETE_ENUM:     ·                 ─────────
+// INCOMPLETE_ENUM:  19 │ #elif defined(VOID_TYPEDEF)
+// INCOMPLETE_ENUM:     ╰────
 // SLATE-FILECHECK-END INCOMPLETE_ENUM
 // SLATE-FILECHECK-BEGIN VOID_TYPEDEF
 // VOID_TYPEDEF: Error:   × semantic analysis failed
 // VOID_TYPEDEF: Error:
-// VOID_TYPEDEF: × object cannot have type void
-// VOID_TYPEDEF: ╭─[tests/fixtures/error/clang/linux/x86_64/declaration_rules.c:21:22]
-// VOID_TYPEDEF: 20 │ typedef void alias;
-// VOID_TYPEDEF: 21 │ void g(void) { alias bad; }
-// VOID_TYPEDEF: ·                      ───
-// VOID_TYPEDEF: 22 │ #endif
-// VOID_TYPEDEF: ╰────
+// VOID_TYPEDEF:   × object cannot have type void
+// VOID_TYPEDEF:     ╭─[tests/fixtures/error/clang/linux/x86_64/declaration_rules.c:21:22]
+// VOID_TYPEDEF:  20 │ typedef void alias;
+// VOID_TYPEDEF:  21 │ void g(void) { alias bad; }
+// VOID_TYPEDEF:     ·                      ───
+// VOID_TYPEDEF:  22 │ #endif
+// VOID_TYPEDEF:     ╰────
 // SLATE-FILECHECK-END VOID_TYPEDEF

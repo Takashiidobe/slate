@@ -106,61 +106,61 @@ done:;
 
 // SLATE-FILECHECK-BEGIN C17
 // C17: -Wjump-seh-finally
-// C17: ⚠ jump out of __finally block has undefined behavior
-// C17: ╭─[tests/fixtures/clang/windows/x86_64/seh_jump_out_of_finally.c:6:7]
-// C17: 5 │     } __finally {
-// C17: 6 │       continue;
-// C17: ·       ─────────
-// C17: 7 │     }
-// C17: ╰────
+// C17:   ⚠ jump out of __finally block has undefined behavior
+// C17:    ╭─[tests/fixtures/clang/windows/x86_64/seh_jump_out_of_finally.c:6:7]
+// C17:  5 │     } __finally {
+// C17:  6 │       continue;
+// C17:    ·       ─────────
+// C17:  7 │     }
+// C17:    ╰────
 // C17: -Wjump-seh-finally
-// C17: ⚠ jump out of __finally block has undefined behavior
-// C17: ╭─[tests/fixtures/clang/windows/x86_64/seh_jump_out_of_finally.c:24:7]
-// C17: 23 │     } __finally {
-// C17: 24 │       break;
-// C17: ·       ──────
-// C17: 25 │     }
-// C17: ╰────
+// C17:   ⚠ jump out of __finally block has undefined behavior
+// C17:     ╭─[tests/fixtures/clang/windows/x86_64/seh_jump_out_of_finally.c:24:7]
+// C17:  23 │     } __finally {
+// C17:  24 │       break;
+// C17:     ·       ──────
+// C17:  25 │     }
+// C17:     ╰────
 // C17: -Wjump-seh-finally
-// C17: ⚠ jump out of __finally block has undefined behavior
-// C17: ╭─[tests/fixtures/clang/windows/x86_64/seh_jump_out_of_finally.c:31:7]
-// C17: 30 │     } __finally {
-// C17: 31 │       break;
-// C17: ·       ──────
-// C17: 32 │     }
-// C17: ╰────
+// C17:   ⚠ jump out of __finally block has undefined behavior
+// C17:     ╭─[tests/fixtures/clang/windows/x86_64/seh_jump_out_of_finally.c:31:7]
+// C17:  30 │     } __finally {
+// C17:  31 │       break;
+// C17:     ·       ──────
+// C17:  32 │     }
+// C17:     ╰────
 // C17: -Wjump-seh-finally
-// C17: ⚠ jump out of __finally block has undefined behavior
-// C17: ╭─[tests/fixtures/clang/windows/x86_64/seh_jump_out_of_finally.c:49:7]
-// C17: 48 │     } __finally {
-// C17: 49 │       __leave;
-// C17: ·       ────────
-// C17: 50 │     }
-// C17: ╰────
+// C17:   ⚠ jump out of __finally block has undefined behavior
+// C17:     ╭─[tests/fixtures/clang/windows/x86_64/seh_jump_out_of_finally.c:49:7]
+// C17:  48 │     } __finally {
+// C17:  49 │       __leave;
+// C17:     ·       ────────
+// C17:  50 │     }
+// C17:     ╰────
 // C17: -Wjump-seh-finally
-// C17: ⚠ jump out of __finally block has undefined behavior
-// C17: ╭─[tests/fixtures/clang/windows/x86_64/seh_jump_out_of_finally.c:68:5]
-// C17: 67 │   } __finally {
-// C17: 68 │     return;
-// C17: ·     ───────
-// C17: 69 │   }
-// C17: ╰────
+// C17:   ⚠ jump out of __finally block has undefined behavior
+// C17:     ╭─[tests/fixtures/clang/windows/x86_64/seh_jump_out_of_finally.c:68:5]
+// C17:  67 │   } __finally {
+// C17:  68 │     return;
+// C17:     ·     ───────
+// C17:  69 │   }
+// C17:     ╰────
 // C17: -Wjump-seh-finally
-// C17: ⚠ jump out of __finally block has undefined behavior
-// C17: ╭─[tests/fixtures/clang/windows/x86_64/seh_jump_out_of_finally.c:75:5]
-// C17: 74 │   } __finally {
-// C17: 75 │     return 1;
-// C17: ·     ─────────
-// C17: 76 │   }
-// C17: ╰────
+// C17:   ⚠ jump out of __finally block has undefined behavior
+// C17:     ╭─[tests/fixtures/clang/windows/x86_64/seh_jump_out_of_finally.c:75:5]
+// C17:  74 │   } __finally {
+// C17:  75 │     return 1;
+// C17:     ·     ─────────
+// C17:  76 │   }
+// C17:     ╰────
 // C17: -Wjump-seh-finally
-// C17: ⚠ jump out of __finally block has undefined behavior
-// C17: ╭─[tests/fixtures/clang/windows/x86_64/seh_jump_out_of_finally.c:83:5]
-// C17: 82 │   } __finally {
-// C17: 83 │     goto done;
-// C17: ·     ──────────
-// C17: 84 │   }
-// C17: ╰────
+// C17:   ⚠ jump out of __finally block has undefined behavior
+// C17:     ╭─[tests/fixtures/clang/windows/x86_64/seh_jump_out_of_finally.c:83:5]
+// C17:  82 │   } __finally {
+// C17:  83 │     goto done;
+// C17:     ·     ──────────
+// C17:  84 │   }
+// C17:     ╰────
 // SLATE-FILECHECK-END C17
 // SLATE-FILECHECK-BEGIN IR-C17
 // IR-C17: module {

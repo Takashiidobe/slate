@@ -36,61 +36,61 @@ void invalid(void) {
 
 // SLATE-FILECHECK-BEGIN EMPTY
 // EMPTY: Error:   × expected type name
-// EMPTY: ╰─▶ expected type name
-// EMPTY: ╭─[tests/fixtures/error/gcc/linux/x86_64/c2y_integer_type_limits_syntax.c:3:5]
-// EMPTY: 2 │ #ifdef EMPTY
-// EMPTY: 3 │     _Maxof();
-// EMPTY: ·     ──────
-// EMPTY: 4 │ #elif defined(EXPR)
-// EMPTY: ╰────
+// EMPTY:   ╰─▶ expected type name
+// EMPTY:    ╭─[tests/fixtures/error/gcc/linux/x86_64/c2y_integer_type_limits_syntax.c:3:5]
+// EMPTY:  2 │ #ifdef EMPTY
+// EMPTY:  3 │     _Maxof();
+// EMPTY:    ·     ──────
+// EMPTY:  4 │ #elif defined(EXPR)
+// EMPTY:    ╰────
 // SLATE-FILECHECK-END EMPTY
 // SLATE-FILECHECK-BEGIN EXPR
 // EXPR: Error:   × expected type name
-// EXPR: ╰─▶ expected type name
-// EXPR: ╭─[tests/fixtures/error/gcc/linux/x86_64/c2y_integer_type_limits_syntax.c:5:5]
-// EXPR: 4 │ #elif defined(EXPR)
-// EXPR: 5 │     _Minof(1 + 2);
-// EXPR: ·     ──────
-// EXPR: 6 │ #elif defined(BARE)
-// EXPR: ╰────
+// EXPR:   ╰─▶ expected type name
+// EXPR:    ╭─[tests/fixtures/error/gcc/linux/x86_64/c2y_integer_type_limits_syntax.c:5:5]
+// EXPR:  4 │ #elif defined(EXPR)
+// EXPR:  5 │     _Minof(1 + 2);
+// EXPR:    ·     ──────
+// EXPR:  6 │ #elif defined(BARE)
+// EXPR:    ╰────
 // SLATE-FILECHECK-END EXPR
 // SLATE-FILECHECK-BEGIN BARE
 // BARE: Error:   × expected `(`, found `int`
-// BARE: ╰─▶ expected `(`, found `int`
-// BARE: ╭─[tests/fixtures/error/gcc/linux/x86_64/c2y_integer_type_limits_syntax.c:7:5]
-// BARE: 6 │ #elif defined(BARE)
-// BARE: 7 │     _Maxof int;
-// BARE: ·     ──────
-// BARE: 8 │ #elif defined(EXTRA)
-// BARE: ╰────
+// BARE:   ╰─▶ expected `(`, found `int`
+// BARE:    ╭─[tests/fixtures/error/gcc/linux/x86_64/c2y_integer_type_limits_syntax.c:7:5]
+// BARE:  6 │ #elif defined(BARE)
+// BARE:  7 │     _Maxof int;
+// BARE:    ·     ──────
+// BARE:  8 │ #elif defined(EXTRA)
+// BARE:    ╰────
 // SLATE-FILECHECK-END BARE
 // SLATE-FILECHECK-BEGIN EXTRA
 // EXTRA: Error:   × expected `)`, found `,`
-// EXTRA: ╰─▶ expected `)`, found `,`
-// EXTRA: ╭─[tests/fixtures/error/gcc/linux/x86_64/c2y_integer_type_limits_syntax.c:9:5]
-// EXTRA: 8 │ #elif defined(EXTRA)
-// EXTRA: 9 │     _Minof(int, long);
-// EXTRA: ·     ──────
-// EXTRA: 10 │ #elif defined(CLOSE)
-// EXTRA: ╰────
+// EXTRA:   ╰─▶ expected `)`, found `,`
+// EXTRA:     ╭─[tests/fixtures/error/gcc/linux/x86_64/c2y_integer_type_limits_syntax.c:9:5]
+// EXTRA:   8 │ #elif defined(EXTRA)
+// EXTRA:   9 │     _Minof(int, long);
+// EXTRA:     ·     ──────
+// EXTRA:  10 │ #elif defined(CLOSE)
+// EXTRA:     ╰────
 // SLATE-FILECHECK-END EXTRA
 // SLATE-FILECHECK-BEGIN CLOSE
 // CLOSE: Error:   × expected `;`
-// CLOSE: ╰─▶ expected `;`
-// CLOSE: ╭─[tests/fixtures/error/gcc/linux/x86_64/c2y_integer_type_limits_syntax.c:11:5]
-// CLOSE: 10 │ #elif defined(CLOSE)
-// CLOSE: 11 │     _Maxof(int;
-// CLOSE: ·     ──────
-// CLOSE: 12 │ #else
-// CLOSE: ╰────
+// CLOSE:   ╰─▶ expected `;`
+// CLOSE:     ╭─[tests/fixtures/error/gcc/linux/x86_64/c2y_integer_type_limits_syntax.c:11:5]
+// CLOSE:  10 │ #elif defined(CLOSE)
+// CLOSE:  11 │     _Maxof(int;
+// CLOSE:     ·     ──────
+// CLOSE:  12 │ #else
+// CLOSE:     ╰────
 // SLATE-FILECHECK-END CLOSE
 // SLATE-FILECHECK-BEGIN VALUE
 // VALUE: Error:   × expected type name
-// VALUE: ╰─▶ expected type name
-// VALUE: ╭─[tests/fixtures/error/gcc/linux/x86_64/c2y_integer_type_limits_syntax.c:14:5]
-// VALUE: 13 │     int x = 0;
-// VALUE: 14 │     _Minof(x);
-// VALUE: ·     ──────
-// VALUE: 15 │ #endif
-// VALUE: ╰────
+// VALUE:   ╰─▶ expected type name
+// VALUE:     ╭─[tests/fixtures/error/gcc/linux/x86_64/c2y_integer_type_limits_syntax.c:14:5]
+// VALUE:  13 │     int x = 0;
+// VALUE:  14 │     _Minof(x);
+// VALUE:     ·     ──────
+// VALUE:  15 │ #endif
+// VALUE:     ╰────
 // SLATE-FILECHECK-END VALUE

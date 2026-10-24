@@ -51,35 +51,35 @@ out:
 // SLATE-FILECHECK-BEGIN SEMANTIC
 // SEMANTIC: Error:   × semantic analysis failed
 // SEMANTIC: Error:
-// SEMANTIC: × cannot jump from this goto statement to its label
-// SEMANTIC: ╭─[tests/fixtures/error/clang/windows/x86_64/seh_goto_into_scope.c:3:3]
-// SEMANTIC: 2 │ int into_try(void) {
-// SEMANTIC: 3 │   goto in;
-// SEMANTIC: ·   ────────
-// SEMANTIC: 4 │   __try {
-// SEMANTIC: ╰────
+// SEMANTIC:   × cannot jump from this goto statement to its label
+// SEMANTIC:    ╭─[tests/fixtures/error/clang/windows/x86_64/seh_goto_into_scope.c:3:3]
+// SEMANTIC:  2 │ int into_try(void) {
+// SEMANTIC:  3 │   goto in;
+// SEMANTIC:    ·   ────────
+// SEMANTIC:  4 │   __try {
+// SEMANTIC:    ╰────
 // SEMANTIC: Error:
-// SEMANTIC: × cannot jump from this goto statement to its label
-// SEMANTIC: ╭─[tests/fixtures/error/clang/windows/x86_64/seh_goto_into_scope.c:12:3]
-// SEMANTIC: 11 │ int into_except(void) {
-// SEMANTIC: 12 │   goto in;
-// SEMANTIC: ·   ────────
-// SEMANTIC: 13 │   __try {
-// SEMANTIC: ╰────
+// SEMANTIC:   × cannot jump from this goto statement to its label
+// SEMANTIC:     ╭─[tests/fixtures/error/clang/windows/x86_64/seh_goto_into_scope.c:12:3]
+// SEMANTIC:  11 │ int into_except(void) {
+// SEMANTIC:  12 │   goto in;
+// SEMANTIC:     ·   ────────
+// SEMANTIC:  13 │   __try {
+// SEMANTIC:     ╰────
 // SEMANTIC: Error:
-// SEMANTIC: × cannot jump from this goto statement to its label
-// SEMANTIC: ╭─[tests/fixtures/error/clang/windows/x86_64/seh_goto_into_scope.c:21:3]
-// SEMANTIC: 20 │ int into_finally(void) {
-// SEMANTIC: 21 │   goto in;
-// SEMANTIC: ·   ────────
-// SEMANTIC: 22 │   __try {
-// SEMANTIC: ╰────
+// SEMANTIC:   × cannot jump from this goto statement to its label
+// SEMANTIC:     ╭─[tests/fixtures/error/clang/windows/x86_64/seh_goto_into_scope.c:21:3]
+// SEMANTIC:  20 │ int into_finally(void) {
+// SEMANTIC:  21 │   goto in;
+// SEMANTIC:     ·   ────────
+// SEMANTIC:  22 │   __try {
+// SEMANTIC:     ╰────
 // SEMANTIC: Error:
-// SEMANTIC: × cannot jump from this goto statement to its label
-// SEMANTIC: ╭─[tests/fixtures/error/clang/windows/x86_64/seh_goto_into_scope.c:31:5]
-// SEMANTIC: 30 │   __try {
-// SEMANTIC: 31 │     goto in;
-// SEMANTIC: ·     ────────
-// SEMANTIC: 32 │   } __except (1) {
-// SEMANTIC: ╰────
+// SEMANTIC:   × cannot jump from this goto statement to its label
+// SEMANTIC:     ╭─[tests/fixtures/error/clang/windows/x86_64/seh_goto_into_scope.c:31:5]
+// SEMANTIC:  30 │   __try {
+// SEMANTIC:  31 │     goto in;
+// SEMANTIC:     ·     ────────
+// SEMANTIC:  32 │   } __except (1) {
+// SEMANTIC:     ╰────
 // SLATE-FILECHECK-END SEMANTIC

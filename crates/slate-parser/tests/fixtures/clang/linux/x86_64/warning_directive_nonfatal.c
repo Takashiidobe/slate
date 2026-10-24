@@ -6,13 +6,13 @@
 int after_warning = 7;
 
 // SLATE-FILECHECK-BEGIN WARN
-// WARN: ⚠ #warning directives stay non-fatal
-// WARN: ╭─[tests/fixtures/clang/linux/x86_64/warning_directive_nonfatal.c:2:1]
-// WARN: 1 │
-// WARN: 2 │ #warning directives stay non-fatal
-// WARN: · ──────────────────────────────────
-// WARN: 3 │ int after_warning = 7;
-// WARN: ╰────
+// WARN:   ⚠ #warning directives stay non-fatal
+// WARN:    ╭─[tests/fixtures/clang/linux/x86_64/warning_directive_nonfatal.c:2:1]
+// WARN:  1 │
+// WARN:  2 │ #warning directives stay non-fatal
+// WARN:    · ──────────────────────────────────
+// WARN:  3 │ int after_warning = 7;
+// WARN:    ╰────
 // SLATE-FILECHECK-END WARN
 // SLATE-FILECHECK-BEGIN IR-WARN
 // IR-WARN: module {

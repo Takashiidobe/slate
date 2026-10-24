@@ -8,11 +8,11 @@ int reference __attribute__((weakref("target")));
 // SLATE-FILECHECK-BEGIN IR
 // IR: Error:   × semantic analysis failed
 // IR: Error:
-// IR: × weakref without internal linkage
-// IR: ╭─[tests/fixtures/error/clang/linux/x86_64/weakref_external_linkage.c:3:5]
-// IR: 2 │ int target;
-// IR: 3 │ int reference __attribute__((weakref("target")));
-// IR: ·     ────────────────────────────────────────────
-// IR: 4 │
-// IR: ╰────
+// IR:   × weakref without internal linkage
+// IR:    ╭─[tests/fixtures/error/clang/linux/x86_64/weakref_external_linkage.c:3:5]
+// IR:  2 │ int target;
+// IR:  3 │ int reference __attribute__((weakref("target")));
+// IR:    ·     ────────────────────────────────────────────
+// IR:  4 │
+// IR:    ╰────
 // SLATE-FILECHECK-END IR

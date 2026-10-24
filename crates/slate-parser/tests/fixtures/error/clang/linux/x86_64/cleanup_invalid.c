@@ -32,66 +32,66 @@ int f(void) {
 // SLATE-FILECHECK-BEGIN UNDECLARED
 // UNDECLARED: Error:   × semantic analysis failed
 // UNDECLARED: Error:
-// UNDECLARED: × 'cleanup' argument is not a function
-// UNDECLARED: ╭─[tests/fixtures/error/clang/linux/x86_64/cleanup_invalid.c:15:32]
-// UNDECLARED: 14 │ int f(void) {
-// UNDECLARED: 15 │   int x __attribute__((cleanup(release))) = 1;
-// UNDECLARED: ·                                ───────
-// UNDECLARED: 16 │   return x;
-// UNDECLARED: ╰────
+// UNDECLARED:   × 'cleanup' argument is not a function
+// UNDECLARED:     ╭─[tests/fixtures/error/clang/linux/x86_64/cleanup_invalid.c:15:32]
+// UNDECLARED:  14 │ int f(void) {
+// UNDECLARED:  15 │   int x __attribute__((cleanup(release))) = 1;
+// UNDECLARED:     ·                                ───────
+// UNDECLARED:  16 │   return x;
+// UNDECLARED:     ╰────
 // SLATE-FILECHECK-END UNDECLARED
 // SLATE-FILECHECK-BEGIN OBJECT
 // OBJECT: Error:   × semantic analysis failed
 // OBJECT: Error:
-// OBJECT: × 'cleanup' argument is not a function
-// OBJECT: ╭─[tests/fixtures/error/clang/linux/x86_64/cleanup_invalid.c:15:32]
-// OBJECT: 14 │ int f(void) {
-// OBJECT: 15 │   int x __attribute__((cleanup(release))) = 1;
-// OBJECT: ·                                ───────
-// OBJECT: 16 │   return x;
-// OBJECT: ╰────
+// OBJECT:   × 'cleanup' argument is not a function
+// OBJECT:     ╭─[tests/fixtures/error/clang/linux/x86_64/cleanup_invalid.c:15:32]
+// OBJECT:  14 │ int f(void) {
+// OBJECT:  15 │   int x __attribute__((cleanup(release))) = 1;
+// OBJECT:     ·                                ───────
+// OBJECT:  16 │   return x;
+// OBJECT:     ╰────
 // SLATE-FILECHECK-END OBJECT
 // SLATE-FILECHECK-BEGIN ARITY
 // ARITY: Error:   × semantic analysis failed
 // ARITY: Error:
-// ARITY: × 'cleanup' function must take 1 parameter
-// ARITY: ╭─[tests/fixtures/error/clang/linux/x86_64/cleanup_invalid.c:15:32]
-// ARITY: 14 │ int f(void) {
-// ARITY: 15 │   int x __attribute__((cleanup(release))) = 1;
-// ARITY: ·                                ───────
-// ARITY: 16 │   return x;
-// ARITY: ╰────
+// ARITY:   × 'cleanup' function must take 1 parameter
+// ARITY:     ╭─[tests/fixtures/error/clang/linux/x86_64/cleanup_invalid.c:15:32]
+// ARITY:  14 │ int f(void) {
+// ARITY:  15 │   int x __attribute__((cleanup(release))) = 1;
+// ARITY:     ·                                ───────
+// ARITY:  16 │   return x;
+// ARITY:     ╰────
 // SLATE-FILECHECK-END ARITY
 // SLATE-FILECHECK-BEGIN UNPROTOTYPED
 // UNPROTOTYPED: Error:   × semantic analysis failed
 // UNPROTOTYPED: Error:
-// UNPROTOTYPED: × 'cleanup' function must take 1 parameter
-// UNPROTOTYPED: ╭─[tests/fixtures/error/clang/linux/x86_64/cleanup_invalid.c:15:32]
-// UNPROTOTYPED: 14 │ int f(void) {
-// UNPROTOTYPED: 15 │   int x __attribute__((cleanup(release))) = 1;
-// UNPROTOTYPED: ·                                ───────
-// UNPROTOTYPED: 16 │   return x;
-// UNPROTOTYPED: ╰────
+// UNPROTOTYPED:   × 'cleanup' function must take 1 parameter
+// UNPROTOTYPED:     ╭─[tests/fixtures/error/clang/linux/x86_64/cleanup_invalid.c:15:32]
+// UNPROTOTYPED:  14 │ int f(void) {
+// UNPROTOTYPED:  15 │   int x __attribute__((cleanup(release))) = 1;
+// UNPROTOTYPED:     ·                                ───────
+// UNPROTOTYPED:  16 │   return x;
+// UNPROTOTYPED:     ╰────
 // SLATE-FILECHECK-END UNPROTOTYPED
 // SLATE-FILECHECK-BEGIN INCOMPATIBLE
 // INCOMPATIBLE: Error:   × semantic analysis failed
 // INCOMPATIBLE: Error:
-// INCOMPATIBLE: × 'cleanup' function parameter type is incompatible with the variable's
-// INCOMPATIBLE: ╭─[tests/fixtures/error/clang/linux/x86_64/cleanup_invalid.c:15:32]
-// INCOMPATIBLE: 14 │ int f(void) {
-// INCOMPATIBLE: 15 │   int x __attribute__((cleanup(release))) = 1;
-// INCOMPATIBLE: ·                                ───────
-// INCOMPATIBLE: 16 │   return x;
-// INCOMPATIBLE: ╰────
+// INCOMPATIBLE:   × 'cleanup' function parameter type is incompatible with the variable's
+// INCOMPATIBLE:     ╭─[tests/fixtures/error/clang/linux/x86_64/cleanup_invalid.c:15:32]
+// INCOMPATIBLE:  14 │ int f(void) {
+// INCOMPATIBLE:  15 │   int x __attribute__((cleanup(release))) = 1;
+// INCOMPATIBLE:     ·                                ───────
+// INCOMPATIBLE:  16 │   return x;
+// INCOMPATIBLE:     ╰────
 // SLATE-FILECHECK-END INCOMPATIBLE
 // SLATE-FILECHECK-BEGIN SIGN
 // SIGN: Error:   × semantic analysis failed
 // SIGN: Error:
-// SIGN: × 'cleanup' function parameter type is incompatible with the variable's
-// SIGN: ╭─[tests/fixtures/error/clang/linux/x86_64/cleanup_invalid.c:15:32]
-// SIGN: 14 │ int f(void) {
-// SIGN: 15 │   int x __attribute__((cleanup(release))) = 1;
-// SIGN: ·                                ───────
-// SIGN: 16 │   return x;
-// SIGN: ╰────
+// SIGN:   × 'cleanup' function parameter type is incompatible with the variable's
+// SIGN:     ╭─[tests/fixtures/error/clang/linux/x86_64/cleanup_invalid.c:15:32]
+// SIGN:  14 │ int f(void) {
+// SIGN:  15 │   int x __attribute__((cleanup(release))) = 1;
+// SIGN:     ·                                ───────
+// SIGN:  16 │   return x;
+// SIGN:     ╰────
 // SLATE-FILECHECK-END SIGN

@@ -79,66 +79,66 @@ int size_keyword(void) { __asm mov eax, SIZE int }
 // SLATE-FILECHECK-BEGIN AMBIGUOUS
 // AMBIGUOUS: Error:   × semantic analysis failed
 // AMBIGUOUS: Error:
-// AMBIGUOUS: × ambiguous member name in `__asm`
-// AMBIGUOUS: ╭─[tests/fixtures/msvc/windows/i686/ms_asm_msvc_members.c:42:23]
-// AMBIGUOUS: 41 │ #if defined(AMBIGUOUS)
-// AMBIGUOUS: 42 │ int ambiguous(void) { __asm mov eax, [ebx].second }
-// AMBIGUOUS: ·                       ───────────────────────────
-// AMBIGUOUS: 43 │ #endif
-// AMBIGUOUS: ╰────
+// AMBIGUOUS:   × ambiguous member name in `__asm`
+// AMBIGUOUS:     ╭─[tests/fixtures/msvc/windows/i686/ms_asm_msvc_members.c:42:23]
+// AMBIGUOUS:  41 │ #if defined(AMBIGUOUS)
+// AMBIGUOUS:  42 │ int ambiguous(void) { __asm mov eax, [ebx].second }
+// AMBIGUOUS:     ·                       ───────────────────────────
+// AMBIGUOUS:  43 │ #endif
+// AMBIGUOUS:     ╰────
 // SLATE-FILECHECK-END AMBIGUOUS
 // SLATE-FILECHECK-BEGIN ANONYMOUS
 // ANONYMOUS: Error:   × semantic analysis failed
 // ANONYMOUS: Error:
-// ANONYMOUS: × ambiguous member name in `__asm`
-// ANONYMOUS: ╭─[tests/fixtures/msvc/windows/i686/ms_asm_msvc_members.c:46:23]
-// ANONYMOUS: 45 │ #if defined(ANONYMOUS)
-// ANONYMOUS: 46 │ int anonymous(void) { __asm mov eax, [ebx].deep }
-// ANONYMOUS: ·                       ─────────────────────────
-// ANONYMOUS: 47 │ #endif
-// ANONYMOUS: ╰────
+// ANONYMOUS:   × ambiguous member name in `__asm`
+// ANONYMOUS:     ╭─[tests/fixtures/msvc/windows/i686/ms_asm_msvc_members.c:46:23]
+// ANONYMOUS:  45 │ #if defined(ANONYMOUS)
+// ANONYMOUS:  46 │ int anonymous(void) { __asm mov eax, [ebx].deep }
+// ANONYMOUS:     ·                       ─────────────────────────
+// ANONYMOUS:  47 │ #endif
+// ANONYMOUS:     ╰────
 // SLATE-FILECHECK-END ANONYMOUS
 // SLATE-FILECHECK-BEGIN UNKNOWN
 // UNKNOWN: Error:   × semantic analysis failed
 // UNKNOWN: Error:
-// UNKNOWN: × illegal struct/union member in `__asm`
-// UNKNOWN: ╭─[tests/fixtures/msvc/windows/i686/ms_asm_msvc_members.c:50:21]
-// UNKNOWN: 49 │ #if defined(UNKNOWN)
-// UNKNOWN: 50 │ int unknown(void) { __asm mov eax, global.missing }
-// UNKNOWN: ·                     ─────────────────────────────
-// UNKNOWN: 51 │ #endif
-// UNKNOWN: ╰────
+// UNKNOWN:   × illegal struct/union member in `__asm`
+// UNKNOWN:     ╭─[tests/fixtures/msvc/windows/i686/ms_asm_msvc_members.c:50:21]
+// UNKNOWN:  49 │ #if defined(UNKNOWN)
+// UNKNOWN:  50 │ int unknown(void) { __asm mov eax, global.missing }
+// UNKNOWN:     ·                     ─────────────────────────────
+// UNKNOWN:  51 │ #endif
+// UNKNOWN:     ╰────
 // SLATE-FILECHECK-END UNKNOWN
 // SLATE-FILECHECK-BEGIN LATER
 // LATER: Error:   × semantic analysis failed
 // LATER: Error:
-// LATER: × illegal struct/union member in `__asm`
-// LATER: ╭─[tests/fixtures/msvc/windows/i686/ms_asm_msvc_members.c:54:19]
-// LATER: 53 │ #if defined(LATER)
-// LATER: 54 │ int later(void) { __asm mov eax, [ebx].after }
-// LATER: ·                   ──────────────────────────
-// LATER: 55 │ struct after_use { int a0; int after; };
-// LATER: ╰────
+// LATER:   × illegal struct/union member in `__asm`
+// LATER:     ╭─[tests/fixtures/msvc/windows/i686/ms_asm_msvc_members.c:54:19]
+// LATER:  53 │ #if defined(LATER)
+// LATER:  54 │ int later(void) { __asm mov eax, [ebx].after }
+// LATER:     ·                   ──────────────────────────
+// LATER:  55 │ struct after_use { int a0; int after; };
+// LATER:     ╰────
 // SLATE-FILECHECK-END LATER
 // SLATE-FILECHECK-BEGIN TWO_WORDS
 // TWO_WORDS: Error:   × unexpected token in `__asm` operand
-// TWO_WORDS: ╰─▶ unexpected token in `__asm` operand
-// TWO_WORDS: ╭─[tests/fixtures/msvc/windows/i686/ms_asm_msvc_members.c:59:52]
-// TWO_WORDS: 58 │ #if defined(TWO_WORDS)
-// TWO_WORDS: 59 │ int two_words(void) { __asm mov eax, TYPE unsigned int }
-// TWO_WORDS: ·                                                    ───
-// TWO_WORDS: 60 │ #endif
-// TWO_WORDS: ╰────
+// TWO_WORDS:   ╰─▶ unexpected token in `__asm` operand
+// TWO_WORDS:     ╭─[tests/fixtures/msvc/windows/i686/ms_asm_msvc_members.c:59:52]
+// TWO_WORDS:  58 │ #if defined(TWO_WORDS)
+// TWO_WORDS:  59 │ int two_words(void) { __asm mov eax, TYPE unsigned int }
+// TWO_WORDS:     ·                                                    ───
+// TWO_WORDS:  60 │ #endif
+// TWO_WORDS:     ╰────
 // SLATE-FILECHECK-END TWO_WORDS
 // SLATE-FILECHECK-BEGIN SIZE_KEYWORD
 // SIZE_KEYWORD: Error:   × expected `__asm` operand
-// SIZE_KEYWORD: ╰─▶ expected `__asm` operand
-// SIZE_KEYWORD: ╭─[tests/fixtures/msvc/windows/i686/ms_asm_msvc_members.c:63:46]
-// SIZE_KEYWORD: 62 │ #if defined(SIZE_KEYWORD)
-// SIZE_KEYWORD: 63 │ int size_keyword(void) { __asm mov eax, SIZE int }
-// SIZE_KEYWORD: ·                                              ───
-// SIZE_KEYWORD: 64 │ #endif
-// SIZE_KEYWORD: ╰────
+// SIZE_KEYWORD:   ╰─▶ expected `__asm` operand
+// SIZE_KEYWORD:     ╭─[tests/fixtures/msvc/windows/i686/ms_asm_msvc_members.c:63:46]
+// SIZE_KEYWORD:  62 │ #if defined(SIZE_KEYWORD)
+// SIZE_KEYWORD:  63 │ int size_keyword(void) { __asm mov eax, SIZE int }
+// SIZE_KEYWORD:     ·                                              ───
+// SIZE_KEYWORD:  64 │ #endif
+// SIZE_KEYWORD:     ╰────
 // SLATE-FILECHECK-END SIZE_KEYWORD
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: module {

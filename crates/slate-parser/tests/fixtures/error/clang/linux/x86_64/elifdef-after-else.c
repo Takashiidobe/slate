@@ -10,11 +10,11 @@ int second;
 
 // SLATE-FILECHECK-BEGIN PARSE
 // PARSE: Error:   × #elifdef after #else
-// PARSE: ╰─▶ #elifdef after #else
-// PARSE: ╭─[tests/fixtures/error/clang/linux/x86_64/elifdef-after-else.c:5:1]
-// PARSE: 4 │ int other;
-// PARSE: 5 │ #elifdef SECOND
-// PARSE: · ───────────────
-// PARSE: 6 │ int second;
-// PARSE: ╰────
+// PARSE:   ╰─▶ #elifdef after #else
+// PARSE:    ╭─[tests/fixtures/error/clang/linux/x86_64/elifdef-after-else.c:5:1]
+// PARSE:  4 │ int other;
+// PARSE:  5 │ #elifdef SECOND
+// PARSE:    · ───────────────
+// PARSE:  6 │ int second;
+// PARSE:    ╰────
 // SLATE-FILECHECK-END PARSE

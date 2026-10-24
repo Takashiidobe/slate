@@ -42,23 +42,23 @@ int replaced = _Maxof(int);
 
 // SLATE-FILECHECK-BEGIN C23
 // C23: Error:   × expected `)`, found `char`
-// C23: ╰─▶ expected `)`, found `char`
-// C23: ╭─[tests/fixtures/gcc/linux/x86_64/c2y_integer_type_limits.c:9:36]
-// C23: 8 │ void limits(int n) {
-// C23: 9 │     int bound[_Maxof(unsigned char)];
-// C23: ·                                    ─
-// C23: 10 │     _Maxof(char);
-// C23: ╰────
+// C23:   ╰─▶ expected `)`, found `char`
+// C23:     ╭─[tests/fixtures/gcc/linux/x86_64/c2y_integer_type_limits.c:9:36]
+// C23:   8 │ void limits(int n) {
+// C23:   9 │     int bound[_Maxof(unsigned char)];
+// C23:     ·                                    ─
+// C23:  10 │     _Maxof(char);
+// C23:     ╰────
 // SLATE-FILECHECK-END C23
 // SLATE-FILECHECK-BEGIN GNU23
 // GNU23: Error:   × expected `)`, found `char`
-// GNU23: ╰─▶ expected `)`, found `char`
-// GNU23: ╭─[tests/fixtures/gcc/linux/x86_64/c2y_integer_type_limits.c:9:36]
-// GNU23: 8 │ void limits(int n) {
-// GNU23: 9 │     int bound[_Maxof(unsigned char)];
-// GNU23: ·                                    ─
-// GNU23: 10 │     _Maxof(char);
-// GNU23: ╰────
+// GNU23:   ╰─▶ expected `)`, found `char`
+// GNU23:     ╭─[tests/fixtures/gcc/linux/x86_64/c2y_integer_type_limits.c:9:36]
+// GNU23:   8 │ void limits(int n) {
+// GNU23:   9 │     int bound[_Maxof(unsigned char)];
+// GNU23:     ·                                    ─
+// GNU23:  10 │     _Maxof(char);
+// GNU23:     ╰────
 // SLATE-FILECHECK-END GNU23
 // SLATE-FILECHECK-BEGIN C2Y
 // C2Y: decl[{{[0-9]+}}]: Declaration(

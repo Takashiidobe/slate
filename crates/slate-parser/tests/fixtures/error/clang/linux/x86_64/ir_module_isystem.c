@@ -5,8 +5,8 @@
 
 // SLATE-FILECHECK-BEGIN PARSE
 // PARSE: Error:   × #error isystem header reached for IR fixture
-// PARSE: ╭─[tests/fixtures/inputs/error/ir-module-headers/ir_module_required_error.h:1:1]
-// PARSE: 1 │ #error isystem header reached for IR fixture
-// PARSE: · ────────────────────────────────────────────
-// PARSE: ╰────
+// PARSE:    ╭─[tests/fixtures/inputs/error/ir-module-headers/ir_module_required_error.h:1:1]
+// PARSE:  1 │ #error isystem header reached for IR fixture
+// PARSE:    · ────────────────────────────────────────────
+// PARSE:    ╰────
 // SLATE-FILECHECK-END PARSE

@@ -5,10 +5,10 @@ int value;
 
 // SLATE-FILECHECK-BEGIN PARSE
 // PARSE: Error:   × expected `)` after macro parameters
-// PARSE: ╰─▶ expected `)` after macro parameters
-// PARSE: ╭─[tests/fixtures/error/clang/linux/x86_64/define-unclosed-parameters.c:1:13]
-// PARSE: 1 │ #define PAIR(first, second
-// PARSE: ·             ─
-// PARSE: 2 │ int value;
-// PARSE: ╰────
+// PARSE:   ╰─▶ expected `)` after macro parameters
+// PARSE:    ╭─[tests/fixtures/error/clang/linux/x86_64/define-unclosed-parameters.c:1:13]
+// PARSE:  1 │ #define PAIR(first, second
+// PARSE:    ·             ─
+// PARSE:  2 │ int value;
+// PARSE:    ╰────
 // SLATE-FILECHECK-END PARSE

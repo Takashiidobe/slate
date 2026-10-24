@@ -4,10 +4,10 @@ asm volatile("top");
 
 // SLATE-FILECHECK-BEGIN PARSE
 // PARSE: Error:   × meaningless `volatile` on asm outside function
-// PARSE: ╰─▶ meaningless `volatile` on asm outside function
-// PARSE: ╭─[tests/fixtures/error/clang/linux/x86_64/asm-file-scope-qualifier.c:1:5]
-// PARSE: 1 │ asm volatile("top");
-// PARSE: ·     ────────
-// PARSE: 2 │
-// PARSE: ╰────
+// PARSE:   ╰─▶ meaningless `volatile` on asm outside function
+// PARSE:    ╭─[tests/fixtures/error/clang/linux/x86_64/asm-file-scope-qualifier.c:1:5]
+// PARSE:  1 │ asm volatile("top");
+// PARSE:    ·     ────────
+// PARSE:  2 │
+// PARSE:    ╰────
 // SLATE-FILECHECK-END PARSE

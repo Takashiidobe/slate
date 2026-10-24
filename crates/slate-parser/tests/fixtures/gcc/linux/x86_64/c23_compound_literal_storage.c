@@ -37,23 +37,23 @@ void literals(int i) {
 
 // SLATE-FILECHECK-BEGIN C17
 // C17: Error:   × storage-class specifiers in compound literals require C23
-// C17: ╰─▶ storage-class specifiers in compound literals require C23
-// C17: ╭─[tests/fixtures/gcc/linux/x86_64/c23_compound_literal_storage.c:3:15]
-// C17: 2 │ struct pair { int values[2]; };
-// C17: 3 │ int *global = &(static int){1};
-// C17: ·               ─
-// C17: 4 │
-// C17: ╰────
+// C17:   ╰─▶ storage-class specifiers in compound literals require C23
+// C17:    ╭─[tests/fixtures/gcc/linux/x86_64/c23_compound_literal_storage.c:3:15]
+// C17:  2 │ struct pair { int values[2]; };
+// C17:  3 │ int *global = &(static int){1};
+// C17:    ·               ─
+// C17:  4 │
+// C17:    ╰────
 // SLATE-FILECHECK-END C17
 // SLATE-FILECHECK-BEGIN GNU17
 // GNU17: Error:   × storage-class specifiers in compound literals require C23
-// GNU17: ╰─▶ storage-class specifiers in compound literals require C23
-// GNU17: ╭─[tests/fixtures/gcc/linux/x86_64/c23_compound_literal_storage.c:3:15]
-// GNU17: 2 │ struct pair { int values[2]; };
-// GNU17: 3 │ int *global = &(static int){1};
-// GNU17: ·               ─
-// GNU17: 4 │
-// GNU17: ╰────
+// GNU17:   ╰─▶ storage-class specifiers in compound literals require C23
+// GNU17:    ╭─[tests/fixtures/gcc/linux/x86_64/c23_compound_literal_storage.c:3:15]
+// GNU17:  2 │ struct pair { int values[2]; };
+// GNU17:  3 │ int *global = &(static int){1};
+// GNU17:    ·               ─
+// GNU17:  4 │
+// GNU17:    ╰────
 // SLATE-FILECHECK-END GNU17
 // SLATE-FILECHECK-BEGIN C23
 // C23: tag[{{[0-9]+}}]: TagDefinition {

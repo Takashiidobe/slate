@@ -28,53 +28,53 @@ int run(struct efi_boot_services *services) {
 
 // SLATE-FILECHECK-BEGIN WARN
 // WARN: -Wignored-attributes
-// WARN: ⚠ 'noreturn' attribute ignored; it applies only to function types
-// WARN: ╭─[tests/fixtures/gcc/linux/x86_64/noreturn_function_pointer.c:3:29]
-// WARN: 2 │ typedef void (*handler_fn)(int);
-// WARN: 3 │ typedef void __attribute__((noreturn)) noreturn_fn(int);
-// WARN: ·                             ────────
-// WARN: 4 │
-// WARN: ╰────
+// WARN:   ⚠ 'noreturn' attribute ignored; it applies only to function types
+// WARN:    ╭─[tests/fixtures/gcc/linux/x86_64/noreturn_function_pointer.c:3:29]
+// WARN:  2 │ typedef void (*handler_fn)(int);
+// WARN:  3 │ typedef void __attribute__((noreturn)) noreturn_fn(int);
+// WARN:    ·                             ────────
+// WARN:  4 │
+// WARN:    ╰────
 // WARN: -Wignored-attributes
-// WARN: ⚠ 'noreturn' attribute ignored; it applies only to function types
-// WARN: ╭─[tests/fixtures/gcc/linux/x86_64/noreturn_function_pointer.c:8:22]
-// WARN: 7 │   void (*after)(int) __attribute__((noreturn));
-// WARN: 8 │   int __attribute__((noreturn)) not_callable;
-// WARN: ·                      ────────
-// WARN: 9 │ };
-// WARN: ╰────
+// WARN:   ⚠ 'noreturn' attribute ignored; it applies only to function types
+// WARN:    ╭─[tests/fixtures/gcc/linux/x86_64/noreturn_function_pointer.c:8:22]
+// WARN:  7 │   void (*after)(int) __attribute__((noreturn));
+// WARN:  8 │   int __attribute__((noreturn)) not_callable;
+// WARN:    ·                      ────────
+// WARN:  9 │ };
+// WARN:    ╰────
 // WARN: -Wignored-attributes
-// WARN: ⚠ 'noreturn' attribute ignored; it applies only to function types
-// WARN: ╭─[tests/fixtures/gcc/linux/x86_64/noreturn_function_pointer.c:12:21]
-// WARN: 11 │ void __attribute__((noreturn)) (*single)(int);
-// WARN: 12 │ void __attribute__((noreturn)) (**double_pointer)(int);
-// WARN: ·                     ────────
-// WARN: 13 │ void __attribute__((noreturn)) (*table[2])(int);
-// WARN: ╰────
+// WARN:   ⚠ 'noreturn' attribute ignored; it applies only to function types
+// WARN:     ╭─[tests/fixtures/gcc/linux/x86_64/noreturn_function_pointer.c:12:21]
+// WARN:  11 │ void __attribute__((noreturn)) (*single)(int);
+// WARN:  12 │ void __attribute__((noreturn)) (**double_pointer)(int);
+// WARN:     ·                     ────────
+// WARN:  13 │ void __attribute__((noreturn)) (*table[2])(int);
+// WARN:     ╰────
 // WARN: -Wignored-attributes
-// WARN: ⚠ 'noreturn' attribute ignored; it applies only to function types
-// WARN: ╭─[tests/fixtures/gcc/linux/x86_64/noreturn_function_pointer.c:13:21]
-// WARN: 12 │ void __attribute__((noreturn)) (**double_pointer)(int);
-// WARN: 13 │ void __attribute__((noreturn)) (*table[2])(int);
-// WARN: ·                     ────────
-// WARN: 14 │ handler_fn __attribute__((noreturn)) typedef_pointer;
-// WARN: ╰────
+// WARN:   ⚠ 'noreturn' attribute ignored; it applies only to function types
+// WARN:     ╭─[tests/fixtures/gcc/linux/x86_64/noreturn_function_pointer.c:13:21]
+// WARN:  12 │ void __attribute__((noreturn)) (**double_pointer)(int);
+// WARN:  13 │ void __attribute__((noreturn)) (*table[2])(int);
+// WARN:     ·                     ────────
+// WARN:  14 │ handler_fn __attribute__((noreturn)) typedef_pointer;
+// WARN:     ╰────
 // WARN: -Wignored-attributes
-// WARN: ⚠ 'noreturn' attribute ignored; it applies only to function types
-// WARN: ╭─[tests/fixtures/gcc/linux/x86_64/noreturn_function_pointer.c:15:27]
-// WARN: 14 │ handler_fn __attribute__((noreturn)) typedef_pointer;
-// WARN: 15 │ handler_fn __attribute__((noreturn)) typedef_table[2];
-// WARN: ·                           ────────
-// WARN: 16 │ int __attribute__((noreturn)) plain;
-// WARN: ╰────
+// WARN:   ⚠ 'noreturn' attribute ignored; it applies only to function types
+// WARN:     ╭─[tests/fixtures/gcc/linux/x86_64/noreturn_function_pointer.c:15:27]
+// WARN:  14 │ handler_fn __attribute__((noreturn)) typedef_pointer;
+// WARN:  15 │ handler_fn __attribute__((noreturn)) typedef_table[2];
+// WARN:     ·                           ────────
+// WARN:  16 │ int __attribute__((noreturn)) plain;
+// WARN:     ╰────
 // WARN: -Wignored-attributes
-// WARN: ⚠ 'noreturn' attribute ignored; it applies only to function types
-// WARN: ╭─[tests/fixtures/gcc/linux/x86_64/noreturn_function_pointer.c:16:20]
-// WARN: 15 │ handler_fn __attribute__((noreturn)) typedef_table[2];
-// WARN: 16 │ int __attribute__((noreturn)) plain;
-// WARN: ·                    ────────
-// WARN: 17 │ void declared(void) __attribute__((noreturn));
-// WARN: ╰────
+// WARN:   ⚠ 'noreturn' attribute ignored; it applies only to function types
+// WARN:     ╭─[tests/fixtures/gcc/linux/x86_64/noreturn_function_pointer.c:16:20]
+// WARN:  15 │ handler_fn __attribute__((noreturn)) typedef_table[2];
+// WARN:  16 │ int __attribute__((noreturn)) plain;
+// WARN:     ·                    ────────
+// WARN:  17 │ void declared(void) __attribute__((noreturn));
+// WARN:     ╰────
 // SLATE-FILECHECK-END WARN
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: module {

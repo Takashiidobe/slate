@@ -18,42 +18,42 @@ int proto_later(int x);
 
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: -Wdeprecated-non-prototype
-// DEFAULT: ⚠ a function definition without a prototype is deprecated in all versions of
-// DEFAULT: │ C and is not supported in C23
-// DEFAULT: ╭─[tests/fixtures/clang/linux/x86_64/knr_unprototyped_calls.c:3:1]
-// DEFAULT: 2 │ int unproto();
-// DEFAULT: 3 │ int knr(a, b, t) char a; float b; C t; { return sizeof(a) + a + b + t; }
-// DEFAULT: · ────────────────────────────────────────────────────────────────────────
-// DEFAULT: 4 │ int (*fp)();
-// DEFAULT: ╰────
+// DEFAULT:   ⚠ a function definition without a prototype is deprecated in all versions of
+// DEFAULT:   │ C and is not supported in C23
+// DEFAULT:    ╭─[tests/fixtures/clang/linux/x86_64/knr_unprototyped_calls.c:3:1]
+// DEFAULT:  2 │ int unproto();
+// DEFAULT:  3 │ int knr(a, b, t) char a; float b; C t; { return sizeof(a) + a + b + t; }
+// DEFAULT:    · ────────────────────────────────────────────────────────────────────────
+// DEFAULT:  4 │ int (*fp)();
+// DEFAULT:    ╰────
 // DEFAULT: -Wdeprecated-non-prototype
-// DEFAULT: ⚠ passing arguments to 'unproto' without a prototype is deprecated in all
-// DEFAULT: │ versions of C and is not supported in C23
-// DEFAULT: ╭─[tests/fixtures/clang/linux/x86_64/knr_unprototyped_calls.c:6:3]
-// DEFAULT: 5 │ int use(void) {
-// DEFAULT: 6 │   unproto(1.0f, (char)2);
-// DEFAULT: ·   ──────────────────────
-// DEFAULT: 7 │   knr(1.5, 2, 3);
-// DEFAULT: ╰────
+// DEFAULT:   ⚠ passing arguments to 'unproto' without a prototype is deprecated in all
+// DEFAULT:   │ versions of C and is not supported in C23
+// DEFAULT:    ╭─[tests/fixtures/clang/linux/x86_64/knr_unprototyped_calls.c:6:3]
+// DEFAULT:  5 │ int use(void) {
+// DEFAULT:  6 │   unproto(1.0f, (char)2);
+// DEFAULT:    ·   ──────────────────────
+// DEFAULT:  7 │   knr(1.5, 2, 3);
+// DEFAULT:    ╰────
 // DEFAULT: -Wdeprecated-non-prototype
-// DEFAULT: ⚠ passing arguments to a function without a prototype is deprecated in all
-// DEFAULT: │ versions of C and is not supported in C23
-// DEFAULT: ╭─[tests/fixtures/clang/linux/x86_64/knr_unprototyped_calls.c:10:10]
-// DEFAULT: 9 │   knr(1, 2, 3, 4);
-// DEFAULT: 10 │   return fp(1);
-// DEFAULT: ·          ─────
-// DEFAULT: 11 │ }
-// DEFAULT: ╰────
+// DEFAULT:   ⚠ passing arguments to a function without a prototype is deprecated in all
+// DEFAULT:   │ versions of C and is not supported in C23
+// DEFAULT:     ╭─[tests/fixtures/clang/linux/x86_64/knr_unprototyped_calls.c:10:10]
+// DEFAULT:   9 │   knr(1, 2, 3, 4);
+// DEFAULT:  10 │   return fp(1);
+// DEFAULT:     ·          ─────
+// DEFAULT:  11 │ }
+// DEFAULT:     ╰────
 // DEFAULT: -Wdeprecated-non-prototype
-// DEFAULT: ⚠ a function declaration without a prototype is deprecated in all versions
-// DEFAULT: │ of C and is treated as a zero-parameter prototype in C23, conflicting with
-// DEFAULT: │ a subsequent declaration
-// DEFAULT: ╭─[tests/fixtures/clang/linux/x86_64/knr_unprototyped_calls.c:12:5]
-// DEFAULT: 11 │ }
-// DEFAULT: 12 │ int proto_later();
-// DEFAULT: ·     ─────────────
-// DEFAULT: 13 │ int proto_later(int x);
-// DEFAULT: ╰────
+// DEFAULT:   ⚠ a function declaration without a prototype is deprecated in all versions
+// DEFAULT:   │ of C and is treated as a zero-parameter prototype in C23, conflicting with
+// DEFAULT:   │ a subsequent declaration
+// DEFAULT:     ╭─[tests/fixtures/clang/linux/x86_64/knr_unprototyped_calls.c:12:5]
+// DEFAULT:  11 │ }
+// DEFAULT:  12 │ int proto_later();
+// DEFAULT:     ·     ─────────────
+// DEFAULT:  13 │ int proto_later(int x);
+// DEFAULT:     ╰────
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN IR-DEFAULT
 // IR-DEFAULT: module {

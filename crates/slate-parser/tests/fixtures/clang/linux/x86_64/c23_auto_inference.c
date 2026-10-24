@@ -94,138 +94,138 @@ void deduce(int n, int *ip, const int *cip, struct S s) {
 // SLATE-FILECHECK-BEGIN MIXED
 // MIXED: Error:   × semantic analysis failed
 // MIXED: Error:
-// MIXED: × 'auto' deduced as different types in one declaration
-// MIXED: ╭─[tests/fixtures/clang/linux/x86_64/c23_auto_inference.c:51:15]
-// MIXED: 50 │ #ifdef MIXED
-// MIXED: 51 │   auto x = 1, y = 2.0;
-// MIXED: ·               ───────
-// MIXED: 52 │ #endif
-// MIXED: ╰────
+// MIXED:   × 'auto' deduced as different types in one declaration
+// MIXED:     ╭─[tests/fixtures/clang/linux/x86_64/c23_auto_inference.c:51:15]
+// MIXED:  50 │ #ifdef MIXED
+// MIXED:  51 │   auto x = 1, y = 2.0;
+// MIXED:     ·               ───────
+// MIXED:  52 │ #endif
+// MIXED:     ╰────
 // SLATE-FILECHECK-END MIXED
 // SLATE-FILECHECK-BEGIN SELF
 // SELF: Error:   × semantic analysis failed
 // SELF: Error:
-// SELF: × variable declared with deduced type cannot appear in its own initializer
-// SELF: ╭─[tests/fixtures/clang/linux/x86_64/c23_auto_inference.c:54:8]
-// SELF: 53 │ #ifdef SELF
-// SELF: 54 │   auto z = 1 + sizeof(z);
-// SELF: ·        ─────────────────
-// SELF: 55 │ #endif
-// SELF: ╰────
+// SELF:   × variable declared with deduced type cannot appear in its own initializer
+// SELF:     ╭─[tests/fixtures/clang/linux/x86_64/c23_auto_inference.c:54:8]
+// SELF:  53 │ #ifdef SELF
+// SELF:  54 │   auto z = 1 + sizeof(z);
+// SELF:     ·        ─────────────────
+// SELF:  55 │ #endif
+// SELF:     ╰────
 // SELF: Error:
-// SELF: × 'auto' type inference is not allowed here
-// SELF: ╭─[tests/fixtures/clang/linux/x86_64/c23_auto_inference.c:54:3]
-// SELF: 53 │ #ifdef SELF
-// SELF: 54 │   auto z = 1 + sizeof(z);
-// SELF: ·   ───────────────────────
-// SELF: 55 │ #endif
-// SELF: ╰────
+// SELF:   × 'auto' type inference is not allowed here
+// SELF:     ╭─[tests/fixtures/clang/linux/x86_64/c23_auto_inference.c:54:3]
+// SELF:  53 │ #ifdef SELF
+// SELF:  54 │   auto z = 1 + sizeof(z);
+// SELF:     ·   ───────────────────────
+// SELF:  55 │ #endif
+// SELF:     ╰────
 // SLATE-FILECHECK-END SELF
 // SLATE-FILECHECK-BEGIN NO_INIT
 // NO_INIT: Error:   × semantic analysis failed
 // NO_INIT: Error:
-// NO_INIT: × declaration with deduced type requires an initializer
-// NO_INIT: ╭─[tests/fixtures/clang/linux/x86_64/c23_auto_inference.c:57:15]
-// NO_INIT: 56 │ #ifdef NO_INIT
-// NO_INIT: 57 │   auto w = 1, v;
-// NO_INIT: ·               ─
-// NO_INIT: 58 │ #endif
-// NO_INIT: ╰────
+// NO_INIT:   × declaration with deduced type requires an initializer
+// NO_INIT:     ╭─[tests/fixtures/clang/linux/x86_64/c23_auto_inference.c:57:15]
+// NO_INIT:  56 │ #ifdef NO_INIT
+// NO_INIT:  57 │   auto w = 1, v;
+// NO_INIT:     ·               ─
+// NO_INIT:  58 │ #endif
+// NO_INIT:     ╰────
 // NO_INIT: Error:
-// NO_INIT: × 'auto' type inference is not allowed here
-// NO_INIT: ╭─[tests/fixtures/clang/linux/x86_64/c23_auto_inference.c:57:3]
-// NO_INIT: 56 │ #ifdef NO_INIT
-// NO_INIT: 57 │   auto w = 1, v;
-// NO_INIT: ·   ──────────────
-// NO_INIT: 58 │ #endif
-// NO_INIT: ╰────
+// NO_INIT:   × 'auto' type inference is not allowed here
+// NO_INIT:     ╭─[tests/fixtures/clang/linux/x86_64/c23_auto_inference.c:57:3]
+// NO_INIT:  56 │ #ifdef NO_INIT
+// NO_INIT:  57 │   auto w = 1, v;
+// NO_INIT:     ·   ──────────────
+// NO_INIT:  58 │ #endif
+// NO_INIT:     ╰────
 // SLATE-FILECHECK-END NO_INIT
 // SLATE-FILECHECK-BEGIN LIST
 // LIST: Error:   × semantic analysis failed
 // LIST: Error:
-// LIST: × cannot use 'auto' with an initializer list
-// LIST: ╭─[tests/fixtures/clang/linux/x86_64/c23_auto_inference.c:60:8]
-// LIST: 59 │ #ifdef LIST
-// LIST: 60 │   auto l = {1};
-// LIST: ·        ───────
-// LIST: 61 │ #endif
-// LIST: ╰────
+// LIST:   × cannot use 'auto' with an initializer list
+// LIST:     ╭─[tests/fixtures/clang/linux/x86_64/c23_auto_inference.c:60:8]
+// LIST:  59 │ #ifdef LIST
+// LIST:  60 │   auto l = {1};
+// LIST:     ·        ───────
+// LIST:  61 │ #endif
+// LIST:     ╰────
 // LIST: Error:
-// LIST: × 'auto' type inference is not allowed here
-// LIST: ╭─[tests/fixtures/clang/linux/x86_64/c23_auto_inference.c:60:3]
-// LIST: 59 │ #ifdef LIST
-// LIST: 60 │   auto l = {1};
-// LIST: ·   ─────────────
-// LIST: 61 │ #endif
-// LIST: ╰────
+// LIST:   × 'auto' type inference is not allowed here
+// LIST:     ╭─[tests/fixtures/clang/linux/x86_64/c23_auto_inference.c:60:3]
+// LIST:  59 │ #ifdef LIST
+// LIST:  60 │   auto l = {1};
+// LIST:     ·   ─────────────
+// LIST:  61 │ #endif
+// LIST:     ╰────
 // SLATE-FILECHECK-END LIST
 // SLATE-FILECHECK-BEGIN PARAMS
 // PARAMS: Error:   × semantic analysis failed
 // PARAMS: Error:
-// PARAMS: × initializer does not match the deduced declarator
-// PARAMS: ╭─[tests/fixtures/clang/linux/x86_64/c23_auto_inference.c:63:8]
-// PARAMS: 62 │ #ifdef PARAMS
-// PARAMS: 63 │   auto (*f)(int) = h;
-// PARAMS: ·        ─────────────
-// PARAMS: 64 │ #endif
-// PARAMS: ╰────
+// PARAMS:   × initializer does not match the deduced declarator
+// PARAMS:     ╭─[tests/fixtures/clang/linux/x86_64/c23_auto_inference.c:63:8]
+// PARAMS:  62 │ #ifdef PARAMS
+// PARAMS:  63 │   auto (*f)(int) = h;
+// PARAMS:     ·        ─────────────
+// PARAMS:  64 │ #endif
+// PARAMS:     ╰────
 // PARAMS: Error: -Wincompatible-pointer-types
-// PARAMS: × incompatible pointer types
-// PARAMS: ╭─[tests/fixtures/clang/linux/x86_64/c23_auto_inference.c:63:20]
-// PARAMS: 62 │ #ifdef PARAMS
-// PARAMS: 63 │   auto (*f)(int) = h;
-// PARAMS: ·                    ─
-// PARAMS: 64 │ #endif
-// PARAMS: ╰────
+// PARAMS:   × incompatible pointer types
+// PARAMS:     ╭─[tests/fixtures/clang/linux/x86_64/c23_auto_inference.c:63:20]
+// PARAMS:  62 │ #ifdef PARAMS
+// PARAMS:  63 │   auto (*f)(int) = h;
+// PARAMS:     ·                    ─
+// PARAMS:  64 │ #endif
+// PARAMS:     ╰────
 // SLATE-FILECHECK-END PARAMS
 // SLATE-FILECHECK-BEGIN EXTENT
 // EXTENT: Error:   × semantic analysis failed
 // EXTENT: Error:
-// EXTENT: × initializer does not match the deduced declarator
-// EXTENT: ╭─[tests/fixtures/clang/linux/x86_64/c23_auto_inference.c:66:8]
-// EXTENT: 65 │ #ifdef EXTENT
-// EXTENT: 66 │   auto (*e)[4] = &arr;
-// EXTENT: ·        ──────────────
-// EXTENT: 67 │ #endif
-// EXTENT: ╰────
+// EXTENT:   × initializer does not match the deduced declarator
+// EXTENT:     ╭─[tests/fixtures/clang/linux/x86_64/c23_auto_inference.c:66:8]
+// EXTENT:  65 │ #ifdef EXTENT
+// EXTENT:  66 │   auto (*e)[4] = &arr;
+// EXTENT:     ·        ──────────────
+// EXTENT:  67 │ #endif
+// EXTENT:     ╰────
 // EXTENT: Error: -Wincompatible-pointer-types
-// EXTENT: × incompatible pointer types
-// EXTENT: ╭─[tests/fixtures/clang/linux/x86_64/c23_auto_inference.c:66:18]
-// EXTENT: 65 │ #ifdef EXTENT
-// EXTENT: 66 │   auto (*e)[4] = &arr;
-// EXTENT: ·                  ────
-// EXTENT: 67 │ #endif
-// EXTENT: ╰────
+// EXTENT:   × incompatible pointer types
+// EXTENT:     ╭─[tests/fixtures/clang/linux/x86_64/c23_auto_inference.c:66:18]
+// EXTENT:  65 │ #ifdef EXTENT
+// EXTENT:  66 │   auto (*e)[4] = &arr;
+// EXTENT:     ·                  ────
+// EXTENT:  67 │ #endif
+// EXTENT:     ╰────
 // SLATE-FILECHECK-END EXTENT
 // SLATE-FILECHECK-BEGIN TOP_ARRAY
 // TOP_ARRAY: Error:   × semantic analysis failed
 // TOP_ARRAY: Error:
-// TOP_ARRAY: × initializer does not match the deduced declarator
-// TOP_ARRAY: ╭─[tests/fixtures/clang/linux/x86_64/c23_auto_inference.c:69:8]
-// TOP_ARRAY: 68 │ #ifdef TOP_ARRAY
-// TOP_ARRAY: 69 │   auto t[3] = arr;
-// TOP_ARRAY: ·        ──────────
-// TOP_ARRAY: 70 │ #endif
-// TOP_ARRAY: ╰────
+// TOP_ARRAY:   × initializer does not match the deduced declarator
+// TOP_ARRAY:     ╭─[tests/fixtures/clang/linux/x86_64/c23_auto_inference.c:69:8]
+// TOP_ARRAY:  68 │ #ifdef TOP_ARRAY
+// TOP_ARRAY:  69 │   auto t[3] = arr;
+// TOP_ARRAY:     ·        ──────────
+// TOP_ARRAY:  70 │ #endif
+// TOP_ARRAY:     ╰────
 // TOP_ARRAY: Error:
-// TOP_ARRAY: × 'auto' type inference is not allowed here
-// TOP_ARRAY: ╭─[tests/fixtures/clang/linux/x86_64/c23_auto_inference.c:69:3]
-// TOP_ARRAY: 68 │ #ifdef TOP_ARRAY
-// TOP_ARRAY: 69 │   auto t[3] = arr;
-// TOP_ARRAY: ·   ────────────────
-// TOP_ARRAY: 70 │ #endif
-// TOP_ARRAY: ╰────
+// TOP_ARRAY:   × 'auto' type inference is not allowed here
+// TOP_ARRAY:     ╭─[tests/fixtures/clang/linux/x86_64/c23_auto_inference.c:69:3]
+// TOP_ARRAY:  68 │ #ifdef TOP_ARRAY
+// TOP_ARRAY:  69 │   auto t[3] = arr;
+// TOP_ARRAY:     ·   ────────────────
+// TOP_ARRAY:  70 │ #endif
+// TOP_ARRAY:     ╰────
 // SLATE-FILECHECK-END TOP_ARRAY
 // SLATE-FILECHECK-BEGIN BIT_FIELD
 // BIT_FIELD: Error:   × semantic analysis failed
 // BIT_FIELD: Error:
-// BIT_FIELD: × cannot use a bit-field as a deduced-type initializer
-// BIT_FIELD: ╭─[tests/fixtures/clang/linux/x86_64/c23_auto_inference.c:72:8]
-// BIT_FIELD: 71 │ #ifdef BIT_FIELD
-// BIT_FIELD: 72 │   auto b = s.b;
-// BIT_FIELD: ·        ───────
-// BIT_FIELD: 73 │ #endif
-// BIT_FIELD: ╰────
+// BIT_FIELD:   × cannot use a bit-field as a deduced-type initializer
+// BIT_FIELD:     ╭─[tests/fixtures/clang/linux/x86_64/c23_auto_inference.c:72:8]
+// BIT_FIELD:  71 │ #ifdef BIT_FIELD
+// BIT_FIELD:  72 │   auto b = s.b;
+// BIT_FIELD:     ·        ───────
+// BIT_FIELD:  73 │ #endif
+// BIT_FIELD:     ╰────
 // SLATE-FILECHECK-END BIT_FIELD
 // SLATE-FILECHECK-BEGIN VALID
 // VALID: module {

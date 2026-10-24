@@ -32,24 +32,24 @@ void deduce(int *ip) {
 // SLATE-FILECHECK-BEGIN POINTER
 // POINTER: Error:   × semantic analysis failed
 // POINTER: Error:
-// POINTER: × 'auto' requires a plain identifier as declarator
-// POINTER: ╭─[tests/fixtures/gcc/linux/x86_64/gcc_auto_inference.c:19:8]
-// POINTER: 18 │ #ifdef POINTER
-// POINTER: 19 │   auto *p = ip;
-// POINTER: ·        ───────
-// POINTER: 20 │ #endif
-// POINTER: ╰────
+// POINTER:   × 'auto' requires a plain identifier as declarator
+// POINTER:     ╭─[tests/fixtures/gcc/linux/x86_64/gcc_auto_inference.c:19:8]
+// POINTER:  18 │ #ifdef POINTER
+// POINTER:  19 │   auto *p = ip;
+// POINTER:     ·        ───────
+// POINTER:  20 │ #endif
+// POINTER:     ╰────
 // SLATE-FILECHECK-END POINTER
 // SLATE-FILECHECK-BEGIN MULTIPLE
 // MULTIPLE: Error:   × semantic analysis failed
 // MULTIPLE: Error:
-// MULTIPLE: × 'auto' may only be used with a single declarator
-// MULTIPLE: ╭─[tests/fixtures/gcc/linux/x86_64/gcc_auto_inference.c:22:15]
-// MULTIPLE: 21 │ #ifdef MULTIPLE
-// MULTIPLE: 22 │   auto x = 1, y = 2;
-// MULTIPLE: ·               ─────
-// MULTIPLE: 23 │ #endif
-// MULTIPLE: ╰────
+// MULTIPLE:   × 'auto' may only be used with a single declarator
+// MULTIPLE:     ╭─[tests/fixtures/gcc/linux/x86_64/gcc_auto_inference.c:22:15]
+// MULTIPLE:  21 │ #ifdef MULTIPLE
+// MULTIPLE:  22 │   auto x = 1, y = 2;
+// MULTIPLE:     ·               ─────
+// MULTIPLE:  23 │ #endif
+// MULTIPLE:     ╰────
 // SLATE-FILECHECK-END MULTIPLE
 // SLATE-FILECHECK-BEGIN VALID
 // VALID: module {

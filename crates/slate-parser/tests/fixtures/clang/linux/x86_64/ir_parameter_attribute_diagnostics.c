@@ -36,82 +36,82 @@ void f(__declspec(code_seg("s")) int p);
 // SLATE-FILECHECK-BEGIN ERR_SYMBOL
 // ERR_SYMBOL: Error:   × semantic analysis failed
 // ERR_SYMBOL: Error:
-// ERR_SYMBOL: × 'section' attribute only applies to functions and global variables
-// ERR_SYMBOL: ╭─[tests/fixtures/clang/linux/x86_64/ir_parameter_attribute_diagnostics.c:7:8]
-// ERR_SYMBOL: 6 │ #elif defined(ERR_SYMBOL)
-// ERR_SYMBOL: 7 │ void f(int p __attribute__((section("s"))));
-// ERR_SYMBOL: ·        ───────────────────────────────────
-// ERR_SYMBOL: 8 │ #elif defined(WARN_SYMBOL)
-// ERR_SYMBOL: ╰────
+// ERR_SYMBOL:   × 'section' attribute only applies to functions and global variables
+// ERR_SYMBOL:    ╭─[tests/fixtures/clang/linux/x86_64/ir_parameter_attribute_diagnostics.c:7:8]
+// ERR_SYMBOL:  6 │ #elif defined(ERR_SYMBOL)
+// ERR_SYMBOL:  7 │ void f(int p __attribute__((section("s"))));
+// ERR_SYMBOL:    ·        ───────────────────────────────────
+// ERR_SYMBOL:  8 │ #elif defined(WARN_SYMBOL)
+// ERR_SYMBOL:    ╰────
 // SLATE-FILECHECK-END ERR_SYMBOL
 // SLATE-FILECHECK-BEGIN ERR_UNSUPPORTED
 // ERR_UNSUPPORTED: Error:   × semantic analysis failed
 // ERR_UNSUPPORTED: Error:
-// ERR_UNSUPPORTED: × not implemented: code segment attribute
-// ERR_UNSUPPORTED: ╭─[tests/fixtures/clang/linux/x86_64/ir_parameter_attribute_diagnostics.c:17:1]
-// ERR_UNSUPPORTED: 16 │ #elif defined(ERR_UNSUPPORTED)
-// ERR_UNSUPPORTED: 17 │ void f(__declspec(code_seg("s")) int p);
-// ERR_UNSUPPORTED: · ────────────────────────────────────────
-// ERR_UNSUPPORTED: 18 │ #endif
-// ERR_UNSUPPORTED: ╰────
+// ERR_UNSUPPORTED:   × not implemented: code segment attribute
+// ERR_UNSUPPORTED:     ╭─[tests/fixtures/clang/linux/x86_64/ir_parameter_attribute_diagnostics.c:17:1]
+// ERR_UNSUPPORTED:  16 │ #elif defined(ERR_UNSUPPORTED)
+// ERR_UNSUPPORTED:  17 │ void f(__declspec(code_seg("s")) int p);
+// ERR_UNSUPPORTED:     · ────────────────────────────────────────
+// ERR_UNSUPPORTED:  18 │ #endif
+// ERR_UNSUPPORTED:     ╰────
 // SLATE-FILECHECK-END ERR_UNSUPPORTED
 // SLATE-FILECHECK-BEGIN WARN_ALIGNED
 // WARN_ALIGNED: -Wparameter-alignment
-// WARN_ALIGNED: ⚠ alignment of 16 on a function parameter is rejected by gcc
-// WARN_ALIGNED: ╭─[tests/fixtures/clang/linux/x86_64/ir_parameter_attribute_diagnostics.c:3:8]
-// WARN_ALIGNED: 2 │ #if defined(WARN_ALIGNED)
-// WARN_ALIGNED: 3 │ void f(int q __attribute__((aligned(16))));
-// WARN_ALIGNED: ·        ──────────────────────────────────
-// WARN_ALIGNED: 4 │ #elif defined(WARN_ALIGNAS)
-// WARN_ALIGNED: ╰────
+// WARN_ALIGNED:   ⚠ alignment of 16 on a function parameter is rejected by gcc
+// WARN_ALIGNED:    ╭─[tests/fixtures/clang/linux/x86_64/ir_parameter_attribute_diagnostics.c:3:8]
+// WARN_ALIGNED:  2 │ #if defined(WARN_ALIGNED)
+// WARN_ALIGNED:  3 │ void f(int q __attribute__((aligned(16))));
+// WARN_ALIGNED:    ·        ──────────────────────────────────
+// WARN_ALIGNED:  4 │ #elif defined(WARN_ALIGNAS)
+// WARN_ALIGNED:    ╰────
 // SLATE-FILECHECK-END WARN_ALIGNED
 // SLATE-FILECHECK-BEGIN WARN_ALIGNAS
 // WARN_ALIGNAS: -Wparameter-alignment
-// WARN_ALIGNAS: ⚠ alignment of 32 on a function parameter is rejected by clang and gcc
-// WARN_ALIGNAS: ╭─[tests/fixtures/clang/linux/x86_64/ir_parameter_attribute_diagnostics.c:5:8]
-// WARN_ALIGNAS: 4 │ #elif defined(WARN_ALIGNAS)
-// WARN_ALIGNAS: 5 │ void f(_Alignas(32) int p);
-// WARN_ALIGNAS: ·        ──────────────────
-// WARN_ALIGNAS: 6 │ #elif defined(ERR_SYMBOL)
-// WARN_ALIGNAS: ╰────
+// WARN_ALIGNAS:   ⚠ alignment of 32 on a function parameter is rejected by clang and gcc
+// WARN_ALIGNAS:    ╭─[tests/fixtures/clang/linux/x86_64/ir_parameter_attribute_diagnostics.c:5:8]
+// WARN_ALIGNAS:  4 │ #elif defined(WARN_ALIGNAS)
+// WARN_ALIGNAS:  5 │ void f(_Alignas(32) int p);
+// WARN_ALIGNAS:    ·        ──────────────────
+// WARN_ALIGNAS:  6 │ #elif defined(ERR_SYMBOL)
+// WARN_ALIGNAS:    ╰────
 // SLATE-FILECHECK-END WARN_ALIGNAS
 // SLATE-FILECHECK-BEGIN WARN_SYMBOL
 // WARN_SYMBOL: -Wignored-attributes
-// WARN_SYMBOL: ⚠ 'weak' attribute ignored
-// WARN_SYMBOL: ╭─[tests/fixtures/clang/linux/x86_64/ir_parameter_attribute_diagnostics.c:9:29]
-// WARN_SYMBOL: 8 │ #elif defined(WARN_SYMBOL)
-// WARN_SYMBOL: 9 │ void f(int p __attribute__((weak, visibility("hidden"))));
-// WARN_SYMBOL: ·                             ────
-// WARN_SYMBOL: 10 │ #elif defined(WARN_LAYOUT)
-// WARN_SYMBOL: ╰────
+// WARN_SYMBOL:   ⚠ 'weak' attribute ignored
+// WARN_SYMBOL:     ╭─[tests/fixtures/clang/linux/x86_64/ir_parameter_attribute_diagnostics.c:9:29]
+// WARN_SYMBOL:   8 │ #elif defined(WARN_SYMBOL)
+// WARN_SYMBOL:   9 │ void f(int p __attribute__((weak, visibility("hidden"))));
+// WARN_SYMBOL:     ·                             ────
+// WARN_SYMBOL:  10 │ #elif defined(WARN_LAYOUT)
+// WARN_SYMBOL:     ╰────
 // WARN_SYMBOL: -Wignored-attributes
-// WARN_SYMBOL: ⚠ 'visibility' attribute ignored
-// WARN_SYMBOL: ╭─[tests/fixtures/clang/linux/x86_64/ir_parameter_attribute_diagnostics.c:9:35]
-// WARN_SYMBOL: 8 │ #elif defined(WARN_SYMBOL)
-// WARN_SYMBOL: 9 │ void f(int p __attribute__((weak, visibility("hidden"))));
-// WARN_SYMBOL: ·                                   ──────────
-// WARN_SYMBOL: 10 │ #elif defined(WARN_LAYOUT)
-// WARN_SYMBOL: ╰────
+// WARN_SYMBOL:   ⚠ 'visibility' attribute ignored
+// WARN_SYMBOL:     ╭─[tests/fixtures/clang/linux/x86_64/ir_parameter_attribute_diagnostics.c:9:35]
+// WARN_SYMBOL:   8 │ #elif defined(WARN_SYMBOL)
+// WARN_SYMBOL:   9 │ void f(int p __attribute__((weak, visibility("hidden"))));
+// WARN_SYMBOL:     ·                                   ──────────
+// WARN_SYMBOL:  10 │ #elif defined(WARN_LAYOUT)
+// WARN_SYMBOL:     ╰────
 // SLATE-FILECHECK-END WARN_SYMBOL
 // SLATE-FILECHECK-BEGIN WARN_LAYOUT
 // WARN_LAYOUT: -Wignored-attributes
-// WARN_LAYOUT: ⚠ 'nocommon' attribute ignored
-// WARN_LAYOUT: ╭─[tests/fixtures/clang/linux/x86_64/ir_parameter_attribute_diagnostics.c:11:29]
-// WARN_LAYOUT: 10 │ #elif defined(WARN_LAYOUT)
-// WARN_LAYOUT: 11 │ void f(int p __attribute__((nocommon)));
-// WARN_LAYOUT: ·                             ────────
-// WARN_LAYOUT: 12 │ #elif defined(VECTOR)
-// WARN_LAYOUT: ╰────
+// WARN_LAYOUT:   ⚠ 'nocommon' attribute ignored
+// WARN_LAYOUT:     ╭─[tests/fixtures/clang/linux/x86_64/ir_parameter_attribute_diagnostics.c:11:29]
+// WARN_LAYOUT:  10 │ #elif defined(WARN_LAYOUT)
+// WARN_LAYOUT:  11 │ void f(int p __attribute__((nocommon)));
+// WARN_LAYOUT:     ·                             ────────
+// WARN_LAYOUT:  12 │ #elif defined(VECTOR)
+// WARN_LAYOUT:     ╰────
 // SLATE-FILECHECK-END WARN_LAYOUT
 // SLATE-FILECHECK-BEGIN WARN_IGNORED
 // WARN_IGNORED: -Wignored-attributes
-// WARN_IGNORED: ⚠ 'packed' attribute ignored
-// WARN_IGNORED: ╭─[tests/fixtures/clang/linux/x86_64/ir_parameter_attribute_diagnostics.c:15:29]
-// WARN_IGNORED: 14 │ #elif defined(WARN_IGNORED)
-// WARN_IGNORED: 15 │ void f(int p __attribute__((packed)));
-// WARN_IGNORED: ·                             ──────
-// WARN_IGNORED: 16 │ #elif defined(ERR_UNSUPPORTED)
-// WARN_IGNORED: ╰────
+// WARN_IGNORED:   ⚠ 'packed' attribute ignored
+// WARN_IGNORED:     ╭─[tests/fixtures/clang/linux/x86_64/ir_parameter_attribute_diagnostics.c:15:29]
+// WARN_IGNORED:  14 │ #elif defined(WARN_IGNORED)
+// WARN_IGNORED:  15 │ void f(int p __attribute__((packed)));
+// WARN_IGNORED:     ·                             ──────
+// WARN_IGNORED:  16 │ #elif defined(ERR_UNSUPPORTED)
+// WARN_IGNORED:     ╰────
 // SLATE-FILECHECK-END WARN_IGNORED
 // SLATE-FILECHECK-BEGIN IR-WARN_ALIGNED
 // IR-WARN_ALIGNED: module {

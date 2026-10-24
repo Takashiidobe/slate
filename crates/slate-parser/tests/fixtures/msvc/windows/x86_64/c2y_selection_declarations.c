@@ -20,23 +20,23 @@ void selections(int n) {
 
 // SLATE-FILECHECK-BEGIN C23
 // C23: Error:   × selection statement declarations require C2y
-// C23: ╰─▶ selection statement declarations require C2y
-// C23: ╭─[tests/fixtures/msvc/windows/x86_64/c2y_selection_declarations.c:2:9]
-// C23: 1 │ void selections(int n) {
-// C23: 2 │     if (int x = n) n = x;
-// C23: ·         ───
-// C23: 3 │     else n = x + 1;
-// C23: ╰────
+// C23:   ╰─▶ selection statement declarations require C2y
+// C23:    ╭─[tests/fixtures/msvc/windows/x86_64/c2y_selection_declarations.c:2:9]
+// C23:  1 │ void selections(int n) {
+// C23:  2 │     if (int x = n) n = x;
+// C23:    ·         ───
+// C23:  3 │     else n = x + 1;
+// C23:    ╰────
 // SLATE-FILECHECK-END C23
 // SLATE-FILECHECK-BEGIN GNU23
 // GNU23: Error:   × selection statement declarations require C2y
-// GNU23: ╰─▶ selection statement declarations require C2y
-// GNU23: ╭─[tests/fixtures/msvc/windows/x86_64/c2y_selection_declarations.c:2:9]
-// GNU23: 1 │ void selections(int n) {
-// GNU23: 2 │     if (int x = n) n = x;
-// GNU23: ·         ───
-// GNU23: 3 │     else n = x + 1;
-// GNU23: ╰────
+// GNU23:   ╰─▶ selection statement declarations require C2y
+// GNU23:    ╭─[tests/fixtures/msvc/windows/x86_64/c2y_selection_declarations.c:2:9]
+// GNU23:  1 │ void selections(int n) {
+// GNU23:  2 │     if (int x = n) n = x;
+// GNU23:    ·         ───
+// GNU23:  3 │     else n = x + 1;
+// GNU23:    ╰────
 // SLATE-FILECHECK-END GNU23
 // SLATE-FILECHECK-BEGIN C2Y
 // C2Y: decl[{{[0-9]+}}]: Function(

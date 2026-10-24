@@ -8,10 +8,11 @@ typedef unsigned long long T;
 // SLATE-FILECHECK-BEGIN IR
 // IR: Error:   × semantic analysis failed
 // IR: Error:
-// IR: × typedef redefinition with different types
-// IR: ╭─[tests/fixtures/error/msvc/windows/x86_64/typedef_redefinition_different_type.c:3:28]
-// IR: 2 │ typedef unsigned int T;
-// IR: 3 │ typedef unsigned long long T;
-// IR: ·                            ─
-// IR: ╰────
+// IR:   × typedef redefinition with different types
+// IR:    ╭─[tests/fixtures/error/msvc/windows/x86_64/typedef_redefinition_different_type.c:3:28]
+// IR:  2 │ typedef unsigned int T;
+// IR:  3 │ typedef unsigned long long T;
+// IR:    ·                            ─
+// IR:  4 │
+// IR:    ╰────
 // SLATE-FILECHECK-END IR

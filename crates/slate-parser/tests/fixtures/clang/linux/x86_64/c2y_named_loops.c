@@ -29,13 +29,13 @@ choice:
 
 // SLATE-FILECHECK-BEGIN C23
 // C23: Error:   × named loop jumps require C2y
-// C23: ╰─▶ named loop jumps require C2y
-// C23: ╭─[tests/fixtures/clang/linux/x86_64/c2y_named_loops.c:6:34]
-// C23: 5 │         while (n) {
-// C23: 6 │             if (n == 1) continue outer;
-// C23: ·                                  ─────
-// C23: 7 │             if (n == 2) break inner;
-// C23: ╰────
+// C23:   ╰─▶ named loop jumps require C2y
+// C23:    ╭─[tests/fixtures/clang/linux/x86_64/c2y_named_loops.c:6:34]
+// C23:  5 │         while (n) {
+// C23:  6 │             if (n == 1) continue outer;
+// C23:    ·                                  ─────
+// C23:  7 │             if (n == 2) break inner;
+// C23:    ╰────
 // SLATE-FILECHECK-END C23
 // SLATE-FILECHECK-BEGIN C2Y
 // C2Y: module {

@@ -38,66 +38,66 @@ int *dropped(_Atomic int *value) { return value; }
 // SLATE-FILECHECK-BEGIN WIDENED
 // WIDENED: Error:   × semantic analysis failed
 // WIDENED: Error: -Wincompatible-pointer-types
-// WIDENED: × incompatible pointer types
-// WIDENED: ╭─[tests/fixtures/error/clang/linux/x86_64/conversion_default_errors.c:6:41]
-// WIDENED: 5 │ #if defined(WIDENED)
-// WIDENED: 6 │ long *widened(unsigned *value) { return value; }
-// WIDENED: ·                                         ─────
-// WIDENED: 7 │ #elif defined(NESTED_SIGN)
-// WIDENED: ╰────
+// WIDENED:   × incompatible pointer types
+// WIDENED:    ╭─[tests/fixtures/error/clang/linux/x86_64/conversion_default_errors.c:6:41]
+// WIDENED:  5 │ #if defined(WIDENED)
+// WIDENED:  6 │ long *widened(unsigned *value) { return value; }
+// WIDENED:    ·                                         ─────
+// WIDENED:  7 │ #elif defined(NESTED_SIGN)
+// WIDENED:    ╰────
 // SLATE-FILECHECK-END WIDENED
 // SLATE-FILECHECK-BEGIN NESTED_SIGN
 // NESTED_SIGN: Error:   × semantic analysis failed
 // NESTED_SIGN: Error: -Wincompatible-pointer-types
-// NESTED_SIGN: × incompatible pointer types
-// NESTED_SIGN: ╭─[tests/fixtures/error/clang/linux/x86_64/conversion_default_errors.c:8:46]
-// NESTED_SIGN: 7 │ #elif defined(NESTED_SIGN)
-// NESTED_SIGN: 8 │ int **nested_sign(unsigned **value) { return value; }
-// NESTED_SIGN: ·                                              ─────
-// NESTED_SIGN: 9 │ #elif defined(UNRELATED)
-// NESTED_SIGN: ╰────
+// NESTED_SIGN:   × incompatible pointer types
+// NESTED_SIGN:    ╭─[tests/fixtures/error/clang/linux/x86_64/conversion_default_errors.c:8:46]
+// NESTED_SIGN:  7 │ #elif defined(NESTED_SIGN)
+// NESTED_SIGN:  8 │ int **nested_sign(unsigned **value) { return value; }
+// NESTED_SIGN:    ·                                              ─────
+// NESTED_SIGN:  9 │ #elif defined(UNRELATED)
+// NESTED_SIGN:    ╰────
 // SLATE-FILECHECK-END NESTED_SIGN
 // SLATE-FILECHECK-BEGIN UNRELATED
 // UNRELATED: Error:   × semantic analysis failed
 // UNRELATED: Error: -Wincompatible-pointer-types
-// UNRELATED: × incompatible pointer types
-// UNRELATED: ╭─[tests/fixtures/error/clang/linux/x86_64/conversion_default_errors.c:16:47]
-// UNRELATED: 15 │ };
-// UNRELATED: 16 │ struct B *unrelated(struct A *value) { return value; }
-// UNRELATED: ·                                               ─────
-// UNRELATED: 17 │ #elif defined(FROM_POINTER)
-// UNRELATED: ╰────
+// UNRELATED:   × incompatible pointer types
+// UNRELATED:     ╭─[tests/fixtures/error/clang/linux/x86_64/conversion_default_errors.c:16:47]
+// UNRELATED:  15 │ };
+// UNRELATED:  16 │ struct B *unrelated(struct A *value) { return value; }
+// UNRELATED:     ·                                               ─────
+// UNRELATED:  17 │ #elif defined(FROM_POINTER)
+// UNRELATED:     ╰────
 // SLATE-FILECHECK-END UNRELATED
 // SLATE-FILECHECK-BEGIN FROM_POINTER
 // FROM_POINTER: Error:   × semantic analysis failed
 // FROM_POINTER: Error: -Wint-conversion
-// FROM_POINTER: × incompatible pointer to integer conversion
-// FROM_POINTER: ╭─[tests/fixtures/error/clang/linux/x86_64/conversion_default_errors.c:18:39]
-// FROM_POINTER: 17 │ #elif defined(FROM_POINTER)
-// FROM_POINTER: 18 │ int from_pointer(int *value) { return value; }
-// FROM_POINTER: ·                                       ─────
-// FROM_POINTER: 19 │ #elif defined(TO_POINTER)
-// FROM_POINTER: ╰────
+// FROM_POINTER:   × incompatible pointer to integer conversion
+// FROM_POINTER:     ╭─[tests/fixtures/error/clang/linux/x86_64/conversion_default_errors.c:18:39]
+// FROM_POINTER:  17 │ #elif defined(FROM_POINTER)
+// FROM_POINTER:  18 │ int from_pointer(int *value) { return value; }
+// FROM_POINTER:     ·                                       ─────
+// FROM_POINTER:  19 │ #elif defined(TO_POINTER)
+// FROM_POINTER:     ╰────
 // SLATE-FILECHECK-END FROM_POINTER
 // SLATE-FILECHECK-BEGIN TO_POINTER
 // TO_POINTER: Error:   × semantic analysis failed
 // TO_POINTER: Error: -Wint-conversion
-// TO_POINTER: × incompatible integer to pointer conversion
-// TO_POINTER: ╭─[tests/fixtures/error/clang/linux/x86_64/conversion_default_errors.c:20:37]
-// TO_POINTER: 19 │ #elif defined(TO_POINTER)
-// TO_POINTER: 20 │ int *to_pointer(int value) { return value; }
-// TO_POINTER: ·                                     ─────
-// TO_POINTER: 21 │ #elif defined(ATOMIC)
-// TO_POINTER: ╰────
+// TO_POINTER:   × incompatible integer to pointer conversion
+// TO_POINTER:     ╭─[tests/fixtures/error/clang/linux/x86_64/conversion_default_errors.c:20:37]
+// TO_POINTER:  19 │ #elif defined(TO_POINTER)
+// TO_POINTER:  20 │ int *to_pointer(int value) { return value; }
+// TO_POINTER:     ·                                     ─────
+// TO_POINTER:  21 │ #elif defined(ATOMIC)
+// TO_POINTER:     ╰────
 // SLATE-FILECHECK-END TO_POINTER
 // SLATE-FILECHECK-BEGIN ATOMIC
 // ATOMIC: Error:   × semantic analysis failed
 // ATOMIC: Error: -Wincompatible-pointer-types
-// ATOMIC: × pointer conversion drops _Atomic from the pointee
-// ATOMIC: ╭─[tests/fixtures/error/clang/linux/x86_64/conversion_default_errors.c:22:43]
-// ATOMIC: 21 │ #elif defined(ATOMIC)
-// ATOMIC: 22 │ int *dropped(_Atomic int *value) { return value; }
-// ATOMIC: ·                                           ─────
-// ATOMIC: 23 │ #endif
-// ATOMIC: ╰────
+// ATOMIC:   × pointer conversion drops _Atomic from the pointee
+// ATOMIC:     ╭─[tests/fixtures/error/clang/linux/x86_64/conversion_default_errors.c:22:43]
+// ATOMIC:  21 │ #elif defined(ATOMIC)
+// ATOMIC:  22 │ int *dropped(_Atomic int *value) { return value; }
+// ATOMIC:     ·                                           ─────
+// ATOMIC:  23 │ #endif
+// ATOMIC:     ╰────
 // SLATE-FILECHECK-END ATOMIC

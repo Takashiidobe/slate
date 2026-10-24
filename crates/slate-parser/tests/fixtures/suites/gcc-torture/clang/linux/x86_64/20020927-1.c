@@ -33,11 +33,11 @@ bar ()
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: Error:   × semantic analysis failed
 // DEFAULT: Error:
-// DEFAULT: × non-void function should return a value
-// DEFAULT: ╭─[tests/fixtures/suites/gcc-torture/clang/linux/x86_64/20020927-1.c:27:5]
-// DEFAULT: 26 │   if (foo ())
-// DEFAULT: 27 │     return;
-// DEFAULT: ·     ───────
-// DEFAULT: 28 │ }
-// DEFAULT: ╰────
+// DEFAULT:   × non-void function should return a value
+// DEFAULT:     ╭─[tests/fixtures/suites/gcc-torture/clang/linux/x86_64/20020927-1.c:27:5]
+// DEFAULT:  26 │   if (foo ())
+// DEFAULT:  27 │     return;
+// DEFAULT:     ·     ───────
+// DEFAULT:  28 │ }
+// DEFAULT:     ╰────
 // SLATE-FILECHECK-END DEFAULT

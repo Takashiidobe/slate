@@ -5,10 +5,10 @@ int values[1+];
 
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: Error:   × unexpected token `Plus`
-// DEFAULT: ╰─▶ unexpected token `Plus`
-// DEFAULT: ╭─[tests/fixtures/error/clang/linux/x86_64/array-bound-malformed.c:1:14]
-// DEFAULT: 1 │ int values[1+];
-// DEFAULT: ·              ─
-// DEFAULT: 2 │
-// DEFAULT: ╰────
+// DEFAULT:   ╰─▶ unexpected token `Plus`
+// DEFAULT:    ╭─[tests/fixtures/error/clang/linux/x86_64/array-bound-malformed.c:1:14]
+// DEFAULT:  1 │ int values[1+];
+// DEFAULT:    ·              ─
+// DEFAULT:  2 │
+// DEFAULT:    ╰────
 // SLATE-FILECHECK-END DEFAULT

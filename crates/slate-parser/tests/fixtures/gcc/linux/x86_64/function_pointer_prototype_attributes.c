@@ -31,74 +31,74 @@ int print(struct disassemble_info *info) {
 
 // SLATE-FILECHECK-BEGIN WARN
 // WARN: -Wignored-attributes
-// WARN: ⚠ 'nonnull' attribute ignored; it applies only to functions, methods, and
-// WARN: │ parameters
-// WARN: ╭─[tests/fixtures/gcc/linux/x86_64/function_pointer_prototype_attributes.c:12:22]
-// WARN: 11 │   void *(*aligned_alloc)(unsigned long, unsigned long) __attribute__((alloc_align(1)));
-// WARN: 12 │   int __attribute__((nonnull)) not_a_function;
-// WARN: ·                      ───────
-// WARN: 13 │ };
-// WARN: ╰────
+// WARN:   ⚠ 'nonnull' attribute ignored; it applies only to functions, methods, and
+// WARN:   │ parameters
+// WARN:     ╭─[tests/fixtures/gcc/linux/x86_64/function_pointer_prototype_attributes.c:12:22]
+// WARN:  11 │   void *(*aligned_alloc)(unsigned long, unsigned long) __attribute__((alloc_align(1)));
+// WARN:  12 │   int __attribute__((nonnull)) not_a_function;
+// WARN:     ·                      ───────
+// WARN:  13 │ };
+// WARN:     ╰────
 // WARN: -Wignored-attributes
-// WARN: ⚠ 'nonnull' attribute ignored; it applies only to functions, methods, and
-// WARN: │ parameters
-// WARN: ╭─[tests/fixtures/gcc/linux/x86_64/function_pointer_prototype_attributes.c:15:20]
-// WARN: 14 │
-// WARN: 15 │ int __attribute__((nonnull(1))) (**double_pointer)(void *);
-// WARN: ·                    ───────
-// WARN: 16 │ int (*table[2])(const char *, ...) __attribute__((format(printf, 1, 2)));
-// WARN: ╰────
+// WARN:   ⚠ 'nonnull' attribute ignored; it applies only to functions, methods, and
+// WARN:   │ parameters
+// WARN:     ╭─[tests/fixtures/gcc/linux/x86_64/function_pointer_prototype_attributes.c:15:20]
+// WARN:  14 │
+// WARN:  15 │ int __attribute__((nonnull(1))) (**double_pointer)(void *);
+// WARN:     ·                    ───────
+// WARN:  16 │ int (*table[2])(const char *, ...) __attribute__((format(printf, 1, 2)));
+// WARN:     ╰────
 // WARN: -Wignored-attributes
-// WARN: ⚠ 'format' attribute ignored; it applies only to functions
-// WARN: ╭─[tests/fixtures/gcc/linux/x86_64/function_pointer_prototype_attributes.c:16:51]
-// WARN: 15 │ int __attribute__((nonnull(1))) (**double_pointer)(void *);
-// WARN: 16 │ int (*table[2])(const char *, ...) __attribute__((format(printf, 1, 2)));
-// WARN: ·                                                   ──────
-// WARN: 17 │ int __attribute__((format(printf, 1, 2))) plain;
-// WARN: ╰────
+// WARN:   ⚠ 'format' attribute ignored; it applies only to functions
+// WARN:     ╭─[tests/fixtures/gcc/linux/x86_64/function_pointer_prototype_attributes.c:16:51]
+// WARN:  15 │ int __attribute__((nonnull(1))) (**double_pointer)(void *);
+// WARN:  16 │ int (*table[2])(const char *, ...) __attribute__((format(printf, 1, 2)));
+// WARN:     ·                                                   ──────
+// WARN:  17 │ int __attribute__((format(printf, 1, 2))) plain;
+// WARN:     ╰────
 // WARN: -Wignored-attributes
-// WARN: ⚠ 'format' attribute ignored; it applies only to functions
-// WARN: ╭─[tests/fixtures/gcc/linux/x86_64/function_pointer_prototype_attributes.c:17:20]
-// WARN: 16 │ int (*table[2])(const char *, ...) __attribute__((format(printf, 1, 2)));
-// WARN: 17 │ int __attribute__((format(printf, 1, 2))) plain;
-// WARN: ·                    ──────
-// WARN: 18 │ struct __attribute__((nonnull)) not_a_function_record { int value; };
-// WARN: ╰────
+// WARN:   ⚠ 'format' attribute ignored; it applies only to functions
+// WARN:     ╭─[tests/fixtures/gcc/linux/x86_64/function_pointer_prototype_attributes.c:17:20]
+// WARN:  16 │ int (*table[2])(const char *, ...) __attribute__((format(printf, 1, 2)));
+// WARN:  17 │ int __attribute__((format(printf, 1, 2))) plain;
+// WARN:     ·                    ──────
+// WARN:  18 │ struct __attribute__((nonnull)) not_a_function_record { int value; };
+// WARN:     ╰────
 // WARN: -Wignored-attributes
-// WARN: ⚠ 'nonnull' attribute ignored; it applies only to functions, methods, and
-// WARN: │ parameters
-// WARN: ╭─[tests/fixtures/gcc/linux/x86_64/function_pointer_prototype_attributes.c:18:23]
-// WARN: 17 │ int __attribute__((format(printf, 1, 2))) plain;
-// WARN: 18 │ struct __attribute__((nonnull)) not_a_function_record { int value; };
-// WARN: ·                       ───────
-// WARN: 19 │ struct __attribute__((noreturn)) not_noreturn_record { int value; };
-// WARN: ╰────
+// WARN:   ⚠ 'nonnull' attribute ignored; it applies only to functions, methods, and
+// WARN:   │ parameters
+// WARN:     ╭─[tests/fixtures/gcc/linux/x86_64/function_pointer_prototype_attributes.c:18:23]
+// WARN:  17 │ int __attribute__((format(printf, 1, 2))) plain;
+// WARN:  18 │ struct __attribute__((nonnull)) not_a_function_record { int value; };
+// WARN:     ·                       ───────
+// WARN:  19 │ struct __attribute__((noreturn)) not_noreturn_record { int value; };
+// WARN:     ╰────
 // WARN: -Wignored-attributes
-// WARN: ⚠ 'noreturn' attribute ignored; it applies only to function types
-// WARN: ╭─[tests/fixtures/gcc/linux/x86_64/function_pointer_prototype_attributes.c:19:23]
-// WARN: 18 │ struct __attribute__((nonnull)) not_a_function_record { int value; };
-// WARN: 19 │ struct __attribute__((noreturn)) not_noreturn_record { int value; };
-// WARN: ·                       ────────
-// WARN: 20 │
-// WARN: ╰────
+// WARN:   ⚠ 'noreturn' attribute ignored; it applies only to function types
+// WARN:     ╭─[tests/fixtures/gcc/linux/x86_64/function_pointer_prototype_attributes.c:19:23]
+// WARN:  18 │ struct __attribute__((nonnull)) not_a_function_record { int value; };
+// WARN:  19 │ struct __attribute__((noreturn)) not_noreturn_record { int value; };
+// WARN:     ·                       ────────
+// WARN:  20 │
+// WARN:     ╰────
 // WARN: -Wignored-attributes
-// WARN: ⚠ 'nonnull' attribute ignored; it applies only to functions, methods, and
-// WARN: │ parameters
-// WARN: ╭─[tests/fixtures/gcc/linux/x86_64/function_pointer_prototype_attributes.c:22:93]
-// WARN: 21 │ void list_sort(void *priv, struct list_head *head, list_cmp_func_t cmp);
-// WARN: 22 │ void callback(int __attribute__((nonnull(1))) (*visit)(void *), int *pointer __attribute__((nonnull)), int count __attribute__((nonnull)));
-// WARN: ·                                                                                             ───────
-// WARN: 23 │
-// WARN: ╰────
+// WARN:   ⚠ 'nonnull' attribute ignored; it applies only to functions, methods, and
+// WARN:   │ parameters
+// WARN:     ╭─[tests/fixtures/gcc/linux/x86_64/function_pointer_prototype_attributes.c:22:93]
+// WARN:  21 │ void list_sort(void *priv, struct list_head *head, list_cmp_func_t cmp);
+// WARN:  22 │ void callback(int __attribute__((nonnull(1))) (*visit)(void *), int *pointer __attribute__((nonnull)), int count __attribute__((nonnull)));
+// WARN:     ·                                                                                             ───────
+// WARN:  23 │
+// WARN:     ╰────
 // WARN: -Wignored-attributes
-// WARN: ⚠ 'nonnull' attribute ignored; it applies only to functions, methods, and
-// WARN: │ parameters
-// WARN: ╭─[tests/fixtures/gcc/linux/x86_64/function_pointer_prototype_attributes.c:22:129]
-// WARN: 21 │ void list_sort(void *priv, struct list_head *head, list_cmp_func_t cmp);
-// WARN: 22 │ void callback(int __attribute__((nonnull(1))) (*visit)(void *), int *pointer __attribute__((nonnull)), int count __attribute__((nonnull)));
-// WARN: ·                                                                                                                                 ───────
-// WARN: 23 │
-// WARN: ╰────
+// WARN:   ⚠ 'nonnull' attribute ignored; it applies only to functions, methods, and
+// WARN:   │ parameters
+// WARN:     ╭─[tests/fixtures/gcc/linux/x86_64/function_pointer_prototype_attributes.c:22:129]
+// WARN:  21 │ void list_sort(void *priv, struct list_head *head, list_cmp_func_t cmp);
+// WARN:  22 │ void callback(int __attribute__((nonnull(1))) (*visit)(void *), int *pointer __attribute__((nonnull)), int count __attribute__((nonnull)));
+// WARN:     ·                                                                                                                                 ───────
+// WARN:  23 │
+// WARN:     ╰────
 // SLATE-FILECHECK-END WARN
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: module {

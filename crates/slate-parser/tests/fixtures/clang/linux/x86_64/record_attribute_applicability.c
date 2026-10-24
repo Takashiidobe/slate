@@ -42,71 +42,71 @@ int sizes(void) {
 
 // SLATE-FILECHECK-BEGIN WARN
 // WARN: -Wignored-attributes
-// WARN: ⚠ 'malloc' attribute ignored; it applies only to functions
-// WARN: ╭─[tests/fixtures/clang/linux/x86_64/record_attribute_applicability.c:6:36]
-// WARN: 5 │   int aligned_member __attribute__((aligned(8)));
-// WARN: 6 │   int malloc_member __attribute__((malloc));
-// WARN: ·                                    ──────
-// WARN: 7 │   int weak_member __attribute__((weak));
-// WARN: ╰────
+// WARN:   ⚠ 'malloc' attribute ignored; it applies only to functions
+// WARN:    ╭─[tests/fixtures/clang/linux/x86_64/record_attribute_applicability.c:6:36]
+// WARN:  5 │   int aligned_member __attribute__((aligned(8)));
+// WARN:  6 │   int malloc_member __attribute__((malloc));
+// WARN:    ·                                    ──────
+// WARN:  7 │   int weak_member __attribute__((weak));
+// WARN:    ╰────
 // WARN: -Wignored-attributes
-// WARN: ⚠ 'weak' attribute ignored
-// WARN: ╭─[tests/fixtures/clang/linux/x86_64/record_attribute_applicability.c:7:34]
-// WARN: 6 │   int malloc_member __attribute__((malloc));
-// WARN: 7 │   int weak_member __attribute__((weak));
-// WARN: ·                                  ────
-// WARN: 8 │   __attribute__((cold)) int first_cold, second_cold;
-// WARN: ╰────
+// WARN:   ⚠ 'weak' attribute ignored
+// WARN:    ╭─[tests/fixtures/clang/linux/x86_64/record_attribute_applicability.c:7:34]
+// WARN:  6 │   int malloc_member __attribute__((malloc));
+// WARN:  7 │   int weak_member __attribute__((weak));
+// WARN:    ·                                  ────
+// WARN:  8 │   __attribute__((cold)) int first_cold, second_cold;
+// WARN:    ╰────
 // WARN: -Wignored-attributes
-// WARN: ⚠ 'cold' attribute ignored; it applies only to functions
-// WARN: ╭─[tests/fixtures/clang/linux/x86_64/record_attribute_applicability.c:8:18]
-// WARN: 7 │   int weak_member __attribute__((weak));
-// WARN: 8 │   __attribute__((cold)) int first_cold, second_cold;
-// WARN: ·                  ────
-// WARN: 9 │   int ms_member __attribute__((ms_struct));
-// WARN: ╰────
+// WARN:   ⚠ 'cold' attribute ignored; it applies only to functions
+// WARN:    ╭─[tests/fixtures/clang/linux/x86_64/record_attribute_applicability.c:8:18]
+// WARN:  7 │   int weak_member __attribute__((weak));
+// WARN:  8 │   __attribute__((cold)) int first_cold, second_cold;
+// WARN:    ·                  ────
+// WARN:  9 │   int ms_member __attribute__((ms_struct));
+// WARN:    ╰────
 // WARN: -Wignored-attributes
-// WARN: ⚠ 'cold' attribute ignored; it applies only to functions
-// WARN: ╭─[tests/fixtures/clang/linux/x86_64/record_attribute_applicability.c:8:18]
-// WARN: 7 │   int weak_member __attribute__((weak));
-// WARN: 8 │   __attribute__((cold)) int first_cold, second_cold;
-// WARN: ·                  ────
-// WARN: 9 │   int ms_member __attribute__((ms_struct));
-// WARN: ╰────
+// WARN:   ⚠ 'cold' attribute ignored; it applies only to functions
+// WARN:    ╭─[tests/fixtures/clang/linux/x86_64/record_attribute_applicability.c:8:18]
+// WARN:  7 │   int weak_member __attribute__((weak));
+// WARN:  8 │   __attribute__((cold)) int first_cold, second_cold;
+// WARN:    ·                  ────
+// WARN:  9 │   int ms_member __attribute__((ms_struct));
+// WARN:    ╰────
 // WARN: -Wignored-attributes
-// WARN: ⚠ 'ms_struct' attribute ignored; it applies only to structs, unions, and
-// WARN: │ classes
-// WARN: ╭─[tests/fixtures/clang/linux/x86_64/record_attribute_applicability.c:9:32]
-// WARN: 8 │   __attribute__((cold)) int first_cold, second_cold;
-// WARN: 9 │   int ms_member __attribute__((ms_struct));
-// WARN: ·                                ─────────
-// WARN: 10 │ };
-// WARN: ╰────
+// WARN:   ⚠ 'ms_struct' attribute ignored; it applies only to structs, unions, and
+// WARN:   │ classes
+// WARN:     ╭─[tests/fixtures/clang/linux/x86_64/record_attribute_applicability.c:9:32]
+// WARN:   8 │   __attribute__((cold)) int first_cold, second_cold;
+// WARN:   9 │   int ms_member __attribute__((ms_struct));
+// WARN:     ·                                ─────────
+// WARN:  10 │ };
+// WARN:     ╰────
 // WARN: -Wignored-attributes
-// WARN: ⚠ 'transparent_union' attribute ignored; it applies only to unions
-// WARN: ╭─[tests/fixtures/clang/linux/x86_64/record_attribute_applicability.c:17:23]
-// WARN: 16 │
-// WARN: 17 │ struct __attribute__((transparent_union)) NotAUnion {
-// WARN: ·                       ─────────────────
-// WARN: 18 │   int *value;
-// WARN: ╰────
+// WARN:   ⚠ 'transparent_union' attribute ignored; it applies only to unions
+// WARN:     ╭─[tests/fixtures/clang/linux/x86_64/record_attribute_applicability.c:17:23]
+// WARN:  16 │
+// WARN:  17 │ struct __attribute__((transparent_union)) NotAUnion {
+// WARN:     ·                       ─────────────────
+// WARN:  18 │   int *value;
+// WARN:     ╰────
 // WARN: -Wignored-attributes
-// WARN: ⚠ 'used' attribute ignored; it applies only to variables with non-local
-// WARN: │ storage and functions
-// WARN: ╭─[tests/fixtures/clang/linux/x86_64/record_attribute_applicability.c:28:18]
-// WARN: 27 │   int value;
-// WARN: 28 │ } __attribute__((used));
-// WARN: ·                  ────
-// WARN: 29 │
-// WARN: ╰────
+// WARN:   ⚠ 'used' attribute ignored; it applies only to variables with non-local
+// WARN:   │ storage and functions
+// WARN:     ╭─[tests/fixtures/clang/linux/x86_64/record_attribute_applicability.c:28:18]
+// WARN:  27 │   int value;
+// WARN:  28 │ } __attribute__((used));
+// WARN:     ·                  ────
+// WARN:  29 │
+// WARN:     ╰────
 // WARN: -Wignored-attributes
-// WARN: ⚠ attribute ignored; place it after the tag keyword to apply it to the type
-// WARN: ╭─[tests/fixtures/clang/linux/x86_64/record_attribute_applicability.c:30:16]
-// WARN: 29 │
-// WARN: 30 │ __attribute__((packed)) struct Leading {
-// WARN: ·                ──────
-// WARN: 31 │   char tag;
-// WARN: ╰────
+// WARN:   ⚠ attribute ignored; place it after the tag keyword to apply it to the type
+// WARN:     ╭─[tests/fixtures/clang/linux/x86_64/record_attribute_applicability.c:30:16]
+// WARN:  29 │
+// WARN:  30 │ __attribute__((packed)) struct Leading {
+// WARN:     ·                ──────
+// WARN:  31 │   char tag;
+// WARN:     ╰────
 // SLATE-FILECHECK-END WARN
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: module {

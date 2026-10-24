@@ -17,21 +17,21 @@ void floating_offset(void) { __atomic_fetch_add(slots, 1.5, 5); }
 
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: -Wpointer-type-mismatch
-// DEFAULT: ⚠ pointer type mismatch in conditional expression
-// DEFAULT: ╭─[tests/fixtures/clang/linux/x86_64/ir_lenient_operand_rules.c:8:33]
-// DEFAULT: 7 │
-// DEFAULT: 8 │ void *mismatched(void) { return flag ? ints : floats; }
-// DEFAULT: ·                                 ────────────────────
-// DEFAULT: 9 │ int ordered(void) { return (ints < 1) + (0 > ints); }
-// DEFAULT: ╰────
+// DEFAULT:   ⚠ pointer type mismatch in conditional expression
+// DEFAULT:    ╭─[tests/fixtures/clang/linux/x86_64/ir_lenient_operand_rules.c:8:33]
+// DEFAULT:  7 │
+// DEFAULT:  8 │ void *mismatched(void) { return flag ? ints : floats; }
+// DEFAULT:    ·                                 ────────────────────
+// DEFAULT:  9 │ int ordered(void) { return (ints < 1) + (0 > ints); }
+// DEFAULT:    ╰────
 // DEFAULT: -Wpointer-integer-compare
-// DEFAULT: ⚠ comparison between pointer and integer
-// DEFAULT: ╭─[tests/fixtures/clang/linux/x86_64/ir_lenient_operand_rules.c:9:29]
-// DEFAULT: 8 │ void *mismatched(void) { return flag ? ints : floats; }
-// DEFAULT: 9 │ int ordered(void) { return (ints < 1) + (0 > ints); }
-// DEFAULT: ·                             ────────
-// DEFAULT: 10 │ unsigned long pair_size = sizeof(__builtin_bit_cast(Pair, bits));
-// DEFAULT: ╰────
+// DEFAULT:   ⚠ comparison between pointer and integer
+// DEFAULT:     ╭─[tests/fixtures/clang/linux/x86_64/ir_lenient_operand_rules.c:9:29]
+// DEFAULT:   8 │ void *mismatched(void) { return flag ? ints : floats; }
+// DEFAULT:   9 │ int ordered(void) { return (ints < 1) + (0 > ints); }
+// DEFAULT:     ·                             ────────
+// DEFAULT:  10 │ unsigned long pair_size = sizeof(__builtin_bit_cast(Pair, bits));
+// DEFAULT:     ╰────
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN IR-DEFAULT
 // IR-DEFAULT: module {

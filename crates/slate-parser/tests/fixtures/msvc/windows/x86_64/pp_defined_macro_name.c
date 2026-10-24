@@ -7,21 +7,21 @@ int x;
 
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: -Wbuiltin-macro-redefined
-// DEFAULT: ⚠ macro name 'defined' is reserved, '#define' ignored
-// DEFAULT: ╭─[tests/fixtures/msvc/windows/x86_64/pp_defined_macro_name.c:2:9]
-// DEFAULT: 1 │
-// DEFAULT: 2 │ #define defined 1
-// DEFAULT: ·         ───────
-// DEFAULT: 3 │ #undef defined
-// DEFAULT: ╰────
+// DEFAULT:   ⚠ macro name 'defined' is reserved, '#define' ignored
+// DEFAULT:    ╭─[tests/fixtures/msvc/windows/x86_64/pp_defined_macro_name.c:2:9]
+// DEFAULT:  1 │
+// DEFAULT:  2 │ #define defined 1
+// DEFAULT:    ·         ───────
+// DEFAULT:  3 │ #undef defined
+// DEFAULT:    ╰────
 // DEFAULT: -Wbuiltin-macro-redefined
-// DEFAULT: ⚠ macro name 'defined' is reserved, '#undef' ignored
-// DEFAULT: ╭─[tests/fixtures/msvc/windows/x86_64/pp_defined_macro_name.c:3:8]
-// DEFAULT: 2 │ #define defined 1
-// DEFAULT: 3 │ #undef defined
-// DEFAULT: ·        ───────
-// DEFAULT: 4 │ int x;
-// DEFAULT: ╰────
+// DEFAULT:   ⚠ macro name 'defined' is reserved, '#undef' ignored
+// DEFAULT:    ╭─[tests/fixtures/msvc/windows/x86_64/pp_defined_macro_name.c:3:8]
+// DEFAULT:  2 │ #define defined 1
+// DEFAULT:  3 │ #undef defined
+// DEFAULT:    ·        ───────
+// DEFAULT:  4 │ int x;
+// DEFAULT:    ╰────
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN IR-DEFAULT
 // IR-DEFAULT: module {

@@ -25,11 +25,11 @@ void zzz (char *s1, char *s2, int len, int *q)
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: Error:   × semantic analysis failed
 // DEFAULT: Error:
-// DEFAULT: × nonconstant or unknown identifier
-// DEFAULT: ╭─[tests/fixtures/suites/gcc-torture/gcc/linux/x86_64/20030224-1.c:8:3]
-// DEFAULT: 7 │   unsigned int i,  b;
-// DEFAULT: 8 │   struct { char a[z]; } x;
-// DEFAULT: ·   ────────────────────────
-// DEFAULT: 9 │
-// DEFAULT: ╰────
+// DEFAULT:   × nonconstant or unknown identifier
+// DEFAULT:    ╭─[tests/fixtures/suites/gcc-torture/gcc/linux/x86_64/20030224-1.c:8:3]
+// DEFAULT:  7 │   unsigned int i,  b;
+// DEFAULT:  8 │   struct { char a[z]; } x;
+// DEFAULT:    ·   ────────────────────────
+// DEFAULT:  9 │
+// DEFAULT:    ╰────
 // SLATE-FILECHECK-END DEFAULT

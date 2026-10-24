@@ -53,36 +53,36 @@ void selections(int n) {
 
 // SLATE-FILECHECK-BEGIN C23
 // C23: Error:   × selection statement declarations require C2y
-// C23: ╰─▶ selection statement declarations require C2y
-// C23: ╭─[tests/fixtures/gcc/linux/x86_64/c2y_selection_declarations.c:6:9]
-// C23: 5 │ void selections(int n) {
-// C23: 6 │     if (int x = get())
-// C23: ·         ───
-// C23: 7 │         n = x;
-// C23: ╰────
+// C23:   ╰─▶ selection statement declarations require C2y
+// C23:    ╭─[tests/fixtures/gcc/linux/x86_64/c2y_selection_declarations.c:6:9]
+// C23:  5 │ void selections(int n) {
+// C23:  6 │     if (int x = get())
+// C23:    ·         ───
+// C23:  7 │         n = x;
+// C23:    ╰────
 // SLATE-FILECHECK-END C23
 // SLATE-FILECHECK-BEGIN GNU23
 // GNU23: Error:   × selection statement declarations require C2y
-// GNU23: ╰─▶ selection statement declarations require C2y
-// GNU23: ╭─[tests/fixtures/gcc/linux/x86_64/c2y_selection_declarations.c:6:9]
-// GNU23: 5 │ void selections(int n) {
-// GNU23: 6 │     if (int x = get())
-// GNU23: ·         ───
-// GNU23: 7 │         n = x;
-// GNU23: ╰────
+// GNU23:   ╰─▶ selection statement declarations require C2y
+// GNU23:    ╭─[tests/fixtures/gcc/linux/x86_64/c2y_selection_declarations.c:6:9]
+// GNU23:  5 │ void selections(int n) {
+// GNU23:  6 │     if (int x = get())
+// GNU23:    ·         ───
+// GNU23:  7 │         n = x;
+// GNU23:    ╰────
 // SLATE-FILECHECK-END GNU23
 // SLATE-FILECHECK-BEGIN IR
 // IR: Error:   × semantic analysis failed
 // IR: Error:
-// IR: × not implemented: selection statement declarations
-// IR: ╭─[tests/fixtures/gcc/linux/x86_64/c2y_selection_declarations.c:6:5]
-// IR: 5 │     void selections(int n) {
-// IR: 6 │ ╭─▶     if (int x = get())
-// IR: 7 │ │           n = x;
-// IR: 8 │ │       else
-// IR: 9 │ ╰─▶         n = x + 1;
-// IR: 10 │         if (T x = get(); x > 0) n = x;
-// IR: ╰────
+// IR:   × not implemented: selection statement declarations without a condition
+// IR:     ╭─[tests/fixtures/gcc/linux/x86_64/c2y_selection_declarations.c:6:5]
+// IR:   5 │     void selections(int n) {
+// IR:   6 │ ╭─▶     if (int x = get())
+// IR:   7 │ │           n = x;
+// IR:   8 │ │       else
+// IR:   9 │ ╰─▶         n = x + 1;
+// IR:  10 │         if (T x = get(); x > 0) n = x;
+// IR:     ╰────
 // SLATE-FILECHECK-END IR
 // SLATE-FILECHECK-BEGIN C2Y
 // C2Y: decl[{{[0-9]+}}]: Declaration(

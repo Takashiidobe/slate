@@ -58,35 +58,35 @@ int outer(int x) {
 // SLATE-FILECHECK-BEGIN RETURN
 // RETURN: Error:   × semantic analysis failed
 // RETURN: Error:
-// RETURN: × non-void function should return a value
-// RETURN: ╭─[tests/fixtures/clang/linux/x86_64/statement_flavor_rules.c:22:5]
-// RETURN: 21 │   if (x)
-// RETURN: 22 │     return;
-// RETURN: ·     ───────
-// RETURN: 23 │   return g(x);
-// RETURN: ╰────
+// RETURN:   × non-void function should return a value
+// RETURN:     ╭─[tests/fixtures/clang/linux/x86_64/statement_flavor_rules.c:22:5]
+// RETURN:  21 │   if (x)
+// RETURN:  22 │     return;
+// RETURN:     ·     ───────
+// RETURN:  23 │   return g(x);
+// RETURN:     ╰────
 // SLATE-FILECHECK-END RETURN
 // SLATE-FILECHECK-BEGIN FALLTHROUGH
 // FALLTHROUGH: Error:   × semantic analysis failed
 // FALLTHROUGH: Error:
-// FALLTHROUGH: × fallthrough attribute on a non-empty statement
-// FALLTHROUGH: ╭─[tests/fixtures/clang/linux/x86_64/statement_flavor_rules.c:31:5]
-// FALLTHROUGH: 30 │   case 1:
-// FALLTHROUGH: 31 │     {{\[\[}}fallthrough]] x++;
-// FALLTHROUGH: ·     ────────────────────
-// FALLTHROUGH: 32 │   default:
-// FALLTHROUGH: ╰────
+// FALLTHROUGH:   × fallthrough attribute on a non-empty statement
+// FALLTHROUGH:     ╭─[tests/fixtures/clang/linux/x86_64/statement_flavor_rules.c:31:5]
+// FALLTHROUGH:  30 │   case 1:
+// FALLTHROUGH:  31 │     {{\[\[}}fallthrough]] x++;
+// FALLTHROUGH:     ·     ────────────────────
+// FALLTHROUGH:  32 │   default:
+// FALLTHROUGH:     ╰────
 // SLATE-FILECHECK-END FALLTHROUGH
 // SLATE-FILECHECK-BEGIN NESTED
 // NESTED: Error:   × semantic analysis failed
 // NESTED: Error:
-// NESTED: × function definition is not allowed here
-// NESTED: ╭─[tests/fixtures/clang/linux/x86_64/statement_flavor_rules.c:41:3]
-// NESTED: 40 │ int outer(int x) {
-// NESTED: 41 │   int inner(int y) { return y + x; }
-// NESTED: ·   ──────────────────────────────────
-// NESTED: 42 │   return inner(x);
-// NESTED: ╰────
+// NESTED:   × function definition is not allowed here
+// NESTED:     ╭─[tests/fixtures/clang/linux/x86_64/statement_flavor_rules.c:41:3]
+// NESTED:  40 │ int outer(int x) {
+// NESTED:  41 │   int inner(int y) { return y + x; }
+// NESTED:     ·   ──────────────────────────────────
+// NESTED:  42 │   return inner(x);
+// NESTED:     ╰────
 // SLATE-FILECHECK-END NESTED
 // SLATE-FILECHECK-BEGIN VALID
 // VALID: module {

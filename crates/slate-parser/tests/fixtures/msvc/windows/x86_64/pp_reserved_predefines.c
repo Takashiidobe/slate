@@ -10,21 +10,21 @@ long hosted = __STDC_HOSTED__;
 
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: -Wbuiltin-macro-redefined
-// DEFAULT: ⚠ macro name '__STDC_VERSION__' is reserved, '#define' ignored
-// DEFAULT: ╭─[tests/fixtures/msvc/windows/x86_64/pp_reserved_predefines.c:2:9]
-// DEFAULT: 1 │
-// DEFAULT: 2 │ #define __STDC_VERSION__ 1L
-// DEFAULT: ·         ────────────────
-// DEFAULT: 3 │ #undef __STDC_HOSTED__
-// DEFAULT: ╰────
+// DEFAULT:   ⚠ macro name '__STDC_VERSION__' is reserved, '#define' ignored
+// DEFAULT:    ╭─[tests/fixtures/msvc/windows/x86_64/pp_reserved_predefines.c:2:9]
+// DEFAULT:  1 │
+// DEFAULT:  2 │ #define __STDC_VERSION__ 1L
+// DEFAULT:    ·         ────────────────
+// DEFAULT:  3 │ #undef __STDC_HOSTED__
+// DEFAULT:    ╰────
 // DEFAULT: -Wbuiltin-macro-redefined
-// DEFAULT: ⚠ macro name '__STDC_HOSTED__' is reserved, '#undef' ignored
-// DEFAULT: ╭─[tests/fixtures/msvc/windows/x86_64/pp_reserved_predefines.c:3:8]
-// DEFAULT: 2 │ #define __STDC_VERSION__ 1L
-// DEFAULT: 3 │ #undef __STDC_HOSTED__
-// DEFAULT: ·        ───────────────
-// DEFAULT: 4 │ long version = __STDC_VERSION__;
-// DEFAULT: ╰────
+// DEFAULT:   ⚠ macro name '__STDC_HOSTED__' is reserved, '#undef' ignored
+// DEFAULT:    ╭─[tests/fixtures/msvc/windows/x86_64/pp_reserved_predefines.c:3:8]
+// DEFAULT:  2 │ #define __STDC_VERSION__ 1L
+// DEFAULT:  3 │ #undef __STDC_HOSTED__
+// DEFAULT:    ·        ───────────────
+// DEFAULT:  4 │ long version = __STDC_VERSION__;
+// DEFAULT:    ╰────
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN IR-DEFAULT
 // IR-DEFAULT: module {

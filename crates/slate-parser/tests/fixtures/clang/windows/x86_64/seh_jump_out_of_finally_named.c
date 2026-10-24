@@ -22,37 +22,37 @@ a:
 
 // SLATE-FILECHECK-BEGIN C2Y
 // C2Y: -Wjump-seh-finally
-// C2Y: ⚠ jump out of __finally block has undefined behavior
-// C2Y: ╭─[tests/fixtures/clang/windows/x86_64/seh_jump_out_of_finally_named.c:7:7]
-// C2Y: 6 │     } __finally {
-// C2Y: 7 │       continue a;
-// C2Y: ·       ───────────
-// C2Y: 8 │       break a;
-// C2Y: ╰────
+// C2Y:   ⚠ jump out of __finally block has undefined behavior
+// C2Y:    ╭─[tests/fixtures/clang/windows/x86_64/seh_jump_out_of_finally_named.c:7:7]
+// C2Y:  6 │     } __finally {
+// C2Y:  7 │       continue a;
+// C2Y:    ·       ───────────
+// C2Y:  8 │       break a;
+// C2Y:    ╰────
 // C2Y: -Wjump-seh-finally
-// C2Y: ⚠ jump out of __finally block has undefined behavior
-// C2Y: ╭─[tests/fixtures/clang/windows/x86_64/seh_jump_out_of_finally_named.c:8:7]
-// C2Y: 7 │       continue a;
-// C2Y: 8 │       break a;
-// C2Y: ·       ────────
-// C2Y: 9 │     b:
-// C2Y: ╰────
+// C2Y:   ⚠ jump out of __finally block has undefined behavior
+// C2Y:    ╭─[tests/fixtures/clang/windows/x86_64/seh_jump_out_of_finally_named.c:8:7]
+// C2Y:  7 │       continue a;
+// C2Y:  8 │       break a;
+// C2Y:    ·       ────────
+// C2Y:  9 │     b:
+// C2Y:    ╰────
 // C2Y: -Wjump-seh-finally
-// C2Y: ⚠ jump out of __finally block has undefined behavior
-// C2Y: ╭─[tests/fixtures/clang/windows/x86_64/seh_jump_out_of_finally_named.c:11:9]
-// C2Y: 10 │       while (1) {
-// C2Y: 11 │         continue a;
-// C2Y: ·         ───────────
-// C2Y: 12 │         break a;
-// C2Y: ╰────
+// C2Y:   ⚠ jump out of __finally block has undefined behavior
+// C2Y:     ╭─[tests/fixtures/clang/windows/x86_64/seh_jump_out_of_finally_named.c:11:9]
+// C2Y:  10 │       while (1) {
+// C2Y:  11 │         continue a;
+// C2Y:     ·         ───────────
+// C2Y:  12 │         break a;
+// C2Y:     ╰────
 // C2Y: -Wjump-seh-finally
-// C2Y: ⚠ jump out of __finally block has undefined behavior
-// C2Y: ╭─[tests/fixtures/clang/windows/x86_64/seh_jump_out_of_finally_named.c:12:9]
-// C2Y: 11 │         continue a;
-// C2Y: 12 │         break a;
-// C2Y: ·         ────────
-// C2Y: 13 │         continue b;
-// C2Y: ╰────
+// C2Y:   ⚠ jump out of __finally block has undefined behavior
+// C2Y:     ╭─[tests/fixtures/clang/windows/x86_64/seh_jump_out_of_finally_named.c:12:9]
+// C2Y:  11 │         continue a;
+// C2Y:  12 │         break a;
+// C2Y:     ·         ────────
+// C2Y:  13 │         continue b;
+// C2Y:     ╰────
 // SLATE-FILECHECK-END C2Y
 // SLATE-FILECHECK-BEGIN IR-C2Y
 // IR-C2Y: module {

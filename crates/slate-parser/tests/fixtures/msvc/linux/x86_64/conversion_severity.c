@@ -8,13 +8,13 @@ int *to_pointer(int value) { return value; }
 
 // SLATE-FILECHECK-BEGIN WARN
 // WARN: -Wint-conversion
-// WARN: ⚠ incompatible integer to pointer conversion
-// WARN: ╭─[tests/fixtures/msvc/linux/x86_64/conversion_severity.c:4:37]
-// WARN: 3 │ // the msvc flavor keeps both as warnings. Measured 2026-09-21.
-// WARN: 4 │ int *to_pointer(int value) { return value; }
-// WARN: ·                                     ─────
-// WARN: 5 │
-// WARN: ╰────
+// WARN:   ⚠ incompatible integer to pointer conversion
+// WARN:    ╭─[tests/fixtures/msvc/linux/x86_64/conversion_severity.c:4:37]
+// WARN:  3 │ // the msvc flavor keeps both as warnings. Measured 2026-09-21.
+// WARN:  4 │ int *to_pointer(int value) { return value; }
+// WARN:    ·                                     ─────
+// WARN:  5 │
+// WARN:    ╰────
 // SLATE-FILECHECK-END WARN
 // SLATE-FILECHECK-BEGIN IR-WARN
 // IR-WARN: module {

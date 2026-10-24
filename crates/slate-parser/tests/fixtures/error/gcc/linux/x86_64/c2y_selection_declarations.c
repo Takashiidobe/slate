@@ -15,21 +15,21 @@ void invalid(void) {
 
 // SLATE-FILECHECK-BEGIN IF
 // IF: Error:   × expected expression after selection declaration
-// IF: ╰─▶ expected expression after selection declaration
-// IF: ╭─[tests/fixtures/error/gcc/linux/x86_64/c2y_selection_declarations.c:5:18]
-// IF: 4 │ #else
-// IF: 5 │     if (int x = 1;) {}
-// IF: ·                  ─
-// IF: 6 │ #endif
-// IF: ╰────
+// IF:   ╰─▶ expected expression after selection declaration
+// IF:    ╭─[tests/fixtures/error/gcc/linux/x86_64/c2y_selection_declarations.c:5:18]
+// IF:  4 │ #else
+// IF:  5 │     if (int x = 1;) {}
+// IF:    ·                  ─
+// IF:  6 │ #endif
+// IF:    ╰────
 // SLATE-FILECHECK-END IF
 // SLATE-FILECHECK-BEGIN SWITCH
 // SWITCH: Error:   × expected expression after selection declaration
-// SWITCH: ╰─▶ expected expression after selection declaration
-// SWITCH: ╭─[tests/fixtures/error/gcc/linux/x86_64/c2y_selection_declarations.c:3:22]
-// SWITCH: 2 │ #ifdef SWITCH
-// SWITCH: 3 │     switch (int x = 1;) { default: break; }
-// SWITCH: ·                      ─
-// SWITCH: 4 │ #else
-// SWITCH: ╰────
+// SWITCH:   ╰─▶ expected expression after selection declaration
+// SWITCH:    ╭─[tests/fixtures/error/gcc/linux/x86_64/c2y_selection_declarations.c:3:22]
+// SWITCH:  2 │ #ifdef SWITCH
+// SWITCH:  3 │     switch (int x = 1;) { default: break; }
+// SWITCH:    ·                      ─
+// SWITCH:  4 │ #else
+// SWITCH:    ╰────
 // SLATE-FILECHECK-END SWITCH

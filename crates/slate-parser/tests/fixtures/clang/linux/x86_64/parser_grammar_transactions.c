@@ -56,11 +56,11 @@ T after_functions;
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: Error:   × semantic analysis failed
 // DEFAULT: Error:
-// DEFAULT: × invalid attribute
-// DEFAULT: ╭─[tests/fixtures/clang/linux/x86_64/parser_grammar_transactions.c:35:62]
-// DEFAULT: 34 │ int invalid_attribute(void) {
-// DEFAULT: 35 │   __attribute__((alloc_size(sizeof(enum { T = 2 }), +))) int value;
-// DEFAULT: ·                                                              ─────
-// DEFAULT: 36 │   T after_invalid_attribute;
-// DEFAULT: ╰────
+// DEFAULT:   × invalid attribute
+// DEFAULT:     ╭─[tests/fixtures/clang/linux/x86_64/parser_grammar_transactions.c:35:62]
+// DEFAULT:  34 │ int invalid_attribute(void) {
+// DEFAULT:  35 │   __attribute__((alloc_size(sizeof(enum { T = 2 }), +))) int value;
+// DEFAULT:     ·                                                              ─────
+// DEFAULT:  36 │   T after_invalid_attribute;
+// DEFAULT:     ╰────
 // SLATE-FILECHECK-END DEFAULT

@@ -25,11 +25,11 @@ double bar (void)
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: Error:   × semantic analysis failed
 // DEFAULT: Error:
-// DEFAULT: × non-void function should return a value
-// DEFAULT: ╭─[tests/fixtures/suites/gcc-torture/gcc/linux/x86_64/20020418-1.c:14:3]
-// DEFAULT: 13 │   baz ();
-// DEFAULT: 14 │   return;
-// DEFAULT: ·   ───────
-// DEFAULT: 15 │ }
-// DEFAULT: ╰────
+// DEFAULT:   × non-void function should return a value
+// DEFAULT:     ╭─[tests/fixtures/suites/gcc-torture/gcc/linux/x86_64/20020418-1.c:14:3]
+// DEFAULT:  13 │   baz ();
+// DEFAULT:  14 │   return;
+// DEFAULT:     ·   ───────
+// DEFAULT:  15 │ }
+// DEFAULT:     ╰────
 // SLATE-FILECHECK-END DEFAULT

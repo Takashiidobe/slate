@@ -31,85 +31,85 @@ int ok = 1;
 
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: -Wtraditional
-// DEFAULT: ⚠ suggest hiding '#assert' from traditional C with an indented '#'
-// DEFAULT: ╭─[tests/fixtures/gcc/linux/x86_64/pp_traditional_warnings.c:2:2]
-// DEFAULT: 1 │
-// DEFAULT: 2 │ #assert x(x)
-// DEFAULT: ·  ──────
-// DEFAULT: 3 │
-// DEFAULT: ╰────
+// DEFAULT:   ⚠ suggest hiding '#assert' from traditional C with an indented '#'
+// DEFAULT:    ╭─[tests/fixtures/gcc/linux/x86_64/pp_traditional_warnings.c:2:2]
+// DEFAULT:  1 │
+// DEFAULT:  2 │ #assert x(x)
+// DEFAULT:    ·  ──────
+// DEFAULT:  3 │
+// DEFAULT:    ╰────
 // DEFAULT: -Wtraditional
-// DEFAULT: ⚠ traditional C ignores '#define' with the '#' indented
-// DEFAULT: ╭─[tests/fixtures/gcc/linux/x86_64/pp_traditional_warnings.c:4:3]
-// DEFAULT: 3 │
-// DEFAULT: 4 │  #define X X
-// DEFAULT: ·   ──────
-// DEFAULT: 5 │
-// DEFAULT: ╰────
+// DEFAULT:   ⚠ traditional C ignores '#define' with the '#' indented
+// DEFAULT:    ╭─[tests/fixtures/gcc/linux/x86_64/pp_traditional_warnings.c:4:3]
+// DEFAULT:  3 │
+// DEFAULT:  4 │  #define X X
+// DEFAULT:    ·   ──────
+// DEFAULT:  5 │
+// DEFAULT:    ╰────
 // DEFAULT: -Wtraditional
-// DEFAULT: ⚠ traditional C ignores '#define' with the '#' indented
-// DEFAULT: ╭─[tests/fixtures/gcc/linux/x86_64/pp_traditional_warnings.c:7:3]
-// DEFAULT: 6 │ #if 0
-// DEFAULT: 7 │  #define SKIPPED 1
-// DEFAULT: ·   ──────
-// DEFAULT: 8 │ #elif 1
-// DEFAULT: ╰────
+// DEFAULT:   ⚠ traditional C ignores '#define' with the '#' indented
+// DEFAULT:    ╭─[tests/fixtures/gcc/linux/x86_64/pp_traditional_warnings.c:7:3]
+// DEFAULT:  6 │ #if 0
+// DEFAULT:  7 │  #define SKIPPED 1
+// DEFAULT:    ·   ──────
+// DEFAULT:  8 │ #elif 1
+// DEFAULT:    ╰────
 // DEFAULT: -Wtraditional
-// DEFAULT: ⚠ suggest not using '#elif' in traditional C
-// DEFAULT: ╭─[tests/fixtures/gcc/linux/x86_64/pp_traditional_warnings.c:8:2]
-// DEFAULT: 7 │  #define SKIPPED 1
-// DEFAULT: 8 │ #elif 1
-// DEFAULT: ·  ────
-// DEFAULT: 9 │ #endif
-// DEFAULT: ╰────
+// DEFAULT:   ⚠ suggest not using '#elif' in traditional C
+// DEFAULT:    ╭─[tests/fixtures/gcc/linux/x86_64/pp_traditional_warnings.c:8:2]
+// DEFAULT:  7 │  #define SKIPPED 1
+// DEFAULT:  8 │ #elif 1
+// DEFAULT:    ·  ────
+// DEFAULT:  9 │ #endif
+// DEFAULT:    ╰────
 // DEFAULT: -Wtraditional
-// DEFAULT: ⚠ function-like macro 'f' must be used with arguments in traditional C
-// DEFAULT: ╭─[tests/fixtures/gcc/linux/x86_64/pp_traditional_warnings.c:12:5]
-// DEFAULT: 11 │ #define f(X) X
-// DEFAULT: 12 │ int f;
-// DEFAULT: ·     ─
-// DEFAULT: 13 │
-// DEFAULT: ╰────
+// DEFAULT:   ⚠ function-like macro 'f' must be used with arguments in traditional C
+// DEFAULT:     ╭─[tests/fixtures/gcc/linux/x86_64/pp_traditional_warnings.c:12:5]
+// DEFAULT:  11 │ #define f(X) X
+// DEFAULT:  12 │ int f;
+// DEFAULT:     ·     ─
+// DEFAULT:  13 │
+// DEFAULT:     ╰────
 // DEFAULT: -Wtraditional
-// DEFAULT: ⚠ traditional C rejects the 'U' suffix
-// DEFAULT: ╭─[tests/fixtures/gcc/linux/x86_64/pp_traditional_warnings.c:14:5]
-// DEFAULT: 13 │
-// DEFAULT: 14 │ #if 0U
-// DEFAULT: ·     ──
-// DEFAULT: 15 │ #endif
-// DEFAULT: ╰────
+// DEFAULT:   ⚠ traditional C rejects the 'U' suffix
+// DEFAULT:     ╭─[tests/fixtures/gcc/linux/x86_64/pp_traditional_warnings.c:14:5]
+// DEFAULT:  13 │
+// DEFAULT:  14 │ #if 0U
+// DEFAULT:     ·     ──
+// DEFAULT:  15 │ #endif
+// DEFAULT:     ╰────
 // DEFAULT: -Wtraditional
-// DEFAULT: ⚠ traditional C rejects the unary plus operator
-// DEFAULT: ╭─[tests/fixtures/gcc/linux/x86_64/pp_traditional_warnings.c:17:5]
-// DEFAULT: 16 │
-// DEFAULT: 17 │ #if +1
-// DEFAULT: ·     ──
-// DEFAULT: 18 │ #endif
-// DEFAULT: ╰────
+// DEFAULT:   ⚠ traditional C rejects the unary plus operator
+// DEFAULT:     ╭─[tests/fixtures/gcc/linux/x86_64/pp_traditional_warnings.c:17:5]
+// DEFAULT:  16 │
+// DEFAULT:  17 │ #if +1
+// DEFAULT:     ·     ──
+// DEFAULT:  18 │ #endif
+// DEFAULT:     ╰────
 // DEFAULT: -Wtraditional
-// DEFAULT: ⚠ the meaning of '\x' is different in traditional C
-// DEFAULT: ╭─[tests/fixtures/gcc/linux/x86_64/pp_traditional_warnings.c:24:12]
-// DEFAULT: 23 │ #define ALERT "\a"
-// DEFAULT: 24 │ char *x = "\x0";
-// DEFAULT: ·            ──
-// DEFAULT: 25 │ char *y = ALERT;
-// DEFAULT: ╰────
+// DEFAULT:   ⚠ the meaning of '\x' is different in traditional C
+// DEFAULT:     ╭─[tests/fixtures/gcc/linux/x86_64/pp_traditional_warnings.c:24:12]
+// DEFAULT:  23 │ #define ALERT "\a"
+// DEFAULT:  24 │ char *x = "\x0";
+// DEFAULT:     ·            ──
+// DEFAULT:  25 │ char *y = ALERT;
+// DEFAULT:     ╰────
 // DEFAULT: -Wtraditional
-// DEFAULT: ⚠ the meaning of '\a' is different in traditional C
-// DEFAULT: ╭─[tests/fixtures/gcc/linux/x86_64/pp_traditional_warnings.c:25:11]
-// DEFAULT: 24 │ char *x = "\x0";
-// DEFAULT: 25 │ char *y = ALERT;
-// DEFAULT: ·           ─────
-// DEFAULT: 26 │ char *z = "\u0F43";
-// DEFAULT: ╰────
+// DEFAULT:   ⚠ the meaning of '\a' is different in traditional C
+// DEFAULT:     ╭─[tests/fixtures/gcc/linux/x86_64/pp_traditional_warnings.c:25:11]
+// DEFAULT:  24 │ char *x = "\x0";
+// DEFAULT:  25 │ char *y = ALERT;
+// DEFAULT:     ·           ─────
+// DEFAULT:  26 │ char *z = "\u0F43";
+// DEFAULT:     ╰────
 // DEFAULT: -Wtraditional
-// DEFAULT: ⚠ the meaning of '\u' is different in traditional C
-// DEFAULT: ╭─[tests/fixtures/gcc/linux/x86_64/pp_traditional_warnings.c:26:12]
-// DEFAULT: 25 │ char *y = ALERT;
-// DEFAULT: 26 │ char *z = "\u0F43";
-// DEFAULT: ·            ──
-// DEFAULT: 27 │ int ok = 1;
-// DEFAULT: ╰────
+// DEFAULT:   ⚠ the meaning of '\u' is different in traditional C
+// DEFAULT:     ╭─[tests/fixtures/gcc/linux/x86_64/pp_traditional_warnings.c:26:12]
+// DEFAULT:  25 │ char *y = ALERT;
+// DEFAULT:  26 │ char *z = "\u0F43";
+// DEFAULT:     ·            ──
+// DEFAULT:  27 │ int ok = 1;
+// DEFAULT:     ╰────
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN IR-DEFAULT
 // IR-DEFAULT: module {

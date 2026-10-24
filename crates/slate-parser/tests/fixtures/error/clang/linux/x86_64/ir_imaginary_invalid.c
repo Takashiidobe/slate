@@ -38,64 +38,64 @@ int invalid(double _Imaginary y, double x) {
 
 // SLATE-FILECHECK-BEGIN INTEGER
 // INTEGER: Error:   × cannot combine `_Imaginary` with previous declaration specifiers
-// INTEGER: ╰─▶ cannot combine `_Imaginary` with previous declaration specifiers
-// INTEGER: ╭─[tests/fixtures/error/clang/linux/x86_64/ir_imaginary_invalid.c:3:5]
-// INTEGER: 2 │ #ifdef INTEGER
-// INTEGER: 3 │ int _Imaginary integer;
-// INTEGER: ·     ──────────
-// INTEGER: 4 │ #endif
-// INTEGER: ╰────
+// INTEGER:   ╰─▶ cannot combine `_Imaginary` with previous declaration specifiers
+// INTEGER:    ╭─[tests/fixtures/error/clang/linux/x86_64/ir_imaginary_invalid.c:3:5]
+// INTEGER:  2 │ #ifdef INTEGER
+// INTEGER:  3 │ int _Imaginary integer;
+// INTEGER:    ·     ──────────
+// INTEGER:  4 │ #endif
+// INTEGER:    ╰────
 // SLATE-FILECHECK-END INTEGER
 // SLATE-FILECHECK-BEGIN DECIMAL
 // DECIMAL: Error:   × cannot combine `_Imaginary` with previous declaration specifiers
-// DECIMAL: ╰─▶ cannot combine `_Imaginary` with previous declaration specifiers
-// DECIMAL: ╭─[tests/fixtures/error/clang/linux/x86_64/ir_imaginary_invalid.c:6:12]
-// DECIMAL: 5 │ #ifdef DECIMAL
-// DECIMAL: 6 │ _Decimal64 _Imaginary decimal;
-// DECIMAL: ·            ──────────
-// DECIMAL: 7 │ #endif
-// DECIMAL: ╰────
+// DECIMAL:   ╰─▶ cannot combine `_Imaginary` with previous declaration specifiers
+// DECIMAL:    ╭─[tests/fixtures/error/clang/linux/x86_64/ir_imaginary_invalid.c:6:12]
+// DECIMAL:  5 │ #ifdef DECIMAL
+// DECIMAL:  6 │ _Decimal64 _Imaginary decimal;
+// DECIMAL:    ·            ──────────
+// DECIMAL:  7 │ #endif
+// DECIMAL:    ╰────
 // SLATE-FILECHECK-END DECIMAL
 // SLATE-FILECHECK-BEGIN RELATIONAL
 // RELATIONAL: Error:   × semantic analysis failed
 // RELATIONAL: Error:
-// RELATIONAL: × relational comparison requires real operands
-// RELATIONAL: ╭─[tests/fixtures/error/clang/linux/x86_64/ir_imaginary_invalid.c:15:12]
-// RELATIONAL: 14 │ #ifdef RELATIONAL
-// RELATIONAL: 15 │     return y < x;
-// RELATIONAL: ·            ─────
-// RELATIONAL: 16 │ #endif
-// RELATIONAL: ╰────
+// RELATIONAL:   × relational comparison requires real operands
+// RELATIONAL:     ╭─[tests/fixtures/error/clang/linux/x86_64/ir_imaginary_invalid.c:15:12]
+// RELATIONAL:  14 │ #ifdef RELATIONAL
+// RELATIONAL:  15 │     return y < x;
+// RELATIONAL:     ·            ─────
+// RELATIONAL:  16 │ #endif
+// RELATIONAL:     ╰────
 // SLATE-FILECHECK-END RELATIONAL
 // SLATE-FILECHECK-BEGIN REMAINDER
 // REMAINDER: Error:   × semantic analysis failed
 // REMAINDER: Error:
-// REMAINDER: × operator requires integer or real operands
-// REMAINDER: ╭─[tests/fixtures/error/clang/linux/x86_64/ir_imaginary_invalid.c:18:12]
-// REMAINDER: 17 │ #ifdef REMAINDER
-// REMAINDER: 18 │     return y % 2;
-// REMAINDER: ·            ─────
-// REMAINDER: 19 │ #endif
-// REMAINDER: ╰────
+// REMAINDER:   × operator requires integer or real operands
+// REMAINDER:     ╭─[tests/fixtures/error/clang/linux/x86_64/ir_imaginary_invalid.c:18:12]
+// REMAINDER:  17 │ #ifdef REMAINDER
+// REMAINDER:  18 │     return y % 2;
+// REMAINDER:     ·            ─────
+// REMAINDER:  19 │ #endif
+// REMAINDER:     ╰────
 // SLATE-FILECHECK-END REMAINDER
 // SLATE-FILECHECK-BEGIN COMPLEMENT
 // COMPLEMENT: Error:   × semantic analysis failed
 // COMPLEMENT: Error:
-// COMPLEMENT: × bitwise complement of imaginary operand
-// COMPLEMENT: ╭─[tests/fixtures/error/clang/linux/x86_64/ir_imaginary_invalid.c:21:12]
-// COMPLEMENT: 20 │ #ifdef COMPLEMENT
-// COMPLEMENT: 21 │     return ~y;
-// COMPLEMENT: ·            ──
-// COMPLEMENT: 22 │ #endif
-// COMPLEMENT: ╰────
+// COMPLEMENT:   × bitwise complement of imaginary operand
+// COMPLEMENT:     ╭─[tests/fixtures/error/clang/linux/x86_64/ir_imaginary_invalid.c:21:12]
+// COMPLEMENT:  20 │ #ifdef COMPLEMENT
+// COMPLEMENT:  21 │     return ~y;
+// COMPLEMENT:     ·            ──
+// COMPLEMENT:  22 │ #endif
+// COMPLEMENT:     ╰────
 // SLATE-FILECHECK-END COMPLEMENT
 // SLATE-FILECHECK-BEGIN PREPROCESSOR
 // PREPROCESSOR: Error:   × invalid #if expression: imaginary literal is not a constant expression
-// PREPROCESSOR: ╰─▶ invalid #if expression: imaginary literal is not a constant expression
-// PREPROCESSOR: ╭─[tests/fixtures/error/clang/linux/x86_64/ir_imaginary_invalid.c:9:5]
-// PREPROCESSOR: 8 │ #ifdef PREPROCESSOR
-// PREPROCESSOR: 9 │ #if 3i
-// PREPROCESSOR: ·     ──
-// PREPROCESSOR: 10 │ #endif
-// PREPROCESSOR: ╰────
+// PREPROCESSOR:   ╰─▶ invalid #if expression: imaginary literal is not a constant expression
+// PREPROCESSOR:     ╭─[tests/fixtures/error/clang/linux/x86_64/ir_imaginary_invalid.c:9:5]
+// PREPROCESSOR:   8 │ #ifdef PREPROCESSOR
+// PREPROCESSOR:   9 │ #if 3i
+// PREPROCESSOR:     ·     ──
+// PREPROCESSOR:  10 │ #endif
+// PREPROCESSOR:     ╰────
 // SLATE-FILECHECK-END PREPROCESSOR

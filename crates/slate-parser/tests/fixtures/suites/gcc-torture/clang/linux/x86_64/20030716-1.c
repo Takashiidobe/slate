@@ -13,11 +13,11 @@ void foo(int i, int A[i+1])
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: Error:   × semantic analysis failed
 // DEFAULT: Error:
-// DEFAULT: × function definition is not allowed here
-// DEFAULT: ╭─[tests/fixtures/suites/gcc-torture/clang/linux/x86_64/20030716-1.c:7:5]
-// DEFAULT: 6 │     int j=A[i];
-// DEFAULT: 7 │     void bar() { baz(A[i]); }
-// DEFAULT: ·     ─────────────────────────
-// DEFAULT: 8 │ }
-// DEFAULT: ╰────
+// DEFAULT:   × function definition is not allowed here
+// DEFAULT:    ╭─[tests/fixtures/suites/gcc-torture/clang/linux/x86_64/20030716-1.c:7:5]
+// DEFAULT:  6 │     int j=A[i];
+// DEFAULT:  7 │     void bar() { baz(A[i]); }
+// DEFAULT:    ·     ─────────────────────────
+// DEFAULT:  8 │ }
+// DEFAULT:    ╰────
 // SLATE-FILECHECK-END DEFAULT

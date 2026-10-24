@@ -10,11 +10,11 @@ double misplaced(double a, double b) {
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: Error:   × semantic analysis failed
 // DEFAULT: Error:
-// DEFAULT: × floating-point pragma can only appear at file scope or at the start of a
-// DEFAULT: ╭─[tests/fixtures/clang/linux/x86_64/fp_pragma_misplaced_after_statement_expression.c:3:1]
-// DEFAULT: 2 │   double x = ({ a; });
-// DEFAULT: 3 │ #pragma STDC FENV_ACCESS ON
-// DEFAULT: · ───────────────────────────
-// DEFAULT: 4 │   return x / b;
-// DEFAULT: ╰────
+// DEFAULT:   × floating-point pragma can only appear at file scope or at the start of a
+// DEFAULT:    ╭─[tests/fixtures/clang/linux/x86_64/fp_pragma_misplaced_after_statement_expression.c:3:1]
+// DEFAULT:  2 │   double x = ({ a; });
+// DEFAULT:  3 │ #pragma STDC FENV_ACCESS ON
+// DEFAULT:    · ───────────────────────────
+// DEFAULT:  4 │   return x / b;
+// DEFAULT:    ╰────
 // SLATE-FILECHECK-END DEFAULT

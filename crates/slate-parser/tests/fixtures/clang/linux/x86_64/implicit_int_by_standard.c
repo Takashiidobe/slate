@@ -9,12 +9,12 @@ f() { return 1; }
 
 // SLATE-FILECHECK-BEGIN C23
 // C23: Error:   × a type specifier is required for all declarations
-// C23: ╰─▶ a type specifier is required for all declarations
-// C23: ╭─[tests/fixtures/clang/linux/x86_64/implicit_int_by_standard.c:1:8]
-// C23: 1 │ static x;
-// C23: ·        ─
-// C23: 2 │ f() { return 1; }
-// C23: ╰────
+// C23:   ╰─▶ a type specifier is required for all declarations
+// C23:    ╭─[tests/fixtures/clang/linux/x86_64/implicit_int_by_standard.c:1:8]
+// C23:  1 │ static x;
+// C23:    ·        ─
+// C23:  2 │ f() { return 1; }
+// C23:    ╰────
 // SLATE-FILECHECK-END C23
 // SLATE-FILECHECK-BEGIN C89
 // C89: module {

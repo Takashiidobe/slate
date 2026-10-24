@@ -14,22 +14,22 @@ int *to_pointer(int value) { return value; }
 // SLATE-FILECHECK-BEGIN C99
 // C99: Error:   × semantic analysis failed
 // C99: Error: -Wint-conversion
-// C99: × incompatible integer to pointer conversion
-// C99: ╭─[tests/fixtures/error/gcc/linux/x86_64/conversion_default_errors.c:4:37]
-// C99: 3 │ #if defined(C99) || defined(C17)
-// C99: 4 │ int *to_pointer(int value) { return value; }
-// C99: ·                                     ─────
-// C99: 5 │ #endif
-// C99: ╰────
+// C99:   × incompatible integer to pointer conversion
+// C99:    ╭─[tests/fixtures/error/gcc/linux/x86_64/conversion_default_errors.c:4:37]
+// C99:  3 │ #if defined(C99) || defined(C17)
+// C99:  4 │ int *to_pointer(int value) { return value; }
+// C99:    ·                                     ─────
+// C99:  5 │ #endif
+// C99:    ╰────
 // SLATE-FILECHECK-END C99
 // SLATE-FILECHECK-BEGIN C17
 // C17: Error:   × semantic analysis failed
 // C17: Error: -Wint-conversion
-// C17: × incompatible integer to pointer conversion
-// C17: ╭─[tests/fixtures/error/gcc/linux/x86_64/conversion_default_errors.c:4:37]
-// C17: 3 │ #if defined(C99) || defined(C17)
-// C17: 4 │ int *to_pointer(int value) { return value; }
-// C17: ·                                     ─────
-// C17: 5 │ #endif
-// C17: ╰────
+// C17:   × incompatible integer to pointer conversion
+// C17:    ╭─[tests/fixtures/error/gcc/linux/x86_64/conversion_default_errors.c:4:37]
+// C17:  3 │ #if defined(C99) || defined(C17)
+// C17:  4 │ int *to_pointer(int value) { return value; }
+// C17:    ·                                     ─────
+// C17:  5 │ #endif
+// C17:    ╰────
 // SLATE-FILECHECK-END C17

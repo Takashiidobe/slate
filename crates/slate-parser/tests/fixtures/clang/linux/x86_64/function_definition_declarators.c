@@ -14,11 +14,18 @@ void outer(void) {
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: Error:   × semantic analysis failed
 // DEFAULT: Error:
-// DEFAULT: × function definition is not allowed here
-// DEFAULT: ╭─[tests/fixtures/clang/linux/x86_64/function_definition_declarators.c:7:3]
-// DEFAULT: 6 │ void outer(void) {
-// DEFAULT: 7 │   int (*nested(int x))(char) { return 0; }
-// DEFAULT: ·   ────────────────────────────────────────
-// DEFAULT: 8 │ }
-// DEFAULT: ╰────
+// DEFAULT:   × function definition is not allowed here
+// DEFAULT:    ╭─[tests/fixtures/clang/linux/x86_64/function_definition_declarators.c:7:3]
+// DEFAULT:  6 │ void outer(void) {
+// DEFAULT:  7 │   int (*nested(int x))(char) { return 0; }
+// DEFAULT:    ·   ────────────────────────────────────────
+// DEFAULT:  8 │ }
+// DEFAULT:    ╰────
+// DEFAULT:   ⚠ omitting the parameter name in a function definition is a C23 extension
+// DEFAULT:    ╭─[tests/fixtures/clang/linux/x86_64/function_definition_declarators.c:3:52]
+// DEFAULT:  2 │ int (*returns_function_pointer(int x))(char) { return 0; }
+// DEFAULT:  3 │ void *(*returns_pointer_returning_function_pointer(int))(void) { return 0; }
+// DEFAULT:    ·                                                    ───
+// DEFAULT:  4 │ int (parenthesized_name)(int x) { return x; }
+// DEFAULT:    ╰────
 // SLATE-FILECHECK-END DEFAULT
