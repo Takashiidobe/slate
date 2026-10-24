@@ -260,6 +260,11 @@ token plus an interned `HideSet`; file tokens start empty.
   `const_expr::Parser::evaluate_with_defined`.
   `expand_condition` runs the stream expander over the directive, and a
   `defined` or `__has_*` name takes its operand unexpanded from the stream.
+  Only names the flavor owns (`is_defined_operator`) are queries, in both
+  `expand_condition` and `expand_has_checks`. Under msvc `__has_builtin`,
+  `__has_feature`, `__has_extension` and `__has_attribute` are ordinary
+  identifiers, so a user `#define __has_builtin(x) 0` shim expands, as in
+  cl.exe (SQLite's `sqliteInt.h` relies on this).
   That includes a `defined` an expansion produced, with its operand from
   the expansion or from the directive after it, as gcc and clang do.
   The exception is a query whose operand the compiler macro-expands

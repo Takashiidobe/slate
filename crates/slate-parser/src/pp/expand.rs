@@ -413,6 +413,7 @@ impl Preprocessor<'_> {
                 Token::Ident(name) if name == "defined" => Some(true),
                 Token::Ident(name)
                     if name.starts_with("__has_")
+                        && super::is_defined_operator(name, self.dialect.flavor())
                         && !expands_has_operand(name, self.dialect.flavor()) =>
                 {
                     Some(false)

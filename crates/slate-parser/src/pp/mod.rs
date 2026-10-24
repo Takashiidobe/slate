@@ -1811,15 +1811,13 @@ fn expand_has_checks(tokens: &[Span<Token>], dialect: &Dialect) -> Vec<Span<Toke
             |name: &str| target_check.is_some_and(|check| check.matches(triple, name)) as i64;
         let check: Option<&dyn Fn(&str) -> i64> = match tokens.value_at(index) {
             _ if target_check.is_some() => Some(&is_target),
-            Some(Token::Ident(name)) if name == "__has_attribute" => Some(&has_attribute),
-            Some(Token::Ident(name)) if name == "__has_c_attribute" => Some(&has_c_attribute),
-            Some(Token::Ident(name)) if name == "__has_cpp_attribute" && flavor.is_gcc() => {
-                Some(&has_cpp_attribute)
-            }
-            Some(Token::Ident(name)) if name == "__has_builtin" => Some(&has_builtin),
-            Some(Token::Ident(name)) if name == "__has_feature" => Some(&has_feature),
-            Some(Token::Ident(name)) if name == "__has_extension" => Some(&has_extension),
-            Some(Token::Ident(name)) if flavor.is_clang() => match name.as_ref() {
+            Some(Token::Ident(name)) if is_defined_operator(name, flavor) => match name.as_ref() {
+                "__has_attribute" => Some(&has_attribute),
+                "__has_c_attribute" => Some(&has_c_attribute),
+                "__has_cpp_attribute" => Some(&has_cpp_attribute),
+                "__has_builtin" => Some(&has_builtin),
+                "__has_feature" => Some(&has_feature),
+                "__has_extension" => Some(&has_extension),
                 "__has_declspec_attribute" => Some(&has_declspec_attribute),
                 "__has_warning" => Some(&has_warning),
                 "__is_identifier" => Some(&is_identifier),
