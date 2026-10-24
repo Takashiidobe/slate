@@ -1835,10 +1835,7 @@ impl TypeResolver {
                 let (ty, field_offset) = self.offsetof_field(path.ty, &field.value)?;
                 Ok(OffsetOfPath {
                     ty,
-                    offset: path
-                        .offset
-                        .checked_add(field_offset)
-                        .ok_or(ResolveError::Rejected("offsetof overflow"))?,
+                    offset: path.offset.wrapping_add(field_offset),
                     runtime_indices: path.runtime_indices,
                 })
             }
@@ -1851,12 +1848,9 @@ impl TypeResolver {
                 path.ty = *element;
                 match self.constant_integer(index) {
                     Ok(constant) => {
-                        let constant = u64::try_from(constant)
-                            .map_err(|_| ResolveError::Unimplemented("invalid offsetof index"))?;
-                        path.offset = size
-                            .checked_mul(constant)
-                            .and_then(|n| path.offset.checked_add(n))
-                            .ok_or(ResolveError::Rejected("offsetof overflow"))?;
+                        let wrapped = u64::try_from(constant & BigInt::from(u64::MAX))
+                            .map_err(|_| ResolveError::Internal("offsetof index out of range"))?;
+                        path.offset = path.offset.wrapping_add(size.wrapping_mul(wrapped));
                     }
                     Err(_) => path.runtime_indices.push((index, size)),
                 }
