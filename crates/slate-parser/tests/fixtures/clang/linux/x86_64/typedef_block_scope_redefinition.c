@@ -1,0 +1,53 @@
+// SLATE-FILECHECK-DEFINES IR
+// SLATE-FILECHECK-ARGS --dump-ir --compact-ir
+
+int f(void) {
+    typedef int T;
+    typedef int T;
+    T x = 1;
+    {
+        typedef long T;
+        typedef long T;
+        x += (int)sizeof(T);
+    }
+    return x;
+}
+
+// SLATE-FILECHECK-BEGIN IR
+// IR: module {
+// IR-NEXT:     target "x86_64-unknown-linux-gnu" {
+// IR-NEXT:         endian = little;
+// IR-NEXT:         pointer [size=8, align=8];
+// IR-NEXT:         stack_alignment = 16;
+// IR-NEXT:         long_double = f80;
+// IR-NEXT:         storage bool [size=1, align=1];
+// IR-NEXT:         storage i8, u8 [size=1, align=1];
+// IR-NEXT:         storage i16, u16 [size=2, align=2];
+// IR-NEXT:         storage i32, u32 [size=4, align=4];
+// IR-NEXT:         storage i64, u64 [size=8, align=8];
+// IR-NEXT:         storage i128, u128 [size=16, align=16];
+// IR-NEXT:         storage bf16 [size=2, align=2];
+// IR-NEXT:         storage f16 [size=2, align=2];
+// IR-NEXT:         storage f32 [size=4, align=4];
+// IR-NEXT:         storage f64 [size=8, align=8];
+// IR-NEXT:         storage f80 [size=16, align=16];
+// IR-NEXT:         storage f128 [size=16, align=16];
+// IR-NEXT:         storage d32 [size=4, align=4];
+// IR-NEXT:         storage d64 [size=8, align=8];
+// IR-NEXT:         storage d128 [size=16, align=16];
+// IR-NEXT:     }
+// IR-NEXT:     type @type[[TYPE_T:[0-9]+]] T = i32;
+// IR-NEXT:     type @type[[TYPE_T_2:[0-9]+]] T = i32;
+// IR-NEXT:     type @type[[TYPE_T_3:[0-9]+]] T = i64;
+// IR-NEXT:     type @type[[TYPE_T_4:[0-9]+]] T = i64;
+// IR-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %[[VALUE_x:[0-9]+]] x: i32 [storage=automatic] = const<i32>(1);
+// IR-NEXT:         {
+// IR-NEXT:             let %[[VALUE0:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_x]]);
+// IR-NEXT:             let %[[VALUE1:[0-9]+]]: i32 [synthetic] = add<i32>(read<i32>(%[[VALUE0]]), reinterpret<i32>(truncate<u32>(const<u64>(8))));
+// IR-NEXT:             write<i32>(%[[VALUE_x]], read<i32>(%[[VALUE1]]));
+// IR-NEXT:         }
+// IR-NEXT:         return read<i32>(%[[VALUE_x]]);
+// IR-NEXT:     }
+// IR-NEXT: }
+// SLATE-FILECHECK-END IR

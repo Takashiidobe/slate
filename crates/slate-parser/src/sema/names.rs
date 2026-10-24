@@ -807,7 +807,10 @@ impl Resolver {
         span: &Span<T>,
     ) -> Result<Entry, ResolveError> {
         if let Some(existing) = self.ordinary.last().unwrap().get(name).cloned() {
-            if (self.ordinary.len() == 1 || linked) && redeclares(existing.kind, kind) {
+            let file_scope = self.ordinary.len() == 1;
+            if (file_scope || linked || kind == BindingKind::Typedef)
+                && redeclares(existing.kind, kind)
+            {
                 self.resolution.declarations.insert(span.id, existing.id);
                 return Ok(existing);
             }

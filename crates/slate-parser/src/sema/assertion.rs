@@ -391,6 +391,10 @@ impl Checker<'_> {
                     .types
                     .attribute_error(attributes.clone(), Subject::Typedef);
                 self.report(declarator, result);
+                let result = self
+                    .types
+                    .reject_variably_modified_redefinition(declarator.id, resolved);
+                self.report(declarator, result);
                 if self.types.ctypes.is_variably_modified(resolved) {
                     self.types
                         .declare_provisional_alias(declarator.id, name.to_owned(), resolved);

@@ -2034,6 +2034,27 @@ impl TypeResolver {
                 && same_layout(&self.ir_type(previous), &self.ir_type(redefined))
     }
 
+    pub(super) fn reject_variably_modified_redefinition(
+        &self,
+        node: crate::ast::NodeId,
+        resolved: QualType,
+    ) -> Result<(), ResolveError> {
+        let Some(previous) = self
+            .declarations
+            .get(&node)
+            .and_then(|binding| self.alias(*binding))
+        else {
+            return Ok(());
+        };
+        if self.ctypes.is_variably_modified(previous) || self.ctypes.is_variably_modified(resolved)
+        {
+            return Err(ResolveError::Rejected(
+                "redefinition of typedef for variably-modified type",
+            ));
+        }
+        Ok(())
+    }
+
     pub(super) fn declare_provisional_alias(
         &mut self,
         node: crate::ast::NodeId,
