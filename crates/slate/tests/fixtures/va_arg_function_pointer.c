@@ -49,12 +49,7 @@ int main(void) {
 // CHECK-NEXT:             >(ap.next_arg::<*const u8>())
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: i32;
-// CHECK-NEXT:     if second != None {
-// CHECK-NEXT:         [[V_0]] = unsafe { second.unwrap()(x + 1) };
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         [[V_0]] = 3;
-// CHECK-NEXT:     }
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = if second != None { unsafe { second.unwrap()(x + 1) } } else { 3 };
 // CHECK-NEXT:     (unsafe { first.unwrap()(x) }) + [[V_0]]
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {

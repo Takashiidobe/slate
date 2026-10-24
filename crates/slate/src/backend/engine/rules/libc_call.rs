@@ -768,6 +768,7 @@ impl NodeRule for LibcCall {
         &[
             NodeKindTag::Expr,
             NodeKindTag::Let,
+            NodeKindTag::LetIf,
             NodeKindTag::Return,
             NodeKindTag::Assign,
             NodeKindTag::CompoundAssign,

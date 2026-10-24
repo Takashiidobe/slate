@@ -38,21 +38,11 @@ int main(void) {
 // CHECK-NEXT:     value
 // CHECK-NEXT: }
 // CHECK-NEXT: fn logical_and(a: i32, b: i32) -> i32 {
-// CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: bool;
-// CHECK-NEXT:     if a != 0 {
-// CHECK-NEXT:         [[V_0]] = mark(b) != 0;
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         [[V_0]] = false;
-// CHECK-NEXT:     }
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: bool = a != 0 && mark(b) != 0;
 // CHECK-NEXT:     [[V_0]] as i32
 // CHECK-NEXT: }
 // CHECK-NEXT: fn logical_or(a: i32, b: i32) -> i32 {
-// CHECK-NEXT:     let mut [[V_1:__v[0-9]+]]: bool;
-// CHECK-NEXT:     if a != 0 {
-// CHECK-NEXT:         [[V_1]] = true;
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         [[V_1]] = mark(b) != 0;
-// CHECK-NEXT:     }
+// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: bool = a != 0 || mark(b) != 0;
 // CHECK-NEXT:     [[V_1]] as i32
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {

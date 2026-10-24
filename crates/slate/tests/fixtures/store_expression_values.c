@@ -199,16 +199,15 @@ int main(void) {
 // CHECK-NEXT:     let mut picked: i32 = 0;
 // CHECK-NEXT:     let [[V_12:__v[0-9]+]]: i32 = (a > 5) as i32;
 // CHECK-NEXT:     flag = [[V_12]];
-// CHECK-NEXT:     let mut [[V_13:__v[0-9]+]]: i32;
-// CHECK-NEXT:     if [[V_12]] != 0 {
+// CHECK-NEXT:     let [[V_13:__v[0-9]+]]: i32 = if [[V_12]] != 0 {
 // CHECK-NEXT:         let [[V_14:__v[0-9]+]]: i32 = b - 1;
 // CHECK-NEXT:         b = [[V_14]];
-// CHECK-NEXT:         [[V_13]] = [[V_14]];
+// CHECK-NEXT:         [[V_14]]
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         let [[V_15:__v[0-9]+]]: i32 = c + 1;
 // CHECK-NEXT:         c = [[V_15]];
-// CHECK-NEXT:         [[V_13]] = [[V_15]];
-// CHECK-NEXT:     }
+// CHECK-NEXT:         [[V_15]]
+// CHECK-NEXT:     };
 // CHECK-NEXT:     picked = [[V_13]];
 // CHECK-NEXT:     let narrow: u8 = 44u8;
 // CHECK-NEXT:     let widened: i32 = 45i32;

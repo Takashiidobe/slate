@@ -607,12 +607,11 @@ int main(void) {
 // CHECK-NEXT:             ^ i << 40i32;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut bits: i64 = 0;
-// CHECK-NEXT:     let mut [[V_1:__v[0-9]+]]: i64;
-// CHECK-NEXT:     if std::arch::is_x86_feature_detected!("popcnt") {
-// CHECK-NEXT:         [[V_1]] = unsafe { popcount_hw(words.0.as_mut_ptr() as *const u64, 37u64) };
+// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i64 = if std::arch::is_x86_feature_detected!("popcnt") {
+// CHECK-NEXT:         unsafe { popcount_hw(words.0.as_mut_ptr() as *const u64, 37u64) }
 // CHECK-NEXT:     } else {
-// CHECK-NEXT:         [[V_1]] = popcount_scalar(&words.0);
-// CHECK-NEXT:     }
+// CHECK-NEXT:         popcount_scalar(&words.0)
+// CHECK-NEXT:     };
 // CHECK-NEXT:     bits = [[V_1]];
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"bits %lld %lld\n".as_ptr(), bits, popcount_scalar(&words.0)) };

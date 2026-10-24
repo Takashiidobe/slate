@@ -15,13 +15,12 @@ int main(int argc, char **argv) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main(argc: i32, argv: *mut *mut i8) -> i32 {
 // CHECK-NEXT:     let mut r: i32 = 0;
-// CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: i32;
-// CHECK-NEXT:     if argc == 1 {
-// CHECK-NEXT:         [[V_0]] = 0;
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = if argc == 1 {
+// CHECK-NEXT:         0
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         unsafe { std::process::abort() };
-// CHECK-NEXT:         [[V_0]] = 0;
-// CHECK-NEXT:     }
+// CHECK-NEXT:         0
+// CHECK-NEXT:     };
 // CHECK-NEXT:     r = [[V_0]];
 // CHECK-NEXT:     println!("{}", r);
 // CHECK-NEXT:     0

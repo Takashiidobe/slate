@@ -62,12 +62,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let holder: Holder = Holder { mode: 1 };
-// CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: bool;
-// CHECK-NEXT:     if (holder.mode as u32) == 1 {
-// CHECK-NEXT:         [[V_0]] = increment(1i32) == 2;
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         [[V_0]] = false;
-// CHECK-NEXT:     }
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: bool = (holder.mode as u32) == 1 && increment(1i32) == 2;
 // CHECK-NEXT:     if [[V_0]] && (unsafe { completed_count }) == 2 {
 // CHECK-NEXT:         0
 // CHECK-NEXT:     } else {

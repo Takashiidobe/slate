@@ -76,6 +76,7 @@ fn build(fold: Fold, cond: Expr, then_value: Expr, else_value: Expr) -> Expr {
 
 const INT_KINDS: &[NodeKindTag] = &[
     NodeKindTag::Let,
+    NodeKindTag::LetIf,
     NodeKindTag::Assign,
     NodeKindTag::CompoundAssign,
     NodeKindTag::Expr,

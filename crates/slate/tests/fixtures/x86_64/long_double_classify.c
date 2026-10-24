@@ -414,12 +414,11 @@ int main(void) {
 // CHECK-NEXT:         );
 // CHECK-NEXT:         let mut out: __SlateAlign16<[i8; 64]> = __SlateAlign16([0i8; 64]);
 // CHECK-NEXT:         let mut n: i32 = 0;
-// CHECK-NEXT:         let mut [[V_0:__v[0-9]+]]: i32;
-// CHECK-NEXT:         if ok != 0 {
-// CHECK-NEXT:             [[V_0]] = ld2string(out.0.as_mut_ptr() as *mut i8, 64u64, d);
+// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = if ok != 0 {
+// CHECK-NEXT:             ld2string(out.0.as_mut_ptr() as *mut i8, 64u64, d)
 // CHECK-NEXT:         } else {
-// CHECK-NEXT:             [[V_0]] = 0;
-// CHECK-NEXT:         }
+// CHECK-NEXT:             0
+// CHECK-NEXT:         };
 // CHECK-NEXT:         n = [[V_0]];
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { printf(c"%d %.*s\n".as_ptr(), ok, n, out.0.as_mut_ptr() as *mut i8) };

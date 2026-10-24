@@ -176,12 +176,7 @@ int main(void) {
 // CHECK-NEXT:             deepest = n;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut [[V_3:__v[0-9]+]]: i32;
-// CHECK-NEXT:     if n == 0 {
-// CHECK-NEXT:         [[V_3]] = unsafe { deepest };
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         [[V_3]] = depth(n - 1);
-// CHECK-NEXT:     }
+// CHECK-NEXT:     let [[V_3:__v[0-9]+]]: i32 = if n == 0 { unsafe { deepest } } else { depth(n - 1) };
 // CHECK-NEXT:     [[V_3]]
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut deepest: i32 = unsafe { std::mem::zeroed() };

@@ -72,12 +72,11 @@ int main(void) {
 // CHECK-NEXT:         setenv(c"SLATE_GETENV_FIXTURE_REJECTED".as_ptr(), c"ready".as_ptr(), 1i32)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let value: *mut i8 = unsafe { getenv(c"SLATE_GETENV_FIXTURE_REJECTED".as_ptr()) };
-// CHECK-NEXT:     let mut found: i32 = 0;
-// CHECK-NEXT:     if !value.is_null() {
-// CHECK-NEXT:         found = ((unsafe { strcmp(value as *const i8, c"ready".as_ptr()) }) == 0) as i32;
+// CHECK-NEXT:     let found: i32 = if !value.is_null() {
+// CHECK-NEXT:         ((unsafe { strcmp(value as *const i8, c"ready".as_ptr()) }) == 0) as i32
 // CHECK-NEXT:     } else {
-// CHECK-NEXT:         found = 0;
-// CHECK-NEXT:     }
+// CHECK-NEXT:         0
+// CHECK-NEXT:     };
 // CHECK-NEXT:     found
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

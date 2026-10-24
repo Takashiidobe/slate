@@ -67,12 +67,7 @@ int main(void) {
 // CHECK-NEXT:     println!("{}", clamp_low(3i32));
 // CHECK-NEXT:     println!("{}", clamp_low(20i32));
 // CHECK-NEXT:     let x: i32 = 7;
-// CHECK-NEXT:     let mut label: i32 = 0;
-// CHECK-NEXT:     if x % 2 == 0 {
-// CHECK-NEXT:         label = 100;
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         label = 200;
-// CHECK-NEXT:     }
+// CHECK-NEXT:     let label: i32 = if x % 2 == 0 { 100 } else { 200 };
 // CHECK-NEXT:     println!("{}", label);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

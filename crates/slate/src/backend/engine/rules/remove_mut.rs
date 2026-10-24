@@ -96,7 +96,7 @@ impl Binding<'_> {
                 self.expr_mutates(target) || self.expr_mutates(value)
             }
             NodeKind::Let { init, .. } => init.as_ref().is_some_and(|init| self.expr_mutates(init)),
-            NodeKind::LetIf { .. } | NodeKind::InlineAsm(_) => true,
+            NodeKind::InlineAsm(_) => true,
             NodeKind::For { iter, .. } => self.expr_mutates(iter),
             other => {
                 let mut mutates = false;
@@ -118,7 +118,7 @@ pub(in crate::backend::engine) fn invariant_within(
 ) -> bool {
     let ty = match arena.definition(name) {
         Some(id) => match arena.get(id) {
-            Some(NodeKind::Let { ty, .. }) => ty.as_ref(),
+            Some(NodeKind::Let { ty, .. } | NodeKind::LetIf { ty, .. }) => ty.as_ref(),
             _ => return false,
         },
         None => match arena.param_type(name) {
@@ -148,14 +148,20 @@ pub(in crate::backend::engine) fn binding_invariant_within(
 }
 
 fn demotable(arena: &FunctionOptimizer, id: NodeId) -> bool {
-    let Some(NodeKind::Let {
-        name,
-        mutable: true,
-        ty,
-        init: Some(_),
-    }) = arena.get(id)
-    else {
-        return false;
+    let (name, ty) = match arena.get(id) {
+        Some(NodeKind::Let {
+            name,
+            mutable: true,
+            ty,
+            init: Some(_),
+        })
+        | Some(NodeKind::LetIf {
+            name,
+            mutable: true,
+            ty,
+            ..
+        }) => (name, ty),
+        _ => return false,
     };
     if arena.param_type(*name).is_some() || arena.definition(*name) != Some(id) {
         return false;
@@ -211,7 +217,7 @@ impl NodeRule for RemoveMut {
     }
 
     fn kinds(&self) -> &'static [NodeKindTag] {
-        &[NodeKindTag::Let]
+        &[NodeKindTag::Let, NodeKindTag::LetIf]
     }
 
     fn matches(&self, arena: &FunctionOptimizer, id: NodeId) -> bool {
@@ -222,7 +228,9 @@ impl NodeRule for RemoveMut {
         if !demotable(arena, id) {
             return false;
         }
-        let Some(NodeKind::Let { mutable, .. }) = arena.get_mut(id) else {
+        let Some(NodeKind::Let { mutable, .. } | NodeKind::LetIf { mutable, .. }) =
+            arena.get_mut(id)
+        else {
             return false;
         };
         *mutable = false;

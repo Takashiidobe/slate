@@ -73,12 +73,11 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut joined: i32 = 0;
-// CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: i32;
-// CHECK-NEXT:     if created == 0 {
-// CHECK-NEXT:         [[V_0]] = unsafe { thrd_join(thread, std::ptr::addr_of_mut!(worker_result)) };
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = if created == 0 {
+// CHECK-NEXT:         unsafe { thrd_join(thread, std::ptr::addr_of_mut!(worker_result)) }
 // CHECK-NEXT:     } else {
-// CHECK-NEXT:         [[V_0]] = -1;
-// CHECK-NEXT:     }
+// CHECK-NEXT:         -1
+// CHECK-NEXT:     };
 // CHECK-NEXT:     joined = [[V_0]];
 // CHECK-NEXT:     let main_after: i32 = update_values(23i32, 29i32);
 // CHECK-NEXT:     println!("{} {} {} {} {}", main_before, worker_result, main_after, created, joined);

@@ -30,7 +30,7 @@ fn expr_is_zero(expr: &Expr) -> bool {
     }
 }
 
-fn expr_is_pure_and_closed(expr: &Expr) -> bool {
+pub(super) fn expr_is_pure_and_closed(expr: &Expr) -> bool {
     match expr {
         Expr::Value(_) | Expr::Str(_) | Expr::HexFloat(_) | Expr::ByteStr(_) | Expr::CStr(_) => {
             true
@@ -95,7 +95,7 @@ fn kind_reads_var(kind: &NodeKind, name: Ident) -> bool {
     }
 }
 
-fn node_touches_name(arena: &Arena, id: NodeId, name: Ident) -> bool {
+pub(super) fn node_touches_name(arena: &Arena, id: NodeId, name: Ident) -> bool {
     let Some(kind) = arena.get(id) else {
         return false;
     };

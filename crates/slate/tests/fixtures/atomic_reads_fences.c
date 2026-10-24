@@ -156,12 +156,7 @@ int main(void) {
 // CHECK-NEXT:             )
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: bool;
-// CHECK-NEXT:     if (unsafe { *cpv }) != c {
-// CHECK-NEXT:         [[V_0]] = true;
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         [[V_0]] = (unsafe { fnv.unwrap()(7i32) }) != 12;
-// CHECK-NEXT:     }
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: bool = (unsafe { *cpv }) != c || (unsafe { fnv.unwrap()(7i32) }) != 12;
 // CHECK-NEXT:     if [[V_0]]
 // CHECK-NEXT:         || !unsafe {
 // CHECK-NEXT:             std::sync::atomic::AtomicBool::load_volatile(

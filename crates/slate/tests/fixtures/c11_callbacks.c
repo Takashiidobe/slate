@@ -52,12 +52,11 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut thread_joined: i32 = 0;
-// CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: i32;
-// CHECK-NEXT:     if thread_created == 0 {
-// CHECK-NEXT:         [[V_0]] = unsafe { thrd_join(thread, std::ptr::addr_of_mut!(thread_result)) };
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = if thread_created == 0 {
+// CHECK-NEXT:         unsafe { thrd_join(thread, std::ptr::addr_of_mut!(thread_result)) }
 // CHECK-NEXT:     } else {
-// CHECK-NEXT:         [[V_0]] = -1;
-// CHECK-NEXT:     }
+// CHECK-NEXT:         -1
+// CHECK-NEXT:     };
 // CHECK-NEXT:     thread_joined = [[V_0]];
 // CHECK-NEXT:     let mut control: [[SLATERECORD_0:__SlateRecord[0-9]+]] = [[SLATERECORD_0]] { __data: 0 };
 // CHECK-NEXT:     unsafe { call_once(std::ptr::addr_of_mut!(control), Some(once_handler)) };

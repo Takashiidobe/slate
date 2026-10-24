@@ -5,6 +5,7 @@ use crate::backend::rust_ast::{BinOp, Expr, Prim, RustValue, Type, UnaryOp};
 
 const KINDS: &[NodeKindTag] = &[
     NodeKindTag::Let,
+    NodeKindTag::LetIf,
     NodeKindTag::Assign,
     NodeKindTag::CompoundAssign,
     NodeKindTag::Expr,
@@ -233,7 +234,19 @@ fn rewrite_kind(kind: &mut NodeKind, tail: bool) -> bool {
         }
         NodeKind::Return(Some(expr)) => rewrite(expr, true),
         NodeKind::Expr(expr) if tail => rewrite(expr, true),
-        NodeKind::LetIf { .. } | NodeKind::InlineAsm(_) => false,
+        NodeKind::LetIf {
+            ty,
+            cond,
+            then_value,
+            else_value,
+            ..
+        } => {
+            let typed = ty.is_some();
+            let cond_changed = rewrite(cond, false);
+            let then_changed = rewrite(then_value, typed);
+            rewrite(else_value, typed) || cond_changed || then_changed
+        }
+        NodeKind::InlineAsm(_) => false,
         other => {
             let mut changed = false;
             walk::visit_kind_exprs_mut(other, |expr| changed |= rewrite(expr, false));

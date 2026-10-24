@@ -162,12 +162,7 @@ int read_static_total(void) { return total; }
 // CHECK-NEXT:         unsafe { &mut (*std::ptr::addr_of_mut!(a)) },
 // CHECK-NEXT:         unsafe { &mut (*std::ptr::addr_of_mut!(b)) },
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let mut chosen: i32 = 0;
-// CHECK-NEXT:     if x > 0 {
-// CHECK-NEXT:         chosen = 10;
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         chosen = 20;
-// CHECK-NEXT:     }
+// CHECK-NEXT:     let chosen: i32 = if x > 0 { 10 } else { 20 };
 // CHECK-NEXT:     let mut sum: i32 = 0;
 // CHECK-NEXT:     for round in 0i32..3i32 {
 // CHECK-NEXT:         let mut fresh: i32 = 1;

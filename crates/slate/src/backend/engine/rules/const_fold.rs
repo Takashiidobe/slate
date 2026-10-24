@@ -5,6 +5,7 @@ use crate::backend::rust_ast::{BinOp, Expr, Item, Prim, RustValue, Type, UnaryOp
 
 const KINDS: &[NodeKindTag] = &[
     NodeKindTag::Let,
+    NodeKindTag::LetIf,
     NodeKindTag::Assign,
     NodeKindTag::CompoundAssign,
     NodeKindTag::Expr,

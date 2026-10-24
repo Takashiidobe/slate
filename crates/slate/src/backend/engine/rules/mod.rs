@@ -1,6 +1,7 @@
 mod array_iter;
 mod bool_simplify;
 mod bool_ternary;
+mod branch_init;
 mod compound_assign;
 pub(super) mod const_fold;
 mod constant_index_casts;
@@ -56,6 +57,7 @@ pub(super) fn registry(target: &slate_parser::target_info::TargetInfo) -> Vec<Bo
         Box::new(remove_mut::RemoveMut) as Box<dyn NodeRule>,
         Box::new(slot_promote::SlotPromote),
         Box::new(slot_promote::DeclSink),
+        Box::new(branch_init::BranchInitFold),
         Box::new(zero_init::ZeroInitFold),
         Box::new(param_spills::ParamSpillFold),
         Box::new(raw_ptr_alias::RawPtrAliasElide),

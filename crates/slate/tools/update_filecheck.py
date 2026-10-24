@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import argparse
 import difflib
+import glob
 import os
 import re
 import subprocess
@@ -373,6 +374,22 @@ def all_fixtures():
     return sorted([*generated, *release])
 
 
+def expand_glob(argument):
+    if not any(char in argument for char in "*?["):
+        return [argument]
+    path = Path(argument)
+    pattern = str(path.resolve())
+    deep = str(path.resolve().parent / "**" / path.name)
+    known = {str(fixture) for fixture in all_fixtures()}
+    matches = sorted(
+        match
+        for candidate in (pattern, deep)
+        for match in glob.glob(candidate, recursive=True)
+        if match in known
+    )
+    return list(dict.fromkeys(matches)) or [argument]
+
+
 def resolve_fixture(argument):
     path = Path(argument)
     if path.suffix == ".c" or path.exists():
@@ -407,7 +424,7 @@ def main(argv):
     parser.add_argument(
         "fixtures",
         nargs="*",
-        help="fixture paths, or names (optionally TARGET/NAME) as a failing test run lists them; default: every fixture",
+        help="fixture paths (globs also match subdirectories), or names (optionally TARGET/NAME) as a failing test run lists them; default: every fixture",
     )
     parser.add_argument(
         "--target",
@@ -423,7 +440,12 @@ def main(argv):
     arguments = parser.parse_args(argv)
     targets_by_fixture = {}
     failures = 0
-    for argument in arguments.fixtures or [str(path) for path in all_fixtures()]:
+    requested = [
+        expanded
+        for argument in arguments.fixtures
+        for expanded in expand_glob(argument)
+    ]
+    for argument in requested or [str(path) for path in all_fixtures()]:
         try:
             path, extra = resolve_fixture(argument)
             targets = fixture_targets(path, arguments.target, extra)

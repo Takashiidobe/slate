@@ -22,22 +22,21 @@ int main() {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn bump(p: &mut u64, c: i32) -> u64 {
-// CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: u64;
-// CHECK-NEXT:     if c != 0 {
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: u64 = if c != 0 {
 // CHECK-NEXT:         let [[V_1:__v[0-9]+]]: u64 = unsafe { *p };
 // CHECK-NEXT:         let [[V_2:__v[0-9]+]]: u64 = [[V_1]].wrapping_add(2);
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *p = [[V_2]];
 // CHECK-NEXT:         }
-// CHECK-NEXT:         [[V_0]] = [[V_2]];
+// CHECK-NEXT:         [[V_2]]
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         let [[V_3:__v[0-9]+]]: u64 = unsafe { *p };
 // CHECK-NEXT:         let [[V_4:__v[0-9]+]]: u64 = [[V_3]].wrapping_add(1);
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *p = [[V_4]];
 // CHECK-NEXT:         }
-// CHECK-NEXT:         [[V_0]] = [[V_4]];
-// CHECK-NEXT:     }
+// CHECK-NEXT:         [[V_4]]
+// CHECK-NEXT:     };
 // CHECK-NEXT:     [[V_0]]
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {

@@ -140,40 +140,18 @@ int main(void) {
 // CHECK-NEXT:         block.0[i as usize] = ((i + depth) as i8) as u8;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut ok: i32 = 0;
-// CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: bool;
-// CHECK-NEXT:     if aligned(row.0.as_mut_ptr() as *const (), 16u64) != 0 {
-// CHECK-NEXT:         [[V_0]] = aligned(line.0.as_mut_ptr() as *const (), 64u64) != 0;
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         [[V_0]] = false;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     let mut [[V_1:__v[0-9]+]]: bool;
-// CHECK-NEXT:     if [[V_0]] {
-// CHECK-NEXT:         [[V_1]] = aligned(block.0.as_mut_ptr() as *const (), 16u64) != 0;
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         [[V_1]] = false;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     let mut [[V_2:__v[0-9]+]]: bool;
-// CHECK-NEXT:     if [[V_1]] {
-// CHECK-NEXT:         [[V_2]] = aligned(std::ptr::addr_of_mut!(word.0) as *const (), 16u64) != 0;
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         [[V_2]] = false;
-// CHECK-NEXT:     }
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: bool = aligned(row.0.as_mut_ptr() as *const (), 16u64) != 0
+// CHECK-NEXT:         && aligned(line.0.as_mut_ptr() as *const (), 64u64) != 0;
+// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: bool = [[V_0]] && aligned(block.0.as_mut_ptr() as *const (), 16u64) != 0;
+// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: bool = [[V_1]]
+// CHECK-NEXT:         && aligned(std::ptr::addr_of_mut!(word.0) as *const (), 16u64) != 0;
 // CHECK-NEXT:     ok = [[V_2]] as i32;
-// CHECK-NEXT:     let mut [[V_3:__v[0-9]+]]: bool;
-// CHECK-NEXT:     if ok != 0 {
-// CHECK-NEXT:         [[V_3]] = sum_vectors(row.0.as_mut_ptr() as *const u64, 4i32)
+// CHECK-NEXT:     let [[V_3:__v[0-9]+]]: bool = ok != 0
+// CHECK-NEXT:         && sum_vectors(row.0.as_mut_ptr() as *const u64, 4i32)
 // CHECK-NEXT:             == 6u64.wrapping_add((depth as i64) as u64);
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         [[V_3]] = false;
-// CHECK-NEXT:     }
 // CHECK-NEXT:     ok = [[V_3]] as i32;
 // CHECK-NEXT:     if depth > 0 {
-// CHECK-NEXT:         let mut [[V_4:__v[0-9]+]]: bool;
-// CHECK-NEXT:         if ok != 0 {
-// CHECK-NEXT:             [[V_4]] = locals(depth - 1) != 0;
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             [[V_4]] = false;
-// CHECK-NEXT:         }
+// CHECK-NEXT:         let [[V_4:__v[0-9]+]]: bool = ok != 0 && locals(depth - 1) != 0;
 // CHECK-NEXT:         ok = [[V_4]] as i32;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     ok + (tag2 as i32) - (tag as i32) + (marker as i32) - 7 + ((line.0[0] as u32) as i32)
