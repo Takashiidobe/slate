@@ -12,3 +12,4 @@ target/
 
 # Local Netlify folder
 .netlify
+.scip/

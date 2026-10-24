@@ -21,6 +21,8 @@ LOCK = OUT / "build.lock"
 RERUN = OUT / "rebuild-requested"
 LOG = OUT / "build.log"
 
+SCHEMA_VERSION = "2"
+
 FUNCTION_KINDS = {"Function", "Method", "StaticMethod", "AbstractMethod", "TraitMethod"}
 
 SCHEMA = """
@@ -30,7 +32,7 @@ CREATE TABLE symbols(
     id INTEGER PRIMARY KEY, symbol TEXT UNIQUE, name TEXT, kind TEXT,
     crate TEXT, signature TEXT, docs TEXT);
 CREATE TABLE occurrences(
-    symbol_id INTEGER, file_id INTEGER, line INTEGER, col INTEGER,
+    symbol_id INTEGER, file_id INTEGER, line INTEGER, col INTEGER, end_col INTEGER,
     is_definition INTEGER, enclosing_id INTEGER);
 """
 
@@ -128,11 +130,13 @@ def load(scip_path, db_path, commit, tree):
             if occurrence.symbol.startswith("local ") or not occurrence.symbol:
                 continue
             line, col = occurrence.range[0], occurrence.range[1]
+            end_col = occurrence.range[2] + 1 if len(occurrence.range) == 3 else None
             is_definition = 1 if occurrence.symbol_roles & pb2.Definition else 0
             sid = symbol_id(occurrence.symbol)
             enclosing = innermost_function(functions, line)
             occurrence_rows.append(
-                (sid, file_id, line + 1, col + 1, is_definition, None if enclosing == sid else enclosing)
+                (sid, file_id, line + 1, col + 1, end_col, is_definition,
+                 None if enclosing == sid else enclosing)
             )
 
     con.executemany(
@@ -150,11 +154,12 @@ def load(scip_path, db_path, commit, tree):
             for symbol, sid in symbol_ids.items()
         ),
     )
-    con.executemany("INSERT INTO occurrences VALUES (?, ?, ?, ?, ?, ?)", occurrence_rows)
+    con.executemany("INSERT INTO occurrences VALUES (?, ?, ?, ?, ?, ?, ?)", occurrence_rows)
     con.executescript(INDEXES)
     con.executemany(
         "INSERT INTO meta VALUES (?, ?)",
-        [("commit", commit), ("tree", tree), ("built_at", str(int(time.time())))],
+        [("commit", commit), ("tree", tree), ("built_at", str(int(time.time()))),
+         ("schema", SCHEMA_VERSION)],
     )
     con.commit()
     con.close()
@@ -164,9 +169,9 @@ def indexed_tree():
     if not DB.exists():
         return None
     con = sqlite3.connect(DB)
-    row = con.execute("SELECT value FROM meta WHERE key = 'tree'").fetchone()
+    meta = dict(con.execute("SELECT key, value FROM meta"))
     con.close()
-    return row[0] if row else None
+    return meta.get("tree") if meta.get("schema") == SCHEMA_VERSION else None
 
 
 def build_once():

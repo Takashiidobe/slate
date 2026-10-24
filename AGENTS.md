@@ -78,10 +78,10 @@ Then pick the tool by what you are searching:
   - `status`: the commit it was built at, and the `.rs` files changed since
 
   Qualify names to narrow them (`Preprocessor::reject_poisoned`,
-  `PPErrorKind::PoisonedIdentifier`) or pass `--crate slate-parser`. A
-  post-commit hook rebuilds it in the background (about 90 s); install
-  the hook once with `ln -s ../../tools/scip/post-commit .git/hooks/post-commit`,
-  or build it by hand with `python3 tools/scip/scip.py build`.
+  `PPErrorKind::PoisonedIdentifier`) or pass `--crate slate-parser`. Rebuild
+  it with `python3 tools/scip/scip.py build` (about 90 s) when `status`
+  says it is stale. `python3 tools/scip/site.py` writes a browsable,
+  cross-crate view of it to `.scip/site/index.html`.
 - Rust code you have edited this session, or a file `status` lists as
   changed: the LSP (rust-analyzer), since the index's lines there are
   stale. `hover`, `goToDefinition`, `findReferences`, `workspaceSymbol`,
