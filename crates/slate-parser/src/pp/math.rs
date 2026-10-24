@@ -3,7 +3,7 @@ use super::error::PPFailure;
 use super::syntax::{Directive, identifier};
 use crate::ast::HeaderKind;
 use crate::compiler_args::math_switch_argument;
-use crate::compiler_options::MathOptions;
+use crate::compiler_options::{MathOptions, Optimization};
 use crate::lexer::Token;
 use crate::target_info::TargetFamily;
 use std::path::PathBuf;
@@ -14,20 +14,32 @@ pub(super) struct PragmaMath {
     errno_default: bool,
     command_line: MathOptions,
     current: MathOptions,
-    pushed: Vec<MathOptions>,
+    pushed: Vec<(MathOptions, Optimization)>,
+    command_line_optimization: Optimization,
+    optimization: Optimization,
     sources: usize,
 }
 
 impl PragmaMath {
-    pub(super) fn new(math: MathOptions) -> Self {
+    pub(super) fn new(math: MathOptions, optimization: Optimization) -> Self {
         Self {
             errno_default: true,
             command_line: math,
             current: math,
             pushed: Vec::new(),
+            command_line_optimization: optimization,
+            optimization,
             sources: 0,
         }
     }
+}
+
+fn optimization_macros(optimization: Optimization) -> [MathMacro; 2] {
+    let flag = |name, on: bool| (name, on.then_some("1"));
+    [
+        flag("__OPTIMIZE__", optimization != Optimization::None),
+        flag("__OPTIMIZE_SIZE__", optimization == Optimization::Size),
+    ]
 }
 
 impl Preprocessor<'_> {
@@ -153,13 +165,27 @@ impl Preprocessor<'_> {
         };
         let flavor = self.dialect.flavor();
         let previous = self.math.current;
+        let previous_optimization = self.math.optimization;
         match action.as_str() {
             "optimize" => {
                 for token in &directive.arguments[2..] {
-                    let Token::StringLit(text) = &token.value else {
-                        continue;
+                    let text = match &token.value {
+                        Token::StringLit(text) => text.to_string(),
+                        Token::IntLit(level) => {
+                            if let Some(optimization) = Optimization::from_level(level) {
+                                self.math.optimization = optimization;
+                            }
+                            continue;
+                        }
+                        _ => continue,
                     };
                     for option in text.split(',').map(str::trim) {
+                        let level = option.trim_start_matches('-');
+                        let level = level.strip_prefix('O').unwrap_or(level);
+                        if let Some(optimization) = Optimization::from_level(level) {
+                            self.math.optimization = optimization;
+                            continue;
+                        }
                         let argument = if option.starts_with('-') {
                             option.to_owned()
                         } else {
@@ -171,19 +197,28 @@ impl Preprocessor<'_> {
                     }
                 }
             }
-            "push_options" => self.math.pushed.push(previous),
+            "push_options" => self.math.pushed.push((previous, previous_optimization)),
             "pop_options" => {
-                if let Some(saved) = self.math.pushed.pop() {
+                if let Some((saved, optimization)) = self.math.pushed.pop() {
                     self.math.current = saved;
+                    self.math.optimization = optimization;
                 }
             }
-            "reset_options" => self.math.current = self.math.command_line,
+            "reset_options" => {
+                self.math.current = self.math.command_line;
+                self.math.optimization = self.math.command_line_optimization;
+            }
             _ => {}
         }
         let changed: Vec<MathMacro> = self
             .math_macros(&previous, true)
             .into_iter()
-            .zip(self.math_macros(&self.math.current, true))
+            .chain(optimization_macros(previous_optimization))
+            .zip(
+                self.math_macros(&self.math.current, true)
+                    .into_iter()
+                    .chain(optimization_macros(self.math.optimization)),
+            )
             .filter(|(before, after)| before != after)
             .map(|(_, after)| after)
             .collect();

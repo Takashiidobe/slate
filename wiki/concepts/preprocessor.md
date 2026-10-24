@@ -333,8 +333,13 @@ token plus an interned `HideSet`; file tokens start empty.
   `__RECIPROCAL_MATH__`, `__NO_SIGNED_ZEROS__`, `__NO_TRAPPING_MATH__`,
   `__ASSOCIATIVE_MATH__`, `__ROUNDING_MATH__`, `__SUPPORT_SNAN__`. Unlike
   the command line, `-fassociative-math` here is not disabled by trapping
-  math. gcc also updates `__OPTIMIZE__`; slate does not yet. The pragma
-  does not change IR operation contracts.
+  math. The same pragmas also track the optimization level (seeded from
+  `CodegenOptions::optimization`): an O-level argument (`"O2"`, `"-Os"`,
+  `"s"`, or the number form `optimize 2`; last one wins) redefines
+  `__OPTIMIZE__` (unset for `O0`) and `__OPTIMIZE_SIZE__` (set only for
+  `Os`/`Oz`/`s`). `__NO_INLINE__` is never touched, matching gcc. `"Ofast"`
+  sets `__OPTIMIZE__` but does not yet turn on fast-math. The pragma does
+  not change IR operation contracts.
 - `#line` and GNU line markers set `line_overrides`, read by
   `presumed_location` for `__LINE__` / `__FILE__`. An oversized `#line`
   number follows each oracle: gcc wraps it modulo 2^32 (and warns), clang

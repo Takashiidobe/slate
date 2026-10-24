@@ -35,6 +35,26 @@ pub struct CodegenOptions {
     pub three_dnow: u8,
     pub delete_null_pointer_checks: bool,
     pub trivial_auto_var_init: TrivialAutoVarInit,
+    pub optimization: Optimization,
+}
+
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
+pub enum Optimization {
+    #[default]
+    None,
+    Speed,
+    Size,
+}
+
+impl Optimization {
+    pub fn from_level(level: &str) -> Option<Self> {
+        match level {
+            "0" => Some(Self::None),
+            "" | "1" | "2" | "3" | "g" | "fast" => Some(Self::Speed),
+            "s" | "z" => Some(Self::Size),
+            _ => None,
+        }
+    }
 }
 
 impl Default for CodegenOptions {
@@ -46,6 +66,7 @@ impl Default for CodegenOptions {
             three_dnow: 0,
             delete_null_pointer_checks: true,
             trivial_auto_var_init: TrivialAutoVarInit::Uninitialized,
+            optimization: Optimization::None,
         }
     }
 }

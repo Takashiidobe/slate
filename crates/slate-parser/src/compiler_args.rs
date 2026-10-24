@@ -1,6 +1,7 @@
 use crate::compiler_options::{
     CodegenOptions, CompilerOptions, LayoutOptions, LibraryBuiltins, MathOptions, MathSwitch,
-    MicrosoftFlags, OperationValues, Pic, SourceGraphs, StackProtector, TrivialAutoVarInit,
+    MicrosoftFlags, OperationValues, Optimization, Pic, SourceGraphs, StackProtector,
+    TrivialAutoVarInit,
 };
 use crate::diagnostics::{DiagnosticOptions, Warning};
 use crate::files::SearchPaths;
@@ -445,13 +446,6 @@ enum Opt {
     MacroPrefixMap,
     FixedRegister,
     Mllvm,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum Optimization {
-    None,
-    Speed,
-    Size,
 }
 
 impl std::fmt::Display for Opt {
@@ -1594,6 +1588,7 @@ fn codegen_options(raw: &ParsedCompilerArgs, target: &TargetInfo) -> CodegenOpti
         three_dnow: raw.three_dnow.unwrap_or(0),
         delete_null_pointer_checks: raw.delete_null_pointer_checks.unwrap_or(true),
         trivial_auto_var_init: raw.trivial_auto_var_init.unwrap_or_default(),
+        optimization: raw.optimization.unwrap_or_default(),
     }
 }
 

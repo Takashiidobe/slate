@@ -316,7 +316,10 @@ impl<'a> Preprocessor<'a> {
             included_files: HashSet::new(),
             include_guards: HashMap::new(),
             pushed_macros: HashMap::new(),
-            math: math::PragmaMath::new(dialect.options().math),
+            math: math::PragmaMath::new(
+                dialect.options().math,
+                dialect.options().codegen.optimization,
+            ),
             assertions: HashMap::new(),
             directive_diagnostics: Vec::new(),
             line_overrides: HashMap::new(),
