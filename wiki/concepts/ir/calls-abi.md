@@ -200,8 +200,10 @@ member, so Slate must pass that member's type at the boundary
   conventions, stay on variadic functions (`fn ms_abi(i32, ...) -> i32`).
   Slate lowers them to `extern "win64-unwind"` / `"sysv64-unwind"` on
   x86-64 and rejects what rustc cannot express: variadic definitions,
-  `long double`, and `win64` on AArch64. Slate also rejects the x86
-  conventions instead of lowering them as C.
+  `long double`, and `win64` on AArch64. Slate lowers the x86 conventions
+  to `extern "stdcall-unwind"`, `"fastcall-unwind"`, `"thiscall-unwind"`
+  (i686) and `"vectorcall-unwind"` (x86-64) only where rustc passes the
+  shapes like clang, and rejects the rest (no shims, no rustc work).
 - `-mregparm=N` on 32-bit x86 puts `regparm=N` on every non-variadic
   `cdecl` or `stdcall` `AbiSignature` (`x86_cdecl regparm=3(scalar) ->
 scalar`): the first N integer-class registers (`eax`, `edx`, `ecx`) carry
@@ -217,6 +219,13 @@ scalar`): the first N integer-class registers (`eax`, `edx`, `ecx`) carry
   `@f@8`, `f@@8`) are left to rustc's `extern "stdcall"` etc. Pass shapes
   are the platform's cdecl ones, except x86-64 `vectorcall` (see
   [x86-64 `vectorcall`](#x86-64-vectorcall)).
+- rustc matches clang for `stdcall` and `thiscall` (records, `sret`,
+  decoration) but not for all `fastcall` `inreg` assignment, which the IR
+  does not record: an integer of at most 32 bits after a `long long` that
+  found a register free goes in a register for clang and on the stack for
+  rustc, and off MSVC clang (like gcc) puts small records in registers
+  while rustc passes them `byval`. Slate rejects those signatures by type
+  (`Tables::fastcall_matches_rustc`).
 - Fixtures: `clang/{windows,linux}/i686/calling_conventions.c`,
   `clang/linux/x86_64/calling_conventions_ignored.c`,
   `clang/{windows,linux}/x86_64/calling_convention_vectorcall.c`,

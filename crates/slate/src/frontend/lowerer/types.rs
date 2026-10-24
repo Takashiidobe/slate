@@ -676,6 +676,10 @@ impl FunctionLowerer<'_, '_> {
                                     .chain(return_type.as_deref())
                                     .all(|ty| self.tables.vectorcall_scalar(ty))
                         }
+                        rust::Abi::FastcallUnwind => {
+                            self.tables.fastcall_matches_rustc(parameters)
+                                && !self.tables.function_type_passes_long_double(ty)
+                        }
                         _ => !self.tables.function_type_passes_long_double(ty),
                     })
                 else {

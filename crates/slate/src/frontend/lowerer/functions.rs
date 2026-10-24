@@ -131,8 +131,47 @@ impl Tables<'_> {
             (ir::CallConv::X86Vectorcall, TargetFamily::X86_64) => {
                 Some(rust::Abi::VectorcallUnwind)
             }
+            (ir::CallConv::X86Stdcall, TargetFamily::X86) => Some(rust::Abi::StdcallUnwind),
+            (ir::CallConv::X86Fastcall, TargetFamily::X86) => Some(rust::Abi::FastcallUnwind),
+            (ir::CallConv::X86Thiscall, TargetFamily::X86) => Some(rust::Abi::ThiscallUnwind),
             _ => None,
         }
+    }
+
+    pub(super) fn fastcall_matches_rustc<'a>(
+        &self,
+        parameters: impl IntoIterator<Item = &'a ir::Type>,
+    ) -> bool {
+        let msvc = self.target.environment == slate_parser::target_info::TargetEnvironment::Msvc;
+        let mut free_registers = 2;
+        let mut wide_holds_registers = false;
+        for ty in parameters {
+            match self.resolve_type(ty) {
+                ir::Type::Bool
+                | ir::Type::Pointer { .. }
+                | ir::Type::Numeric(ir::NumericType::Integer {
+                    width: ..=32,
+                    bit_precise: false,
+                    ..
+                }) => {
+                    if wide_holds_registers {
+                        return false;
+                    }
+                    free_registers = usize::saturating_sub(free_registers, 1);
+                }
+                ir::Type::Numeric(ir::NumericType::Integer {
+                    width: 33..=64,
+                    bit_precise: false,
+                    ..
+                }) => wide_holds_registers |= free_registers > 0,
+                ir::Type::Numeric(ir::NumericType::Float(
+                    ir::FloatType::F32 | ir::FloatType::F64,
+                )) => {}
+                ty if msvc && self.record_fields(ty).is_some() => {}
+                _ => return false,
+            }
+        }
+        true
     }
 
     pub(super) fn vectorcall_scalar(&self, ty: &ir::Type) -> bool {
@@ -181,9 +220,27 @@ impl Tables<'_> {
         {
             return unsupported(format!("variadic {convention} definition"));
         }
+        let x86_convention = matches!(
+            abi,
+            rust::Abi::StdcallUnwind
+                | rust::Abi::FastcallUnwind
+                | rust::Abi::ThiscallUnwind
+                | rust::Abi::VectorcallUnwind
+        );
+        if abi == rust::Abi::FastcallUnwind
+            && !self.fastcall_matches_rustc(
+                types::fixed_parameters(&function.parameters)
+                    .iter()
+                    .map(|parameter| &parameter.ty),
+            )
+        {
+            return unsupported(format!(
+                "{convention} register assignment rustc diverges on"
+            ));
+        }
         if let Some(signature) = &function.abi
-            && abi == rust::Abi::VectorcallUnwind
-            && !rustc_spells_vectorcall(signature)
+            && x86_convention
+            && !rustc_spells_shapes(signature)
         {
             return unsupported(format!(
                 "{convention} pass shapes rustc diverges on: {signature}"
@@ -193,9 +250,10 @@ impl Tables<'_> {
     }
 }
 
-fn rustc_spells_vectorcall(signature: &ir::AbiSignature) -> bool {
+fn rustc_spells_shapes(signature: &ir::AbiSignature) -> bool {
     let native = |pass: &ir::AbiPass| matches!(pass, ir::AbiPass::Scalar | ir::AbiPass::NativeC);
-    signature.arguments.iter().all(native)
+    signature.regparm == 0
+        && signature.arguments.iter().all(native)
         && (native(&signature.result) || signature.result == ir::AbiPass::Void)
 }
 
