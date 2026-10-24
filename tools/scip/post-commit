@@ -1,0 +1,3 @@
+#!/bin/sh
+[ "$(git rev-parse --git-dir)" = "$(git rev-parse --git-common-dir)" ] || exit 0
+python3 "$(git rev-parse --show-toplevel)/tools/scip/scip.py" build-background >/dev/null 2>&1 || true
