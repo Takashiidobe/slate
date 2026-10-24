@@ -447,7 +447,8 @@ PragmaKind = Pack { action: StackAction, label?: opt<string>,
                     alignment: opt<expr> }
            | Weak { name: string, alias: opt<string> }
            | Visibility { action: StackAction, visibility: opt<string> }
-           | Stdc { option: ( "FenvAccess" | "FpContract" | "CxLimitedRange" ),
+           | Stdc { option: ( "FenvAccess" | "FpContract" | "CxLimitedRange"
+                            | "FloatConstDecimal64" ),
                     value: ( "On" | "Off" | "Default" ) }
            | "FloatControl(" FloatControl ")"
            | MsStruct { action: ( "On" | "Off" | "Reset" ) }

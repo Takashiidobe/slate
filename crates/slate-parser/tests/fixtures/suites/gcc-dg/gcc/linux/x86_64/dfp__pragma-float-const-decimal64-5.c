@@ -73,7 +73,7 @@ void f6 (void)
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: f64 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<f64>(%[[VALUE_a]], const<f64>(1.0));
+// DEFAULT-NEXT:         write<f64>(%[[VALUE_a]], float_convert<f64, reason=assign, rounding=nearest_even, exceptions=observable>(const<d64>(1.0)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<f64>(%[[VALUE_a]], const<f64>(2.0));
@@ -82,7 +82,7 @@ void f6 (void)
 // DEFAULT-NEXT:         write<f64>(%[[VALUE_a]], const<f64>(3.0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f4:[0-9]+]] @f4() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<f64>(%[[VALUE_a]], const<f64>(1.0));
+// DEFAULT-NEXT:         write<f64>(%[[VALUE_a]], float_convert<f64, reason=assign, rounding=nearest_even, exceptions=observable>(const<d64>(1.0)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f5:[0-9]+]] @f5() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<f64>(%[[VALUE_a]], const<f64>(2.0));

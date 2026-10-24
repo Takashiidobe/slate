@@ -96,6 +96,15 @@ restores. Clang and MSVC flavors, matching clang 22:
   statement, so it's accepted where clang rejects it (permissive).
 - gcc implements none of these (`-Wunknown-pragmas`): no effect under the
   gcc flavor.
+- `STDC FLOAT_CONST_DECIMAL64 ON|OFF|DEFAULT` is gcc only (clang and msvc
+  ignore it). Under `ON`, an unsuffixed decimal floating constant has type
+  `_Decimal64` (`d64`). Hex constants, imaginary constants and the `d`
+  suffix stay binary, and `DEFAULT` is `OFF`. Placement and scoping follow
+  the rules above: a pragma after the first item of a compound statement is
+  ignored, as gcc does with `-Wpragmas` (the warning is not emitted).
+  `pragmas::collect` records the affected literals' `NodeId`s in one walk,
+  and `TypeResolver::literal`/`literal_type` give those literals the
+  `DecimalF64` suffix. The AST keeps the literal's own suffix.
 
 ## Conversions
 

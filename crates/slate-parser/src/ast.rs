@@ -80,6 +80,7 @@ pub enum StdcPragmaOption {
     FenvAccess,
     FpContract,
     CxLimitedRange,
+    FloatConstDecimal64,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

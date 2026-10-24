@@ -498,6 +498,7 @@ fn parse_stdc_option(token: &str) -> Option<StdcPragmaOption> {
         "FENV_ACCESS" => Some(StdcPragmaOption::FenvAccess),
         "FP_CONTRACT" => Some(StdcPragmaOption::FpContract),
         "CX_LIMITED_RANGE" => Some(StdcPragmaOption::CxLimitedRange),
+        "FLOAT_CONST_DECIMAL64" => Some(StdcPragmaOption::FloatConstDecimal64),
         _ => None,
     }
 }

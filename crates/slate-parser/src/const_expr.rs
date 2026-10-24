@@ -550,6 +550,14 @@ fn split_float_spelling(spelling: &str) -> (String, &'static str, bool) {
 }
 
 impl FloatLiteral {
+    pub fn is_unsuffixed_decimal(&self) -> bool {
+        let (_, suffix, imaginary) = split_float_spelling(&self.spelling);
+        self.radix == FloatRadix::Decimal
+            && self.fixed_suffix.is_none()
+            && suffix.is_empty()
+            && !imaginary
+    }
+
     pub fn parse_unevaluated(spelling: &str) -> Self {
         let (fixed_suffix, base_spelling) = split_fixed_suffix(spelling);
         let (digits, suffix, imaginary) = split_float_spelling(&base_spelling);

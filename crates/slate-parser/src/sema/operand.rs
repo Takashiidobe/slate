@@ -4,7 +4,7 @@ use super::numeric::{Context, ResolveError};
 use super::types::TypeResolver;
 use super::validate::MicrosoftLiteralType;
 use crate::ast::{Expr, ExprKind, FixedPointKind, FixedPointRank, IntegerRank};
-use crate::const_expr::{BinaryOp, FloatSuffix};
+use crate::const_expr::{BinaryOp, FloatLiteral, FloatSuffix};
 use crate::ir::{ConversionReason, ValueKind};
 use crate::ir::{Place, Value};
 use crate::standard_features::StandardFeatures;
@@ -113,7 +113,24 @@ impl TypeResolver {
         }
     }
 
+    fn decimal64_literal(&self, e: &Expr) -> Option<Expr> {
+        let ExprKind::FloatLiteral(literal) = &e.value else {
+            return None;
+        };
+        if !self.pragmas.is_decimal64_literal(e.id) {
+            return None;
+        }
+        let literal = FloatLiteral {
+            suffix: FloatSuffix::DecimalF64,
+            ..literal.clone()
+        };
+        Some(Box::new(e.derive(ExprKind::FloatLiteral(literal))))
+    }
+
     pub(super) fn literal(&mut self, context: &Context, e: &Expr) -> Result<Operand, ResolveError> {
+        if let Some(decimal) = self.decimal64_literal(e) {
+            return self.literal(context, &decimal);
+        }
         let c = self.literal_type(&context.target, context.features, e)?;
         Ok(Operand {
             value: context.resolve_literal(e)?,
@@ -145,6 +162,9 @@ impl TypeResolver {
         features: StandardFeatures,
         e: &Expr,
     ) -> Result<QualType, ResolveError> {
+        if let Some(decimal) = self.decimal64_literal(e) {
+            return self.literal_type(target, features, &decimal);
+        }
         let kind = match &e.value {
             ExprKind::IntegerLiteral(literal) => {
                 let component = if let crate::const_expr::IntegerSizeSuffix::Microsoft(suffix) =

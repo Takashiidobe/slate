@@ -1,8 +1,9 @@
 use super::numeric::ResolveError;
 use crate::ast::{
-    DeclKind, Declaration, FloatControl, FloatControlOption, FunctionDefinition, MsStructAction,
-    Pragma, PragmaKind, PragmaStackAction, SehHandler, StdcPragmaOption, StdcPragmaValue, Stmt,
-    StmtKind, TagId, TagSpecifier, TranslationUnit, TypeSpecifier,
+    Decl, DeclKind, Declaration, Expr, ExprKind, FloatControl, FloatControlOption,
+    FunctionDefinition, MsStructAction, NodeId, Pragma, PragmaKind, PragmaStackAction, SehHandler,
+    StdcPragmaOption, StdcPragmaValue, Stmt, StmtKind, TagId, TagSpecifier, TranslationUnit,
+    TypeSpecifier,
 };
 use crate::compiler_args::{CompilerFlavor, LanguageStandard};
 use crate::ir::{
@@ -20,9 +21,14 @@ pub struct Pragmas {
     visibility: HashMap<String, Visibility>,
     weak: HashMap<String, Option<String>>,
     renamed: HashMap<String, String>,
+    decimal64_literals: HashSet<NodeId>,
 }
 
 impl Pragmas {
+    pub fn is_decimal64_literal(&self, literal: NodeId) -> bool {
+        self.decimal64_literals.contains(&literal)
+    }
+
     pub fn max_field_alignment(&self, tag: TagId) -> Option<u64> {
         self.pack.get(&tag).copied()
     }
@@ -108,6 +114,10 @@ impl FloatingPragmas {
             return Ok(());
         }
         let control = match pragma {
+            PragmaKind::Stdc {
+                option: StdcPragmaOption::FloatConstDecimal64,
+                ..
+            } => return Ok(()),
             PragmaKind::Stdc { option, value } => {
                 if placement == PragmaPlacement::Misplaced {
                     return Err(misplaced());
@@ -194,6 +204,7 @@ impl FloatingPragmas {
                     StdcPragmaValue::Default => self.defaults.complex_range,
                 };
             }
+            StdcPragmaOption::FloatConstDecimal64 => {}
         }
         Ok(())
     }
@@ -262,7 +273,85 @@ pub fn collect(unit: &TranslationUnit) -> Pragmas {
             walk.symbol(name);
         }
     }
+    if unit.dialect.flavor().is_gcc() {
+        let mut literals = Decimal64Literals::default();
+        let Ok(()) = literals.visit_translation_unit(unit);
+        walk.pragmas.decimal64_literals = literals.found;
+    }
     walk.pragmas
+}
+
+#[derive(Default)]
+struct Decimal64Literals {
+    on: bool,
+    compound_start: bool,
+    found: HashSet<NodeId>,
+}
+
+impl Decimal64Literals {
+    fn pragma(&mut self, pragma: &Pragma) {
+        if let PragmaKind::Stdc {
+            option: StdcPragmaOption::FloatConstDecimal64,
+            value,
+        } = pragma.kind
+        {
+            self.on = value == StdcPragmaValue::On;
+        }
+    }
+
+    fn compound(&mut self, body: &[Stmt]) {
+        let on = self.on;
+        self.compound_start = true;
+        let Ok(()) = visit::walk_stmts(self, body);
+        self.on = on;
+        self.compound_start = false;
+    }
+}
+
+impl Visitor for Decimal64Literals {
+    type Error = Infallible;
+
+    fn visit_decl(&mut self, decl: &Decl) -> Result<(), Self::Error> {
+        if let DeclKind::Pragma(pragma) = &decl.value {
+            self.pragma(pragma);
+        }
+        visit::walk_decl(self, decl)
+    }
+
+    fn visit_function(&mut self, function: &FunctionDefinition) -> Result<(), Self::Error> {
+        visit::walk_specifiers(self, &function.specifiers)?;
+        self.visit_declarator(&function.declarator)?;
+        visit::walk_attributes(self, &function.attributes)?;
+        self.compound(&function.body);
+        Ok(())
+    }
+
+    fn visit_stmt(&mut self, stmt: &Stmt) -> Result<(), Self::Error> {
+        match &stmt.value {
+            StmtKind::Pragma(pragma) if self.compound_start => self.pragma(pragma),
+            StmtKind::Pragma(_) | StmtKind::Comment(_) => {}
+            StmtKind::Block(body) => self.compound(body),
+            _ => {
+                self.compound_start = false;
+                visit::walk_stmt(self, stmt)?;
+            }
+        }
+        Ok(())
+    }
+
+    fn visit_expr(&mut self, expr: &Expr) -> Result<(), Self::Error> {
+        match &expr.value {
+            ExprKind::FloatLiteral(literal) if self.on && literal.is_unsuffixed_decimal() => {
+                self.found.insert(expr.id);
+                Ok(())
+            }
+            ExprKind::StatementExpression(body) => {
+                self.compound(body);
+                Ok(())
+            }
+            _ => visit::walk_expr(self, expr),
+        }
+    }
 }
 
 struct Walk<'a> {
