@@ -351,8 +351,8 @@ ExprKind = "Identifier(" string ")"
          | CompoundLiteral { ty: TypeName, initializer: vec<InitializerItem> }
          | "SizeOfExpr(" expr ")"
          | SizeOfType { ty: TypeName }
-         | "AlignOfExpr(" expr ")"
-         | AlignOf { ty: TypeName }
+         | "AlignOfExpr(" expr ", " bool ")"
+         | AlignOf { ty: TypeName, preferred: bool }
          | "CountOfExpr(" expr ")"
          | CountOfType { ty: TypeName }
          | MaxOf { ty: TypeName }

@@ -53,6 +53,7 @@ impl<'a> Spellings<'a> {
             Token::Keyword(_)
                 | Token::Sizeof
                 | Token::Alignof
+                | Token::GnuAlignof
                 | Token::Countof
                 | Token::Maxof
                 | Token::Minof

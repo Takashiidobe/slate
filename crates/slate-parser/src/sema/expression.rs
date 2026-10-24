@@ -2754,7 +2754,7 @@ impl Lowerer {
             ExprKind::IntegerLiteral(_) | ExprKind::FloatLiteral(_) | ExprKind::BoolLiteral(_) => {
                 self.types.literal(&self.context, e)
             }
-            ExprKind::SizeOfType { ty } | ExprKind::AlignOf { ty } => {
+            ExprKind::SizeOfType { ty } | ExprKind::AlignOf { ty, .. } => {
                 let extents = self.type_name_extents(ty)?;
                 let resolved = self.resolve_type_name(ty)?;
                 let atomic = self.types.ctypes.quals(resolved).is_atomic;
@@ -2773,7 +2773,8 @@ impl Lowerer {
                 let value = if matches!(e.value, ExprKind::SizeOfType { .. }) {
                     layout.size_bytes
                 } else {
-                    u64::from(layout.alignment_bytes)
+                    self.types
+                        .preferred_alignment(e, &ty, u64::from(layout.alignment_bytes))
                 };
                 let key = if matches!(e.value, ExprKind::SizeOfType { .. }) {
                     "size_of"
@@ -2782,7 +2783,7 @@ impl Lowerer {
                 };
                 Ok(self.layout_constant(e, value, key, ty.to_string()))
             }
-            ExprKind::SizeOfExpr(operand) | ExprKind::AlignOfExpr(operand) => {
+            ExprKind::SizeOfExpr(operand) | ExprKind::AlignOfExpr(operand, _) => {
                 let (c, evaluated) = self.unevaluated_type(operand)?;
                 let ty = self.types.ir_type(c);
                 if matches!(e.value, ExprKind::SizeOfExpr(_)) && self.types.ctypes.is_function(c) {
@@ -2811,8 +2812,10 @@ impl Lowerer {
                 let amount = if matches!(e.value, ExprKind::SizeOfExpr(_)) {
                     layout.size_bytes
                 } else {
-                    self.types
-                        .object_alignment(operand, u64::from(layout.alignment_bytes))
+                    let natural =
+                        self.types
+                            .preferred_alignment(e, &ty, u64::from(layout.alignment_bytes));
+                    self.types.object_alignment(operand, natural)
                 };
                 let key = if matches!(e.value, ExprKind::SizeOfExpr(_)) {
                     "size_of"

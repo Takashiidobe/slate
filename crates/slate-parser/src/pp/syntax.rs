@@ -112,6 +112,7 @@ pub(super) fn identifier(src: &str, token: &Span<Token>) -> Option<String> {
         Token::Keyword(_)
         | Token::Sizeof
         | Token::Alignof
+        | Token::GnuAlignof
         | Token::Countof
         | Token::Maxof
         | Token::Minof => src

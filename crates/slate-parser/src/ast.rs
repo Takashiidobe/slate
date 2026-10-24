@@ -172,8 +172,9 @@ pub enum ExprKind {
     },
     AlignOf {
         ty: Box<TypeName>,
+        preferred: bool,
     },
-    AlignOfExpr(Expr),
+    AlignOfExpr(Expr, bool),
     CountOfType {
         ty: Box<TypeName>,
     },
@@ -286,7 +287,7 @@ impl std::fmt::Display for ExprKind {
             Self::SizeOfExpr(value) => write!(formatter, "sizeof {value}"),
             Self::SizeOfType { .. } => write!(formatter, "sizeof(...)"),
             Self::AlignOf { .. } => write!(formatter, "_Alignof(...)"),
-            Self::AlignOfExpr(value) => write!(formatter, "_Alignof {value}"),
+            Self::AlignOfExpr(value, _) => write!(formatter, "_Alignof {value}"),
             Self::CountOfType { .. } => write!(formatter, "_Countof(...)"),
             Self::CountOfExpr(value) => write!(formatter, "_Countof {value}"),
             Self::MaxOf { .. } => write!(formatter, "_Maxof(...)"),

@@ -353,7 +353,9 @@ TypeName { specifiers: DeclarationSpecifiers, declarator: Declarator }   // abst
 
 Used by casts, `sizeof`, `_Alignof`, compound literals, `va_arg`,
 `offsetof`, `_Generic`, `typeof`. `_Alignof`, `__alignof`, `__alignof__`
-are always the operator; `alignof` only with `keyword_alignof` (C23).
+are always the operator; `__alignof` and `__alignof__` set `preferred` on
+`AlignOf`/`AlignOfExpr` (i686 gives `long long`/`double` objects 8, not the ABI 4);
+`alignof` only with `keyword_alignof` (C23).
 `_Countof` is the operator only with `keyword_countof` (gcc and clang in
 every mode); msvc leaves it an identifier.
 

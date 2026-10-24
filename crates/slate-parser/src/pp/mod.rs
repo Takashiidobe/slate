@@ -1931,7 +1931,12 @@ fn has_check_argument(
         Some(Token::Ident(name)) => Some(name.to_string()),
         Some(Token::Keyword(keyword)) => Some(<&str>::from(*keyword).to_string()),
         Some(
-            token @ (Token::Sizeof | Token::Alignof | Token::Countof | Token::Maxof | Token::Minof),
+            token @ (Token::Sizeof
+            | Token::Alignof
+            | Token::GnuAlignof
+            | Token::Countof
+            | Token::Maxof
+            | Token::Minof),
         ) => Some(String::from(token)),
         _ => None,
     };

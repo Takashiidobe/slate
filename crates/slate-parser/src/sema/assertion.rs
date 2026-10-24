@@ -1495,7 +1495,7 @@ impl Checker<'_> {
                 self.type_name(ty);
             }
             ExprKind::SizeOfType { ty }
-            | ExprKind::AlignOf { ty }
+            | ExprKind::AlignOf { ty, .. }
             | ExprKind::CountOfType { ty }
             | ExprKind::MaxOf { ty }
             | ExprKind::MinOf { ty } => self.type_name(ty),
@@ -1511,7 +1511,7 @@ impl Checker<'_> {
             | ExprKind::Unary { operand: expr, .. }
             | ExprKind::Postfix { operand: expr, .. }
             | ExprKind::SizeOfExpr(expr)
-            | ExprKind::AlignOfExpr(expr)
+            | ExprKind::AlignOfExpr(expr, _)
             | ExprKind::CountOfExpr(expr)
             | ExprKind::Member { base: expr, .. } => self.expression(expr),
             ExprKind::Assign { op, target, value } => {
@@ -1933,7 +1933,9 @@ impl Visitor for InvalidConstantArithmetic<'_> {
                 }
                 Ok(())
             }
-            ExprKind::SizeOfExpr(_) | ExprKind::AlignOfExpr(_) | ExprKind::CountOfExpr(_) => Ok(()),
+            ExprKind::SizeOfExpr(_) | ExprKind::AlignOfExpr(..) | ExprKind::CountOfExpr(_) => {
+                Ok(())
+            }
             ExprKind::Generic {
                 controlling,
                 associations,
@@ -2171,7 +2173,7 @@ fn ice_shape<'e>(types: &mut TypeResolver, expr: &'e Expr) -> Shape<'e> {
         | ExprKind::SizeOfType { .. }
         | ExprKind::AlignOf { .. }
         | ExprKind::SizeOfExpr(_)
-        | ExprKind::AlignOfExpr(_)
+        | ExprKind::AlignOfExpr(..)
         | ExprKind::MaxOf { .. }
         | ExprKind::MinOf { .. }
         | ExprKind::CountOfType { .. }

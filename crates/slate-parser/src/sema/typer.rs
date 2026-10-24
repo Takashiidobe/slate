@@ -753,14 +753,14 @@ impl TypeResolver {
                 }
             }
             ExprKind::Call { callee, arguments } => self.call_type(e, callee, arguments)?,
-            ExprKind::SizeOfType { ty } | ExprKind::AlignOf { ty } => {
+            ExprKind::SizeOfType { ty } | ExprKind::AlignOf { ty, .. } => {
                 let resolved = self.type_name(ty)?;
                 let sizeof = matches!(e.value, ExprKind::SizeOfType { .. });
                 self.layout_query(resolved, sizeof, self.ctypes.quals(resolved).is_atomic)?;
                 let target = self.target_info().clone();
                 Typed::rvalue(self.ctypes.size_type(&target))
             }
-            ExprKind::SizeOfExpr(operand) | ExprKind::AlignOfExpr(operand) => {
+            ExprKind::SizeOfExpr(operand) | ExprKind::AlignOfExpr(operand, _) => {
                 self.operand_layout(operand, matches!(e.value, ExprKind::SizeOfExpr(_)))?;
                 let target = self.target_info().clone();
                 Typed::rvalue(self.ctypes.size_type(&target))
@@ -1840,10 +1840,10 @@ impl TypeResolver {
             ExprKind::Identifier(_) => self
                 .constant(e)
                 .is_some_and(|constant| self.ctypes.is_integer(constant.c)),
-            ExprKind::SizeOfType { ty } | ExprKind::AlignOf { ty } => self
+            ExprKind::SizeOfType { ty } | ExprKind::AlignOf { ty, .. } => self
                 .type_name(ty)
                 .is_ok_and(|c| !matches!(self.ir_type(c), Type::VariableArray { .. })),
-            ExprKind::SizeOfExpr(operand) | ExprKind::AlignOfExpr(operand) => self
+            ExprKind::SizeOfExpr(operand) | ExprKind::AlignOfExpr(operand, _) => self
                 .expression_type(operand)
                 .is_ok_and(|c| !matches!(self.ir_type(c), Type::VariableArray { .. })),
             ExprKind::CountOfType { ty } => self

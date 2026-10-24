@@ -1104,7 +1104,7 @@ impl<'a> Parser<'a> {
             ExprKind::SizeOfExpr(_) => Err(ConstExprError::UnsupportedSizeOf),
             ExprKind::SizeOfType { .. } => Err(ConstExprError::UnsupportedSizeOf),
             ExprKind::AlignOf { .. } => Err(ConstExprError::UnsupportedAlignOf),
-            ExprKind::AlignOfExpr(_) => Err(ConstExprError::UnsupportedAlignOf),
+            ExprKind::AlignOfExpr(..) => Err(ConstExprError::UnsupportedAlignOf),
             ExprKind::CountOfType { .. } | ExprKind::CountOfExpr(_) => {
                 Err(ConstExprError::NotConstant("_Countof"))
             }
@@ -1826,7 +1826,8 @@ impl<'a> Parser<'a> {
             let operand = self.parse_unary()?;
             return Ok(self.node(ExprKind::SizeOfExpr(operand), start));
         }
-        if self.peek() == Some(&Token::Alignof)
+        let preferred = self.peek() == Some(&Token::GnuAlignof);
+        if matches!(self.peek(), Some(Token::Alignof | Token::GnuAlignof))
             && self.peek_at(1) == Some(&Token::LParen)
             && let Some(next) = self.peek_at(2)
             && starts_type_name(next, self.context)
@@ -1835,11 +1836,11 @@ impl<'a> Parser<'a> {
             })
         {
             self.position = end + 1;
-            return Ok(self.node(ExprKind::AlignOf { ty }, start));
+            return Ok(self.node(ExprKind::AlignOf { ty, preferred }, start));
         }
-        if self.consume(&Token::Alignof) {
+        if self.consume(&Token::Alignof) || self.consume(&Token::GnuAlignof) {
             let operand = self.parse_unary()?;
-            return Ok(self.node(ExprKind::AlignOfExpr(operand), start));
+            return Ok(self.node(ExprKind::AlignOfExpr(operand, preferred), start));
         }
         if matches!(self.peek(), Some(Token::Maxof | Token::Minof)) {
             let maximum = self.take() == Some(Token::Maxof);

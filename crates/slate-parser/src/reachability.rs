@@ -431,7 +431,7 @@ impl<'a> Reachability<'a> {
                 }
             }
             ExprKind::SizeOfType { ty }
-            | ExprKind::AlignOf { ty }
+            | ExprKind::AlignOf { ty, .. }
             | ExprKind::CountOfType { ty }
             | ExprKind::MaxOf { ty }
             | ExprKind::MinOf { ty } => self.mark_type_name(ty),
@@ -458,7 +458,7 @@ impl<'a> Reachability<'a> {
             }
             ExprKind::Paren(value)
             | ExprKind::SizeOfExpr(value)
-            | ExprKind::AlignOfExpr(value)
+            | ExprKind::AlignOfExpr(value, _)
             | ExprKind::CountOfExpr(value)
             | ExprKind::Unary { operand: value, .. }
             | ExprKind::Postfix { operand: value, .. }

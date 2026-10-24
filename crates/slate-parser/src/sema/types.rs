@@ -778,7 +778,7 @@ impl TypeResolver {
                 let (ty, number) = self.character_constant(literal)?;
                 (ty, ValueKind::Constant(number))
             }
-            ExprKind::SizeOfExpr(operand) | ExprKind::AlignOfExpr(operand) => {
+            ExprKind::SizeOfExpr(operand) | ExprKind::AlignOfExpr(operand, _) => {
                 let ty = self.expression_type(operand)?;
                 if matches!(e.value, ExprKind::SizeOfExpr(_)) && self.ctypes.is_function(ty) {
                     let c = self.ctypes.size_type(self.dialect.target());
@@ -819,7 +819,12 @@ impl TypeResolver {
                 let n = if matches!(e.value, ExprKind::SizeOfExpr(_)) {
                     layout.size_bytes
                 } else {
-                    self.object_alignment(operand, u64::from(layout.alignment_bytes))
+                    let natural = self.preferred_alignment(
+                        e,
+                        &self.ir_type(ty),
+                        u64::from(layout.alignment_bytes),
+                    );
+                    self.object_alignment(operand, natural)
                 };
                 (
                     self.ctypes.size_type(self.dialect.target()),
@@ -942,7 +947,7 @@ impl TypeResolver {
                     ValueKind::Constant(super::fold::integer_number(&self.ir_type(c), n)),
                 )
             }
-            ExprKind::SizeOfType { ty } | ExprKind::AlignOf { ty } => {
+            ExprKind::SizeOfType { ty } | ExprKind::AlignOf { ty, .. } => {
                 let resolved = self.resolve_type_name(ty)?;
                 let atomic = self.ctypes.quals(resolved).is_atomic;
                 let ty = self.ir_type(resolved);
@@ -958,7 +963,7 @@ impl TypeResolver {
                 let n = if matches!(e.value, ExprKind::SizeOfType { .. }) {
                     layout.size_bytes
                 } else {
-                    u64::from(layout.alignment_bytes)
+                    self.preferred_alignment(e, &ty, u64::from(layout.alignment_bytes))
                 };
                 (
                     self.ctypes.size_type(self.dialect.target()),
@@ -1450,6 +1455,29 @@ impl TypeResolver {
             return natural;
         };
         self.declared_alignment(requested, natural)
+    }
+
+    pub(super) fn preferred_alignment(&self, e: &crate::ast::Expr, ty: &Type, abi: u64) -> u64 {
+        use crate::ast::ExprKind;
+        let gnu = matches!(
+            e.value,
+            ExprKind::AlignOf {
+                preferred: true,
+                ..
+            } | ExprKind::AlignOfExpr(_, true)
+        );
+        if !gnu || self.dialect.target().family != TargetFamily::X86 {
+            return abi;
+        }
+        let mut scalar = ty;
+        while let Type::Array { element, .. } | Type::VariableArray { element, .. } = scalar {
+            scalar = element;
+        }
+        match scalar {
+            Type::Numeric(NumericType::Integer { width: 64, .. })
+            | Type::Numeric(NumericType::Float(crate::ir::FloatType::F64)) => abi.max(8),
+            _ => abi,
+        }
     }
 
     pub(super) fn function_alignment(&mut self, e: &crate::ast::Expr) -> u64 {

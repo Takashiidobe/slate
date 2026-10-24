@@ -467,7 +467,7 @@ impl Resolver {
                 Ok(())
             }
             ExprKind::SizeOfType { ty }
-            | ExprKind::AlignOf { ty }
+            | ExprKind::AlignOf { ty, .. }
             | ExprKind::CountOfType { ty }
             | ExprKind::MaxOf { ty }
             | ExprKind::MinOf { ty } => self.type_name(ty, expr),

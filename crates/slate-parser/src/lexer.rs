@@ -275,6 +275,7 @@ pub enum Token {
     Keyword(Keyword),
     Sizeof,
     Alignof,
+    GnuAlignof,
     Countof,
     Maxof,
     Minof,
@@ -422,6 +423,7 @@ impl From<&Token> for String {
         match token {
             Token::Sizeof => "sizeof".into(),
             Token::Alignof => "_Alignof".into(),
+            Token::GnuAlignof => "__alignof__".into(),
             Token::Countof => "_Countof".into(),
             Token::Maxof => "_Maxof".into(),
             Token::Minof => "_Minof".into(),
@@ -1242,7 +1244,8 @@ fn source_char(src: &str, byte: usize, trigraphs: bool) -> Option<(char, usize)>
 pub fn keyword_token(word: &str, features: &StandardFeatures) -> Option<Token> {
     Some(match word {
         "sizeof" => Token::Sizeof,
-        "_Alignof" | "__alignof" | "__alignof__" => Token::Alignof,
+        "_Alignof" => Token::Alignof,
+        "__alignof" | "__alignof__" => Token::GnuAlignof,
         "alignof" if features.keyword_alignof.is_accepted() => Token::Alignof,
         "_Countof" if features.keyword_countof => Token::Countof,
         "_Maxof" if features.keyword_type_limits => Token::Maxof,
