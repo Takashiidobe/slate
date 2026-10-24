@@ -338,11 +338,17 @@ impl TypeResolver {
     }
 
     pub(super) fn reduced_alignment(&self, q: QualType) -> Option<u64> {
-        self.ctypes.typedef_alignment(q)?;
+        let unaligned = self.ctypes.quals(q).is_unaligned;
+        if !unaligned {
+            self.ctypes.typedef_alignment(q)?;
+        }
         let natural = self.storage(self.ir_type(q)).ok()?;
-        let declared = self.declared_storage(q, natural).ok()?;
-        (declared.alignment_bytes < natural.alignment_bytes)
-            .then_some(u64::from(declared.alignment_bytes))
+        let declared = if unaligned {
+            1
+        } else {
+            self.declared_storage(q, natural).ok()?.alignment_bytes
+        };
+        (declared < natural.alignment_bytes).then_some(u64::from(declared))
     }
 
     pub(super) fn with_names(unit: &TranslationUnit, names: &crate::ir::NameResolution) -> Self {

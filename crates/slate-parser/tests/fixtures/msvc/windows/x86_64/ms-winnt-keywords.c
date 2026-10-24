@@ -78,7 +78,7 @@ int use_forced(void) { return forced() + forced_static() + forced_after(); }
 // DEFAULT-NEXT:     global %[[VALUE_plain:[0-9]+]] plain: ptr<i32> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_convert:[0-9]+]] @convert() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<ptr<u16>>(%[[VALUE_unaligned_wide_string]], pointer_cast<ptr<u16>, reason=explicit>(read<ptr<i32>>(%[[VALUE_plain]])));
-// DEFAULT-NEXT:         write<ptr<i32>>(%[[VALUE_plain]], read<ptr<i32>>(%[[VALUE_unaligned_pointer]]));
+// DEFAULT-NEXT:         write<ptr<i32>>(%[[VALUE_plain]], read<ptr<i32>, align=1>(%[[VALUE_unaligned_pointer]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_forced:[0-9]+]] @forced() -> i32 [linkage=external] [inline=always] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(1);

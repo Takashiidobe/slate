@@ -231,6 +231,9 @@ __attribute__((aligned(16)))` is still `i32`). Its alignment lives on the
   typedef lowers a type's natural alignment, a place reached through a
   pointer to it, and every read or write of that place, carries
   `align=N` (`read<i32, align=1>`); `Access::align` is `None` otherwise.
+  MSVC `__unaligned` on the accessed type (`__unaligned int *p`, `*p`) sets
+  `align=1` the same way, unless the type is already align 1
+  (`ms-unaligned-access.c`).
 - `aligned` in a type name's specifiers (`_Alignof(__attribute__((aligned(16)))
 char)`, casts, `sizeof`, `typeof`, `_Generic`, compound literals) is
   flavor-dependent. gcc makes the whole type name an anonymous aligned
