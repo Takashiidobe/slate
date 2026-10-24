@@ -182,7 +182,7 @@ impl Preprocessor<'_> {
             .ok_or_else(|| {
                 PPFailure::at(
                     arguments[0].spelling,
-                    PPErrorKind::HeaderNotFound(include.to_string()),
+                    PPErrorKind::EmbedResourceNotFound(name.to_string()),
                 )
             })?;
         let parameters = self.embed_parameters(&arguments[1..], directive.loc.file)?;

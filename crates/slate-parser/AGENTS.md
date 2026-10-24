@@ -148,8 +148,12 @@ A fixture's directory sets its compiler and target
 (`crates/slate-parser/tests/fixtures/<flavor>/<os>/<arch>/`, with `error/` and `suites/`
 variants); see [fixture-layout](../../wiki/concepts/fixture-layout.md).
 
-FileCheck expectations are generated. After changing a fixture or its
-renderer, run `python3 crates/slate-parser/tools/update_filecheck.py --in-place <fixture>`;
+FileCheck expectations are generated. Before running the generator on a new
+fixture, add the `SLATE-FILECHECK-*` directives it needs (error fixtures need
+`// SLATE-FILECHECK-ERROR PARSE`; IR fixtures need `DEFINES` and `ARGS`). The
+generator silently leaves a fixture without them unchanged. The full list is in
+[fixture-layout](../../wiki/concepts/fixture-layout.md#directives-to-write-before-generating).
+After changing a fixture or its renderer, run `python3 crates/slate-parser/tools/update_filecheck.py --in-place <fixture>`;
 do not write `CHECK` lines by hand.
 
 Testing is done via filecheck. Standard gate (use release to run tests

@@ -97,6 +97,8 @@ pub(super) enum PPErrorKind {
     Assertion(&'static str),
     #[error("header not found in search path: {0}")]
     HeaderNotFound(String),
+    #[error("'{0}' file not found")]
+    EmbedResourceNotFound(String),
     #[error("#include nested too deeply")]
     IncludeTooDeep,
     #[error("failed to read {path}: {message}")]

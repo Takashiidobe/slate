@@ -12,16 +12,21 @@ and `target/test-cache/release/slate-parser`. `target/release/` is not used.
 | `crates/slate-intrinsic-gen` | Generates the frontend intrinsic catalog from LLVM | `crates/slate-intrinsic-gen/README.md` |
 | `crates/slate-sysroots`| Installs per-target C headers for slate-parser       | `crates/slate-sysroots/README.md` |
 
-## Routing work by bead ID
+## Routing work
 
-Every bead ID starts with `slate-`, so check the longer prefix first:
+Route by what the problem is, not by the bead ID (a `slate-*` bead can be a
+parser bug, and the title prefix is not reliable):
 
-1. `slate-parser-*` -> read `crates/slate-parser/AGENTS.md`.
-2. Any other `slate-*` -> read `crates/slate/CLAUDE.md`.
+1. If it looks like it is in the parser (preprocessing, `#include`/`#embed`,
+   lexing, parsing, sema, the typed IR, or a parser diagnostic), read
+   `crates/slate-parser/AGENTS.md`.
+2. Otherwise it is a backend issue (lowering IR to Rust, output, the CLI,
+   differential suites): read `crates/slate/CLAUDE.md`.
 
-A bead may need changes in the other crate (for example, a Slate lowering bead
-that exposes a parser bug). Make the fix where it belongs, follow that crate's
-instructions for the part you changed, and run both crates' test profiles.
+Reproduce first and read the error text. If it comes from `crates/slate-parser`,
+it is a parser bug even if the failing test lives in `crates/slate`. Make the
+fix where it belongs, follow that crate's instructions for the part you
+changed, and run both crates' test profiles.
 
 ## Testing
 
@@ -52,12 +57,25 @@ bd close <id>         # Complete work
 
 ## Navigating code
 
-Always use the LSP (rust-analyzer) to navigate Rust: `hover`,
-`goToDefinition`, `findReferences`, `workspaceSymbol`, and `documentSymbol`
-for an enum's variants or a file's outline. Use grep only for text outside
-Rust, such as the wiki, fixtures, and C sources. Right after startup,
-rust-analyzer may still be indexing and return nothing. Retry before you fall
-back to grep.
+Search in this order before reading or re-deriving anything:
+
+1. `bd search "<query>"` for existing or closed beads on the subsystem.
+2. `llog search "<query>"` for past decisions and the history of a test or fix.
+3. For a bead that names a test, check `git log -S"<test name>"`: the test may
+   have been removed, which makes the bead stale.
+
+Then pick the tool by what you are searching:
+
+- Rust code: the LSP (rust-analyzer): `hover`, `goToDefinition`,
+  `findReferences`, `workspaceSymbol`, and `documentSymbol` for an enum's
+  variants or a file's outline. Put the cursor on the identifier itself
+  (for example the variant name line, not its `#[error]` attribute).
+- Everything else (wiki, fixtures, C sources, `.beads`): grep. Quote globs;
+  the shell is fish and an unquoted `--include=*.rs` errors.
+
+rust-analyzer returns nothing or "no references" while it is still indexing,
+and the first call after startup often fails. Wait about 5 seconds and retry
+before you fall back to grep.
 
 ## Shell
 
@@ -78,7 +96,11 @@ recorded.
    - `cargo fmt`
    - the nextest profile for each changed crate
 3. **Update issue status** - Close finished work, update in-progress items.
-4. **Log every change** - `llog new`, summarizing the change in no more than 30 lines.
+4. **Log every change** - `llog new "<title>" "<entry>"`, summarizing the change in no more than 30 lines. Required before closing a bead. No need for `llog --help`:
+
+   ```bash
+   llog new "Name missing #embed resources" "slate-rpkp: #embed of a missing resource reported 'header not found'. Added PPErrorKind::EmbedResourceNotFound (pp/error.rs), used by expand_embed (pp/embed.rs), message matches clang. Fixture: error/clang/linux/x86_64/embed-missing-resource.c."
+   ```
 5. **Commit** - `git commit -m ...` with a one-line message summarizing the task.
 6. **Hand off** - Summarize changes, validation, issue status, and the commit.
 

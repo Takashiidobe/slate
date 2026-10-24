@@ -2,6 +2,8 @@
 
 <!-- toc -->
 - [Path](#path)
+- [Directives to write before
+  generating](#directives-to-write-before-generating)
 - [Ids in generated expectations](#ids-in-generated-expectations)
 - [Matcher](#matcher)
 <!-- /toc -->
@@ -37,6 +39,42 @@ tests/fixtures/[error/ | suites/<name>/]<flavor>/[<os>/[<arch> | <triple>]]/<fix
 - A valid `--target`/`--flavor` in `SLATE-FILECHECK-ARGS` or `PREFIX-ARGS`
   must match the path. Invalid values are allowed to test option errors
   (`error/clang/linux/x86_64/target_unknown.c`).
+
+## Directives to write before generating
+
+`update_filecheck.py` only writes the `BEGIN`/`END` blocks. Everything else is
+a `// SLATE-FILECHECK-<NAME>` line you add first, because the generator and
+`tests/filecheck.rs` read them to decide what to run and render. A fixture
+without the marker it needs is left unchanged with no message, so a missing
+directive looks like "nothing happened". Prefix names are free-form (`DEFAULT`, `WARN`, `IR`) and
+become the `// <PREFIX>:` check lines.
+
+| Directive                                   | Write it when                                                                          | Example                                      |
+| ------------------------------------------- | -------------------------------------------------------------------------------------- | -------------------------------------------- |
+| `DEFINES <prefix> [-DX ...]`                | a run is wanted under a named configuration (almost every IR fixture has `DEFAULT`)    | `// SLATE-FILECHECK-DEFINES DEFAULT`         |
+| `ARGS <flags>`                              | the fixture needs compiler flags for all prefixes (`--dump-ir`, `--compact-ir`, `-std=`) | `// SLATE-FILECHECK-ARGS --dump-ir`          |
+| `PREFIX-ARGS <prefix> <flags>`              | only one prefix needs the flags (`--parse-only`)                                       | `// SLATE-FILECHECK-PREFIX-ARGS AST --parse-only` |
+| `STD <prefix> <std>`                        | the prefix pins a language standard                                                    | `// SLATE-FILECHECK-STD DEFAULT gnu23`       |
+| `AST`                                       | the output is the AST instead of IR (bare line, no prefix)                             | `// SLATE-FILECHECK-AST`                     |
+| `ERROR <prefix>`                            | the run must fail in preprocessing, parsing or sema; the block holds the diagnostic    | `// SLATE-FILECHECK-ERROR PARSE`             |
+| `IR-ERROR <prefix>`                         | parsing succeeds and IR lowering must fail                                             | `// SLATE-FILECHECK-IR-ERROR DEFAULT`        |
+| `WARNING <prefix>`                          | the run must succeed and the block holds warnings                                      | `// SLATE-FILECHECK-WARNING WARN`            |
+| `ISYSTEM <dirs>`                            | headers come from `inputs/` or a sysroot                                               | `// SLATE-FILECHECK-ISYSTEM inputs/sysroot`  |
+| `SHOW-IDS <prefix>`                         | the fixture checks raw ids, so id loosening must be off                                | `// SLATE-FILECHECK-SHOW-IDS DEFAULT`        |
+| `EXAMPLE <name>`                            | the output comes from a `cargo run --example <name>` instead of the CLI                | `// SLATE-FILECHECK-EXAMPLE <name>`          |
+
+Common starting points:
+
+- Error fixture (`error/<flavor>/<os>/<arch>/`): the source, then a blank
+  line and `// SLATE-FILECHECK-ERROR PARSE`. Nothing else
+  (`error/clang/linux/x86_64/embed-missing-resource.c`).
+- IR fixture: `DEFINES DEFAULT` and `ARGS --dump-ir`, plus `STD DEFAULT <std>`
+  if the standard matters.
+- AST fixture: `AST`, `DEFINES DEFAULT`, and `PREFIX-ARGS DEFAULT --parse-only`
+  when sema is out of scope.
+
+Then run `python3 crates/slate-parser/tools/update_filecheck.py --in-place <fixture>`.
+If the file comes back unchanged, a directive is missing or misspelled.
 
 ## Ids in generated expectations
 
