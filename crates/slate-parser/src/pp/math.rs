@@ -2,8 +2,8 @@ use super::Preprocessor;
 use super::error::PPFailure;
 use super::syntax::{Directive, identifier};
 use crate::ast::HeaderKind;
-use crate::compiler_args::math_switch_argument;
-use crate::compiler_options::{MathOptions, Optimization};
+use crate::compiler_args::{CompilerFlavor, math_switch_argument};
+use crate::compiler_options::{MathOptions, MathSwitch, Optimization};
 use crate::lexer::Token;
 use crate::target_info::TargetFamily;
 use std::path::PathBuf;
@@ -13,10 +13,12 @@ type MathMacro = (&'static str, Option<&'static str>);
 pub(super) struct PragmaMath {
     errno_default: bool,
     command_line: MathOptions,
+    requested: MathOptions,
     current: MathOptions,
     pushed: Vec<(MathOptions, Optimization)>,
     command_line_optimization: Optimization,
     optimization: Optimization,
+    before_ofast: Option<MathOptions>,
     sources: usize,
 }
 
@@ -25,12 +27,52 @@ impl PragmaMath {
         Self {
             errno_default: true,
             command_line: math,
+            requested: MathOptions {
+                associative_math: math.requested_associative_math,
+                ..math
+            },
             current: math,
             pushed: Vec::new(),
             command_line_optimization: optimization,
             optimization,
+            before_ofast: None,
             sources: 0,
         }
+    }
+
+    fn restart(&mut self, math: MathOptions) {
+        self.current = math;
+        self.optimization = self.command_line_optimization;
+        self.before_ofast = None;
+    }
+
+    fn apply_option(&mut self, flavor: CompilerFlavor, option: &str) {
+        let name = option.trim_start_matches('-');
+        if name == "Ofast" {
+            self.before_ofast.get_or_insert(self.current);
+            self.current.apply(flavor, MathSwitch::FastMath, true);
+            self.optimization = Optimization::Speed;
+        } else if !self.apply_level(name.strip_prefix('O').unwrap_or(name)) {
+            let argument = if option.starts_with('-') {
+                option.to_owned()
+            } else {
+                format!("-f{option}")
+            };
+            if let Some((switch, value)) = math_switch_argument(&argument) {
+                self.current.apply(flavor, switch, value);
+            }
+        }
+    }
+
+    fn apply_level(&mut self, level: &str) -> bool {
+        let Some(optimization) = Optimization::from_level(level) else {
+            return false;
+        };
+        if let Some(saved) = self.before_ofast.take() {
+            self.current = saved;
+        }
+        self.optimization = optimization;
+        true
     }
 }
 
@@ -168,32 +210,18 @@ impl Preprocessor<'_> {
         let previous_optimization = self.math.optimization;
         match action.as_str() {
             "optimize" => {
+                self.math.restart(self.math.requested);
                 for token in &directive.arguments[2..] {
-                    let text = match &token.value {
-                        Token::StringLit(text) => text.to_string(),
-                        Token::IntLit(level) => {
-                            if let Some(optimization) = Optimization::from_level(level) {
-                                self.math.optimization = optimization;
+                    match &token.value {
+                        Token::StringLit(text) => {
+                            for option in text.split(',').map(str::trim) {
+                                self.math.apply_option(flavor, option);
                             }
-                            continue;
                         }
-                        _ => continue,
-                    };
-                    for option in text.split(',').map(str::trim) {
-                        let level = option.trim_start_matches('-');
-                        let level = level.strip_prefix('O').unwrap_or(level);
-                        if let Some(optimization) = Optimization::from_level(level) {
-                            self.math.optimization = optimization;
-                            continue;
+                        Token::IntLit(level) => {
+                            self.math.apply_level(level);
                         }
-                        let argument = if option.starts_with('-') {
-                            option.to_owned()
-                        } else {
-                            format!("-f{option}")
-                        };
-                        if let Some((switch, value)) = math_switch_argument(&argument) {
-                            self.math.current.apply(flavor, switch, value);
-                        }
+                        _ => {}
                     }
                 }
             }
@@ -204,10 +232,7 @@ impl Preprocessor<'_> {
                     self.math.optimization = optimization;
                 }
             }
-            "reset_options" => {
-                self.math.current = self.math.command_line;
-                self.math.optimization = self.math.command_line_optimization;
-            }
+            "reset_options" => self.math.restart(self.math.command_line),
             _ => {}
         }
         let changed: Vec<MathMacro> = self

@@ -324,22 +324,30 @@ token plus an interned `HideSet`; file tokens start empty.
   Both become `Pragma` nodes, like `#pragma`.
 - `record_pragma` acts on `push_macro`, `pop_macro`, and `once`; every
   other pragma passes through to the parser.
-- gcc flavor only: `#pragma GCC optimize` applies its fast-math options
-  (`"no-math-errno"` means `-fno-math-errno`) to the current options, and
-  `push_options` / `pop_options` / `reset_options` save, restore, or go
-  back to the command line (`pp/math.rs`). Each changes only the macros
-  whose value differs: `__FAST_MATH__` (without gcc's excess-precision
-  condition), `__FINITE_MATH_ONLY__`, `__NO_MATH_ERRNO__`,
+- gcc flavor only: `#pragma GCC optimize` applies fast-math options
+  (`"no-math-errno"` means `-fno-math-errno`) and an optimization level,
+  and `push_options` / `pop_options` / `reset_options` save, restore, or go
+  back to the command line (`pp/math.rs`, `PragmaMath`). Each changes only
+  the macros whose value differs: `__FAST_MATH__` (without gcc's
+  excess-precision condition), `__FINITE_MATH_ONLY__`, `__NO_MATH_ERRNO__`,
   `__RECIPROCAL_MATH__`, `__NO_SIGNED_ZEROS__`, `__NO_TRAPPING_MATH__`,
-  `__ASSOCIATIVE_MATH__`, `__ROUNDING_MATH__`, `__SUPPORT_SNAN__`. Unlike
-  the command line, `-fassociative-math` here is not disabled by trapping
-  math. The same pragmas also track the optimization level (seeded from
-  `CodegenOptions::optimization`): an O-level argument (`"O2"`, `"-Os"`,
-  `"s"`, or the number form `optimize 2`; last one wins) redefines
-  `__OPTIMIZE__` (unset for `O0`) and `__OPTIMIZE_SIZE__` (set only for
-  `Os`/`Oz`/`s`). `__NO_INLINE__` is never touched, matching gcc. `"Ofast"`
-  sets `__OPTIMIZE__` but does not yet turn on fast-math. The pragma does
-  not change IR operation contracts.
+  `__ASSOCIATIVE_MATH__`, `__ROUNDING_MATH__`, `__SUPPORT_SNAN__`,
+  `__OPTIMIZE__`, `__OPTIMIZE_SIZE__`. `__NO_INLINE__` is never touched,
+  matching gcc.
+  - Each `optimize` pragma restarts from the requested command-line
+    options, not from the previous pragma: `"fast-math"` then
+    `"no-math-errno"` leaves only errno. Unlike the command line,
+    `-fassociative-math` here is not disabled by trapping math
+    (`requested_associative_math`); `reset_options` returns to the
+    resolved command line instead.
+  - Levels (`"O2"`, `"-Os"`, `"s"`, or `optimize 2`; last in a list wins):
+    `__OPTIMIZE__` is unset only for `O0`, `__OPTIMIZE_SIZE__` is set only
+    for `Os`/`Oz`/`s`. The command-line level is
+    `CodegenOptions::optimization`.
+  - `"Ofast"` applies fast-math and the speed level. A later non-`Ofast`
+    level in the same list drops the math flags it added; an explicit
+    `fast-math` is kept, and `no-fast-math` after `Ofast` clears it.
+  - The pragma does not change IR operation contracts.
 - `#line` and GNU line markers set `line_overrides`, read by
   `presumed_location` for `__LINE__` / `__FILE__`. An oversized `#line`
   number follows each oracle: gcc wraps it modulo 2^32 (and warns), clang

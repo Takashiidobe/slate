@@ -50,7 +50,7 @@ impl Optimization {
     pub fn from_level(level: &str) -> Option<Self> {
         match level {
             "0" => Some(Self::None),
-            "" | "1" | "2" | "3" | "g" | "fast" => Some(Self::Speed),
+            "" | "1" | "2" | "3" | "g" => Some(Self::Speed),
             "s" | "z" => Some(Self::Size),
             _ => None,
         }
@@ -194,6 +194,7 @@ pub struct MathOptions {
     pub requested_trapping_math: bool,
     pub signed_zeros: bool,
     pub associative_math: bool,
+    pub requested_associative_math: bool,
     pub reciprocal_math: bool,
     pub rounding_math: bool,
     pub signaling_nans: bool,
@@ -211,6 +212,7 @@ impl MathOptions {
             requested_trapping_math: flavor.is_gcc(),
             signed_zeros: true,
             associative_math: false,
+            requested_associative_math: false,
             reciprocal_math: false,
             rounding_math: false,
             signaling_nans: false,
@@ -224,6 +226,7 @@ impl MathOptions {
         for &(switch, value) in switches {
             math.apply(flavor, switch, value);
         }
+        math.requested_associative_math = math.associative_math;
         if flavor.is_gcc() {
             math.trapping_math |= math.signaling_nans;
             math.associative_math &= !math.trapping_math && !math.signed_zeros;
