@@ -850,7 +850,7 @@ const GNU_FLAVORS: &[CompilerFlavor] = &[CompilerFlavor::Gcc, CompilerFlavor::Cl
 const GCC_ONLY: &[CompilerFlavor] = &[CompilerFlavor::Gcc];
 const CLANG_ONLY: &[CompilerFlavor] = &[CompilerFlavor::Clang];
 
-const CODEGEN_ONLY_FLAGS: [CodegenOnlyFlag; 59] = [
+const CODEGEN_ONLY_FLAGS: [CodegenOnlyFlag; 60] = [
     CodegenOnlyFlag::switch("-fomit-frame-pointer", ALL_FLAVORS),
     CodegenOnlyFlag::switch("-flto", ALL_FLAVORS),
     CodegenOnlyFlag::switch("-ffunction-sections", ALL_FLAVORS),
@@ -867,6 +867,7 @@ const CODEGEN_ONLY_FLAGS: [CodegenOnlyFlag; 59] = [
     CodegenOnlyFlag::value("-fvisibility=", ALL_FLAVORS),
     CodegenOnlyFlag::value("-fdebug-prefix-map=", ALL_FLAVORS),
     CodegenOnlyFlag::switch("-fjump-tables", GNU_FLAVORS),
+    CodegenOnlyFlag::switch("-fsplit-stack", GNU_FLAVORS),
     CodegenOnlyFlag::switch("-fstack-check", GNU_FLAVORS),
     CodegenOnlyFlag::switch("-foptimize-sibling-calls", GNU_FLAVORS),
     CodegenOnlyFlag::switch("-fverbose-asm", GNU_FLAVORS),

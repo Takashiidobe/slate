@@ -113,10 +113,18 @@ sema already resolves typedefs, so the module's type list is not a gate.
 
 `dg-options "..."` comments in a fixture add compiler flags to both
 slate-parser and the C oracle; `dg-additional-options "..."` adds them to
-slate-parser only. Only semantic flags are kept (`-std=`, `-O0`..`-O3`, and
-the list in `is_semantic_dg_flag` in `tests/support/mod.rs`), and a
-`{ target ... }` clause that does not match the host triple drops the
-directive.
+slate-parser only. A `{ target ... }` clause that does not match the host
+triple drops the directive.
+
+- Own fixtures (`tests/fixtures*`) keep every flag, so a fixture can test
+  a flag slate does not accept yet (`fixtures.unsupported/flag_*.c`).
+- Imported gcc-dg and gcc-torture tests keep only semantic flags (`-std=`,
+  `-O0`..`-O3`, and `is_semantic_dg_flag` in `tests/support/mod.rs`),
+  because their options are mostly warnings and codegen.
+- A flag the clang oracle rejects needs a sibling `.expected` recorded
+  from the compiler that accepts it, with `--flavor=gcc` or
+  `--flavor=msvc` in `dg-options` (`flag_unsigned_bitfields.c`,
+  `x86_64/flag_msvc_unsigned_char.c`).
 
 ## FileCheck
 

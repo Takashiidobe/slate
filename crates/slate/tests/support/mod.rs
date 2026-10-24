@@ -1201,10 +1201,6 @@ fn target_clause_matches(text: &str, triple: &str) -> bool {
     if negated { !any_match } else { any_match }
 }
 
-fn is_semantic_fixture_flag(flag: &str) -> bool {
-    is_semantic_dg_flag(flag) || matches!(flag, "-O0" | "-O1" | "-O2" | "-O3")
-}
-
 fn fixture_dg_directive_flags(path: &Path, directive: &str) -> Vec<String> {
     let Ok(text) = std::fs::read_to_string(path) else {
         return Vec::new();
@@ -1226,12 +1222,7 @@ fn fixture_dg_directive_flags(path: &Path, directive: &str) -> Vec<String> {
         if after.contains("target") && !target_clause_matches(after, "x86_64-unknown-linux-gnu") {
             continue;
         }
-        flags.extend(
-            quoted
-                .split_whitespace()
-                .filter(|flag| is_semantic_fixture_flag(flag))
-                .map(str::to_string),
-        );
+        flags.extend(quoted.split_whitespace().map(str::to_string));
     }
     flags
 }
