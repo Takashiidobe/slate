@@ -91,6 +91,10 @@ pub(super) enum PPErrorKind {
     LineNumberOutOfRange,
     #[error("{0}")]
     Directive(String),
+    #[error("attempt to use a poisoned identifier")]
+    PoisonedIdentifier,
+    #[error("can only poison identifier tokens")]
+    PoisonNonIdentifier,
     #[error("unsupported preprocessor directive")]
     UnsupportedDirective,
     #[error("{0}")]

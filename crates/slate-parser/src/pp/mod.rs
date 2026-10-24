@@ -286,6 +286,7 @@ pub struct Preprocessor<'a> {
     included_files: HashSet<PathBuf>,
     include_guards: HashMap<FileId, String>,
     pushed_macros: HashMap<String, Vec<Option<MacroEntry>>>,
+    poisoned: HashSet<String>,
     math: math::PragmaMath,
     assertions: HashMap<String, Vec<Answer>>,
     pub directive_diagnostics: Vec<DirectiveDiagnostic>,
@@ -316,6 +317,7 @@ impl<'a> Preprocessor<'a> {
             included_files: HashSet::new(),
             include_guards: HashMap::new(),
             pushed_macros: HashMap::new(),
+            poisoned: HashSet::new(),
             math: math::PragmaMath::new(
                 dialect.options().math,
                 dialect.options().codegen.optimization,
@@ -1152,6 +1154,7 @@ impl<'a> Preprocessor<'a> {
             if !matches!(guard, GuardScan::Open(_)) {
                 guard = GuardScan::Unguarded;
             }
+            self.reject_poisoned(&line.tokens)?;
             file.group.extend(&line.tokens);
             self.source_position = line.tokens.last().map(|token| token.spelling);
             let tokens = line.tokens.into_iter().map(PPToken::from).collect();
@@ -1219,6 +1222,9 @@ impl<'a> Preprocessor<'a> {
             | DirectiveName::Elifdef
             | DirectiveName::Elifndef
             | DirectiveName::Else => {
+                if self.dialect.flavor().is_clang() {
+                    self.reject_poisoned(&directive.arguments)?;
+                }
                 let Some(mut open) = conditionals.pop() else {
                     return Err(PPFailure::at(
                         directive.loc,
@@ -1285,6 +1291,7 @@ impl<'a> Preprocessor<'a> {
     }
 
     fn branch_taken(&mut self, directive: &Directive) -> Result<bool, PPFailure> {
+        self.reject_poisoned(&directive.arguments)?;
         match directive.name {
             DirectiveName::Ifdef | DirectiveName::Elifdef => self.names_defined_macro(directive),
             DirectiveName::Ifndef | DirectiveName::Elifndef => {
@@ -1323,6 +1330,18 @@ impl<'a> Preprocessor<'a> {
         directive: &Directive,
         nodes: &mut Vec<PPNode>,
     ) -> Result<(), PPFailure> {
+        match directive.name {
+            DirectiveName::Define | DirectiveName::Undef => {
+                self.reject_poisoned(&directive.arguments)?
+            }
+            DirectiveName::Pragma if !self.is_poison_pragma(directive) => {
+                self.reject_poisoned(&directive.arguments)?
+            }
+            DirectiveName::Error | DirectiveName::Warning if self.dialect.flavor().is_gcc() => {
+                self.reject_poisoned(&directive.arguments)?
+            }
+            _ => {}
+        }
         match directive.name {
             DirectiveName::Define => self.record_define(directive)?,
             DirectiveName::Include | DirectiveName::IncludeNext => {
@@ -1647,6 +1666,7 @@ impl<'a> Preprocessor<'a> {
             .first()
             .and_then(|token| identifier(self.source(directive.loc.file), token));
         match pragma.as_deref() {
+            _ if self.is_poison_pragma(directive) => self.poison(directive)?,
             Some("push_macro") => self.push_macro(directive),
             Some("pop_macro") => self.pop_macro(directive),
             Some("once") => {

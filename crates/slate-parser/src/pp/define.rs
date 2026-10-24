@@ -32,6 +32,54 @@ impl Preprocessor<'_> {
         }
     }
 
+    pub(super) fn is_poison_pragma(&self, directive: &Directive) -> bool {
+        let source = self.source(directive.loc.file);
+        let mut words = directive
+            .arguments
+            .iter()
+            .take(2)
+            .map(|token| identifier(source, token));
+        let namespace = words.next().flatten();
+        let action = words.next().flatten();
+        let flavor = self.dialect.flavor();
+        action.as_deref() == Some("poison")
+            && match namespace.as_deref() {
+                Some("GCC") => !flavor.is_msvc(),
+                Some("clang") => flavor.is_clang(),
+                _ => false,
+            }
+    }
+
+    pub(super) fn poison(&mut self, directive: &Directive) -> Result<(), PPFailure> {
+        let source = self.source(directive.loc.file);
+        let names = directive.arguments[2..]
+            .iter()
+            .map(|token| {
+                identifier(source, token)
+                    .ok_or_else(|| PPFailure::at(token.spelling, PPErrorKind::PoisonNonIdentifier))
+            })
+            .collect::<Result<Vec<_>, _>>()?;
+        self.poisoned.extend(names);
+        Ok(())
+    }
+
+    pub(super) fn reject_poisoned(&self, tokens: &[Span<Token>]) -> Result<(), PPFailure> {
+        if self.poisoned.is_empty() {
+            return Ok(());
+        }
+        let poisoned = tokens.iter().find(|token| {
+            identifier(self.source(token.spelling.file), token)
+                .is_some_and(|name| self.poisoned.contains(&name))
+        });
+        match poisoned {
+            Some(token) => Err(PPFailure::at(
+                token.spelling,
+                PPErrorKind::PoisonedIdentifier,
+            )),
+            None => Ok(()),
+        }
+    }
+
     pub(super) fn macro_name<'d>(
         &self,
         directive: &'d Directive,

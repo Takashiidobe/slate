@@ -149,6 +149,7 @@ impl Preprocessor<'_> {
                     )?;
                 }
                 Some(Line::Text(line)) => {
+                    self.reject_poisoned(&line.tokens)?;
                     file.group.trailing.extend(line.comments);
                     file.group.extend(&line.tokens);
                     if let Some(last) = line.tokens.last() {

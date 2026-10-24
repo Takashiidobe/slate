@@ -322,8 +322,20 @@ token plus an interned `HideSet`; file tokens start empty.
   `__pragma(...)` (with `microsoft_extensions`) takes its balanced tokens.
   Both are recognized in the expanded stream ([Expansion](#expansion)).
   Both become `Pragma` nodes, like `#pragma`.
-- `record_pragma` acts on `push_macro`, `pop_macro`, and `once`; every
-  other pragma passes through to the parser.
+- `record_pragma` acts on `push_macro`, `pop_macro`, `once`, and poison;
+  every other pragma passes through to the parser.
+- `#pragma GCC poison` (gcc, clang) and `#pragma clang poison` (clang)
+  record names in `poisoned` (`pp/define.rs`); a non-identifier operand is
+  "can only poison identifier tokens". `reject_poisoned` then fails with
+  "attempt to use a poisoned identifier" on a poisoned name lexed from a
+  file, in system headers too: active text lines (including lines pulled
+  in by `next_raw` for macro arguments), `#define`/`#undef` operands,
+  evaluated conditions, and other pragmas. Tokens from expanding a macro
+  defined before the poison are not checked, and neither is skipped text.
+  Flavor splits, matching each compiler: gcc also checks `#error`/`#warning`
+  text; clang also checks the `#elif`/`#elifdef` that ends the active
+  group, which it never evaluates. Clang's ungrouped "poisoning existing
+  macro" warning is not emitted.
 - gcc flavor only: `#pragma GCC optimize` applies fast-math options
   (`"no-math-errno"` means `-fno-math-errno`) and an optimization level,
   and `push_options` / `pop_options` / `reset_options` save, restore, or go
