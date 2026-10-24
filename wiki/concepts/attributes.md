@@ -229,8 +229,8 @@ Fixtures: `sema/ir_attribute_applicability.c`,
 - `malloc(f[, n])`: `f` resolves like a callee (`Resolver::implicit_builtin`
   for undeclared builtins); `deallocator_argument` (shared) validates `n`
   ([ir/declarations](ir/declarations.md#function-semantics)).
-- The `always_inline` / `noinline` conflict is rejected by
-  `Checker::inlining`; `record_function` treats it as `Internal`.
+- An `always_inline` / `noinline` conflict is accepted: `record_function` keeps
+  the first one seen, as gcc does after its "ignoring attribute" warning.
 
 ## Consumers
 

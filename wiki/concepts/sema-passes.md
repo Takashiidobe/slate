@@ -195,8 +195,7 @@ i)`).
   object; function initializer / thread-local / block-scope `static`;
   thread-local automatic; block-scope `extern` initializer; constexpr
   without initializer; VLA initializer; static VLA; weakref / selectany
-  linkage; multiple initializers (`Checker::initialized`); conflicting
-  `always_inline`/`noinline` (`Checker::inlining`). Arrays of `void` never
+  linkage; multiple initializers (`Checker::initialized`). Arrays of `void` never
   resolve, so `validate.rs` checks them syntactically. Conversions to or
   from an incomplete enum are rejected by `classify_conversion`.
 - **Conversions**: recorded per operand by `record_conversion`
