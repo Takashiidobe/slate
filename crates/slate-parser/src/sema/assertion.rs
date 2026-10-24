@@ -1,12 +1,14 @@
 use super::names::ItemResolution;
 use crate::ast::*;
 use crate::compiler_args::CompilerFlavor;
+use crate::compiler_options::InlineSemantics;
 use crate::const_expr::{AssignOp, BinaryOp, UnaryOp};
 use crate::diagnostics::Warning;
 use crate::ir::{
     BindingId, Linkage, NameResolution, Number, NumericType, SymbolAttributes, Type, Value,
     ValueKind,
 };
+use crate::target_info::TargetEnvironment;
 use crate::visit::{self, Visitor};
 use miette::Severity;
 use num_bigint::{BigInt, Sign};
@@ -218,6 +220,21 @@ impl Checker<'_> {
         merged
     }
 
+    fn extern_inline_only(
+        &self,
+        specifiers: &DeclarationSpecifiers,
+        attributes: &[&Span<Attribute>],
+    ) -> bool {
+        let dialect = self.types.dialect();
+        let microsoft = dialect.target().environment == TargetEnvironment::Msvc;
+        specifiers.is_inline
+            && specifiers.storage == StorageClass::Extern
+            && (attributes
+                .iter()
+                .any(|attribute| matches!(attribute.value, Attribute::GnuInline))
+                || (!microsoft && dialect.inline_semantics() == InlineSemantics::SupressDef))
+    }
+
     fn function(
         &mut self,
         node: NodeId,
@@ -290,6 +307,12 @@ impl Checker<'_> {
             let linkage = owner_linkage.then(|| linkage(function.specifiers.storage));
             let declared = self.declare_object(&at, node, ty, None, linkage.flatten(), false);
             self.report(&at, declared);
+            if let Some(id) = self.types.declarations.get(&node).copied()
+                && self.types.external_overloads.contains(&id)
+                && self.extern_inline_only(&function.specifiers, &attributes)
+            {
+                self.types.external_overloads.remove(&id);
+            }
             if let Some(id) = self.types.declarations.get(&node)
                 && self.types.external_overloads.contains(id)
             {

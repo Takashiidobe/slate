@@ -118,13 +118,16 @@ on it.
   same type (the second binding would need merging into the first). Also
   `Unimplemented` (slate-parser-6x05.41): calling or defining an extern
   overload, whose symbol is the Itanium-mangled name. An unused extern
-  prototype is lowered.
+  prototype is lowered. An `extern inline` definition with `gnu_inline` (or
+  under gnu89 `SupressDef` semantics) is exempt: it never emits a symbol, so
+  it needs no mangling (`Checker::extern_inline_only`, slate-parser-6x05.50;
+  glibc's clang fortify `open`).
 - Each overload prints `[overloadable]` and keeps its C name. Consumers must
   name it by binding (see the [grammar](../ir-grammar.md#functions)).
 - gcc and msvc don't register the attribute, so overloads there conflict as
   those compilers report.
-- Fixtures: `ir_overloadable.c`, `error/.../overloadable-ambiguous.c`,
-  `overloadable-no-match.c`.
+- Fixtures: `ir_overloadable.c`, `ir_overloadable_inline_only.c`,
+  `error/.../overloadable-ambiguous.c`, `overloadable-no-match.c`.
 
 ## Symbol attributes
 
