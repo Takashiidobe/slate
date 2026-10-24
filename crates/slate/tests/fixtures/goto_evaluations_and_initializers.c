@@ -80,12 +80,8 @@ int main(void) {
 // CHECK-NEXT:             let [[V_0:__v[0-9]+]]: i32 = checks + 1;
 // CHECK-NEXT:             checks = [[V_0]];
 // CHECK-NEXT:             if [[V_0]] != 0 && i < 4 {
-// CHECK-NEXT:                 loop {
-// CHECK-NEXT:                     if i == 0 {
-// CHECK-NEXT:                         i = 1;
-// CHECK-NEXT:                     } else {
-// CHECK-NEXT:                         break;
-// CHECK-NEXT:                     }
+// CHECK-NEXT:                 while i == 0 {
+// CHECK-NEXT:                     i = 1;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 if i != 2 {
 // CHECK-NEXT:                     sum += i;

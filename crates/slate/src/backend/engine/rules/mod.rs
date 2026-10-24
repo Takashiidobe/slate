@@ -46,6 +46,7 @@ pub(super) fn control_flow_registry() -> Vec<Box<dyn NodeRule>> {
         Box::new(singleton_scopes::ScopeFlatten),
         Box::new(for_range::ForRangeRecover),
         Box::new(loop_to_while::LoopToWhile),
+        Box::new(loop_to_while::LoopElseBreakToWhile),
     ]
 }
 

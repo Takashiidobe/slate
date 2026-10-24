@@ -85,31 +85,23 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         hits = 0;
 // CHECK-NEXT:         i = 0;
-// CHECK-NEXT:         '__loop_1: loop {
-// CHECK-NEXT:             if i < 6 {
-// CHECK-NEXT:                 j = 0;
-// CHECK-NEXT:                 loop {
-// CHECK-NEXT:                     if j < 6 {
-// CHECK-NEXT:                         if j > i {
-// CHECK-NEXT:                             break;
-// CHECK-NEXT:                         } else {
-// CHECK-NEXT:                             if i * j > limit {
-// CHECK-NEXT:                                 break '__loop_1;
-// CHECK-NEXT:                             } else {
-// CHECK-NEXT:                                 if (i + j) % 3 != 0 {
-// CHECK-NEXT:                                     hits += i * 10 + j;
-// CHECK-NEXT:                                 }
-// CHECK-NEXT:                                 j += 1;
-// CHECK-NEXT:                             }
-// CHECK-NEXT:                         }
+// CHECK-NEXT:         '__loop_1: while i < 6 {
+// CHECK-NEXT:             j = 0;
+// CHECK-NEXT:             while j < 6 {
+// CHECK-NEXT:                 if j > i {
+// CHECK-NEXT:                     break;
+// CHECK-NEXT:                 } else {
+// CHECK-NEXT:                     if i * j > limit {
+// CHECK-NEXT:                         break '__loop_1;
 // CHECK-NEXT:                     } else {
-// CHECK-NEXT:                         break;
+// CHECK-NEXT:                         if (i + j) % 3 != 0 {
+// CHECK-NEXT:                             hits += i * 10 + j;
+// CHECK-NEXT:                         }
+// CHECK-NEXT:                         j += 1;
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                 }
-// CHECK-NEXT:                 i += 1;
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
+// CHECK-NEXT:             i += 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         return hits;
 // CHECK-NEXT:     }

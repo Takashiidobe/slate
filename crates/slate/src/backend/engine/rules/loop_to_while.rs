@@ -5,6 +5,8 @@ use crate::backend::rust_ast::{Expr, UnaryOp};
 
 pub(in crate::backend::engine) struct LoopToWhile;
 
+pub(in crate::backend::engine) struct LoopElseBreakToWhile;
+
 pub(super) fn negate(cond: &Expr) -> Expr {
     match cond {
         Expr::Unary {
@@ -106,6 +108,89 @@ impl NodeRule for LoopToWhile {
                 label,
                 cond,
                 stmts,
+                tail: None,
+            },
+        );
+        arena.touch_subtree(id);
+        true
+    }
+}
+
+struct ElseBreakHead {
+    guard: NodeId,
+    exit: NodeId,
+    cond: Expr,
+    stmts: Vec<NodeId>,
+}
+
+fn else_break_head(arena: &Arena, body: &[NodeId]) -> Option<ElseBreakHead> {
+    let guard = *body.first()?;
+    let NodeKind::If {
+        cond,
+        then_body,
+        else_body,
+    } = arena.get(guard)?
+    else {
+        return None;
+    };
+    let [exit] = else_body[..] else {
+        return None;
+    };
+    if then_body.is_empty() || !matches!(arena.get(exit), Some(NodeKind::Break(None))) {
+        return None;
+    }
+    Some(ElseBreakHead {
+        guard,
+        exit,
+        cond: cond.clone(),
+        stmts: then_body.iter().chain(&body[1..]).copied().collect(),
+    })
+}
+
+impl NodeRule for LoopElseBreakToWhile {
+    fn name(&self) -> &'static str {
+        "loop_to_while::else_break"
+    }
+
+    fn priority(&self) -> u32 {
+        20
+    }
+
+    fn kinds(&self) -> &'static [NodeKindTag] {
+        &[NodeKindTag::Loop]
+    }
+
+    fn requeues_moved_nodes(&self) -> bool {
+        true
+    }
+
+    fn matches(&self, arena: &FunctionOptimizer, id: NodeId) -> bool {
+        let Some(NodeKind::Loop { body, .. }) = arena.get(id) else {
+            return false;
+        };
+        else_break_head(arena, body).is_some_and(|head| !tail_pending_inline(arena, &head.stmts))
+    }
+
+    fn apply(&self, arena: &mut FunctionOptimizer, id: NodeId) -> bool {
+        let Some(NodeKind::Loop { label, body }) = arena.get(id) else {
+            return false;
+        };
+        let Some(head) = else_break_head(arena, body) else {
+            return false;
+        };
+        let label = label.clone();
+        arena.retire_subtree(head.exit, Some(head.guard));
+        arena.release_comments(head.guard, None);
+        arena.take(head.guard);
+        for &child in &head.stmts {
+            arena.set_parent(child, Some(id));
+        }
+        arena.set_kind(
+            id,
+            NodeKind::While {
+                label,
+                cond: head.cond,
+                stmts: head.stmts,
                 tail: None,
             },
         );
