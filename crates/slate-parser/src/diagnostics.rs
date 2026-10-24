@@ -29,10 +29,11 @@ pub enum Warning {
     Traditional,
     JumpSehFinally,
     ExtraTokens,
+    ExtraSemi,
 }
 
 impl Warning {
-    pub const ALL: [Self; 25] = [
+    pub const ALL: [Self; 26] = [
         Self::LongLong,
         Self::C99Compat,
         Self::ImplicitlyUnsignedLiteral,
@@ -58,6 +59,7 @@ impl Warning {
         Self::Traditional,
         Self::JumpSehFinally,
         Self::ExtraTokens,
+        Self::ExtraSemi,
     ];
 
     pub fn name(self) -> &'static str {
@@ -89,6 +91,7 @@ impl Warning {
             Self::Traditional => "traditional",
             Self::JumpSehFinally => "jump-seh-finally",
             Self::ExtraTokens => "extra-tokens",
+            Self::ExtraSemi => "extra-semi",
         }
     }
 
@@ -107,6 +110,7 @@ impl Warning {
                 | Self::MacroRedefined
                 | Self::BuiltinMacroRedefined
                 | Self::Deprecated
+                | Self::ExtraSemi
         )
     }
 
@@ -116,7 +120,9 @@ impl Warning {
         flavor: CompilerFlavor,
     ) -> DefaultSeverity {
         match self {
-            Self::LongLong | Self::BitIntExtension | Self::Traditional => DefaultSeverity::Ignored,
+            Self::LongLong | Self::BitIntExtension | Self::Traditional | Self::ExtraSemi => {
+                DefaultSeverity::Ignored
+            }
             Self::DeprecatedNonPrototype if !flavor.is_clang() => DefaultSeverity::Ignored,
             Self::ImplicitFunctionDeclaration if flavor.is_msvc() => DefaultSeverity::Ignored,
             Self::C99Compat if standard.at_least_c99() => DefaultSeverity::Ignored,

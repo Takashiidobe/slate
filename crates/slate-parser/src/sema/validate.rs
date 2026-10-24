@@ -195,7 +195,45 @@ fn analyze(
             }
         }
     }
+    let mut extra_semicolons = Vec::new();
+    for tag in &unit.tags {
+        check_extra_semicolons(tag, types, &mut extra_semicolons);
+    }
+    extra_semicolons.sort_by_key(|diagnostic| diagnostic.loc.map(|loc| (loc.file.0, loc.offset)));
+    errors.extend(extra_semicolons);
     with_sources(errors, files)
+}
+
+fn check_extra_semicolons(
+    tag: &Span<TagDefinition>,
+    context: TypeContext<'_>,
+    errors: &mut Vec<SemaError>,
+) {
+    let TagBody::Record(fields) = &tag.body else {
+        return;
+    };
+    let message = match (context.flavor, tag.kind) {
+        (CompilerFlavor::Gcc, _) => "extra semicolon in struct or union specified",
+        (_, TagKind::Union) => "extra ';' inside a union",
+        _ => "extra ';' inside a struct",
+    };
+    let mut previous_was_semi = false;
+    for item in fields {
+        let is_semi = match item.value {
+            FieldItemKind::ExtraSemi => true,
+            FieldItemKind::Comment(_) => continue,
+            _ => false,
+        };
+        if is_semi && !(previous_was_semi && context.flavor.is_clang()) {
+            errors.extend(Warning::ExtraSemi.diagnose(
+                message,
+                context.diagnostics(),
+                item.provenance,
+                item.expansion,
+            ));
+        }
+        previous_was_semi = is_semi;
+    }
 }
 
 pub fn with_sources(

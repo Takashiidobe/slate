@@ -399,15 +399,15 @@ TagBody =
     | Record(Vec<MemberItem>)
     | Enum { fixed_type: Option<TypeName>, enumerators: Vec<EnumItem> }   // C23 `enum E : int`
 
-MemberItem = Field(FieldDeclaration) | StaticAssert | CommentGroup
+MemberItem = Field(FieldDeclaration) | StaticAssert | CommentGroup | ExtraSemi
 FieldDeclaration { specifiers, declarators: Vec<FieldDeclarator>, provenance }   // empty: anonymous member
 FieldDeclarator { declarator: Declarator, bit_width: Option<Expr>, attributes, provenance }
 EnumItem = Enumerator { name, value: Option<Expr>, attributes, provenance } | CommentGroup
 ```
 
-- A stray `;` in a record body (`struct { int x; ; }`) leaves no
-  `MemberItem`. gcc and clang accept it (their pedantic warning is
-  not emitted, slate-parser-6x05.38.26); msvc rejects it.
+- A stray `;` in a record body (`struct { int x; ; }`) is an `ExtraSemi`
+  item, one per `;`, spanning the token. It declares nothing; sema raises
+  `extra-semi` from it. gcc and clang accept it; msvc rejects it.
 - Definitions are stored once in `TranslationUnit.tags` and referenced by
   `TagId`, so anonymous tags have identity (`struct { int y; } g1, g2;`
   share one). Nested, block, and parameter-list definitions get their own

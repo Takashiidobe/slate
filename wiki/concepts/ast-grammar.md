@@ -265,7 +265,7 @@ TagBody       = "Record(" vec<span<FieldItemKind>> ")"
                        enumerators: vec<span<EnumItemKind>> } ;
 
 FieldItemKind       = "Comment(" CommentGroup ")" | "Field(" FieldDecl ")"
-                    | "StaticAssert(" StaticAssert ")" ;
+                    | "StaticAssert(" StaticAssert ")" | "ExtraSemi" ;
 FieldDecl           = FieldDecl { specifiers: DeclarationSpecifiers,
                                   declarators?: vec<span<FieldDeclaratorKind>> } ;
 FieldDeclaratorKind = FieldDeclaratorKind { declarator: Declarator,

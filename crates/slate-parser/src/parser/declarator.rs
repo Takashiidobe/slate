@@ -307,6 +307,11 @@ impl<'a> DeclaratorParser<'a> {
                 break;
             }
             if !parser.flavor().is_msvc() && self.matches(Token::Semi) {
+                fields.push(span_tokens(
+                    FieldItemKind::ExtraSemi,
+                    &self.tokens[self.pos - 1..self.pos],
+                    self.context,
+                ));
                 continue;
             }
             let start = self.pos;

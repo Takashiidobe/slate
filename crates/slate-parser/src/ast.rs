@@ -1706,6 +1706,7 @@ pub enum FieldItemKind {
     Field(FieldDecl),
     StaticAssert(StaticAssert),
     Pragma(Pragma),
+    ExtraSemi,
 }
 
 #[derive(Debug, Clone, PartialEq)]
