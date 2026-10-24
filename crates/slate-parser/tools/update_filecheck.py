@@ -17,7 +17,17 @@ def _no_color_env() -> dict:
     env.pop("FORCE_COLOR", None)
     env.pop("CLICOLOR_FORCE", None)
     env["NO_COLOR"] = "1"
+    env.setdefault("SLATE_SYSROOTS", str(_sysroots_root()))
     return env
+
+
+def _sysroots_root() -> Path:
+    if sys.platform == "darwin":
+        return Path.home() / "Library/Application Support/Slate/sysroots"
+    if sys.platform == "win32":
+        return Path(os.environ["LOCALAPPDATA"]) / "Slate/data/sysroots"
+    data = os.environ.get("XDG_DATA_HOME") or str(Path.home() / ".local/share")
+    return Path(data) / "slate/sysroots"
 
 
 DEFINE_RE = re.compile(r"^\s*//\s*SLATE-FILECHECK-DEFINES\s+([A-Za-z0-9_-]+)(?:\s+(.*))?$")
