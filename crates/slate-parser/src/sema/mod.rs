@@ -35,6 +35,13 @@ use crate::ast::{DeclKind, Expr, StmtKind, TranslationUnit};
 use crate::ir::{NameResolution, Value};
 use numeric::{Context, ResolveError};
 
+const STACK_RED_ZONE: usize = 512 << 10;
+const STACK_GROWTH: usize = 16 << 20;
+
+pub(crate) fn deep<T>(recurse: impl FnOnce() -> T) -> T {
+    stacker::maybe_grow(STACK_RED_ZONE, STACK_GROWTH, recurse)
+}
+
 pub struct Sema<'u> {
     unit: &'u TranslationUnit,
     names: NameResolution,

@@ -107,6 +107,10 @@ fn touches(value: &Value) -> Touches {
 }
 
 fn walk(value: &Value, found: &mut Touches) {
+    super::deep(|| walk_value(value, found));
+}
+
+fn walk_value(value: &Value, found: &mut Touches) {
     match &value.node.value {
         ValueKind::Store { place, value, .. } => {
             walk_place(place, true, found);

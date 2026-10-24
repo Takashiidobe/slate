@@ -2233,7 +2233,40 @@ impl Lowerer {
     }
 
     pub fn expr(&mut self, e: &Expr) -> Result<Operand, ResolveError> {
+        if self.is_binary_chain(e) {
+            return self.binary_chain(e);
+        }
         let lowered = self.lower_expr(e).map_err(|error| error.at(e.expansion))?;
+        self.finish_expr(e, lowered)
+    }
+
+    fn is_binary_chain(&self, e: &Expr) -> bool {
+        matches!(&e.value, ExprKind::Binary { left, .. } if matches!(left.value, ExprKind::Binary { .. }))
+            && !self.types.constexpr_values.contains_key(&e.id)
+    }
+
+    fn binary_chain(&mut self, e: &Expr) -> Result<Operand, ResolveError> {
+        let mut spine = Vec::new();
+        let mut node = e;
+        while let ExprKind::Binary { op, left, right } = &node.value {
+            if !spine.is_empty() && self.types.constexpr_values.contains_key(&node.id) {
+                break;
+            }
+            spine.push((node, *op, right));
+            node = left;
+        }
+        let mut accumulated = self.expr(node)?;
+        for (node, op, right) in spine.into_iter().rev() {
+            let lowered = self
+                .expr(right)
+                .and_then(|right| self.binary_operands(node, op, accumulated, right))
+                .map_err(|error| error.at(node.expansion))?;
+            accumulated = self.finish_expr(node, lowered)?;
+        }
+        Ok(accumulated)
+    }
+
+    fn finish_expr(&mut self, e: &Expr, lowered: Operand) -> Result<Operand, ResolveError> {
         let c = self.result(e).map_err(|error| error.at(e.expansion))?;
         if self.types.typed(e)?.source_bits.is_some() {
             return self
@@ -2242,6 +2275,56 @@ impl Lowerer {
                 .map_err(|error| error.at(e.expansion));
         }
         Ok(Operand { c, ..lowered })
+    }
+
+    fn binary_operands(
+        &mut self,
+        e: &Expr,
+        op: BinaryOp,
+        left: Operand,
+        right: Operand,
+    ) -> Result<Operand, ResolveError> {
+        if matches!(op, BinaryOp::And | BinaryOp::Or) {
+            let left = self.enum_operand(left);
+            let right = self.enum_operand(right);
+            return Ok(self.truth(
+                e,
+                ValueKind::Logical {
+                    op: if op == BinaryOp::And {
+                        LogicalOp::And
+                    } else {
+                        LogicalOp::Or
+                    },
+                    left: Box::new(self.condition(left.value, None)?),
+                    right: Box::new(self.condition(right.value, None)?),
+                },
+            ));
+        }
+        let compare = match op {
+            BinaryOp::Equal => Some(CompareOp::Eq),
+            BinaryOp::NotEqual => Some(CompareOp::Ne),
+            BinaryOp::Less => Some(CompareOp::Lt),
+            BinaryOp::LessEqual => Some(CompareOp::Le),
+            BinaryOp::Greater => Some(CompareOp::Gt),
+            BinaryOp::GreaterEqual => Some(CompareOp::Ge),
+            _ => None,
+        }
+        .filter(|_| self.pointee(&left.ty).is_ok() || self.pointee(&right.ty).is_ok());
+        let left = self.converted(e, Slot::Left, left)?;
+        let right = self.converted(e, Slot::Right, right)?;
+        if let Some(op) = compare {
+            return Ok(self.truth(
+                e,
+                ValueKind::Compare {
+                    op,
+                    left: Box::new(left.value),
+                    right: Box::new(right.value),
+                    exceptions: None,
+                    reason: None,
+                },
+            ));
+        }
+        self.binary(e, op, left, right)
     }
 
     pub(super) fn result(&mut self, e: &Expr) -> Result<QualType, ResolveError> {
@@ -2490,47 +2573,7 @@ impl Lowerer {
             ExprKind::Binary { op, left, right } => {
                 let left = self.expr(left)?;
                 let right = self.expr(right)?;
-                if matches!(op, BinaryOp::And | BinaryOp::Or) {
-                    let left = self.enum_operand(left);
-                    let right = self.enum_operand(right);
-                    return Ok(self.truth(
-                        e,
-                        ValueKind::Logical {
-                            op: if *op == BinaryOp::And {
-                                LogicalOp::And
-                            } else {
-                                LogicalOp::Or
-                            },
-                            left: Box::new(self.condition(left.value, None)?),
-                            right: Box::new(self.condition(right.value, None)?),
-                        },
-                    ));
-                }
-                let compare = match op {
-                    BinaryOp::Equal => Some(CompareOp::Eq),
-                    BinaryOp::NotEqual => Some(CompareOp::Ne),
-                    BinaryOp::Less => Some(CompareOp::Lt),
-                    BinaryOp::LessEqual => Some(CompareOp::Le),
-                    BinaryOp::Greater => Some(CompareOp::Gt),
-                    BinaryOp::GreaterEqual => Some(CompareOp::Ge),
-                    _ => None,
-                }
-                .filter(|_| self.pointee(&left.ty).is_ok() || self.pointee(&right.ty).is_ok());
-                let left = self.converted(e, Slot::Left, left)?;
-                let right = self.converted(e, Slot::Right, right)?;
-                if let Some(op) = compare {
-                    return Ok(self.truth(
-                        e,
-                        ValueKind::Compare {
-                            op,
-                            left: Box::new(left.value),
-                            right: Box::new(right.value),
-                            exceptions: None,
-                            reason: None,
-                        },
-                    ));
-                }
-                self.binary(e, *op, left, right)
+                self.binary_operands(e, *op, left, right)
             }
             ExprKind::Assign { op, target, value } => {
                 let value_expr = value;

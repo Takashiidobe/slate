@@ -545,6 +545,19 @@ impl<T: std::fmt::Display> std::fmt::Display for Span<T> {
 }
 
 impl<T> Span<T> {
+    pub fn erased(&self) -> Span<()> {
+        Span {
+            id: self.id,
+            value: (),
+            spelling: self.spelling,
+            expansion: self.expansion,
+            provenance: self.provenance,
+            macro_origin: self.macro_origin.clone(),
+            leading_space: self.leading_space,
+            digraph: self.digraph,
+        }
+    }
+
     pub fn with_value<U>(self, value: U) -> Span<U> {
         Span {
             id: self.id,

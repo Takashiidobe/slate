@@ -381,7 +381,15 @@ impl Hoister {
         value: Value,
         out: &mut Vec<Span<Statement>>,
     ) -> Result<Value, ResolveError> {
-        let source = value.node.clone().with_value(());
+        super::deep(|| self.hoist_value(value, out))
+    }
+
+    fn hoist_value(
+        &mut self,
+        value: Value,
+        out: &mut Vec<Span<Statement>>,
+    ) -> Result<Value, ResolveError> {
+        let source = value.node.erased();
         let ty = value.ty.clone();
         let template = Value {
             ty: ty.clone(),

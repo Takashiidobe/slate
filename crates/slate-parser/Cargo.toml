@@ -23,6 +23,7 @@ libc.workspace = true
 miette.workspace = true
 num-bigint.workspace = true
 rustc_apfloat.workspace = true
+stacker = "0.1.25"
 thiserror.workspace = true
 unicode_names2 = "4.0.0"
 
