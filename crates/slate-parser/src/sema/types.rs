@@ -60,7 +60,7 @@ pub(super) struct OffsetOfPath<'e> {
 pub struct TypeResolver {
     dialect: Dialect,
     pub ctypes: CTypes,
-    tags: Vec<crate::ast::Span<TagDefinition>>,
+    tags: std::sync::Arc<Vec<crate::ast::Span<TagDefinition>>>,
     tag_ids: HashMap<TagId, TypeId>,
     tag_bindings: HashMap<BindingId, TypeId>,
     tag_definitions: HashMap<TagId, BindingId>,
@@ -133,7 +133,7 @@ impl TypeResolver {
         Self {
             dialect,
             ctypes: CTypes::default(),
-            tags: Vec::new(),
+            tags: std::sync::Arc::default(),
             tag_ids: HashMap::new(),
             tag_bindings: HashMap::new(),
             tag_definitions: HashMap::new(),
@@ -368,7 +368,7 @@ impl TypeResolver {
         resolver.builtin_typedefs = names.builtin_typedefs.clone();
         resolver.tag_definitions = names.tags.clone();
         resolver.ctypes.ptr32_extension_is_qualifier = unit.dialect.flavor().is_msvc();
-        resolver.tags = unit.tags.clone();
+        resolver.tags = std::sync::Arc::new(unit.tags.clone());
         resolver.pragmas = super::pragmas::collect(unit);
         resolver
     }
@@ -507,21 +507,30 @@ impl TypeResolver {
         }
     }
 
-    pub fn tag_span<'a>(
+    pub fn tag_spans<'a>(
         &self,
-        id: TypeId,
         unit: &'a TranslationUnit,
-    ) -> Option<&'a crate::ast::Span<TagDefinition>> {
-        unit.tags
-            .iter()
-            .find(|tag| self.tag_ids.get(&tag.value.id) == Some(&id))
+    ) -> HashMap<TypeId, &'a crate::ast::Span<TagDefinition>> {
+        let mut spans = HashMap::new();
+        for tag in &unit.tags {
+            if let Some(id) = self.tag_ids.get(&tag.value.id) {
+                spans.entry(*id).or_insert(tag);
+            }
+        }
+        spans
     }
 
-    pub(super) fn tag_definition(&self, id: TagId) -> Option<TagDefinition> {
-        self.tags
-            .iter()
-            .find(|tag| tag.value.id == id)
-            .map(|tag| tag.value.clone())
+    pub(super) fn tag_by_id(
+        tags: &[crate::ast::Span<TagDefinition>],
+        id: TagId,
+    ) -> Option<&crate::ast::Span<TagDefinition>> {
+        tags.binary_search_by_key(&id, |tag| tag.value.id)
+            .ok()
+            .map(|index| &tags[index])
+    }
+
+    pub(super) fn shared_tags(&self) -> std::sync::Arc<Vec<crate::ast::Span<TagDefinition>>> {
+        std::sync::Arc::clone(&self.tags)
     }
 
     fn vector_count(
@@ -2255,11 +2264,8 @@ impl TypeResolver {
                     .ok_or(ResolveError::Internal("unknown typedef"));
             }
             TypeSpecifier::Tag(TagSpecifier::Definition(id)) => {
-                let tag = self
-                    .tags
-                    .iter()
-                    .find(|tag| tag.value.id == *id)
-                    .cloned()
+                let tags = std::sync::Arc::clone(&self.tags);
+                let tag = Self::tag_by_id(&tags, *id)
                     .ok_or(ResolveError::Internal("unknown tag definition"))?;
                 let id = self.define_tag(&tag.value)?;
                 tag_kind(tag.kind, id)
@@ -2752,9 +2758,9 @@ impl TypeResolver {
         let CTypeKind::Record { id, .. } = self.ctypes.canonical_kind(c) else {
             return false;
         };
-        self.tag_ids
-            .iter()
-            .any(|(tag, defined)| defined == id && self.tag_failures.contains_key(tag))
+        self.tag_failures
+            .keys()
+            .any(|tag| self.tag_ids.get(tag) == Some(id))
     }
 
     fn collect_member_names(&self, record: QualType, names: &mut HashSet<String>) {
@@ -4585,14 +4591,11 @@ pub(super) fn resolve_type_module(
             _ => return Err(ResolveError::Unimplemented("declaration in type view")),
         }
     }
+    let spans = resolver.tag_spans(unit);
+    let mut present: HashSet<_> = module.types.iter().map(|entry| entry.value.id).collect();
     for definition in &resolver.definitions {
-        if !module
-            .types
-            .iter()
-            .any(|entry| entry.value.id == definition.id)
-        {
-            let span = resolver.tag_span(definition.id, unit);
-            if let Some(span) = span {
+        if present.insert(definition.id) {
+            if let Some(span) = spans.get(&definition.id) {
                 module.types.push(span.derive(definition.clone()));
             } else if let Some(declaration) = unit.decls.first() {
                 module.types.push(declaration.derive(definition.clone()));

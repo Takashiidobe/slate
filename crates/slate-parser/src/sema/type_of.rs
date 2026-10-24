@@ -77,10 +77,11 @@ impl Lowerer {
             TypeSpecifier::Vector(vector) => self.prepare_specifier(&vector.element),
             TypeSpecifier::Mode(mode) => self.prepare_specifier(&mode.base),
             TypeSpecifier::Tag(TagSpecifier::Definition(id)) => {
-                let Some(tag) = self.types.tag_definition(*id) else {
+                let tags = self.types.shared_tags();
+                let Some(tag) = TypeResolver::tag_by_id(&tags, *id) else {
                     return Ok(());
                 };
-                match &tag.body {
+                match &tag.value.body {
                     TagBody::Record(items) => {
                         for item in items {
                             let FieldItemKind::Field(declaration) = &item.value else {

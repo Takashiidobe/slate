@@ -138,11 +138,12 @@ fn resolve_module(
     if error_count > 0 {
         with_sources(std::mem::take(&mut lower.types.diagnostics), files)?;
     }
+    let tag_spans = lower.types.tag_spans(unit);
     let mut type_nodes = HashMap::new();
     for definition in &lower.types.definitions {
         let span = if let Some(owner) = lower.types.owners.get(&definition.id) {
             owner.derive(definition.clone())
-        } else if let Some(tag) = lower.types.tag_span(definition.id, unit) {
+        } else if let Some(tag) = tag_spans.get(&definition.id) {
             tag.derive(definition.clone())
         } else if let Some(declaration) = unit.decls.first() {
             declaration.derive(definition.clone())
