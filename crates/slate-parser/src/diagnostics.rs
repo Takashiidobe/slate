@@ -167,6 +167,7 @@ pub struct DiagnosticOptions {
     pub pedantic: bool,
     pub pedantic_errors: bool,
     pub ignore_warnings: bool,
+    pub permissive: bool,
     settings: BTreeMap<Warning, WarningSetting>,
 }
 
@@ -209,7 +210,9 @@ impl DiagnosticContext<'_> {
             return (default.is_error() && setting.error != Some(false)).then_some(Severity::Error);
         }
         let error = setting.error.unwrap_or(
-            options.werror || default.is_error() || (options.pedantic_errors && pedantic),
+            options.werror
+                || (default.is_error() && !options.permissive)
+                || (options.pedantic_errors && pedantic),
         );
         Some(if error {
             Severity::Error

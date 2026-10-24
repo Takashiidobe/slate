@@ -441,6 +441,7 @@ enum Opt {
     Optimize,
     Pthread,
     NoWarnings,
+    Permissive,
     DeleteNullPointerChecks,
     TrivialAutoVarInit,
     MacroPrefixMap,
@@ -538,6 +539,7 @@ impl std::fmt::Display for Opt {
             Self::Optimize => "O",
             Self::Pthread => "pthread",
             Self::NoWarnings => "w",
+            Self::Permissive => "fpermissive",
             Self::DeleteNullPointerChecks => "fdelete-null-pointer-checks",
             Self::TrivialAutoVarInit => "ftrivial-auto-var-init",
             Self::MacroPrefixMap => "fmacro-prefix-map",
@@ -634,7 +636,8 @@ impl Opt {
             | Self::GccStrictFlexArrays
             | Self::PermittedFltEvalMethods
             | Self::StackProtectorExplicit
-            | Self::FpRetIn387 => &[Gcc],
+            | Self::FpRetIn387
+            | Self::Permissive => &[Gcc],
             Self::StackAlignment
             | Self::ClangX87
             | Self::AsmBlocks
@@ -1256,6 +1259,9 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
         } else if argument == "-w" {
             parsed.saw(Opt::NoWarnings, argument);
             parsed.diagnostics.ignore_warnings = true;
+        } else if argument == "-fpermissive" || argument == "-fno-permissive" {
+            parsed.saw(Opt::Permissive, argument);
+            parsed.diagnostics.permissive = argument == "-fpermissive";
         } else if let Some(value) = argument.strip_prefix("-fexcess-precision=") {
             parsed.saw(Opt::ExcessPrecision, argument);
             let fast = match value {

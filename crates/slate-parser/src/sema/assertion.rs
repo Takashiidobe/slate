@@ -1216,6 +1216,7 @@ impl Checker<'_> {
                     Returns::Void => {
                         if let Ok(ty) = self.types.operand_type(expr)
                             && !self.types.ctypes.is_void(ty)
+                            && !self.types.features().value_return_in_void
                         {
                             self.reject(stmt, "value return from void function");
                         }

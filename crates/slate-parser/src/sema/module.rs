@@ -1817,6 +1817,10 @@ impl Lowerer {
                         result.push(statement.derive(Statement::Expression(value.value)));
                         Statement::Return(None)
                     }
+                    None if self.types.features().value_return_in_void => {
+                        result.push(statement.derive(Statement::Expression(value.value)));
+                        Statement::Return(None)
+                    }
                     None => {
                         return Err(ResolveError::Internal("value return from void function"));
                     }

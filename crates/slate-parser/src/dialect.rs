@@ -1,6 +1,6 @@
 use crate::compiler_args::{CompilerFlavor, LanguageStandard};
 use crate::compiler_options::{CompilerOptions, InlineSemantics};
-use crate::standard_features::StandardFeatures;
+use crate::standard_features::{Availability, StandardFeatures};
 use crate::target_info::TargetInfo;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -20,13 +20,20 @@ impl Dialect {
         options: CompilerOptions,
     ) -> Self {
         let target = options.effective_target(target);
-        let features = StandardFeatures::for_compiler(
+        let mut features = StandardFeatures::for_compiler(
             standard,
             flavor,
             &target,
             options.microsoft,
             options.graphs,
         );
+        if flavor.is_gcc() && options.diagnostics.permissive {
+            features.valueless_return_in_nonvoid = true;
+            features.value_return_in_void = true;
+            if !features.implicit_int.is_accepted() {
+                features.implicit_int = Availability::Extension;
+            }
+        }
         Self {
             flavor,
             standard,

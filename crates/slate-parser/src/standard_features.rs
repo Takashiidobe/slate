@@ -61,6 +61,7 @@ pub struct StandardFeatures {
     pub empty_parens_are_prototype: bool,
     pub main_implicit_return_zero: bool,
     pub valueless_return_in_nonvoid: bool,
+    pub value_return_in_void: bool,
     pub inline_semantics: InlineSemantics,
     pub microsoft_extensions: bool,
     pub microsoft_compatibility: bool,
@@ -141,6 +142,7 @@ impl StandardFeatures {
             empty_parens_are_prototype: c23,
             main_implicit_return_zero: standard.at_least_c99(),
             valueless_return_in_nonvoid: c89,
+            value_return_in_void: false,
             inline_semantics: if c89 {
                 InlineSemantics::SupressDef
             } else {
