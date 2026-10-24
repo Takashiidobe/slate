@@ -24,6 +24,7 @@ miette.workspace = true
 num-bigint.workspace = true
 rustc_apfloat.workspace = true
 thiserror.workspace = true
+unicode_names2 = "4.0.0"
 
 [target.'cfg(all(target_arch = "wasm32", target_os = "unknown"))'.dependencies]
 js-sys = "0.3"

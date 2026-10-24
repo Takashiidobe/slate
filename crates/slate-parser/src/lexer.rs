@@ -1110,6 +1110,18 @@ impl Lexer {
             };
         }
         let j = i + 1;
+        if Self::char_in(chars, j, end) == Some('N')
+            && Self::char_in(chars, j + 1, end) == Some('{')
+        {
+            let close = (j + 2..end).find(|&k| chars[k] == '}');
+            let named = close.and_then(|close| {
+                let name: String = chars[j + 2..close].iter().collect();
+                unicode_names2::character(&name).map(|c| (c, close + 1))
+            });
+            if let Some((c, next)) = named {
+                return (SourceUnit::Character(c as u32), next);
+            }
+        }
         if matches!(Self::char_in(chars, j, end), Some('o' | 'x' | 'u'))
             && Self::char_in(chars, j + 1, end) == Some('{')
         {
