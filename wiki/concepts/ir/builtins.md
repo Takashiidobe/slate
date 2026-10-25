@@ -161,8 +161,8 @@ overflow area otherwise. On i386 cdecl every record is `memory`: the
 that list, scalar or record, through `__slate_i386_va::arg`. A 16-aligned
 type (`__float128`) first rounds the cursor up to 16, as gcc's caller and
 `va_arg` do; clang's i386 `va_arg` reads it at 4-byte alignment and
-disagrees with its own caller, so `i686/float128_va_arg.c` checks against a
-gcc-recorded `.expected`. On AAPCS64 a scalar binary128 (`long double`)
+disagrees with its own caller, so `gcc/i686/float128_va_arg.c` uses gcc as
+its oracle. On AAPCS64 a scalar binary128 (`long double`)
 takes one vector register slot, lowered as a one-member
 `__slate_aapcs_va::hfa`. On AAPCS64 a
 homogeneous float aggregate is `hfa=<count>x<bytes>` (one 16-byte vector

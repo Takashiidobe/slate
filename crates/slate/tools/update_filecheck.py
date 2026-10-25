@@ -81,8 +81,8 @@ def fixture_arch(path):
     if is_release(path):
         return None
     relative = path.resolve().relative_to(FIXTURES)
-    if relative.parts[0] == "gcc":
-        relative = relative.relative_to("gcc")
+    if relative.parts[0] in ("gcc", "msvc"):
+        relative = relative.relative_to(relative.parts[0])
     if len(relative.parts) == 1:
         return None
     if len(relative.parts) == 2 and relative.parts[0] in ARCH_TARGETS:

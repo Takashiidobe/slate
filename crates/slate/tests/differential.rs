@@ -14,10 +14,24 @@ struct Fixture {
     name: String,
     relative: PathBuf,
     path: PathBuf,
-    gcc: bool,
+    flavor: Flavor,
 }
 
-const GCC_FIXTURES: &str = "gcc";
+#[derive(Clone, Copy, PartialEq)]
+enum Flavor {
+    Clang,
+    Gcc,
+    Msvc,
+}
+
+const FLAVOR_FIXTURES: [(&str, Flavor); 2] = [("gcc", Flavor::Gcc), ("msvc", Flavor::Msvc)];
+
+fn fixture_flavor(sub: &Path) -> Flavor {
+    FLAVOR_FIXTURES
+        .iter()
+        .find(|(dir, _)| sub.starts_with(dir))
+        .map_or(Flavor::Clang, |&(_, flavor)| flavor)
+}
 
 fn collect_fixtures(root: &Path, sub: &Path, selected: &Option<String>, out: &mut Vec<Fixture>) {
     let Ok(entries) = std::fs::read_dir(root.join(sub)) else {
@@ -37,7 +51,7 @@ fn collect_fixtures(root: &Path, sub: &Path, selected: &Option<String>, out: &mu
             name,
             relative,
             path,
-            gcc: sub.starts_with(GCC_FIXTURES),
+            flavor: fixture_flavor(sub),
         });
     }
 }
@@ -69,9 +83,10 @@ fn target_fixtures(root: &Path, triple: &str) -> Vec<Fixture> {
     let mut fixtures = Vec::new();
     collect_fixtures(root, Path::new(""), &selected, &mut fixtures);
     collect_fixtures(root, Path::new(arch), &selected, &mut fixtures);
-    let gcc = Path::new(GCC_FIXTURES);
-    collect_fixtures(root, gcc, &selected, &mut fixtures);
-    collect_fixtures(root, &gcc.join(arch), &selected, &mut fixtures);
+    for (dir, _) in FLAVOR_FIXTURES {
+        collect_fixtures(root, Path::new(dir), &selected, &mut fixtures);
+        collect_fixtures(root, &Path::new(dir).join(arch), &selected, &mut fixtures);
+    }
     fixtures.sort_by(|a, b| a.name.cmp(&b.name));
     fixtures
 }
@@ -98,11 +113,13 @@ fn run_cases_for_target(
     let translated = support::parallel_map(fixtures, |f| {
         let generated = tmp.join(format!("{}.generated.rs", f.name));
         let dg_options = support::fixture_dg_options(&f.path);
-        let mut extra_args = dg_options.clone();
+        let mut extra_args = match f.flavor {
+            Flavor::Clang => Vec::new(),
+            Flavor::Gcc => vec!["--flavor=gcc".into()],
+            Flavor::Msvc => vec!["--flavor=msvc".into()],
+        };
+        extra_args.extend(dg_options.iter().cloned());
         extra_args.extend(support::fixture_dg_additional_options(&f.path));
-        if f.gcc {
-            extra_args.push("--flavor=gcc".into());
-        }
         if let Some(cross) = cross {
             extra_args.push(format!("-target={}", cross.rust_triple));
         }
@@ -122,10 +139,9 @@ fn run_cases_for_target(
         result.map(|()| {
             let config = support::RunConfig {
                 c_args: dg_options,
-                expected_stdout: Some(f.path.with_extension("expected"))
-                    .filter(|path| path.is_file()),
+                self_check: f.flavor == Flavor::Msvc,
                 filecheck_target,
-                cc: f.gcc.then(|| "gcc".to_string()),
+                cc: (f.flavor == Flavor::Gcc).then(|| "gcc".to_string()),
                 ..support::RunConfig::default()
             };
             support::Case {

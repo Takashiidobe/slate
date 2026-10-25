@@ -522,7 +522,7 @@ pub struct RunConfig {
     pub timeout_seconds: Option<u64>,
     pub c_args: Vec<String>,
     pub cc: Option<String>,
-    pub expected_stdout: Option<PathBuf>,
+    pub self_check: bool,
     pub extra_files: Vec<PathBuf>,
     pub extra_files_dir: PathBuf,
     pub filecheck_target: Option<String>,
@@ -538,7 +538,7 @@ impl Default for RunConfig {
             timeout_seconds: None,
             c_args: Vec::new(),
             cc: None,
-            expected_stdout: None,
+            self_check: false,
             extra_files: Vec::new(),
             extra_files_dir: PathBuf::from("src/functional"),
             filecheck_target: None,
@@ -604,7 +604,7 @@ pub fn compare_batch_with_jobs_for_target(
                 Err(error) => return Err(format!("Rust batch build failed:\n{error}")),
             };
             let c_bin = work_dir.join(format!("{}_c", bn));
-            if case.config.expected_stdout.is_none() {
+            if !case.config.self_check {
                 compile_c_with_args_for_target(
                     &case.c_src,
                     &c_bin,
@@ -630,14 +630,14 @@ pub fn compare_batch_with_jobs_for_target(
                 std::fs::copy(extra, dest_dir.join(name))
                     .map_err(|e| format!("stage {}: {e}", extra.display()))?;
             }
-            let expected = match &case.config.expected_stdout {
-                Some(path) => Run {
-                    stdout: std::fs::read(path)
-                        .map_err(|e| format!("read {}: {e}", path.display()))?,
+            let expected = if case.config.self_check {
+                Run {
+                    stdout: Vec::new(),
                     stderr: Vec::new(),
                     exit: Some(0),
-                },
-                None => run_with_config_for_target(&c_bin, &case.config, &run_dir, cross)?,
+                }
+            } else {
+                run_with_config_for_target(&c_bin, &case.config, &run_dir, cross)?
             };
             compare_runs(
                 &expected,

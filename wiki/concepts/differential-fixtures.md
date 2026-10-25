@@ -40,8 +40,13 @@ target-independent `tests/fixtures/*.c` plus `tests/fixtures/<arch>/`, where
 only when it cannot be target-independent (inline asm, ISA intrinsics).
 `tests/fixtures/gcc/` and `tests/fixtures/gcc/<arch>/` hold gcc-flavor
 fixtures: they translate with `--flavor=gcc` and the oracle is real gcc
-(`gcc -m32` for i686, `aarch64-linux-gnu-gcc` for aarch64), so they need no
-`.expected`. Leave `--flavor=gcc` out of their `dg-options`. Nextest
+(`gcc -m32` for i686, `aarch64-linux-gnu-gcc` for aarch64). Leave
+`--flavor=gcc` out of their `dg-options`. `tests/fixtures/msvc/` and
+`tests/fixtures/msvc/<arch>/` translate with `--flavor=msvc` and have no
+native oracle: they are self-checking, so the Rust must exit 0 with empty
+stdout, and a fixture checks its own results and calls `abort()` on a
+mismatch. The `.unsupported` tree has the same `gcc/` and `msvc/`
+directories. Nextest
 profiles pick targets through setup scripts in `.config/nextest.toml`:
 
 ```bash
@@ -125,10 +130,9 @@ triple drops the directive.
 - Imported gcc-dg and gcc-torture tests keep only semantic flags (`-std=`,
   `-O0`..`-O3`, and `is_semantic_dg_flag` in `tests/support/mod.rs`),
   because their options are mostly warnings and codegen.
-- A flag the clang oracle rejects needs a sibling `.expected` recorded
-  from the compiler that accepts it, with `--flavor=gcc` or
-  `--flavor=msvc` in `dg-options` (`flag_unsigned_bitfields.c`,
-  `x86_64/flag_msvc_unsigned_char.c`).
+- A flag the clang oracle rejects goes in the `gcc/` or `msvc/` directory
+  of the compiler that accepts it (`gcc/flag_unsigned_bitfields.c`,
+  `msvc/x86_64/flag_msvc_unsigned_char.c`).
 
 ## FileCheck
 
