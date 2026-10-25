@@ -418,7 +418,8 @@ impl Lowerer {
             .find(|binding| binding.value.id == id)
             .ok_or(ResolveError::Internal("missing declaration binding"))?
             .clone();
-        let resolved = self.types.ctypes.implicit_function();
+        let convention = self.types.default_convention(None);
+        let resolved = self.types.ctypes.implicit_function(convention);
         let ty = self.types.ir_type(resolved);
         let abi = Some(self.c_abi_signature(resolved, &ty, None, &[])?);
         self.types.entities.declare(id, resolved, false);

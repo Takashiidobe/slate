@@ -289,6 +289,7 @@ struct ParsedCompilerArgs {
     char_signed: Option<bool>,
     c11_atomics: bool,
     msvc_warning_level: Option<u32>,
+    msvc_convention: Option<(crate::ir::CallConv, String)>,
     short_wchar: Option<bool>,
     short_enums: Option<bool>,
     pack_struct: Option<bool>,
@@ -602,6 +603,7 @@ enum Opt {
     MsvcC11Atomics,
     MsvcWarningLevel,
     MsvcNoWarnings,
+    MsvcCallingConvention,
     Permissive,
     DeleteNullPointerChecks,
     TrivialAutoVarInit,
@@ -723,6 +725,7 @@ impl std::fmt::Display for Opt {
             Self::MsvcC11Atomics => "experimental:c11atomics",
             Self::MsvcWarningLevel => "W",
             Self::MsvcNoWarnings => "w",
+            Self::MsvcCallingConvention => "Gd",
             Self::Permissive => "fpermissive",
             Self::DeleteNullPointerChecks => "fdelete-null-pointer-checks",
             Self::TrivialAutoVarInit => "ftrivial-auto-var-init",
@@ -852,7 +855,8 @@ impl Opt {
             | Self::MsvcStandard
             | Self::MsvcC11Atomics
             | Self::MsvcWarningLevel
-            | Self::MsvcNoWarnings => &[Msvc],
+            | Self::MsvcNoWarnings
+            | Self::MsvcCallingConvention => &[Msvc],
             Self::CodegenOnly(spelling) => {
                 codegen_only_flag_named(spelling).map_or(&[], |flag| flag.flavors)
             }
@@ -1389,6 +1393,13 @@ impl CompilerArgParser {
         if target.family == TargetFamily::X86 {
             target.abi.default_regparm = raw.regparm.unwrap_or(0);
         }
+        target.abi.default_convention = match (target.family, raw.msvc_convention.as_ref()) {
+            (TargetFamily::X86, Some((convention, _))) => *convention,
+            (TargetFamily::X86_64, Some((crate::ir::CallConv::X86Vectorcall, _))) => {
+                crate::ir::CallConv::X86Vectorcall
+            }
+            _ => crate::ir::CallConv::C,
+        };
         target.isa = TargetIsa::resolve(target.family, target.environment, &raw.isa, raw.flavor)
             .map_err(|reason| invalid(&raw.target, &reason))?;
         let flavor = raw.flavor;
@@ -1821,6 +1832,14 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
         } else if argument == "/experimental:c11atomics" {
             parsed.saw(Opt::MsvcC11Atomics, argument);
             parsed.c11_atomics = true;
+        } else if let Some(convention) = msvc_convention(argument) {
+            parsed.saw(Opt::MsvcCallingConvention, argument);
+            if let Some((previous, spelling)) = &parsed.msvc_convention
+                && *previous != convention
+            {
+                return Err(invalid(argument, &format!("incompatible with {spelling}")));
+            }
+            parsed.msvc_convention = Some((convention, argument.clone()));
         } else if argument == "/w" {
             parsed.saw(Opt::MsvcNoWarnings, argument);
             parsed.msvc_warning_level = parsed
@@ -2121,6 +2140,17 @@ fn last_flag(arguments: &[String], opt: Opt) -> Option<(usize, bool)> {
         .enumerate()
         .rev()
         .find_map(|(index, argument)| opt.parse_switch(argument).map(|value| (index, value)))
+}
+
+fn msvc_convention(argument: &str) -> Option<crate::ir::CallConv> {
+    use crate::ir::CallConv;
+    Some(match argument {
+        "/Gd" => CallConv::C,
+        "/Gr" => CallConv::X86Fastcall,
+        "/Gz" => CallConv::X86Stdcall,
+        "/Gv" => CallConv::X86Vectorcall,
+        _ => return None,
+    })
 }
 
 fn option_value<'a>(argument: &'a str, name: &str) -> Option<&'a str> {

@@ -51,7 +51,8 @@ pub(super) fn validate(
     for (declaration, item) in unit.decls.iter().zip(items) {
         for id in item.declared.clone().map(BindingId) {
             if names.implicit_functions.contains(&id) {
-                let ty = checker.types.ctypes.implicit_function();
+                let convention = checker.types.default_convention(None);
+                let ty = checker.types.ctypes.implicit_function(convention);
                 checker.types.entities.declare(id, ty, false);
                 checker.types.entities.merge_declaration(
                     id,

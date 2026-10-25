@@ -191,7 +191,16 @@ member, so Slate must pass that member's type at the boundary
   innermost function declarator (or a function typedef in the specifiers);
   one on a pointer or grouped declarator goes to the function type beneath.
 - Dropped as clang does: on variadic functions, the other three on x86-64,
-  all four on other targets.
+  all four on other targets. On x86-64 an explicit `__stdcall`,
+  `__fastcall` or `__thiscall` resolves to `cdecl` rather than nothing, so
+  it overrides a `/Gv` default as cl.exe does.
+- msvc `/Gr`, `/Gz`, `/Gv` (`TargetAbi::default_convention`) give every
+  new function type without an explicit convention `fastcall`, `stdcall`
+  or `vectorcall`: prototyped, K&R, unprototyped, typedef'd and implicitly
+  declared functions alike. Variadic functions and functions named `main`
+  or `wmain` stay `cdecl`. On x86-64 only `/Gv` applies. cl.exe also makes
+  `WinMain`, `wWinMain` and `DllMain` `stdcall` under any option on x86;
+  slate does not.
 - `ms_abi` and `sysv_abi` resolve as clang's do: `ms_abi` is `cdecl` on
   Windows and `CallConv::Win64` elsewhere on x86-64 and AArch64; `sysv_abi`
   is `cdecl` off Windows and `CallConv::SysV64` on x86-64 Windows. Each is
@@ -231,7 +240,10 @@ scalar`): the first N integer-class registers (`eax`, `edx`, `ecx`) carry
   `clang/{windows,linux}/x86_64/calling_convention_vectorcall.c`,
   `clang/linux/{x86_64,aarch64}/ms_abi_convention.c`,
   `clang/windows/x86_64/sysv_abi_convention.c`,
-  `clang/linux/i686/ms_abi_ignored.c`, slate
+  `clang/linux/i686/ms_abi_ignored.c`,
+  `msvc/windows/{i686,x86_64}/default_convention_*.c`,
+  `error/msvc/windows/i686/default_convention_conflict.c`, slate
+  `tests/fixtures/msvc/{i686,x86_64}/flag_msvc_*_default.c`, slate
   `tests/fixtures.library/ms_abi_calls`,
   `error/clang/.../calling_convention_*.c`.
 

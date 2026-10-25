@@ -2200,11 +2200,21 @@ impl TypeResolver {
                     crate::ast::CallingConvention::Stdcall if x86 => Some(CallConv::X86Stdcall),
                     crate::ast::CallingConvention::Fastcall if x86 => Some(CallConv::X86Fastcall),
                     crate::ast::CallingConvention::Thiscall if x86 => Some(CallConv::X86Thiscall),
+                    crate::ast::CallingConvention::Stdcall
+                    | crate::ast::CallingConvention::Fastcall
+                    | crate::ast::CallingConvention::Thiscall => Some(CallConv::C),
                     _ => None,
                 },
                 _ => None,
             })
             .last()
+    }
+
+    pub(super) fn default_convention(&self, name: Option<&str>) -> CallConv {
+        match name {
+            Some("main" | "wmain") => CallConv::C,
+            _ => self.dialect.target().abi.default_convention,
+        }
     }
 
     pub(super) fn inherit_convention(&mut self, id: BindingId, declared: QualType) -> QualType {
@@ -2644,12 +2654,16 @@ impl TypeResolver {
                     ParameterList::Prototype { .. } | ParameterList::Void => true,
                 };
                 let (core, ret) = self.apply_pointers(inner, q)?;
+                let variadic = parameters.is_variadic();
                 let q = self.ctypes.qual(CTypeKind::Function {
                     ret,
                     params,
-                    variadic: parameters.is_variadic(),
+                    variadic,
                     prototyped,
-                    convention: CallConv::C,
+                    convention: match variadic {
+                        true => CallConv::C,
+                        false => self.default_convention(direct_name(core)),
+                    },
                 });
                 let q = match innermost {
                     Some(convention) if !has_function_declarator(core) => {
@@ -4453,9 +4467,12 @@ fn without_conventions(specifiers: &DeclarationSpecifiers) -> DeclarationSpecifi
 fn view_convention<'a>(
     resolver: &TypeResolver,
     parameters: &crate::ir::Parameters,
+    name: &str,
     attributes: impl IntoIterator<Item = &'a Span<Attribute>>,
 ) -> CallConv {
-    let convention = resolver.calling_convention(attributes).unwrap_or_default();
+    let convention = resolver
+        .calling_convention(attributes)
+        .unwrap_or_else(|| resolver.default_convention(Some(name)));
     if matches!(
         parameters,
         crate::ir::Parameters::Prototype { variadic: true, .. }
@@ -4464,6 +4481,14 @@ fn view_convention<'a>(
         return CallConv::C;
     }
     convention
+}
+
+fn direct_name(declarator: &Declarator) -> Option<&str> {
+    match declarator {
+        Declarator::Name(name) => Some(name),
+        Declarator::Grouped(inner) | Declarator::Attributed { inner, .. } => direct_name(inner),
+        _ => None,
+    }
 }
 
 fn has_function_declarator(declarator: &Declarator) -> bool {
@@ -4569,6 +4594,7 @@ pub(super) fn resolve_type_module(
                         view_convention(
                             &resolver,
                             &parameters,
+                            name,
                             function
                                 .specifiers
                                 .attributes
@@ -4633,6 +4659,7 @@ pub(super) fn resolve_type_module(
                             view_convention(
                                 &resolver,
                                 &parameters,
+                                name,
                                 item.specifiers
                                     .attributes
                                     .iter()

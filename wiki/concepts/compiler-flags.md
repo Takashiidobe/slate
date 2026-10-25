@@ -56,6 +56,11 @@ each stage is in [configuration-threading](configuration-threading.md).
     `0L`; `MicrosoftFlags::warning_level`). The last one wins, except that
     `/Wall` sticks once seen. `/W` takes a joined or separate value; another
     number is level 1 (cl.exe warns D9014), a non-number is rejected.
+  - `/Gd`, `/Gr`, `/Gz` and `/Gv` set `TargetAbi::default_convention`
+    (cdecl, fastcall, stdcall, vectorcall) for every function type without
+    an explicit convention ([calls-abi](ir/calls-abi.md#calling-conventions)).
+    On x64 only `/Gv` applies. Two different ones are rejected, as cl.exe
+    does (D8016); repeating one is accepted.
   - Options with no C-level effect are `MSVC_ONLY` rows in
     `CODEGEN_ONLY_FLAGS`: optimization (`/O…`), codegen (`/GS`, `/Gy`,
     `/GF`, `/Qspectre…`, `/favor:blend|AMD64`, ...), debug info, output files

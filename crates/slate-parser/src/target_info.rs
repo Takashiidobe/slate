@@ -143,6 +143,7 @@ pub struct TargetAbi {
     pub preferred_stack_alignment: u32,
     pub zero_width_bitfield_aligns_record: bool,
     pub default_regparm: u8,
+    pub default_convention: crate::ir::CallConv,
 }
 
 impl Default for TargetAbi {
@@ -151,6 +152,7 @@ impl Default for TargetAbi {
             preferred_stack_alignment: 16,
             zero_width_bitfield_aligns_record: false,
             default_regparm: 0,
+            default_convention: crate::ir::CallConv::C,
         }
     }
 }

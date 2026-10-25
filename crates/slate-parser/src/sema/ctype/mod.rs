@@ -511,14 +511,14 @@ impl CTypes {
         }
     }
 
-    pub fn implicit_function(&mut self) -> QualType {
+    pub fn implicit_function(&mut self, convention: CallConv) -> QualType {
         let ret = self.int();
         self.qual(CTypeKind::Function {
             ret,
             params: Vec::new(),
             variadic: false,
             prototyped: false,
-            convention: CallConv::C,
+            convention,
         })
     }
 
