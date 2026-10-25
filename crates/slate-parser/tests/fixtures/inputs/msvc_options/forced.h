@@ -1,0 +1,1 @@
+#define FORCED_VALUE 7

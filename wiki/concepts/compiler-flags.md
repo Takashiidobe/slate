@@ -40,6 +40,9 @@ each stage is in [configuration-threading](configuration-threading.md).
     `-fpack-struct=<n>`; `#pragma pack()` restores it. `/Zp` alone is
     `/Zp1`. A number other than 1, 2, 4, 8 or 16 is `/Zp8`, which cl.exe
     only warns about (D9014); a non-number is rejected.
+  - `/D`, `/U`, `/I` and `/FI` are `-D`, `-U`, `-I` and `-include`, joined
+    or with a separate argument, applied in command-line order. Each `#` in
+    a `/D` value is `=` (`/DNAME#4` is `NAME=4`). `/X` is `-nostdlibinc`.
 
 ## Implemented
 

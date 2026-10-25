@@ -591,6 +591,11 @@ enum Opt {
     ConformingPreprocessor,
     MsvcUnsignedChar,
     MsvcPack,
+    MsvcDefine,
+    MsvcUndef,
+    MsvcInclude,
+    MsvcForceInclude,
+    MsvcNoStandardIncludes,
     Permissive,
     DeleteNullPointerChecks,
     TrivialAutoVarInit,
@@ -703,6 +708,11 @@ impl std::fmt::Display for Opt {
             Self::ConformingPreprocessor => "Zc:preprocessor",
             Self::MsvcUnsignedChar => "J",
             Self::MsvcPack => "Zp",
+            Self::MsvcDefine => "D",
+            Self::MsvcUndef => "U",
+            Self::MsvcInclude => "I",
+            Self::MsvcForceInclude => "FI",
+            Self::MsvcNoStandardIncludes => "X",
             Self::Permissive => "fpermissive",
             Self::DeleteNullPointerChecks => "fdelete-null-pointer-checks",
             Self::TrivialAutoVarInit => "ftrivial-auto-var-init",
@@ -821,7 +831,14 @@ impl Opt {
             | Self::OpenMpRuntime
             | Self::OpenMpVersion
             | Self::Mllvm => &[Clang],
-            Self::ConformingPreprocessor | Self::MsvcUnsignedChar | Self::MsvcPack => &[Msvc],
+            Self::ConformingPreprocessor
+            | Self::MsvcUnsignedChar
+            | Self::MsvcPack
+            | Self::MsvcDefine
+            | Self::MsvcUndef
+            | Self::MsvcInclude
+            | Self::MsvcForceInclude
+            | Self::MsvcNoStandardIncludes => &[Msvc],
             Self::CodegenOnly(spelling) => {
                 codegen_only_flag_named(spelling).map_or(&[], |flag| flag.flavors)
             }
@@ -1585,6 +1602,38 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                 .preprocessor_inputs
                 .macros
                 .push(MacroOption::Define(define));
+        } else if let Some(value) = argument.strip_prefix("/D") {
+            parsed.saw(Opt::MsvcDefine, argument);
+            let define = next_value(arguments, &mut index, argument, value)?.replace('#', "=");
+            parsed.defines.push(define.clone());
+            parsed
+                .preprocessor_inputs
+                .macros
+                .push(MacroOption::Define(define));
+        } else if let Some(value) = argument.strip_prefix("/U") {
+            parsed.saw(Opt::MsvcUndef, argument);
+            parsed
+                .preprocessor_inputs
+                .macros
+                .push(MacroOption::Undef(next_value(
+                    arguments, &mut index, argument, value,
+                )?));
+        } else if let Some(value) = argument.strip_prefix("/FI") {
+            parsed.saw(Opt::MsvcForceInclude, argument);
+            parsed
+                .preprocessor_inputs
+                .includes
+                .push(PathBuf::from(next_value(
+                    arguments, &mut index, argument, value,
+                )?));
+        } else if let Some(value) = argument.strip_prefix("/I") {
+            parsed.saw(Opt::MsvcInclude, argument);
+            parsed
+                .include
+                .push(next_value(arguments, &mut index, argument, value)?);
+        } else if argument == "/X" {
+            parsed.saw(Opt::MsvcNoStandardIncludes, argument);
+            parsed.nostdlibinc = true;
         } else if let Some(value) = option_value(argument, "U") {
             parsed.saw(Opt::Undef, argument);
             parsed
