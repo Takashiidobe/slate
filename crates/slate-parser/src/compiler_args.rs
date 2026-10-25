@@ -287,6 +287,7 @@ struct ParsedCompilerArgs {
     builtin: Option<bool>,
     no_builtin: Vec<String>,
     char_signed: Option<bool>,
+    c11_atomics: bool,
     short_wchar: Option<bool>,
     short_enums: Option<bool>,
     pack_struct: Option<bool>,
@@ -596,6 +597,8 @@ enum Opt {
     MsvcInclude,
     MsvcForceInclude,
     MsvcNoStandardIncludes,
+    MsvcStandard,
+    MsvcC11Atomics,
     Permissive,
     DeleteNullPointerChecks,
     TrivialAutoVarInit,
@@ -713,6 +716,8 @@ impl std::fmt::Display for Opt {
             Self::MsvcInclude => "I",
             Self::MsvcForceInclude => "FI",
             Self::MsvcNoStandardIncludes => "X",
+            Self::MsvcStandard => "std:",
+            Self::MsvcC11Atomics => "experimental:c11atomics",
             Self::Permissive => "fpermissive",
             Self::DeleteNullPointerChecks => "fdelete-null-pointer-checks",
             Self::TrivialAutoVarInit => "ftrivial-auto-var-init",
@@ -838,7 +843,9 @@ impl Opt {
             | Self::MsvcUndef
             | Self::MsvcInclude
             | Self::MsvcForceInclude
-            | Self::MsvcNoStandardIncludes => &[Msvc],
+            | Self::MsvcNoStandardIncludes
+            | Self::MsvcStandard
+            | Self::MsvcC11Atomics => &[Msvc],
             Self::CodegenOnly(spelling) => {
                 codegen_only_flag_named(spelling).map_or(&[], |flag| flag.flavors)
             }
@@ -1270,6 +1277,7 @@ impl CompilerArgParser {
             compatibility: raw.ms_compatibility,
             asm_blocks: raw.asm_blocks == Some(true),
             anonymous_structs: raw.ms_anonymous_structs,
+            c11_atomics: raw.c11_atomics,
         };
         options.asm_dialect = raw.asm_dialect.unwrap_or_default();
         options.explicit_standard = raw.standard.is_some();
@@ -1634,6 +1642,20 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
         } else if argument == "/X" {
             parsed.saw(Opt::MsvcNoStandardIncludes, argument);
             parsed.nostdlibinc = true;
+        } else if let Some(standard) = argument.strip_prefix("/std:") {
+            parsed.saw(Opt::MsvcStandard, argument);
+            parsed.standard = Some(match standard {
+                "c11" => LanguageStandard::C11,
+                "c17" => LanguageStandard::C17,
+                "clatest" => LanguageStandard::C23,
+                _ if standard.starts_with("c++") => {
+                    return Err(invalid(argument, "a C++ standard does not apply to C"));
+                }
+                _ => return Err(invalid(argument, "expected one of c11, c17, clatest")),
+            });
+        } else if argument == "/experimental:c11atomics" {
+            parsed.saw(Opt::MsvcC11Atomics, argument);
+            parsed.c11_atomics = true;
         } else if let Some(value) = option_value(argument, "U") {
             parsed.saw(Opt::Undef, argument);
             parsed

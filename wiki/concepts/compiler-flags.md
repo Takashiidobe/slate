@@ -43,6 +43,15 @@ each stage is in [configuration-threading](configuration-threading.md).
   - `/D`, `/U`, `/I` and `/FI` are `-D`, `-U`, `-I` and `-include`, joined
     or with a separate argument, applied in command-line order. Each `#` in
     a `/D` value is `=` (`/DNAME#4` is `NAME=4`). `/X` is `-nostdlibinc`.
+  - `/std:c11`, `/std:c17` and `/std:clatest` (C23, `__STDC_VERSION__`
+    `202312L`) set the standard; the last one wins. Like an explicit `-std=`,
+    they define `__STDC_VERSION__` and `__STDC_NO_ATOMICS__`,
+    `__STDC_NO_COMPLEX__` and `__STDC_NO_VLA__`, which cl.exe leaves
+    undefined without `/std`. `/experimental:c11atomics` drops
+    `__STDC_NO_ATOMICS__` under any `/std` and does nothing without one
+    (`MicrosoftFlags::c11_atomics`). `/std:c++*` and other values are
+    rejected; cl.exe only warns about `/std:c99` and `/std:c23` (D9002) and
+    ignores them.
 
 ## Implemented
 

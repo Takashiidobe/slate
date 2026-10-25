@@ -755,13 +755,12 @@ impl<'a> Preprocessor<'a> {
             let version = if version == 202311 { 202312 } else { version };
             defines.push(format!("__STDC_VERSION__={version}L"));
             if version >= 201112 {
+                let atomics = (!options.microsoft.c11_atomics).then_some("__STDC_NO_ATOMICS__");
                 defines.extend(
-                    [
-                        "__STDC_NO_ATOMICS__",
-                        "__STDC_NO_COMPLEX__",
-                        "__STDC_NO_VLA__",
-                    ]
-                    .map(|name| format!("{name}=1")),
+                    atomics
+                        .into_iter()
+                        .chain(["__STDC_NO_COMPLEX__", "__STDC_NO_VLA__"])
+                        .map(|name| format!("{name}=1")),
                 );
             }
         }

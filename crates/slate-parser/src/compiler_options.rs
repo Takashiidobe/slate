@@ -127,6 +127,7 @@ pub struct MicrosoftFlags {
     pub compatibility: Option<bool>,
     pub asm_blocks: bool,
     pub anonymous_structs: Option<bool>,
+    pub c11_atomics: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
