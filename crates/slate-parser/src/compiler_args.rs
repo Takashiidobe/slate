@@ -298,6 +298,11 @@ struct ParsedCompilerArgs {
     ms_anonymous_structs: Option<bool>,
     strict_flex_arrays: Option<u8>,
     pthread: bool,
+    openmp: Option<bool>,
+    openmp_simd: Option<bool>,
+    openmp_runtime: Option<String>,
+    openmp_version: Option<String>,
+    openmp_date: Option<u32>,
     delete_null_pointer_checks: Option<bool>,
     trivial_auto_var_init: Option<TrivialAutoVarInit>,
     macro_prefix_map: Vec<(String, String)>,
@@ -363,6 +368,43 @@ impl ParsedCompilerArgs {
             self.fast_optimization = Some(self.math.len());
             self.math.push((MathSwitch::FastMath, true));
         }
+    }
+
+    fn openmp_date(&self) -> Result<Option<u32>, CompilerArgError> {
+        let enabled = self.openmp == Some(true);
+        if self.flavor.is_gcc() {
+            return Ok(enabled.then_some(202111));
+        }
+        if !self.flavor.is_clang() {
+            return Ok(None);
+        }
+        let runtime = self.openmp_runtime.as_deref().unwrap_or("libomp");
+        if enabled && !matches!(runtime, "libomp" | "libiomp5" | "libgomp") {
+            return Err(invalid(
+                &format!("-fopenmp={runtime}"),
+                "unsupported OpenMP runtime; expected libomp, libiomp5 or libgomp",
+            ));
+        }
+        let openmp = enabled && runtime != "libgomp";
+        let simd = !enabled && self.openmp_simd == Some(true);
+        let version = match &self.openmp_version {
+            Some(value) if openmp || simd => Some(parse_clang_integer(value).ok_or_else(|| {
+                invalid(
+                    &format!("-fopenmp-version={value}"),
+                    "invalid integral value",
+                )
+            })?),
+            _ => None,
+        };
+        Ok(openmp.then_some(match version {
+            Some(31) => 201107,
+            Some(40) => 201307,
+            Some(45) => 201511,
+            Some(50) => 201811,
+            Some(52) => 202111,
+            Some(60) => 202411,
+            _ => 202011,
+        }))
     }
 
     fn no_inline_requested(&self) -> bool {
@@ -541,6 +583,10 @@ enum Opt {
     Pedantic,
     Optimize,
     Pthread,
+    OpenMp,
+    OpenMpSimd,
+    OpenMpRuntime,
+    OpenMpVersion,
     NoWarnings,
     Permissive,
     DeleteNullPointerChecks,
@@ -646,6 +692,10 @@ impl std::fmt::Display for Opt {
             Self::Pedantic => "pedantic",
             Self::Optimize => "O",
             Self::Pthread => "pthread",
+            Self::OpenMp => "fopenmp",
+            Self::OpenMpSimd => "fopenmp-simd",
+            Self::OpenMpRuntime => "fopenmp=",
+            Self::OpenMpVersion => "fopenmp-version=",
             Self::NoWarnings => "w",
             Self::Permissive => "fpermissive",
             Self::DeleteNullPointerChecks => "fdelete-null-pointer-checks",
@@ -742,6 +792,8 @@ impl Opt {
             | Self::ThreeDNow
             | Self::ThreeDNowA
             | Self::Pthread
+            | Self::OpenMp
+            | Self::OpenMpSimd
             | Self::DeleteNullPointerChecks
             | Self::TrivialAutoVarInit
             | Self::MacroPrefixMap
@@ -760,6 +812,8 @@ impl Opt {
             | Self::MsAnonymousStructs
             | Self::LateParseAttributes
             | Self::InlineHintFunctions
+            | Self::OpenMpRuntime
+            | Self::OpenMpVersion
             | Self::Mllvm => &[Clang],
             Self::CodegenOnly(spelling) => {
                 codegen_only_flag_named(spelling).map_or(&[], |flag| flag.flavors)
@@ -830,6 +884,8 @@ impl Opt {
             Self::ThreeDNow => "-m3dnow",
             Self::ThreeDNowA => "-m3dnowa",
             Self::DeleteNullPointerChecks => "-fdelete-null-pointer-checks",
+            Self::OpenMp => "-fopenmp",
+            Self::OpenMpSimd => "-fopenmp-simd",
             Self::CodegenOnly(spelling)
                 if codegen_only_flag_named(spelling)
                     .is_some_and(|flag| flag.form == CodegenOnlyForm::Switch) =>
@@ -1068,7 +1124,9 @@ fn ignored_option(argument: &str) -> Option<IgnoredOption> {
         .then_some(IgnoredOption::Alone)
 }
 
-const SWITCH_OPTS: [Opt; 49] = [
+const SWITCH_OPTS: [Opt; 51] = [
+    Opt::OpenMp,
+    Opt::OpenMpSimd,
     Opt::ClangTrigraphs,
     Opt::ClangDigraphs,
     Opt::DeleteNullPointerChecks,
@@ -1201,6 +1259,7 @@ impl CompilerArgParser {
             .asynchronous_unwind_tables
             .unwrap_or(options.hosted || !flavor.is_clang());
         options.late_parsed_attributes = raw.late_parsed_attributes == Some(true);
+        options.openmp = raw.openmp_date.is_some();
         options.strict_flex_arrays = raw.strict_flex_arrays.unwrap_or(0);
         options.macro_prefix_map = raw.macro_prefix_map;
         options.fixed_registers = raw.fixed_registers;
@@ -1325,6 +1384,8 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                 Opt::InlineFunctions | Opt::InlineHintFunctions => {
                     parsed.inline_functions = Some(value)
                 }
+                Opt::OpenMp => parsed.openmp = Some(value),
+                Opt::OpenMpSimd => parsed.openmp_simd = Some(value),
                 Opt::Exceptions => parsed.exceptions = Some(value),
                 Opt::MsAnonymousStructs => parsed.ms_anonymous_structs = Some(value),
                 Opt::LateParseAttributes => parsed.late_parsed_attributes = Some(value),
@@ -1394,6 +1455,13 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
         } else if argument == "-pthread" {
             parsed.saw(Opt::Pthread, argument);
             parsed.pthread = true;
+        } else if let Some(runtime) = argument.strip_prefix("-fopenmp=") {
+            parsed.saw(Opt::OpenMpRuntime, argument);
+            parsed.openmp = Some(true);
+            parsed.openmp_runtime = Some(runtime.into());
+        } else if let Some(version) = argument.strip_prefix("-fopenmp-version=") {
+            parsed.saw(Opt::OpenMpVersion, argument);
+            parsed.openmp_version = Some(version.into());
         } else if argument == "-w" {
             parsed.saw(Opt::NoWarnings, argument);
             parsed.diagnostics.ignore_warnings = true;
@@ -1686,7 +1754,14 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
             .macros
             .insert(0, MacroOption::Define("__EXCEPTIONS".into()));
     }
-    if parsed.pthread {
+    parsed.openmp_date = parsed.openmp_date()?;
+    if let Some(date) = parsed.openmp_date {
+        parsed
+            .preprocessor_inputs
+            .macros
+            .insert(0, MacroOption::Define(format!("_OPENMP={date}")));
+    }
+    if parsed.pthread || (parsed.flavor.is_gcc() && parsed.openmp_date.is_some()) {
         parsed
             .preprocessor_inputs
             .macros
@@ -1830,6 +1905,37 @@ fn long_double_flag(argument: &str) -> Option<LongDoubleFormat> {
         "-mlong-double-128" | "--mlong-double-128" => Some(LongDoubleFormat::Binary128),
         _ => None,
     }
+}
+
+fn parse_clang_integer(value: &str) -> Option<i32> {
+    let (negative, digits) = match value.strip_prefix('-') {
+        Some(rest) => (true, rest),
+        None => (false, value),
+    };
+    let (radix, digits) = if let Some(rest) = digits
+        .strip_prefix("0x")
+        .or_else(|| digits.strip_prefix("0X"))
+    {
+        (16, rest)
+    } else if let Some(rest) = digits
+        .strip_prefix("0b")
+        .or_else(|| digits.strip_prefix("0B"))
+    {
+        (2, rest)
+    } else if let Some(rest) = digits.strip_prefix("0o") {
+        (8, rest)
+    } else if digits.len() > 1
+        && let Some(rest) = digits.strip_prefix('0')
+    {
+        (8, rest)
+    } else {
+        (10, digits)
+    };
+    if digits.is_empty() || digits.starts_with(['+', '-']) {
+        return None;
+    }
+    let magnitude = i64::from_str_radix(digits, radix).ok()?;
+    i32::try_from(if negative { -magnitude } else { magnitude }).ok()
 }
 
 fn invalid(argument: &str, reason: &str) -> CompilerArgError {

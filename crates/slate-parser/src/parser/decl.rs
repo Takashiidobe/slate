@@ -40,6 +40,17 @@ impl Parser {
             .join(" ");
         let values = tokens.as_tokens();
         let kind = match values.as_slice() {
+            [Token::Ident(omp), rest @ ..]
+                if omp == "omp"
+                    && self.dialect().options().openmp
+                    && !matches!(rest.first(), Some(Token::Ident(name)) if name == "simd") =>
+            {
+                return Err(self.error_at_tokens(
+                    tokens,
+                    0,
+                    "OpenMP directives are not supported yet",
+                ));
+            }
             [Token::Ident(name), Token::LParen, .., Token::RParen] if name == "pack" => {
                 parse_pack(self, &tokens[2..tokens.len() - 1])?
             }
