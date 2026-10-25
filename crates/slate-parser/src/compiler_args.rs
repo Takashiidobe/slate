@@ -315,6 +315,7 @@ struct ParsedCompilerArgs {
     signed_overflow: Overflow,
     strict_overflow: Option<bool>,
     math: Vec<(MathSwitch, bool)>,
+    fast_optimization: Option<usize>,
     fp_contract: Option<(FpContract, usize)>,
     iso_flt_eval_method: bool,
     gnu89_inline: Option<bool>,
@@ -347,6 +348,21 @@ impl ParsedCompilerArgs {
             .or(bare)
             .filter(|alignment| *alignment != 0)
             .map(u64::from)
+    }
+
+    fn set_fast_optimization(&mut self, fast: bool) {
+        if let Some(position) = self.fast_optimization.take() {
+            self.math.remove(position);
+            if let Some((_, contract_position)) = &mut self.fp_contract
+                && *contract_position > position
+            {
+                *contract_position -= 1;
+            }
+        }
+        if fast {
+            self.fast_optimization = Some(self.math.len());
+            self.math.push((MathSwitch::FastMath, true));
+        }
     }
 
     fn no_inline_requested(&self) -> bool {
@@ -1627,11 +1643,11 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
             parsed.saw(Opt::Optimize, argument);
             parsed.optimization = Some(match level {
                 "0" => Optimization::None,
-                "" | "1" | "2" | "3" | "g" => Optimization::Speed,
+                "" | "1" | "2" | "3" | "g" | "fast" => Optimization::Speed,
                 "s" | "z" => Optimization::Size,
-                "fast" => return Err(invalid(argument, "fast-math is not emulated")),
                 _ => return Err(invalid(argument, "unknown optimization level")),
             });
+            parsed.set_fast_optimization(level == "fast");
         } else if let Some(format) = long_double_flag(argument) {
             parsed.saw(Opt::LongDouble, argument);
             parsed.long_double = Some(format);
@@ -1639,6 +1655,10 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
             return Err(invalid(argument, "unknown option"));
         }
         index += 1;
+    }
+    if let (true, Some(position)) = (parsed.flavor.is_gcc(), parsed.fast_optimization) {
+        let entry = parsed.math.remove(position);
+        parsed.math.insert(0, entry);
     }
     parsed.signed_overflow = signed_overflow(parsed.flavor, arguments);
     let optimization_macros = match parsed.optimization {
