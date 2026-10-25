@@ -117,7 +117,9 @@ impl Context {
             pointer_wrap: options.operations.pointer_wrap,
             region: FloatingRegion {
                 floating: options.operations.floating,
-                contract: super::pragmas::default_contraction(dialect.flavor(), dialect.standard()),
+                contract: options.math.contract.unwrap_or_else(|| {
+                    super::pragmas::default_contraction(dialect.flavor(), dialect.standard())
+                }),
                 ..FloatingRegion::default()
             },
             asm_dialect: options.asm_dialect,

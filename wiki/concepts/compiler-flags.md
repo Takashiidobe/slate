@@ -44,6 +44,7 @@ each stage is in [configuration-threading](configuration-threading.md).
 | `-fshort-enums` (and `-fno-`)                                                             | gcc, clang                                  | enums without a fixed type use the smallest integer type that holds every enumerator (unsigned unless one is negative), as `__attribute__((packed))` does |
 | `-fpack-struct[=N]` (and `-fno-pack-struct`) | gcc, clang | `LayoutOptions::default_max_field_alignment` is the pack in effect at the top of the TU and what `#pragma pack()`/`pack(0)` restores. clang: `=N` (any power of two, `0` is off) wins over the bare flag in any order, the bare flag is `=1`, and `-fno-pack-struct` only cancels the bare flag. gcc: `=N` must be 1, 2, 4, 8 or 16; the bare flag is independent (`pack_records`) and marks every record `packed`, so `aligned` fields keep their alignment and pragmas only add a cap. clang's non-power-of-two `=N` is not emulated |
 | `-mms-bitfields` (and `-mno-`) | gcc (x86 only), clang | `LayoutOptions::ms_bitfields`: every record uses `ms_struct` bit-field layout unless it has `gcc_struct`; `#pragma ms_struct off`/`reset` don't undo it. No effect on windows-msvc targets, which always use Microsoft layout |
+| `-ffp-contract=off\|on\|fast\|fast-honor-pragmas` | gcc (not `fast-honor-pragmas`), clang | `MathOptions::contract` seeds the IR's `contract=` default and `#pragma STDC FP_CONTRACT DEFAULT`. clang: argv order with the fast-math umbrellas, whose `-fno-` restores the last `-ffp-contract=` or `on`. gcc: the explicit flag wins in any order, else unsafe math gives `fast`, else `fast` in `gnu*` and `off` in ISO modes. See [ir/operations](ir/operations.md) |
 | `-ffixed-<reg>` | gcc, clang | lets a file-scope `register T x asm("<reg>")` name that register (clang rejects it otherwise); slate lowers such a global as an ordinary static |
 | `-fexceptions` (and `-fno-`) | gcc, clang | defines `__EXCEPTIONS` (off by default in C); no other effect |
 | `-fms-anonymous-structs` (and `-fno-`)                                                    | clang                                       | [MS modes](#ms-modes): a declarator-less member of record type is an anonymous member                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -178,7 +179,7 @@ where the effect is observable at runtime. Highlights:
   `-fzero-init-padding-bits=`.
 - Language: gcc's `-fms-extensions`, `-fdollars-in-identifiers`,
   `-fno-knr-functions`, `-fno-asm`, `-fpermissive`.
-- Floating point: `-ffp-contract=`, `-ffp-model=`,
+- Floating point: `-ffp-model=`,
   `-fcomplex-arithmetic=`, gcc `-mfpmath=387`.
 - msvc: every `/` spelling (`/J`, `/Zp`, `/Gz`, `/fp:`, ...).
 - Floating point: the fast-math family's IR effect (`nnan`, `ninf`, `nsz`,

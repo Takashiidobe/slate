@@ -1,6 +1,6 @@
 use crate::compiler_args::CompilerFlavor;
 use crate::diagnostics::DiagnosticOptions;
-use crate::ir::{AsmDialect, Exceptions, FloatingSemantics, Overflow, Rounding};
+use crate::ir::{AsmDialect, Contraction, Exceptions, FloatingSemantics, Overflow, Rounding};
 use crate::target_info::{LongDoubleFormat, TargetInfo};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -200,6 +200,7 @@ pub struct MathOptions {
     pub signaling_nans: bool,
     pub cx_limited_range: bool,
     pub fast_excess_precision: Option<bool>,
+    pub contract: Option<Contraction>,
 }
 
 impl MathOptions {
@@ -218,6 +219,7 @@ impl MathOptions {
             signaling_nans: false,
             cx_limited_range: false,
             fast_excess_precision: None,
+            contract: None,
         }
     }
 

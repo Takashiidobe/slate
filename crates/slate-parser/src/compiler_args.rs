@@ -5,7 +5,7 @@ use crate::compiler_options::{
 };
 use crate::diagnostics::{DiagnosticOptions, Warning};
 use crate::files::SearchPaths;
-use crate::ir::{AsmDialect, Overflow};
+use crate::ir::{AsmDialect, Contraction, Overflow};
 use crate::pp::{MacroOption, PreprocessorInputs};
 use crate::rules::{Rule, Rules};
 use crate::target::isa::{IsaRequest, TargetIsa};
@@ -313,6 +313,7 @@ struct ParsedCompilerArgs {
     signed_overflow: Overflow,
     strict_overflow: Option<bool>,
     math: Vec<(MathSwitch, bool)>,
+    fp_contract: Option<(FpContract, usize)>,
     iso_flt_eval_method: bool,
     gnu89_inline: Option<bool>,
     common: Option<bool>,
@@ -346,6 +347,33 @@ impl ParsedCompilerArgs {
             .map(u64::from)
     }
 
+    fn fp_contract(&self, math: &MathOptions) -> Option<Contraction> {
+        let explicit = self.fp_contract.map(|(request, _)| request.contraction());
+        if self.flavor.is_gcc() {
+            return explicit.or(math.unsafe_math.then_some(Contraction::Fast));
+        }
+        let mut contract = None;
+        let mut last_seen = None;
+        for (index, (switch, value)) in self.math.iter().enumerate() {
+            if let Some((_, position)) = self.fp_contract
+                && position == index
+            {
+                (contract, last_seen) = (explicit, explicit);
+            }
+            match (switch, value) {
+                (MathSwitch::FastMath | MathSwitch::UnsafeMath, true) => {
+                    contract = Some(Contraction::Fast);
+                }
+                (MathSwitch::FastMath | MathSwitch::UnsafeMath, false) => contract = last_seen,
+                _ => {}
+            }
+        }
+        match self.fp_contract {
+            Some((_, position)) if position == self.math.len() => explicit,
+            _ => contract,
+        }
+    }
+
     fn check_flavor(&self) -> Result<(), CompilerArgError> {
         match self.occurrences.iter().find(|(opt, argument)| {
             if opt.parse_switch(argument) == Some(false) {
@@ -359,6 +387,34 @@ impl ParsedCompilerArgs {
                 &format!("unknown option for the {} flavor", self.flavor),
             )),
             None => Ok(()),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum FpContract {
+    Off,
+    On,
+    Fast,
+    FastHonorPragmas,
+}
+
+impl FpContract {
+    fn parse(value: &str) -> Option<Self> {
+        match value {
+            "off" => Some(Self::Off),
+            "on" => Some(Self::On),
+            "fast" => Some(Self::Fast),
+            "fast-honor-pragmas" => Some(Self::FastHonorPragmas),
+            _ => None,
+        }
+    }
+
+    fn contraction(self) -> Contraction {
+        match self {
+            Self::Off => Contraction::Off,
+            Self::On => Contraction::On,
+            Self::Fast | Self::FastHonorPragmas => Contraction::Fast,
         }
     }
 }
@@ -395,6 +451,7 @@ enum Opt {
     PackStruct,
     PackStructAlignment,
     MsBitfields,
+    FpContract,
     Exceptions,
     MsAnonymousStructs,
     StrictFlexArrays,
@@ -496,6 +553,7 @@ impl std::fmt::Display for Opt {
             Self::PackStruct => "fpack-struct",
             Self::PackStructAlignment => "fpack-struct=",
             Self::MsBitfields => "mms-bitfields",
+            Self::FpContract => "ffp-contract=",
             Self::Exceptions => "fexceptions",
             Self::MsAnonymousStructs => "fms-anonymous-structs",
             Self::StrictFlexArrays => "fstrict-flex-arrays=",
@@ -631,6 +689,7 @@ impl Opt {
             | Self::PackStruct
             | Self::PackStructAlignment
             | Self::MsBitfields
+            | Self::FpContract
             | Self::Exceptions
             | Self::StrictFlexArrays
             | Self::AsynchronousUnwindTables
@@ -1054,6 +1113,8 @@ impl CompilerArgParser {
             pack_records: flavor.is_gcc() && raw.pack_struct == Some(true),
             ms_bitfields: raw.ms_bitfields.unwrap_or(false),
         };
+        let mut math = MathOptions::resolve(flavor, &raw.math);
+        math.contract = raw.fp_contract(&math);
         let mut options = CompilerOptions::from_values(
             flavor,
             layout,
@@ -1061,7 +1122,7 @@ impl CompilerArgParser {
             OperationValues {
                 signed_overflow: raw.signed_overflow,
                 strict_overflow: raw.strict_overflow,
-                math: MathOptions::resolve(flavor, &raw.math),
+                math,
             },
         );
         options.iso_flt_eval_method = raw.iso_flt_eval_method;
@@ -1365,6 +1426,15 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
             parsed.saw(Opt::PackStructAlignment, argument);
             parsed.pack_struct_alignment =
                 Some(parse_value(alignment.to_owned(), argument, "alignment")?);
+        } else if let Some(style) = argument.strip_prefix("-ffp-contract=") {
+            parsed.saw(Opt::FpContract, argument);
+            let request = FpContract::parse(style).ok_or_else(|| {
+                invalid(
+                    argument,
+                    "expected one of off, on, fast, fast-honor-pragmas",
+                )
+            })?;
+            parsed.fp_contract = Some((request, parsed.math.len()));
         } else if let Some(level) = argument.strip_prefix("-fstrict-flex-arrays=") {
             parsed.saw(Opt::StrictFlexArrays, argument);
             parsed.strict_flex_arrays = Some(parse_value(level.to_owned(), argument, "level")?);
@@ -1800,6 +1870,15 @@ fn gcc_rules<'a>(target: &'a TargetInfo) -> Rule<'a, ParsedCompilerArgs> {
                 Ok(())
             }
         }),
+        Rule::validate(
+            "GCC contraction style",
+            |args: &ParsedCompilerArgs| match args.fp_contract {
+                Some((FpContract::FastHonorPragmas, _)) => {
+                    Err("unknown floating point contraction style 'fast-honor-pragmas'".to_owned())
+                }
+                _ => Ok(()),
+            },
+        ),
         Rule::validate(
             "GCC structure packing",
             |args: &ParsedCompilerArgs| match args.pack_struct_alignment {
