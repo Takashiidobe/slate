@@ -3043,10 +3043,11 @@ impl TypeResolver {
                     })
                     .collect();
                 self.own_member_comments(id, siblings);
-                let packed = tag
-                    .attributes
-                    .iter()
-                    .any(|attribute| matches!(&attribute.value, Attribute::Packed));
+                let packed = self.dialect.options().layout.pack_records
+                    || tag
+                        .attributes
+                        .iter()
+                        .any(|attribute| matches!(&attribute.value, Attribute::Packed));
                 let has = |wanted: &Attribute| {
                     tag.attributes
                         .iter()
@@ -3803,6 +3804,14 @@ impl TypeResolver {
                 aggregate_align = aggregate_align.max(natural);
             } else if field.bit_width != Some(0) {
                 aggregate_align = aggregate_align.max(align);
+                if let (true, true, Some(_), Some(max)) = (
+                    packed || field_packed,
+                    field.name.is_some(),
+                    field.bit_width,
+                    max_field_alignment,
+                ) {
+                    aggregate_align = aggregate_align.max(natural.min(max));
+                }
             }
             if let Some(width) = field.bit_width {
                 if width == 0 {

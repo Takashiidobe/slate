@@ -320,6 +320,8 @@ pub struct LayoutOptions {
     pub char_signed: Option<bool>,
     pub short_wchar: Option<bool>,
     pub short_enums: bool,
+    pub default_max_field_alignment: Option<u64>,
+    pub pack_records: bool,
 }
 
 impl Default for CompilerOptions {

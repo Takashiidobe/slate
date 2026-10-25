@@ -289,6 +289,8 @@ struct ParsedCompilerArgs {
     char_signed: Option<bool>,
     short_wchar: Option<bool>,
     short_enums: Option<bool>,
+    pack_struct: Option<bool>,
+    pack_struct_alignment: Option<u32>,
     exceptions: Option<bool>,
     ms_anonymous_structs: Option<bool>,
     strict_flex_arrays: Option<u8>,
@@ -333,6 +335,14 @@ impl ParsedCompilerArgs {
 
     fn has(&self, opt: Opt) -> bool {
         self.occurrences.iter().any(|(seen, _)| *seen == opt)
+    }
+
+    fn default_max_field_alignment(&self) -> Option<u64> {
+        let bare = (self.flavor.is_clang() && self.pack_struct == Some(true)).then_some(1);
+        self.pack_struct_alignment
+            .or(bare)
+            .filter(|alignment| *alignment != 0)
+            .map(u64::from)
     }
 
     fn check_flavor(&self) -> Result<(), CompilerArgError> {
@@ -381,6 +391,8 @@ enum Opt {
     SignedChar,
     ShortWchar,
     ShortEnums,
+    PackStruct,
+    PackStructAlignment,
     Exceptions,
     MsAnonymousStructs,
     StrictFlexArrays,
@@ -479,6 +491,8 @@ impl std::fmt::Display for Opt {
             Self::SignedChar => "fsigned-char",
             Self::ShortWchar => "fshort-wchar",
             Self::ShortEnums => "fshort-enums",
+            Self::PackStruct => "fpack-struct",
+            Self::PackStructAlignment => "fpack-struct=",
             Self::Exceptions => "fexceptions",
             Self::MsAnonymousStructs => "fms-anonymous-structs",
             Self::StrictFlexArrays => "fstrict-flex-arrays=",
@@ -611,6 +625,8 @@ impl Opt {
             | Self::SignedChar
             | Self::ShortWchar
             | Self::ShortEnums
+            | Self::PackStruct
+            | Self::PackStructAlignment
             | Self::Exceptions
             | Self::StrictFlexArrays
             | Self::AsynchronousUnwindTables
@@ -693,6 +709,7 @@ impl Opt {
             Self::SignedChar => "-fsigned-char",
             Self::ShortWchar => "-fshort-wchar",
             Self::ShortEnums => "-fshort-enums",
+            Self::PackStruct => "-fpack-struct",
             Self::Exceptions => "-fexceptions",
             Self::MsAnonymousStructs => "-fms-anonymous-structs",
             Self::GccStrictFlexArrays => "-fstrict-flex-arrays",
@@ -947,7 +964,7 @@ fn ignored_option(argument: &str) -> Option<IgnoredOption> {
         .then_some(IgnoredOption::Alone)
 }
 
-const SWITCH_OPTS: [Opt; 44] = [
+const SWITCH_OPTS: [Opt; 45] = [
     Opt::ClangTrigraphs,
     Opt::ClangDigraphs,
     Opt::DeleteNullPointerChecks,
@@ -969,6 +986,7 @@ const SWITCH_OPTS: [Opt; 44] = [
     Opt::SignedChar,
     Opt::ShortWchar,
     Opt::ShortEnums,
+    Opt::PackStruct,
     Opt::Exceptions,
     Opt::MsAnonymousStructs,
     Opt::LateParseAttributes,
@@ -1026,6 +1044,8 @@ impl CompilerArgParser {
             char_signed: raw.char_signed,
             short_wchar: raw.short_wchar,
             short_enums: raw.short_enums.unwrap_or(false),
+            default_max_field_alignment: raw.default_max_field_alignment(),
+            pack_records: flavor.is_gcc() && raw.pack_struct == Some(true),
         };
         let mut options = CompilerOptions::from_values(
             flavor,
@@ -1188,6 +1208,7 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                 Opt::SignedChar => parsed.char_signed = Some(value),
                 Opt::ShortWchar => parsed.short_wchar = Some(value),
                 Opt::ShortEnums => parsed.short_enums = Some(value),
+                Opt::PackStruct => parsed.pack_struct = Some(value),
                 Opt::Exceptions => parsed.exceptions = Some(value),
                 Opt::MsAnonymousStructs => parsed.ms_anonymous_structs = Some(value),
                 Opt::LateParseAttributes => parsed.late_parsed_attributes = Some(value),
@@ -1332,6 +1353,10 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
         {
             parsed.saw(Opt::NoBuiltinFunction, argument);
             parsed.no_builtin.push(function.to_owned());
+        } else if let Some(alignment) = argument.strip_prefix("-fpack-struct=") {
+            parsed.saw(Opt::PackStructAlignment, argument);
+            parsed.pack_struct_alignment =
+                Some(parse_value(alignment.to_owned(), argument, "alignment")?);
         } else if let Some(level) = argument.strip_prefix("-fstrict-flex-arrays=") {
             parsed.saw(Opt::StrictFlexArrays, argument);
             parsed.strict_flex_arrays = Some(parse_value(level.to_owned(), argument, "level")?);
@@ -1758,6 +1783,15 @@ fn gcc_rules<'a>(target: &'a TargetInfo) -> Rule<'a, ParsedCompilerArgs> {
             }
         }),
         Rule::validate(
+            "GCC structure packing",
+            |args: &ParsedCompilerArgs| match args.pack_struct_alignment {
+                Some(alignment) if !matches!(alignment, 1 | 2 | 4 | 8 | 16) => Err(format!(
+                    "structure alignment must be a small power of two, not {alignment}"
+                )),
+                _ => Ok(()),
+            },
+        ),
+        Rule::validate(
             "GCC register parameters",
             |args: &ParsedCompilerArgs| match args.regparm {
                 Some(count) if count > 3 => {
@@ -1818,6 +1852,15 @@ fn clang_rules<'a>() -> Rule<'a, ParsedCompilerArgs> {
                     Err(format!("expected a power of two, found {value}"))
                 }
             }),
+        ),
+        Rule::validate(
+            "Clang structure packing",
+            |args: &ParsedCompilerArgs| match args.pack_struct_alignment {
+                Some(alignment) if alignment != 0 && !alignment.is_power_of_two() => Err(format!(
+                    "a structure packing of {alignment}, which is not a power of two, is not emulated"
+                )),
+                _ => Ok(()),
+            },
         ),
         Rule::validate(
             "Clang control-flow protection",

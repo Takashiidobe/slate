@@ -258,7 +258,12 @@ aligned_attr), N)`. It caps a field's `aligned`, not the record's, so
   `pack(1)` plus a record `aligned(16)` is a 16-aligned record of packed
   fields. A pack that isn't a small power of two is diagnosed and ignored
   (the previous value stays). While any pack is active, bit-fields stop
-  padding to avoid straddling a unit, as `packed` does.
+  padding to avoid straddling a unit, as `packed` does. A named packed
+  bit-field under a pack still raises record alignment to
+  `min(natural, N)` (gcc and clang agree; `pragma_pack_packed_bit_fields.c`).
+- `-fpack-struct=N` seeds the pack, and `pack()` restores it; gcc's bare
+  `-fpack-struct` makes every record `packed`
+  ([compiler-flags](../compiler-flags.md)).
 - `ms_struct` bit-field rules apply with `__attribute__((ms_struct))`, or
   under `#pragma ms_struct on` without `gcc_struct`:
   - each bit-field allocates a whole unit of its declared type, aligned to

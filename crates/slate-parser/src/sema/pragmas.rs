@@ -251,9 +251,11 @@ fn float_control(
 }
 
 pub fn collect(unit: &TranslationUnit) -> Pragmas {
+    let initial_pack = unit.dialect.options().layout.default_max_field_alignment;
     let mut walk = Walk {
         unit,
-        pack: None,
+        initial_pack,
+        pack: initial_pack,
         pack_stack: Vec::new(),
         ms_struct: false,
         visibility: Vec::new(),
@@ -356,6 +358,7 @@ impl Visitor for Decimal64Literals {
 
 struct Walk<'a> {
     unit: &'a TranslationUnit,
+    initial_pack: Option<u64>,
     pack: Option<u64>,
     pack_stack: Vec<(Option<String>, Option<u64>)>,
     ms_struct: bool,
@@ -371,7 +374,8 @@ impl Walk<'_> {
                 label,
                 alignment,
             } => {
-                let requested = pack_request(alignment.as_ref());
+                let requested =
+                    pack_request(alignment.as_ref()).map(|value| value.or(self.initial_pack));
                 match action {
                     PragmaStackAction::Push => {
                         self.pack_stack.push((label.clone(), self.pack));
