@@ -44,15 +44,19 @@ fixtures: they translate with `--flavor=gcc` and the oracle is real gcc
 `--flavor=gcc` out of their `dg-options`. `tests/fixtures/msvc/` and
 `tests/fixtures/msvc/<arch>/` translate with `--flavor=msvc`, and the oracle
 is real `cl.exe` under wine ([MSVC oracle](msvc-oracle.md), `MSVC_ARCH=x64`
-for x86_64 and `x86` for i686). They translate for `<arch>-pc-windows-msvc`,
-so Windows predefines and LLP64 layout match the oracle, and the Rust is
-built for that target with lld-link, clang-cl and msvc-wine's `LIB`/`INCLUDE`
-and run under wine, as a separate batch. Without that toolchain or rustup
+for x86_64, `x86` for i686 and `arm64` for aarch64). They translate for
+`<arch>-pc-windows-msvc`, so Windows predefines and LLP64 layout match the
+oracle, and the Rust is built for that target with lld-link, clang-cl and
+msvc-wine's `LIB`/`INCLUDE` and run under wine, as a separate batch. wine
+on an x86_64 host cannot run ARM64 PE binaries, so aarch64 is build-only:
+cl.exe compiles the C, the Rust builds and is FileChecked, and nothing runs.
+`msvc/aarch64/` fixtures check at compile time instead (`#error`, and
+`_Static_assert` with `/std:c11`). Without that toolchain or rustup
 target they translate for the linux triple. Each passes `/Zc:preprocessor`
 in `dg-options`, because cl.exe's default is the traditional preprocessor,
 which slate never emulates.
 They also check themselves, calling `abort()` on a mismatch: when wine or
-msvc-wine is missing, or on aarch64, the Rust must exit 0 with empty stdout.
+msvc-wine is missing, the Rust must exit 0 with empty stdout.
 A Windows FileCheck block lists `<arch>-pc-windows-msvc`;
 `update_filecheck.py` runs the matching linux target to produce it. The `.unsupported` tree has the same `gcc/` and `msvc/`
 directories. Nextest
@@ -72,8 +76,8 @@ the unsupported ratchet to that flavor's fixtures: the root and arch
 directories for `clang`, `gcc/` or `msvc/` otherwise. `gcc` and `msvc`
 also skip the check that every `<triple>.txt` entry ran, since those lists
 name clang fixtures. Each flavor profile sets it, adds slate-parser's
-fixtures of that flavor, and runs x86_64, i686 and aarch64 (`msvc`: x86_64
-and i686).
+fixtures of that flavor, and runs x86_64, i686 and aarch64 (`msvc`: aarch64
+build-only).
 
 `tests/fixtures.unsupported/<triple>.txt` lists target-independent fixtures
 that still fail on that target. A listed fixture that passes, or an unlisted

@@ -74,7 +74,7 @@ filter = 'package(slate-c2rust) & (test(=generated_differential) | test(/^fixtur
 setup = "flavor-gcc"
 
 [scripts.setup.flavor-msvc]
-command = ["sh", "-c", "echo SLATE_DIFF_FLAVOR=msvc >> \"$NEXTEST_ENV\"; echo SLATE_TEST_TARGETS=x86_64-unknown-linux-gnu,i686-unknown-linux-gnu >> \"$NEXTEST_ENV\""]
+command = ["sh", "-c", "echo SLATE_DIFF_FLAVOR=msvc >> \"$NEXTEST_ENV\"; echo SLATE_TEST_TARGETS=x86_64-unknown-linux-gnu,i686-unknown-linux-gnu,aarch64-unknown-linux-gnu >> \"$NEXTEST_ENV\""]
 
 [profile.msvc]
 default-filter = '(package(slate-c2rust) & (test(=generated_differential) | test(=fixtures_unsupported_tests_still_fail))) | (package(slate-parser) & test(/^(error\/|suites\/[^\/]+\/)?msvc\//))'

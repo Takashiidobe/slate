@@ -116,15 +116,20 @@ target-independent `tests/fixtures/*.c` plus `tests/fixtures/<arch>/`, where
 `--flavor=gcc` and use real gcc as the oracle, and `tests/fixtures/msvc/` plus
 `tests/fixtures/msvc/<arch>/`, which translate with `--flavor=msvc` and use
 `crates/slate-parser/tools/cl.exe` under wine as the oracle (`MSVC_ARCH=x64`
-for x86_64, `x86` for i686). msvc fixtures translate for
+for x86_64, `x86` for i686, `arm64` for aarch64). msvc fixtures translate for
 `<arch>-pc-windows-msvc` and their Rust is built for that target (lld-link,
 clang-cl and msvc-wine's libs, `CrossTarget::windows_msvc`) and run under
-wine. When that toolchain is missing, they translate for the linux triple
-instead (the rustup targets come from `rust-toolchain.toml`). Every msvc fixture passes `/Zc:preprocessor` in its
+wine. wine cannot run ARM64 binaries on an x86_64 host, so aarch64 is
+build-only (`CrossTarget::build_only`): cl.exe compiles the C, the Rust is
+built and FileChecked, and neither runs. `tests/fixtures/msvc/aarch64/`
+fixtures therefore check at compile time (`#error`, `_Static_assert` with
+`/std:c11`), not with `abort()`. When that toolchain is missing, they
+translate for the linux triple instead (the rustup targets come from
+`rust-toolchain.toml`). Every msvc fixture passes `/Zc:preprocessor` in its
 `dg-options`, since cl.exe defaults to the traditional preprocessor. Each
 one checks its own results and calls `abort()` on a mismatch, so without
-msvc-wine, or on aarch64, the Rust must just exit 0 with empty stdout. There
-are no `.expected` files.
+msvc-wine the Rust must just exit 0 with empty stdout. There are no
+`.expected` files.
 Profiles in `.config/nextest.toml` set the targets with setup scripts:
 
 | Profile         | Targets                          | Runs                    |
@@ -134,7 +139,7 @@ Profiles in `.config/nextest.toml` set the targets with setup scripts:
 | `slate-aarch64` | aarch64, under `qemu-aarch64-static` | `generated_differential`, unsupported ratchet |
 | `slate-targets` | all three                        | `generated_differential`, unsupported ratchet |
 | `clang`, `gcc`  | all three, that flavor's fixtures only (`SLATE_DIFF_FLAVOR`) | `generated_differential`, unsupported ratchet, slate-parser fixtures of that flavor |
-| `msvc`          | x86_64 and i686, msvc fixtures only | same, against cl.exe |
+| `msvc`          | x86_64 and i686, plus aarch64 build-only; msvc fixtures only | same, against cl.exe |
 
 `CrossTarget::for_triple` in `tests/support/mod.rs` holds each target's C
 oracle flags, Rust linker and emulator.

@@ -52,7 +52,8 @@ profile. Each runs both crates' fixtures for one flavor: slate-parser's
 `generated_differential` plus unsupported ratchet over that flavor's
 fixtures (the root and arch directories for clang, `gcc/` or `msvc/`).
 `clang` and `gcc` run x86_64, i686 and aarch64; `msvc` runs x86_64 and
-i686 against cl.exe. They skip slate's corpus suites, so run the full
+i686 against cl.exe, and builds aarch64 without running it (wine cannot run
+ARM64 binaries here). They skip slate's corpus suites, so run the full
 `slate` and `parser` profiles before committing:
 
 ```bash

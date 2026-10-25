@@ -38,6 +38,7 @@ pub struct CrossTarget {
     pub cargo_env: Vec<(String, String)>,
     pub qemu: Option<String>,
     pub qemu_args: Vec<String>,
+    pub build_only: bool,
 }
 
 impl CrossTarget {
@@ -54,6 +55,7 @@ impl CrossTarget {
             )],
             qemu: None,
             qemu_args: Vec::new(),
+            build_only: false,
         }
     }
 
@@ -71,6 +73,7 @@ impl CrossTarget {
             cargo_env: Vec::new(),
             qemu: Some("qemu-aarch64-static".into()),
             qemu_args: vec!["-L".into(), "/usr/aarch64-linux-gnu".into()],
+            build_only: false,
         }
     }
 
@@ -94,9 +97,11 @@ impl CrossTarget {
 
 impl CrossTarget {
     pub fn windows_msvc_with_root(root: &Path, arch: &str) -> Self {
-        let (rust_triple, msvc_arch) = match arch {
-            "x86_64" => ("x86_64-pc-windows-msvc", "x64"),
-            "i686" => ("i686-pc-windows-msvc", "x86"),
+        let msvc_arch = msvc_arch_name(arch);
+        let rust_triple = match arch {
+            "x86_64" => "x86_64-pc-windows-msvc",
+            "i686" => "i686-pc-windows-msvc",
+            "aarch64" => "aarch64-pc-windows-msvc",
             _ => panic!("no msvc target for {arch}"),
         };
         let newest = |dir: PathBuf| {
@@ -144,20 +149,21 @@ impl CrossTarget {
             ],
             qemu: Some("wine".into()),
             qemu_args: Vec::new(),
+            build_only: arch == "aarch64",
         }
     }
 
     pub fn windows_msvc(arch: &str) -> Option<Self> {
         static AVAILABLE: std::sync::Mutex<BTreeMap<String, bool>> =
             std::sync::Mutex::new(BTreeMap::new());
-        if !matches!(arch, "x86_64" | "i686") {
+        if !matches!(arch, "x86_64" | "i686" | "aarch64") {
             return None;
         }
         let root = msvc_wine_root()?;
         let candidate = Self::windows_msvc_with_root(&root, arch);
         let mut available = AVAILABLE.lock().unwrap();
         let ok = *available.entry(arch.to_string()).or_insert_with(|| {
-            let msvc_arch = if arch == "x86_64" { "x64" } else { "x86" };
+            let msvc_arch = msvc_arch_name(arch);
             let tool = |name: &str| Command::new(name).arg("--version").output().is_ok();
             let missing: Vec<_> = [
                 (
@@ -185,6 +191,14 @@ impl CrossTarget {
             missing.is_empty()
         });
         ok.then_some(candidate)
+    }
+}
+
+fn msvc_arch_name(arch: &str) -> &'static str {
+    match arch {
+        "x86_64" => "x64",
+        "aarch64" => "arm64",
+        _ => "x86",
     }
 }
 
@@ -428,6 +442,7 @@ fn msvc_oracle_arch(cross: Option<&CrossTarget>) -> Option<&'static str> {
         None if cfg!(target_arch = "x86_64") => "x64",
         Some("x86_64-pc-windows-msvc") => "x64",
         Some("i686-unknown-linux-gnu" | "i686-pc-windows-msvc") => "x86",
+        Some("aarch64-pc-windows-msvc") => "arm64",
         _ => return None,
     };
     msvc_wine_root()
@@ -802,6 +817,14 @@ pub fn compare_batch_with_jobs_for_target(
             }
             std::fs::create_dir_all(&run_dir)
                 .map_err(|e| format!("create {}: {e}", run_dir.display()))?;
+            if cross.is_some_and(|cross| cross.build_only) {
+                std::fs::write(&runtime_ok, b"")
+                    .map_err(|e| format!("write {}: {e}", runtime_ok.display()))?;
+                return match &case.config.filecheck_target {
+                    Some(target) => filecheck_case(case, target),
+                    None => Ok(()),
+                };
+            }
             for extra in &case.config.extra_files {
                 let name = extra
                     .file_name()
