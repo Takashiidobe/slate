@@ -590,6 +590,7 @@ enum Opt {
     NoWarnings,
     ConformingPreprocessor,
     MsvcUnsignedChar,
+    MsvcPack,
     Permissive,
     DeleteNullPointerChecks,
     TrivialAutoVarInit,
@@ -701,6 +702,7 @@ impl std::fmt::Display for Opt {
             Self::NoWarnings => "w",
             Self::ConformingPreprocessor => "Zc:preprocessor",
             Self::MsvcUnsignedChar => "J",
+            Self::MsvcPack => "Zp",
             Self::Permissive => "fpermissive",
             Self::DeleteNullPointerChecks => "fdelete-null-pointer-checks",
             Self::TrivialAutoVarInit => "ftrivial-auto-var-init",
@@ -819,7 +821,7 @@ impl Opt {
             | Self::OpenMpRuntime
             | Self::OpenMpVersion
             | Self::Mllvm => &[Clang],
-            Self::ConformingPreprocessor | Self::MsvcUnsignedChar => &[Msvc],
+            Self::ConformingPreprocessor | Self::MsvcUnsignedChar | Self::MsvcPack => &[Msvc],
             Self::CodegenOnly(spelling) => {
                 codegen_only_flag_named(spelling).map_or(&[], |flag| flag.flavors)
             }
@@ -1475,6 +1477,18 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
         } else if argument == "/J" {
             parsed.saw(Opt::MsvcUnsignedChar, argument);
             parsed.char_signed = Some(false);
+        } else if let Some(alignment) = argument.strip_prefix("/Zp") {
+            parsed.saw(Opt::MsvcPack, argument);
+            let alignment = match alignment {
+                "" => 1,
+                _ => {
+                    match parse_value::<u32>(alignment.to_owned(), argument, "numeric argument")? {
+                        alignment @ (1 | 2 | 4 | 8 | 16) => alignment,
+                        _ => 8,
+                    }
+                }
+            };
+            parsed.pack_struct_alignment = Some(alignment);
         } else if argument == "-fpermissive" || argument == "-fno-permissive" {
             parsed.saw(Opt::Permissive, argument);
             parsed.diagnostics.permissive = argument == "-fpermissive";

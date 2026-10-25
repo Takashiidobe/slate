@@ -27,12 +27,19 @@ each stage is in [configuration-threading](configuration-threading.md).
 - The MSVC flavor rejects every `-f…` and `-m…` flag below
   (`Opt::accepted_by`), except the `CODEGEN_ONLY_FLAGS` rows marked
   `ALL_FLAVORS` (`-fomit-frame-pointer`, `-flto`, `-fvisibility=`, ...).
-  Of its own `/` spellings `/Zc:preprocessor` and `/J` are modeled. The first is accepted
-  with no effect, since slate always preprocesses conformingly and the msvc
-  snapshots were taken with it (`_MSVC_TRADITIONAL 0`).
-  `/Zc:preprocessor-` is rejected (slate-3amj.5.12). `/J` makes plain
-  `char` unsigned (`TargetInfo::char_signed`) and defines `_CHAR_UNSIGNED`
-  only, as cl.exe does; `__CHAR_UNSIGNED__` stays undefined.
+  Its own `/` spellings (the rest of the cl.exe options are tracked in
+  slate-3amj.5):
+  - `/Zc:preprocessor` is accepted with no effect, since slate always
+    preprocesses conformingly and the msvc snapshots were taken with it
+    (`_MSVC_TRADITIONAL 0`). `/Zc:preprocessor-` is rejected
+    (slate-3amj.5.12).
+  - `/J` makes plain `char` unsigned (`TargetInfo::char_signed`) and defines
+    `_CHAR_UNSIGNED` only, as cl.exe does; `__CHAR_UNSIGNED__` stays
+    undefined.
+  - `/Zp<n>` sets the default maximum field alignment, like
+    `-fpack-struct=<n>`; `#pragma pack()` restores it. `/Zp` alone is
+    `/Zp1`. A number other than 1, 2, 4, 8 or 16 is `/Zp8`, which cl.exe
+    only warns about (D9014); a non-number is rejected.
 
 ## Implemented
 
