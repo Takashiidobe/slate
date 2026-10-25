@@ -1,4 +1,4 @@
-/* { dg-options "/source-charset:utf-8 /execution-charset:windows-1252" } */
+/* { dg-options "/Zc:preprocessor /source-charset:utf-8 /execution-charset:windows-1252" } */
 void abort(void);
 
 static void check(int got, int want) {

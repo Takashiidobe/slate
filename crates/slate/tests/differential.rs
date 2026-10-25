@@ -105,6 +105,32 @@ fn run_cases_for_target(
     project: bool,
     cross: Option<&support::CrossTarget>,
 ) -> Vec<(String, Result<(), String>)> {
+    let (msvc, rest): (Vec<&Fixture>, Vec<&Fixture>) =
+        fixtures.iter().partition(|f| f.flavor == Flavor::Msvc);
+    let triple = cross.map_or(env!("SLATE_BUILD_TARGET"), |cross| cross.rust_triple);
+    let windows = (!msvc.is_empty())
+        .then(|| support::CrossTarget::windows_msvc(triple.split('-').next().unwrap()))
+        .flatten();
+    let Some(windows) = windows else {
+        return run_batch(group, &fixtures.iter().collect::<Vec<_>>(), project, cross);
+    };
+    let mut results = run_batch(group, &rest, project, cross);
+    results.extend(run_batch(
+        &format!("{group}-windows"),
+        &msvc,
+        project,
+        Some(&windows),
+    ));
+    results.sort_by(|a, b| a.0.cmp(&b.0));
+    results
+}
+
+fn run_batch(
+    group: &str,
+    fixtures: &[&Fixture],
+    project: bool,
+    cross: Option<&support::CrossTarget>,
+) -> Vec<(String, Result<(), String>)> {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("target/difftest-generated")
         .join(group);

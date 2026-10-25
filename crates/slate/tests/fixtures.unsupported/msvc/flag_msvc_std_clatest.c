@@ -1,4 +1,4 @@
-/* { dg-options "/std:clatest" } */
+/* { dg-options "/Zc:preprocessor /std:clatest" } */
 void abort(void);
 
 static void check(long got, long want) {

@@ -1,4 +1,4 @@
-/* { dg-options "/arch:AVX2" } */
+/* { dg-options "/Zc:preprocessor /arch:AVX2" } */
 void abort(void);
 
 int main(void) {

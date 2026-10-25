@@ -1,4 +1,4 @@
-/* { dg-options "/MTd /RTC1 /W4 /volatile:iso /fpcvt:IA /favor:ATOM /sdl" } */
+/* { dg-options "/Zc:preprocessor /MTd /RTC1 /W4 /volatile:iso /fpcvt:IA /favor:ATOM /sdl" } */
 void abort(void);
 
 int main(void) {

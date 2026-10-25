@@ -1,4 +1,4 @@
-/* { dg-options "/J" } */
+/* { dg-options "/Zc:preprocessor /J" } */
 void abort(void);
 
 int main(void) {

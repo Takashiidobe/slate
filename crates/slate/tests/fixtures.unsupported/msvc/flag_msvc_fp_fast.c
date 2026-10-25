@@ -1,4 +1,4 @@
-/* { dg-options "/fp:fast" } */
+/* { dg-options "/Zc:preprocessor /fp:fast" } */
 void abort(void);
 
 int main(void) {

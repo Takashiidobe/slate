@@ -113,9 +113,16 @@ target-independent `tests/fixtures/*.c` plus `tests/fixtures/<arch>/`, where
 `--flavor=gcc` and use real gcc as the oracle, and `tests/fixtures/msvc/` plus
 `tests/fixtures/msvc/<arch>/`, which translate with `--flavor=msvc` and use
 `crates/slate-parser/tools/cl.exe` under wine as the oracle (`MSVC_ARCH=x64`
-for x86_64, `x86` for i686). Each one checks its own results and calls
-`abort()` on a mismatch, so without msvc-wine, or on aarch64, the Rust must
-just exit 0 with empty stdout. There are no `.expected` files.
+for x86_64, `x86` for i686). msvc fixtures translate for
+`<arch>-pc-windows-msvc` and their Rust is built for that target (lld-link,
+clang-cl and msvc-wine's libs, `CrossTarget::windows_msvc`) and run under
+wine. When that toolchain or the rustup target is missing (i686 needs
+`rustup target add i686-pc-windows-msvc`), they translate for the linux
+triple instead. Every msvc fixture passes `/Zc:preprocessor` in its
+`dg-options`, since cl.exe defaults to the traditional preprocessor. Each
+one checks its own results and calls `abort()` on a mismatch, so without
+msvc-wine, or on aarch64, the Rust must just exit 0 with empty stdout. There
+are no `.expected` files.
 Profiles in `.config/nextest.toml` set the targets with setup scripts:
 
 | Profile         | Targets                          | Runs                    |

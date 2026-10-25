@@ -1,4 +1,4 @@
-/* { dg-options "/Zc:trigraphs" } */
+/* { dg-options "/Zc:preprocessor /Zc:trigraphs" } */
 void abort(void);
 
 static void check(int got, int want) {

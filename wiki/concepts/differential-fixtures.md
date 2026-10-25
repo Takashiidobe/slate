@@ -44,9 +44,16 @@ fixtures: they translate with `--flavor=gcc` and the oracle is real gcc
 `--flavor=gcc` out of their `dg-options`. `tests/fixtures/msvc/` and
 `tests/fixtures/msvc/<arch>/` translate with `--flavor=msvc`, and the oracle
 is real `cl.exe` under wine ([MSVC oracle](msvc-oracle.md), `MSVC_ARCH=x64`
-for x86_64 and `x86` for i686). They also check themselves, calling
-`abort()` on a mismatch: when wine or msvc-wine is missing, or on aarch64,
-the Rust must exit 0 with empty stdout. The `.unsupported` tree has the same `gcc/` and `msvc/`
+for x86_64 and `x86` for i686). They translate for `<arch>-pc-windows-msvc`,
+so Windows predefines and LLP64 layout match the oracle, and the Rust is
+built for that target with lld-link, clang-cl and msvc-wine's `LIB`/`INCLUDE`
+and run under wine, as a separate batch. Without that toolchain or rustup
+target they translate for the linux triple. Each passes `/Zc:preprocessor`
+in `dg-options`, because cl.exe's default is the traditional preprocessor.
+They also check themselves, calling `abort()` on a mismatch: when wine or
+msvc-wine is missing, or on aarch64, the Rust must exit 0 with empty stdout.
+A Windows FileCheck block lists `<arch>-pc-windows-msvc`;
+`update_filecheck.py` runs the matching linux target to produce it. The `.unsupported` tree has the same `gcc/` and `msvc/`
 directories. Nextest
 profiles pick targets through setup scripts in `.config/nextest.toml`:
 

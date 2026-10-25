@@ -1,4 +1,4 @@
-/* { dg-options "/arch:IA32" } */
+/* { dg-options "/Zc:preprocessor /arch:IA32" } */
 void abort(void);
 
 int main(void) {

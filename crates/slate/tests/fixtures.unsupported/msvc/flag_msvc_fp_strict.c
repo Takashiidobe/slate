@@ -1,4 +1,4 @@
-/* { dg-options "/fp:strict" } */
+/* { dg-options "/Zc:preprocessor /fp:strict" } */
 void abort(void);
 
 int main(void) {

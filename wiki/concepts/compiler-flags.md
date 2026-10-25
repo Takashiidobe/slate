@@ -27,7 +27,10 @@ each stage is in [configuration-threading](configuration-threading.md).
 - The MSVC flavor rejects every `-f…` and `-m…` flag below
   (`Opt::accepted_by`), except the `CODEGEN_ONLY_FLAGS` rows marked
   `ALL_FLAVORS` (`-fomit-frame-pointer`, `-flto`, `-fvisibility=`, ...).
-  Its own `/` spellings are not modeled.
+  Of its own `/` spellings only `/Zc:preprocessor` is modeled: accepted
+  with no effect, since slate always preprocesses conformingly and the msvc
+  snapshots were taken with it (`_MSVC_TRADITIONAL 0`).
+  `/Zc:preprocessor-` is rejected (slate-3amj.5.12).
 
 ## Implemented
 

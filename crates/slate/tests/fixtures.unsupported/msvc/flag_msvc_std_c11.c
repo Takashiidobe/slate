@@ -1,4 +1,4 @@
-/* { dg-options "/std:c11" } */
+/* { dg-options "/Zc:preprocessor /std:c11" } */
 void abort(void);
 
 static void check(long got, long want) {

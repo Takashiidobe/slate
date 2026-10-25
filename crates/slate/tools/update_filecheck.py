@@ -22,6 +22,7 @@ ARCH_TARGETS = {
     "i686": "i686-unknown-linux-gnu",
     "aarch64": "aarch64-unknown-linux-gnu",
 }
+WINDOWS_SUFFIX = "-pc-windows-msvc"
 TEST_COMMAND = ["--test", "differential", "-E", "test(=generated_differential)"]
 RELEASE_TEST_COMMAND = ["--test", "differential", "-E", "test(=release_build_differential)"]
 
@@ -77,6 +78,16 @@ class FixtureError(Exception):
     pass
 
 
+def run_target(target):
+    if target.endswith(WINDOWS_SUFFIX):
+        return ARCH_TARGETS[target.removesuffix(WINDOWS_SUFFIX)]
+    return target
+
+
+def is_msvc(path):
+    return not is_release(path) and path.resolve().relative_to(FIXTURES).parts[0] == "msvc"
+
+
 def fixture_arch(path):
     if is_release(path):
         return None
@@ -109,6 +120,8 @@ def generated_rust(target, path):
         src = WORK / "release" / release_project(path) / "src"
         unit = src / f"{'__slate_unit_main' if path.stem == 'main' else path.stem}.rs"
         return unit if unit.is_file() else src / "main.rs"
+    if target.endswith(WINDOWS_SUFFIX):
+        return WORK / f"{run_target(target)}-windows" / f"{path.stem}.generated.rs"
     return WORK / target / f"{path.stem}.generated.rs"
 
 
@@ -355,7 +368,7 @@ def run_harness(targets, fixtures):
         if not names:
             continue
         environment = os.environ.copy()
-        environment["SLATE_TEST_TARGETS"] = ",".join(targets)
+        environment["SLATE_TEST_TARGETS"] = ",".join(dict.fromkeys(map(run_target, targets)))
         if len(names) == 1:
             environment["SLATE_DIFF_FIXTURE"] = next(iter(names))
         command = ["cargo", "nextest", "r", "--release", "--profile", "slate", "--no-fail-fast", *test_command]
@@ -365,8 +378,9 @@ def run_harness(targets, fixtures):
 def all_fixtures():
     generated = (
         path
+        for flavor in ("", "gcc", "msvc")
         for subdirectory in ("", *ARCH_TARGETS)
-        for path in (FIXTURES / subdirectory).glob("*.c")
+        for path in (FIXTURES / flavor / subdirectory).glob("*.c")
     )
     release = (
         path
@@ -411,7 +425,10 @@ def fixture_targets(path, requested, extra):
         targets = block_targets(path.read_text(errors="surrogateescape"))
         if not targets:
             arch = fixture_arch(path)
-            targets = [ARCH_TARGETS[arch] if arch else DEFAULT_TARGET]
+            target = ARCH_TARGETS[arch] if arch else DEFAULT_TARGET
+            if is_msvc(path):
+                target = target.split("-", 1)[0] + WINDOWS_SUFFIX
+            targets = [target]
     if extra and extra not in targets:
         targets.append(extra)
     for target in targets:

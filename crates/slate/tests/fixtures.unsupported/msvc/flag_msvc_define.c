@@ -1,4 +1,4 @@
-/* { dg-options "/DSLATE_A=3 /DSLATE_B#4 /DSLATE_C /DSLATE_D /USLATE_D" } */
+/* { dg-options "/Zc:preprocessor /DSLATE_A=3 /DSLATE_B#4 /DSLATE_C /DSLATE_D /USLATE_D" } */
 void abort(void);
 
 static void check(int got, int want) {

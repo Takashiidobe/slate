@@ -1,4 +1,4 @@
-/* { dg-options "/Zp2" } */
+/* { dg-options "/Zc:preprocessor /Zp2" } */
 #include <stddef.h>
 void abort(void);
 

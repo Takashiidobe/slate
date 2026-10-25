@@ -1,4 +1,4 @@
-/* { dg-options "/utf-8" } */
+/* { dg-options "/Zc:preprocessor /utf-8" } */
 void abort(void);
 
 static void check(int got, int want) {

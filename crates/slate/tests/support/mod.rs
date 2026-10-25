@@ -92,6 +92,111 @@ impl CrossTarget {
     }
 }
 
+impl CrossTarget {
+    pub fn windows_msvc_with_root(root: &Path, arch: &str) -> Self {
+        let (rust_triple, msvc_arch) = match arch {
+            "x86_64" => ("x86_64-pc-windows-msvc", "x64"),
+            "i686" => ("i686-pc-windows-msvc", "x86"),
+            _ => panic!("no msvc target for {arch}"),
+        };
+        let newest = |dir: PathBuf| {
+            let mut versions: Vec<PathBuf> = std::fs::read_dir(&dir)
+                .unwrap_or_else(|e| panic!("read {}: {e}", dir.display()))
+                .filter_map(|entry| entry.ok().map(|entry| entry.path()))
+                .collect();
+            versions.sort();
+            versions
+                .pop()
+                .unwrap_or_else(|| panic!("no version directory in {}", dir.display()))
+        };
+        let tools = newest(root.join("vc/tools/msvc"));
+        let kits_lib = newest(root.join("kits/10/lib"));
+        let kits_include = newest(root.join("kits/10/include"));
+        let join = |dirs: &[PathBuf]| {
+            dirs.iter()
+                .map(|dir| dir.display().to_string())
+                .collect::<Vec<_>>()
+                .join(";")
+        };
+        let lib = join(&[
+            tools.join("lib").join(msvc_arch),
+            kits_lib.join("um").join(msvc_arch),
+            kits_lib.join("ucrt").join(msvc_arch),
+        ]);
+        let include = join(&[
+            tools.join("include"),
+            kits_include.join("ucrt"),
+            kits_include.join("um"),
+            kits_include.join("shared"),
+        ]);
+        let env_triple = rust_triple.replace('-', "_");
+        Self {
+            rust_triple,
+            cc: "cl.exe".into(),
+            cc_extra_args: Vec::new(),
+            cargo_linker_env: format!("CARGO_TARGET_{}_LINKER", env_triple.to_uppercase()),
+            linker: "lld-link".into(),
+            cargo_env: vec![
+                ("LIB".into(), lib),
+                ("INCLUDE".into(), include),
+                (format!("CC_{env_triple}"), "clang-cl".into()),
+                (format!("AR_{env_triple}"), "llvm-lib".into()),
+            ],
+            qemu: Some("wine".into()),
+            qemu_args: Vec::new(),
+        }
+    }
+
+    pub fn windows_msvc(arch: &str) -> Option<Self> {
+        static AVAILABLE: std::sync::Mutex<BTreeMap<String, bool>> =
+            std::sync::Mutex::new(BTreeMap::new());
+        if !matches!(arch, "x86_64" | "i686") {
+            return None;
+        }
+        let root = msvc_wine_root()?;
+        let candidate = Self::windows_msvc_with_root(&root, arch);
+        let mut available = AVAILABLE.lock().unwrap();
+        let ok = *available.entry(arch.to_string()).or_insert_with(|| {
+            let msvc_arch = if arch == "x86_64" { "x64" } else { "x86" };
+            let tool = |name: &str| Command::new(name).arg("--version").output().is_ok();
+            let missing: Vec<_> = [
+                (
+                    "msvc-wine cl.exe",
+                    root.join("bin").join(msvc_arch).join("cl.exe").is_file(),
+                ),
+                ("lld-link", tool("lld-link")),
+                ("clang-cl", tool("clang-cl")),
+                ("llvm-lib", tool("llvm-lib")),
+                (
+                    "rustup target",
+                    rust_target_installed(candidate.rust_triple),
+                ),
+            ]
+            .into_iter()
+            .filter_map(|(name, present)| (!present).then_some(name))
+            .collect();
+            if !missing.is_empty() {
+                eprintln!(
+                    "note: msvc fixtures translate for the linux target instead of {}; missing {}",
+                    candidate.rust_triple,
+                    missing.join(", ")
+                );
+            }
+            missing.is_empty()
+        });
+        ok.then_some(candidate)
+    }
+}
+
+pub fn rust_target_installed(triple: &str) -> bool {
+    Command::new("rustc")
+        .args(["--print", "target-libdir", "--target", triple])
+        .output()
+        .ok()
+        .and_then(|output| String::from_utf8(output.stdout).ok())
+        .is_some_and(|dir| Path::new(dir.trim()).is_dir())
+}
+
 pub const DEFAULT_TEST_TARGET: &str = "x86_64-unknown-linux-gnu";
 
 pub fn test_targets() -> Vec<String> {
@@ -299,14 +404,9 @@ pub fn compile_c_with_args_for_target(
     })
 }
 
-fn msvc_oracle_arch(cross: Option<&CrossTarget>) -> Option<&'static str> {
-    static INSTALLED: std::sync::OnceLock<Option<PathBuf>> = std::sync::OnceLock::new();
-    let arch = match cross.map(|cross| cross.rust_triple) {
-        None if cfg!(target_arch = "x86_64") => "x64",
-        Some("i686-unknown-linux-gnu") => "x86",
-        _ => return None,
-    };
-    let root = INSTALLED.get_or_init(|| {
+pub fn msvc_wine_root() -> Option<PathBuf> {
+    static ROOT: std::sync::OnceLock<Option<PathBuf>> = std::sync::OnceLock::new();
+    ROOT.get_or_init(|| {
         let root = std::env::var_os("MSVC_WINE_ROOT")
             .map(PathBuf::from)
             .or_else(|| {
@@ -319,8 +419,18 @@ fn msvc_oracle_arch(cross: Option<&CrossTarget>) -> Option<&'static str> {
             eprintln!("note: wine or msvc-wine missing; msvc fixtures only self-check");
         }
         root
-    });
-    root.as_ref()
+    })
+    .clone()
+}
+
+fn msvc_oracle_arch(cross: Option<&CrossTarget>) -> Option<&'static str> {
+    let arch = match cross.map(|cross| cross.rust_triple) {
+        None if cfg!(target_arch = "x86_64") => "x64",
+        Some("x86_64-pc-windows-msvc") => "x64",
+        Some("i686-unknown-linux-gnu" | "i686-pc-windows-msvc") => "x86",
+        _ => return None,
+    };
+    msvc_wine_root()
         .filter(|root| root.join("bin").join(arch).join("cl.exe").is_file())
         .map(|_| arch)
 }

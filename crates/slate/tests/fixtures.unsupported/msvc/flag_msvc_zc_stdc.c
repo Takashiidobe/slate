@@ -1,4 +1,4 @@
-/* { dg-options "/Zc:__STDC__" } */
+/* { dg-options "/Zc:preprocessor /Zc:__STDC__" } */
 void abort(void);
 
 int main(void) {

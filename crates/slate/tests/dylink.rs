@@ -79,40 +79,14 @@ impl Platform {
     }
 
     fn windows(msvc_root: PathBuf) -> Self {
-        let tools = msvc_root.join("vc/tools/msvc");
-        let kits = msvc_root.join("kits/10/lib");
-        let newest = |dir: &Path| {
-            let mut versions: Vec<PathBuf> = std::fs::read_dir(dir)
-                .expect("read msvc-wine directory")
-                .filter_map(|entry| entry.ok().map(|entry| entry.path()))
-                .collect();
-            versions.sort();
-            versions.pop().expect("msvc-wine version directory")
-        };
-        let tools = newest(&tools);
-        let kits = newest(&kits);
-        let lib = [
-            tools.join("lib/x64"),
-            kits.join("um/x64"),
-            kits.join("ucrt/x64"),
-        ]
-        .map(|dir| dir.display().to_string())
-        .join(";");
         Self {
             name: "windows",
             dep_file: "dep.dll",
             dep_path: ".\\\\dep.dll",
             translate_args: vec![format!("--target={WINDOWS_TRIPLE}")],
-            cross: Some(support::CrossTarget {
-                rust_triple: WINDOWS_TRIPLE,
-                cc: "cl.exe".into(),
-                cc_extra_args: Vec::new(),
-                cargo_linker_env: "CARGO_TARGET_X86_64_PC_WINDOWS_MSVC_LINKER".into(),
-                linker: "lld-link".into(),
-                cargo_env: vec![("LIB".into(), lib)],
-                qemu: Some("wine".into()),
-                qemu_args: Vec::new(),
-            }),
+            cross: Some(support::CrossTarget::windows_msvc_with_root(
+                &msvc_root, "x86_64",
+            )),
             msvc_root: Some(msvc_root),
         }
     }
@@ -291,7 +265,7 @@ fn windows_platform() -> Option<Platform> {
         ("msvc-wine (MSVC_WINE_ROOT)", root.is_some()),
         (
             "rust target x86_64-pc-windows-msvc",
-            windows_rust_target_installed(),
+            support::rust_target_installed(WINDOWS_TRIPLE),
         ),
     ]
     .into_iter()
@@ -307,15 +281,6 @@ fn windows_platform() -> Option<Platform> {
     assert!(!required, "{message}");
     eprintln!("{message}");
     None
-}
-
-fn windows_rust_target_installed() -> bool {
-    Command::new("rustc")
-        .args(["--print", "target-libdir", "--target", WINDOWS_TRIPLE])
-        .output()
-        .ok()
-        .and_then(|output| String::from_utf8(output.stdout).ok())
-        .is_some_and(|dir| Path::new(dir.trim()).is_dir())
 }
 
 fn run_platform(platform: &Platform) {

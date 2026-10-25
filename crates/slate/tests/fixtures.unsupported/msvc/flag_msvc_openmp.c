@@ -1,4 +1,4 @@
-/* { dg-options "/openmp" } */
+/* { dg-options "/Zc:preprocessor /openmp" } */
 void abort(void);
 
 int main(void) {

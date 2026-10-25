@@ -1,4 +1,4 @@
-/* { dg-options "/Zc:preprocessor-" } */
+/* { dg-options "/Zc:preprocessor /Zc:preprocessor-" } */
 void abort(void);
 
 static void check(int got, int want) {

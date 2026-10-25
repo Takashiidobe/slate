@@ -1,4 +1,4 @@
-/* { dg-options "/Gr /std:c11" } */
+/* { dg-options "/Zc:preprocessor /Gr /std:c11" } */
 void __cdecl abort(void);
 
 static int add(int a, int b) { return a + b; }
