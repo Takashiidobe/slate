@@ -1,12 +1,12 @@
 use crate::charset::Charset;
 use crate::compiler_options::{
     CodegenOptions, CompilerOptions, LayoutOptions, LibraryBuiltins, MathOptions, MathSwitch,
-    MicrosoftFlags, OperationValues, Optimization, Pic, SourceGraphs, StackProtector,
-    TrivialAutoVarInit,
+    MicrosoftFlags, MsvcFloatingModel, MsvcFloatingPoint, OperationValues, Optimization, Pic,
+    SourceGraphs, StackProtector, TrivialAutoVarInit,
 };
 use crate::diagnostics::{DiagnosticOptions, Warning};
 use crate::files::SearchPaths;
-use crate::ir::{AsmDialect, Contraction, Overflow};
+use crate::ir::{AsmDialect, Contraction, Exceptions, Overflow, Rounding};
 use crate::pp::{MacroOption, PreprocessorInputs};
 use crate::rules::{Rule, Rules};
 use crate::target::isa::{IsaRequest, TargetIsa};
@@ -294,6 +294,7 @@ struct ParsedCompilerArgs {
     msvc_source_charset: Option<(Charset, String)>,
     msvc_execution_charset: Option<(Charset, String)>,
     msvc_utf8: bool,
+    msvc_floating_point: MsvcFloatingPoint,
     short_wchar: Option<bool>,
     short_enums: Option<bool>,
     pack_struct: Option<bool>,
@@ -610,6 +611,7 @@ enum Opt {
     MsvcCallingConvention,
     MsvcUtf8,
     MsvcCharset,
+    MsvcFloatingPoint,
     Permissive,
     DeleteNullPointerChecks,
     TrivialAutoVarInit,
@@ -734,6 +736,7 @@ impl std::fmt::Display for Opt {
             Self::MsvcCallingConvention => "Gd",
             Self::MsvcUtf8 => "utf-8",
             Self::MsvcCharset => "source-charset",
+            Self::MsvcFloatingPoint => "fp",
             Self::Permissive => "fpermissive",
             Self::DeleteNullPointerChecks => "fdelete-null-pointer-checks",
             Self::TrivialAutoVarInit => "ftrivial-auto-var-init",
@@ -866,7 +869,8 @@ impl Opt {
             | Self::MsvcNoWarnings
             | Self::MsvcCallingConvention
             | Self::MsvcUtf8
-            | Self::MsvcCharset => &[Msvc],
+            | Self::MsvcCharset
+            | Self::MsvcFloatingPoint => &[Msvc],
             Self::CodegenOnly(spelling) => {
                 codegen_only_flag_named(spelling).map_or(&[], |flag| flag.flavors)
             }
@@ -1470,7 +1474,20 @@ impl CompilerArgParser {
                 .map(|(charset, _)| charset)
                 .or(raw.msvc_utf8.then_some(Charset::Utf8)),
             utf8: raw.msvc_utf8,
+            floating_point: raw.msvc_floating_point,
         };
+        let floating_point = raw.msvc_floating_point;
+        if floating_point.model == Some(MsvcFloatingModel::Strict) {
+            options.operations.floating.rounding = Rounding::Environment;
+        }
+        if floating_point.exceptions() {
+            options.operations.floating.exceptions = Exceptions::Observable;
+        }
+        if floating_point.model == Some(MsvcFloatingModel::Fast) {
+            options.math.contract = Some(Contraction::Fast);
+        } else if floating_point.contract {
+            options.math.contract = Some(Contraction::On);
+        }
         options.asm_dialect = raw.asm_dialect.unwrap_or_default();
         options.explicit_standard = raw.standard.is_some();
         options.hosted = raw.hosted.unwrap_or(true);
@@ -1859,6 +1876,40 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                 return Err(invalid(argument, &format!("incompatible with {spelling}")));
             }
             parsed.msvc_convention = Some((convention, argument.clone()));
+        } else if let Some(mode) = argument.strip_prefix("/fp:") {
+            parsed.saw(Opt::MsvcFloatingPoint, argument);
+            let floating_point = &mut parsed.msvc_floating_point;
+            let conflict = match mode {
+                "strict" if floating_point.contract => Some("/fp:contract"),
+                "contract" if floating_point.model == Some(MsvcFloatingModel::Strict) => {
+                    Some("/fp:strict")
+                }
+                "fast" if floating_point.except == Some(true) => Some("/fp:except"),
+                "except" if floating_point.model == Some(MsvcFloatingModel::Fast) => {
+                    Some("/fp:fast")
+                }
+                "precise" | "strict" | "fast" | "contract" | "except" | "except-" => None,
+                _ => {
+                    return Err(invalid(
+                        argument,
+                        "expected one of precise, strict, fast, contract, except, except-",
+                    ));
+                }
+            };
+            if let Some(previous) = conflict {
+                return Err(invalid(argument, &format!("incompatible with {previous}")));
+            }
+            match mode {
+                "precise" => floating_point.model = Some(MsvcFloatingModel::Precise),
+                "strict" => floating_point.model = Some(MsvcFloatingModel::Strict),
+                "fast" => {
+                    floating_point.model = Some(MsvcFloatingModel::Fast);
+                    floating_point.contract = false;
+                }
+                "contract" => floating_point.contract = true,
+                "except" => floating_point.except = Some(true),
+                _ => floating_point.except = Some(false),
+            }
         } else if argument == "/utf-8" {
             parsed.saw(Opt::MsvcUtf8, argument);
             if let Some((_, spelling)) = parsed

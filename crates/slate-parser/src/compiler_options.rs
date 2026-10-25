@@ -132,6 +132,35 @@ pub struct MicrosoftFlags {
     pub source_charset: Option<crate::charset::Charset>,
     pub execution_charset: Option<crate::charset::Charset>,
     pub utf8: bool,
+    pub floating_point: MsvcFloatingPoint,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum MsvcFloatingModel {
+    Precise,
+    Strict,
+    Fast,
+}
+
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
+pub struct MsvcFloatingPoint {
+    pub model: Option<MsvcFloatingModel>,
+    pub contract: bool,
+    pub except: Option<bool>,
+}
+
+impl MsvcFloatingPoint {
+    pub fn contracts(self) -> bool {
+        self.contract || self.model == Some(MsvcFloatingModel::Fast)
+    }
+
+    pub fn exceptions(self) -> bool {
+        self.model == Some(MsvcFloatingModel::Strict) || self.except == Some(true)
+    }
+
+    pub fn precise(self) -> bool {
+        self.model != Some(MsvcFloatingModel::Fast)
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]

@@ -120,6 +120,7 @@ impl Context {
                 contract: options.math.contract.unwrap_or_else(|| {
                     super::pragmas::default_contraction(dialect.flavor(), dialect.standard())
                 }),
+                precise: options.microsoft.floating_point.precise(),
                 ..FloatingRegion::default()
             },
             asm_dialect: options.asm_dialect,

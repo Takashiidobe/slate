@@ -14,7 +14,7 @@ use crate::ast::{FileId, HeaderKind, Loc, Provenance, Span};
 use crate::attribute_support;
 use crate::charset::Charset;
 use crate::compiler_args::CompilerFlavor;
-use crate::compiler_options::StackProtector;
+use crate::compiler_options::{MsvcFloatingModel, StackProtector};
 use crate::const_expr;
 use crate::diagnostics::{DiagnosticContext, Warning};
 use crate::dialect::Dialect;
@@ -783,6 +783,30 @@ impl<'a> Preprocessor<'a> {
         }
         if flavor.is_msvc() && options.microsoft.utf8 {
             defines.push("_UTF8=1".to_owned());
+        }
+        if flavor.is_msvc() && self.macros.contains_key("_MSC_VER") {
+            let floating_point = options.microsoft.floating_point;
+            defines.extend(
+                [
+                    (
+                        "_M_FP_PRECISE",
+                        floating_point.model == Some(MsvcFloatingModel::Precise),
+                    ),
+                    (
+                        "_M_FP_STRICT",
+                        floating_point.model == Some(MsvcFloatingModel::Strict),
+                    ),
+                    (
+                        "_M_FP_FAST",
+                        floating_point.model == Some(MsvcFloatingModel::Fast),
+                    ),
+                    ("_M_FP_CONTRACT", floating_point.contracts()),
+                    ("_M_FP_EXCEPT", floating_point.exceptions()),
+                ]
+                .into_iter()
+                .filter(|(_, defined)| *defined)
+                .map(|(name, _)| format!("{name}=1")),
+            );
         }
         if !flavor.is_msvc() {
             defines.extend(self.option_predefines());

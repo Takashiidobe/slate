@@ -75,8 +75,8 @@ impl Default for FloatingRegion {
 pub fn default_contraction(flavor: CompilerFlavor, standard: LanguageStandard) -> Contraction {
     match flavor {
         CompilerFlavor::Gcc if standard.is_gnu() => Contraction::Fast,
-        CompilerFlavor::Gcc => Contraction::Off,
-        CompilerFlavor::Clang | CompilerFlavor::Msvc => Contraction::On,
+        CompilerFlavor::Gcc | CompilerFlavor::Msvc => Contraction::Off,
+        CompilerFlavor::Clang => Contraction::On,
     }
 }
 

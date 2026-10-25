@@ -69,6 +69,18 @@ each stage is in [configuration-threading](configuration-threading.md).
     (D8016). An explicit execution charset sets
     `_MSVC_EXECUTION_CHARACTER_SET` (65001 or 1252). Other code pages are
     rejected.
+  - `/fp:precise|strict|fast` pick the model (last wins) and define
+    `_M_FP_PRECISE`, `_M_FP_STRICT` or `_M_FP_FAST`; none is defined without
+    one. `/fp:contract` adds `_M_FP_CONTRACT`, which `fast` implies, and a
+    later `/fp:fast` drops an earlier `/fp:contract`. `/fp:except[-]` (last
+    wins) adds `_M_FP_EXCEPT`, which `strict` implies even after
+    `/fp:except-`. cl.exe checks conflicts against the options seen so far,
+    so slate does too: `/fp:contract` with a current `strict` (or `strict`
+    after `/fp:contract`) and `/fp:except` with a current `fast` (or `fast`
+    after `/fp:except`) are rejected (D8016), while
+    `/fp:strict /fp:precise /fp:contract` is fine. IR effects are in
+    [ir/operations](ir/operations.md#floating-settings). An unknown mode
+    is rejected; cl.exe ignores it (D9002).
   - Options with no C-level effect are `MSVC_ONLY` rows in
     `CODEGEN_ONLY_FLAGS`: optimization (`/O…`), codegen (`/GS`, `/Gy`,
     `/GF`, `/Qspectre…`, `/favor:blend|AMD64`, ...), debug info, output files

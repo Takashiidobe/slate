@@ -59,15 +59,23 @@ le gt ge`), printed with the operand type and yielding `bool`.
 
 - Default: `rounding=nearest_even`; `exceptions=ignore` for clang and MSVC,
   `observable` for gcc.
-- `contract=` (FMA permission): `on` for clang and MSVC (within an
-  expression), `fast` for gcc `gnu*` (across statements), `off` for gcc ISO
-  modes. `-ffp-contract=off|on|fast` (clang also `fast-honor-pragmas`, same
+- `contract=` (FMA permission): `on` for clang (within an expression),
+  `fast` for gcc `gnu*` (across statements), `off` for gcc ISO modes and
+  MSVC (cl.exe 19.51 fuses `a * b + c` only under `/fp:contract` or
+  `/fp:fast`). `-ffp-contract=off|on|fast` (clang also `fast-honor-pragmas`, same
   as `fast`) replaces the default. clang applies it in argv order with the
   fast-math umbrellas (`-ffast-math`/`-funsafe-math-optimizations` set
   `fast`; their `-fno-` restores the last `-ffp-contract=` or `on`); gcc's
   explicit flag wins regardless of order, else unsafe math gives `fast`.
   It and `range=` are recorded because a consumer can use them, not
   because ignoring them is wrong.
+- msvc `/fp:` (`MicrosoftFlags::floating_point`): `strict` gives
+  `rounding=environment, exceptions=observable`, `except` gives
+  `exceptions=observable`, `contract` gives `contract=on`, and `fast` gives
+  `contract=fast` and clears the region's `precise`, so
+  `float_control(except, on)` is rejected as cl.exe rejects it (C3199).
+  `fast`'s other permissions are not represented
+  ([compiler-flags](../compiler-flags.md)).
 - Flags: `-f[no-]wrapv`, `-f[no-]trapv`, `-f[no-]strict-overflow`,
   `-f[no-]rounding-math`, `-f[no-]trapping-math`, and the long-double
   options. `pointer_wrap` (from strict-overflow) governs pointer offsets
