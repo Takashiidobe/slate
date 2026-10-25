@@ -61,8 +61,8 @@ translated with `translate-project`; both run in the directory holding the
 dependency and must match. `dylink_linux` always runs. `dylink_windows` builds
 with `cl.exe` under wine and the translated host for `x86_64-pc-windows-msvc`
 (linked by `lld-link` against msvc-wine's libs), and skips with a message when
-`wine`, `lld-link`, msvc-wine, or `rustup target add x86_64-pc-windows-msvc` is
-missing; `SLATE_DYLINK_REQUIRE_WINDOWS=1` turns the skip into a failure.
+`wine`, `lld-link`, msvc-wine, or the `x86_64-pc-windows-msvc` rustup target
+(from `rust-toolchain.toml`) is missing; `SLATE_DYLINK_REQUIRE_WINDOWS=1` turns the skip into a failure.
 
 ## Toolchain
 
@@ -71,6 +71,9 @@ missing; `SLATE_DYLINK_REQUIRE_WINDOWS=1` turns the skip into a failure.
 | `SLATE_SYSROOTS` | `~/.local/share/slate/sysroots`      | slate-parser reads target headers from `<dir>/<triple>`; when set, host targets skip native `clang` headers. Test harnesses always set it |
 | `SLATE_CARGO`    | `cargo`                              | compiles the generated Rust                                   |
 | `SLATE_RUSTFMT`  | `rustfmt`                            | fallback formatter when syn rejects generated Rust |
+
+The Rust toolchain and test targets are pinned in the root
+`rust-toolchain.toml` ([Toolchain](../../AGENTS.md#toolchain)).
 
 Differential tests use `clang` on PATH as the C oracle. Slate frontend translation does not
 invoke Clang.
@@ -116,9 +119,8 @@ target-independent `tests/fixtures/*.c` plus `tests/fixtures/<arch>/`, where
 for x86_64, `x86` for i686). msvc fixtures translate for
 `<arch>-pc-windows-msvc` and their Rust is built for that target (lld-link,
 clang-cl and msvc-wine's libs, `CrossTarget::windows_msvc`) and run under
-wine. When that toolchain or the rustup target is missing (i686 needs
-`rustup target add i686-pc-windows-msvc`), they translate for the linux
-triple instead. Every msvc fixture passes `/Zc:preprocessor` in its
+wine. When that toolchain is missing, they translate for the linux triple
+instead (the rustup targets come from `rust-toolchain.toml`). Every msvc fixture passes `/Zc:preprocessor` in its
 `dg-options`, since cl.exe defaults to the traditional preprocessor. Each
 one checks its own results and calls `abort()` on a mismatch, so without
 msvc-wine, or on aarch64, the Rust must just exit 0 with empty stdout. There

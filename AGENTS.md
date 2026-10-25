@@ -12,6 +12,23 @@ command from the workspace root.** `.cargo/config.toml` sends all builds to
 | `crates/slate-intrinsic-gen` | Generates the frontend intrinsic catalog from LLVM   | `crates/slate-intrinsic-gen/README.md` |
 | `crates/slate-sysroots`      | Installs per-target C headers for slate-parser       | `crates/slate-sysroots/README.md`      |
 
+## Toolchain
+
+`rust-toolchain.toml` pins the nightly (generated Rust uses nightly features
+such as `c_variadic` and `f128`), rustfmt and clippy, and every rustup target
+the tests build Rust for: x86_64, i686 and aarch64 `unknown-linux-gnu`, and
+x86_64 and i686 `pc-windows-msvc`. rustup installs them on first use, and the
+harness's nested `cargo` and `rustc` calls run on the same toolchain. When a
+test or build differs between machines, check `rustc -V` from the workspace
+root first.
+
+Bump the pin every month or two: change `channel` to a newer
+`nightly-YYYY-MM-DD`, then run the `slate`, `parser` and `slate-targets`
+profiles and fix what breaks in the same commit. Add a target to the list in
+the same change as the harness or profile that builds for it. Targets that
+slate-parser only parses for (musl, FreeBSD, Android, macOS) need sysroots,
+not rustup targets.
+
 ## Routing work
 
 Route by what the problem is, not by the bead ID (a `slate-*` bead can be a

@@ -15,7 +15,7 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN x86_64-pc-windows-msvc i686-unknown-linux-gnu
+// SLATE-FILECHECK-BEGIN x86_64-pc-windows-msvc i686-pc-windows-msvc
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:

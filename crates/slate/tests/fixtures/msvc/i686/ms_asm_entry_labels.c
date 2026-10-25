@@ -72,7 +72,7 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN i686-unknown-linux-gnu
+// SLATE-FILECHECK-BEGIN i686-pc-windows-msvc
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![feature(asm_goto_with_outputs)]
 // CHECK-NEXT: #![no_main]
