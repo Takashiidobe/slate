@@ -128,6 +128,7 @@ pub struct MicrosoftFlags {
     pub asm_blocks: bool,
     pub anonymous_structs: Option<bool>,
     pub c11_atomics: bool,
+    pub warning_level: Option<u32>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]

@@ -63,6 +63,11 @@ rule pipeline. Flag effects are in [compiler-flags](compiler-flags.md).
   `-fno-`/`-mno-` and `--` forms through `parse_switch`; `negated_by`
   narrows the flavors that accept the opposite. `value` rows match a
   `-f…=` prefix and accept any value; `one_of` restricts the values.
+  cl.exe rows use `exact`, `toggle` (with or without a trailing `-`),
+  `number` (the spelling followed by digits) or `value`; `separate` makes a
+  row that matches its bare spelling take the next argument as its value
+  (`/Fo: out.obj`, `/wd 4996`). Rows match in table order, so a longer
+  spelling (`/Fd:`) comes before its prefix (`/Fd`).
   Matches are recorded as `Opt::CodegenOnly(spelling)`, so `check_flavor`
   applies. PIC/PIE, stack protector, `-fcf-protection` and
   `-fasynchronous-unwind-tables` change macros, so they are `Opt`s.

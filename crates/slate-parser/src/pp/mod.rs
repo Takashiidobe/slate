@@ -767,6 +767,11 @@ impl<'a> Preprocessor<'a> {
         if flavor.is_msvc() && options.layout.char_signed == Some(false) {
             defines.push("_CHAR_UNSIGNED=1".to_owned());
         }
+        if let (true, Some(level)) = (flavor.is_msvc(), options.microsoft.warning_level)
+            && self.macros.contains_key("_MSVC_WARNING_LEVEL")
+        {
+            defines.push(format!("_MSVC_WARNING_LEVEL={level}L"));
+        }
         if !flavor.is_msvc() {
             defines.extend(self.option_predefines());
             self.math_predefines(&mut defines);

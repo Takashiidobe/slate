@@ -52,6 +52,21 @@ each stage is in [configuration-threading](configuration-threading.md).
     (`MicrosoftFlags::c11_atomics`). `/std:c++*` and other values are
     rejected; cl.exe only warns about `/std:c99` and `/std:c23` (D9002) and
     ignores them.
+  - `/W0`..`/W4`, `/Wall` and `/w` set `_MSVC_WARNING_LEVEL` (`nL`, `100L`,
+    `0L`; `MicrosoftFlags::warning_level`). The last one wins, except that
+    `/Wall` sticks once seen. `/W` takes a joined or separate value; another
+    number is level 1 (cl.exe warns D9014), a non-number is rejected.
+  - Options with no C-level effect are `MSVC_ONLY` rows in
+    `CODEGEN_ONLY_FLAGS`: optimization (`/O…`), codegen (`/GS`, `/Gy`,
+    `/GF`, `/Qspectre…`, `/favor:blend|AMD64`, ...), debug info, output files
+    (`/Fo`, `/Fd:` ...), `/nologo`, `/c`, `/MP`, `/analyze…`, `/external:…`,
+    warning controls (`/wd`, `/WX`, ...), PCH (`/Y…`), `/TC`, `/Tc`, `/MT`
+    (the default CRT), and the C++-only options cl.exe accepts in C (`/EH…`,
+    `/GR`, `/permissive`, the C++ `/Zc:` arguments). `/GF` string pooling
+    makes the address identity of equal literals unspecified, which C
+    already allows. `/favor:INTEL64` (`_NO_PREFETCHW`) and `/favor:ATOM`
+    change predefines and are rejected for now (slate-3amj.5.11). `/TP`,
+    `/Tp`, `/clr`, `/ZW` and `/await` are C++ and rejected.
 
 ## Implemented
 

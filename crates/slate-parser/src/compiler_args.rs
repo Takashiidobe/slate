@@ -288,6 +288,7 @@ struct ParsedCompilerArgs {
     no_builtin: Vec<String>,
     char_signed: Option<bool>,
     c11_atomics: bool,
+    msvc_warning_level: Option<u32>,
     short_wchar: Option<bool>,
     short_enums: Option<bool>,
     pack_struct: Option<bool>,
@@ -599,6 +600,8 @@ enum Opt {
     MsvcNoStandardIncludes,
     MsvcStandard,
     MsvcC11Atomics,
+    MsvcWarningLevel,
+    MsvcNoWarnings,
     Permissive,
     DeleteNullPointerChecks,
     TrivialAutoVarInit,
@@ -698,7 +701,7 @@ impl std::fmt::Display for Opt {
             Self::Fpu => "mfpu",
             Self::Thumb => "mthumb",
             Self::SveVectorBits => "msve-vector-bits",
-            Self::CodegenOnly(spelling) => spelling.trim_start_matches('-'),
+            Self::CodegenOnly(spelling) => spelling.trim_start_matches(['-', '/']),
             Self::Warning => "W",
             Self::Pedantic => "pedantic",
             Self::Optimize => "O",
@@ -718,6 +721,8 @@ impl std::fmt::Display for Opt {
             Self::MsvcNoStandardIncludes => "X",
             Self::MsvcStandard => "std:",
             Self::MsvcC11Atomics => "experimental:c11atomics",
+            Self::MsvcWarningLevel => "W",
+            Self::MsvcNoWarnings => "w",
             Self::Permissive => "fpermissive",
             Self::DeleteNullPointerChecks => "fdelete-null-pointer-checks",
             Self::TrivialAutoVarInit => "ftrivial-auto-var-init",
@@ -845,7 +850,9 @@ impl Opt {
             | Self::MsvcForceInclude
             | Self::MsvcNoStandardIncludes
             | Self::MsvcStandard
-            | Self::MsvcC11Atomics => &[Msvc],
+            | Self::MsvcC11Atomics
+            | Self::MsvcWarningLevel
+            | Self::MsvcNoWarnings => &[Msvc],
             Self::CodegenOnly(spelling) => {
                 codegen_only_flag_named(spelling).map_or(&[], |flag| flag.flavors)
             }
@@ -986,6 +993,9 @@ const IGNORED_VALUE_OPTIONS: [&str; 5] = ["-o", "-MF", "-MT", "-MQ", "-MJ"];
 enum CodegenOnlyForm {
     Switch,
     Value(&'static [&'static str]),
+    Exact,
+    Toggle,
+    Number,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -994,6 +1004,7 @@ struct CodegenOnlyFlag {
     form: CodegenOnlyForm,
     flavors: &'static [CompilerFlavor],
     negation_flavors: &'static [CompilerFlavor],
+    separate: bool,
 }
 
 impl CodegenOnlyFlag {
@@ -1003,6 +1014,35 @@ impl CodegenOnlyFlag {
             form: CodegenOnlyForm::Switch,
             flavors,
             negation_flavors: flavors,
+            separate: false,
+        }
+    }
+
+    const fn exact(spelling: &'static str, flavors: &'static [CompilerFlavor]) -> Self {
+        Self {
+            form: CodegenOnlyForm::Exact,
+            ..Self::switch(spelling, flavors)
+        }
+    }
+
+    const fn toggle(spelling: &'static str, flavors: &'static [CompilerFlavor]) -> Self {
+        Self {
+            form: CodegenOnlyForm::Toggle,
+            ..Self::switch(spelling, flavors)
+        }
+    }
+
+    const fn number(spelling: &'static str, flavors: &'static [CompilerFlavor]) -> Self {
+        Self {
+            form: CodegenOnlyForm::Number,
+            ..Self::switch(spelling, flavors)
+        }
+    }
+
+    const fn separate(self) -> Self {
+        Self {
+            separate: true,
+            ..self
         }
     }
 
@@ -1031,6 +1071,13 @@ impl CodegenOnlyFlag {
         match self.form {
             CodegenOnlyForm::Switch => parse_switch(self.spelling, argument).is_some(),
             CodegenOnlyForm::Value(_) => argument.starts_with(self.spelling),
+            CodegenOnlyForm::Exact => argument == self.spelling,
+            CodegenOnlyForm::Toggle => {
+                matches!(argument.strip_prefix(self.spelling), Some("" | "-"))
+            }
+            CodegenOnlyForm::Number => argument.strip_prefix(self.spelling).is_some_and(|rest| {
+                !rest.is_empty() && rest.bytes().all(|byte| byte.is_ascii_digit())
+            }),
         }
     }
 
@@ -1057,8 +1104,9 @@ const ALL_FLAVORS: &[CompilerFlavor] = &[
 const GNU_FLAVORS: &[CompilerFlavor] = &[CompilerFlavor::Gcc, CompilerFlavor::Clang];
 const GCC_ONLY: &[CompilerFlavor] = &[CompilerFlavor::Gcc];
 const CLANG_ONLY: &[CompilerFlavor] = &[CompilerFlavor::Clang];
+const MSVC_ONLY: &[CompilerFlavor] = &[CompilerFlavor::Msvc];
 
-const CODEGEN_ONLY_FLAGS: [CodegenOnlyFlag; 60] = [
+const CODEGEN_ONLY_FLAGS: [CodegenOnlyFlag; 173] = [
     CodegenOnlyFlag::switch("-fomit-frame-pointer", ALL_FLAVORS),
     CodegenOnlyFlag::switch("-flto", ALL_FLAVORS),
     CodegenOnlyFlag::switch("-ffunction-sections", ALL_FLAVORS),
@@ -1130,6 +1178,119 @@ const CODEGEN_ONLY_FLAGS: [CodegenOnlyFlag; 60] = [
     CodegenOnlyFlag::switch("-fdiagnostics-show-inlining-chain", CLANG_ONLY),
     CodegenOnlyFlag::switch("-Qunused-arguments", CLANG_ONLY).negated_by(&[]),
     CodegenOnlyFlag::value("--warning-suppression-mappings=", CLANG_ONLY),
+    CodegenOnlyFlag::exact("/nologo", MSVC_ONLY),
+    CodegenOnlyFlag::exact("/c", MSVC_ONLY),
+    CodegenOnlyFlag::exact("/MT", MSVC_ONLY),
+    CodegenOnlyFlag::value("/O", MSVC_ONLY),
+    CodegenOnlyFlag::toggle("/GS", MSVC_ONLY),
+    CodegenOnlyFlag::toggle("/Gy", MSVC_ONLY),
+    CodegenOnlyFlag::toggle("/Gw", MSVC_ONLY),
+    CodegenOnlyFlag::toggle("/GL", MSVC_ONLY),
+    CodegenOnlyFlag::toggle("/GR", MSVC_ONLY),
+    CodegenOnlyFlag::exact("/GF", MSVC_ONLY),
+    CodegenOnlyFlag::value("/Gs", MSVC_ONLY),
+    CodegenOnlyFlag::exact("/Ge", MSVC_ONLY),
+    CodegenOnlyFlag::exact("/Gh", MSVC_ONLY),
+    CodegenOnlyFlag::exact("/GH", MSVC_ONLY),
+    CodegenOnlyFlag::exact("/GT", MSVC_ONLY),
+    CodegenOnlyFlag::exact("/Gu", MSVC_ONLY),
+    CodegenOnlyFlag::exact("/GA", MSVC_ONLY),
+    CodegenOnlyFlag::value("/Qspectre", MSVC_ONLY),
+    CodegenOnlyFlag::value("/Qpar", MSVC_ONLY),
+    CodegenOnlyFlag::value("/Qvec-report:", MSVC_ONLY),
+    CodegenOnlyFlag::exact("/QIntel-jcc-erratum", MSVC_ONLY),
+    CodegenOnlyFlag::toggle("/guard:ehcont", MSVC_ONLY),
+    CodegenOnlyFlag::exact("/homeparams", MSVC_ONLY),
+    CodegenOnlyFlag::exact("/jumptablerdata", MSVC_ONLY),
+    CodegenOnlyFlag::value("/vlen", MSVC_ONLY),
+    CodegenOnlyFlag::value("/favor:", MSVC_ONLY).one_of(&["blend", "AMD64"]),
+    CodegenOnlyFlag::exact("/bigobj", MSVC_ONLY),
+    CodegenOnlyFlag::exact("/Z7", MSVC_ONLY),
+    CodegenOnlyFlag::exact("/Zi", MSVC_ONLY),
+    CodegenOnlyFlag::exact("/ZI", MSVC_ONLY),
+    CodegenOnlyFlag::toggle("/Zo", MSVC_ONLY),
+    CodegenOnlyFlag::value("/ZH:", MSVC_ONLY).one_of(&["MD5", "SHA1", "SHA_256"]),
+    CodegenOnlyFlag::toggle("/JMC", MSVC_ONLY),
+    CodegenOnlyFlag::number("/F", MSVC_ONLY),
+    CodegenOnlyFlag::value("/Fa", MSVC_ONLY),
+    CodegenOnlyFlag::value("/FA", MSVC_ONLY),
+    CodegenOnlyFlag::value("/Fd:", MSVC_ONLY).separate(),
+    CodegenOnlyFlag::value("/Fd", MSVC_ONLY),
+    CodegenOnlyFlag::value("/Fe:", MSVC_ONLY).separate(),
+    CodegenOnlyFlag::value("/Fe", MSVC_ONLY),
+    CodegenOnlyFlag::value("/Fi:", MSVC_ONLY).separate(),
+    CodegenOnlyFlag::value("/Fi", MSVC_ONLY),
+    CodegenOnlyFlag::value("/Fm:", MSVC_ONLY).separate(),
+    CodegenOnlyFlag::value("/Fm", MSVC_ONLY),
+    CodegenOnlyFlag::value("/Fo:", MSVC_ONLY).separate(),
+    CodegenOnlyFlag::value("/Fo", MSVC_ONLY),
+    CodegenOnlyFlag::value("/Fp:", MSVC_ONLY).separate(),
+    CodegenOnlyFlag::value("/Fp", MSVC_ONLY),
+    CodegenOnlyFlag::value("/FR:", MSVC_ONLY).separate(),
+    CodegenOnlyFlag::value("/FR", MSVC_ONLY),
+    CodegenOnlyFlag::value("/Fr", MSVC_ONLY),
+    CodegenOnlyFlag::exact("/FC", MSVC_ONLY),
+    CodegenOnlyFlag::exact("/FS", MSVC_ONLY),
+    CodegenOnlyFlag::exact("/MP", MSVC_ONLY),
+    CodegenOnlyFlag::number("/MP", MSVC_ONLY),
+    CodegenOnlyFlag::exact("/showIncludes", MSVC_ONLY),
+    CodegenOnlyFlag::toggle("/validate-charset", MSVC_ONLY),
+    CodegenOnlyFlag::exact("/fastfail", MSVC_ONLY),
+    CodegenOnlyFlag::toggle("/volatileMetadata", MSVC_ONLY),
+    CodegenOnlyFlag::value("/sourcelink:", MSVC_ONLY),
+    CodegenOnlyFlag::value("/diagnostics:", MSVC_ONLY).one_of(&["caret", "column", "classic"]),
+    CodegenOnlyFlag::value("/external:I", MSVC_ONLY).separate(),
+    CodegenOnlyFlag::value("/external:", MSVC_ONLY),
+    CodegenOnlyFlag::value("/analyze:ruleset", MSVC_ONLY).separate(),
+    CodegenOnlyFlag::value("/analyze:log", MSVC_ONLY).separate(),
+    CodegenOnlyFlag::value("/analyze:plugin", MSVC_ONLY).separate(),
+    CodegenOnlyFlag::value("/analyze", MSVC_ONLY),
+    CodegenOnlyFlag::value("/wd", MSVC_ONLY).separate(),
+    CodegenOnlyFlag::value("/we", MSVC_ONLY).separate(),
+    CodegenOnlyFlag::value("/wo", MSVC_ONLY).separate(),
+    CodegenOnlyFlag::value("/w1", MSVC_ONLY).separate(),
+    CodegenOnlyFlag::value("/w2", MSVC_ONLY).separate(),
+    CodegenOnlyFlag::value("/w3", MSVC_ONLY).separate(),
+    CodegenOnlyFlag::value("/w4", MSVC_ONLY).separate(),
+    CodegenOnlyFlag::toggle("/WX", MSVC_ONLY),
+    CodegenOnlyFlag::exact("/WL", MSVC_ONLY),
+    CodegenOnlyFlag::value("/Wv:", MSVC_ONLY),
+    CodegenOnlyFlag::value("/Y", MSVC_ONLY),
+    CodegenOnlyFlag::exact("/TC", MSVC_ONLY),
+    CodegenOnlyFlag::value("/Tc", MSVC_ONLY).separate(),
+    CodegenOnlyFlag::value("/EH", MSVC_ONLY),
+    CodegenOnlyFlag::toggle("/permissive", MSVC_ONLY),
+    CodegenOnlyFlag::exact("/presetPadding", MSVC_ONLY),
+    CodegenOnlyFlag::toggle("/Zc:wchar_t", MSVC_ONLY),
+    CodegenOnlyFlag::toggle("/Zc:forScope", MSVC_ONLY),
+    CodegenOnlyFlag::toggle("/Zc:inline", MSVC_ONLY),
+    CodegenOnlyFlag::toggle("/Zc:auto", MSVC_ONLY),
+    CodegenOnlyFlag::toggle("/Zc:rvalueCast", MSVC_ONLY),
+    CodegenOnlyFlag::toggle("/Zc:strictStrings", MSVC_ONLY),
+    CodegenOnlyFlag::toggle("/Zc:__cplusplus", MSVC_ONLY),
+    CodegenOnlyFlag::toggle("/Zc:externConstexpr", MSVC_ONLY),
+    CodegenOnlyFlag::toggle("/Zc:throwingNew", MSVC_ONLY),
+    CodegenOnlyFlag::toggle("/Zc:sizedDealloc", MSVC_ONLY),
+    CodegenOnlyFlag::toggle("/Zc:threadSafeInit", MSVC_ONLY),
+    CodegenOnlyFlag::toggle("/Zc:referenceBinding", MSVC_ONLY),
+    CodegenOnlyFlag::toggle("/Zc:ternary", MSVC_ONLY),
+    CodegenOnlyFlag::toggle("/Zc:hiddenFriend", MSVC_ONLY),
+    CodegenOnlyFlag::toggle("/Zc:lambda", MSVC_ONLY),
+    CodegenOnlyFlag::toggle("/Zc:noexceptTypes", MSVC_ONLY),
+    CodegenOnlyFlag::toggle("/Zc:twoPhase", MSVC_ONLY),
+    CodegenOnlyFlag::toggle("/Zc:alignedNew", MSVC_ONLY),
+    CodegenOnlyFlag::toggle("/Zc:implicitNoexcept", MSVC_ONLY),
+    CodegenOnlyFlag::toggle("/Zc:enumTypes", MSVC_ONLY),
+    CodegenOnlyFlag::toggle("/Zc:templateScope", MSVC_ONLY),
+    CodegenOnlyFlag::toggle("/Zc:checkGwOdr", MSVC_ONLY),
+    CodegenOnlyFlag::toggle("/Zc:nrvo", MSVC_ONLY),
+    CodegenOnlyFlag::toggle("/Zc:char8_t", MSVC_ONLY),
+    CodegenOnlyFlag::toggle("/Zc:gotoScope", MSVC_ONLY),
+    CodegenOnlyFlag::toggle("/Zc:zeroSizeArrayNew", MSVC_ONLY),
+    CodegenOnlyFlag::toggle("/Zc:static_assert", MSVC_ONLY),
+    CodegenOnlyFlag::toggle("/Zc:u8EscapeEncoding", MSVC_ONLY),
+    CodegenOnlyFlag::toggle("/Zc:externC", MSVC_ONLY),
+    CodegenOnlyFlag::toggle("/Zc:tlsGuards", MSVC_ONLY),
 ];
 
 fn codegen_only_flag(argument: &str) -> Option<&'static CodegenOnlyFlag> {
@@ -1278,6 +1439,7 @@ impl CompilerArgParser {
             asm_blocks: raw.asm_blocks == Some(true),
             anonymous_structs: raw.ms_anonymous_structs,
             c11_atomics: raw.c11_atomics,
+            warning_level: raw.msvc_warning_level,
         };
         options.asm_dialect = raw.asm_dialect.unwrap_or_default();
         options.explicit_standard = raw.standard.is_some();
@@ -1380,6 +1542,9 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
         } else if let Some(flag) = codegen_only_flag(argument) {
             flag.check_value(argument)?;
             parsed.saw(Opt::CodegenOnly(flag.spelling), argument);
+            if flag.separate && argument == flag.spelling {
+                next_value(arguments, &mut index, argument, "")?;
+            }
         } else if let Some((opt, value)) = SWITCH_OPTS
             .iter()
             .find_map(|opt| opt.parse_switch(argument).map(|value| (*opt, value)))
@@ -1656,6 +1821,29 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
         } else if argument == "/experimental:c11atomics" {
             parsed.saw(Opt::MsvcC11Atomics, argument);
             parsed.c11_atomics = true;
+        } else if argument == "/w" {
+            parsed.saw(Opt::MsvcNoWarnings, argument);
+            parsed.msvc_warning_level = parsed
+                .msvc_warning_level
+                .filter(|level| *level == 100)
+                .or(Some(0));
+        } else if let Some(value) = argument.strip_prefix("/W") {
+            parsed.saw(Opt::MsvcWarningLevel, argument);
+            let level = match next_value(arguments, &mut index, argument, value)? {
+                level if level == "all" => 100,
+                level => match parse_value::<u32>(level, argument, "numeric argument")? {
+                    level @ 0..=4 => level,
+                    _ => 1,
+                },
+            };
+            if parsed.msvc_warning_level != Some(100) {
+                parsed.msvc_warning_level = Some(level);
+            }
+        } else if ["/TP", "/Tp", "/clr", "/ZW", "/await"]
+            .iter()
+            .any(|prefix| argument.starts_with(prefix))
+        {
+            return Err(invalid(argument, "a C++ option does not apply to C"));
         } else if let Some(value) = option_value(argument, "U") {
             parsed.saw(Opt::Undef, argument);
             parsed
