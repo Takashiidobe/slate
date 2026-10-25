@@ -191,13 +191,13 @@ int main(void) {
 // CHECK-NEXT:     let mut [[V_1:__v[0-9]+]]: num_complex::Complex<f128> = c;
 // CHECK-NEXT:     c = [[V_1]].c_div(b, false);
 // CHECK-NEXT:     print_lc(c"div_assign".as_ptr(), c);
-// CHECK-NEXT:     if !(a == a) {
+// CHECK-NEXT:     if a != a {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if a == b {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if !(a != b) {
+// CHECK-NEXT:     if a == b {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     print_lc(c"mix".as_ptr(), mix_complex(a, b));

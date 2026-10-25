@@ -3839,14 +3839,15 @@ impl TypeResolver {
                 && self.dialect.target().abi.zero_width_bitfield_aligns_record
             {
                 aggregate_align = aggregate_align.max(natural);
-            } else if field.bit_width != Some(0) {
+            } else if field.bit_width != Some(0)
+                && (field.name.is_some()
+                    || field.bit_width.is_none()
+                    || self.dialect.target().abi.zero_width_bitfield_aligns_record)
+            {
                 aggregate_align = aggregate_align.max(align);
-                if let (true, true, Some(_), Some(max)) = (
-                    packed || field_packed,
-                    field.name.is_some(),
-                    field.bit_width,
-                    max_field_alignment,
-                ) {
+                if let (true, Some(_), Some(max)) =
+                    (packed || field_packed, field.bit_width, max_field_alignment)
+                {
                     aggregate_align = aggregate_align.max(natural.min(max));
                 }
             }
@@ -3890,11 +3891,7 @@ impl TypeResolver {
                 let used = position
                     .checked_add(u64::from(width))
                     .ok_or(ResolveError::Rejected("record size overflow"))?;
-                end_bits = end_bits.max(if kind == TagKind::Union && !(packed || field_packed) {
-                    unit_bits
-                } else {
-                    used
-                });
+                end_bits = end_bits.max(used);
                 offsets.push(position / 8);
                 bit_offsets.push(Some(position));
             } else {

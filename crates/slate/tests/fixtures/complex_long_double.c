@@ -199,10 +199,10 @@ int main(void) {
 // CHECK-NEXT:     show(c"place".as_ptr(), unsafe { *p });
 // CHECK-NEXT:     show(c"global".as_ptr(), unsafe { global_cl });
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", ! (make(0i32 as f128, 0i32 as f128) != num_complex::Complex { re :
-// CHECK-NEXT:         0f128, im : 0.0 }) as i32, ! (! (a != num_complex::Complex { re : 0f128, im : 0.0
-// CHECK-NEXT:         })) as i32, if (a != num_complex::Complex { re : 0f128, im : 0.0 }) { 1i32 } else
-// CHECK-NEXT:         { 0i32 }
+// CHECK-NEXT:         "{} {} {}", (make(0i32 as f128, 0i32 as f128) == num_complex::Complex { re :
+// CHECK-NEXT:         0f128, im : 0.0 }) as i32, (a != num_complex::Complex { re : 0f128, im : 0.0 })
+// CHECK-NEXT:         as i32, if (a != num_complex::Complex { re : 0f128, im : 0.0 }) { 1i32 } else {
+// CHECK-NEXT:         0i32 }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let re: f128 = a.re;
 // CHECK-NEXT:     let truncated: i32 = a.re as i32;

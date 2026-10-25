@@ -204,9 +204,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn c99_qualified_array_sum(values: *mut i32) -> i32 {
-// CHECK-NEXT:     (unsafe { *values.offset(0 as isize) })
-// CHECK-NEXT:         + unsafe { *values.offset(1 as isize) }
-// CHECK-NEXT:         + unsafe { *values.offset(2 as isize) }
+// CHECK-NEXT:     (unsafe { *values.add(0) }) + unsafe { *values.add(1) } + unsafe { *values.add(2) }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn c99_vm_sum(length: i32, values: *mut [i32; 0]) -> i32 {
@@ -288,7 +286,7 @@ int main(void) {
 // CHECK-NEXT:     let mut [[SLATE_COMPOUND_0:__slate_compound_[0-9]+]]: C99Pair = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     let mut [[SLATE_COMPOUND_1:__slate_compound_[0-9]+]]: [i32; 2] = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     let α: i32 = 7;
-// CHECK-NEXT:     let boolean_value: bool = 4i32 != 0i32;
+// CHECK-NEXT:     let boolean_value: bool = true;
 // CHECK-NEXT:     let signed_long_long: i64 = -9000000000;
 // CHECK-NEXT:     let unsigned_long_long: u64 = 18000000000;
 // CHECK-NEXT:     let float_complex: num_complex::Complex<f32> = 1.0f32
@@ -365,12 +363,12 @@ int main(void) {
 // CHECK-NEXT:         let mut index: u64 = 0;
 // CHECK-NEXT:         while index < unsafe { (*flexible).count } {
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 *(std::ptr::addr_of_mut!((*flexible).values) as *mut i32).offset(index as isize) =
+// CHECK-NEXT:                 *(std::ptr::addr_of_mut!((*flexible).values) as *mut i32).add(index as usize) =
 // CHECK-NEXT:                     ((index as u32) as i32) + 1;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             let [[V_0:__v[0-9]+]]: i32 = flexible_total
 // CHECK-NEXT:                 + unsafe {
-// CHECK-NEXT:                     *(std::ptr::addr_of_mut!((*flexible).values) as *mut i32).offset(index as isize)
+// CHECK-NEXT:                     *(std::ptr::addr_of_mut!((*flexible).values) as *mut i32).add(index as usize)
 // CHECK-NEXT:                 };
 // CHECK-NEXT:             flexible_total = [[V_0]];
 // CHECK-NEXT:             index = index.wrapping_add(1);
@@ -430,7 +428,7 @@ int main(void) {
 // CHECK-NEXT:             std::ptr::addr_of_mut!([[SLATE_COMPOUND_1]])
 // CHECK-NEXT:         })
 // CHECK-NEXT:         .as_mut_ptr() as *mut i32)
-// CHECK-NEXT:             .offset(1 as isize)
+// CHECK-NEXT:             .add(1)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let signed_quotient: i32 = -7 / 3;
 // CHECK-NEXT:     let signed_remainder: i32 = -7 % 3;
@@ -452,7 +450,7 @@ int main(void) {
 // CHECK-NEXT:     let fenv_flags: i32 = unsafe { fetestexcept(31i32) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(c"%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n".as_ptr(), c"main".as_ptr() as *mut u8, α, c99_external_identifier_with_more_than_thirty_one_significant_characters, slash_comment_value, enhanced_arithmetic, flexible_total, vm_total, nonconstant_initializer.first + nonconstant_initializer.second, designated_initializer.first + designated_initializer.second, designated_array[0] + designated_array[2], idempotent_const_value, std::ptr::read_volatile(std::ptr::addr_of!(idempotent_volatile_value)), *restricted_pointer, hexadecimal_float as i32, compound_pair.first + compound_pair.second, compound_array_value, signed_quotient, signed_remainder, mixed_order, declaration_after_statement, for_total, c99_inline_square(8i32), c99_qualified_array_sum(qualified_values.as_mut_ptr() as *mut i32), macro_total, translation_limit_total, 17i32, fenv_clear, fenv_flags, c99_restrict_sum((qualified_values.as_mut_ptr() as *mut i32).offset(0 as isize) as *const i32, (qualified_values.as_mut_ptr() as *mut i32).offset(1 as isize) as *const i32))
+// CHECK-NEXT:         printf(c"%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n".as_ptr(), c"main".as_ptr() as *mut u8, α, c99_external_identifier_with_more_than_thirty_one_significant_characters, slash_comment_value, enhanced_arithmetic, flexible_total, vm_total, nonconstant_initializer.first + nonconstant_initializer.second, designated_initializer.first + designated_initializer.second, designated_array[0] + designated_array[2], idempotent_const_value, std::ptr::read_volatile(std::ptr::addr_of!(idempotent_volatile_value)), *restricted_pointer, hexadecimal_float as i32, compound_pair.first + compound_pair.second, compound_array_value, signed_quotient, signed_remainder, mixed_order, declaration_after_statement, for_total, c99_inline_square(8i32), c99_qualified_array_sum(qualified_values.as_mut_ptr() as *mut i32), macro_total, translation_limit_total, 17i32, fenv_clear, fenv_flags, c99_restrict_sum((qualified_values.as_mut_ptr() as *mut i32).add(0) as *const i32, (qualified_values.as_mut_ptr() as *mut i32).add(1) as *const i32))
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0

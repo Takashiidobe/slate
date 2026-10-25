@@ -47,6 +47,6 @@ struct s3 { int : 3; int : 4; }; /* { dg-error "struct has no named members" } *
 // DEFAULT-NEXT:     type @type[[TYPE_s3:[0-9]+]] s3 = struct {
 // DEFAULT-NEXT:         field0 <anonymous>: i32 : 3;
 // DEFAULT-NEXT:         field1 <anonymous>: i32 : 4;
-// DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0], bit_offsets=[Some(0), Some(3)], bit_units=[(0, 1)], field_units=[Some(0), Some(0)]];
+// DEFAULT-NEXT:     } [size=1, align=1, offsets=[0, 0], bit_offsets=[Some(0), Some(3)], bit_units=[(0, 1)], field_units=[Some(0), Some(0)]];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

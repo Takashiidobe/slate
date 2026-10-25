@@ -205,7 +205,16 @@ The shown type is concrete and target-resolved; the C type is metadata
   `tools/check_record_layout.py` diffs each target's layout fixture against
   clang's record-layout dump.
 - ARM lets zero-width bit-fields raise record alignment, packed records
-  included; x86 does not.
+  included; x86 does not. The same target rule
+  (`zero_width_bitfield_aligns_record`) applies to unnamed bit-fields of
+  any width: on x86 they never raise record alignment
+  (`struct { char c; int : 4; }` is size 2, align 1), on ARM their type
+  does, and a packed one under `#pragma pack(n)` raises it to
+  `min(natural, n)` like a named one.
+- A union bit-field occupies its width rounded up to bytes, not its
+  storage unit; record alignment pads the size from there
+  (`union { int : 1; }` is size 1 on x86, `#pragma pack(1)
+  union { int x : 20; }` is size 3).
 - A bit-field starts at the current bit unless `offset % align + width >
   size` (bits of its declared type's natural alignment and size), in which
   case it moves to the next `align` boundary. This is the clang and gcc
