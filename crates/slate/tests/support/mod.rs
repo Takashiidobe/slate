@@ -299,6 +299,71 @@ pub fn compile_c_with_args_for_target(
     })
 }
 
+fn msvc_oracle_arch(cross: Option<&CrossTarget>) -> Option<&'static str> {
+    static INSTALLED: std::sync::OnceLock<Option<PathBuf>> = std::sync::OnceLock::new();
+    let arch = match cross.map(|cross| cross.rust_triple) {
+        None if cfg!(target_arch = "x86_64") => "x64",
+        Some("i686-unknown-linux-gnu") => "x86",
+        _ => return None,
+    };
+    let root = INSTALLED.get_or_init(|| {
+        let root = std::env::var_os("MSVC_WINE_ROOT")
+            .map(PathBuf::from)
+            .or_else(|| {
+                std::env::var_os("HOME")
+                    .map(|home| PathBuf::from(home).join(".local/share/msvc-wine/opt/msvc"))
+            });
+        let wine = Command::new("wine").arg("--version").output().is_ok();
+        let root = root.filter(|root| wine && root.join("bin").is_dir());
+        if root.is_none() {
+            eprintln!("note: wine or msvc-wine missing; msvc fixtures only self-check");
+        }
+        root
+    });
+    root.as_ref()
+        .filter(|root| root.join("bin").join(arch).join("cl.exe").is_file())
+        .map(|_| arch)
+}
+
+fn compile_c_msvc(src: &Path, out: &Path, extra_args: &[String], arch: &str) -> Result<(), String> {
+    let cache_key = serde_json::to_string(&(1, src, "cl.exe", arch, extra_args))
+        .map_err(|e| format!("encode C cache key: {e}"))?;
+    let dir = out.parent().ok_or("msvc output has no directory")?;
+    compile_c_cached(
+        &[src],
+        out,
+        &cache_key,
+        "cl.exe compile failed",
+        |temporary| {
+            let stem = temporary
+                .file_name()
+                .unwrap()
+                .to_string_lossy()
+                .into_owned();
+            let output = Command::new(
+                Path::new(env!("CARGO_MANIFEST_DIR")).join("../slate-parser/tools/cl.exe"),
+            )
+            .current_dir(dir)
+            .env("MSVC_ARCH", arch)
+            .env("WINEDEBUG", "-all")
+            .arg("/nologo")
+            .args(extra_args)
+            .arg(format!("/Fe:{stem}.exe"))
+            .arg(format!("/Fo:{stem}.obj"))
+            .arg(src)
+            .args(["/link", "legacy_stdio_definitions.lib"])
+            .output()
+            .map_err(|e| format!("spawn cl.exe: {e}"))?;
+            let _ = std::fs::remove_file(dir.join(format!("{stem}.obj")));
+            if output.status.success() {
+                std::fs::rename(dir.join(format!("{stem}.exe")), temporary)
+                    .map_err(|e| format!("rename {stem}.exe: {e}"))?;
+            }
+            Ok(output)
+        },
+    )
+}
+
 fn c_cache_sidecar(binary: &Path, suffix: &str) -> PathBuf {
     let mut name = binary.file_name().unwrap_or_default().to_os_string();
     name.push(suffix);
@@ -522,7 +587,7 @@ pub struct RunConfig {
     pub timeout_seconds: Option<u64>,
     pub c_args: Vec<String>,
     pub cc: Option<String>,
-    pub self_check: bool,
+    pub msvc: bool,
     pub extra_files: Vec<PathBuf>,
     pub extra_files_dir: PathBuf,
     pub filecheck_target: Option<String>,
@@ -538,7 +603,7 @@ impl Default for RunConfig {
             timeout_seconds: None,
             c_args: Vec::new(),
             cc: None,
-            self_check: false,
+            msvc: false,
             extra_files: Vec::new(),
             extra_files_dir: PathBuf::from("src/functional"),
             filecheck_target: None,
@@ -603,8 +668,15 @@ pub fn compare_batch_with_jobs_for_target(
                     .map_err(|error| format!("Rust batch build failed:\n{error}"))?,
                 Err(error) => return Err(format!("Rust batch build failed:\n{error}")),
             };
-            let c_bin = work_dir.join(format!("{}_c", bn));
-            if !case.config.self_check {
+            let msvc_arch = case.config.msvc.then(|| msvc_oracle_arch(cross)).flatten();
+            let self_check = case.config.msvc && msvc_arch.is_none();
+            let c_bin = work_dir.join(format!(
+                "{bn}_c{}",
+                if msvc_arch.is_some() { ".exe" } else { "" }
+            ));
+            if let Some(arch) = msvc_arch {
+                compile_c_msvc(&case.c_src, &c_bin, &case.config.c_args, arch)?;
+            } else if !self_check {
                 compile_c_with_args_for_target(
                     &case.c_src,
                     &c_bin,
@@ -630,12 +702,14 @@ pub fn compare_batch_with_jobs_for_target(
                 std::fs::copy(extra, dest_dir.join(name))
                     .map_err(|e| format!("stage {}: {e}", extra.display()))?;
             }
-            let expected = if case.config.self_check {
+            let expected = if self_check {
                 Run {
                     stdout: Vec::new(),
                     stderr: Vec::new(),
                     exit: Some(0),
                 }
+            } else if msvc_arch.is_some() {
+                run_with_emulator(&c_bin, &case.config, &run_dir, Some(("wine", &[])))?
             } else {
                 run_with_config_for_target(&c_bin, &case.config, &run_dir, cross)?
             };
@@ -1034,9 +1108,9 @@ pub fn write_if_changed(path: impl AsRef<Path>, contents: &[u8]) -> std::io::Res
     Ok(true)
 }
 
-fn emulator(cross: Option<&CrossTarget>) -> Option<(&String, &[String])> {
+fn emulator(cross: Option<&CrossTarget>) -> Option<(&str, &[String])> {
     let cross = cross?;
-    Some((cross.qemu.as_ref()?, &cross.qemu_args))
+    Some((cross.qemu.as_deref()?, &cross.qemu_args))
 }
 
 pub fn run_with_config(bin: &Path, config: &RunConfig, cwd: &Path) -> Result<Run, String> {
@@ -1049,15 +1123,24 @@ pub fn run_with_config_for_target(
     cwd: &Path,
     cross: Option<&CrossTarget>,
 ) -> Result<Run, String> {
+    run_with_emulator(bin, config, cwd, emulator(cross))
+}
+
+fn run_with_emulator(
+    bin: &Path,
+    config: &RunConfig,
+    cwd: &Path,
+    emulator: Option<(&str, &[String])>,
+) -> Result<Run, String> {
     let mut cmd = if let Some(seconds) = config.timeout_seconds {
         let mut cmd = Command::new("timeout");
         cmd.args(["--kill-after=1", &format!("{seconds}s")]);
-        if let Some((qemu, qemu_args)) = emulator(cross) {
+        if let Some((qemu, qemu_args)) = emulator {
             cmd.arg(qemu).args(qemu_args);
         }
         cmd.arg(bin);
         cmd
-    } else if let Some((qemu, qemu_args)) = emulator(cross) {
+    } else if let Some((qemu, qemu_args)) = emulator {
         let mut cmd = Command::new(qemu);
         cmd.args(qemu_args).arg(bin);
         cmd

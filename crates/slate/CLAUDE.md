@@ -111,9 +111,11 @@ target-independent `tests/fixtures/*.c` plus `tests/fixtures/<arch>/`, where
 `<arch>` is the triple's first component (`x86_64`, `i686`, `aarch64`), and
 `tests/fixtures/gcc/` plus `tests/fixtures/gcc/<arch>/`, which translate with
 `--flavor=gcc` and use real gcc as the oracle, and `tests/fixtures/msvc/` plus
-`tests/fixtures/msvc/<arch>/`, which translate with `--flavor=msvc` and have
-no oracle: they must exit 0 with empty stdout, so each one checks its own
-results and calls `abort()` on a mismatch. There are no `.expected` files.
+`tests/fixtures/msvc/<arch>/`, which translate with `--flavor=msvc` and use
+`crates/slate-parser/tools/cl.exe` under wine as the oracle (`MSVC_ARCH=x64`
+for x86_64, `x86` for i686). Each one checks its own results and calls
+`abort()` on a mismatch, so without msvc-wine, or on aarch64, the Rust must
+just exit 0 with empty stdout. There are no `.expected` files.
 Profiles in `.config/nextest.toml` set the targets with setup scripts:
 
 | Profile         | Targets                          | Runs                    |
@@ -130,10 +132,7 @@ fixtures that still fail on that target. The run fails when a listed
 fixture passes (remove it from the list) or an unlisted one fails.
 `tests/fixtures.unsupported/` also runs per target (root plus `<arch>/`); a
 fixture that passes prints the `git mv`, the `update_filecheck.py` command,
-and the per-target list entries it needs. To get expected values for an
-msvc fixture, run it under `MSVC_ARCH=x86 crates/slate-parser/tools/cl.exe`
-with wine, linking with `/link legacy_stdio_definitions.lib`.
-`tests/fixtures/arm/` is not collected yet (slate-5vj0.8).
+and the per-target list entries it needs. `tests/fixtures/arm/` is not collected yet (slate-5vj0.8).
 
 Isolate one fixture while developing:
 

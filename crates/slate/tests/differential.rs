@@ -139,7 +139,11 @@ fn run_cases_for_target(
         result.map(|()| {
             let config = support::RunConfig {
                 c_args: dg_options,
-                self_check: f.flavor == Flavor::Msvc,
+                msvc: f.flavor == Flavor::Msvc,
+                env: [("WINEDEBUG".to_string(), "-all".to_string())]
+                    .into_iter()
+                    .filter(|_| f.flavor == Flavor::Msvc)
+                    .collect(),
                 filecheck_target,
                 cc: (f.flavor == Flavor::Gcc).then(|| "gcc".to_string()),
                 ..support::RunConfig::default()

@@ -42,10 +42,11 @@ only when it cannot be target-independent (inline asm, ISA intrinsics).
 fixtures: they translate with `--flavor=gcc` and the oracle is real gcc
 (`gcc -m32` for i686, `aarch64-linux-gnu-gcc` for aarch64). Leave
 `--flavor=gcc` out of their `dg-options`. `tests/fixtures/msvc/` and
-`tests/fixtures/msvc/<arch>/` translate with `--flavor=msvc` and have no
-native oracle: they are self-checking, so the Rust must exit 0 with empty
-stdout, and a fixture checks its own results and calls `abort()` on a
-mismatch. The `.unsupported` tree has the same `gcc/` and `msvc/`
+`tests/fixtures/msvc/<arch>/` translate with `--flavor=msvc`, and the oracle
+is real `cl.exe` under wine ([MSVC oracle](msvc-oracle.md), `MSVC_ARCH=x64`
+for x86_64 and `x86` for i686). They also check themselves, calling
+`abort()` on a mismatch: when wine or msvc-wine is missing, or on aarch64,
+the Rust must exit 0 with empty stdout. The `.unsupported` tree has the same `gcc/` and `msvc/`
 directories. Nextest
 profiles pick targets through setup scripts in `.config/nextest.toml`:
 
