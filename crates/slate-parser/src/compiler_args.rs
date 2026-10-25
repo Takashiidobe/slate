@@ -589,6 +589,7 @@ enum Opt {
     OpenMpVersion,
     NoWarnings,
     ConformingPreprocessor,
+    MsvcUnsignedChar,
     Permissive,
     DeleteNullPointerChecks,
     TrivialAutoVarInit,
@@ -699,6 +700,7 @@ impl std::fmt::Display for Opt {
             Self::OpenMpVersion => "fopenmp-version=",
             Self::NoWarnings => "w",
             Self::ConformingPreprocessor => "Zc:preprocessor",
+            Self::MsvcUnsignedChar => "J",
             Self::Permissive => "fpermissive",
             Self::DeleteNullPointerChecks => "fdelete-null-pointer-checks",
             Self::TrivialAutoVarInit => "ftrivial-auto-var-init",
@@ -817,7 +819,7 @@ impl Opt {
             | Self::OpenMpRuntime
             | Self::OpenMpVersion
             | Self::Mllvm => &[Clang],
-            Self::ConformingPreprocessor => &[Msvc],
+            Self::ConformingPreprocessor | Self::MsvcUnsignedChar => &[Msvc],
             Self::CodegenOnly(spelling) => {
                 codegen_only_flag_named(spelling).map_or(&[], |flag| flag.flavors)
             }
@@ -1470,6 +1472,9 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
             parsed.diagnostics.ignore_warnings = true;
         } else if argument == "/Zc:preprocessor" {
             parsed.saw(Opt::ConformingPreprocessor, argument);
+        } else if argument == "/J" {
+            parsed.saw(Opt::MsvcUnsignedChar, argument);
+            parsed.char_signed = Some(false);
         } else if argument == "-fpermissive" || argument == "-fno-permissive" {
             parsed.saw(Opt::Permissive, argument);
             parsed.diagnostics.permissive = argument == "-fpermissive";
