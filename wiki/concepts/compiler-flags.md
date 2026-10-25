@@ -98,11 +98,25 @@ each stage is in [configuration-threading](configuration-threading.md).
     (`AVX10.2 AVX512 SSE2 AVX` gives `__AVX__` and `__AVX10_VER__` without
     `__AVX2__`), so slate rejects that order. `IA32`/`SSE` on x64,
     `SSE4.2` on x86 and unknown values are rejected; cl.exe ignores them
-    (D9002). `/arch` on Arm is rejected too (slate-3amj.5.23).
+    (D9002). `/arch` on 32-bit Arm is rejected too.
   - `/feature:APX` (x64 only) defines `__APX_F__`, `__EGPR__`,
     `__PUSH2POP2__`, `__PPX__`, `__NDD__`, `__CCMP__`, `__NF__`, `__CF__`
     and `__ZU__`. slate's x86 tables have no APX features, so it sets macros
     only.
+  - On arm64, `/arch:armv8.0`-`armv8.9` and `armv9.0`-`armv9.4`, optionally
+    followed by `+lse`, `+rcpc` or `+rcpc2`, and `/feature:lse|rcpc|rcpc2`
+    (joined with `+`) resolve in `resolve_msvc_arm64_arch` to
+    `MicrosoftFlags::arm64_arch`. Any version but 8.0 sets `__ARM_ARCH` to
+    major*100+minor. armv8.x sets `_M_ARM64_EXTENSION` to 80+x, and armv9.x
+    removes it. LSE (`__ARM_FEATURE_ATOMICS`) comes from 8.1 on, RCPC
+    (`__ARM_FEATURE_RCPC` 1) from 8.3 and RCPC2 (2) from 8.4, with 9.x
+    counting as 8.5 and later. The last `/arch` wins, with its `+features`.
+    `/feature:` options add up in any order, also across `/arch`. The
+    version and features feed the AArch64 `TargetIsa` march
+    (`ArmMarch::with_features`). Checked by fuzzing random sequences against
+    the arm64 cl.exe. cl.exe errors on unknown features and versions (D8021,
+    D8043, D8044) and ignores x86 values and other spellings like
+    `ARMv8.1` (D9002). slate rejects them all.
   - Options with no C-level effect are `MSVC_ONLY` rows in
     `CODEGEN_ONLY_FLAGS`: optimization (`/O…`), codegen (`/GS`, `/Gy`,
     `/GF`, `/Qspectre…`, `/favor:blend|AMD64`, ...), debug info, output files

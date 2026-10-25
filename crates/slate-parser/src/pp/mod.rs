@@ -14,7 +14,7 @@ use crate::ast::{FileId, HeaderKind, Loc, Provenance, Span};
 use crate::attribute_support;
 use crate::charset::Charset;
 use crate::compiler_args::CompilerFlavor;
-use crate::compiler_options::{MsvcArchLevel, MsvcFloatingModel, StackProtector};
+use crate::compiler_options::{MsvcArchLevel, MsvcArm64Arch, MsvcFloatingModel, StackProtector};
 use crate::const_expr;
 use crate::diagnostics::{DiagnosticContext, Warning};
 use crate::dialect::Dialect;
@@ -842,8 +842,33 @@ impl<'a> Preprocessor<'a> {
             .map_err(|failure| self.render_error(failure))
     }
 
-    fn msvc_arch_predefines(&self) -> Vec<String> {
+    fn msvc_arm64_predefines(&mut self, arch: MsvcArm64Arch) -> Vec<String> {
+        let mut defines = Vec::new();
+        if (arch.major, arch.minor) != (8, 0) {
+            defines.push(format!(
+                "__ARM_ARCH={}",
+                u32::from(arch.major) * 100 + u32::from(arch.minor)
+            ));
+            if arch.major == 8 {
+                defines.push(format!("_M_ARM64_EXTENSION={}", 80 + arch.minor));
+            } else {
+                self.macros.remove("_M_ARM64_EXTENSION");
+            }
+        }
+        if arch.lse {
+            defines.push("__ARM_FEATURE_ATOMICS=1".to_owned());
+        }
+        if arch.rcpc > 0 {
+            defines.push(format!("__ARM_FEATURE_RCPC={}", arch.rcpc));
+        }
+        defines
+    }
+
+    fn msvc_arch_predefines(&mut self) -> Vec<String> {
         let microsoft = &self.dialect.options().microsoft;
+        if let Some(arch) = microsoft.arm64_arch {
+            return self.msvc_arm64_predefines(arch);
+        }
         let x64 = self.dialect.target().family == crate::target_info::TargetFamily::X86_64;
         let mut names = Vec::new();
         if microsoft.apx {

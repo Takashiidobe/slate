@@ -135,6 +135,15 @@ pub struct MicrosoftFlags {
     pub floating_point: MsvcFloatingPoint,
     pub arch: Option<MsvcArch>,
     pub apx: bool,
+    pub arm64_arch: Option<MsvcArm64Arch>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct MsvcArm64Arch {
+    pub major: u8,
+    pub minor: u8,
+    pub lse: bool,
+    pub rcpc: u8,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]

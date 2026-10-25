@@ -321,6 +321,15 @@ impl ArmMarch {
         }
     }
 
+    pub fn with_features(major: u8, minor: u8, features: &[AArch64Feature]) -> Self {
+        let mut march = Self::plain(ArmVersion { major, minor });
+        for &feature in features {
+            march.clang.set(march.version, feature, true, Rules::Clang);
+            march.gcc.set(march.version, feature, true, Rules::Gcc);
+        }
+        march
+    }
+
     pub fn has_modifiers(self) -> bool {
         self.clang != Selection::default() || self.gcc != Selection::default()
     }
