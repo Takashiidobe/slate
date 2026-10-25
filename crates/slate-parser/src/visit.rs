@@ -566,6 +566,7 @@ pub fn walk_attribute<V: Visitor + ?Sized>(
         | Attribute::NoDiscard(_)
         | Attribute::MaybeUnused
         | Attribute::Fallthrough
+        | Attribute::Uninitialized
         | Attribute::Unknown { .. }
         | Attribute::IgnoredDeclspec { .. }
         | Attribute::Invalid { .. } => Ok(()),

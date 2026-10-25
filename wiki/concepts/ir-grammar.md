@@ -162,7 +162,12 @@ global       = ( "global" | "extern" ) variable linkage symbol_attrs
 variable     = binding name ":" [ access_prefix ] type "[storage=" storage "]"
                [ "[restrict]" ] [ "[const]" ] [ "[constexpr]" ]
                [ "[align=" int "]" ] [ "[cleanup=%" int "]" ]
-               [ "[register=" string "]" ] [ "=" value ] ;
+               [ "[register=" string "]" ] [ auto_init ] [ "=" value ] ;
+auto_init    = "[auto_init=zero]"
+             | "[auto_init=pattern(integer=" byte ", floating=" byte
+               ", lone_bool=" byte ", padding=" ( byte | "none" )
+               ", bit_runs=" ( "true" | "false" ) ")]" ;
+byte         = "0x" hex hex ;
 storage      = "automatic" | "static" | "thread" ;
 linkage      = "[linkage=" ( "internal" | "external" ) "]" ;
 symbol_attrs = [ "[asm_name=" string "]" ] [ "[visibility=" visibility "]" ]

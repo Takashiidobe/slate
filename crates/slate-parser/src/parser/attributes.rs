@@ -586,6 +586,7 @@ fn parse_attribute_value(
             .unwrap_or_else(|| invalid_attribute(name, arguments))),
         "maybe_unused" | "unused" if arguments.is_empty() => Ok(Attribute::MaybeUnused),
         "fallthrough" if arguments.is_empty() => Ok(Attribute::Fallthrough),
+        "uninitialized" if arguments.is_empty() => Ok(Attribute::Uninitialized),
         _ if attribute_support::is_modeled(canonical_name) => {
             Ok(invalid_attribute(name, arguments))
         }

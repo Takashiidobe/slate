@@ -11,6 +11,7 @@ use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
 mod arithmetic;
 mod asm;
 mod atomics;
+mod auto_init;
 mod bitint;
 mod calls;
 mod comment_text;
@@ -145,7 +146,7 @@ struct FunctionLowerer<'a, 'm> {
     register_locals: HashSet<BindingId>,
     old_value: Option<Expr>,
     declaring: std::cell::Cell<Option<(BindingId, bool)>>,
-    self_initializer: Option<Stmt>,
+    after_declaration: Option<Stmt>,
     uses_alloca: bool,
     in_static_initializer: bool,
     target_features: Vec<&'static str>,
@@ -547,7 +548,7 @@ impl<'m> ModuleLowerer<'m> {
             register_locals: HashSet::new(),
             old_value: None,
             declaring: std::cell::Cell::new(None),
-            self_initializer: None,
+            after_declaration: None,
             uses_alloca: false,
             in_static_initializer: false,
             target_features: Vec::new(),

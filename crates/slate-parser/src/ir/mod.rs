@@ -20,9 +20,10 @@ pub use asm::{
 pub use atomic::{Atomicity, CompareExchangeForm, FenceScope, MemoryOrder, SyncScope, Weakness};
 pub use comments::{Comments, Detached, OwnedComments, Sibling};
 pub use declarations::{
-    Access, AggregateMember, AggregateTarget, ArrayExtent, ArrayParameter, BitFieldAccess,
-    BitFieldUnit, Enumerator, Field, Global, Parameter, Parameters, Place, PlaceKind, RecordKind,
-    RecordLayout, StorageDuration, TypeDefinition, TypeDefinitionKind, TypeId, Variable,
+    Access, AggregateMember, AggregateTarget, ArrayExtent, ArrayParameter, AutoInit,
+    BitFieldAccess, BitFieldUnit, Enumerator, Field, Global, Parameter, Parameters, PatternFill,
+    Place, PlaceKind, RecordKind, RecordLayout, StorageDuration, TypeDefinition,
+    TypeDefinitionKind, TypeId, Variable,
 };
 pub use module::{
     Comment, Deallocator, DllStorage, Evaluation, Fallthrough, Function, FunctionSemantics,

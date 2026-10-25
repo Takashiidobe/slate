@@ -94,6 +94,9 @@ impl FunctionLowerer<'_, '_> {
     }
 
     pub(super) fn vla_buffer(&mut self, variable: &ir::Variable) -> Result<(rust::Type, Expr)> {
+        if matches!(variable.auto_init, Some(ir::AutoInit::Pattern(_))) {
+            return Err(unsupported_type(&variable.ty));
+        }
         if let Some(initializer) = &variable.initializer
             && !matches!(
                 &initializer.node.value,

@@ -182,6 +182,7 @@ fn general_use(attribute: &Attribute) -> Use {
         | Attribute::Deprecated(_)
         | Attribute::NoDiscard(_)
         | Attribute::MaybeUnused
+        | Attribute::Uninitialized
         | Attribute::Fallthrough => Use::Ignored,
 
         Attribute::Unknown { .. } => Use::Unknown,

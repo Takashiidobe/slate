@@ -1140,6 +1140,7 @@ impl Lowerer {
                     cleanup: None,
                     register: None,
                     initializer: Some(initializer.value),
+                    auto_init: None,
                 }));
                 self.module
                     .annotate(&local, self.types.render(resolved).entries());
@@ -1559,6 +1560,12 @@ impl Lowerer {
                         ast::AsmLabel::Register(register) => Some(super::asm::register(register)),
                         _ => None,
                     }),
+                auto_init: (storage == StorageDuration::Automatic
+                    && initializer.is_none()
+                    && !attributes()
+                        .any(|attribute| matches!(attribute.value, ast::Attribute::Uninitialized)))
+                .then(|| self.types.auto_init())
+                .flatten(),
                 initializer,
             };
             if storage != StorageDuration::Automatic

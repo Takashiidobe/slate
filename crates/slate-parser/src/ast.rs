@@ -1096,6 +1096,7 @@ pub enum Attribute {
     NoDiscard(Option<String>),
     MaybeUnused,
     Fallthrough,
+    Uninitialized,
     Unknown {
         name: String,
         arguments: Vec<String>,

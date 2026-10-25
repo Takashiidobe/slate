@@ -143,6 +143,22 @@ pub struct Variable {
     pub cleanup: Option<BindingId>,
     pub register: Option<super::AsmRegister>,
     pub initializer: Option<Value>,
+    pub auto_init: Option<AutoInit>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum AutoInit {
+    Zero,
+    Pattern(PatternFill),
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct PatternFill {
+    pub integer: u8,
+    pub floating: u8,
+    pub lone_bool: u8,
+    pub padding: Option<u8>,
+    pub bit_runs: bool,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

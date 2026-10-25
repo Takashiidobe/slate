@@ -7,11 +7,12 @@ use crate::ast::{
     TranslationUnit, TypeName, TypeOfOperand, TypeSpecifier,
 };
 use crate::compiler_args::{CompilerFlavor, LanguageStandard};
+use crate::compiler_options::TrivialAutoVarInit;
 use crate::diagnostics::{DiagnosticContext, Warning};
 use crate::ir::{
-    Access, ArrayExtent, ArrayParameter, BindingId, BitFieldUnit, CallConv, Comment, Enumerator,
-    Field, Number, NumericType, PointerSpace, RecordKind, RecordLayout, Sibling, Type,
-    TypeDefinition, TypeDefinitionKind, TypeId, VaConvention, Value, ValueKind,
+    Access, ArrayExtent, ArrayParameter, AutoInit, BindingId, BitFieldUnit, CallConv, Comment,
+    Enumerator, Field, Number, NumericType, PatternFill, PointerSpace, RecordKind, RecordLayout,
+    Sibling, Type, TypeDefinition, TypeDefinitionKind, TypeId, VaConvention, Value, ValueKind,
 };
 use crate::target_info::{
     LongDoubleFormat, StorageLayout, TargetEnvironment, TargetFamily, TargetInfo, TargetOs,
@@ -127,6 +128,30 @@ impl TypeResolver {
 
     pub(super) fn dialect(&self) -> &Dialect {
         &self.dialect
+    }
+
+    pub(super) fn auto_init(&self) -> Option<AutoInit> {
+        match self.dialect.options().codegen.trivial_auto_var_init {
+            TrivialAutoVarInit::Uninitialized => None,
+            TrivialAutoVarInit::Zero => Some(AutoInit::Zero),
+            TrivialAutoVarInit::Pattern => match self.flavor() {
+                CompilerFlavor::Gcc => Some(AutoInit::Pattern(PatternFill {
+                    integer: 0xFE,
+                    floating: 0xFE,
+                    lone_bool: 0,
+                    padding: None,
+                    bit_runs: true,
+                })),
+                CompilerFlavor::Clang => Some(AutoInit::Pattern(PatternFill {
+                    integer: 0xAA,
+                    floating: 0xFF,
+                    lone_bool: 0xAA,
+                    padding: Some(0xAA),
+                    bit_runs: false,
+                })),
+                CompilerFlavor::Msvc => None,
+            },
+        }
     }
 
     fn new(dialect: Dialect) -> Self {

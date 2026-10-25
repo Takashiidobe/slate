@@ -571,7 +571,7 @@ Attribute = (* no arguments *)
           | "NoSplitStack" | "ReturnsTwice" | "DllImport" | "DllExport"
           | "WeakImport" | "MsStruct" | "NoMips16" | "TransparentUnion"
           | "GccStruct" | "Common" | "NoCommon" | "Pure" | "Const"
-          | "MayAlias" | "MaybeUnused" | "Fallthrough"
+          | "MayAlias" | "MaybeUnused" | "Fallthrough" | "Uninitialized"
             (* expression arguments *)
           | "AddressSpace(" expr ")" | "Aligned(" expr ")"
           | "VectorSize(" expr ")" | "AllocAlign(" expr ")"

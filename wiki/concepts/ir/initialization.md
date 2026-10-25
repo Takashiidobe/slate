@@ -2,6 +2,7 @@
 
 <!-- toc -->
 - [Principles](#principles)
+- [Automatic variable fill](#automatic-variable-fill)
 - [Aggregate initializers](#aggregate-initializers)
 - [String literals](#string-literals)
 - [Compound literals and
@@ -19,13 +20,39 @@ initialization are required semantics, not optional metadata.
 - Uninitialized storage differs from zero initialization. Semantic zero
   initialization (omitted subobjects, static storage) is explicit; it is
   never an assumed all-zero byte pattern, and an uninitialized automatic
-  object never gets a synthesized zero.
+  object never gets a synthesized zero. The one exception is
+  `-ftrivial-auto-var-init=zero|pattern`, recorded as `Variable::auto_init`
+  (below), never as an initializer.
 - Aggregate initialization stays structured, with designators resolved to
   field indices and element indices or ranges, not expanded into stores.
   Brace and designator spelling is source context.
 - `int b = a` initializes from `a`'s current value; later writes are
   `write` statements, not changes to the initializer.
 - Compound literals and string literals have their own object identity.
+
+## Automatic variable fill
+
+`-ftrivial-auto-var-init=zero|pattern` sets `Variable::auto_init` on an
+automatic `let` that has no initializer and no `__attribute__((uninitialized))`.
+Parameters, statics, and `-ftrivial-auto-var-init=uninitialized` leave it
+`None`. It is separate from `zero_fill`, which is what C requires of omitted
+subobjects in a partial initializer and never changes.
+
+Printed `[auto_init=zero]` or `[auto_init=pattern(integer=.., floating=..,
+lone_bool=.., padding=.., bit_runs=..)]`. Sema resolves the flavor into bytes,
+so a consumer needs no flavor rules:
+
+| Field       | Meaning                                                                           | clang  | gcc    |
+| ----------- | --------------------------------------------------------------------------------- | ------ | ------ |
+| `integer`   | byte for integers, enums, pointers, and `_Bool` members and elements              | `0xAA` | `0xFE` |
+| `floating`  | byte for each floating scalar and complex or imaginary part (x87 value bytes only) | `0xFF` | `0xFE` |
+| `lone_bool` | byte for a standalone `_Bool` variable                                            | `0xAA` | `0x00` |
+| `padding`   | byte written to the whole object first, so padding gets it; `None` leaves padding | `0xAA` | `None` |
+| `bit_runs`  | each run of adjacent bit-fields gets the repeating `integer` byte truncated to the run's bit width, other bits of those bytes zero | false  | true   |
+
+A consumer writes `padding` over the whole object (or zeroes it when `None`),
+then the per-leaf bytes. Slate does this with in-place `write_bytes` after the
+`let`, because a typed move does not preserve Rust padding.
 
 ## Aggregate initializers
 

@@ -168,7 +168,22 @@ impl FunctionLowerer<'_, '_> {
                         kind: PlaceKind::Binding(variable.id),
                         access: variable.access,
                     };
-                    self.self_initializer = Some(self.lower_assignment(&place, value)?);
+                    self.after_declaration = Some(self.lower_assignment(&place, value)?);
+                } else if let Some(auto) = variable.auto_init {
+                    let writes = self.auto_init_writes(
+                        &variable.ty,
+                        auto,
+                        self.local_bytes(variable.id),
+                        true,
+                    )?;
+                    if !writes.is_empty() {
+                        self.after_declaration = Some(Stmt::Unsafe {
+                            body: rust::Block {
+                                stmts: writes,
+                                tail: None,
+                            },
+                        });
+                    }
                 }
                 Stmt::Let {
                     name: binding_name(variable.id, &self.tables.bindings),
@@ -434,7 +449,7 @@ impl FunctionLowerer<'_, '_> {
             .lower_statement_node(statement)
             .map_err(|error| error.used_at(Site::of(statement)))?;
         Ok(std::iter::once(lowered)
-            .chain(self.self_initializer.take())
+            .chain(self.after_declaration.take())
             .collect())
     }
 }
