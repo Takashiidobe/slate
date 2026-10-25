@@ -322,6 +322,7 @@ pub struct LayoutOptions {
     pub short_enums: bool,
     pub default_max_field_alignment: Option<u64>,
     pub pack_records: bool,
+    pub ms_bitfields: bool,
 }
 
 impl Default for CompilerOptions {

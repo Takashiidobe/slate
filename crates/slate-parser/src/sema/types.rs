@@ -3054,7 +3054,9 @@ impl TypeResolver {
                         .any(|attribute| &attribute.value == wanted)
                 };
                 let ms_struct = has(&Attribute::MsStruct)
-                    || (self.pragmas.is_ms_struct(tag.id) && !has(&Attribute::GccStruct));
+                    || ((self.pragmas.is_ms_struct(tag.id)
+                        || self.dialect.options().layout.ms_bitfields)
+                        && !has(&Attribute::GccStruct));
                 let max_field_alignment = self.pragmas.max_field_alignment(tag.id);
                 let alignment = requested_alignment(self, &tag.attributes)?;
                 let (layout, field_alignments) = self.layout_record(

@@ -291,6 +291,7 @@ struct ParsedCompilerArgs {
     short_enums: Option<bool>,
     pack_struct: Option<bool>,
     pack_struct_alignment: Option<u32>,
+    ms_bitfields: Option<bool>,
     exceptions: Option<bool>,
     ms_anonymous_structs: Option<bool>,
     strict_flex_arrays: Option<u8>,
@@ -393,6 +394,7 @@ enum Opt {
     ShortEnums,
     PackStruct,
     PackStructAlignment,
+    MsBitfields,
     Exceptions,
     MsAnonymousStructs,
     StrictFlexArrays,
@@ -493,6 +495,7 @@ impl std::fmt::Display for Opt {
             Self::ShortEnums => "fshort-enums",
             Self::PackStruct => "fpack-struct",
             Self::PackStructAlignment => "fpack-struct=",
+            Self::MsBitfields => "mms-bitfields",
             Self::Exceptions => "fexceptions",
             Self::MsAnonymousStructs => "fms-anonymous-structs",
             Self::StrictFlexArrays => "fstrict-flex-arrays=",
@@ -627,6 +630,7 @@ impl Opt {
             | Self::ShortEnums
             | Self::PackStruct
             | Self::PackStructAlignment
+            | Self::MsBitfields
             | Self::Exceptions
             | Self::StrictFlexArrays
             | Self::AsynchronousUnwindTables
@@ -710,6 +714,7 @@ impl Opt {
             Self::ShortWchar => "-fshort-wchar",
             Self::ShortEnums => "-fshort-enums",
             Self::PackStruct => "-fpack-struct",
+            Self::MsBitfields => "-mms-bitfields",
             Self::Exceptions => "-fexceptions",
             Self::MsAnonymousStructs => "-fms-anonymous-structs",
             Self::GccStrictFlexArrays => "-fstrict-flex-arrays",
@@ -964,7 +969,7 @@ fn ignored_option(argument: &str) -> Option<IgnoredOption> {
         .then_some(IgnoredOption::Alone)
 }
 
-const SWITCH_OPTS: [Opt; 45] = [
+const SWITCH_OPTS: [Opt; 46] = [
     Opt::ClangTrigraphs,
     Opt::ClangDigraphs,
     Opt::DeleteNullPointerChecks,
@@ -987,6 +992,7 @@ const SWITCH_OPTS: [Opt; 45] = [
     Opt::ShortWchar,
     Opt::ShortEnums,
     Opt::PackStruct,
+    Opt::MsBitfields,
     Opt::Exceptions,
     Opt::MsAnonymousStructs,
     Opt::LateParseAttributes,
@@ -1046,6 +1052,7 @@ impl CompilerArgParser {
             short_enums: raw.short_enums.unwrap_or(false),
             default_max_field_alignment: raw.default_max_field_alignment(),
             pack_records: flavor.is_gcc() && raw.pack_struct == Some(true),
+            ms_bitfields: raw.ms_bitfields.unwrap_or(false),
         };
         let mut options = CompilerOptions::from_values(
             flavor,
@@ -1209,6 +1216,7 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                 Opt::ShortWchar => parsed.short_wchar = Some(value),
                 Opt::ShortEnums => parsed.short_enums = Some(value),
                 Opt::PackStruct => parsed.pack_struct = Some(value),
+                Opt::MsBitfields => parsed.ms_bitfields = Some(value),
                 Opt::Exceptions => parsed.exceptions = Some(value),
                 Opt::MsAnonymousStructs => parsed.ms_anonymous_structs = Some(value),
                 Opt::LateParseAttributes => parsed.late_parsed_attributes = Some(value),
@@ -1778,6 +1786,16 @@ fn gcc_rules<'a>(target: &'a TargetInfo) -> Rule<'a, ParsedCompilerArgs> {
         Rule::validate("GCC asm dialect", move |args: &ParsedCompilerArgs| {
             if args.asm_dialect.is_some() && !target.family.is_x86() {
                 Err(format!("asm dialect is unsupported for {}", target.triple))
+            } else {
+                Ok(())
+            }
+        }),
+        Rule::validate("GCC MS bit-fields", move |args: &ParsedCompilerArgs| {
+            if args.ms_bitfields.is_some() && !target.family.is_x86() {
+                Err(format!(
+                    "MS bit-fields are unsupported for {}",
+                    target.triple
+                ))
             } else {
                 Ok(())
             }

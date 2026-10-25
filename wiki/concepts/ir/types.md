@@ -265,7 +265,7 @@ aligned_attr), N)`. It caps a field's `aligned`, not the record's, so
   `-fpack-struct` makes every record `packed`
   ([compiler-flags](../compiler-flags.md)).
 - `ms_struct` bit-field rules apply with `__attribute__((ms_struct))`, or
-  under `#pragma ms_struct on` without `gcc_struct`:
+  under `#pragma ms_struct on` or `-mms-bitfields` without `gcc_struct`:
   - each bit-field allocates a whole unit of its declared type, aligned to
     its size; later same-size bit-fields fill it until one doesn't fit;
   - a non-bit-field after bit-fields starts after the whole unit;
