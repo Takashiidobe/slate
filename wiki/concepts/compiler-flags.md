@@ -117,17 +117,57 @@ each stage is in [configuration-threading](configuration-threading.md).
     the arm64 cl.exe. cl.exe errors on unknown features and versions (D8021,
     D8043, D8044) and ignores x86 values and other spellings like
     `ARMv8.1` (D9002). slate rejects them all.
+  - Predefine-only options (`MicrosoftFlags`, `msvc_option_predefines`):
+    - CRT: `/MT` (the default) keeps `_MSVC_MT`, `/MTd` defines `_DEBUG`,
+      `/MD` defines `_DLL` and `_MSVC_MD`, `/MDd` defines `_DLL` and
+      `_DEBUG`. Each one other than `/MT` drops `_MSVC_MT`. The last
+      `/M…` wins. `/LD` changes nothing. `/LDd` adds `_DEBUG` (dropping
+      `_MSVC_MT` only when no `/M…` came first) until a later `/M…`
+      clears it, so `/MD /LDd` keeps `_MSVC_MD` alongside `_DEBUG`.
+    - `/RTC` takes letters from `1suc` and defines `__MSVC_RUNTIME_CHECKS`.
+      A `c` anywhere also defines `_RTC_CONVERSION_CHECKS_ENABLED`.
+    - Each of these defines one macro:
+
+      | Option | Macro |
+      | --- | --- |
+      | `/volatile:iso` | `_ISO_VOLATILE`, which `/volatile:ms` removes again; it is the arm64 default |
+      | `/sdl` (`/sdl-` turns it off) | `_GUARDOVERFLOW_CRT_ALLOCATORS` |
+      | `/kernel` | `_KERNEL_MODE` |
+      | `/fsanitize=address` or `kernel-address` | `__SANITIZE_ADDRESS__`; `/fsanitize=fuzzer` defines nothing |
+      | `/guard:cf` (`/guard:cf-` turns it off) | `_CONTROL_FLOW_GUARD` |
+      | `/Zl` | `_VC_NODEFAULTLIB` |
+      | `/favor:ATOM` | `__ATOM__` |
+      | `/favor:INTEL64` | `_NO_PREFETCHW` |
+      | `/fpcvt:IA` | `__FPCVT_IA__` 1 |
+      | `/fpcvt:BC` | `__FPCVT_IA__` 0 |
+
+    - `/favor:` and `/fpcvt:` are x86 and x64 only, and x86 accepts only
+      `/favor:blend|ATOM`. cl.exe ignores the others (D9002), even when a
+      later `/favor:` overrides them, and slate rejects them.
+    - `check_msvc_conflicts` replays the options in argv order and rejects
+      the pairs cl.exe rejects (D8016), checking each option against the
+      ones before it:
+      - `/RTC…` with `/O1`, `/O2`, `/Ox` or `/Og`, checked letter by
+        letter: `/RTC1 /O2d` fails but `/O2d /RTC1` passes.
+      - `/ZI` with `/fsanitize=address` or `/guard:cf`.
+      - `/fsanitize=address` with `kernel-address`.
+      - `/kernel` with `/GR`.
+      - `/fpcvt:IA` with `/fpcvt:BC`.
+
+      A later `/Zi`, `/Z7`, `/guard:cf-` or `/GR-` clears the earlier side.
+    - With `/kernel`, the final `/arch` must be `IA32` on x86, or at most
+      `SSE4.2` on x64.
+    - Checked by fuzzing random sequences against cl.exe on x64, x86 and
+      arm64.
   - Options with no C-level effect are `MSVC_ONLY` rows in
     `CODEGEN_ONLY_FLAGS`: optimization (`/O…`), codegen (`/GS`, `/Gy`,
-    `/GF`, `/Qspectre…`, `/favor:blend|AMD64`, ...), debug info, output files
-    (`/Fo`, `/Fd:` ...), `/nologo`, `/c`, `/MP`, `/analyze…`, `/external:…`,
-    warning controls (`/wd`, `/WX`, ...), PCH (`/Y…`), `/TC`, `/Tc`, `/MT`
-    (the default CRT), and the C++-only options cl.exe accepts in C (`/EH…`,
-    `/GR`, `/permissive`, the C++ `/Zc:` arguments). `/GF` string pooling
-    makes the address identity of equal literals unspecified, which C
-    already allows. `/favor:INTEL64` (`_NO_PREFETCHW`) and `/favor:ATOM`
-    change predefines and are rejected for now (slate-3amj.5.11). `/TP`,
-    `/Tp`, `/clr`, `/ZW` and `/await` are C++ and rejected.
+    `/GF`, `/Qspectre…`, ...), debug info, output files (`/Fo`, `/Fd:` ...),
+    `/nologo`, `/c`, `/MP`, `/analyze…`, `/external:…`, warning controls
+    (`/wd`, `/WX`, ...), PCH (`/Y…`), `/TC`, `/Tc`, and the C++-only options
+    cl.exe accepts in C (`/EH…`, `/GR`, `/permissive`, the C++ `/Zc:`
+    arguments). `/GF` string pooling makes the address identity of equal
+    literals unspecified, which C already allows. `/TP`, `/Tp`, `/clr`,
+    `/ZW` and `/await` are C++ and rejected.
 
 ## Implemented
 

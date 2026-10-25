@@ -136,6 +136,38 @@ pub struct MicrosoftFlags {
     pub arch: Option<MsvcArch>,
     pub apx: bool,
     pub arm64_arch: Option<MsvcArm64Arch>,
+    pub runtime_library: Option<MsvcRuntimeLibrary>,
+    pub debug_dll: bool,
+    pub runtime_checks: Option<MsvcRuntimeChecks>,
+    pub iso_volatile: Option<bool>,
+    pub sdl: bool,
+    pub kernel: bool,
+    pub address_sanitizer: bool,
+    pub control_flow_guard: bool,
+    pub no_default_lib: bool,
+    pub favor: Option<MsvcFavor>,
+    pub intel_float_conversions: Option<bool>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum MsvcRuntimeLibrary {
+    Static,
+    StaticDebug,
+    Dynamic,
+    DynamicDebug,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct MsvcRuntimeChecks {
+    pub conversion: bool,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum MsvcFavor {
+    Blend,
+    Amd64,
+    Intel64,
+    Atom,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

@@ -1,8 +1,9 @@
 use crate::charset::Charset;
 use crate::compiler_options::{
     CodegenOptions, CompilerOptions, LayoutOptions, LibraryBuiltins, MathOptions, MathSwitch,
-    MicrosoftFlags, MsvcArch, MsvcArchLevel, MsvcArm64Arch, MsvcFloatingModel, MsvcFloatingPoint,
-    OperationValues, Optimization, Pic, SourceGraphs, StackProtector, TrivialAutoVarInit,
+    MicrosoftFlags, MsvcArch, MsvcArchLevel, MsvcArm64Arch, MsvcFavor, MsvcFloatingModel,
+    MsvcFloatingPoint, MsvcRuntimeChecks, MsvcRuntimeLibrary, OperationValues, Optimization, Pic,
+    SourceGraphs, StackProtector, TrivialAutoVarInit,
 };
 use crate::diagnostics::{DiagnosticOptions, Warning};
 use crate::files::SearchPaths;
@@ -298,6 +299,17 @@ struct ParsedCompilerArgs {
     msvc_floating_point: MsvcFloatingPoint,
     msvc_arch: Vec<String>,
     msvc_features: Vec<String>,
+    msvc_runtime_library: Option<MsvcRuntimeLibrary>,
+    msvc_debug_dll: bool,
+    msvc_runtime_checks: Option<MsvcRuntimeChecks>,
+    msvc_iso_volatile: Option<bool>,
+    msvc_sdl: bool,
+    msvc_kernel: bool,
+    msvc_address_sanitizer: bool,
+    msvc_control_flow_guard: bool,
+    msvc_no_default_lib: bool,
+    msvc_favor: Option<MsvcFavor>,
+    msvc_fpcvt: Option<bool>,
     short_wchar: Option<bool>,
     short_enums: Option<bool>,
     pack_struct: Option<bool>,
@@ -617,6 +629,16 @@ enum Opt {
     MsvcFloatingPoint,
     MsvcArch,
     MsvcFeature,
+    MsvcRuntimeLibrary,
+    MsvcRuntimeChecks,
+    MsvcVolatile,
+    MsvcSdl,
+    MsvcKernel,
+    MsvcSanitize,
+    MsvcControlFlowGuard,
+    MsvcNoDefaultLib,
+    MsvcFavor,
+    MsvcFpcvt,
     Permissive,
     DeleteNullPointerChecks,
     TrivialAutoVarInit,
@@ -744,6 +766,16 @@ impl std::fmt::Display for Opt {
             Self::MsvcFloatingPoint => "fp",
             Self::MsvcArch => "arch",
             Self::MsvcFeature => "feature",
+            Self::MsvcRuntimeLibrary => "MT",
+            Self::MsvcRuntimeChecks => "RTC",
+            Self::MsvcVolatile => "volatile",
+            Self::MsvcSdl => "sdl",
+            Self::MsvcKernel => "kernel",
+            Self::MsvcSanitize => "fsanitize",
+            Self::MsvcControlFlowGuard => "guard:cf",
+            Self::MsvcNoDefaultLib => "Zl",
+            Self::MsvcFavor => "favor",
+            Self::MsvcFpcvt => "fpcvt",
             Self::Permissive => "fpermissive",
             Self::DeleteNullPointerChecks => "fdelete-null-pointer-checks",
             Self::TrivialAutoVarInit => "ftrivial-auto-var-init",
@@ -879,7 +911,17 @@ impl Opt {
             | Self::MsvcCharset
             | Self::MsvcFloatingPoint
             | Self::MsvcArch
-            | Self::MsvcFeature => &[Msvc],
+            | Self::MsvcFeature
+            | Self::MsvcRuntimeLibrary
+            | Self::MsvcRuntimeChecks
+            | Self::MsvcVolatile
+            | Self::MsvcSdl
+            | Self::MsvcKernel
+            | Self::MsvcSanitize
+            | Self::MsvcControlFlowGuard
+            | Self::MsvcNoDefaultLib
+            | Self::MsvcFavor
+            | Self::MsvcFpcvt => &[Msvc],
             Self::CodegenOnly(spelling) => {
                 codegen_only_flag_named(spelling).map_or(&[], |flag| flag.flavors)
             }
@@ -1133,7 +1175,7 @@ const GCC_ONLY: &[CompilerFlavor] = &[CompilerFlavor::Gcc];
 const CLANG_ONLY: &[CompilerFlavor] = &[CompilerFlavor::Clang];
 const MSVC_ONLY: &[CompilerFlavor] = &[CompilerFlavor::Msvc];
 
-const CODEGEN_ONLY_FLAGS: [CodegenOnlyFlag; 173] = [
+const CODEGEN_ONLY_FLAGS: [CodegenOnlyFlag; 171] = [
     CodegenOnlyFlag::switch("-fomit-frame-pointer", ALL_FLAVORS),
     CodegenOnlyFlag::switch("-flto", ALL_FLAVORS),
     CodegenOnlyFlag::switch("-ffunction-sections", ALL_FLAVORS),
@@ -1207,7 +1249,6 @@ const CODEGEN_ONLY_FLAGS: [CodegenOnlyFlag; 173] = [
     CodegenOnlyFlag::value("--warning-suppression-mappings=", CLANG_ONLY),
     CodegenOnlyFlag::exact("/nologo", MSVC_ONLY),
     CodegenOnlyFlag::exact("/c", MSVC_ONLY),
-    CodegenOnlyFlag::exact("/MT", MSVC_ONLY),
     CodegenOnlyFlag::value("/O", MSVC_ONLY),
     CodegenOnlyFlag::toggle("/GS", MSVC_ONLY),
     CodegenOnlyFlag::toggle("/Gy", MSVC_ONLY),
@@ -1230,7 +1271,6 @@ const CODEGEN_ONLY_FLAGS: [CodegenOnlyFlag; 173] = [
     CodegenOnlyFlag::exact("/homeparams", MSVC_ONLY),
     CodegenOnlyFlag::exact("/jumptablerdata", MSVC_ONLY),
     CodegenOnlyFlag::value("/vlen", MSVC_ONLY),
-    CodegenOnlyFlag::value("/favor:", MSVC_ONLY).one_of(&["blend", "AMD64"]),
     CodegenOnlyFlag::exact("/bigobj", MSVC_ONLY),
     CodegenOnlyFlag::exact("/Z7", MSVC_ONLY),
     CodegenOnlyFlag::exact("/Zi", MSVC_ONLY),
@@ -1434,6 +1474,10 @@ impl CompilerArgParser {
                 None,
             )
         };
+        if raw.flavor.is_msvc() {
+            check_msvc_conflicts(&raw.occurrences)?;
+            check_msvc_target_options(&raw, target.family, msvc_arch)?;
+        }
         let mut isa = raw.isa.clone();
         if let Some(arch) = msvc_arch {
             request_msvc_arch(arch, &mut isa.x86);
@@ -1505,6 +1549,17 @@ impl CompilerArgParser {
             arch: msvc_arch,
             apx: msvc_apx,
             arm64_arch: msvc_arm64_arch,
+            runtime_library: raw.msvc_runtime_library,
+            debug_dll: raw.msvc_debug_dll,
+            runtime_checks: raw.msvc_runtime_checks,
+            iso_volatile: raw.msvc_iso_volatile,
+            sdl: raw.msvc_sdl,
+            kernel: raw.msvc_kernel,
+            address_sanitizer: raw.msvc_address_sanitizer,
+            control_flow_guard: raw.msvc_control_flow_guard,
+            no_default_lib: raw.msvc_no_default_lib,
+            favor: raw.msvc_favor,
+            intel_float_conversions: raw.msvc_fpcvt,
         };
         let floating_point = raw.msvc_floating_point;
         if floating_point.model == Some(MsvcFloatingModel::Strict) {
@@ -1976,6 +2031,80 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                 return Err(invalid(argument, "incompatible with /utf-8"));
             }
             parsed.saw(Opt::MsvcCharset, argument);
+        } else if let Some(library) = msvc_runtime_library(argument) {
+            parsed.saw(Opt::MsvcRuntimeLibrary, argument);
+            match library {
+                Some(library) => {
+                    parsed.msvc_runtime_library = Some(library);
+                    parsed.msvc_debug_dll = false;
+                }
+                None => parsed.msvc_debug_dll |= argument == "/LDd",
+            }
+        } else if let Some(checks) = argument.strip_prefix("/RTC") {
+            parsed.saw(Opt::MsvcRuntimeChecks, argument);
+            if checks.is_empty() || !checks.chars().all(|check| "1suc".contains(check)) {
+                return Err(invalid(argument, "expected a combination of 1, s, u, c"));
+            }
+            let conversion = parsed
+                .msvc_runtime_checks
+                .is_some_and(|checks| checks.conversion);
+            parsed.msvc_runtime_checks = Some(MsvcRuntimeChecks {
+                conversion: conversion || checks.contains('c'),
+            });
+        } else if let Some(model) = argument.strip_prefix("/volatile:") {
+            parsed.saw(Opt::MsvcVolatile, argument);
+            parsed.msvc_iso_volatile = Some(match model {
+                "iso" => true,
+                "ms" => false,
+                _ => return Err(invalid(argument, "expected one of iso, ms")),
+            });
+        } else if argument == "/sdl" || argument == "/sdl-" {
+            parsed.saw(Opt::MsvcSdl, argument);
+            parsed.msvc_sdl = argument == "/sdl";
+        } else if argument == "/kernel" {
+            parsed.saw(Opt::MsvcKernel, argument);
+            parsed.msvc_kernel = true;
+        } else if let Some(sanitizer) = argument.strip_prefix("/fsanitize=") {
+            parsed.saw(Opt::MsvcSanitize, argument);
+            match sanitizer {
+                "address" | "kernel-address" => parsed.msvc_address_sanitizer = true,
+                "fuzzer" => {}
+                _ => {
+                    return Err(invalid(
+                        argument,
+                        "expected one of address, kernel-address, fuzzer",
+                    ));
+                }
+            }
+        } else if argument == "/guard:cf" || argument == "/guard:cf-" {
+            parsed.saw(Opt::MsvcControlFlowGuard, argument);
+            parsed.msvc_control_flow_guard = argument == "/guard:cf";
+        } else if argument == "/Zl" {
+            parsed.saw(Opt::MsvcNoDefaultLib, argument);
+            parsed.msvc_no_default_lib = true;
+        } else if let Some(favor) = argument.strip_prefix("/favor:") {
+            parsed.saw(Opt::MsvcFavor, argument);
+            let favor = match favor {
+                "blend" => MsvcFavor::Blend,
+                "AMD64" => MsvcFavor::Amd64,
+                "INTEL64" => MsvcFavor::Intel64,
+                "ATOM" => MsvcFavor::Atom,
+                _ => {
+                    return Err(invalid(
+                        argument,
+                        "expected one of blend, AMD64, INTEL64, ATOM",
+                    ));
+                }
+            };
+            parsed.msvc_favor = Some(favor);
+        } else if let Some(conversion) = argument.strip_prefix("/fpcvt:") {
+            parsed.saw(Opt::MsvcFpcvt, argument);
+            let intel = match conversion {
+                "IA" => true,
+                "BC" => false,
+                _ => return Err(invalid(argument, "expected one of IA, BC")),
+            };
+            parsed.msvc_fpcvt = Some(intel);
         } else if argument == "/w" {
             parsed.saw(Opt::MsvcNoWarnings, argument);
             parsed.msvc_warning_level = parsed
@@ -2542,6 +2671,135 @@ fn resolve_msvc_arch(
         });
     }
     Ok(resolved)
+}
+
+fn msvc_runtime_library(argument: &str) -> Option<Option<MsvcRuntimeLibrary>> {
+    Some(Some(match argument {
+        "/MT" => MsvcRuntimeLibrary::Static,
+        "/MTd" => MsvcRuntimeLibrary::StaticDebug,
+        "/MD" => MsvcRuntimeLibrary::Dynamic,
+        "/MDd" => MsvcRuntimeLibrary::DynamicDebug,
+        "/LD" | "/LDd" => return Some(None),
+        _ => return None,
+    }))
+}
+
+fn check_msvc_conflicts(occurrences: &[(Opt, String)]) -> Result<(), CompilerArgError> {
+    let mut optimization: Option<String> = None;
+    let mut runtime_checks: Option<&str> = None;
+    let mut edit_and_continue: Option<&str> = None;
+    let mut address_sanitizer: Option<&str> = None;
+    let mut control_flow_guard: Option<&str> = None;
+    let mut rtti: Option<&str> = None;
+    let mut kernel: Option<&str> = None;
+    let mut fpcvt: Option<&str> = None;
+    let conflict = |argument: &str, previous: &str| {
+        invalid(argument, &format!("incompatible with {previous}"))
+    };
+    for (opt, argument) in occurrences {
+        let argument = argument.as_str();
+        match (opt, argument) {
+            (Opt::CodegenOnly("/O"), _) => {
+                let mut letters = argument["/O".len()..].chars().peekable();
+                while let Some(letter) = letters.next() {
+                    match letter {
+                        'b' => drop(letters.next_if(char::is_ascii_digit)),
+                        'g' if letters.next_if_eq(&'-').is_some() => {}
+                        '1' | '2' | 'x' | 'g' => {
+                            if let Some(checks) = runtime_checks {
+                                return Err(conflict(argument, checks));
+                            }
+                            optimization = Some(format!("/O{letter}"));
+                        }
+                        'd' => optimization = None,
+                        _ => {}
+                    }
+                }
+            }
+            (Opt::MsvcRuntimeChecks, _) => {
+                if let Some(optimization) = &optimization {
+                    return Err(conflict(argument, optimization));
+                }
+                runtime_checks = Some(argument);
+            }
+            (Opt::CodegenOnly("/ZI"), _) => {
+                if let Some(previous) = address_sanitizer.or(control_flow_guard) {
+                    return Err(conflict(argument, previous));
+                }
+                edit_and_continue = Some(argument);
+            }
+            (Opt::CodegenOnly("/Zi" | "/Z7"), _) => edit_and_continue = None,
+            (Opt::MsvcSanitize, "/fsanitize=address" | "/fsanitize=kernel-address") => {
+                if let Some(previous) =
+                    edit_and_continue.or(address_sanitizer.filter(|previous| *previous != argument))
+                {
+                    return Err(conflict(argument, previous));
+                }
+                address_sanitizer = Some(argument);
+            }
+            (Opt::MsvcControlFlowGuard, "/guard:cf") => {
+                if let Some(previous) = edit_and_continue {
+                    return Err(conflict(argument, previous));
+                }
+                control_flow_guard = Some(argument);
+            }
+            (Opt::MsvcControlFlowGuard, _) => control_flow_guard = None,
+            (Opt::CodegenOnly("/GR"), "/GR") => {
+                if let Some(previous) = kernel {
+                    return Err(conflict(argument, previous));
+                }
+                rtti = Some(argument);
+            }
+            (Opt::CodegenOnly("/GR"), _) => rtti = None,
+            (Opt::MsvcKernel, _) => {
+                if let Some(previous) = rtti {
+                    return Err(conflict(argument, previous));
+                }
+                kernel = Some(argument);
+            }
+            (Opt::MsvcFpcvt, _) => {
+                if let Some(previous) = fpcvt.filter(|previous| *previous != argument) {
+                    return Err(conflict(argument, previous));
+                }
+                fpcvt = Some(argument);
+            }
+            _ => {}
+        }
+    }
+    Ok(())
+}
+
+fn check_msvc_target_options(
+    raw: &ParsedCompilerArgs,
+    family: TargetFamily,
+    arch: Option<MsvcArch>,
+) -> Result<(), CompilerArgError> {
+    for (opt, argument) in &raw.occurrences {
+        match (opt, family, argument.as_str()) {
+            (Opt::MsvcFavor, TargetFamily::X86, "/favor:AMD64" | "/favor:INTEL64") => {
+                return Err(invalid(argument, "only supported on x64"));
+            }
+            (Opt::MsvcFavor | Opt::MsvcFpcvt, _, _) if !family.is_x86() => {
+                return Err(invalid(argument, "only supported on x86 and x64"));
+            }
+            _ => {}
+        }
+    }
+    let Some(arch) = arch.filter(|_| raw.msvc_kernel) else {
+        return Ok(());
+    };
+    let kernel_limit = match family {
+        TargetFamily::X86 => MsvcArchLevel::Ia32,
+        _ => MsvcArchLevel::Sse42,
+    };
+    if arch.level > kernel_limit
+        && let Some(argument) = raw.msvc_arch.iter().rev().find(|argument| {
+            msvc_x86_arch_level(argument).is_ok_and(|(level, _)| level > kernel_limit)
+        })
+    {
+        return Err(invalid(argument, "incompatible with /kernel"));
+    }
+    Ok(())
 }
 
 fn request_msvc_arch(arch: MsvcArch, request: &mut X86IsaRequest) {

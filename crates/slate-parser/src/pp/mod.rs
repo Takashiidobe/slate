@@ -14,7 +14,9 @@ use crate::ast::{FileId, HeaderKind, Loc, Provenance, Span};
 use crate::attribute_support;
 use crate::charset::Charset;
 use crate::compiler_args::CompilerFlavor;
-use crate::compiler_options::{MsvcArchLevel, MsvcArm64Arch, MsvcFloatingModel, StackProtector};
+use crate::compiler_options::{
+    MsvcArchLevel, MsvcArm64Arch, MsvcFavor, MsvcFloatingModel, MsvcRuntimeLibrary, StackProtector,
+};
 use crate::const_expr;
 use crate::diagnostics::{DiagnosticContext, Warning};
 use crate::dialect::Dialect;
@@ -808,6 +810,7 @@ impl<'a> Preprocessor<'a> {
                 .map(|(name, _)| format!("{name}=1")),
             );
             defines.extend(self.msvc_arch_predefines());
+            defines.extend(self.msvc_option_predefines());
         }
         if !flavor.is_msvc() {
             defines.extend(self.option_predefines());
@@ -860,6 +863,60 @@ impl<'a> Preprocessor<'a> {
         }
         if arch.rcpc > 0 {
             defines.push(format!("__ARM_FEATURE_RCPC={}", arch.rcpc));
+        }
+        defines
+    }
+
+    fn msvc_option_predefines(&mut self) -> Vec<String> {
+        let microsoft = self.dialect.options().microsoft;
+        let library = microsoft.runtime_library;
+        let debug = microsoft.debug_dll
+            || matches!(
+                library,
+                Some(MsvcRuntimeLibrary::StaticDebug | MsvcRuntimeLibrary::DynamicDebug)
+            );
+        let static_release = match library {
+            Some(library) => library == MsvcRuntimeLibrary::Static,
+            None => !debug,
+        };
+        if !static_release {
+            self.macros.remove("_MSVC_MT");
+        }
+        if microsoft.iso_volatile == Some(false) {
+            self.macros.remove("_ISO_VOLATILE");
+        }
+        let mut defines: Vec<String> = [
+            ("_DEBUG", debug),
+            (
+                "_DLL",
+                matches!(
+                    library,
+                    Some(MsvcRuntimeLibrary::Dynamic | MsvcRuntimeLibrary::DynamicDebug)
+                ),
+            ),
+            ("_MSVC_MD", library == Some(MsvcRuntimeLibrary::Dynamic)),
+            ("__MSVC_RUNTIME_CHECKS", microsoft.runtime_checks.is_some()),
+            (
+                "_RTC_CONVERSION_CHECKS_ENABLED",
+                microsoft
+                    .runtime_checks
+                    .is_some_and(|checks| checks.conversion),
+            ),
+            ("_ISO_VOLATILE", microsoft.iso_volatile == Some(true)),
+            ("_GUARDOVERFLOW_CRT_ALLOCATORS", microsoft.sdl),
+            ("_KERNEL_MODE", microsoft.kernel),
+            ("__SANITIZE_ADDRESS__", microsoft.address_sanitizer),
+            ("_CONTROL_FLOW_GUARD", microsoft.control_flow_guard),
+            ("_VC_NODEFAULTLIB", microsoft.no_default_lib),
+            ("__ATOM__", microsoft.favor == Some(MsvcFavor::Atom)),
+            ("_NO_PREFETCHW", microsoft.favor == Some(MsvcFavor::Intel64)),
+        ]
+        .into_iter()
+        .filter(|(_, defined)| *defined)
+        .map(|(name, _)| format!("{name}=1"))
+        .collect();
+        if let Some(intel) = microsoft.intel_float_conversions {
+            defines.push(format!("__FPCVT_IA__={}", u8::from(intel)));
         }
         defines
     }
