@@ -292,6 +292,8 @@ struct ParsedCompilerArgs {
     pack_struct: Option<bool>,
     pack_struct_alignment: Option<u32>,
     ms_bitfields: Option<bool>,
+    inline: Option<bool>,
+    inline_functions: Option<bool>,
     exceptions: Option<bool>,
     ms_anonymous_structs: Option<bool>,
     strict_flex_arrays: Option<u8>,
@@ -345,6 +347,15 @@ impl ParsedCompilerArgs {
             .or(bare)
             .filter(|alignment| *alignment != 0)
             .map(u64::from)
+    }
+
+    fn no_inline_requested(&self) -> bool {
+        let inline = if self.flavor.is_clang() {
+            self.inline.or(self.inline_functions)
+        } else {
+            self.inline
+        };
+        inline == Some(false)
     }
 
     fn fp_contract(&self, math: &MathOptions) -> Option<Contraction> {
@@ -452,6 +463,9 @@ enum Opt {
     PackStructAlignment,
     MsBitfields,
     FpContract,
+    Inline,
+    InlineFunctions,
+    InlineHintFunctions,
     Exceptions,
     MsAnonymousStructs,
     StrictFlexArrays,
@@ -554,6 +568,9 @@ impl std::fmt::Display for Opt {
             Self::PackStructAlignment => "fpack-struct=",
             Self::MsBitfields => "mms-bitfields",
             Self::FpContract => "ffp-contract=",
+            Self::Inline => "finline",
+            Self::InlineFunctions => "finline-functions",
+            Self::InlineHintFunctions => "finline-hint-functions",
             Self::Exceptions => "fexceptions",
             Self::MsAnonymousStructs => "fms-anonymous-structs",
             Self::StrictFlexArrays => "fstrict-flex-arrays=",
@@ -690,6 +707,8 @@ impl Opt {
             | Self::PackStructAlignment
             | Self::MsBitfields
             | Self::FpContract
+            | Self::Inline
+            | Self::InlineFunctions
             | Self::Exceptions
             | Self::StrictFlexArrays
             | Self::AsynchronousUnwindTables
@@ -724,6 +743,7 @@ impl Opt {
             | Self::ClangDigraphs
             | Self::MsAnonymousStructs
             | Self::LateParseAttributes
+            | Self::InlineHintFunctions
             | Self::Mllvm => &[Clang],
             Self::CodegenOnly(spelling) => {
                 codegen_only_flag_named(spelling).map_or(&[], |flag| flag.flavors)
@@ -736,6 +756,7 @@ impl Opt {
         match self {
             Self::Freestanding | Self::Hosted => flavor.is_gcc(),
             Self::FpRetIn387 => !flavor.is_msvc(),
+            Self::InlineHintFunctions => false,
             Self::CodegenOnly(spelling) => codegen_only_flag_named(spelling)
                 .is_some_and(|flag| flag.negation_flavors.contains(&flavor)),
             _ => self.accepted_by(flavor),
@@ -774,6 +795,9 @@ impl Opt {
             Self::ShortEnums => "-fshort-enums",
             Self::PackStruct => "-fpack-struct",
             Self::MsBitfields => "-mms-bitfields",
+            Self::Inline => "-finline",
+            Self::InlineFunctions => "-finline-functions",
+            Self::InlineHintFunctions => "-finline-hint-functions",
             Self::Exceptions => "-fexceptions",
             Self::MsAnonymousStructs => "-fms-anonymous-structs",
             Self::GccStrictFlexArrays => "-fstrict-flex-arrays",
@@ -1028,7 +1052,7 @@ fn ignored_option(argument: &str) -> Option<IgnoredOption> {
         .then_some(IgnoredOption::Alone)
 }
 
-const SWITCH_OPTS: [Opt; 46] = [
+const SWITCH_OPTS: [Opt; 49] = [
     Opt::ClangTrigraphs,
     Opt::ClangDigraphs,
     Opt::DeleteNullPointerChecks,
@@ -1052,6 +1076,9 @@ const SWITCH_OPTS: [Opt; 46] = [
     Opt::ShortEnums,
     Opt::PackStruct,
     Opt::MsBitfields,
+    Opt::Inline,
+    Opt::InlineFunctions,
+    Opt::InlineHintFunctions,
     Opt::Exceptions,
     Opt::MsAnonymousStructs,
     Opt::LateParseAttributes,
@@ -1278,6 +1305,10 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                 Opt::ShortEnums => parsed.short_enums = Some(value),
                 Opt::PackStruct => parsed.pack_struct = Some(value),
                 Opt::MsBitfields => parsed.ms_bitfields = Some(value),
+                Opt::Inline => parsed.inline = Some(value),
+                Opt::InlineFunctions | Opt::InlineHintFunctions => {
+                    parsed.inline_functions = Some(value)
+                }
                 Opt::Exceptions => parsed.exceptions = Some(value),
                 Opt::MsAnonymousStructs => parsed.ms_anonymous_structs = Some(value),
                 Opt::LateParseAttributes => parsed.late_parsed_attributes = Some(value),
@@ -1616,13 +1647,17 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
         Some(Optimization::Size) => vec!["__OPTIMIZE__", "__OPTIMIZE_SIZE__"],
     };
     if !optimization_macros.is_empty() {
+        let keep_no_inline = parsed.no_inline_requested();
         parsed.preprocessor_inputs.macros.splice(
             0..0,
-            std::iter::once(MacroOption::Undef("__NO_INLINE__".into())).chain(
-                optimization_macros
-                    .into_iter()
-                    .map(|name| MacroOption::Define(name.into())),
-            ),
+            (!keep_no_inline)
+                .then(|| MacroOption::Undef("__NO_INLINE__".into()))
+                .into_iter()
+                .chain(
+                    optimization_macros
+                        .into_iter()
+                        .map(|name| MacroOption::Define(name.into())),
+                ),
         );
     }
     if parsed.exceptions == Some(true) {
