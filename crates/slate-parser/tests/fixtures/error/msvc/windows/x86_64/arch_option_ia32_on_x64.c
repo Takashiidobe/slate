@@ -1,0 +1,8 @@
+// SLATE-FILECHECK-DEFINES DEFAULT
+// SLATE-FILECHECK-ERROR DEFAULT
+// SLATE-FILECHECK-ARGS /arch:IA32
+int arch_option;
+
+// SLATE-FILECHECK-BEGIN DEFAULT
+// DEFAULT: Error:   × invalid compiler argument `/arch:IA32`: only supported on x86
+// SLATE-FILECHECK-END DEFAULT

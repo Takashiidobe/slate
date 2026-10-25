@@ -1,0 +1,8 @@
+// SLATE-FILECHECK-DEFINES DEFAULT
+// SLATE-FILECHECK-ERROR DEFAULT
+// SLATE-FILECHECK-ARGS /feature:apx
+int arch_option;
+
+// SLATE-FILECHECK-BEGIN DEFAULT
+// DEFAULT: Error:   × invalid compiler argument `/feature:apx`: expected APX
+// SLATE-FILECHECK-END DEFAULT

@@ -85,6 +85,24 @@ each stage is in [configuration-threading](configuration-threading.md).
     `/fp:strict /fp:precise /fp:contract` is fine. IR effects are in
     [ir/operations](ir/operations.md#floating-settings). An unknown mode
     is rejected; cl.exe ignores it (D9002).
+  - `/arch:` (`resolve_msvc_arch`, `MicrosoftFlags::arch`) defines
+    `__AVX__`, `__AVX2__`, `__AVX512{F,CD,BW,DQ,VL}__` up to the level and
+    `__AVX10_VER__` for AVX10.1/AVX10.2. The level also feeds the x86
+    `TargetIsa` request (`request_msvc_arch`), so vector width follows it as
+    with `-m` flags. cl.exe keeps the highest level, not the last: x64 always
+    (any `/arch` there also defines `_NO_PREFETCHW`); x86 for the AVX
+    options, while a later `IA32`, `SSE` or `SSE2` resets it and sets
+    `_M_IX86_FP` 0, 1 or 2. The AVX10 version is the last one given.
+    Checked by fuzzing random sequences against cl.exe. On x86, cl.exe keeps
+    parts of AVX10 through a later `IA32`/`SSE`/`SSE2` in no consistent way
+    (`AVX10.2 AVX512 SSE2 AVX` gives `__AVX__` and `__AVX10_VER__` without
+    `__AVX2__`), so slate rejects that order. `IA32`/`SSE` on x64,
+    `SSE4.2` on x86 and unknown values are rejected; cl.exe ignores them
+    (D9002). `/arch` on Arm is rejected too (slate-3amj.5.23).
+  - `/feature:APX` (x64 only) defines `__APX_F__`, `__EGPR__`,
+    `__PUSH2POP2__`, `__PPX__`, `__NDD__`, `__CCMP__`, `__NF__`, `__CF__`
+    and `__ZU__`. slate's x86 tables have no APX features, so it sets macros
+    only.
   - Options with no C-level effect are `MSVC_ONLY` rows in
     `CODEGEN_ONLY_FLAGS`: optimization (`/O…`), codegen (`/GS`, `/Gy`,
     `/GF`, `/Qspectre…`, `/favor:blend|AMD64`, ...), debug info, output files

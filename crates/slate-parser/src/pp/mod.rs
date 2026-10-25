@@ -14,7 +14,7 @@ use crate::ast::{FileId, HeaderKind, Loc, Provenance, Span};
 use crate::attribute_support;
 use crate::charset::Charset;
 use crate::compiler_args::CompilerFlavor;
-use crate::compiler_options::{MsvcFloatingModel, StackProtector};
+use crate::compiler_options::{MsvcArchLevel, MsvcFloatingModel, StackProtector};
 use crate::const_expr;
 use crate::diagnostics::{DiagnosticContext, Warning};
 use crate::dialect::Dialect;
@@ -807,6 +807,7 @@ impl<'a> Preprocessor<'a> {
                 .filter(|(_, defined)| *defined)
                 .map(|(name, _)| format!("{name}=1")),
             );
+            defines.extend(self.msvc_arch_predefines());
         }
         if !flavor.is_msvc() {
             defines.extend(self.option_predefines());
@@ -839,6 +840,64 @@ impl<'a> Preprocessor<'a> {
         self.parse_source(&source, file)
             .map(drop)
             .map_err(|failure| self.render_error(failure))
+    }
+
+    fn msvc_arch_predefines(&self) -> Vec<String> {
+        let microsoft = &self.dialect.options().microsoft;
+        let x64 = self.dialect.target().family == crate::target_info::TargetFamily::X86_64;
+        let mut names = Vec::new();
+        if microsoft.apx {
+            names.extend([
+                "__APX_F__",
+                "__EGPR__",
+                "__PUSH2POP2__",
+                "__PPX__",
+                "__NDD__",
+                "__CCMP__",
+                "__NF__",
+                "__CF__",
+                "__ZU__",
+            ]);
+        }
+        let Some(arch) = microsoft.arch else {
+            return names.iter().map(|name| format!("{name}=1")).collect();
+        };
+        if x64 {
+            names.push("_NO_PREFETCHW");
+        }
+        for (level, macros) in [
+            (MsvcArchLevel::Avx, &["__AVX__"][..]),
+            (MsvcArchLevel::Avx2, &["__AVX2__"]),
+            (
+                MsvcArchLevel::Avx512,
+                &[
+                    "__AVX512F__",
+                    "__AVX512CD__",
+                    "__AVX512BW__",
+                    "__AVX512DQ__",
+                    "__AVX512VL__",
+                ],
+            ),
+        ] {
+            if arch.level >= level {
+                names.extend(macros);
+            }
+        }
+        let mut defines: Vec<String> = names.iter().map(|name| format!("{name}=1")).collect();
+        if let Some(version) = arch.avx10 {
+            defines.push(format!("__AVX10_VER__={version}"));
+        }
+        let fp = match arch.level {
+            MsvcArchLevel::Ia32 => Some(0),
+            MsvcArchLevel::Sse => Some(1),
+            _ => None,
+        };
+        if let Some(fp) = fp
+            && self.macros.contains_key("_M_IX86_FP")
+        {
+            defines.push(format!("_M_IX86_FP={fp}"));
+        }
+        defines
     }
 
     fn option_predefines(&mut self) -> Vec<String> {

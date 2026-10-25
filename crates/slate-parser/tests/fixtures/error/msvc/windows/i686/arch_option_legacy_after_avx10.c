@@ -1,0 +1,8 @@
+// SLATE-FILECHECK-DEFINES DEFAULT
+// SLATE-FILECHECK-ERROR DEFAULT
+// SLATE-FILECHECK-ARGS /arch:AVX10.1 /arch:SSE2
+int arch_option;
+
+// SLATE-FILECHECK-BEGIN DEFAULT
+// DEFAULT: Error:   × invalid compiler argument `/arch:SSE2`: unsupported after /arch:AVX10.1
+// SLATE-FILECHECK-END DEFAULT

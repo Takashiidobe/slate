@@ -1,8 +1,8 @@
 use crate::charset::Charset;
 use crate::compiler_options::{
     CodegenOptions, CompilerOptions, LayoutOptions, LibraryBuiltins, MathOptions, MathSwitch,
-    MicrosoftFlags, MsvcFloatingModel, MsvcFloatingPoint, OperationValues, Optimization, Pic,
-    SourceGraphs, StackProtector, TrivialAutoVarInit,
+    MicrosoftFlags, MsvcArch, MsvcArchLevel, MsvcFloatingModel, MsvcFloatingPoint, OperationValues,
+    Optimization, Pic, SourceGraphs, StackProtector, TrivialAutoVarInit,
 };
 use crate::diagnostics::{DiagnosticOptions, Warning};
 use crate::files::SearchPaths;
@@ -10,7 +10,7 @@ use crate::ir::{AsmDialect, Contraction, Exceptions, Overflow, Rounding};
 use crate::pp::{MacroOption, PreprocessorInputs};
 use crate::rules::{Rule, Rules};
 use crate::target::isa::{IsaRequest, TargetIsa};
-use crate::target::x86_isa::X86Feature;
+use crate::target::x86_isa::{X86Feature, X86IsaRequest};
 use crate::target_info::{LongDoubleFormat, TargetEnvironment, TargetFamily, TargetInfo, TargetOs};
 use crate::target_registry::{ArchMode, arch_variant};
 use crate::{compiler_headers, native_headers, sysroot};
@@ -295,6 +295,8 @@ struct ParsedCompilerArgs {
     msvc_execution_charset: Option<(Charset, String)>,
     msvc_utf8: bool,
     msvc_floating_point: MsvcFloatingPoint,
+    msvc_arch: Vec<(MsvcArchLevel, Option<u32>, String)>,
+    msvc_apx: Option<String>,
     short_wchar: Option<bool>,
     short_enums: Option<bool>,
     pack_struct: Option<bool>,
@@ -612,6 +614,8 @@ enum Opt {
     MsvcUtf8,
     MsvcCharset,
     MsvcFloatingPoint,
+    MsvcArch,
+    MsvcFeature,
     Permissive,
     DeleteNullPointerChecks,
     TrivialAutoVarInit,
@@ -737,6 +741,8 @@ impl std::fmt::Display for Opt {
             Self::MsvcUtf8 => "utf-8",
             Self::MsvcCharset => "source-charset",
             Self::MsvcFloatingPoint => "fp",
+            Self::MsvcArch => "arch",
+            Self::MsvcFeature => "feature",
             Self::Permissive => "fpermissive",
             Self::DeleteNullPointerChecks => "fdelete-null-pointer-checks",
             Self::TrivialAutoVarInit => "ftrivial-auto-var-init",
@@ -870,7 +876,9 @@ impl Opt {
             | Self::MsvcCallingConvention
             | Self::MsvcUtf8
             | Self::MsvcCharset
-            | Self::MsvcFloatingPoint => &[Msvc],
+            | Self::MsvcFloatingPoint
+            | Self::MsvcArch
+            | Self::MsvcFeature => &[Msvc],
             Self::CodegenOnly(spelling) => {
                 codegen_only_flag_named(spelling).map_or(&[], |flag| flag.flavors)
             }
@@ -1414,7 +1422,17 @@ impl CompilerArgParser {
             }
             _ => crate::ir::CallConv::C,
         };
-        target.isa = TargetIsa::resolve(target.family, target.environment, &raw.isa, raw.flavor)
+        let msvc_arch = resolve_msvc_arch(target.family, &raw.msvc_arch)?;
+        if let Some(argument) = &raw.msvc_apx
+            && target.family != TargetFamily::X86_64
+        {
+            return Err(invalid(argument, "only supported on x64"));
+        }
+        let mut isa = raw.isa.clone();
+        if let Some(arch) = msvc_arch {
+            request_msvc_arch(arch, &mut isa.x86);
+        }
+        target.isa = TargetIsa::resolve(target.family, target.environment, &isa, raw.flavor)
             .map_err(|reason| invalid(&raw.target, &reason))?;
         let flavor = raw.flavor;
         let codegen = codegen_options(&raw, &target);
@@ -1475,6 +1493,8 @@ impl CompilerArgParser {
                 .or(raw.msvc_utf8.then_some(Charset::Utf8)),
             utf8: raw.msvc_utf8,
             floating_point: raw.msvc_floating_point,
+            arch: msvc_arch,
+            apx: raw.msvc_apx.is_some(),
         };
         let floating_point = raw.msvc_floating_point;
         if floating_point.model == Some(MsvcFloatingModel::Strict) {
@@ -1910,6 +1930,32 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                 "except" => floating_point.except = Some(true),
                 _ => floating_point.except = Some(false),
             }
+        } else if let Some(name) = argument.strip_prefix("/arch:") {
+            parsed.saw(Opt::MsvcArch, argument);
+            let (level, avx10) = match name {
+                "IA32" => (MsvcArchLevel::Ia32, None),
+                "SSE" => (MsvcArchLevel::Sse, None),
+                "SSE2" => (MsvcArchLevel::Sse2, None),
+                "SSE4.2" => (MsvcArchLevel::Sse42, None),
+                "AVX" => (MsvcArchLevel::Avx, None),
+                "AVX2" => (MsvcArchLevel::Avx2, None),
+                "AVX512" => (MsvcArchLevel::Avx512, None),
+                "AVX10.1" => (MsvcArchLevel::Avx512, Some(1)),
+                "AVX10.2" => (MsvcArchLevel::Avx512, Some(2)),
+                _ => {
+                    return Err(invalid(
+                        argument,
+                        "expected one of IA32, SSE, SSE2, SSE4.2, AVX, AVX2, AVX512, AVX10.1, AVX10.2",
+                    ));
+                }
+            };
+            parsed.msvc_arch.push((level, avx10, argument.clone()));
+        } else if let Some(name) = argument.strip_prefix("/feature:") {
+            parsed.saw(Opt::MsvcFeature, argument);
+            if name != "APX" {
+                return Err(invalid(argument, "expected APX"));
+            }
+            parsed.msvc_apx = Some(argument.clone());
         } else if argument == "/utf-8" {
             parsed.saw(Opt::MsvcUtf8, argument);
             if let Some((_, spelling)) = parsed
@@ -2355,6 +2401,65 @@ fn invalid(argument: &str, reason: &str) -> CompilerArgError {
     CompilerArgError::Invalid {
         argument: argument.into(),
         reason: reason.into(),
+    }
+}
+
+fn resolve_msvc_arch(
+    family: TargetFamily,
+    options: &[(MsvcArchLevel, Option<u32>, String)],
+) -> Result<Option<MsvcArch>, CompilerArgError> {
+    let mut resolved: Option<MsvcArch> = None;
+    let mut avx10: Option<&str> = None;
+    for (level, version, argument) in options {
+        match family {
+            TargetFamily::X86_64 if *level < MsvcArchLevel::Sse2 => {
+                return Err(invalid(argument, "only supported on x86"));
+            }
+            TargetFamily::X86 if *level == MsvcArchLevel::Sse42 => {
+                return Err(invalid(argument, "only supported on x64"));
+            }
+            TargetFamily::X86 | TargetFamily::X86_64 => {}
+            _ => return Err(invalid(argument, "only supported on x86 and x64")),
+        }
+        if family == TargetFamily::X86 && *level <= MsvcArchLevel::Sse2 {
+            if let Some(previous) = avx10 {
+                return Err(invalid(argument, &format!("unsupported after {previous}")));
+            }
+            resolved = Some(MsvcArch {
+                level: *level,
+                avx10: None,
+            });
+            continue;
+        }
+        if version.is_some() {
+            avx10 = Some(argument);
+        }
+        resolved = Some(MsvcArch {
+            level: resolved.map_or(*level, |resolved| resolved.level.max(*level)),
+            avx10: version.or(resolved.and_then(|resolved| resolved.avx10)),
+        });
+    }
+    Ok(resolved)
+}
+
+fn request_msvc_arch(arch: MsvcArch, request: &mut X86IsaRequest) {
+    use X86Feature::*;
+    let features: &[X86Feature] = match arch.level {
+        MsvcArchLevel::Ia32 => return request.set(Sse, false),
+        MsvcArchLevel::Sse => return request.set(Sse2, false),
+        MsvcArchLevel::Sse2 => &[],
+        MsvcArchLevel::Sse42 => &[Sse42],
+        MsvcArchLevel::Avx => &[Avx],
+        MsvcArchLevel::Avx2 => &[Avx2],
+        MsvcArchLevel::Avx512 => &[Avx512f, Avx512cd, Avx512bw, Avx512dq, Avx512vl],
+    };
+    for &feature in features {
+        request.set(feature, true);
+    }
+    match arch.avx10 {
+        Some(1) => request.set(Avx101, true),
+        Some(_) => request.set(Avx102, true),
+        None => {}
     }
 }
 

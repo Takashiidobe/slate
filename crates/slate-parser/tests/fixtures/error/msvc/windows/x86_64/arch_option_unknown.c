@@ -1,0 +1,8 @@
+// SLATE-FILECHECK-DEFINES DEFAULT
+// SLATE-FILECHECK-ERROR DEFAULT
+// SLATE-FILECHECK-ARGS /arch:avx2
+int arch_option;
+
+// SLATE-FILECHECK-BEGIN DEFAULT
+// DEFAULT: Error:   × invalid compiler argument `/arch:avx2`: expected one of IA32, SSE, SSE2,
+// SLATE-FILECHECK-END DEFAULT

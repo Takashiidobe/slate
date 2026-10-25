@@ -133,6 +133,25 @@ pub struct MicrosoftFlags {
     pub execution_charset: Option<crate::charset::Charset>,
     pub utf8: bool,
     pub floating_point: MsvcFloatingPoint,
+    pub arch: Option<MsvcArch>,
+    pub apx: bool,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub enum MsvcArchLevel {
+    Ia32,
+    Sse,
+    Sse2,
+    Sse42,
+    Avx,
+    Avx2,
+    Avx512,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct MsvcArch {
+    pub level: MsvcArchLevel,
+    pub avx10: Option<u32>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
