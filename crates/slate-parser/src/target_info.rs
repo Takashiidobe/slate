@@ -26,6 +26,7 @@ pub struct TargetInfo {
     pub environment: TargetEnvironment,
     pub isa: TargetIsa,
     pub profile: TargetProfile,
+    pub execution_charset: crate::charset::Charset,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -111,6 +112,7 @@ impl Default for TargetInfo {
             environment: TargetEnvironment::Gnu,
             isa: TargetIsa::baseline(TargetFamily::X86_64, TargetEnvironment::Gnu),
             profile: crate::target_registry::X86_64_LINUX_GNU_PROFILE,
+            execution_charset: crate::charset::Charset::Utf8,
         }
     }
 }

@@ -1127,7 +1127,7 @@ impl TypeResolver {
         let Type::Array { element, length } = ty else {
             return Err(ResolveError::Internal("string initializer for non-array"));
         };
-        let mut units = literal.execution_units(self.dialect().target().wchar_width);
+        let mut units = literal.execution_units(self.dialect().target());
         units.push(0);
         let length = length.unwrap_or(units.len() as u64);
         units.resize(length as usize, 0);

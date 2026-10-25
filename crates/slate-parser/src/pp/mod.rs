@@ -12,6 +12,7 @@ mod traditional;
 
 use crate::ast::{FileId, HeaderKind, Loc, Provenance, Span};
 use crate::attribute_support;
+use crate::charset::Charset;
 use crate::compiler_args::CompilerFlavor;
 use crate::compiler_options::StackProtector;
 use crate::const_expr;
@@ -772,6 +773,17 @@ impl<'a> Preprocessor<'a> {
         {
             defines.push(format!("_MSVC_WARNING_LEVEL={level}L"));
         }
+        if let (true, Some(charset)) = (flavor.is_msvc(), options.microsoft.execution_charset)
+            && self.macros.contains_key("_MSVC_EXECUTION_CHARACTER_SET")
+        {
+            defines.push(format!(
+                "_MSVC_EXECUTION_CHARACTER_SET={}",
+                charset.code_page()
+            ));
+        }
+        if flavor.is_msvc() && options.microsoft.utf8 {
+            defines.push("_UTF8=1".to_owned());
+        }
         if !flavor.is_msvc() {
             defines.extend(self.option_predefines());
             self.math_predefines(&mut defines);
@@ -974,7 +986,13 @@ impl<'a> Preprocessor<'a> {
             .collect();
         self.files.set_line_starts(file, starts.clone());
         self.line_starts.insert(file, starts);
-        let tokens = Lexer::new(file, src, self.dialect.features()).tokenize_lines();
+        let charset = match src.starts_with('\u{feff}') {
+            true => Charset::Utf8,
+            false => self.dialect.source_charset(),
+        };
+        let tokens = Lexer::new(file, src, self.dialect.features())
+            .decoding(charset)
+            .tokenize_lines();
         let elifdef_directives = self.dialect.features().elifdef_directives;
         self.process(file, TokenSource::new(src, tokens, elifdef_directives))
     }

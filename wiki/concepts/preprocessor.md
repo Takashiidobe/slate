@@ -50,6 +50,20 @@ lines. Its Code node takes the first line's provenance. Comments of the
 first line come before the node, comments of pulled lines after it, then
 any nodes produced by directives met inside the arguments.
 
+Files are read as UTF-8. For msvc, `parse_source` then applies
+`Lexer::decoding(Dialect::source_charset())`: windows-1252 by default (the
+ANSI code page under wine) or UTF-8 under `/source-charset:utf-8` or
+`/utf-8`. A file with a byte order mark is always UTF-8, as cl.exe reads it.
+Under windows-1252 each byte of a non-ASCII character becomes its own
+windows-1252 character, so `"é"` (C3 A9) is the two characters `Ã©` and
+`L"é"` has two units. The decoded characters keep the original byte offsets,
+so locations and the stored source are unchanged. Literal spellings, and
+`-E` output, show the decoded text; cl.exe's `/E` writes it back in the code
+page instead. The execution charset is separate:
+`TargetInfo::execution_charset` encodes plain string and character literals
+(`const_expr::execution_units`), windows-1252 by default for msvc, with `?`
+for an unrepresentable character as cl.exe writes it (no C4566 warning).
+
 `Lexer::with_offset` skips a leading UTF-8 byte order mark (all three
 flavors, main files and headers; offsets still count it), then runs
 translation phases 1 and 2 before scanning:

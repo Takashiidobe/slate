@@ -79,9 +79,7 @@ impl TypeResolver {
         let element = self.encoded_character_type(literal.encoding, &target);
         self.ctypes.qual(CTypeKind::Array {
             element,
-            extent: super::ctype::Extent::Fixed(
-                literal.execution_units(target.wchar_width).len() as u64 + 1,
-            ),
+            extent: super::ctype::Extent::Fixed(literal.execution_units(&target).len() as u64 + 1),
         })
     }
 

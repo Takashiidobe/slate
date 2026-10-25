@@ -1,5 +1,6 @@
 pub mod ast;
 pub mod attribute_support;
+pub mod charset;
 pub mod compiler_args;
 pub mod compiler_headers;
 pub mod compiler_options;

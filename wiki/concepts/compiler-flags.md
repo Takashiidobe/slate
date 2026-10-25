@@ -61,6 +61,14 @@ each stage is in [configuration-threading](configuration-threading.md).
     an explicit convention ([calls-abi](ir/calls-abi.md#calling-conventions)).
     On x64 only `/Gv` applies. Two different ones are rejected, as cl.exe
     does (D8016); repeating one is accepted.
+  - `/source-charset:` and `/execution-charset:` take `utf-8`,
+    `windows-1252`, `.65001` or `.1252` (any case); the last of each wins.
+    Both default to windows-1252, the ANSI code page under wine
+    ([preprocessor](preprocessor.md#pipeline)). `/utf-8` sets both to UTF-8
+    and defines `_UTF8` to 1; combining it with either one is rejected
+    (D8016). An explicit execution charset sets
+    `_MSVC_EXECUTION_CHARACTER_SET` (65001 or 1252). Other code pages are
+    rejected.
   - Options with no C-level effect are `MSVC_ONLY` rows in
     `CODEGEN_ONLY_FLAGS`: optimization (`/O…`), codegen (`/GS`, `/Gy`,
     `/GF`, `/Qspectre…`, `/favor:blend|AMD64`, ...), debug info, output files

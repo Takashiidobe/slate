@@ -1,3 +1,4 @@
+use crate::charset::Charset;
 use crate::compiler_options::{
     CodegenOptions, CompilerOptions, LayoutOptions, LibraryBuiltins, MathOptions, MathSwitch,
     MicrosoftFlags, OperationValues, Optimization, Pic, SourceGraphs, StackProtector,
@@ -290,6 +291,9 @@ struct ParsedCompilerArgs {
     c11_atomics: bool,
     msvc_warning_level: Option<u32>,
     msvc_convention: Option<(crate::ir::CallConv, String)>,
+    msvc_source_charset: Option<(Charset, String)>,
+    msvc_execution_charset: Option<(Charset, String)>,
+    msvc_utf8: bool,
     short_wchar: Option<bool>,
     short_enums: Option<bool>,
     pack_struct: Option<bool>,
@@ -604,6 +608,8 @@ enum Opt {
     MsvcWarningLevel,
     MsvcNoWarnings,
     MsvcCallingConvention,
+    MsvcUtf8,
+    MsvcCharset,
     Permissive,
     DeleteNullPointerChecks,
     TrivialAutoVarInit,
@@ -726,6 +732,8 @@ impl std::fmt::Display for Opt {
             Self::MsvcWarningLevel => "W",
             Self::MsvcNoWarnings => "w",
             Self::MsvcCallingConvention => "Gd",
+            Self::MsvcUtf8 => "utf-8",
+            Self::MsvcCharset => "source-charset",
             Self::Permissive => "fpermissive",
             Self::DeleteNullPointerChecks => "fdelete-null-pointer-checks",
             Self::TrivialAutoVarInit => "ftrivial-auto-var-init",
@@ -856,7 +864,9 @@ impl Opt {
             | Self::MsvcC11Atomics
             | Self::MsvcWarningLevel
             | Self::MsvcNoWarnings
-            | Self::MsvcCallingConvention => &[Msvc],
+            | Self::MsvcCallingConvention
+            | Self::MsvcUtf8
+            | Self::MsvcCharset => &[Msvc],
             Self::CodegenOnly(spelling) => {
                 codegen_only_flag_named(spelling).map_or(&[], |flag| flag.flavors)
             }
@@ -1451,6 +1461,15 @@ impl CompilerArgParser {
             anonymous_structs: raw.ms_anonymous_structs,
             c11_atomics: raw.c11_atomics,
             warning_level: raw.msvc_warning_level,
+            source_charset: raw
+                .msvc_source_charset
+                .map(|(charset, _)| charset)
+                .or(raw.msvc_utf8.then_some(Charset::Utf8)),
+            execution_charset: raw
+                .msvc_execution_charset
+                .map(|(charset, _)| charset)
+                .or(raw.msvc_utf8.then_some(Charset::Utf8)),
+            utf8: raw.msvc_utf8,
         };
         options.asm_dialect = raw.asm_dialect.unwrap_or_default();
         options.explicit_standard = raw.standard.is_some();
@@ -1840,6 +1859,36 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                 return Err(invalid(argument, &format!("incompatible with {spelling}")));
             }
             parsed.msvc_convention = Some((convention, argument.clone()));
+        } else if argument == "/utf-8" {
+            parsed.saw(Opt::MsvcUtf8, argument);
+            if let Some((_, spelling)) = parsed
+                .msvc_source_charset
+                .as_ref()
+                .or(parsed.msvc_execution_charset.as_ref())
+            {
+                return Err(invalid(argument, &format!("incompatible with {spelling}")));
+            }
+            parsed.msvc_utf8 = true;
+        } else if let Some((slot, name)) = argument
+            .strip_prefix("/source-charset:")
+            .map(|name| (&mut parsed.msvc_source_charset, name))
+            .or_else(|| {
+                argument
+                    .strip_prefix("/execution-charset:")
+                    .map(|name| (&mut parsed.msvc_execution_charset, name))
+            })
+        {
+            let charset = Charset::parse_msvc(name).ok_or_else(|| {
+                invalid(
+                    argument,
+                    "expected one of utf-8, windows-1252, .65001, .1252",
+                )
+            })?;
+            *slot = Some((charset, argument.clone()));
+            if parsed.msvc_utf8 {
+                return Err(invalid(argument, "incompatible with /utf-8"));
+            }
+            parsed.saw(Opt::MsvcCharset, argument);
         } else if argument == "/w" {
             parsed.saw(Opt::MsvcNoWarnings, argument);
             parsed.msvc_warning_level = parsed

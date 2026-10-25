@@ -1,3 +1,4 @@
+use crate::charset::Charset;
 use crate::compiler_args::{CompilerFlavor, LanguageStandard};
 use crate::compiler_options::{CompilerOptions, InlineSemantics};
 use crate::standard_features::{Availability, StandardFeatures};
@@ -19,7 +20,13 @@ impl Dialect {
         target: TargetInfo,
         options: CompilerOptions,
     ) -> Self {
-        let target = options.effective_target(target);
+        let mut target = options.effective_target(target);
+        if flavor.is_msvc() {
+            target.execution_charset = options
+                .microsoft
+                .execution_charset
+                .unwrap_or(Charset::Windows1252);
+        }
         let mut features = StandardFeatures::for_compiler(
             standard,
             flavor,
@@ -50,6 +57,17 @@ impl Dialect {
             target,
             CompilerOptions::for_flavor(flavor),
         )
+    }
+
+    pub fn source_charset(&self) -> Charset {
+        match self.flavor.is_msvc() {
+            true => self
+                .options
+                .microsoft
+                .source_charset
+                .unwrap_or(Charset::Windows1252),
+            false => Charset::Utf8,
+        }
     }
 
     pub fn flavor(&self) -> CompilerFlavor {

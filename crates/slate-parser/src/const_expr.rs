@@ -3,6 +3,7 @@ use crate::ast::{
     Initializer, InitializerItem, IntegerType, Span, SpanRangeIndex, StaticAssert, TypeName,
     TypeSpecifier,
 };
+use crate::charset::Charset;
 use crate::compiler_args::CompilerFlavor;
 use crate::lexer::{Keyword, Lexer, Token, TokenSpanExt};
 use crate::parser::DeclaratorParser;
@@ -685,8 +686,8 @@ impl Encoding {
 }
 
 impl CharLiteral {
-    pub fn execution_units(&self, wchar_width: u32) -> Vec<u32> {
-        execution_units(&self.spelling, self.encoding.unit_width(wchar_width))
+    pub fn execution_units(&self, target: &TargetInfo) -> Vec<u32> {
+        execution_units(&self.spelling, self.encoding, target)
     }
 
     // signedness of the character type behind the constant, not of its C type:
@@ -700,7 +701,7 @@ impl CharLiteral {
     }
 
     pub fn value(&self, target: &TargetInfo) -> Result<i64, ConstExprError> {
-        let units = self.execution_units(target.wchar_width);
+        let units = self.execution_units(target);
         if self.encoding == Encoding::Plain {
             return match units.as_slice() {
                 [] => Err(ConstExprError::CharacterConstant(
@@ -750,22 +751,29 @@ impl StringLiteral {
     }
 
     // code_units holds characters; sizes and contents need execution-charset units
-    pub fn execution_units(&self, wchar_width: u32) -> Vec<u32> {
-        let width = self.unit_width(wchar_width);
+    pub fn execution_units(&self, target: &TargetInfo) -> Vec<u32> {
         let mut units = Vec::with_capacity(self.code_units.len());
         for piece in &self.pieces {
-            units.extend(execution_units(&piece.value, width));
+            units.extend(execution_units(&piece.value, self.encoding, target));
         }
         units
     }
 }
 
-fn execution_units(spelling: &str, width: u32) -> Vec<u32> {
+fn execution_units(spelling: &str, encoding: Encoding, target: &TargetInfo) -> Vec<u32> {
+    let width = encoding.unit_width(target.wchar_width);
+    let charset = match encoding {
+        Encoding::Plain => target.execution_charset,
+        _ => Charset::Utf8,
+    };
     let chars: Vec<char> = spelling.chars().collect();
     let mut units = Vec::with_capacity(chars.len());
     for unit in crate::lexer::Lexer::decode_source_units(&chars, 0, chars.len()) {
         match unit {
             crate::lexer::SourceUnit::CodeUnit(value) => units.push(truncate(value, width)),
+            crate::lexer::SourceUnit::Character(value) if width == 8 => {
+                charset.encode(value, &mut units)
+            }
             crate::lexer::SourceUnit::Character(value) => encode(value, width, &mut units),
         }
     }
@@ -781,19 +789,7 @@ fn truncate(value: u32, width: u32) -> u32 {
 
 fn encode(value: u32, width: u32, units: &mut Vec<u32>) {
     match (width, value) {
-        (8, 0..=0x7F) | (16, 0..=0xFFFF) | (32, _) => units.push(value),
-        (8, 0x80..=0x7FF) => units.extend([0xC0 | value >> 6, 0x80 | value & 0x3F]),
-        (8, 0x800..=0xFFFF) => units.extend([
-            0xE0 | value >> 12,
-            0x80 | (value >> 6) & 0x3F,
-            0x80 | value & 0x3F,
-        ]),
-        (8, _) => units.extend([
-            0xF0 | value >> 18,
-            0x80 | (value >> 12) & 0x3F,
-            0x80 | (value >> 6) & 0x3F,
-            0x80 | value & 0x3F,
-        ]),
+        (16, 0..=0xFFFF) | (32, _) => units.push(value),
         (16, _) => {
             let value = value - 0x1_0000;
             units.extend([0xD800 | value >> 10, 0xDC00 | value & 0x3FF]);

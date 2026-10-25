@@ -1,4 +1,5 @@
 use crate::ast::{FileId, Loc, Span};
+use crate::charset::Charset;
 use crate::const_expr::MicrosoftIntegerSuffix;
 use crate::files::raw_byte_for_char;
 use crate::standard_features::{MicrosoftIntegerLiterals, StandardFeatures};
@@ -625,6 +626,30 @@ pub struct Lexer {
 }
 
 impl Lexer {
+    pub fn decoding(mut self, charset: Charset) -> Self {
+        if charset == Charset::Utf8 {
+            return self;
+        }
+        let mut chars = Vec::with_capacity(self.chars.len());
+        let mut byte_offsets = Vec::with_capacity(self.byte_offsets.len());
+        let mut byte_ends = Vec::with_capacity(self.byte_ends.len());
+        for (index, &c) in self.chars.iter().enumerate() {
+            let decoded = source_bytes(c)
+                .into_iter()
+                .map(|byte| charset.decode_byte(byte));
+            for decoded in decoded {
+                chars.push(decoded);
+                byte_offsets.push(self.byte_offsets[index]);
+                byte_ends.push(self.byte_ends[index]);
+            }
+        }
+        byte_offsets.extend(self.byte_offsets.last().copied());
+        self.chars = chars;
+        self.byte_offsets = byte_offsets;
+        self.byte_ends = byte_ends;
+        self
+    }
+
     pub fn new(file: FileId, src: &str, features: StandardFeatures) -> Self {
         Self::with_offset(file, src, 0, features)
     }
@@ -1215,6 +1240,13 @@ fn splice_len(after_backslash: &str, whitespace_line_splice: bool) -> usize {
         whitespace + 2
     } else {
         0
+    }
+}
+
+fn source_bytes(c: char) -> Vec<u8> {
+    match raw_byte_for_char(c) {
+        Some(byte) => vec![byte],
+        None => c.to_string().into_bytes(),
     }
 }
 

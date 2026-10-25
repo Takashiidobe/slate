@@ -801,7 +801,7 @@ impl Lowerer {
         e: &Expr,
         literal: &crate::const_expr::StringLiteral,
     ) -> Result<Lvalue, ResolveError> {
-        let mut units = literal.execution_units(self.context.target.wchar_width);
+        let mut units = literal.execution_units(&self.context.target);
         units.push(0);
         let c = self.lvalue_result(e)?;
         Ok(self.code_unit_global(e, c, units))
@@ -3096,7 +3096,7 @@ pub(super) fn cf_string_units(argument: &Expr) -> Option<Vec<u32>> {
     if literal.encoding != crate::const_expr::Encoding::Plain {
         return None;
     }
-    let units = literal.execution_units(8);
+    let units = literal.execution_units(&crate::target_info::TargetInfo::default());
     units.iter().all(|unit| *unit < 128).then_some(units)
 }
 

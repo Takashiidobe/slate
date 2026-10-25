@@ -868,9 +868,7 @@ fn resolve_char_literal(
     flavor: CompilerFlavor,
 ) -> Result<(), String> {
     if literal.encoding == Encoding::Plain {
-        if flavor.is_clang()
-            && literal.execution_units(target.wchar_width).len() > literal.code_units.len()
-        {
+        if flavor.is_clang() && literal.execution_units(target).len() > literal.code_units.len() {
             return Err("character too large for enclosing character literal type".to_string());
         }
         return Ok(());

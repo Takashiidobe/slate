@@ -129,6 +129,9 @@ pub struct MicrosoftFlags {
     pub anonymous_structs: Option<bool>,
     pub c11_atomics: bool,
     pub warning_level: Option<u32>,
+    pub source_charset: Option<crate::charset::Charset>,
+    pub execution_charset: Option<crate::charset::Charset>,
+    pub utf8: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
