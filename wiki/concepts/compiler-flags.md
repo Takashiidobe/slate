@@ -183,7 +183,11 @@ where the effect is observable at runtime. Highlights:
   `-fno-knr-functions`, `-fno-asm`, `-fpermissive`.
 - Floating point: `-ffp-model=`,
   `-fcomplex-arithmetic=`, gcc `-mfpmath=387`.
-- msvc: every `/` spelling (`/J`, `/Zp`, `/Gz`, `/fp:`, ...).
+- msvc: every `/` spelling. The slate-3amj.5 epic inventories them from
+  cl.exe's `/?` and `/PD` predefine deltas, one child per group (`/J`,
+  `/Zp`, `/D`, `/std:`, `/fp:`, `/Gz`, `/arch:`, charsets, `/Zc:`, the
+  predefine-only options, and the accept-and-ignore codegen options), with
+  fixtures in `fixtures.unsupported/msvc/`.
 - Floating point: the fast-math family's IR effect (`nnan`, `ninf`, `nsz`,
   `arcp`, `reassoc`, `afn` have no IR field yet; slate-parser-dyd.57). Its
   macros are emulated.
