@@ -869,6 +869,7 @@ impl Preprocessor<'_> {
         stamp: &Stamp,
     ) -> Result<Vec<PPToken>, PPFailure> {
         let mut output = Vec::new();
+        let mut spaced = Vec::new();
         let mut i = 0;
         while i < definition.replacement.len() {
             let token = &definition.replacement[i];
@@ -960,15 +961,24 @@ impl Preprocessor<'_> {
                 i += 2;
                 continue;
             }
-            output.extend(replacement_tokens(
-                token,
-                parameters,
-                arguments,
-                stamp,
-                i + 1 >= definition.replacement.len()
-                    || definition.replacement[i + 1].value != Token::HashHash,
-            ));
+            let prescan = i + 1 >= definition.replacement.len()
+                || definition.replacement[i + 1].value != Token::HashHash;
+            let substituted = replacement_tokens(token, parameters, arguments, stamp, prescan);
+            if prescan
+                && substituted.is_empty()
+                && token.leading_space
+                && (!self.dialect.flavor().is_msvc()
+                    || replacement_tokens(token, parameters, arguments, stamp, false).is_empty())
+            {
+                spaced.push(output.len());
+            }
+            output.extend(substituted);
             i += 1;
+        }
+        for index in spaced {
+            if let Some(next) = output.get_mut(index) {
+                next.token.leading_space = true;
+            }
         }
         Ok(output)
     }

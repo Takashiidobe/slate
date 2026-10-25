@@ -258,6 +258,12 @@ token plus an interned `HideSet`; file tokens start empty.
   `__VA_ARGS__` paths. Linux's `bpf.h` (`___BPF_FUNC_MAPPER(FN, ctx...)`)
   depends on it.
 - The first replacement token inherits the invocation's leading space.
+- A parameter with leading space that substitutes to nothing (not a `##`
+  operand) passes the space to the next replacement token, so
+  `#define M(f, ...) m(f, __VA_ARGS__)` stringizes `M(3)` as `"m(3, )"`.
+  gcc and clang do this whether the argument is empty or only expands empty;
+  msvc only for an empty argument (`J(E)` of `j(x a)` gives `"j(x)"`).
+  Fixtures: `stringize-empty-argument-space.c`.
 - `#if`, `#include`, `#embed` and `#line` operands expand with
   `expand_isolated` too (`expand_macros`), so they never read past the
   directive.
