@@ -40,6 +40,16 @@ cargo nextest r --release --profile parser   # crates/slate-parser: FileCheck fi
 Run the profile for each crate you changed. The crate instructions describe
 single-fixture runs.
 
+While working on msvc-flavor behavior (cl.exe options, the `slate-3amj.5`
+epic), iterate with the `msvc` profile. It runs both crates' msvc fixtures:
+slate-parser's `msvc/`, `error/msvc/` and `suites/*/msvc/`, and slate's
+`fixtures{,.unsupported}/msvc/` on x86_64 and i686 against cl.exe. Run the
+full `slate` and `parser` profiles before committing:
+
+```bash
+cargo nextest r --release --profile msvc
+```
+
 ## Beads Issue Tracker
 
 This project uses **bd (beads)** for issue tracking. Run `bd prime` to see full workflow context and commands.

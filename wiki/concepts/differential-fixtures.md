@@ -61,7 +61,13 @@ profiles pick targets through setup scripts in `.config/nextest.toml`:
 cargo nextest r --release --profile slate-i686      # natively, with -m32
 cargo nextest r --release --profile slate-aarch64   # under qemu-aarch64-static
 cargo nextest r --release --profile slate-targets   # x86_64, i686 and aarch64
+cargo nextest r --release --profile msvc            # msvc fixtures of both crates
 ```
+
+`SLATE_DIFF_FLAVOR=<gcc|msvc>` limits `generated_differential` and the
+unsupported ratchet to that flavor's directories, and skips the check
+that every `<triple>.txt` entry ran. The `msvc` profile sets it with x86_64
+and i686 as targets and adds slate-parser's msvc fixtures.
 
 `tests/fixtures.unsupported/<triple>.txt` lists target-independent fixtures
 that still fail on that target. A listed fixture that passes, or an unlisted

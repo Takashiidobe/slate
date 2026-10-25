@@ -52,3 +52,13 @@ priority = 80
 [[profile.default.overrides]]
 filter = 'test(generated_differential) + test(c_testsuite_supported_tests_match_c)'
 threads-required = 3
+
+[scripts.setup.flavor-msvc]
+command = ["sh", "-c", "echo SLATE_DIFF_FLAVOR=msvc >> \"$NEXTEST_ENV\"; echo SLATE_TEST_TARGETS=x86_64-unknown-linux-gnu,i686-unknown-linux-gnu >> \"$NEXTEST_ENV\""]
+
+[profile.msvc]
+default-filter = '(package(slate-c2rust) & (test(=generated_differential) | test(=fixtures_unsupported_tests_still_fail))) | (package(slate-parser) & test(/^(error\/|suites\/[^\/]+\/)?msvc\//))'
+
+[[profile.msvc.scripts]]
+filter = 'package(slate-c2rust) & (test(=generated_differential) | test(/^fixtures_unsupported_/))'
+setup = "flavor-msvc"

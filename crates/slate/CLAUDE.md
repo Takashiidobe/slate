@@ -131,6 +131,7 @@ Profiles in `.config/nextest.toml` set the targets with setup scripts:
 | `slate-i686`    | i686, natively with `-m32`       | `generated_differential`, unsupported ratchet |
 | `slate-aarch64` | aarch64, under `qemu-aarch64-static` | `generated_differential`, unsupported ratchet |
 | `slate-targets` | all three                        | `generated_differential`, unsupported ratchet |
+| `msvc`          | x86_64 and i686, msvc fixtures only (`SLATE_DIFF_FLAVOR=msvc`) | `generated_differential`, unsupported ratchet, slate-parser msvc fixtures |
 
 `CrossTarget::for_triple` in `tests/support/mod.rs` holds each target's C
 oracle flags, Rust linker and emulator.

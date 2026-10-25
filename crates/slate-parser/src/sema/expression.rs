@@ -559,6 +559,22 @@ impl Lowerer {
                 Ok(self.operand(e, c, ValueKind::Seh(intrinsic)))
             }
             CustomBuiltin::CfString => self.cf_string(e, arguments),
+            CustomBuiltin::MsVaStart => {
+                let [list, ..] = arguments else {
+                    return Err(ResolveError::Internal("__va_start builtin arity"));
+                };
+                let pointer = self.expr(list)?;
+                let list = self.deref(pointer)?.place;
+                let c = self.result(e)?;
+                Ok(self.operand(
+                    e,
+                    c,
+                    ValueKind::VaStart {
+                        list,
+                        convention: VaConvention::Target,
+                    },
+                ))
+            }
             CustomBuiltin::Noop => {
                 let c = self.result(e)?;
                 Ok(self.operand(e, c, ValueKind::Constant(Number::Integer(0u32.into()))))

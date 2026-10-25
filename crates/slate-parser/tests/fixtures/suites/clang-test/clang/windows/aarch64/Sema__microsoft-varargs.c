@@ -123,7 +123,7 @@ wprintf(/*_In_z_ _Printf_format_string_*/ wchar_t const * const _Format, ...) {
 // DEFAULT-NEXT:     fn %[[VALUE_wprintf:[0-9]+]] @wprintf(%[[VALUE__Format:[0-9]+]] _Format: ptr<const u16> [const], ...) -> i32 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE__Result:[0-9]+]] _Result: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE__ArgList:[0-9]+]] _ArgList: ptr<i8> [storage=automatic];
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<ptr<i8>>, ...) -> void>(%[[VALUE___va_start]], addr_of<ptr<ptr<i8>>>(%[[VALUE__ArgList]]), addr_of<ptr<const ptr<const u16>>>(%[[VALUE__Format]]), and<u64>(sub<u64, overflow=wrap>(add<u64, overflow=wrap>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(not<i32>(sub<i32, overflow=ub>(const<i32>(8), const<i32>(1)))))), const<u64>(8), addr_of<ptr<const ptr<const u16>>>(%[[VALUE__Format]]));
+// DEFAULT-NEXT:         va_start(deref(addr_of<ptr<ptr<i8>>>(%[[VALUE__ArgList]])));
 // DEFAULT-NEXT:         write<ptr<i8>>(%[[VALUE__ArgList]], null<ptr<i8>>);
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE__Result]]);
 // DEFAULT-NEXT:     }

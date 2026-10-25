@@ -1382,6 +1382,25 @@ impl TypeResolver {
                 self.builtin_return_type(builtin)
                     .ok_or(ResolveError::Internal("CFString builtin return type"))?
             }
+            CustomBuiltin::MsVaStart => {
+                let [list, rest @ ..] = arguments else {
+                    return Err(ResolveError::Rejected("too few arguments to function call"));
+                };
+                let pointer = self.operand_type(list)?;
+                let pointee = self
+                    .ctypes
+                    .pointee(pointer)
+                    .ok_or(ResolveError::Rejected("__va_start of a non-pointer"))?;
+                let pointee = self.ir_type(pointee);
+                if !self.is_va_list(&pointee) {
+                    return Err(ResolveError::Rejected("__va_start of a non-va_list"));
+                }
+                for argument in rest {
+                    self.operand_type(argument)?;
+                }
+                self.va_start_context(false)?;
+                self.ctypes.qual(CTypeKind::Void)
+            }
             CustomBuiltin::Noop => {
                 for argument in arguments {
                     let ty = self.operand_type(argument)?;

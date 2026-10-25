@@ -347,6 +347,7 @@ pub(super) enum CustomBuiltin {
     CountedByRef,
     CfString,
     Seh(SehIntrinsic),
+    MsVaStart,
     Noop,
 }
 
@@ -381,6 +382,7 @@ pub(super) fn custom_builtin(builtin: &ClangBuiltin) -> Option<CustomBuiltin> {
         "ExceptionCode" => CustomBuiltin::Seh(SehIntrinsic::ExceptionCode),
         "ExceptionInfo" => CustomBuiltin::Seh(SehIntrinsic::ExceptionInfo),
         "AbnormalTermination" => CustomBuiltin::Seh(SehIntrinsic::AbnormalTermination),
+        "MSva_start" => CustomBuiltin::MsVaStart,
         "Noop" => CustomBuiltin::Noop,
         _ => return None,
     })
@@ -800,13 +802,16 @@ impl TypeResolver {
     }
 
     pub(super) fn declares_builtin(&mut self, binding: BindingId, builtin: &ClangBuiltin) -> bool {
-        if matches!(self.entities.linkage(binding), Some(Linkage::External))
-            && let Some(declared) = self.entities.ty(&binding)
-            && let Some(signature) = self.builtin_signature(builtin)
-        {
-            return self.ctypes.compatible(declared, signature);
+        if !matches!(self.entities.linkage(binding), Some(Linkage::External)) {
+            return false;
         }
-        false
+        let Some(declared) = self.entities.ty(&binding) else {
+            return false;
+        };
+        match self.builtin_signature(builtin) {
+            Some(signature) => self.ctypes.compatible(declared, signature),
+            None => builtin.kind != ClangBuiltinKind::Library,
+        }
     }
 
     pub(super) fn derived_signature(

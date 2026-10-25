@@ -135,6 +135,12 @@ default (objc) runtime ABI is modelled, not `-fcf-runtime-abi=swift`.
 
 - `__builtin_ms_va_list`, `__builtin_ms_va_start`, `__builtin_ms_va_end`,
   `__builtin_ms_va_copy` (x86-64 and AArch64 only)
+- `__va_start(&ap, ...)`, the Microsoft intrinsic behind ucrt's
+  `__crt_va_start` on x64 and ARM64: `va_start` on `*(&ap)`, other
+  arguments evaluated for typing only. ucrt's `va_arg` and `va_end` are
+  plain `char *` arithmetic, so they need no IR operation. A redeclaration
+  with external linkage (ucrt's `void __va_start(va_list *, ...)`) keeps any
+  non-library builtin without a checked signature, as in clang.
 
 `slate-parser/src/target_info.rs` selects the target's `va_list` layout;
 `sema/expression.rs` emits the variadic IR operations. Slate lowers them in
