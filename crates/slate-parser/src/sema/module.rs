@@ -1564,7 +1564,7 @@ impl Lowerer {
                     && initializer.is_none()
                     && !attributes()
                         .any(|attribute| matches!(attribute.value, ast::Attribute::Uninitialized)))
-                .then(|| self.types.auto_init())
+                .then(|| self.types.auto_init(resolved))
                 .flatten(),
                 initializer,
             };

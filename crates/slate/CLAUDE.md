@@ -108,7 +108,9 @@ starts passing, `fixtures_unsupported_tests_still_fail` fails and prints the
 `generated_differential` runs once per target in `SLATE_TEST_TARGETS`
 (default `x86_64-unknown-linux-gnu`). For each target it runs the
 target-independent `tests/fixtures/*.c` plus `tests/fixtures/<arch>/`, where
-`<arch>` is the triple's first component (`x86_64`, `i686`, `aarch64`).
+`<arch>` is the triple's first component (`x86_64`, `i686`, `aarch64`), and
+`tests/fixtures/gcc/` plus `tests/fixtures/gcc/<arch>/`, which translate with
+`--flavor=gcc` and use real gcc as the oracle.
 Profiles in `.config/nextest.toml` set the targets with setup scripts:
 
 | Profile         | Targets                          | Runs                    |

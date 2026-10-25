@@ -164,9 +164,8 @@ variable     = binding name ":" [ access_prefix ] type "[storage=" storage "]"
                [ "[align=" int "]" ] [ "[cleanup=%" int "]" ]
                [ "[register=" string "]" ] [ auto_init ] [ "=" value ] ;
 auto_init    = "[auto_init=zero]"
-             | "[auto_init=pattern(integer=" byte ", floating=" byte
-               ", lone_bool=" byte ", padding=" ( byte | "none" )
-               ", bit_runs=" ( "true" | "false" ) ")]" ;
+             | "[auto_init=pattern(typed, integer=" byte ", floating=" byte ")]"
+             | "[auto_init=pattern(value_bits=" byte ")]" ;
 byte         = "0x" hex hex ;
 storage      = "automatic" | "static" | "thread" ;
 linkage      = "[linkage=" ( "internal" | "external" ) "]" ;

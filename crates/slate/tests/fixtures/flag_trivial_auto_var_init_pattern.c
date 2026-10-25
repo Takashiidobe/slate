@@ -35,11 +35,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn show() {
-// CHECK-NEXT:     let mut scalar: i32 = 0;
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let __slate_auto_bytes = (std::ptr::addr_of_mut!(scalar) as *mut _) as *mut u8;
-// CHECK-NEXT:         std::ptr::write_bytes(__slate_auto_bytes.add(0usize), 170u8, 4usize);
-// CHECK-NEXT:     }
+// CHECK-NEXT:     let scalar: i32 = -1431655766i32;
 // CHECK-NEXT:     let mut r: record = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let __slate_auto_bytes = (std::ptr::addr_of_mut!(r) as *mut _) as *mut u8;

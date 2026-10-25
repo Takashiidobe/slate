@@ -74,6 +74,14 @@ impl CrossTarget {
         }
     }
 
+    fn gcc(&self) -> Result<(String, Vec<String>), String> {
+        match self.rust_triple {
+            "i686-unknown-linux-gnu" => Ok(("gcc".into(), vec!["-m32".into()])),
+            "aarch64-unknown-linux-gnu" => Ok(("aarch64-linux-gnu-gcc".into(), Vec::new())),
+            triple => Err(format!("no gcc oracle configured for {triple}")),
+        }
+    }
+
     pub fn for_triple(triple: &str) -> Option<Self> {
         match triple {
             _ if triple == env!("SLATE_BUILD_TARGET") => None,
@@ -261,14 +269,12 @@ pub fn compile_c_with_args_for_target(
     cc_override: Option<&str>,
     cross: Option<&CrossTarget>,
 ) -> Result<(), String> {
-    let cc_bin = match (cross, cc_override) {
-        (Some(cross), _) => cross.cc.clone(),
-        (None, Some(cc_bin)) => cc_bin.to_string(),
-        (None, None) => cc(),
+    let (cc_bin, cc_extra_args) = match (cross, cc_override) {
+        (Some(cross), Some("gcc")) => cross.gcc()?,
+        (Some(cross), _) => (cross.cc.clone(), cross.cc_extra_args.clone()),
+        (None, Some(cc_bin)) => (cc_bin.to_string(), Vec::new()),
+        (None, None) => (cc(), Vec::new()),
     };
-    let cc_extra_args = cross
-        .map(|cross| cross.cc_extra_args.clone())
-        .unwrap_or_default();
     let cache_key = serde_json::to_string(&(1, src, &cc_bin, &cc_extra_args, extra_args))
         .map_err(|e| format!("encode C cache key: {e}"))?;
     let mut inputs = vec![src];

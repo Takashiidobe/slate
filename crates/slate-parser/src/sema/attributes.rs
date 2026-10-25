@@ -300,6 +300,8 @@ fn inapplicable(
         }
         Attribute::Cleanup(_) => (!matches!(subject, Subject::Object { automatic: true }))
             .then_some(("cleanup", Some("local variables"))),
+        Attribute::Uninitialized => (!matches!(subject, Subject::Object { automatic: true }))
+            .then_some(("uninitialized", Some("local variables"))),
         Attribute::Visibility(_) => (subject == Subject::Typedef).then_some(("visibility", None)),
         Attribute::Weak => matches!(
             subject,

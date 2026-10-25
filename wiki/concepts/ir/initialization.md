@@ -33,26 +33,33 @@ initialization are required semantics, not optional metadata.
 ## Automatic variable fill
 
 `-ftrivial-auto-var-init=zero|pattern` sets `Variable::auto_init` on an
-automatic `let` that has no initializer and no `__attribute__((uninitialized))`.
+automatic `let` that has no initializer and no `uninitialized` attribute
+(`__attribute__((uninitialized))` for both flavors, `[[gnu::uninitialized]]`
+for gcc only; elsewhere the attribute warns under `-Wignored-attributes`).
 Parameters, statics, and `-ftrivial-auto-var-init=uninitialized` leave it
 `None`. It is separate from `zero_fill`, which is what C requires of omitted
 subobjects in a partial initializer and never changes.
 
-Printed `[auto_init=zero]` or `[auto_init=pattern(integer=.., floating=..,
-lone_bool=.., padding=.., bit_runs=..)]`. Sema resolves the flavor into bytes,
-so a consumer needs no flavor rules:
+Sema resolves flavor and target, so a consumer needs no flavor rules. Every
+byte of the object is written:
 
-| Field       | Meaning                                                                           | clang  | gcc    |
-| ----------- | --------------------------------------------------------------------------------- | ------ | ------ |
-| `integer`   | byte for integers, enums, pointers, and `_Bool` members and elements              | `0xAA` | `0xFE` |
-| `floating`  | byte for each floating scalar and complex or imaginary part (x87 value bytes only) | `0xFF` | `0xFE` |
-| `lone_bool` | byte for a standalone `_Bool` variable                                            | `0xAA` | `0x00` |
-| `padding`   | byte written to the whole object first, so padding gets it; `None` leaves padding | `0xAA` | `None` |
-| `bit_runs`  | each run of adjacent bit-fields gets the repeating `integer` byte truncated to the run's bit width, other bits of those bytes zero | false  | true   |
+| `AutoInit` | Printed | Bytes |
+| ---------- | ------- | ----- |
+| `Zero` | `[auto_init=zero]` | all zero, padding included |
+| `Pattern(Typed { integer, floating })` | `[auto_init=pattern(typed, integer=.., floating=..)]` | `integer` everywhere, padding and bit-fields included; `floating` over each floating scalar's value bytes; x87 tail bytes zero. A union fills only its storage member: highest alignment, then largest size, then first declared, a bit-field counting as its width rounded up to a power-of-two number of bytes |
+| `Pattern(ValueBits(byte))` | `[auto_init=pattern(value_bits=..)]` | each value bit takes `byte`'s bit at the same position; every other bit is zero: padding, x87 tails, `_BitInt` bits above its width, and bits outside a bit-field. A `_Bool` member has 8 value bits. A union's value bits are those of any member, and a bit-field directly in a union covers whole bytes |
 
-A consumer writes `padding` over the whole object (or zeroes it when `None`),
-then the per-leaf bytes. Slate does this with in-place `write_bytes` after the
-`let`, because a typed move does not preserve Rust padding.
+clang is `Typed { integer: 0xAA, floating: 0xFF }`, with `integer: 0xFF` when
+pointers are narrower than 64 bits. gcc is `ValueBits(0xFE)`, except that a
+local whose type is `_Bool`, `_Complex long double`, or an x87 `long double`
+not stored in 16 bytes is `Zero`: gcc zero-fills a scalar whose repeated
+`0xFE` bytes are not a value of its type.
+
+Slate lowers a scalar or a fixed array of scalars whose fill is a valid Rust
+value to a typed initializer (`i32` `-1431655766i32`, `f32::from_bits(..)`,
+`[..; N]`). Anything else gets in-place `write_bytes` after the `let`: the
+background byte over the whole object, then the differing runs, with a loop
+per element for arrays of records. A typed move does not preserve Rust padding.
 
 ## Aggregate initializers
 

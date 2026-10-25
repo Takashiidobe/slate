@@ -624,14 +624,22 @@ impl FunctionLowerer<'_, '_> {
                                 if let ir::Statement::Let(variable) = &statement.value
                                     && let Some(auto) = variable.auto_init =>
                             {
-                                let target = Expr::Cast {
-                                    expr: Box::new(slot_pointer(variable.id)),
-                                    ty: rust::Type::Ptr {
-                                        mutable: true,
-                                        inner: Box::new(rust::Type::Prim(Prim::U8)),
-                                    },
-                                };
-                                self.auto_init_writes(&variable.ty, auto, target, false)?
+                                if let Some(value) = self.auto_init_value(&variable.ty, auto)? {
+                                    vec![Stmt::Expr(Expr::Call {
+                                        func: Box::new(Expr::Var("std::ptr::write".into())),
+                                        args: vec![slot_pointer(variable.id), value],
+                                        binding: CallBinding::Generated,
+                                    })]
+                                } else {
+                                    let target = Expr::Cast {
+                                        expr: Box::new(slot_pointer(variable.id)),
+                                        ty: rust::Type::Ptr {
+                                            mutable: true,
+                                            inner: Box::new(rust::Type::Prim(Prim::U8)),
+                                        },
+                                    };
+                                    self.auto_init_writes(&variable.ty, auto, target, false)?
+                                }
                             }
                             Some((_, None)) => Vec::new(),
                             None if diverted => Vec::new(),

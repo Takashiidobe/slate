@@ -69,7 +69,15 @@ int main(void) {
 // CHECK-NEXT:     let mut b: bool = false;
 // CHECK-NEXT:     let mut arr: __SlateAlign16<[i32; 64]> = __SlateAlign16([0i32; 64]);
 // CHECK-NEXT:     let mut s: padded = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         let __slate_auto_bytes = (std::ptr::addr_of_mut!(s) as *mut _) as *mut u8;
+// CHECK-NEXT:         std::ptr::write_bytes(__slate_auto_bytes.add(0usize), 0u8, 24usize);
+// CHECK-NEXT:     }
 // CHECK-NEXT:     let mut many: __SlateAlign16<[padded; 4]> = __SlateAlign16(unsafe { std::mem::zeroed() });
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         let __slate_auto_bytes = (std::ptr::addr_of_mut!(many.0) as *mut _) as *mut u8;
+// CHECK-NEXT:         std::ptr::write_bytes(__slate_auto_bytes.add(0usize), 0u8, 96usize);
+// CHECK-NEXT:     }
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"int".as_ptr(),
 // CHECK-NEXT:         std::ptr::addr_of_mut!(i) as *const (),

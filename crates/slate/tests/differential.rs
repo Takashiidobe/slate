@@ -14,7 +14,10 @@ struct Fixture {
     name: String,
     relative: PathBuf,
     path: PathBuf,
+    gcc: bool,
 }
+
+const GCC_FIXTURES: &str = "gcc";
 
 fn collect_fixtures(root: &Path, sub: &Path, selected: &Option<String>, out: &mut Vec<Fixture>) {
     let Ok(entries) = std::fs::read_dir(root.join(sub)) else {
@@ -34,6 +37,7 @@ fn collect_fixtures(root: &Path, sub: &Path, selected: &Option<String>, out: &mu
             name,
             relative,
             path,
+            gcc: sub.starts_with(GCC_FIXTURES),
         });
     }
 }
@@ -65,6 +69,9 @@ fn target_fixtures(root: &Path, triple: &str) -> Vec<Fixture> {
     let mut fixtures = Vec::new();
     collect_fixtures(root, Path::new(""), &selected, &mut fixtures);
     collect_fixtures(root, Path::new(arch), &selected, &mut fixtures);
+    let gcc = Path::new(GCC_FIXTURES);
+    collect_fixtures(root, gcc, &selected, &mut fixtures);
+    collect_fixtures(root, &gcc.join(arch), &selected, &mut fixtures);
     fixtures.sort_by(|a, b| a.name.cmp(&b.name));
     fixtures
 }
@@ -93,6 +100,9 @@ fn run_cases_for_target(
         let dg_options = support::fixture_dg_options(&f.path);
         let mut extra_args = dg_options.clone();
         extra_args.extend(support::fixture_dg_additional_options(&f.path));
+        if f.gcc {
+            extra_args.push("--flavor=gcc".into());
+        }
         if let Some(cross) = cross {
             extra_args.push(format!("-target={}", cross.rust_triple));
         }
@@ -115,6 +125,7 @@ fn run_cases_for_target(
                 expected_stdout: Some(f.path.with_extension("expected"))
                     .filter(|path| path.is_file()),
                 filecheck_target,
+                cc: f.gcc.then(|| "gcc".to_string()),
                 ..support::RunConfig::default()
             };
             support::Case {

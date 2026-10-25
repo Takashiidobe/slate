@@ -11,8 +11,9 @@ use crate::compiler_options::TrivialAutoVarInit;
 use crate::diagnostics::{DiagnosticContext, Warning};
 use crate::ir::{
     Access, ArrayExtent, ArrayParameter, AutoInit, BindingId, BitFieldUnit, CallConv, Comment,
-    Enumerator, Field, Number, NumericType, PatternFill, PointerSpace, RecordKind, RecordLayout,
-    Sibling, Type, TypeDefinition, TypeDefinitionKind, TypeId, VaConvention, Value, ValueKind,
+    Enumerator, Field, FloatType, Number, NumericType, PatternFill, PointerSpace, RecordKind,
+    RecordLayout, Sibling, Type, TypeDefinition, TypeDefinitionKind, TypeId, VaConvention, Value,
+    ValueKind,
 };
 use crate::target_info::{
     LongDoubleFormat, StorageLayout, TargetEnvironment, TargetFamily, TargetInfo, TargetOs,
@@ -130,27 +131,36 @@ impl TypeResolver {
         &self.dialect
     }
 
-    pub(super) fn auto_init(&self) -> Option<AutoInit> {
+    pub(super) fn auto_init(&self, ty: QualType) -> Option<AutoInit> {
         match self.dialect.options().codegen.trivial_auto_var_init {
             TrivialAutoVarInit::Uninitialized => None,
             TrivialAutoVarInit::Zero => Some(AutoInit::Zero),
             TrivialAutoVarInit::Pattern => match self.flavor() {
-                CompilerFlavor::Gcc => Some(AutoInit::Pattern(PatternFill {
-                    integer: 0xFE,
-                    floating: 0xFE,
-                    lone_bool: 0,
-                    padding: None,
-                    bit_runs: true,
-                })),
-                CompilerFlavor::Clang => Some(AutoInit::Pattern(PatternFill {
-                    integer: 0xAA,
+                CompilerFlavor::Gcc if self.gcc_pattern_unrepresentable(ty) => Some(AutoInit::Zero),
+                CompilerFlavor::Gcc => Some(AutoInit::Pattern(PatternFill::ValueBits(0xFE))),
+                CompilerFlavor::Clang => Some(AutoInit::Pattern(PatternFill::Typed {
+                    integer: if self.target_info().pointer_width < 64 {
+                        0xFF
+                    } else {
+                        0xAA
+                    },
                     floating: 0xFF,
-                    lone_bool: 0xAA,
-                    padding: Some(0xAA),
-                    bit_runs: false,
                 })),
                 CompilerFlavor::Msvc => None,
             },
+        }
+    }
+
+    fn gcc_pattern_unrepresentable(&self, ty: QualType) -> bool {
+        let target = self.target_info();
+        let x87 = NumericType::Float(FloatType::F80);
+        match self.ctypes.ir_type(self.ctypes.canonical(ty), target) {
+            Type::Bool => true,
+            Type::Numeric(numeric) if numeric == x87 => target
+                .storage_of(Type::Numeric(x87))
+                .is_ok_and(|layout| layout.size_bytes != 16),
+            Type::Complex(numeric) => numeric == x87,
+            _ => false,
         }
     }
 

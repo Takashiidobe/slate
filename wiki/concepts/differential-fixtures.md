@@ -37,7 +37,11 @@ two-TU fixtures. Additional suite coverage is tracked for restoration in
 (comma-separated, default `x86_64-unknown-linux-gnu`). Each target runs the
 target-independent `tests/fixtures/*.c` plus `tests/fixtures/<arch>/`, where
 `<arch>` is the triple's first component. Put a fixture in an arch directory
-only when it cannot be target-independent (inline asm, ISA intrinsics). Nextest
+only when it cannot be target-independent (inline asm, ISA intrinsics).
+`tests/fixtures/gcc/` and `tests/fixtures/gcc/<arch>/` hold gcc-flavor
+fixtures: they translate with `--flavor=gcc` and the oracle is real gcc
+(`gcc -m32` for i686, `aarch64-linux-gnu-gcc` for aarch64), so they need no
+`.expected`. Leave `--flavor=gcc` out of their `dg-options`. Nextest
 profiles pick targets through setup scripts in `.config/nextest.toml`:
 
 ```bash

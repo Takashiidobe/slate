@@ -149,7 +149,10 @@ position without resolving names:
 - `Ignored` includes `mode`, `address_space`, `cleanup`,
   `scalar_storage_order`, `transparent_union` (the calling convention is
   not modeled; a call needing it fails in argument conversion). `Ignored`
-  only means no symbol or layout effect; `cleanup` has its own consumer.
+  only means no symbol or layout effect; `cleanup` has its own consumer, and
+  `uninitialized` on an automatic local suppresses `Variable::auto_init`
+  (`sema/module.rs`). gcc also honors `[[gnu::uninitialized]]`; clang has no
+  C spelling in `[[...]]` form, so every scoped spelling is unknown there.
 - Attributes before the tag keyword of a declarator-less declaration
   (`__attribute__((packed)) struct S {...};`) never reach the tag; ignored
   with a warning, as clang does.
@@ -162,7 +165,7 @@ clang 22.1.8 subject behavior; `ok` accepted, `ign`
 | `used`, `retain`                                         | ok, `ign` if automatic | ok       | `ign`   | `ign`     |
 | `common`, `nocommon`                                     | ok                     | `ign`    | `ign`   | ok        |
 | `visibility`, `weak`                                     | ok                     | ok       | `ign`   | ok        |
-| `cleanup`                                                | `ign` unless automatic | `ign`    | `ign`   | `ign`     |
+| `cleanup`, `uninitialized`                               | `ign` unless automatic | `ign`    | `ign`   | `ign`     |
 | `packed`, `ms_struct`, `gcc_struct`, `transparent_union` | `ign`                  | `ign`    | `ign`   | `ign`     |
 | `malloc`, `cold`, `ifunc`, `alloc_size`, …               | `ign`                  | ok       | `ign`   | `ign`     |
 
@@ -173,7 +176,7 @@ clang 22.1.8 subject behavior; `ok` accepted, `ign`
 | `transparent_union`                                          | `ign`           | ok on union, `ign` on struct |
 | `mode`                                                       | ok              | `err`                        |
 | `section`, `alias`, `tls_model`                              | `err`           | `err`                        |
-| `used`, `retain`, `weak`, `common`, `nocommon`, `cleanup`    | `ign`           | `ign`                        |
+| `used`, `retain`, `weak`, `common`, `nocommon`, `cleanup`, `uninitialized` | `ign` | `ign`                  |
 | `malloc`, `cold`, `noinline`, …                              | `ign`           | `ign`                        |
 | `noreturn`, `format`, `nonnull`, `alloc_size`, `alloc_align` | by type (below) | `ign`                        |
 

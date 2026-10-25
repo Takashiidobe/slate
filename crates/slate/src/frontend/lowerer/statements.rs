@@ -125,6 +125,14 @@ impl FunctionLowerer<'_, '_> {
                 let self_referential = matches!(self.declaring.replace(outer), Some((_, true)));
                 let mut init = init?;
                 let self_initializer = init.take_if(|_| self_referential);
+                let auto_value = match variable.auto_init {
+                    Some(auto) if init.is_none() && self_initializer.is_none() => {
+                        self.auto_init_value(&variable.ty, auto)?
+                    }
+                    _ => None,
+                };
+                let auto_init = variable.auto_init.filter(|_| auto_value.is_none());
+                let init = init.or(auto_value);
                 let init = match (init, &variable.ty) {
                     (Some(init), _) => Some(init),
                     (
@@ -169,7 +177,7 @@ impl FunctionLowerer<'_, '_> {
                         access: variable.access,
                     };
                     self.after_declaration = Some(self.lower_assignment(&place, value)?);
-                } else if let Some(auto) = variable.auto_init {
+                } else if let Some(auto) = auto_init {
                     let writes = self.auto_init_writes(
                         &variable.ty,
                         auto,

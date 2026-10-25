@@ -153,12 +153,9 @@ pub enum AutoInit {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct PatternFill {
-    pub integer: u8,
-    pub floating: u8,
-    pub lone_bool: u8,
-    pub padding: Option<u8>,
-    pub bit_runs: bool,
+pub enum PatternFill {
+    Typed { integer: u8, floating: u8 },
+    ValueBits(u8),
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

@@ -1,8 +1,8 @@
 use super::{
     ArrayExtent, AsmConstraintLocation, AsmOperandKind, AutoInit, Comment, Comments, DllStorage,
     Evaluation, FloatType, InlineAsm, Inlining, Linkage, MemoryEffects, Metadata, Module,
-    NumericType, Parameters, RecordKind, SehHandler, Statement, StorageDuration, SymbolAttributes,
-    TargetFeature, TlsModel, Type, TypeDefinitionKind, Variable, Visibility,
+    NumericType, Parameters, PatternFill, RecordKind, SehHandler, Statement, StorageDuration,
+    SymbolAttributes, TargetFeature, TlsModel, Type, TypeDefinitionKind, Variable, Visibility,
 };
 use crate::{
     ast::{CommentAttach, Loc, NodeId, Span},
@@ -284,19 +284,12 @@ impl Printer<'_> {
         }
         match variable.auto_init {
             Some(AutoInit::Zero) => f.write_str(" [auto_init=zero]")?,
-            Some(AutoInit::Pattern(fill)) => {
-                write!(
-                    f,
-                    " [auto_init=pattern(integer={:#04x}, floating={:#04x}, lone_bool={:#04x}, padding={}, bit_runs={})]",
-                    fill.integer,
-                    fill.floating,
-                    fill.lone_bool,
-                    match fill.padding {
-                        Some(byte) => format!("{byte:#04x}"),
-                        None => "none".into(),
-                    },
-                    fill.bit_runs
-                )?;
+            Some(AutoInit::Pattern(PatternFill::Typed { integer, floating })) => write!(
+                f,
+                " [auto_init=pattern(typed, integer={integer:#04x}, floating={floating:#04x})]"
+            )?,
+            Some(AutoInit::Pattern(PatternFill::ValueBits(byte))) => {
+                write!(f, " [auto_init=pattern(value_bits={byte:#04x})]")?;
             }
             None => {}
         }
