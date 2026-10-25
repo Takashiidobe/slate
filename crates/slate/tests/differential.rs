@@ -77,22 +77,29 @@ fn target_unsupported(list: &Path) -> std::collections::BTreeSet<String> {
         .collect()
 }
 
-fn selected_flavor_dir() -> Option<String> {
-    std::env::var("SLATE_DIFF_FLAVOR").ok()
+fn selected_flavor() -> Option<Flavor> {
+    let flavor = std::env::var("SLATE_DIFF_FLAVOR").ok()?;
+    match flavor.as_str() {
+        "clang" => Some(Flavor::Clang),
+        "gcc" => Some(Flavor::Gcc),
+        "msvc" => Some(Flavor::Msvc),
+        _ => panic!("SLATE_DIFF_FLAVOR={flavor}: expected clang, gcc or msvc"),
+    }
 }
 
 fn target_fixtures(root: &Path, triple: &str) -> Vec<Fixture> {
     let selected = std::env::var("SLATE_DIFF_FIXTURE").ok();
-    let flavor = selected_flavor_dir();
+    let flavor = selected_flavor();
+    let runs = |candidate: Flavor| flavor.is_none_or(|flavor| flavor == candidate);
     let arch = triple.split('-').next().unwrap_or(triple);
     let mut fixtures = Vec::new();
-    if flavor.is_none() {
+    if runs(Flavor::Clang) {
         collect_fixtures(root, Path::new(""), &selected, &mut fixtures);
         collect_fixtures(root, Path::new(arch), &selected, &mut fixtures);
     }
     for (dir, _) in FLAVOR_FIXTURES
         .into_iter()
-        .filter(|(dir, _)| flavor.as_deref().is_none_or(|flavor| flavor == *dir))
+        .filter(|&(_, dir_flavor)| runs(dir_flavor))
     {
         collect_fixtures(root, Path::new(dir), &selected, &mut fixtures);
         collect_fixtures(root, &Path::new(dir).join(arch), &selected, &mut fixtures);
@@ -289,7 +296,9 @@ fn generated_differential() {
                 }
             }
         }
-        if std::env::var("SLATE_DIFF_FIXTURE").is_err() && selected_flavor_dir().is_none() {
+        if std::env::var("SLATE_DIFF_FIXTURE").is_err()
+            && selected_flavor().is_none_or(|flavor| flavor == Flavor::Clang)
+        {
             for name in expected_failures {
                 failures.push((
                     format!("{triple}/{name}"),

@@ -53,6 +53,26 @@ priority = 80
 filter = 'test(generated_differential) + test(c_testsuite_supported_tests_match_c)'
 threads-required = 3
 
+[scripts.setup.flavor-clang]
+command = ["sh", "-c", "echo SLATE_DIFF_FLAVOR=clang >> \"$NEXTEST_ENV\"; echo SLATE_TEST_TARGETS=x86_64-unknown-linux-gnu,i686-unknown-linux-gnu,aarch64-unknown-linux-gnu >> \"$NEXTEST_ENV\""]
+
+[profile.clang]
+default-filter = '(package(slate-c2rust) & (test(=generated_differential) | test(=fixtures_unsupported_tests_still_fail))) | (package(slate-parser) & test(/^(error\/|suites\/[^\/]+\/)?clang\//))'
+
+[[profile.clang.scripts]]
+filter = 'package(slate-c2rust) & (test(=generated_differential) | test(/^fixtures_unsupported_/))'
+setup = "flavor-clang"
+
+[scripts.setup.flavor-gcc]
+command = ["sh", "-c", "echo SLATE_DIFF_FLAVOR=gcc >> \"$NEXTEST_ENV\"; echo SLATE_TEST_TARGETS=x86_64-unknown-linux-gnu,i686-unknown-linux-gnu,aarch64-unknown-linux-gnu >> \"$NEXTEST_ENV\""]
+
+[profile.gcc]
+default-filter = '(package(slate-c2rust) & (test(=generated_differential) | test(=fixtures_unsupported_tests_still_fail))) | (package(slate-parser) & test(/^(error\/|suites\/[^\/]+\/)?gcc\//))'
+
+[[profile.gcc.scripts]]
+filter = 'package(slate-c2rust) & (test(=generated_differential) | test(/^fixtures_unsupported_/))'
+setup = "flavor-gcc"
+
 [scripts.setup.flavor-msvc]
 command = ["sh", "-c", "echo SLATE_DIFF_FLAVOR=msvc >> \"$NEXTEST_ENV\"; echo SLATE_TEST_TARGETS=x86_64-unknown-linux-gnu,i686-unknown-linux-gnu >> \"$NEXTEST_ENV\""]
 
