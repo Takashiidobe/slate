@@ -1302,10 +1302,10 @@ impl From<StorageClass> for &'static str {
     }
 }
 
-impl TryFrom<&str> for StorageClass {
-    type Error = ();
+impl std::str::FromStr for StorageClass {
+    type Err = ();
 
-    fn try_from(value: &str) -> Result<Self, Self::Error> {
+    fn from_str(value: &str) -> Result<Self, Self::Err> {
         match value {
             "typedef" => Ok(Self::Typedef),
             "extern" => Ok(Self::Extern),
