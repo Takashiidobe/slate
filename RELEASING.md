@@ -33,8 +33,8 @@ requires its dependencies to be available on crates.io.
 ## Tag releases
 
 Trusted publishing uses temporary tokens; no repository API token secret is
-needed. It must be configured after each crate's first manual publication.
-See [crates.io trusted publishing](https://crates.io/docs/trusted-publishing).
+needed. It must be configured after each crate's first manual publication. See
+[crates.io trusted publishing](https://crates.io/docs/trusted-publishing).
 
 Set all three package versions to the release version, update the workspace
 dependency requirements in `Cargo.toml`, and regenerate `Cargo.lock` with
@@ -64,5 +64,5 @@ for these native targets:
 | macOS Apple Silicon | `aarch64-apple-darwin`     |
 | Windows 2022        | `x86_64-pc-windows-msvc`   |
 
-Install the `slate` executable with `cargo binstall slate-c2rust` and the
-parser with `cargo binstall slate-parser`.
+Install the `slate` executable with `cargo binstall slate-c2rust` and the parser
+with `cargo binstall slate-parser`.
