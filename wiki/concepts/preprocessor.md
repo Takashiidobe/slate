@@ -248,9 +248,10 @@ token plus an interned `HideSet`; file tokens start empty.
 - Comma elision (`comma_elision`): gcc and clang drop the comma of
   `, ## __VA_ARGS__` when the variadic argument is omitted (`F(a)`, not
   `F(a,)`); for a macro whose only parameter is `...`, `H()` counts as
-  omitted in gnu modes only. msvc's traditional preprocessor drops a comma
-  before any `__VA_ARGS__` that is empty after expansion, with or without
-  `##`.
+  omitted in gnu modes and msvc only, as cl's conforming preprocessor does.
+  cl's traditional preprocessor drops a comma before any empty
+  `__VA_ARGS__`; slate does not emulate it (see
+  [compiler-flags](compiler-flags.md)).
 - GNU named variadics (`#define F(fmt, args...)`): `#define` keeps `args`
   out of the fixed parameters and rewrites its uses in the replacement to
   `__VA_ARGS__`, so arity, `#`, `##` and comma elision share the

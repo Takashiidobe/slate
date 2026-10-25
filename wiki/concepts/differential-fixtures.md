@@ -49,7 +49,8 @@ so Windows predefines and LLP64 layout match the oracle, and the Rust is
 built for that target with lld-link, clang-cl and msvc-wine's `LIB`/`INCLUDE`
 and run under wine, as a separate batch. Without that toolchain or rustup
 target they translate for the linux triple. Each passes `/Zc:preprocessor`
-in `dg-options`, because cl.exe's default is the traditional preprocessor.
+in `dg-options`, because cl.exe's default is the traditional preprocessor,
+which slate never emulates.
 They also check themselves, calling `abort()` on a mismatch: when wine or
 msvc-wine is missing, or on aarch64, the Rust must exit 0 with empty stdout.
 A Windows FileCheck block lists `<arch>-pc-windows-msvc`;
@@ -100,8 +101,9 @@ promotes it.
 
 Paths are relative to `crates/slate`. `tests/fixtures/<arch>/` and
 `tests/fixtures.unsupported/<arch>/` run only for that architecture's targets.
-`*.ignored` buckets hold only
-features Slate will never support. Selectors take a fixture stem.
+`*.ignored` buckets (`tests/fixtures.ignored`, `tests/fixtures.gcc-dg.ignored`,
+...) hold only features Slate will never support, each with a `SLATE:`
+comment saying why; no test reads them. Selectors take a fixture stem.
 
 ## Triage
 

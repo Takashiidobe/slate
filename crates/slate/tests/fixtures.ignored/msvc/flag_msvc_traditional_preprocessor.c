@@ -1,3 +1,8 @@
+/* SLATE: needs cl's traditional preprocessor (/Zc:preprocessor-, cl's
+ flagless default). Slate always preprocesses conformingly, as cl does with
+ /Zc:preprocessor or /std:c11 and later; most libraries do not build with the
+ traditional one, so /Zc:preprocessor- is rejected and will not be supported
+ (slate-3amj.5.12). */
 /* { dg-options "/Zc:preprocessor /Zc:preprocessor-" } */
 void abort(void);
 

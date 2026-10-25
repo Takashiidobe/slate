@@ -29,10 +29,14 @@ each stage is in [configuration-threading](configuration-threading.md).
   `ALL_FLAVORS` (`-fomit-frame-pointer`, `-flto`, `-fvisibility=`, ...).
   Its own `/` spellings (the rest of the cl.exe options are tracked in
   slate-3amj.5):
-  - `/Zc:preprocessor` is accepted with no effect, since slate always
-    preprocesses conformingly and the msvc snapshots were taken with it
-    (`_MSVC_TRADITIONAL 0`). `/Zc:preprocessor-` is rejected
-    (slate-3amj.5.12).
+  - Slate always uses cl's conforming preprocessor (`_MSVC_TRADITIONAL 0`),
+    even without `/Zc:preprocessor` or `/std:c11` and later, where cl falls
+    back to its traditional one. `/Zc:preprocessor` is accepted with no
+    effect. `/Zc:preprocessor-` is rejected and will not be supported
+    (slate-3amj.5.12), because most libraries do not build with the
+    traditional preprocessor. A flagless TU that depends on traditional
+    expansion (`__VA_ARGS__` forwarded as one argument, commas dropped
+    before an empty `__VA_ARGS__`) expands differently in slate than in cl.
   - `/J` makes plain `char` unsigned (`TargetInfo::char_signed`) and defines
     `_CHAR_UNSIGNED` only, as cl.exe does; `__CHAR_UNSIGNED__` stays
     undefined.
