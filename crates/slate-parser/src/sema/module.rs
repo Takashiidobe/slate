@@ -1314,10 +1314,12 @@ impl Lowerer {
             }
             let mut c_entries = self.types.render(resolved).entries();
             if item.specifiers.storage == StorageClass::Typedef {
+                let explicitly_signed = self.types.explicitly_signed(&item.specifiers.ty);
                 let alias = self.types.define_alias(
                     declarator.id,
                     name.into(),
                     resolved,
+                    explicitly_signed,
                     attributes.clone(),
                 )?;
                 self.types.owner = owner;

@@ -1149,9 +1149,17 @@ pub struct TypeName {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum IntegerType {
-    Char { signed: Option<bool> },
-    Ranked { rank: IntegerRank, signed: bool },
-    BitInt { width: Expr, signed: bool },
+    Char {
+        signed: Option<bool>,
+    },
+    Ranked {
+        rank: IntegerRank,
+        signed: Option<bool>,
+    },
+    BitInt {
+        width: Expr,
+        signed: bool,
+    },
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

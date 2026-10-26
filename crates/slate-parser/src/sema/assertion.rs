@@ -446,9 +446,17 @@ impl Checker<'_> {
                     self.types
                         .declare_provisional_alias(declarator.id, name.to_owned(), resolved);
                 } else {
+                    let explicitly_signed =
+                        self.types.explicitly_signed(&declaration.specifiers.ty);
                     let result = self
                         .types
-                        .define_alias(declarator.id, name.to_owned(), resolved, attributes)
+                        .define_alias(
+                            declarator.id,
+                            name.to_owned(),
+                            resolved,
+                            explicitly_signed,
+                            attributes,
+                        )
                         .map(drop);
                     self.report(declarator, result);
                 }

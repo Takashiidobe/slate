@@ -119,7 +119,7 @@ impl Parser {
                         specifiers: specifiers_with_type(TypeSpecifier::Integer(
                             IntegerType::Ranked {
                                 rank: IntegerRank::Int,
-                                signed: true,
+                                signed: None,
                             },
                         )),
                         declarator: Declarator::Name(name.clone()),

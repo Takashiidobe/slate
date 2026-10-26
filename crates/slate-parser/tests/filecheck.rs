@@ -980,7 +980,11 @@ fn type_spelling(ty: &TypeSpecifier) -> String {
             Some(false) => "unsigned char".into(),
         },
         TypeSpecifier::Integer(IntegerType::Ranked { rank, signed }) => {
-            let prefix = if *signed { "" } else { "unsigned " };
+            let prefix = if *signed == Some(false) {
+                "unsigned "
+            } else {
+                ""
+            };
             let name = match rank {
                 IntegerRank::Short => "short",
                 IntegerRank::Int => "int",

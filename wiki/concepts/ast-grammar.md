@@ -184,7 +184,7 @@ TypeSpecifier = "Void" | "Bool"
               | "Tag(" TagSpecifier ")" ;
 
 IntegerType  = Char { signed: opt<bool> }
-             | Ranked { rank: IntegerRank, signed: bool }
+             | Ranked { rank: IntegerRank, signed: opt<bool> }
              | BitInt { width: expr, signed: bool } ;
 IntegerRank  = "Short" | "Int" | "Long" | "LongLong" | "Int128" ;
 FloatingType = "BFloat16" | "Float" | "Float16" | "Fp16"
@@ -209,7 +209,9 @@ TagKind      = "Struct" | "Union" | "Enum" ;
 ```
 
 - `Char { signed: None }` is plain `char`, distinct from `signed char` and
-  `unsigned char`.
+  `unsigned char`. `Ranked { signed: None }` is a signed type written without
+  `signed` (`int`, `long`, `__int128_t`); gcc's `-funsigned-bitfields` makes
+  only those bit-fields unsigned.
 - `Named` is a typedef name; `TargetBuiltin` is a compiler-provided type
   name, currently only `__builtin_va_list`. `__m128`, `__m256i` and the
   like are `Named`: no compiler predeclares them, the intrinsics headers

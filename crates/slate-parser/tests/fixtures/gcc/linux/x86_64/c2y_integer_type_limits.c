@@ -67,7 +67,9 @@ int replaced = _Maxof(int);
 // C2Y-NEXT:               ty: Integer(
 // C2Y-NEXT:                   Ranked {
 // C2Y-NEXT:                       rank: Long,
-// C2Y-NEXT:                       signed: false,
+// C2Y-NEXT:                       signed: Some(
+// C2Y-NEXT:                           false,
+// C2Y-NEXT:                       ),
 // C2Y-NEXT:                   },
 // C2Y-NEXT:               ),
 // C2Y-NEXT:               storage: Typedef,
@@ -117,7 +119,7 @@ int replaced = _Maxof(int);
 // C2Y-NEXT:               ty: Integer(
 // C2Y-NEXT:                   Ranked {
 // C2Y-NEXT:                       rank: Int,
-// C2Y-NEXT:                       signed: true,
+// C2Y-NEXT:                       signed: None,
 // C2Y-NEXT:                   },
 // C2Y-NEXT:               ),
 // C2Y-NEXT:           },
@@ -134,7 +136,7 @@ int replaced = _Maxof(int);
 // C2Y-NEXT:                                       ty: Integer(
 // C2Y-NEXT:                                           Ranked {
 // C2Y-NEXT:                                               rank: Int,
-// C2Y-NEXT:                                               signed: true,
+// C2Y-NEXT:                                               signed: None,
 // C2Y-NEXT:                                           },
 // C2Y-NEXT:                                       ),
 // C2Y-NEXT:                                   },
@@ -163,7 +165,7 @@ int replaced = _Maxof(int);
 // C2Y-NEXT:                               ty: Integer(
 // C2Y-NEXT:                                   Ranked {
 // C2Y-NEXT:                                       rank: Int,
-// C2Y-NEXT:                                       signed: true,
+// C2Y-NEXT:                                       signed: None,
 // C2Y-NEXT:                                   },
 // C2Y-NEXT:                               ),
 // C2Y-NEXT:                           },
@@ -181,7 +183,7 @@ int replaced = _Maxof(int);
 // C2Y-NEXT:                           ty: Integer(
 // C2Y-NEXT:                               Ranked {
 // C2Y-NEXT:                                   rank: Int,
-// C2Y-NEXT:                                   signed: true,
+// C2Y-NEXT:                                   signed: None,
 // C2Y-NEXT:                               },
 // C2Y-NEXT:                           ),
 // C2Y-NEXT:                       },
@@ -233,7 +235,9 @@ int replaced = _Maxof(int);
 // C2Y-NEXT:                               ty: Integer(
 // C2Y-NEXT:                                   Ranked {
 // C2Y-NEXT:                                       rank: Short,
-// C2Y-NEXT:                                       signed: false,
+// C2Y-NEXT:                                       signed: Some(
+// C2Y-NEXT:                                           false,
+// C2Y-NEXT:                                       ),
 // C2Y-NEXT:                                   },
 // C2Y-NEXT:                               ),
 // C2Y-NEXT:                               qualifiers: Qualifiers {
@@ -252,7 +256,9 @@ int replaced = _Maxof(int);
 // C2Y-NEXT:                               ty: Integer(
 // C2Y-NEXT:                                   Ranked {
 // C2Y-NEXT:                                       rank: LongLong,
-// C2Y-NEXT:                                       signed: false,
+// C2Y-NEXT:                                       signed: Some(
+// C2Y-NEXT:                                           false,
+// C2Y-NEXT:                                       ),
 // C2Y-NEXT:                                   },
 // C2Y-NEXT:                               ),
 // C2Y-NEXT:                           },
@@ -382,7 +388,9 @@ int replaced = _Maxof(int);
 // C2Y-NEXT:                               ty: Integer(
 // C2Y-NEXT:                                   Ranked {
 // C2Y-NEXT:                                       rank: Int,
-// C2Y-NEXT:                                       signed: false,
+// C2Y-NEXT:                                       signed: Some(
+// C2Y-NEXT:                                           false,
+// C2Y-NEXT:                                       ),
 // C2Y-NEXT:                                   },
 // C2Y-NEXT:                               ),
 // C2Y-NEXT:                           },
@@ -397,7 +405,7 @@ int replaced = _Maxof(int);
 // C2Y-NEXT:                               ty: Integer(
 // C2Y-NEXT:                                   Ranked {
 // C2Y-NEXT:                                       rank: Int,
-// C2Y-NEXT:                                       signed: true,
+// C2Y-NEXT:                                       signed: None,
 // C2Y-NEXT:                                   },
 // C2Y-NEXT:                               ),
 // C2Y-NEXT:                           },
@@ -414,7 +422,7 @@ int replaced = _Maxof(int);
 // C2Y-NEXT:                                   ty: Integer(
 // C2Y-NEXT:                                       Ranked {
 // C2Y-NEXT:                                           rank: Int,
-// C2Y-NEXT:                                           signed: true,
+// C2Y-NEXT:                                           signed: None,
 // C2Y-NEXT:                                       },
 // C2Y-NEXT:                                   ),
 // C2Y-NEXT:                               },
@@ -427,7 +435,7 @@ int replaced = _Maxof(int);
 // C2Y-NEXT:                                   ty: Integer(
 // C2Y-NEXT:                                       Ranked {
 // C2Y-NEXT:                                           rank: Int,
-// C2Y-NEXT:                                           signed: true,
+// C2Y-NEXT:                                           signed: None,
 // C2Y-NEXT:                                       },
 // C2Y-NEXT:                                   ),
 // C2Y-NEXT:                               },
@@ -445,7 +453,7 @@ int replaced = _Maxof(int);
 // C2Y-NEXT:                                       ty: Integer(
 // C2Y-NEXT:                                           Ranked {
 // C2Y-NEXT:                                               rank: Int,
-// C2Y-NEXT:                                               signed: true,
+// C2Y-NEXT:                                               signed: None,
 // C2Y-NEXT:                                           },
 // C2Y-NEXT:                                       ),
 // C2Y-NEXT:                                   },
@@ -460,7 +468,7 @@ int replaced = _Maxof(int);
 // C2Y-NEXT:                                       ty: Integer(
 // C2Y-NEXT:                                           Ranked {
 // C2Y-NEXT:                                               rank: Int,
-// C2Y-NEXT:                                               signed: true,
+// C2Y-NEXT:                                               signed: None,
 // C2Y-NEXT:                                           },
 // C2Y-NEXT:                                       ),
 // C2Y-NEXT:                                   },
@@ -503,7 +511,7 @@ int replaced = _Maxof(int);
 // C2Y-NEXT:               ty: Integer(
 // C2Y-NEXT:                   Ranked {
 // C2Y-NEXT:                       rank: Int,
-// C2Y-NEXT:                       signed: true,
+// C2Y-NEXT:                       signed: None,
 // C2Y-NEXT:                   },
 // C2Y-NEXT:               ),
 // C2Y-NEXT:           },
@@ -539,7 +547,9 @@ int replaced = _Maxof(int);
 // GNU2Y-NEXT:               ty: Integer(
 // GNU2Y-NEXT:                   Ranked {
 // GNU2Y-NEXT:                       rank: Long,
-// GNU2Y-NEXT:                       signed: false,
+// GNU2Y-NEXT:                       signed: Some(
+// GNU2Y-NEXT:                           false,
+// GNU2Y-NEXT:                       ),
 // GNU2Y-NEXT:                   },
 // GNU2Y-NEXT:               ),
 // GNU2Y-NEXT:               storage: Typedef,
@@ -589,7 +599,7 @@ int replaced = _Maxof(int);
 // GNU2Y-NEXT:               ty: Integer(
 // GNU2Y-NEXT:                   Ranked {
 // GNU2Y-NEXT:                       rank: Int,
-// GNU2Y-NEXT:                       signed: true,
+// GNU2Y-NEXT:                       signed: None,
 // GNU2Y-NEXT:                   },
 // GNU2Y-NEXT:               ),
 // GNU2Y-NEXT:           },
@@ -606,7 +616,7 @@ int replaced = _Maxof(int);
 // GNU2Y-NEXT:                                       ty: Integer(
 // GNU2Y-NEXT:                                           Ranked {
 // GNU2Y-NEXT:                                               rank: Int,
-// GNU2Y-NEXT:                                               signed: true,
+// GNU2Y-NEXT:                                               signed: None,
 // GNU2Y-NEXT:                                           },
 // GNU2Y-NEXT:                                       ),
 // GNU2Y-NEXT:                                   },
@@ -635,7 +645,7 @@ int replaced = _Maxof(int);
 // GNU2Y-NEXT:                               ty: Integer(
 // GNU2Y-NEXT:                                   Ranked {
 // GNU2Y-NEXT:                                       rank: Int,
-// GNU2Y-NEXT:                                       signed: true,
+// GNU2Y-NEXT:                                       signed: None,
 // GNU2Y-NEXT:                                   },
 // GNU2Y-NEXT:                               ),
 // GNU2Y-NEXT:                           },
@@ -653,7 +663,7 @@ int replaced = _Maxof(int);
 // GNU2Y-NEXT:                           ty: Integer(
 // GNU2Y-NEXT:                               Ranked {
 // GNU2Y-NEXT:                                   rank: Int,
-// GNU2Y-NEXT:                                   signed: true,
+// GNU2Y-NEXT:                                   signed: None,
 // GNU2Y-NEXT:                               },
 // GNU2Y-NEXT:                           ),
 // GNU2Y-NEXT:                       },
@@ -705,7 +715,9 @@ int replaced = _Maxof(int);
 // GNU2Y-NEXT:                               ty: Integer(
 // GNU2Y-NEXT:                                   Ranked {
 // GNU2Y-NEXT:                                       rank: Short,
-// GNU2Y-NEXT:                                       signed: false,
+// GNU2Y-NEXT:                                       signed: Some(
+// GNU2Y-NEXT:                                           false,
+// GNU2Y-NEXT:                                       ),
 // GNU2Y-NEXT:                                   },
 // GNU2Y-NEXT:                               ),
 // GNU2Y-NEXT:                               qualifiers: Qualifiers {
@@ -724,7 +736,9 @@ int replaced = _Maxof(int);
 // GNU2Y-NEXT:                               ty: Integer(
 // GNU2Y-NEXT:                                   Ranked {
 // GNU2Y-NEXT:                                       rank: LongLong,
-// GNU2Y-NEXT:                                       signed: false,
+// GNU2Y-NEXT:                                       signed: Some(
+// GNU2Y-NEXT:                                           false,
+// GNU2Y-NEXT:                                       ),
 // GNU2Y-NEXT:                                   },
 // GNU2Y-NEXT:                               ),
 // GNU2Y-NEXT:                           },
@@ -854,7 +868,9 @@ int replaced = _Maxof(int);
 // GNU2Y-NEXT:                               ty: Integer(
 // GNU2Y-NEXT:                                   Ranked {
 // GNU2Y-NEXT:                                       rank: Int,
-// GNU2Y-NEXT:                                       signed: false,
+// GNU2Y-NEXT:                                       signed: Some(
+// GNU2Y-NEXT:                                           false,
+// GNU2Y-NEXT:                                       ),
 // GNU2Y-NEXT:                                   },
 // GNU2Y-NEXT:                               ),
 // GNU2Y-NEXT:                           },
@@ -869,7 +885,7 @@ int replaced = _Maxof(int);
 // GNU2Y-NEXT:                               ty: Integer(
 // GNU2Y-NEXT:                                   Ranked {
 // GNU2Y-NEXT:                                       rank: Int,
-// GNU2Y-NEXT:                                       signed: true,
+// GNU2Y-NEXT:                                       signed: None,
 // GNU2Y-NEXT:                                   },
 // GNU2Y-NEXT:                               ),
 // GNU2Y-NEXT:                           },
@@ -886,7 +902,7 @@ int replaced = _Maxof(int);
 // GNU2Y-NEXT:                                   ty: Integer(
 // GNU2Y-NEXT:                                       Ranked {
 // GNU2Y-NEXT:                                           rank: Int,
-// GNU2Y-NEXT:                                           signed: true,
+// GNU2Y-NEXT:                                           signed: None,
 // GNU2Y-NEXT:                                       },
 // GNU2Y-NEXT:                                   ),
 // GNU2Y-NEXT:                               },
@@ -899,7 +915,7 @@ int replaced = _Maxof(int);
 // GNU2Y-NEXT:                                   ty: Integer(
 // GNU2Y-NEXT:                                       Ranked {
 // GNU2Y-NEXT:                                           rank: Int,
-// GNU2Y-NEXT:                                           signed: true,
+// GNU2Y-NEXT:                                           signed: None,
 // GNU2Y-NEXT:                                       },
 // GNU2Y-NEXT:                                   ),
 // GNU2Y-NEXT:                               },
@@ -917,7 +933,7 @@ int replaced = _Maxof(int);
 // GNU2Y-NEXT:                                       ty: Integer(
 // GNU2Y-NEXT:                                           Ranked {
 // GNU2Y-NEXT:                                               rank: Int,
-// GNU2Y-NEXT:                                               signed: true,
+// GNU2Y-NEXT:                                               signed: None,
 // GNU2Y-NEXT:                                           },
 // GNU2Y-NEXT:                                       ),
 // GNU2Y-NEXT:                                   },
@@ -932,7 +948,7 @@ int replaced = _Maxof(int);
 // GNU2Y-NEXT:                                       ty: Integer(
 // GNU2Y-NEXT:                                           Ranked {
 // GNU2Y-NEXT:                                               rank: Int,
-// GNU2Y-NEXT:                                               signed: true,
+// GNU2Y-NEXT:                                               signed: None,
 // GNU2Y-NEXT:                                           },
 // GNU2Y-NEXT:                                       ),
 // GNU2Y-NEXT:                                   },
@@ -975,7 +991,7 @@ int replaced = _Maxof(int);
 // GNU2Y-NEXT:               ty: Integer(
 // GNU2Y-NEXT:                   Ranked {
 // GNU2Y-NEXT:                       rank: Int,
-// GNU2Y-NEXT:                       signed: true,
+// GNU2Y-NEXT:                       signed: None,
 // GNU2Y-NEXT:                   },
 // GNU2Y-NEXT:               ),
 // GNU2Y-NEXT:           },

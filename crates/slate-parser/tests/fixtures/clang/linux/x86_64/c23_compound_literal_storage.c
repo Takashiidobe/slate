@@ -72,7 +72,7 @@ void literals(int i) {
 // C23-NEXT:                           ty: Integer(
 // C23-NEXT:                               Ranked {
 // C23-NEXT:                                   rank: Int,
-// C23-NEXT:                                   signed: true,
+// C23-NEXT:                                   signed: None,
 // C23-NEXT:                               },
 // C23-NEXT:                           ),
 // C23-NEXT:                       },
@@ -109,7 +109,7 @@ void literals(int i) {
 // C23-NEXT:               ty: Integer(
 // C23-NEXT:                   Ranked {
 // C23-NEXT:                       rank: Int,
-// C23-NEXT:                       signed: true,
+// C23-NEXT:                       signed: None,
 // C23-NEXT:                   },
 // C23-NEXT:               ),
 // C23-NEXT:               storage: Typedef,
@@ -142,7 +142,7 @@ void literals(int i) {
 // C23-NEXT:               ty: Integer(
 // C23-NEXT:                   Ranked {
 // C23-NEXT:                       rank: Int,
-// C23-NEXT:                       signed: true,
+// C23-NEXT:                       signed: None,
 // C23-NEXT:                   },
 // C23-NEXT:               ),
 // C23-NEXT:           },
@@ -164,7 +164,7 @@ void literals(int i) {
 // C23-NEXT:                                           ty: Integer(
 // C23-NEXT:                                               Ranked {
 // C23-NEXT:                                                   rank: Int,
-// C23-NEXT:                                                   signed: true,
+// C23-NEXT:                                                   signed: None,
 // C23-NEXT:                                               },
 // C23-NEXT:                                           ),
 // C23-NEXT:                                           storage: Static,
@@ -213,7 +213,7 @@ void literals(int i) {
 // C23-NEXT:                               ty: Integer(
 // C23-NEXT:                                   Ranked {
 // C23-NEXT:                                       rank: Int,
-// C23-NEXT:                                       signed: true,
+// C23-NEXT:                                       signed: None,
 // C23-NEXT:                                   },
 // C23-NEXT:                               ),
 // C23-NEXT:                           },
@@ -233,7 +233,7 @@ void literals(int i) {
 // C23-NEXT:                                   ty: Integer(
 // C23-NEXT:                                       Ranked {
 // C23-NEXT:                                           rank: Int,
-// C23-NEXT:                                           signed: true,
+// C23-NEXT:                                           signed: None,
 // C23-NEXT:                                       },
 // C23-NEXT:                                   ),
 // C23-NEXT:                                   storage: Register,
@@ -405,7 +405,7 @@ void literals(int i) {
 // C23-NEXT:                               ty: Integer(
 // C23-NEXT:                                   Ranked {
 // C23-NEXT:                                       rank: Int,
-// C23-NEXT:                                       signed: true,
+// C23-NEXT:                                       signed: None,
 // C23-NEXT:                                   },
 // C23-NEXT:                               ),
 // C23-NEXT:                               is_constexpr: true,
@@ -439,7 +439,7 @@ void literals(int i) {
 // C23-NEXT:                               ty: Integer(
 // C23-NEXT:                                   Ranked {
 // C23-NEXT:                                       rank: Int,
-// C23-NEXT:                                       signed: true,
+// C23-NEXT:                                       signed: None,
 // C23-NEXT:                                   },
 // C23-NEXT:                               ),
 // C23-NEXT:                               storage: Register,
@@ -476,7 +476,7 @@ void literals(int i) {
 // C23-NEXT:                                   ty: Integer(
 // C23-NEXT:                                       Ranked {
 // C23-NEXT:                                           rank: Int,
-// C23-NEXT:                                           signed: true,
+// C23-NEXT:                                           signed: None,
 // C23-NEXT:                                       },
 // C23-NEXT:                                   ),
 // C23-NEXT:                                   storage: Static,
@@ -514,7 +514,7 @@ void literals(int i) {
 // C23-NEXT:                                   ty: Integer(
 // C23-NEXT:                                       Ranked {
 // C23-NEXT:                                           rank: Int,
-// C23-NEXT:                                           signed: true,
+// C23-NEXT:                                           signed: None,
 // C23-NEXT:                                       },
 // C23-NEXT:                                   ),
 // C23-NEXT:                                   storage: Static,
@@ -552,7 +552,7 @@ void literals(int i) {
 // C23-NEXT:                                   ty: Integer(
 // C23-NEXT:                                       Ranked {
 // C23-NEXT:                                           rank: Int,
-// C23-NEXT:                                           signed: true,
+// C23-NEXT:                                           signed: None,
 // C23-NEXT:                                       },
 // C23-NEXT:                                   ),
 // C23-NEXT:                                   storage: Static,
@@ -590,7 +590,7 @@ void literals(int i) {
 // C23-NEXT:                                   ty: Integer(
 // C23-NEXT:                                       Ranked {
 // C23-NEXT:                                           rank: Int,
-// C23-NEXT:                                           signed: true,
+// C23-NEXT:                                           signed: None,
 // C23-NEXT:                                       },
 // C23-NEXT:                                   ),
 // C23-NEXT:                                   storage: Static,
@@ -626,7 +626,7 @@ void literals(int i) {
 // C23-NEXT:                               ty: Integer(
 // C23-NEXT:                                   Ranked {
 // C23-NEXT:                                       rank: Int,
-// C23-NEXT:                                       signed: true,
+// C23-NEXT:                                       signed: None,
 // C23-NEXT:                                   },
 // C23-NEXT:                               ),
 // C23-NEXT:                               storage: Static,
@@ -677,7 +677,7 @@ void literals(int i) {
 // C23-NEXT:                               ty: Integer(
 // C23-NEXT:                                   Ranked {
 // C23-NEXT:                                       rank: Int,
-// C23-NEXT:                                       signed: true,
+// C23-NEXT:                                       signed: None,
 // C23-NEXT:                                   },
 // C23-NEXT:                               ),
 // C23-NEXT:                           },
@@ -724,7 +724,7 @@ void literals(int i) {
 // GNU23-NEXT:                           ty: Integer(
 // GNU23-NEXT:                               Ranked {
 // GNU23-NEXT:                                   rank: Int,
-// GNU23-NEXT:                                   signed: true,
+// GNU23-NEXT:                                   signed: None,
 // GNU23-NEXT:                               },
 // GNU23-NEXT:                           ),
 // GNU23-NEXT:                       },
@@ -761,7 +761,7 @@ void literals(int i) {
 // GNU23-NEXT:               ty: Integer(
 // GNU23-NEXT:                   Ranked {
 // GNU23-NEXT:                       rank: Int,
-// GNU23-NEXT:                       signed: true,
+// GNU23-NEXT:                       signed: None,
 // GNU23-NEXT:                   },
 // GNU23-NEXT:               ),
 // GNU23-NEXT:               storage: Typedef,
@@ -794,7 +794,7 @@ void literals(int i) {
 // GNU23-NEXT:               ty: Integer(
 // GNU23-NEXT:                   Ranked {
 // GNU23-NEXT:                       rank: Int,
-// GNU23-NEXT:                       signed: true,
+// GNU23-NEXT:                       signed: None,
 // GNU23-NEXT:                   },
 // GNU23-NEXT:               ),
 // GNU23-NEXT:           },
@@ -816,7 +816,7 @@ void literals(int i) {
 // GNU23-NEXT:                                           ty: Integer(
 // GNU23-NEXT:                                               Ranked {
 // GNU23-NEXT:                                                   rank: Int,
-// GNU23-NEXT:                                                   signed: true,
+// GNU23-NEXT:                                                   signed: None,
 // GNU23-NEXT:                                               },
 // GNU23-NEXT:                                           ),
 // GNU23-NEXT:                                           storage: Static,
@@ -865,7 +865,7 @@ void literals(int i) {
 // GNU23-NEXT:                               ty: Integer(
 // GNU23-NEXT:                                   Ranked {
 // GNU23-NEXT:                                       rank: Int,
-// GNU23-NEXT:                                       signed: true,
+// GNU23-NEXT:                                       signed: None,
 // GNU23-NEXT:                                   },
 // GNU23-NEXT:                               ),
 // GNU23-NEXT:                           },
@@ -885,7 +885,7 @@ void literals(int i) {
 // GNU23-NEXT:                                   ty: Integer(
 // GNU23-NEXT:                                       Ranked {
 // GNU23-NEXT:                                           rank: Int,
-// GNU23-NEXT:                                           signed: true,
+// GNU23-NEXT:                                           signed: None,
 // GNU23-NEXT:                                       },
 // GNU23-NEXT:                                   ),
 // GNU23-NEXT:                                   storage: Register,
@@ -1057,7 +1057,7 @@ void literals(int i) {
 // GNU23-NEXT:                               ty: Integer(
 // GNU23-NEXT:                                   Ranked {
 // GNU23-NEXT:                                       rank: Int,
-// GNU23-NEXT:                                       signed: true,
+// GNU23-NEXT:                                       signed: None,
 // GNU23-NEXT:                                   },
 // GNU23-NEXT:                               ),
 // GNU23-NEXT:                               is_constexpr: true,
@@ -1091,7 +1091,7 @@ void literals(int i) {
 // GNU23-NEXT:                               ty: Integer(
 // GNU23-NEXT:                                   Ranked {
 // GNU23-NEXT:                                       rank: Int,
-// GNU23-NEXT:                                       signed: true,
+// GNU23-NEXT:                                       signed: None,
 // GNU23-NEXT:                                   },
 // GNU23-NEXT:                               ),
 // GNU23-NEXT:                               storage: Register,
@@ -1128,7 +1128,7 @@ void literals(int i) {
 // GNU23-NEXT:                                   ty: Integer(
 // GNU23-NEXT:                                       Ranked {
 // GNU23-NEXT:                                           rank: Int,
-// GNU23-NEXT:                                           signed: true,
+// GNU23-NEXT:                                           signed: None,
 // GNU23-NEXT:                                       },
 // GNU23-NEXT:                                   ),
 // GNU23-NEXT:                                   storage: Static,
@@ -1166,7 +1166,7 @@ void literals(int i) {
 // GNU23-NEXT:                                   ty: Integer(
 // GNU23-NEXT:                                       Ranked {
 // GNU23-NEXT:                                           rank: Int,
-// GNU23-NEXT:                                           signed: true,
+// GNU23-NEXT:                                           signed: None,
 // GNU23-NEXT:                                       },
 // GNU23-NEXT:                                   ),
 // GNU23-NEXT:                                   storage: Static,
@@ -1204,7 +1204,7 @@ void literals(int i) {
 // GNU23-NEXT:                                   ty: Integer(
 // GNU23-NEXT:                                       Ranked {
 // GNU23-NEXT:                                           rank: Int,
-// GNU23-NEXT:                                           signed: true,
+// GNU23-NEXT:                                           signed: None,
 // GNU23-NEXT:                                       },
 // GNU23-NEXT:                                   ),
 // GNU23-NEXT:                                   storage: Static,
@@ -1242,7 +1242,7 @@ void literals(int i) {
 // GNU23-NEXT:                                   ty: Integer(
 // GNU23-NEXT:                                       Ranked {
 // GNU23-NEXT:                                           rank: Int,
-// GNU23-NEXT:                                           signed: true,
+// GNU23-NEXT:                                           signed: None,
 // GNU23-NEXT:                                       },
 // GNU23-NEXT:                                   ),
 // GNU23-NEXT:                                   storage: Static,
@@ -1278,7 +1278,7 @@ void literals(int i) {
 // GNU23-NEXT:                               ty: Integer(
 // GNU23-NEXT:                                   Ranked {
 // GNU23-NEXT:                                       rank: Int,
-// GNU23-NEXT:                                       signed: true,
+// GNU23-NEXT:                                       signed: None,
 // GNU23-NEXT:                                   },
 // GNU23-NEXT:                               ),
 // GNU23-NEXT:                               storage: Static,
@@ -1329,7 +1329,7 @@ void literals(int i) {
 // GNU23-NEXT:                               ty: Integer(
 // GNU23-NEXT:                                   Ranked {
 // GNU23-NEXT:                                       rank: Int,
-// GNU23-NEXT:                                       signed: true,
+// GNU23-NEXT:                                       signed: None,
 // GNU23-NEXT:                                   },
 // GNU23-NEXT:                               ),
 // GNU23-NEXT:                           },
@@ -1376,7 +1376,7 @@ void literals(int i) {
 // C2Y-NEXT:                           ty: Integer(
 // C2Y-NEXT:                               Ranked {
 // C2Y-NEXT:                                   rank: Int,
-// C2Y-NEXT:                                   signed: true,
+// C2Y-NEXT:                                   signed: None,
 // C2Y-NEXT:                               },
 // C2Y-NEXT:                           ),
 // C2Y-NEXT:                       },
@@ -1413,7 +1413,7 @@ void literals(int i) {
 // C2Y-NEXT:               ty: Integer(
 // C2Y-NEXT:                   Ranked {
 // C2Y-NEXT:                       rank: Int,
-// C2Y-NEXT:                       signed: true,
+// C2Y-NEXT:                       signed: None,
 // C2Y-NEXT:                   },
 // C2Y-NEXT:               ),
 // C2Y-NEXT:               storage: Typedef,
@@ -1446,7 +1446,7 @@ void literals(int i) {
 // C2Y-NEXT:               ty: Integer(
 // C2Y-NEXT:                   Ranked {
 // C2Y-NEXT:                       rank: Int,
-// C2Y-NEXT:                       signed: true,
+// C2Y-NEXT:                       signed: None,
 // C2Y-NEXT:                   },
 // C2Y-NEXT:               ),
 // C2Y-NEXT:           },
@@ -1468,7 +1468,7 @@ void literals(int i) {
 // C2Y-NEXT:                                           ty: Integer(
 // C2Y-NEXT:                                               Ranked {
 // C2Y-NEXT:                                                   rank: Int,
-// C2Y-NEXT:                                                   signed: true,
+// C2Y-NEXT:                                                   signed: None,
 // C2Y-NEXT:                                               },
 // C2Y-NEXT:                                           ),
 // C2Y-NEXT:                                           storage: Static,
@@ -1517,7 +1517,7 @@ void literals(int i) {
 // C2Y-NEXT:                               ty: Integer(
 // C2Y-NEXT:                                   Ranked {
 // C2Y-NEXT:                                       rank: Int,
-// C2Y-NEXT:                                       signed: true,
+// C2Y-NEXT:                                       signed: None,
 // C2Y-NEXT:                                   },
 // C2Y-NEXT:                               ),
 // C2Y-NEXT:                           },
@@ -1537,7 +1537,7 @@ void literals(int i) {
 // C2Y-NEXT:                                   ty: Integer(
 // C2Y-NEXT:                                       Ranked {
 // C2Y-NEXT:                                           rank: Int,
-// C2Y-NEXT:                                           signed: true,
+// C2Y-NEXT:                                           signed: None,
 // C2Y-NEXT:                                       },
 // C2Y-NEXT:                                   ),
 // C2Y-NEXT:                                   storage: Register,
@@ -1709,7 +1709,7 @@ void literals(int i) {
 // C2Y-NEXT:                               ty: Integer(
 // C2Y-NEXT:                                   Ranked {
 // C2Y-NEXT:                                       rank: Int,
-// C2Y-NEXT:                                       signed: true,
+// C2Y-NEXT:                                       signed: None,
 // C2Y-NEXT:                                   },
 // C2Y-NEXT:                               ),
 // C2Y-NEXT:                               is_constexpr: true,
@@ -1743,7 +1743,7 @@ void literals(int i) {
 // C2Y-NEXT:                               ty: Integer(
 // C2Y-NEXT:                                   Ranked {
 // C2Y-NEXT:                                       rank: Int,
-// C2Y-NEXT:                                       signed: true,
+// C2Y-NEXT:                                       signed: None,
 // C2Y-NEXT:                                   },
 // C2Y-NEXT:                               ),
 // C2Y-NEXT:                               storage: Register,
@@ -1780,7 +1780,7 @@ void literals(int i) {
 // C2Y-NEXT:                                   ty: Integer(
 // C2Y-NEXT:                                       Ranked {
 // C2Y-NEXT:                                           rank: Int,
-// C2Y-NEXT:                                           signed: true,
+// C2Y-NEXT:                                           signed: None,
 // C2Y-NEXT:                                       },
 // C2Y-NEXT:                                   ),
 // C2Y-NEXT:                                   storage: Static,
@@ -1818,7 +1818,7 @@ void literals(int i) {
 // C2Y-NEXT:                                   ty: Integer(
 // C2Y-NEXT:                                       Ranked {
 // C2Y-NEXT:                                           rank: Int,
-// C2Y-NEXT:                                           signed: true,
+// C2Y-NEXT:                                           signed: None,
 // C2Y-NEXT:                                       },
 // C2Y-NEXT:                                   ),
 // C2Y-NEXT:                                   storage: Static,
@@ -1856,7 +1856,7 @@ void literals(int i) {
 // C2Y-NEXT:                                   ty: Integer(
 // C2Y-NEXT:                                       Ranked {
 // C2Y-NEXT:                                           rank: Int,
-// C2Y-NEXT:                                           signed: true,
+// C2Y-NEXT:                                           signed: None,
 // C2Y-NEXT:                                       },
 // C2Y-NEXT:                                   ),
 // C2Y-NEXT:                                   storage: Static,
@@ -1894,7 +1894,7 @@ void literals(int i) {
 // C2Y-NEXT:                                   ty: Integer(
 // C2Y-NEXT:                                       Ranked {
 // C2Y-NEXT:                                           rank: Int,
-// C2Y-NEXT:                                           signed: true,
+// C2Y-NEXT:                                           signed: None,
 // C2Y-NEXT:                                       },
 // C2Y-NEXT:                                   ),
 // C2Y-NEXT:                                   storage: Static,
@@ -1930,7 +1930,7 @@ void literals(int i) {
 // C2Y-NEXT:                               ty: Integer(
 // C2Y-NEXT:                                   Ranked {
 // C2Y-NEXT:                                       rank: Int,
-// C2Y-NEXT:                                       signed: true,
+// C2Y-NEXT:                                       signed: None,
 // C2Y-NEXT:                                   },
 // C2Y-NEXT:                               ),
 // C2Y-NEXT:                               storage: Static,
@@ -1981,7 +1981,7 @@ void literals(int i) {
 // C2Y-NEXT:                               ty: Integer(
 // C2Y-NEXT:                                   Ranked {
 // C2Y-NEXT:                                       rank: Int,
-// C2Y-NEXT:                                       signed: true,
+// C2Y-NEXT:                                       signed: None,
 // C2Y-NEXT:                                   },
 // C2Y-NEXT:                               ),
 // C2Y-NEXT:                           },
@@ -2028,7 +2028,7 @@ void literals(int i) {
 // GNU2Y-NEXT:                           ty: Integer(
 // GNU2Y-NEXT:                               Ranked {
 // GNU2Y-NEXT:                                   rank: Int,
-// GNU2Y-NEXT:                                   signed: true,
+// GNU2Y-NEXT:                                   signed: None,
 // GNU2Y-NEXT:                               },
 // GNU2Y-NEXT:                           ),
 // GNU2Y-NEXT:                       },
@@ -2065,7 +2065,7 @@ void literals(int i) {
 // GNU2Y-NEXT:               ty: Integer(
 // GNU2Y-NEXT:                   Ranked {
 // GNU2Y-NEXT:                       rank: Int,
-// GNU2Y-NEXT:                       signed: true,
+// GNU2Y-NEXT:                       signed: None,
 // GNU2Y-NEXT:                   },
 // GNU2Y-NEXT:               ),
 // GNU2Y-NEXT:               storage: Typedef,
@@ -2098,7 +2098,7 @@ void literals(int i) {
 // GNU2Y-NEXT:               ty: Integer(
 // GNU2Y-NEXT:                   Ranked {
 // GNU2Y-NEXT:                       rank: Int,
-// GNU2Y-NEXT:                       signed: true,
+// GNU2Y-NEXT:                       signed: None,
 // GNU2Y-NEXT:                   },
 // GNU2Y-NEXT:               ),
 // GNU2Y-NEXT:           },
@@ -2120,7 +2120,7 @@ void literals(int i) {
 // GNU2Y-NEXT:                                           ty: Integer(
 // GNU2Y-NEXT:                                               Ranked {
 // GNU2Y-NEXT:                                                   rank: Int,
-// GNU2Y-NEXT:                                                   signed: true,
+// GNU2Y-NEXT:                                                   signed: None,
 // GNU2Y-NEXT:                                               },
 // GNU2Y-NEXT:                                           ),
 // GNU2Y-NEXT:                                           storage: Static,
@@ -2169,7 +2169,7 @@ void literals(int i) {
 // GNU2Y-NEXT:                               ty: Integer(
 // GNU2Y-NEXT:                                   Ranked {
 // GNU2Y-NEXT:                                       rank: Int,
-// GNU2Y-NEXT:                                       signed: true,
+// GNU2Y-NEXT:                                       signed: None,
 // GNU2Y-NEXT:                                   },
 // GNU2Y-NEXT:                               ),
 // GNU2Y-NEXT:                           },
@@ -2189,7 +2189,7 @@ void literals(int i) {
 // GNU2Y-NEXT:                                   ty: Integer(
 // GNU2Y-NEXT:                                       Ranked {
 // GNU2Y-NEXT:                                           rank: Int,
-// GNU2Y-NEXT:                                           signed: true,
+// GNU2Y-NEXT:                                           signed: None,
 // GNU2Y-NEXT:                                       },
 // GNU2Y-NEXT:                                   ),
 // GNU2Y-NEXT:                                   storage: Register,
@@ -2361,7 +2361,7 @@ void literals(int i) {
 // GNU2Y-NEXT:                               ty: Integer(
 // GNU2Y-NEXT:                                   Ranked {
 // GNU2Y-NEXT:                                       rank: Int,
-// GNU2Y-NEXT:                                       signed: true,
+// GNU2Y-NEXT:                                       signed: None,
 // GNU2Y-NEXT:                                   },
 // GNU2Y-NEXT:                               ),
 // GNU2Y-NEXT:                               is_constexpr: true,
@@ -2395,7 +2395,7 @@ void literals(int i) {
 // GNU2Y-NEXT:                               ty: Integer(
 // GNU2Y-NEXT:                                   Ranked {
 // GNU2Y-NEXT:                                       rank: Int,
-// GNU2Y-NEXT:                                       signed: true,
+// GNU2Y-NEXT:                                       signed: None,
 // GNU2Y-NEXT:                                   },
 // GNU2Y-NEXT:                               ),
 // GNU2Y-NEXT:                               storage: Register,
@@ -2432,7 +2432,7 @@ void literals(int i) {
 // GNU2Y-NEXT:                                   ty: Integer(
 // GNU2Y-NEXT:                                       Ranked {
 // GNU2Y-NEXT:                                           rank: Int,
-// GNU2Y-NEXT:                                           signed: true,
+// GNU2Y-NEXT:                                           signed: None,
 // GNU2Y-NEXT:                                       },
 // GNU2Y-NEXT:                                   ),
 // GNU2Y-NEXT:                                   storage: Static,
@@ -2470,7 +2470,7 @@ void literals(int i) {
 // GNU2Y-NEXT:                                   ty: Integer(
 // GNU2Y-NEXT:                                       Ranked {
 // GNU2Y-NEXT:                                           rank: Int,
-// GNU2Y-NEXT:                                           signed: true,
+// GNU2Y-NEXT:                                           signed: None,
 // GNU2Y-NEXT:                                       },
 // GNU2Y-NEXT:                                   ),
 // GNU2Y-NEXT:                                   storage: Static,
@@ -2508,7 +2508,7 @@ void literals(int i) {
 // GNU2Y-NEXT:                                   ty: Integer(
 // GNU2Y-NEXT:                                       Ranked {
 // GNU2Y-NEXT:                                           rank: Int,
-// GNU2Y-NEXT:                                           signed: true,
+// GNU2Y-NEXT:                                           signed: None,
 // GNU2Y-NEXT:                                       },
 // GNU2Y-NEXT:                                   ),
 // GNU2Y-NEXT:                                   storage: Static,
@@ -2546,7 +2546,7 @@ void literals(int i) {
 // GNU2Y-NEXT:                                   ty: Integer(
 // GNU2Y-NEXT:                                       Ranked {
 // GNU2Y-NEXT:                                           rank: Int,
-// GNU2Y-NEXT:                                           signed: true,
+// GNU2Y-NEXT:                                           signed: None,
 // GNU2Y-NEXT:                                       },
 // GNU2Y-NEXT:                                   ),
 // GNU2Y-NEXT:                                   storage: Static,
@@ -2582,7 +2582,7 @@ void literals(int i) {
 // GNU2Y-NEXT:                               ty: Integer(
 // GNU2Y-NEXT:                                   Ranked {
 // GNU2Y-NEXT:                                       rank: Int,
-// GNU2Y-NEXT:                                       signed: true,
+// GNU2Y-NEXT:                                       signed: None,
 // GNU2Y-NEXT:                                   },
 // GNU2Y-NEXT:                               ),
 // GNU2Y-NEXT:                               storage: Static,
@@ -2633,7 +2633,7 @@ void literals(int i) {
 // GNU2Y-NEXT:                               ty: Integer(
 // GNU2Y-NEXT:                                   Ranked {
 // GNU2Y-NEXT:                                       rank: Int,
-// GNU2Y-NEXT:                                       signed: true,
+// GNU2Y-NEXT:                                       signed: None,
 // GNU2Y-NEXT:                                   },
 // GNU2Y-NEXT:                               ),
 // GNU2Y-NEXT:                           },

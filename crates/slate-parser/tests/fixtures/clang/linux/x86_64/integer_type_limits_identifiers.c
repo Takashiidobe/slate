@@ -15,7 +15,7 @@ int legacy(int n) { return _Maxof(n) + _Minof(n); }
 // C23-NEXT:               ty: Integer(
 // C23-NEXT:                   Ranked {
 // C23-NEXT:                       rank: Int,
-// C23-NEXT:                       signed: true,
+// C23-NEXT:                       signed: None,
 // C23-NEXT:                   },
 // C23-NEXT:               ),
 // C23-NEXT:           },
@@ -30,7 +30,7 @@ int legacy(int n) { return _Maxof(n) + _Minof(n); }
 // C23-NEXT:                               ty: Integer(
 // C23-NEXT:                                   Ranked {
 // C23-NEXT:                                       rank: Int,
-// C23-NEXT:                                       signed: true,
+// C23-NEXT:                                       signed: None,
 // C23-NEXT:                                   },
 // C23-NEXT:                               ),
 // C23-NEXT:                           },
@@ -56,7 +56,7 @@ int legacy(int n) { return _Maxof(n) + _Minof(n); }
 // C23-NEXT:               ty: Integer(
 // C23-NEXT:                   Ranked {
 // C23-NEXT:                       rank: Int,
-// C23-NEXT:                       signed: true,
+// C23-NEXT:                       signed: None,
 // C23-NEXT:                   },
 // C23-NEXT:               ),
 // C23-NEXT:           },
@@ -71,7 +71,7 @@ int legacy(int n) { return _Maxof(n) + _Minof(n); }
 // C23-NEXT:                               ty: Integer(
 // C23-NEXT:                                   Ranked {
 // C23-NEXT:                                       rank: Int,
-// C23-NEXT:                                       signed: true,
+// C23-NEXT:                                       signed: None,
 // C23-NEXT:                                   },
 // C23-NEXT:                               ),
 // C23-NEXT:                           },
@@ -100,7 +100,7 @@ int legacy(int n) { return _Maxof(n) + _Minof(n); }
 // C23-NEXT:               ty: Integer(
 // C23-NEXT:                   Ranked {
 // C23-NEXT:                       rank: Int,
-// C23-NEXT:                       signed: true,
+// C23-NEXT:                       signed: None,
 // C23-NEXT:                   },
 // C23-NEXT:               ),
 // C23-NEXT:           },
@@ -115,7 +115,7 @@ int legacy(int n) { return _Maxof(n) + _Minof(n); }
 // C23-NEXT:                               ty: Integer(
 // C23-NEXT:                                   Ranked {
 // C23-NEXT:                                       rank: Int,
-// C23-NEXT:                                       signed: true,
+// C23-NEXT:                                       signed: None,
 // C23-NEXT:                                   },
 // C23-NEXT:                               ),
 // C23-NEXT:                           },
@@ -163,7 +163,7 @@ int legacy(int n) { return _Maxof(n) + _Minof(n); }
 // GNU23-NEXT:               ty: Integer(
 // GNU23-NEXT:                   Ranked {
 // GNU23-NEXT:                       rank: Int,
-// GNU23-NEXT:                       signed: true,
+// GNU23-NEXT:                       signed: None,
 // GNU23-NEXT:                   },
 // GNU23-NEXT:               ),
 // GNU23-NEXT:           },
@@ -178,7 +178,7 @@ int legacy(int n) { return _Maxof(n) + _Minof(n); }
 // GNU23-NEXT:                               ty: Integer(
 // GNU23-NEXT:                                   Ranked {
 // GNU23-NEXT:                                       rank: Int,
-// GNU23-NEXT:                                       signed: true,
+// GNU23-NEXT:                                       signed: None,
 // GNU23-NEXT:                                   },
 // GNU23-NEXT:                               ),
 // GNU23-NEXT:                           },
@@ -204,7 +204,7 @@ int legacy(int n) { return _Maxof(n) + _Minof(n); }
 // GNU23-NEXT:               ty: Integer(
 // GNU23-NEXT:                   Ranked {
 // GNU23-NEXT:                       rank: Int,
-// GNU23-NEXT:                       signed: true,
+// GNU23-NEXT:                       signed: None,
 // GNU23-NEXT:                   },
 // GNU23-NEXT:               ),
 // GNU23-NEXT:           },
@@ -219,7 +219,7 @@ int legacy(int n) { return _Maxof(n) + _Minof(n); }
 // GNU23-NEXT:                               ty: Integer(
 // GNU23-NEXT:                                   Ranked {
 // GNU23-NEXT:                                       rank: Int,
-// GNU23-NEXT:                                       signed: true,
+// GNU23-NEXT:                                       signed: None,
 // GNU23-NEXT:                                   },
 // GNU23-NEXT:                               ),
 // GNU23-NEXT:                           },
@@ -248,7 +248,7 @@ int legacy(int n) { return _Maxof(n) + _Minof(n); }
 // GNU23-NEXT:               ty: Integer(
 // GNU23-NEXT:                   Ranked {
 // GNU23-NEXT:                       rank: Int,
-// GNU23-NEXT:                       signed: true,
+// GNU23-NEXT:                       signed: None,
 // GNU23-NEXT:                   },
 // GNU23-NEXT:               ),
 // GNU23-NEXT:           },
@@ -263,7 +263,7 @@ int legacy(int n) { return _Maxof(n) + _Minof(n); }
 // GNU23-NEXT:                               ty: Integer(
 // GNU23-NEXT:                                   Ranked {
 // GNU23-NEXT:                                       rank: Int,
-// GNU23-NEXT:                                       signed: true,
+// GNU23-NEXT:                                       signed: None,
 // GNU23-NEXT:                                   },
 // GNU23-NEXT:                               ),
 // GNU23-NEXT:                           },

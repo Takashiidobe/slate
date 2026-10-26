@@ -55,7 +55,7 @@ void selections(int n) {
 // C2Y-NEXT:                               ty: Integer(
 // C2Y-NEXT:                                   Ranked {
 // C2Y-NEXT:                                       rank: Int,
-// C2Y-NEXT:                                       signed: true,
+// C2Y-NEXT:                                       signed: None,
 // C2Y-NEXT:                                   },
 // C2Y-NEXT:                               ),
 // C2Y-NEXT:                           },
@@ -73,7 +73,7 @@ void selections(int n) {
 // C2Y-NEXT:                           ty: Integer(
 // C2Y-NEXT:                               Ranked {
 // C2Y-NEXT:                                   rank: Int,
-// C2Y-NEXT:                                   signed: true,
+// C2Y-NEXT:                                   signed: None,
 // C2Y-NEXT:                               },
 // C2Y-NEXT:                           ),
 // C2Y-NEXT:                       },
@@ -138,7 +138,7 @@ void selections(int n) {
 // C2Y-NEXT:                           ty: Integer(
 // C2Y-NEXT:                               Ranked {
 // C2Y-NEXT:                                   rank: Int,
-// C2Y-NEXT:                                   signed: true,
+// C2Y-NEXT:                                   signed: None,
 // C2Y-NEXT:                               },
 // C2Y-NEXT:                           ),
 // C2Y-NEXT:                       },
@@ -195,7 +195,7 @@ void selections(int n) {
 // C2Y-NEXT:                           ty: Integer(
 // C2Y-NEXT:                               Ranked {
 // C2Y-NEXT:                                   rank: Int,
-// C2Y-NEXT:                                   signed: true,
+// C2Y-NEXT:                                   signed: None,
 // C2Y-NEXT:                               },
 // C2Y-NEXT:                           ),
 // C2Y-NEXT:                       },
@@ -241,7 +241,7 @@ void selections(int n) {
 // C2Y-NEXT:                           ty: Integer(
 // C2Y-NEXT:                               Ranked {
 // C2Y-NEXT:                                   rank: Int,
-// C2Y-NEXT:                                   signed: true,
+// C2Y-NEXT:                                   signed: None,
 // C2Y-NEXT:                               },
 // C2Y-NEXT:                           ),
 // C2Y-NEXT:                       },
@@ -320,7 +320,7 @@ void selections(int n) {
 // GNU2Y-NEXT:                               ty: Integer(
 // GNU2Y-NEXT:                                   Ranked {
 // GNU2Y-NEXT:                                       rank: Int,
-// GNU2Y-NEXT:                                       signed: true,
+// GNU2Y-NEXT:                                       signed: None,
 // GNU2Y-NEXT:                                   },
 // GNU2Y-NEXT:                               ),
 // GNU2Y-NEXT:                           },
@@ -338,7 +338,7 @@ void selections(int n) {
 // GNU2Y-NEXT:                           ty: Integer(
 // GNU2Y-NEXT:                               Ranked {
 // GNU2Y-NEXT:                                   rank: Int,
-// GNU2Y-NEXT:                                   signed: true,
+// GNU2Y-NEXT:                                   signed: None,
 // GNU2Y-NEXT:                               },
 // GNU2Y-NEXT:                           ),
 // GNU2Y-NEXT:                       },
@@ -403,7 +403,7 @@ void selections(int n) {
 // GNU2Y-NEXT:                           ty: Integer(
 // GNU2Y-NEXT:                               Ranked {
 // GNU2Y-NEXT:                                   rank: Int,
-// GNU2Y-NEXT:                                   signed: true,
+// GNU2Y-NEXT:                                   signed: None,
 // GNU2Y-NEXT:                               },
 // GNU2Y-NEXT:                           ),
 // GNU2Y-NEXT:                       },
@@ -460,7 +460,7 @@ void selections(int n) {
 // GNU2Y-NEXT:                           ty: Integer(
 // GNU2Y-NEXT:                               Ranked {
 // GNU2Y-NEXT:                                   rank: Int,
-// GNU2Y-NEXT:                                   signed: true,
+// GNU2Y-NEXT:                                   signed: None,
 // GNU2Y-NEXT:                               },
 // GNU2Y-NEXT:                           ),
 // GNU2Y-NEXT:                       },
@@ -506,7 +506,7 @@ void selections(int n) {
 // GNU2Y-NEXT:                           ty: Integer(
 // GNU2Y-NEXT:                               Ranked {
 // GNU2Y-NEXT:                                   rank: Int,
-// GNU2Y-NEXT:                                   signed: true,
+// GNU2Y-NEXT:                                   signed: None,
 // GNU2Y-NEXT:                               },
 // GNU2Y-NEXT:                           ),
 // GNU2Y-NEXT:                       },

@@ -649,7 +649,7 @@ impl<'a> DeclaratorParser<'a> {
         } else if implicit_int {
             TypeSpecifier::Integer(IntegerType::Ranked {
                 rank: IntegerRank::Int,
-                signed: true,
+                signed: None,
             })
         } else {
             let ty = self.parse_type_specifiers(&mut specifiers)?;
@@ -997,8 +997,8 @@ impl<'a> Cursor for DeclaratorParser<'a> {
 
 pub(crate) fn builtin_integer_typedef(name: &str) -> Option<IntegerType> {
     let signed = match name {
-        "__int128_t" => true,
-        "__uint128_t" => false,
+        "__int128_t" => None,
+        "__uint128_t" => Some(false),
         _ => return None,
     };
     Some(IntegerType::Ranked {
@@ -1040,7 +1040,10 @@ impl TypeSpecifierSet {
             SpecifierWidth::Long => IntegerRank::Long,
             SpecifierWidth::LongLong => IntegerRank::LongLong,
         };
-        let ranked = TypeSpecifier::Integer(IntegerType::Ranked { rank, signed });
+        let ranked = TypeSpecifier::Integer(IntegerType::Ranked {
+            rank,
+            signed: shape.sign,
+        });
         let ty = match shape.base {
             None if shape.sign.is_some() || shape.width != SpecifierWidth::None => ranked,
             None if shape.complex || shape.imaginary => {
@@ -1053,7 +1056,7 @@ impl TypeSpecifierSet {
             }
             Some(BaseKind::Int128) => TypeSpecifier::Integer(IntegerType::Ranked {
                 rank: IntegerRank::Int128,
-                signed,
+                signed: shape.sign,
             }),
             Some(BaseKind::Floating(FloatingType::Double))
                 if shape.width == SpecifierWidth::Long =>

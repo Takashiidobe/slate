@@ -290,6 +290,7 @@ struct ParsedCompilerArgs {
     builtin: Option<bool>,
     no_builtin: Vec<String>,
     char_signed: Option<bool>,
+    unsigned_bitfields: Option<bool>,
     c11_atomics: bool,
     msvc_warning_level: Option<u32>,
     msvc_convention: Option<(crate::ir::CallConv, String)>,
@@ -560,6 +561,8 @@ enum Opt {
     NoBuiltinFunction,
     UnsignedChar,
     SignedChar,
+    UnsignedBitfields,
+    SignedBitfields,
     ShortWchar,
     ShortEnums,
     PackStruct,
@@ -706,6 +709,8 @@ impl std::fmt::Display for Opt {
             Self::NoBuiltinFunction => "fno-builtin-<function>",
             Self::UnsignedChar => "funsigned-char",
             Self::SignedChar => "fsigned-char",
+            Self::UnsignedBitfields => "funsigned-bitfields",
+            Self::SignedBitfields => "fsigned-bitfields",
             Self::ShortWchar => "fshort-wchar",
             Self::ShortEnums => "fshort-enums",
             Self::PackStruct => "fpack-struct",
@@ -887,6 +892,8 @@ impl Opt {
             | Self::NoBuiltinFunction
             | Self::UnsignedChar
             | Self::SignedChar
+            | Self::UnsignedBitfields
+            | Self::SignedBitfields
             | Self::ShortWchar
             | Self::ShortEnums
             | Self::PackStruct
@@ -982,6 +989,7 @@ impl Opt {
         match self {
             Self::Freestanding | Self::Hosted => flavor.is_gcc(),
             Self::FpRetIn387 => !flavor.is_msvc(),
+            Self::UnsignedBitfields | Self::SignedBitfields => flavor.is_gcc(),
             Self::InlineHintFunctions => false,
             Self::CodegenOnly(spelling) => codegen_only_flag_named(spelling)
                 .is_some_and(|flag| flag.negation_flavors.contains(&flavor)),
@@ -1018,6 +1026,8 @@ impl Opt {
             Self::Builtin => "-fbuiltin",
             Self::UnsignedChar => "-funsigned-char",
             Self::SignedChar => "-fsigned-char",
+            Self::UnsignedBitfields => "-funsigned-bitfields",
+            Self::SignedBitfields => "-fsigned-bitfields",
             Self::ShortWchar => "-fshort-wchar",
             Self::ShortEnums => "-fshort-enums",
             Self::PackStruct => "-fpack-struct",
@@ -1434,7 +1444,7 @@ fn ignored_option(argument: &str) -> Option<IgnoredOption> {
         .then_some(IgnoredOption::Alone)
 }
 
-const SWITCH_OPTS: [Opt; 52] = [
+const SWITCH_OPTS: [Opt; 54] = [
     Opt::OpenMp,
     Opt::OpenMpSimd,
     Opt::ClangTrigraphs,
@@ -1456,6 +1466,8 @@ const SWITCH_OPTS: [Opt; 52] = [
     Opt::Builtin,
     Opt::UnsignedChar,
     Opt::SignedChar,
+    Opt::UnsignedBitfields,
+    Opt::SignedBitfields,
     Opt::ShortWchar,
     Opt::ShortEnums,
     Opt::PackStruct,
@@ -1553,6 +1565,7 @@ impl CompilerArgParser {
             default_max_field_alignment: raw.default_max_field_alignment(),
             pack_records: flavor.is_gcc() && raw.pack_struct == Some(true),
             ms_bitfields: raw.ms_bitfields.unwrap_or(false),
+            unsigned_bitfields: flavor.is_gcc() && raw.unsigned_bitfields == Some(true),
         };
         let mut math = MathOptions::resolve(flavor, &raw.math);
         math.contract = raw.fp_contract(&math);
@@ -1760,6 +1773,8 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                 Opt::Builtin => parsed.builtin = Some(value),
                 Opt::UnsignedChar => parsed.char_signed = Some(!value),
                 Opt::SignedChar => parsed.char_signed = Some(value),
+                Opt::UnsignedBitfields => parsed.unsigned_bitfields = Some(value),
+                Opt::SignedBitfields => parsed.unsigned_bitfields = Some(!value),
                 Opt::ShortWchar => parsed.short_wchar = Some(value),
                 Opt::ShortEnums => parsed.short_enums = Some(value),
                 Opt::PackStruct => parsed.pack_struct = Some(value),

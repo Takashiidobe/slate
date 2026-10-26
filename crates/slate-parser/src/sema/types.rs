@@ -67,6 +67,7 @@ pub struct TypeResolver {
     tag_bindings: HashMap<BindingId, TypeId>,
     tag_definitions: HashMap<TagId, BindingId>,
     aliases: HashMap<BindingId, QualType>,
+    signed_aliases: HashSet<BindingId>,
     pub definitions: Vec<TypeDefinition>,
     pub(super) comments: crate::ir::Comments,
     pub(super) inner_comments: HashMap<TypeId, Vec<Span<crate::ir::Comment>>>,
@@ -174,6 +175,7 @@ impl TypeResolver {
             tag_bindings: HashMap::new(),
             tag_definitions: HashMap::new(),
             aliases: HashMap::new(),
+            signed_aliases: HashSet::new(),
             definitions: Vec::new(),
             comments: crate::ir::Comments::default(),
             inner_comments: HashMap::new(),
@@ -707,6 +709,41 @@ impl TypeResolver {
 
     pub(super) fn alias(&self, binding: BindingId) -> Option<QualType> {
         self.aliases.get(&binding).copied()
+    }
+
+    pub(super) fn explicitly_signed(&self, specifier: &TypeSpecifier) -> bool {
+        match specifier {
+            TypeSpecifier::Integer(
+                IntegerType::Ranked {
+                    signed: Some(true), ..
+                }
+                | IntegerType::Char { signed: Some(true) },
+            ) => true,
+            TypeSpecifier::Named(name) => self
+                .references
+                .get(&name.id)
+                .is_some_and(|binding| self.signed_aliases.contains(binding)),
+            TypeSpecifier::Mode(mode) => self.explicitly_signed(&mode.base),
+            _ => false,
+        }
+    }
+
+    fn bit_field_type(
+        &mut self,
+        resolved: QualType,
+        specifier: &TypeSpecifier,
+    ) -> Result<QualType, ResolveError> {
+        if !self.dialect.options().layout.unsigned_bitfields
+            || self.explicitly_signed(specifier)
+            || !matches!(
+                self.ctypes.canonical_kind(resolved),
+                CTypeKind::Char | CTypeKind::Int { signed: true, .. }
+            )
+        {
+            return Ok(resolved);
+        }
+        let quals = self.ctypes.quals(resolved);
+        Ok(self.ctypes.unsigned_counterpart(resolved)?.with(quals))
     }
 
     fn referenced_tag(
@@ -2061,12 +2098,16 @@ impl TypeResolver {
         node: crate::ast::NodeId,
         name: String,
         resolved: QualType,
+        explicitly_signed: bool,
         attributes: impl IntoIterator<Item = &'a Span<Attribute>>,
     ) -> Result<TypeId, ResolveError> {
         let binding = *self
             .declarations
             .get(&node)
             .ok_or(ResolveError::Internal("unresolved typedef declaration"))?;
+        if explicitly_signed {
+            self.signed_aliases.insert(binding);
+        }
         let attributes: Vec<_> = attributes.into_iter().collect();
         if transparent(attributes.iter().copied())
             && let CTypeKind::Record { id, union: true } = *self.ctypes.canonical_kind(resolved)
@@ -2446,7 +2487,7 @@ impl TypeResolver {
                     IntegerRank::LongLong => IntRank::LongLong,
                     IntegerRank::Int128 => IntRank::Int128,
                 },
-                signed: *signed,
+                signed: *signed != Some(false),
             },
             TypeSpecifier::Integer(IntegerType::BitInt { width, signed }) => {
                 let width = u32::try_from(self.constant_integer(width)?)
@@ -3033,6 +3074,11 @@ impl TypeResolver {
                             resolved,
                             DeclaredAs::Other,
                         );
+                        let resolved = if declarator.bit_width.is_some() {
+                            self.bit_field_type(resolved, &declaration.specifiers.ty)?
+                        } else {
+                            resolved
+                        };
                         let ty = self.object_type(resolved, "void record field")?;
                         let bit_width = declarator
                             .bit_width
@@ -4574,10 +4620,12 @@ pub(super) fn resolve_type_module(
                         &declarator.attributes,
                     )?;
                     let c_entries = resolver.render(resolved).entries();
+                    let explicitly_signed = resolver.explicitly_signed(&item.specifiers.ty);
                     resolver.define_alias(
                         declarator.id,
                         name,
                         resolved,
+                        explicitly_signed,
                         item.specifiers
                             .attributes_with(&declarator.declarator, &declarator.attributes),
                     )?;
