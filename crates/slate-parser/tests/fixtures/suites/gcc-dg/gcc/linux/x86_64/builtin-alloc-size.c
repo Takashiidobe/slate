@@ -102,47 +102,46 @@ void test_realloc (void *p)
 // DEFAULT-NEXT:         return read<u32>(%[[VALUE_n]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_aligned_alloc:[0-9]+]] @aligned_alloc(%[[VALUE1:[0-9]+]] <unnamed>: u64, %[[VALUE2:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE___builtin_object_size:[0-9]+]] @__builtin_object_size(%[[VALUE3:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE4:[0-9]+]] <unnamed>: i32) -> u64 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_test_aligned_alloc:[0-9]+]] @test_aligned_alloc(%[[VALUE_a:[0-9]+]] a: u32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_n_2:[0-9]+]] n: u32 [storage=automatic] = call<u32, signature=fn(u32) -> u32>(%[[VALUE_size]], reinterpret<u32, reason=arg, fits=always>(const<i32>(7)));
 // DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%[[VALUE_aligned_alloc]], widen<u64, reason=arg>(read<u32>(%[[VALUE_a]])), widen<u64, reason=arg>(read<u32>(%[[VALUE_n_2]])));
-// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(read<ptr<void>>(%[[VALUE_p]])), const<i32>(0)), widen<u64, reason=usual_arith>(read<u32>(%[[VALUE_n_2]])))
+// DEFAULT-NEXT:         if ne<u64>(intrinsic<u64, llvm.objectsize>(read<ptr<void>>(%[[VALUE_p]]), const<bool>(false), const<bool>(false), const<bool>(false)), widen<u64, reason=usual_arith>(read<u32>(%[[VALUE_n_2]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], read<ptr<void>>(%[[VALUE_p]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE___builtin_alloca:[0-9]+]] @__builtin_alloca(%[[VALUE5:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_alloca:[0-9]+]] @__builtin_alloca(%[[VALUE3:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_test_alloca:[0-9]+]] @test_alloca() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_n_3:[0-9]+]] n: u32 [storage=automatic] = call<u32, signature=fn(u32) -> u32>(%[[VALUE_size]], reinterpret<u32, reason=arg, fits=always>(const<i32>(13)));
 // DEFAULT-NEXT:         let %[[VALUE_p_2:[0-9]+]] p: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_alloca]], widen<u64, reason=arg>(read<u32>(%[[VALUE_n_3]])));
 // DEFAULT-NEXT:         if not<bool>(ne<ptr<void>>(read<ptr<void>>(%[[VALUE_p_2]]), null<ptr<void>>))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
-// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(read<ptr<void>>(%[[VALUE_p_2]])), const<i32>(0)), widen<u64, reason=usual_arith>(read<u32>(%[[VALUE_n_3]])))
+// DEFAULT-NEXT:         if ne<u64>(intrinsic<u64, llvm.objectsize>(read<ptr<void>>(%[[VALUE_p_2]]), const<bool>(false), const<bool>(false), const<bool>(false)), widen<u64, reason=usual_arith>(read<u32>(%[[VALUE_n_3]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], read<ptr<void>>(%[[VALUE_p_2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE___builtin_calloc:[0-9]+]] @__builtin_calloc(%[[VALUE6:[0-9]+]] <unnamed>: u64, %[[VALUE7:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_calloc:[0-9]+]] @__builtin_calloc(%[[VALUE4:[0-9]+]] <unnamed>: u64, %[[VALUE5:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_test_calloc:[0-9]+]] @test_calloc() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_m:[0-9]+]] m: u32 [storage=automatic] = call<u32, signature=fn(u32) -> u32>(%[[VALUE_size]], reinterpret<u32, reason=arg, fits=always>(const<i32>(19)));
 // DEFAULT-NEXT:         let %[[VALUE_n_4:[0-9]+]] n: u32 [storage=automatic] = call<u32, signature=fn(u32) -> u32>(%[[VALUE_size]], reinterpret<u32, reason=arg, fits=always>(const<i32>(23)));
 // DEFAULT-NEXT:         let %[[VALUE_p_3:[0-9]+]] p: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%[[VALUE___builtin_calloc]], widen<u64, reason=arg>(read<u32>(%[[VALUE_m]])), widen<u64, reason=arg>(read<u32>(%[[VALUE_n_4]])));
-// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(read<ptr<void>>(%[[VALUE_p_3]])), const<i32>(0)), widen<u64, reason=usual_arith>(mul<u32, overflow=wrap>(read<u32>(%[[VALUE_m]]), read<u32>(%[[VALUE_n_4]]))))
+// DEFAULT-NEXT:         if ne<u64>(intrinsic<u64, llvm.objectsize>(read<ptr<void>>(%[[VALUE_p_3]]), const<bool>(false), const<bool>(false), const<bool>(false)), widen<u64, reason=usual_arith>(mul<u32, overflow=wrap>(read<u32>(%[[VALUE_m]]), read<u32>(%[[VALUE_n_4]]))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], read<ptr<void>>(%[[VALUE_p_3]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE___builtin_malloc:[0-9]+]] @__builtin_malloc(%[[VALUE8:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_malloc:[0-9]+]] @__builtin_malloc(%[[VALUE6:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_test_malloc:[0-9]+]] @test_malloc() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_n_5:[0-9]+]] n: u32 [storage=automatic] = call<u32, signature=fn(u32) -> u32>(%[[VALUE_size]], reinterpret<u32, reason=arg, fits=always>(const<i32>(17)));
 // DEFAULT-NEXT:         let %[[VALUE_p_4:[0-9]+]] p: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_malloc]], widen<u64, reason=arg>(read<u32>(%[[VALUE_n_5]])));
-// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(read<ptr<void>>(%[[VALUE_p_4]])), const<i32>(0)), widen<u64, reason=usual_arith>(read<u32>(%[[VALUE_n_5]])))
+// DEFAULT-NEXT:         if ne<u64>(intrinsic<u64, llvm.objectsize>(read<ptr<void>>(%[[VALUE_p_4]]), const<bool>(false), const<bool>(false), const<bool>(false)), widen<u64, reason=usual_arith>(read<u32>(%[[VALUE_n_5]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], read<ptr<void>>(%[[VALUE_p_4]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE___builtin_realloc:[0-9]+]] @__builtin_realloc(%[[VALUE9:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE10:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_realloc:[0-9]+]] @__builtin_realloc(%[[VALUE7:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE8:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_test_realloc:[0-9]+]] @test_realloc(%[[VALUE_p_5:[0-9]+]] p: ptr<void>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_n_6:[0-9]+]] n: u32 [storage=automatic] = call<u32, signature=fn(u32) -> u32>(%[[VALUE_size]], reinterpret<u32, reason=arg, fits=always>(const<i32>(31)));
 // DEFAULT-NEXT:         write<ptr<void>>(%[[VALUE_p_5]], call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%[[VALUE___builtin_realloc]], read<ptr<void>>(%[[VALUE_p_5]]), widen<u64, reason=arg>(read<u32>(%[[VALUE_n_6]]))));
-// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(read<ptr<void>>(%[[VALUE_p_5]])), const<i32>(0)), widen<u64, reason=usual_arith>(read<u32>(%[[VALUE_n_6]])))
+// DEFAULT-NEXT:         if ne<u64>(intrinsic<u64, llvm.objectsize>(read<ptr<void>>(%[[VALUE_p_5]]), const<bool>(false), const<bool>(false), const<bool>(false)), widen<u64, reason=usual_arith>(read<u32>(%[[VALUE_n_6]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], read<ptr<void>>(%[[VALUE_p_5]]));
 // DEFAULT-NEXT:     }

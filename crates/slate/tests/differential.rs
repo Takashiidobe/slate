@@ -368,6 +368,8 @@ fn release_build_differential() {
         let result = (|| {
             let options = support::fixture_dg_options(&sources[0]);
             let target = support::translation_target(&options);
+            let mut c_args = options.clone();
+            c_args.push("-O2".to_owned());
             translate_fixture_project(sources, &crate_dir, options, &[])?;
             let rs_bin = support::build_project_release(&crate_dir)?;
             let c_bin = work.join(format!("{name}_c"));
@@ -376,7 +378,7 @@ fn release_build_differential() {
                 &c_bin,
                 "c23",
                 sources[0].parent(),
-                &[],
+                &c_args,
             )?;
             let config = support::RunConfig::default();
             let c = support::run_with_config(&c_bin, &config, &work)?;

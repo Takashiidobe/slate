@@ -345,6 +345,9 @@ impl Lowerer {
         match custom {
             CustomBuiltin::Overflow(op) => self.overflow_builtin(e, op, arguments),
             CustomBuiltin::Align(kind) => self.align_builtin(e, kind, arguments),
+            CustomBuiltin::ObjectSize { dynamic } => {
+                self.object_size_builtin(e, dynamic, arguments)
+            }
             CustomBuiltin::FloatClass(test) => {
                 let [operand] = arguments else {
                     return Err(ResolveError::Internal("float class builtin arity"));
@@ -871,6 +874,56 @@ impl Lowerer {
                 left: Box::new(left.value),
                 right: Box::new(right.value),
                 result: result.place,
+            },
+        ))
+    }
+
+    fn object_size_builtin(
+        &mut self,
+        e: &Expr,
+        dynamic: bool,
+        arguments: &[Expr],
+    ) -> Result<Operand, ResolveError> {
+        let [pointer, kind] = arguments else {
+            return Err(ResolveError::Internal("object size builtin arity"));
+        };
+        let kind = u8::try_from(self.types.constant_integer(kind)?)
+            .map_err(|_| ResolveError::Internal("object size type"))?;
+        let c = self.result(e)?;
+        let pointer = self.expr(pointer)?;
+        let minimum = kind & 2 != 0;
+        let unknown = if minimum {
+            0u32.into()
+        } else {
+            (num_bigint::BigUint::from(1u8) << self.types.fold_target().pointer_width) - 1u8
+        };
+        let size = if super::effects::has_effects(&pointer.value) {
+            Some(unknown)
+        } else if let Some(size) = self.types.folded_object_size(&pointer.value, kind) {
+            Some(size.into())
+        } else if kind == 3 && !self.types.flavor().is_gcc() {
+            Some(unknown)
+        } else {
+            None
+        };
+        if let Some(size) = size {
+            return Ok(self.operand(e, c, ValueKind::Constant(Number::Integer(size))));
+        }
+        let flag = |this: &Self, value| {
+            this.value(e, Type::Bool, ValueKind::Constant(Number::Bool(value)))
+        };
+        let arguments = vec![
+            pointer.value,
+            flag(self, minimum),
+            flag(self, false),
+            flag(self, dynamic),
+        ];
+        Ok(self.operand(
+            e,
+            c,
+            ValueKind::Intrinsic {
+                name: "llvm.objectsize".into(),
+                arguments,
             },
         ))
     }

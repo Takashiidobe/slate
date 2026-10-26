@@ -45,6 +45,23 @@ and `is_aligned` is `(x & mask) == 0` typed `_Bool`. Pointers are captured once
 and moved with a byte `ptr_offset` (forward by `aligned - x` for up, back by
 `x & mask` for down), so the result keeps the pointer's provenance and type.
 
+`__builtin_object_size(p, type)` and `__builtin_dynamic_object_size` target
+clang `-O2`, not `-O0` (`sema/object_size.rs`). The front end folds what
+clang's `tryEvaluateBuiltinObjectSize` folds: a pointer built from a declared
+object, string or compound literal (whole object), or from a member of any
+base including `p->m` (the closest sub-object, bit 0 of `type`), moved by
+constant offsets. It folds to `size_t` remaining bytes, 0 past either end.
+Arithmetic leaving the sub-object, or stepping a non-array sub-object by a
+different element size, drops the sub-object. Type 1 on a trailing array of an
+unknown base (flexible under `-fstrict-flex-arrays=N`) is not folded. An
+argument with side effects is not evaluated and gives the unknown value
+(`(size_t)-1` for types 0/1, 0 for 2/3); an unfolded type 3 is 0 (gcc flavor
+asks LLVM for the minimum instead). Everything else becomes
+`intrinsic<size_t, llvm.objectsize>(p, min = type & 2, false, dynamic)`, so
+rustc's optimizer resolves `p = local` and `malloc(n)` as clang `-O2` does.
+Optimizer-dependent fixtures live in `crates/slate/tests/fixtures.release/`,
+whose C oracle builds at `-O2`.
+
 `__builtin_clear_padding(p)` becomes `intrinsic<void, slate.clear_padding>(p)`.
 Slate derives from the pointee layout which bytes and bit-field bits are data
 (named bit-fields and scalars; union members all count) and zeroes the rest

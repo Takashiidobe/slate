@@ -1430,6 +1430,26 @@ impl TypeResolver {
                     AlignBuiltin::Up | AlignBuiltin::Down => self.ctypes.unqualified(value),
                 }
             }
+            CustomBuiltin::ObjectSize { .. } => {
+                let [pointer, kind] = arguments else {
+                    return Err(ResolveError::Rejected("object size builtin arity"));
+                };
+                let pointer = self.operand_type(pointer)?;
+                let pointer = self.ctypes.lvalue_conversion(pointer);
+                if !self.ctypes.is_pointer(pointer) {
+                    return Err(ResolveError::Rejected("object size builtin operand type"));
+                }
+                if u8::try_from(self.constant_integer(kind)?)
+                    .ok()
+                    .is_none_or(|kind| kind > 3)
+                {
+                    return Err(ResolveError::Rejected(
+                        "object size type is outside the valid range [0, 3]",
+                    ));
+                }
+                let target = self.target_info().clone();
+                self.ctypes.size_type(&target)
+            }
             CustomBuiltin::Overflow(_) => {
                 let [left, right, result] = arguments else {
                     return Err(ResolveError::Rejected("overflow builtin argument count"));

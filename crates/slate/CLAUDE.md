@@ -45,7 +45,8 @@ definition (`src/backend/link/`); an address-taken export keeps its C ABI and
 symbol. Library projects only change `static`
 functions, so exported signatures never change.
 `tests/fixtures.release/` fixtures go through `translate-project` and a
-`cargo build --release` (`release_build_differential`), for behavior that only
+`cargo build --release` (`release_build_differential`), compared against the C
+built at `-O2` with the fixture's `dg-options`, for behavior that only
 shows up after LLVM optimization or across translation units: a `.c` file is a
 one-unit project, a directory of `.c` files is a multi-unit project. A unit's
 `.c` file may carry a `SLATE-FILECHECK` block, checked against that unit's

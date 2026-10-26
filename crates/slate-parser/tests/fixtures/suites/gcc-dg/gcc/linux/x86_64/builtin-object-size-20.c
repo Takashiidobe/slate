@@ -331,505 +331,504 @@ void fai64cx (void)
 // DEFAULT-NEXT:     global %[[VALUE_ai64c9:[0-9]+]] ai64c9: @type[[TYPE_AI64CX]] [storage=static] = aggregate<@type[[TYPE_AI64CX]], zero_fill=false>(field0 = widen<i64, reason=assign>(const<i32>(0)), field1 = truncate<i8, reason=assign, fits=always>(const<i32>(8)), field2 = aggregate<array<i8, 9>, zero_fill=false>(index0 = truncate<i8, reason=assign, fits=always>(const<i32>(1)), index1 = truncate<i8, reason=assign, fits=always>(const<i32>(2)), index2 = truncate<i8, reason=assign, fits=always>(const<i32>(3)), index3 = truncate<i8, reason=assign, fits=always>(const<i32>(4)), index4 = truncate<i8, reason=assign, fits=always>(const<i32>(5)), index5 = truncate<i8, reason=assign, fits=always>(const<i32>(6)), index6 = truncate<i8, reason=assign, fits=always>(const<i32>(7)), index7 = truncate<i8, reason=assign, fits=always>(const<i32>(8)), index8 = truncate<i8, reason=assign, fits=always>(const<i32>(9)))) [linkage=external];
 // DEFAULT-NEXT:     extern %[[VALUE_eai64cx:[0-9]+]] eai64cx: @type[[TYPE_AI64CX]] [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_fail:[0-9]+]] @fail(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE___builtin_object_size:[0-9]+]] @__builtin_object_size(%[[VALUE1:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE2:[0-9]+]] <unnamed>: i32) -> u64 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_fai16cx:[0-9]+]] @fai16cx() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI16CX]]>>(%[[VALUE_ai16c0]])), const<i32>(1)), const<u64>(4))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(4), const<u64>(4))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(43));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI16CX]]>>(%[[VALUE_ai16c1]])), const<i32>(1)), const<u64>(4))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(4), const<u64>(4))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(44));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI16CX]]>>(%[[VALUE_ai16c2]])), const<i32>(1)), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(4), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(45));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI16CX]]>>(%[[VALUE_ai16c3]])), const<i32>(1)), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(4), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(46));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI16CX]]>>(%[[VALUE_ai16c4]])), const<i32>(1)), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(3)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(4), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(3)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(48));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI16CX]]>>(%[[VALUE_ai16c5]])), const<i32>(1)), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(4), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(49));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI16CX]]>>(%[[VALUE_ai16c6]])), const<i32>(1)), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(5)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(4), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(5)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(50));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI16CX]]>>(%[[VALUE_ai16c7]])), const<i32>(1)), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(6)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(4), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(6)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(51));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI16CX]]>>(%[[VALUE_ai16c8]])), const<i32>(1)), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(7)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(4), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(7)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(52));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI16CX]]>>(%[[VALUE_eai16cx]])), const<i32>(1)), reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(neg<i32, overflow=ub>(const<i32>(1)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(4), reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(neg<i32, overflow=ub>(const<i32>(1)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(54));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI16CX]]>>(%[[VALUE_ai16c0]])), const<i32>(1)), const<u64>(4))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(4), const<u64>(4))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(57));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI16CX]]>>(%[[VALUE_ai16c1]])), const<i32>(1)), const<u64>(4))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(4), const<u64>(4))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(58));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI16CX]]>>(%[[VALUE_ai16c2]])), const<i32>(1)), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(4), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(59));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI16CX]]>>(%[[VALUE_ai16c3]])), const<i32>(1)), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(4), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(60));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI16CX]]>>(%[[VALUE_ai16c4]])), const<i32>(1)), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(3)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(4), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(3)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(62));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI16CX]]>>(%[[VALUE_ai16c5]])), const<i32>(1)), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(4), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(63));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI16CX]]>>(%[[VALUE_ai16c6]])), const<i32>(1)), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(5)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(4), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(5)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(64));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI16CX]]>>(%[[VALUE_ai16c7]])), const<i32>(1)), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(6)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(4), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(6)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(65));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI16CX]]>>(%[[VALUE_ai16c8]])), const<i32>(1)), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(7)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(4), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(7)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(66));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI16CX]]>>(%[[VALUE_eai16cx]])), const<i32>(1)), reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(neg<i32, overflow=ub>(const<i32>(1)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(4), reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(neg<i32, overflow=ub>(const<i32>(1)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(68));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI16CX]]>>(%[[VALUE_ai16c0]])), const<i32>(2)), const<u64>(4))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(4), const<u64>(4))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(71));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI16CX]]>>(%[[VALUE_ai16c1]])), const<i32>(2)), const<u64>(4))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(4), const<u64>(4))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(72));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI16CX]]>>(%[[VALUE_ai16c2]])), const<i32>(2)), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(4), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(73));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI16CX]]>>(%[[VALUE_ai16c3]])), const<i32>(2)), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(4), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(74));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI16CX]]>>(%[[VALUE_ai16c4]])), const<i32>(2)), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(3)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(4), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(3)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(76));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI16CX]]>>(%[[VALUE_ai16c5]])), const<i32>(2)), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(4), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(77));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI16CX]]>>(%[[VALUE_ai16c6]])), const<i32>(2)), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(5)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(4), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(5)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(78));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI16CX]]>>(%[[VALUE_ai16c7]])), const<i32>(2)), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(6)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(4), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(6)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(79));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI16CX]]>>(%[[VALUE_ai16c8]])), const<i32>(2)), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(7)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(4), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(7)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(80));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI16CX]]>>(%[[VALUE_eai16cx]])), const<i32>(2)), const<u64>(4))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(4), const<u64>(4))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(82));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI16CX]]>>(%[[VALUE_ai16c0]])), const<i32>(3)), const<u64>(4))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(4), const<u64>(4))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(85));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI16CX]]>>(%[[VALUE_ai16c1]])), const<i32>(3)), const<u64>(4))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(4), const<u64>(4))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(86));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI16CX]]>>(%[[VALUE_ai16c2]])), const<i32>(3)), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(4), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(87));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI16CX]]>>(%[[VALUE_ai16c3]])), const<i32>(3)), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(4), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(88));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI16CX]]>>(%[[VALUE_ai16c4]])), const<i32>(3)), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(3)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(4), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(3)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(90));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI16CX]]>>(%[[VALUE_ai16c5]])), const<i32>(3)), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(4), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(91));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI16CX]]>>(%[[VALUE_ai16c6]])), const<i32>(3)), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(5)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(4), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(5)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(92));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI16CX]]>>(%[[VALUE_ai16c7]])), const<i32>(3)), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(6)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(4), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(6)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(93));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI16CX]]>>(%[[VALUE_ai16c8]])), const<i32>(3)), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(7)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(4), add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(7)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(94));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI16CX]]>>(%[[VALUE_eai16cx]])), const<i32>(3)), const<u64>(4))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(4), const<u64>(4))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(96));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fai32cx:[0-9]+]] @fai32cx() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI32CX]]>>(%[[VALUE_ai32c0]])), const<i32>(1)), const<u64>(8))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(8), const<u64>(8))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(119));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI32CX]]>>(%[[VALUE_ai32c1]])), const<i32>(1)), const<u64>(8))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(8), const<u64>(8))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(120));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI32CX]]>>(%[[VALUE_ai32c2]])), const<i32>(1)), const<u64>(8))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(8), const<u64>(8))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(121));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI32CX]]>>(%[[VALUE_ai32c3]])), const<i32>(1)), const<u64>(8))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(8), const<u64>(8))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(122));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI32CX]]>>(%[[VALUE_ai32c4]])), const<i32>(1)), add<u64, overflow=wrap>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(8), add<u64, overflow=wrap>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(124));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI32CX]]>>(%[[VALUE_ai32c5]])), const<i32>(1)), add<u64, overflow=wrap>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(8), add<u64, overflow=wrap>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(125));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI32CX]]>>(%[[VALUE_ai32c6]])), const<i32>(1)), add<u64, overflow=wrap>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(3)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(8), add<u64, overflow=wrap>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(3)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(126));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI32CX]]>>(%[[VALUE_ai32c7]])), const<i32>(1)), add<u64, overflow=wrap>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(8), add<u64, overflow=wrap>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(127));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI32CX]]>>(%[[VALUE_ai32c8]])), const<i32>(1)), add<u64, overflow=wrap>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(5)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(8), add<u64, overflow=wrap>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(5)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(128));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI32CX]]>>(%[[VALUE_eai32cx]])), const<i32>(1)), reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(neg<i32, overflow=ub>(const<i32>(1)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(8), reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(neg<i32, overflow=ub>(const<i32>(1)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(130));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI32CX]]>>(%[[VALUE_ai32c0]])), const<i32>(1)), const<u64>(8))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(8), const<u64>(8))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(133));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI32CX]]>>(%[[VALUE_ai32c1]])), const<i32>(1)), const<u64>(8))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(8), const<u64>(8))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(134));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI32CX]]>>(%[[VALUE_ai32c2]])), const<i32>(1)), const<u64>(8))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(8), const<u64>(8))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(135));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI32CX]]>>(%[[VALUE_ai32c3]])), const<i32>(1)), const<u64>(8))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(8), const<u64>(8))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(136));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI32CX]]>>(%[[VALUE_ai32c4]])), const<i32>(1)), add<u64, overflow=wrap>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(8), add<u64, overflow=wrap>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(138));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI32CX]]>>(%[[VALUE_ai32c5]])), const<i32>(1)), add<u64, overflow=wrap>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(8), add<u64, overflow=wrap>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(139));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI32CX]]>>(%[[VALUE_ai32c6]])), const<i32>(1)), add<u64, overflow=wrap>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(3)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(8), add<u64, overflow=wrap>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(3)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(140));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI32CX]]>>(%[[VALUE_ai32c7]])), const<i32>(1)), add<u64, overflow=wrap>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(8), add<u64, overflow=wrap>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(141));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI32CX]]>>(%[[VALUE_ai32c8]])), const<i32>(1)), add<u64, overflow=wrap>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(5)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(8), add<u64, overflow=wrap>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(5)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(142));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI32CX]]>>(%[[VALUE_eai32cx]])), const<i32>(1)), reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(neg<i32, overflow=ub>(const<i32>(1)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(8), reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(neg<i32, overflow=ub>(const<i32>(1)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(144));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI32CX]]>>(%[[VALUE_ai32c0]])), const<i32>(2)), const<u64>(8))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(8), const<u64>(8))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(147));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI32CX]]>>(%[[VALUE_ai32c1]])), const<i32>(2)), const<u64>(8))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(8), const<u64>(8))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(148));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI32CX]]>>(%[[VALUE_ai32c2]])), const<i32>(2)), const<u64>(8))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(8), const<u64>(8))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(149));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI32CX]]>>(%[[VALUE_ai32c3]])), const<i32>(2)), const<u64>(8))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(8), const<u64>(8))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(150));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI32CX]]>>(%[[VALUE_ai32c4]])), const<i32>(2)), add<u64, overflow=wrap>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(8), add<u64, overflow=wrap>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(152));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI32CX]]>>(%[[VALUE_ai32c5]])), const<i32>(2)), add<u64, overflow=wrap>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(8), add<u64, overflow=wrap>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(153));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI32CX]]>>(%[[VALUE_ai32c6]])), const<i32>(2)), add<u64, overflow=wrap>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(3)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(8), add<u64, overflow=wrap>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(3)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(154));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI32CX]]>>(%[[VALUE_ai32c7]])), const<i32>(2)), add<u64, overflow=wrap>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(8), add<u64, overflow=wrap>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(155));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI32CX]]>>(%[[VALUE_ai32c8]])), const<i32>(2)), add<u64, overflow=wrap>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(5)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(8), add<u64, overflow=wrap>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(5)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(156));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI32CX]]>>(%[[VALUE_eai32cx]])), const<i32>(2)), const<u64>(8))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(8), const<u64>(8))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(158));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI32CX]]>>(%[[VALUE_ai32c0]])), const<i32>(3)), const<u64>(8))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(8), const<u64>(8))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(161));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI32CX]]>>(%[[VALUE_ai32c1]])), const<i32>(3)), const<u64>(8))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(8), const<u64>(8))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(162));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI32CX]]>>(%[[VALUE_ai32c2]])), const<i32>(3)), const<u64>(8))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(8), const<u64>(8))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(163));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI32CX]]>>(%[[VALUE_ai32c3]])), const<i32>(3)), const<u64>(8))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(8), const<u64>(8))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(164));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI32CX]]>>(%[[VALUE_ai32c4]])), const<i32>(3)), add<u64, overflow=wrap>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(8), add<u64, overflow=wrap>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(166));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI32CX]]>>(%[[VALUE_ai32c5]])), const<i32>(3)), add<u64, overflow=wrap>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(8), add<u64, overflow=wrap>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(167));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI32CX]]>>(%[[VALUE_ai32c6]])), const<i32>(3)), add<u64, overflow=wrap>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(3)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(8), add<u64, overflow=wrap>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(3)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(168));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI32CX]]>>(%[[VALUE_ai32c7]])), const<i32>(3)), add<u64, overflow=wrap>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(8), add<u64, overflow=wrap>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(169));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI32CX]]>>(%[[VALUE_ai32c8]])), const<i32>(3)), add<u64, overflow=wrap>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(5)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(8), add<u64, overflow=wrap>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(5)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(170));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI32CX]]>>(%[[VALUE_eai32cx]])), const<i32>(3)), const<u64>(8))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(8), const<u64>(8))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(172));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fai64cx:[0-9]+]] @fai64cx() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI64CX]]>>(%[[VALUE_ai64c0]])), const<i32>(1)), const<u64>(16))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(16), const<u64>(16))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(196));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI64CX]]>>(%[[VALUE_ai64c1]])), const<i32>(1)), const<u64>(16))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(16), const<u64>(16))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(197));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI64CX]]>>(%[[VALUE_ai64c2]])), const<i32>(1)), const<u64>(16))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(16), const<u64>(16))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(198));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI64CX]]>>(%[[VALUE_ai64c3]])), const<i32>(1)), const<u64>(16))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(16), const<u64>(16))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(199));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI64CX]]>>(%[[VALUE_ai64c4]])), const<i32>(1)), const<u64>(16))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(16), const<u64>(16))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(200));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI64CX]]>>(%[[VALUE_ai64c5]])), const<i32>(1)), const<u64>(16))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(16), const<u64>(16))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(201));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI64CX]]>>(%[[VALUE_ai64c6]])), const<i32>(1)), const<u64>(16))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(16), const<u64>(16))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(202));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI64CX]]>>(%[[VALUE_ai64c7]])), const<i32>(1)), const<u64>(16))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(16), const<u64>(16))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(203));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI64CX]]>>(%[[VALUE_ai64c8]])), const<i32>(1)), add<u64, overflow=wrap>(const<u64>(16), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(16), add<u64, overflow=wrap>(const<u64>(16), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(205));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI64CX]]>>(%[[VALUE_ai64c9]])), const<i32>(1)), add<u64, overflow=wrap>(const<u64>(16), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(16), add<u64, overflow=wrap>(const<u64>(16), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(206));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI64CX]]>>(%[[VALUE_eai64cx]])), const<i32>(1)), reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(neg<i32, overflow=ub>(const<i32>(1)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(16), reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(neg<i32, overflow=ub>(const<i32>(1)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(208));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI64CX]]>>(%[[VALUE_ai64c0]])), const<i32>(1)), const<u64>(16))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(16), const<u64>(16))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(211));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI64CX]]>>(%[[VALUE_ai64c1]])), const<i32>(1)), const<u64>(16))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(16), const<u64>(16))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(212));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI64CX]]>>(%[[VALUE_ai64c2]])), const<i32>(1)), const<u64>(16))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(16), const<u64>(16))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(213));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI64CX]]>>(%[[VALUE_ai64c3]])), const<i32>(1)), const<u64>(16))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(16), const<u64>(16))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(214));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI64CX]]>>(%[[VALUE_ai64c4]])), const<i32>(1)), const<u64>(16))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(16), const<u64>(16))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(215));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI64CX]]>>(%[[VALUE_ai64c5]])), const<i32>(1)), const<u64>(16))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(16), const<u64>(16))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(216));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI64CX]]>>(%[[VALUE_ai64c6]])), const<i32>(1)), const<u64>(16))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(16), const<u64>(16))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(217));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI64CX]]>>(%[[VALUE_ai64c7]])), const<i32>(1)), const<u64>(16))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(16), const<u64>(16))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(218));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI64CX]]>>(%[[VALUE_ai64c8]])), const<i32>(1)), add<u64, overflow=wrap>(const<u64>(16), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(16), add<u64, overflow=wrap>(const<u64>(16), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(220));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI64CX]]>>(%[[VALUE_ai64c9]])), const<i32>(1)), add<u64, overflow=wrap>(const<u64>(16), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(16), add<u64, overflow=wrap>(const<u64>(16), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(221));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI64CX]]>>(%[[VALUE_eai64cx]])), const<i32>(1)), reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(neg<i32, overflow=ub>(const<i32>(1)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(16), reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(neg<i32, overflow=ub>(const<i32>(1)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(223));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI64CX]]>>(%[[VALUE_ai64c0]])), const<i32>(2)), const<u64>(16))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(16), const<u64>(16))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(226));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI64CX]]>>(%[[VALUE_ai64c1]])), const<i32>(2)), const<u64>(16))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(16), const<u64>(16))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(227));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI64CX]]>>(%[[VALUE_ai64c2]])), const<i32>(2)), const<u64>(16))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(16), const<u64>(16))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(228));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI64CX]]>>(%[[VALUE_ai64c3]])), const<i32>(2)), const<u64>(16))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(16), const<u64>(16))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(229));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI64CX]]>>(%[[VALUE_ai64c4]])), const<i32>(2)), const<u64>(16))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(16), const<u64>(16))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(230));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI64CX]]>>(%[[VALUE_ai64c5]])), const<i32>(2)), const<u64>(16))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(16), const<u64>(16))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(231));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI64CX]]>>(%[[VALUE_ai64c6]])), const<i32>(2)), const<u64>(16))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(16), const<u64>(16))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(232));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI64CX]]>>(%[[VALUE_ai64c7]])), const<i32>(2)), const<u64>(16))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(16), const<u64>(16))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(233));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI64CX]]>>(%[[VALUE_ai64c8]])), const<i32>(2)), add<u64, overflow=wrap>(const<u64>(16), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(16), add<u64, overflow=wrap>(const<u64>(16), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(235));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI64CX]]>>(%[[VALUE_ai64c9]])), const<i32>(2)), add<u64, overflow=wrap>(const<u64>(16), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(16), add<u64, overflow=wrap>(const<u64>(16), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(236));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI64CX]]>>(%[[VALUE_eai64cx]])), const<i32>(2)), const<u64>(16))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(16), const<u64>(16))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(238));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI64CX]]>>(%[[VALUE_ai64c0]])), const<i32>(3)), const<u64>(16))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(16), const<u64>(16))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(240));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI64CX]]>>(%[[VALUE_ai64c1]])), const<i32>(3)), const<u64>(16))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(16), const<u64>(16))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(241));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI64CX]]>>(%[[VALUE_ai64c2]])), const<i32>(3)), const<u64>(16))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(16), const<u64>(16))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(242));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI64CX]]>>(%[[VALUE_ai64c3]])), const<i32>(3)), const<u64>(16))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(16), const<u64>(16))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(243));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI64CX]]>>(%[[VALUE_ai64c4]])), const<i32>(3)), const<u64>(16))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(16), const<u64>(16))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(244));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI64CX]]>>(%[[VALUE_ai64c5]])), const<i32>(3)), const<u64>(16))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(16), const<u64>(16))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(245));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI64CX]]>>(%[[VALUE_ai64c6]])), const<i32>(3)), const<u64>(16))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(16), const<u64>(16))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(246));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI64CX]]>>(%[[VALUE_ai64c7]])), const<i32>(3)), const<u64>(16))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(16), const<u64>(16))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(247));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI64CX]]>>(%[[VALUE_ai64c8]])), const<i32>(3)), add<u64, overflow=wrap>(const<u64>(16), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(16), add<u64, overflow=wrap>(const<u64>(16), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(249));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI64CX]]>>(%[[VALUE_ai64c9]])), const<i32>(3)), add<u64, overflow=wrap>(const<u64>(16), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(16), add<u64, overflow=wrap>(const<u64>(16), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(250));
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_AI64CX]]>>(%[[VALUE_eai64cx]])), const<i32>(3)), const<u64>(16))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(16), const<u64>(16))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(252));

@@ -350,6 +350,7 @@ pub(super) enum CustomBuiltin {
     MsVaStart,
     Noop,
     Align(AlignBuiltin),
+    ObjectSize { dynamic: bool },
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -395,6 +396,8 @@ pub(super) fn custom_builtin(builtin: &ClangBuiltin) -> Option<CustomBuiltin> {
         "AlignUp" => CustomBuiltin::Align(AlignBuiltin::Up),
         "AlignDown" => CustomBuiltin::Align(AlignBuiltin::Down),
         "IsAligned" => CustomBuiltin::Align(AlignBuiltin::IsAligned),
+        "ObjectSize" => CustomBuiltin::ObjectSize { dynamic: false },
+        "DynamicObjectSize" => CustomBuiltin::ObjectSize { dynamic: true },
         _ => return None,
     })
 }

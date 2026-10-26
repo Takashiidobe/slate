@@ -64,11 +64,10 @@ int main()
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_strncpy:[0-9]+]] @strncpy(%[[VALUE0:[0-9]+]] <unnamed>: ptr<i8>, %[[VALUE1:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE2:[0-9]+]] <unnamed>: u64) -> ptr<i8> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_strncpy:[0-9]+]] @__builtin_strncpy(%[[VALUE3:[0-9]+]] <unnamed>: ptr<i8>, %[[VALUE4:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE5:[0-9]+]] <unnamed>: u64) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE___builtin_object_size:[0-9]+]] @__builtin_object_size(%[[VALUE6:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE7:[0-9]+]] <unnamed>: i32) -> u64 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_u:[0-9]+]] u: ptr<@type[[TYPE_u]]>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_vi:[0-9]+]] vi: array<i8, 9> [storage=automatic];
 // DEFAULT-NEXT:         call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>, u64) -> ptr<i8>>(%[[VALUE___builtin_strncpy]], array_decay<ptr<i8>, length=Some(9)>(%[[VALUE_vi]]), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(8)>(field0(field0(deref(read<ptr<@type[[TYPE_u]]>>(%[[VALUE_u]])))))), const<u64>(8));
-// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i8>, length=Some(28)>(field1(deref(read<ptr<@type[[TYPE_u]]>>(%[[VALUE_u]]))))), const<i32>(1)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(1)))))
+// DEFAULT-NEXT:         if ne<u64>(intrinsic<u64, llvm.objectsize>(array_decay<ptr<i8>, length=Some(28)>(field1(deref(read<ptr<@type[[TYPE_u]]>>(%[[VALUE_u]])))), const<bool>(false), const<bool>(false), const<bool>(false)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(1)))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

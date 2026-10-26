@@ -53,7 +53,6 @@ int main(void) {
 // DEFAULT-NEXT:     global %[[VALUE_global_array:[0-9]+]] global_array: array<i32, 4> [storage=static] [align=16] [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 30> [storage=static] = code_units<array<i8, 30>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 108, 117, 32, 37, 108, 117, 32, 37, 108, 117, 32, 37, 108, 117, 32, 37, 108, 117, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE___builtin_object_size:[0-9]+]] @__builtin_object_size(%[[VALUE0:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE1:[0-9]+]] <unnamed>: i32) -> u64 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_local:[0-9]+]] local: array<i32, 6> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<i32> [storage=automatic] = array_decay<ptr<i32>, length=Some(6)>(%[[VALUE_local]]);
@@ -61,11 +60,11 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_c_literal:[0-9]+]] c_literal: i32 [storage=automatic] = const<i32>(1);
 // DEFAULT-NEXT:         let %[[VALUE_c_expr:[0-9]+]] c_expr: i32 [storage=automatic] = const<i32>(1);
 // DEFAULT-NEXT:         let %[[VALUE_c_volatile:[0-9]+]] c_volatile: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         let %[[VALUE_local_whole:[0-9]+]] local_whole: u64 [storage=automatic] = call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i32>, length=Some(6)>(%[[VALUE_local]])), const<i32>(0));
-// DEFAULT-NEXT:         let %[[VALUE_local_remaining:[0-9]+]] local_remaining: u64 [storage=automatic] = call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(6)>(%[[VALUE_local]]), const<i32>(2))))), const<i32>(1));
-// DEFAULT-NEXT:         let %[[VALUE_global_whole:[0-9]+]] global_whole: u64 [storage=automatic] = call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i32>, length=Some(4)>(%[[VALUE_global_array]])), const<i32>(0));
-// DEFAULT-NEXT:         let %[[VALUE_unknown:[0-9]+]] unknown: u64 [storage=automatic] = call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(read<ptr<i32>>(%[[VALUE_p]])), const<i32>(0));
-// DEFAULT-NEXT:         let %[[VALUE_unknown_upper:[0-9]+]] unknown_upper: u64 [storage=automatic] = call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(read<ptr<i32>>(%[[VALUE_p]])), const<i32>(2));
+// DEFAULT-NEXT:         let %[[VALUE_local_whole:[0-9]+]] local_whole: u64 [storage=automatic] = const<u64>(24);
+// DEFAULT-NEXT:         let %[[VALUE_local_remaining:[0-9]+]] local_remaining: u64 [storage=automatic] = const<u64>(16);
+// DEFAULT-NEXT:         let %[[VALUE_global_whole:[0-9]+]] global_whole: u64 [storage=automatic] = const<u64>(16);
+// DEFAULT-NEXT:         let %[[VALUE_unknown:[0-9]+]] unknown: u64 [storage=automatic] = intrinsic<u64, llvm.objectsize>(read<ptr<i32>>(%[[VALUE_p]]), const<bool>(false), const<bool>(false), const<bool>(false));
+// DEFAULT-NEXT:         let %[[VALUE_unknown_upper:[0-9]+]] unknown_upper: u64 [storage=automatic] = intrinsic<u64, llvm.objectsize>(read<ptr<i32>>(%[[VALUE_p]]), const<bool>(true), const<bool>(false), const<bool>(false));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(30)>(%[[VALUE_str]])), read<i32>(%[[VALUE_c_literal]]), read<i32>(%[[VALUE_c_expr]]), read<i32>(%[[VALUE_c_volatile]]), read<u64>(%[[VALUE_local_whole]]), read<u64>(%[[VALUE_local_remaining]]), read<u64>(%[[VALUE_global_whole]]), read<u64>(%[[VALUE_unknown]]), read<u64>(%[[VALUE_unknown_upper]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
