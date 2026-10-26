@@ -59,6 +59,7 @@ become the `// <PREFIX>:` check lines.
 | `ERROR <prefix>`                            | the run must fail in preprocessing, parsing or sema; the block holds the diagnostic    | `// SLATE-FILECHECK-ERROR PARSE`             |
 | `IR-ERROR <prefix>`                         | parsing succeeds and IR lowering must fail                                             | `// SLATE-FILECHECK-IR-ERROR DEFAULT`        |
 | `WARNING <prefix>`                          | the run must succeed and the block holds warnings                                      | `// SLATE-FILECHECK-WARNING WARN`            |
+| `PP <prefix>`                               | the block holds `slate-parser pp` output; bytes that are not UTF-8 print as `<0xE9>`   | `// SLATE-FILECHECK-PP DEFAULT`              |
 | `ISYSTEM <dirs>`                            | headers come from `inputs/` or a sysroot                                               | `// SLATE-FILECHECK-ISYSTEM inputs/sysroot`  |
 | `SHOW-IDS <prefix>`                         | the fixture checks raw ids, so id loosening must be off                                | `// SLATE-FILECHECK-SHOW-IDS DEFAULT`        |
 | `EXAMPLE <name>`                            | the output comes from a `cargo run --example <name>` instead of the CLI                | `// SLATE-FILECHECK-EXAMPLE <name>`          |
@@ -72,6 +73,10 @@ Common starting points:
   if the standard matters.
 - AST fixture: `AST`, `DEFINES DEFAULT`, and `PREFIX-ARGS DEFAULT --parse-only`
   when sema is out of scope.
+- Preprocessed-output fixture: `DEFINES <prefix>` and `PP <prefix>` per
+  configuration. The scratch copy keeps the fixture's raw bytes, so a source
+  byte that is not UTF-8 reaches the preprocessor unchanged
+  (`msvc/windows/x86_64/pp_code_page.c`).
 
 Then run `python3 crates/slate-parser/tools/update_filecheck.py --in-place <fixture>`.
 If the file comes back unchanged, a directive is missing or misspelled.

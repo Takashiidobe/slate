@@ -1,0 +1,46 @@
+// SLATE-FILECHECK-ARGS /Zc:preprocessor
+// SLATE-FILECHECK-DEFINES DEFAULT
+// SLATE-FILECHECK-PP DEFAULT
+// SLATE-FILECHECK-DEFINES UTF8
+// SLATE-FILECHECK-PREFIX-ARGS UTF8 /utf-8
+// SLATE-FILECHECK-PP UTF8
+// SLATE-FILECHECK-DEFINES EXECUTION
+// SLATE-FILECHECK-PREFIX-ARGS EXECUTION /execution-charset:utf-8
+// SLATE-FILECHECK-PP EXECUTION
+// SLATE-FILECHECK-DEFINES SOURCE
+// SLATE-FILECHECK-PREFIX-ARGS SOURCE /source-charset:utf-8 /execution-charset:windows-1252
+// SLATE-FILECHECK-PP SOURCE
+char *s = "é";
+char *t = "a�b�";
+char *u = "\u00e9\u4e00";
+int n\u00e9x;
+int m\u4e00y;
+
+// SLATE-FILECHECK-BEGIN DEFAULT
+// DEFAULT: char *s = "é";
+// DEFAULT-NEXT: char *t = "a<0x81>b<0x80>";
+// DEFAULT-NEXT: char *u = "\u00e9\u4e00";
+// DEFAULT-NEXT: int n<0xE9>x;
+// DEFAULT-NEXT: int m?y;
+// SLATE-FILECHECK-END DEFAULT
+// SLATE-FILECHECK-BEGIN UTF8
+// UTF8: char *s = "é";
+// UTF8-NEXT: char *t = "ab";
+// UTF8-NEXT: char *u = "\u00e9\u4e00";
+// UTF8-NEXT: int néx;
+// UTF8-NEXT: int m一y;
+// SLATE-FILECHECK-END UTF8
+// SLATE-FILECHECK-BEGIN EXECUTION
+// EXECUTION: char *s = "é";
+// EXECUTION-NEXT: char *t = "a<0x81>b<0x80>";
+// EXECUTION-NEXT: char *u = "\u00e9\u4e00";
+// EXECUTION-NEXT: int n<0xE9>x;
+// EXECUTION-NEXT: int m?y;
+// SLATE-FILECHECK-END EXECUTION
+// SLATE-FILECHECK-BEGIN SOURCE
+// SOURCE: char *s = "é";
+// SOURCE-NEXT: char *t = "ab";
+// SOURCE-NEXT: char *u = "\u00e9\u4e00";
+// SOURCE-NEXT: int néx;
+// SOURCE-NEXT: int m一y;
+// SLATE-FILECHECK-END SOURCE

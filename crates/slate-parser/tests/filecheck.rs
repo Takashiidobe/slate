@@ -8,7 +8,7 @@ use slate_parser::compiler_args::CompilerFlavor;
 use slate_parser::compiler_headers;
 use slate_parser::const_expr::Parser as ConstExprParser;
 use slate_parser::dialect::Dialect;
-use slate_parser::files::{SearchPaths, decode_source_bytes};
+use slate_parser::files::{SearchPaths, decode_source_bytes, raw_byte_for_char};
 use slate_parser::parser::Parser;
 use slate_parser::sysroot;
 use slate_parser::target_info::{TargetInfo, TargetOs};
@@ -332,6 +332,27 @@ fn warning_configurations(source: &str) -> Vec<String> {
         .collect()
 }
 
+fn preprocess_configurations(source: &str) -> Vec<String> {
+    source
+        .lines()
+        .filter_map(|line| {
+            line.trim()
+                .strip_prefix("// SLATE-FILECHECK-PP ")
+                .map(str::to_string)
+        })
+        .collect()
+}
+
+fn render_preprocessed(bytes: &[u8]) -> String {
+    bytes
+        .utf8_chunks()
+        .map(|chunk| {
+            let invalid = chunk.invalid().iter().map(|byte| format!("<0x{byte:02X}>"));
+            chunk.valid().to_string() + &invalid.collect::<String>()
+        })
+        .collect()
+}
+
 fn error_configurations(source: &str) -> Vec<String> {
     source
         .lines()
@@ -354,7 +375,17 @@ fn ir_error_configurations(source: &str) -> Vec<String> {
         .collect()
 }
 
-// the copy sits beside the original so relative includes still resolve
+fn source_bytes(source: &str) -> Vec<u8> {
+    let mut bytes = Vec::with_capacity(source.len());
+    for c in source.chars() {
+        match raw_byte_for_char(c) {
+            Some(byte) => bytes.push(byte),
+            None => bytes.extend_from_slice(c.encode_utf8(&mut [0; 4]).as_bytes()),
+        }
+    }
+    bytes
+}
+
 enum Scratch {
     Beside(NamedTempFile),
     Isolated(TempDir, OsString),
@@ -366,7 +397,7 @@ impl Scratch {
         if source.contains(&format!("#include \"{}\"", name.to_string_lossy())) {
             let directory =
                 tempfile::tempdir().expect("create isolated self-include fixture directory");
-            std::fs::write(directory.path().join(name), source)
+            std::fs::write(directory.path().join(name), source_bytes(source))
                 .expect("write fixture without FileCheck metadata");
             return Self::Isolated(directory, name.to_owned());
         }
@@ -378,7 +409,7 @@ impl Scratch {
             .suffix(".c")
             .tempfile_in(fixture.parent().unwrap())
             .expect("create fixture without FileCheck metadata");
-        file.write_all(source.as_bytes())
+        file.write_all(&source_bytes(source))
             .expect("write fixture without FileCheck metadata");
         Self::Beside(file)
     }
@@ -408,6 +439,7 @@ struct FixtureJob {
     error: bool,
     ir_error: bool,
     warnings: bool,
+    preprocess: bool,
 }
 
 fn run_job(job: FixtureJob) {
@@ -430,27 +462,16 @@ fn run_job(job: FixtureJob) {
             job.show_ids,
         );
     } else {
-        run_fixture(
-            &job.fixture,
-            &job.prefix,
-            &job.defines,
-            &job.isystem,
-            job.standard.as_deref(),
-            job.show_ids,
-            job.warnings,
-        );
+        run_fixture(&job);
     }
 }
 
-fn run_fixture(
-    fixture: &Path,
-    prefix: &str,
-    defines: &[String],
-    isystem: &[String],
-    standard: Option<&str>,
-    show_ids: bool,
-    warnings: bool,
-) {
+fn run_fixture(job: &FixtureJob) {
+    let fixture = job.fixture.as_path();
+    let prefix = job.prefix.as_str();
+    let defines = &job.defines;
+    let isystem = &job.isystem;
+    let warnings = job.warnings;
     let source = fixture_source(fixture);
     let parsed = Scratch::new(fixture, &source);
     let original = decode_source_bytes(&std::fs::read(fixture).expect("read fixture renderer"));
@@ -469,7 +490,9 @@ fn run_fixture(
         command
     } else {
         let mut command = Command::new(env!("CARGO_BIN_EXE_slate-parser"));
-        command.arg("parse").arg(parsed.path());
+        command
+            .arg(if job.preprocess { "pp" } else { "parse" })
+            .arg(parsed.path());
         command
     };
     command
@@ -483,13 +506,17 @@ fn run_fixture(
     for path in isystem {
         command.arg(format!("-isystem{path}"));
     }
-    if let Some(standard) = standard {
+    if let Some(standard) = &job.standard {
         command.arg(format!("-std={standard}"));
     }
-    if show_ids {
+    if job.show_ids {
         command.arg("--show-ids");
     }
-    command.args(fixture_ir_args(fixture));
+    command.args(if job.preprocess {
+        fixture_args(fixture)
+    } else {
+        fixture_ir_args(fixture)
+    });
     command.args(prefix_args(&original, prefix));
     let rendered = command
         .output()
@@ -508,6 +535,8 @@ fn run_fixture(
                 fixture.file_name().unwrap().to_str().unwrap(),
             )
             .into_bytes()
+    } else if job.preprocess {
+        render_preprocessed(&rendered.stdout).into_bytes()
     } else {
         rendered.stdout.clone()
     };
@@ -1260,6 +1289,7 @@ fn fixture_jobs(fixture: &Path, jobs: &mut Vec<FixtureJob>) {
     let errors = error_configurations(&source);
     let ir_errors = ir_error_configurations(&source);
     let warnings = warning_configurations(&source);
+    let preprocess = preprocess_configurations(&source);
     check_directive_placement(fixture, &source, &fixture_placement(fixture));
     let isystem = isystem_paths(&source);
     let config_names = configs
@@ -1286,6 +1316,7 @@ fn fixture_jobs(fixture: &Path, jobs: &mut Vec<FixtureJob>) {
                 error: true,
                 ir_error: false,
                 warnings: false,
+                preprocess: false,
             });
         }
         return;
@@ -1306,6 +1337,7 @@ fn fixture_jobs(fixture: &Path, jobs: &mut Vec<FixtureJob>) {
             error: errors.contains(prefix),
             ir_error: ir_errors.contains(prefix),
             warnings: warnings.contains(prefix),
+            preprocess: preprocess.contains(prefix),
         });
     }
 }

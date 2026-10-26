@@ -105,7 +105,12 @@ each stage is in [configuration-threading](configuration-threading.md).
     and defines `_UTF8` to 1; combining it with either one is rejected
     (D8016). An explicit execution charset sets
     `_MSVC_EXECUTION_CHARACTER_SET` (65001 or 1252). Other code pages are
-    rejected.
+    rejected. `slate-parser pp` writes its output in the source charset, as
+    cl.exe `/E` and `/EP` do. The execution charset has no effect, and a
+    BOM'd UTF-8 file still prints in windows-1252 by default (`é一` as
+    `E9 3F`). A UCN in an identifier prints as its character (`?` if the
+    code page lacks it). One in a literal stays as written. Bytes that are not
+    valid UTF-8 in a UTF-8 file are dropped (`write_preprocessed`, `pp/print.rs`).
   - `/fp:precise|strict|fast` pick the model (last wins) and define
     `_M_FP_PRECISE`, `_M_FP_STRICT` or `_M_FP_FAST`; none is defined without
     one. `/fp:contract` adds `_M_FP_CONTRACT`, which `fast` implies, and a

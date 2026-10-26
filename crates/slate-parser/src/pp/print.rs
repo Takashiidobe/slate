@@ -1,24 +1,39 @@
 use super::{PPNode, PPNodeKind};
 use crate::ast::{FileId, Span};
-use crate::files::{Files, decode_source_bytes};
+use crate::charset::Charset;
+use crate::files::{Files, decode_source_bytes, raw_byte_for_char};
 use crate::lexer::{Token, token_spelling};
 use std::collections::HashMap;
 use std::io::{self, Write};
 
-pub fn write_preprocessed(nodes: &[PPNode], files: &Files, out: &mut impl Write) -> io::Result<()> {
+pub fn write_preprocessed(
+    nodes: &[PPNode],
+    files: &Files,
+    code_page: Option<Charset>,
+    out: &mut impl Write,
+) -> io::Result<()> {
     let mut spellings = Spellings::new(files);
     for node in nodes {
-        match &node.value {
-            PPNodeKind::Comment { .. } => {}
-            PPNodeKind::Code { tokens, .. } => {
-                writeln!(out, "{}", spellings.line(tokens))?;
-            }
-            PPNodeKind::Pragma { tokens, .. } => {
-                writeln!(out, "#pragma {}", spellings.line(tokens))?;
-            }
+        let line = match &node.value {
+            PPNodeKind::Comment { .. } => continue,
+            PPNodeKind::Code { tokens, .. } => spellings.line(tokens),
+            PPNodeKind::Pragma { tokens, .. } => format!("#pragma {}", spellings.line(tokens)),
+        };
+        match code_page {
+            Some(charset) => out.write_all(&encode_line(&line, charset))?,
+            None => out.write_all(line.as_bytes())?,
         }
+        out.write_all(b"\n")?;
     }
     Ok(())
+}
+
+fn encode_line(line: &str, charset: Charset) -> Vec<u8> {
+    let mut units = Vec::new();
+    for c in line.chars().filter(|&c| raw_byte_for_char(c).is_none()) {
+        charset.encode(u32::from(c), &mut units);
+    }
+    units.into_iter().map(|unit| unit as u8).collect()
 }
 
 struct Spellings<'a> {

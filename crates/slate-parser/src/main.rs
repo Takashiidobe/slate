@@ -128,6 +128,7 @@ fn run() -> miette::Result<()> {
         compiler_args.target,
         compiler_args.options,
     );
+    let code_page = dialect.flavor().is_msvc().then(|| dialect.source_charset());
     let mut parser =
         Parser::new(search, dialect).with_preprocessor_inputs(compiler_args.preprocessor_inputs);
     if command.as_deref() == Some("pp") {
@@ -135,8 +136,13 @@ fn run() -> miette::Result<()> {
         report_directives(parser.directive_diagnostics())?;
         let (nodes, files) = preprocessed?;
         let stdout = io::stdout();
-        return write_preprocessed(&nodes, &files, &mut io::BufWriter::new(stdout.lock()))
-            .map_err(|error| miette::miette!(error));
+        return write_preprocessed(
+            &nodes,
+            &files,
+            code_page,
+            &mut io::BufWriter::new(stdout.lock()),
+        )
+        .map_err(|error| miette::miette!(error));
     }
     let parsed = parser.parse_file(Path::new(&path));
     report_directives(parser.directive_diagnostics())?;

@@ -34,6 +34,7 @@ DEFINE_RE = re.compile(r"^\s*//\s*SLATE-FILECHECK-DEFINES\s+([A-Za-z0-9_-]+)(?:\
 BEGIN_RE = re.compile(r"^// SLATE-FILECHECK-BEGIN ([A-Za-z0-9_-]+)$")
 ERROR_RE = re.compile(r"^\s*//\s*SLATE-FILECHECK-ERROR\s+([A-Za-z0-9_-]+)$")
 WARNING_RE = re.compile(r"^\s*//\s*SLATE-FILECHECK-WARNING\s+([A-Za-z0-9_-]+)$")
+PP_RE = re.compile(r"^\s*//\s*SLATE-FILECHECK-PP\s+([A-Za-z0-9_-]+)$")
 ISYSTEM_RE = re.compile(r"^\s*//\s*SLATE-FILECHECK-ISYSTEM\s+(.*)$")
 STD_RE = re.compile(r"^\s*//\s*SLATE-FILECHECK-STD\s+([A-Za-z0-9_-]+)\s+(\S+)\s*$")
 PREFIX_ARGS_RE = re.compile(r"^\s*//\s*SLATE-FILECHECK-PREFIX-ARGS\s+([A-Za-z0-9_-]+)\s+(.*)$")
@@ -167,6 +168,15 @@ def warning_configurations(source: str) -> list[str]:
     return [match.group(1) for line in source.splitlines() if (match := WARNING_RE.match(line))]
 
 
+def preprocess_configurations(source: str) -> list[str]:
+    return [match.group(1) for line in source.splitlines() if (match := PP_RE.match(line))]
+
+
+def render_preprocessed(output: bytes) -> str:
+    text = output.decode("utf-8", errors="surrogateescape")
+    return "".join(f"<0x{ord(c) - 0xDC00:02X}>" if 0xDC80 <= ord(c) <= 0xDCFF else c for c in text)
+
+
 def fixture_source(source: str) -> str:
     kept = []
     in_checks = False
@@ -202,6 +212,7 @@ def render(
     isystem: list[str],
     std_args: list[str],
     extra_args: list[str] = (),
+    preprocess: bool = False,
 ) -> str:
     with tempfile.TemporaryDirectory(prefix=f".{fixture.stem}.filecheck.") as directory:
         parsed_fixture = write_isolated_fixture(Path(directory), fixture, source)
@@ -209,22 +220,24 @@ def render(
                         for line in source.splitlines()
                         if line.strip().startswith("// SLATE-FILECHECK-EXAMPLE ")), None)
         command = (["cargo", "run", "--release", "--quiet", "--example", example, "--"] if example
-                   else [str(RENDERER), "parse", str(parsed_fixture)])
+                   else [str(RENDERER), "pp" if preprocess else "parse", str(parsed_fixture)])
         command.extend(f"-D{define.removeprefix('-D')}" for define in defines)
         command.extend(f"-isystem{path}" for path in isystem)
         command.extend(std_args)
         command.extend(extra_args)
         command.extend(placement_args(fixture))
         filecheck_args = fixture_args(source)
-        if "// SLATE-FILECHECK-AST" not in source.splitlines() and not any(arg.startswith("--dump-ir") for arg in filecheck_args):
+        if (not preprocess and "// SLATE-FILECHECK-AST" not in source.splitlines()
+                and not any(arg.startswith("--dump-ir") for arg in filecheck_args)):
             command.append("--dump-ir")
         for line in source.splitlines():
             if line.strip().startswith("// SLATE-FILECHECK-ARGS "):
                 command.extend(line.strip().removeprefix("// SLATE-FILECHECK-ARGS ").split())
-        result = subprocess.run(command, cwd=repo, text=True, capture_output=True, env=_no_color_env())
+        result = subprocess.run(command, cwd=repo, capture_output=True, env=_no_color_env())
+    stdout = render_preprocessed(result.stdout) if preprocess else result.stdout.decode()
     if result.returncode:
-        raise RuntimeError(result.stderr or result.stdout)
-    return result.stdout.rstrip("\n")
+        raise RuntimeError(result.stderr.decode(errors="replace") or stdout)
+    return stdout.rstrip("\n")
 
 
 def render_warnings(
@@ -626,8 +639,32 @@ def generated_blocks(repo: Path, fixture: Path, source: str) -> str:
         blocks.extend([f"// SLATE-FILECHECK-BEGIN {prefix}"])
         blocks.extend(f"// {prefix}: {escape_filecheck_literal(line)}" for line in output)
         blocks.append(f"// SLATE-FILECHECK-END {prefix}")
+    preprocess = preprocess_configurations(source)
     for prefix, defines in configurations(source):
         if prefix in errors or prefix in ir_errors:
+            continue
+        if prefix in preprocess:
+            output = render(
+                repo,
+                fixture,
+                source,
+                defines,
+                isystem,
+                configuration_std_args(source, prefix),
+                configuration_prefix_args(source, prefix),
+                preprocess=True,
+            )
+            block = [f"// SLATE-FILECHECK-BEGIN {prefix}"]
+            after_blank = True
+            for line in output.splitlines():
+                if not line.strip():
+                    after_blank = True
+                    continue
+                directive = prefix if after_blank else f"{prefix}-NEXT"
+                block.append(f"// {directive}: {escape_filecheck_literal(line)}")
+                after_blank = False
+            block.append(f"// SLATE-FILECHECK-END {prefix}")
+            blocks.extend(block)
             continue
         output = render(
             repo,
