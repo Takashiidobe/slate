@@ -58,7 +58,12 @@
 - `rounding=environment` arithmetic goes through opaque C calls because rustc
   assumes round-to-nearest: it folds `1.0 / 3.0` and may move a float op across
   `fesetround`. An extern call it cannot see into blocks both. `black_box` on the
-  operands stops folding but not code motion. Ops that do not depend on the mode
+  operands stops folding but not code motion. The shims stay opaque under
+  cross-language LTO (`-Clinker-plugin-lto` with clang `-flto`): each is
+  `noinline`, and under clang `#pragma STDC FENV_ACCESS ON` makes it `strictfp`
+  with constrained ops. Without the pragma LLVM infers `memory(none)` for a
+  `noinline` shim and may move or fold the call. gcc and cl.exe objects cannot
+  join rustc's LTO. Ops that do not depend on the mode
   (compares, `neg`, exact conversions) stay native; f80 already runs in
   `long_double.c`. f16 arithmetic is not routed yet.
 - Null-based field-address differences use parser layout offsets, avoiding Rust
