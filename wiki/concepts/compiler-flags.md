@@ -67,6 +67,18 @@ each stage is in [configuration-threading](configuration-threading.md).
   - Trigraphs are off by default. `/Zc:trigraphs` turns on replacement and
     `??/` line splicing in every `/std:` mode, `/Zc:trigraphs-` turns it off
     again, and the last one wins (`SourceGraphs::trigraphs`).
+  - `/u` (`MicrosoftFlags::undefine_predefined`) removes a fixed set of
+    cl.exe's predefines, not all of them: `_MSC_VER`, `_MSC_FULL_VER`,
+    `_MSC_BUILD`, `_MT`, `_DLL`, `_DEBUG`, `_VC_NODEFAULTLIB`,
+    `_CHAR_UNSIGNED`, `_ISO_VOLATILE`, `_WIN32`, `_WIN64`, the `_M_` arch
+    macros (`_M_X64`, `_M_AMD64`, `_M_IX86`, `_M_IX86_FP`, `_M_ARM64`,
+    `_M_ARM64_EXTENSION`), `_CMMN_INTRIN_FUNC`, `_M_FP_*` and every
+    `__ARM_*` macro (`MSVC_UNDEFINABLE_PREDEFINES` in `pp/mod.rs`). It keeps
+    `_MSC_EXTENSIONS`, `__STDC_HOSTED__`, `_MSVC_MT`, `_MSVC_MD`, the x86
+    ISA macros (`__AVX2__`) and the other option predefines. `/D` and `/U`
+    apply after it in either order, so `/D_MSC_VER=5 /u` keeps `5`. cl.exe
+    also removes `_OPENMP` and `_OPENMP_LLVM_RUNTIME`, which slate's msvc
+    flavor does not define yet. Checked against cl.exe on x64, x86 and arm64.
   - `/W0`..`/W4`, `/Wall` and `/w` set `_MSVC_WARNING_LEVEL` (`nL`, `100L`,
     `0L`; `MicrosoftFlags::warning_level`). The last one wins, except that
     `/Wall` sticks once seen. `/W` takes a joined or separate value; another

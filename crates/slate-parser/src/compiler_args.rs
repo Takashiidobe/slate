@@ -312,6 +312,7 @@ struct ParsedCompilerArgs {
     msvc_fpcvt: Option<bool>,
     msvc_strict_ansi: bool,
     msvc_stdc_macro: bool,
+    msvc_undefine_predefined: bool,
     short_wchar: Option<bool>,
     short_enums: Option<bool>,
     pack_struct: Option<bool>,
@@ -645,6 +646,7 @@ enum Opt {
     MsvcExtensions,
     MsvcStdcMacro,
     MsvcTrigraphs,
+    MsvcUndefinePredefined,
     Permissive,
     DeleteNullPointerChecks,
     TrivialAutoVarInit,
@@ -786,6 +788,7 @@ impl std::fmt::Display for Opt {
             Self::MsvcExtensions => "Ze",
             Self::MsvcStdcMacro => "Zc:__STDC__",
             Self::MsvcTrigraphs => "Zc:trigraphs",
+            Self::MsvcUndefinePredefined => "u",
             Self::Permissive => "fpermissive",
             Self::DeleteNullPointerChecks => "fdelete-null-pointer-checks",
             Self::TrivialAutoVarInit => "ftrivial-auto-var-init",
@@ -935,7 +938,8 @@ impl Opt {
             | Self::MsvcStrictAnsi
             | Self::MsvcExtensions
             | Self::MsvcStdcMacro
-            | Self::MsvcTrigraphs => &[Msvc],
+            | Self::MsvcTrigraphs
+            | Self::MsvcUndefinePredefined => &[Msvc],
             Self::CodegenOnly(spelling) => {
                 codegen_only_flag_named(spelling).map_or(&[], |flag| flag.flavors)
             }
@@ -1576,6 +1580,7 @@ impl CompilerArgParser {
             intel_float_conversions: raw.msvc_fpcvt,
             strict_ansi: raw.msvc_strict_ansi,
             stdc_macro: raw.msvc_stdc_macro,
+            undefine_predefined: raw.msvc_undefine_predefined,
         };
         let floating_point = raw.msvc_floating_point;
         if floating_point.model == Some(MsvcFloatingModel::Strict) {
@@ -2132,6 +2137,9 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
         } else if argument == "/Zc:trigraphs" || argument == "/Zc:trigraphs-" {
             parsed.saw(Opt::MsvcTrigraphs, argument);
             parsed.trigraphs = Some(argument == "/Zc:trigraphs");
+        } else if argument == "/u" {
+            parsed.saw(Opt::MsvcUndefinePredefined, argument);
+            parsed.msvc_undefine_predefined = true;
         } else if argument == "/w" {
             parsed.saw(Opt::MsvcNoWarnings, argument);
             parsed.msvc_warning_level = parsed

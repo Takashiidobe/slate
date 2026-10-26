@@ -187,6 +187,36 @@ const MSC_VERSION_MACROS: [&str; 5] = [
     "_CRT_USE_BUILTIN_OFFSETOF",
 ];
 
+const MSVC_UNDEFINABLE_PREDEFINES: [&str; 23] = [
+    "_MSC_VER",
+    "_MSC_FULL_VER",
+    "_MSC_BUILD",
+    "_MT",
+    "_DLL",
+    "_DEBUG",
+    "_VC_NODEFAULTLIB",
+    "_CHAR_UNSIGNED",
+    "_ISO_VOLATILE",
+    "_WIN32",
+    "_WIN64",
+    "_M_X64",
+    "_M_AMD64",
+    "_M_IX86",
+    "_M_IX86_FP",
+    "_M_ARM64",
+    "_M_ARM64_EXTENSION",
+    "_CMMN_INTRIN_FUNC",
+    "_M_FP_PRECISE",
+    "_M_FP_STRICT",
+    "_M_FP_FAST",
+    "_M_FP_CONTRACT",
+    "_M_FP_EXCEPT",
+];
+
+fn is_msvc_undefinable_predefine(name: &str) -> bool {
+    MSVC_UNDEFINABLE_PREDEFINES.contains(&name) || name.starts_with("__ARM_")
+}
+
 #[derive(Debug, Clone, PartialEq)]
 pub struct MacroDef {
     pub parameters: Option<Vec<String>>,
@@ -820,6 +850,15 @@ impl<'a> Preprocessor<'a> {
             if let Some((name, _)) = define.split_once('=') {
                 self.macros.remove(name);
             }
+        }
+        if flavor.is_msvc() && options.microsoft.undefine_predefined {
+            self.macros
+                .retain(|name, _| !is_msvc_undefinable_predefine(name));
+            defines.retain(|define| {
+                define
+                    .split_once('=')
+                    .is_none_or(|(name, _)| !is_msvc_undefinable_predefine(name))
+            });
         }
         if defines.is_empty() {
             return Ok(());

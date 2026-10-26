@@ -149,6 +149,7 @@ pub struct MicrosoftFlags {
     pub intel_float_conversions: Option<bool>,
     pub strict_ansi: bool,
     pub stdc_macro: bool,
+    pub undefine_predefined: bool,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
