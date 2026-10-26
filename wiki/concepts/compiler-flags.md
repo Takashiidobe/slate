@@ -64,6 +64,9 @@ each stage is in [configuration-threading](configuration-threading.md).
     rejects nameless struct members (C2467), casts used as lvalues (C2105),
     zero-size arrays (C2466) and `$` in identifiers (C2018); slate does not
     emulate those yet.
+  - Trigraphs are off by default. `/Zc:trigraphs` turns on replacement and
+    `??/` line splicing in every `/std:` mode, `/Zc:trigraphs-` turns it off
+    again, and the last one wins (`SourceGraphs::trigraphs`).
   - `/W0`..`/W4`, `/Wall` and `/w` set `_MSVC_WARNING_LEVEL` (`nL`, `100L`,
     `0L`; `MicrosoftFlags::warning_level`). The last one wins, except that
     `/Wall` sticks once seen. `/W` takes a joined or separate value; another

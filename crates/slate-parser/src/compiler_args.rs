@@ -644,6 +644,7 @@ enum Opt {
     MsvcStrictAnsi,
     MsvcExtensions,
     MsvcStdcMacro,
+    MsvcTrigraphs,
     Permissive,
     DeleteNullPointerChecks,
     TrivialAutoVarInit,
@@ -784,6 +785,7 @@ impl std::fmt::Display for Opt {
             Self::MsvcStrictAnsi => "Za",
             Self::MsvcExtensions => "Ze",
             Self::MsvcStdcMacro => "Zc:__STDC__",
+            Self::MsvcTrigraphs => "Zc:trigraphs",
             Self::Permissive => "fpermissive",
             Self::DeleteNullPointerChecks => "fdelete-null-pointer-checks",
             Self::TrivialAutoVarInit => "ftrivial-auto-var-init",
@@ -932,7 +934,8 @@ impl Opt {
             | Self::MsvcFpcvt
             | Self::MsvcStrictAnsi
             | Self::MsvcExtensions
-            | Self::MsvcStdcMacro => &[Msvc],
+            | Self::MsvcStdcMacro
+            | Self::MsvcTrigraphs => &[Msvc],
             Self::CodegenOnly(spelling) => {
                 codegen_only_flag_named(spelling).map_or(&[], |flag| flag.flavors)
             }
@@ -2126,6 +2129,9 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
         } else if argument == "/Zc:__STDC__" {
             parsed.saw(Opt::MsvcStdcMacro, argument);
             parsed.msvc_stdc_macro = true;
+        } else if argument == "/Zc:trigraphs" || argument == "/Zc:trigraphs-" {
+            parsed.saw(Opt::MsvcTrigraphs, argument);
+            parsed.trigraphs = Some(argument == "/Zc:trigraphs");
         } else if argument == "/w" {
             parsed.saw(Opt::MsvcNoWarnings, argument);
             parsed.msvc_warning_level = parsed
