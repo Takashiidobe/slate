@@ -2056,7 +2056,7 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
             let charset = Charset::parse_msvc(name).ok_or_else(|| {
                 invalid(
                     argument,
-                    "expected one of utf-8, windows-1252, .65001, .1252",
+                    &format!("character set '{name}' is not supported"),
                 )
             })?;
             *slot = Some((charset, argument.clone()));

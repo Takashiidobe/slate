@@ -25,7 +25,7 @@ impl Dialect {
             target.execution_charset = options
                 .microsoft
                 .execution_charset
-                .unwrap_or(Charset::Windows1252);
+                .unwrap_or(Charset::WINDOWS_1252);
         }
         let mut features = StandardFeatures::for_compiler(
             standard,
@@ -65,7 +65,7 @@ impl Dialect {
                 .options
                 .microsoft
                 .source_charset
-                .unwrap_or(Charset::Windows1252),
+                .unwrap_or(Charset::WINDOWS_1252),
             false => Charset::Utf8,
         }
     }

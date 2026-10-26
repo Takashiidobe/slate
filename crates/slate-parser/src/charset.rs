@@ -1,36 +1,67 @@
+use crate::code_pages::{CODE_PAGES, CP1252};
+
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
 pub enum Charset {
     #[default]
     Utf8,
-    Windows1252,
+    CodePage(&'static CodePage),
 }
 
-const WINDOWS_1252_HIGH: [char; 32] = [
-    '\u{20AC}', '\u{0081}', '\u{201A}', '\u{0192}', '\u{201E}', '\u{2026}', '\u{2020}', '\u{2021}',
-    '\u{02C6}', '\u{2030}', '\u{0160}', '\u{2039}', '\u{0152}', '\u{008D}', '\u{017D}', '\u{008F}',
-    '\u{0090}', '\u{2018}', '\u{2019}', '\u{201C}', '\u{201D}', '\u{2022}', '\u{2013}', '\u{2014}',
-    '\u{02DC}', '\u{2122}', '\u{0161}', '\u{203A}', '\u{0153}', '\u{009D}', '\u{017E}', '\u{0178}',
-];
+#[derive(Debug)]
+pub struct CodePage {
+    pub(crate) number: u32,
+    pub(crate) names: &'static [&'static str],
+    pub(crate) high: [char; 128],
+}
+
+impl PartialEq for CodePage {
+    fn eq(&self, other: &Self) -> bool {
+        self.number == other.number
+    }
+}
+
+impl Eq for CodePage {}
+
+impl CodePage {
+    fn byte(&self, value: u32) -> Option<u8> {
+        match value {
+            0..=0x7F => Some(value as u8),
+            _ => self
+                .high
+                .iter()
+                .position(|&c| c as u32 == value)
+                .map(|index| 0x80 + index as u8),
+        }
+    }
+}
 
 impl Charset {
+    pub const WINDOWS_1252: Self = Self::CodePage(&CP1252);
+
     pub fn parse_msvc(name: &str) -> Option<Self> {
-        match name.to_ascii_lowercase().as_str() {
-            "utf-8" | ".65001" => Some(Self::Utf8),
-            "windows-1252" | ".1252" => Some(Self::Windows1252),
-            _ => None,
+        let name = name.to_ascii_lowercase();
+        if name == "utf-8" || name == ".65001" {
+            return Some(Self::Utf8);
         }
+        CODE_PAGES
+            .into_iter()
+            .find(|page| {
+                page.names.contains(&name.as_str())
+                    || name.strip_prefix('.') == Some(page.number.to_string().as_str())
+            })
+            .map(Self::CodePage)
     }
 
     pub fn code_page(self) -> u32 {
         match self {
             Self::Utf8 => 65001,
-            Self::Windows1252 => 1252,
+            Self::CodePage(page) => page.number,
         }
     }
 
     pub fn decode_byte(self, byte: u8) -> char {
         match (self, byte) {
-            (Self::Windows1252, 0x80..=0x9F) => WINDOWS_1252_HIGH[usize::from(byte - 0x80)],
+            (Self::CodePage(page), 0x80..=0xFF) => page.high[usize::from(byte - 0x80)],
             _ => char::from(byte),
         }
     }
@@ -38,25 +69,15 @@ impl Charset {
     pub fn represents(self, value: u32) -> bool {
         match self {
             Self::Utf8 => true,
-            Self::Windows1252 => windows_1252_byte(value).is_some(),
+            Self::CodePage(page) => page.byte(value).is_some(),
         }
     }
 
     pub fn encode(self, value: u32, units: &mut Vec<u32>) {
         match self {
             Self::Utf8 => encode_utf8(value, units),
-            Self::Windows1252 => units.push(windows_1252_byte(value).map_or(0x3F, u32::from)),
+            Self::CodePage(page) => units.push(page.byte(value).map_or(0x3F, u32::from)),
         }
-    }
-}
-
-fn windows_1252_byte(value: u32) -> Option<u8> {
-    match value {
-        0..=0x7F | 0xA0..=0xFF => Some(value as u8),
-        _ => WINDOWS_1252_HIGH
-            .iter()
-            .position(|&c| c as u32 == value)
-            .map(|index| 0x80 + index as u8),
     }
 }
 
