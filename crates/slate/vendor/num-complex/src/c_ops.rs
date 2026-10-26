@@ -100,7 +100,6 @@ macro_rules! float_ops {
     };
 }
 
-
 float_ops!(f32, mul_f32, div_f32, scalbnf, logbf);
 float_ops!(f64, mul_f64, div_f64, scalbn, logb);
 
@@ -184,6 +183,35 @@ impl Complex<f128> {
         unsafe { __divtc3(self.re, self.im, other.re, other.im) }
     }
 }
+
+macro_rules! improved_div {
+    ($($(#[$cfg:meta])* $t:ident),*) => {$(
+        $(#[$cfg])*
+        impl Complex<$t> {
+            #[inline]
+            pub fn c_div_improved(self, other: Self) -> Self {
+                let (a, b, c, d) = (self.re, self.im, other.re, other.im);
+                if !(c.abs() <= d.abs()) {
+                    let r = d / c;
+                    let den = c + r * d;
+                    Complex {
+                        re: (a + b * r) / den,
+                        im: (b - a * r) / den,
+                    }
+                } else {
+                    let r = c / d;
+                    let den = d + r * c;
+                    Complex {
+                        re: (a * r + b) / den,
+                        im: (b * r - a) / den,
+                    }
+                }
+            }
+        }
+    )*};
+}
+
+improved_div!(f32, f64, #[cfg(has_f16)] f16, #[cfg(has_f128)] f128);
 
 macro_rules! int_methods {
     ($($t:ident),*) => {$(

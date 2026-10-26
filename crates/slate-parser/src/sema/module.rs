@@ -14,6 +14,7 @@ use crate::ast::{
     TranslationUnit,
 };
 use crate::compiler_args::CompilerFlavor;
+use crate::compiler_options::ComplexMethod;
 use crate::const_expr::{IntegerLiteral, IntegerSizeSuffix, IntegerSuffix, Radix};
 use crate::diagnostics::Warning;
 use crate::ir::*;
@@ -1489,6 +1490,7 @@ impl Lowerer {
                     let region = self.context.region;
                     if storage != StorageDuration::Automatic {
                         self.context.region.floating = FloatingSemantics::default();
+                        self.context.region.complex_range = ComplexMethod::Full;
                     }
                     let value = self.initializer_value(
                         declarator.id,

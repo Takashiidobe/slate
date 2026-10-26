@@ -4,18 +4,19 @@ use super::validate::{
     select_integer_candidate,
 };
 use crate::ast::{Expr, ExprKind, FixedPointKind, FixedPointRank, Loc};
+use crate::compiler_options::ComplexMethod;
 use crate::const_expr::{
     BinaryOp, ConstExprError, FixedPointLiteralSuffix, FloatLiteral, FloatSuffix, FloatValue,
     IntegerSizeSuffix, ResolvedFloat, UnaryOp, resolve_float,
 };
 use crate::ir::{
-    AggregateMember, AggregateTarget, ArithOp, ArithSema, AsmDialect, CompareOp, ConversionKind,
-    ConversionReason, ConversionSema, Fits, FixedOverflow, FixedPointType, FixedRounding,
-    FloatType, LogicalOp, Number, NumericType, Overflow, ShiftFill, Type, UbPolicy, UnaryArithOp,
-    Value, ValueKind,
+    AggregateMember, AggregateTarget, ArithOp, ArithSema, AsmDialect, CompareOp, ComplexRange,
+    ConversionKind, ConversionReason, ConversionSema, Fits, FixedOverflow, FixedPointType,
+    FixedRounding, FloatType, LogicalOp, Number, NumericType, Overflow, ShiftFill, Type, UbPolicy,
+    UnaryArithOp, Value, ValueKind,
 };
 use crate::standard_features::StandardFeatures;
-use crate::target_info::TargetInfo;
+use crate::target_info::{LongDoubleFormat, TargetInfo};
 use num_bigint::BigUint;
 use thiserror::Error;
 
@@ -121,7 +122,7 @@ impl Context {
                     super::pragmas::default_contraction(dialect.flavor(), dialect.standard())
                 }),
                 precise: options.microsoft.floating_point.precise(),
-                ..FloatingRegion::default()
+                complex_range: options.math.complex_range.unwrap_or_default(),
             },
             asm_dialect: options.asm_dialect,
         }
@@ -252,11 +253,53 @@ impl Context {
         })
     }
 
-    fn complex_floating_arith(&self) -> ArithSema {
+    fn complex_floating_arith(&self, format: FloatType, complex_division: bool) -> ArithSema {
         ArithSema::ComplexFloating {
             floating: self.region.floating,
-            range: self.region.complex_range,
+            range: match self.region.complex_range {
+                ComplexMethod::Basic => ComplexRange::Basic,
+                ComplexMethod::Improved => ComplexRange::Improved,
+                ComplexMethod::Full => ComplexRange::Full,
+                ComplexMethod::Promoted
+                    if complex_division
+                        && !self.half_excess(&Type::Complex(NumericType::Float(format))) =>
+                {
+                    ComplexRange::Improved
+                }
+                ComplexMethod::Promoted => ComplexRange::Basic,
+            },
         }
+    }
+
+    fn promoted_division(
+        &self,
+        ty: Type,
+        left: Value,
+        right: Value,
+        wide: FloatType,
+    ) -> Result<Resolved, ResolveError> {
+        let widen = |value: Value| {
+            let to = match value.ty {
+                Type::Complex(_) => Type::Complex(NumericType::Float(wide)),
+                _ => Type::Numeric(NumericType::Float(wide)),
+            };
+            self.emit_arithmetic_conversion(value, to, ConversionReason::ExcessPrecision)
+        };
+        let anchor = left.clone();
+        self.excess_precision(ty, &anchor, || {
+            Ok((
+                Type::Complex(NumericType::Float(wide)),
+                ValueKind::Arith {
+                    op: ArithOp::Div,
+                    left: Box::new(widen(left)?),
+                    right: Box::new(widen(right)?),
+                    semantics: ArithSema::ComplexFloating {
+                        floating: self.region.floating,
+                        range: ComplexRange::Basic,
+                    },
+                },
+            ))
+        })
     }
 
     pub(super) fn resolve_literal(&self, expression: &Expr) -> Result<Value, ResolveError> {
@@ -547,7 +590,7 @@ impl Context {
         }
         if let Type::Complex(component) = operand.ty {
             let semantics = match component {
-                NumericType::Float(_) => self.complex_floating_arith(),
+                NumericType::Float(format) => self.complex_floating_arith(format, false),
                 NumericType::Integer { signed, .. } => ArithSema::ComplexInteger {
                     overflow: if signed {
                         self.signed_overflow
@@ -902,8 +945,16 @@ impl Context {
             BinaryOp::Div => ArithOp::Div,
             _ => return Err(ResolveError::Internal("complex operator")),
         };
+        if let (ArithOp::Div, Type::Complex(_), NumericType::Float(format)) =
+            (arith, &right.ty, component)
+            && self.region.complex_range == ComplexMethod::Promoted
+            && let Some(wide) = promoted_complex_format(&self.target, format)
+        {
+            return self.promoted_division(result_ty, left, right, wide);
+        }
+        let complex_division = arith == ArithOp::Div && matches!(right.ty, Type::Complex(_));
         let semantics = match component {
-            NumericType::Float(_) => self.complex_floating_arith(),
+            NumericType::Float(format) => self.complex_floating_arith(format, complex_division),
             NumericType::Integer { signed, .. } => ArithSema::ComplexInteger {
                 overflow: if signed {
                     self.signed_overflow
@@ -995,7 +1046,7 @@ impl Context {
             _ => Type::Imaginary(format),
         };
         let semantics = if matches!(result_ty, Type::Complex(_)) {
-            self.complex_floating_arith()
+            self.complex_floating_arith(format, arith == ArithOp::Div)
         } else {
             self.floating_arith()
         };
@@ -1727,6 +1778,20 @@ pub(super) fn unary_rule(op: UnaryOp, operand: &Type) -> Result<(), ResolveError
             }),
             _ => Ok(()),
         },
+    }
+}
+
+pub(super) fn promoted_complex_format(target: &TargetInfo, format: FloatType) -> Option<FloatType> {
+    match format {
+        FloatType::F16 if !target.float16_excess_precision() => Some(FloatType::F32),
+        FloatType::BF16 => Some(FloatType::F32),
+        FloatType::F32 => Some(FloatType::F64),
+        FloatType::F64 => match target.long_double {
+            LongDoubleFormat::Binary64 => None,
+            LongDoubleFormat::X87 => Some(FloatType::F80),
+            LongDoubleFormat::Binary128 => Some(FloatType::F128),
+        },
+        _ => None,
     }
 }
 

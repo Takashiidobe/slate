@@ -448,6 +448,7 @@ pub(crate) fn f80_shim_decls() -> Vec<ExternFnDecl> {
         ("__slate_cf80_div", cf80()),
         ("__slate_cf80_mul_basic", cf80()),
         ("__slate_cf80_div_basic", cf80()),
+        ("__slate_cf80_div_improved", cf80()),
     ] {
         decls.push(f80_extern_decl(
             shim,

@@ -116,17 +116,16 @@ impl FunctionLowerer<'_, '_> {
         op: ir::ArithOp,
         (lhs, left_complex): (Expr, bool),
         (rhs, right_complex): (Expr, bool),
-        basic: bool,
+        range: ir::ComplexRange,
     ) -> Option<Expr> {
-        let mul = if basic {
-            "__slate_cf80_mul_basic"
-        } else {
-            "__slate_cf80_mul"
+        let mul = match range {
+            ir::ComplexRange::Full => "__slate_cf80_mul",
+            _ => "__slate_cf80_mul_basic",
         };
-        let div = if basic {
-            "__slate_cf80_div_basic"
-        } else {
-            "__slate_cf80_div"
+        let div = match range {
+            ir::ComplexRange::Basic => "__slate_cf80_div_basic",
+            ir::ComplexRange::Improved => "__slate_cf80_div_improved",
+            ir::ComplexRange::Full => "__slate_cf80_div",
         };
         Some(match (op, left_complex, right_complex) {
             (ir::ArithOp::Add, true, true) => shim("__slate_cf80_add", vec![lhs, rhs]),
@@ -304,13 +303,10 @@ impl FunctionLowerer<'_, '_> {
                 semantics,
             } if self.complex_component(&value.ty).is_some() => {
                 self.lower_type(&value.ty)?;
-                let basic = matches!(
-                    semantics,
-                    ir::ArithSema::ComplexFloating {
-                        range: ir::ComplexRange::Basic,
-                        ..
-                    }
-                );
+                let range = match semantics {
+                    ir::ArithSema::ComplexFloating { range, .. } => *range,
+                    _ => ir::ComplexRange::Full,
+                };
                 let left_complex = self.complex_component(&left.ty).is_some();
                 let right_complex = self.complex_component(&right.ty).is_some();
                 let lhs = self.lower_value(left)?;
@@ -321,7 +317,7 @@ impl FunctionLowerer<'_, '_> {
                             *op,
                             (lhs, left_complex),
                             (rhs, right_complex),
-                            basic,
+                            range,
                         )
                         .map(Some)
                         .ok_or_else(|| unsupported_value(value));
@@ -335,6 +331,17 @@ impl FunctionLowerer<'_, '_> {
                 {
                     return Ok(Some(lowered));
                 }
+                let division = |lhs, rhs| match range {
+                    ir::ComplexRange::Improved => method(lhs, "c_div_improved", vec![rhs]),
+                    _ => method(
+                        lhs,
+                        "c_div",
+                        vec![
+                            rhs,
+                            Expr::Value(rust::RustValue::Bool(range == ir::ComplexRange::Basic)),
+                        ],
+                    ),
+                };
                 let binary = |op| Expr::Binary {
                     op,
                     lhs: Box::new(lhs.clone()),
@@ -346,24 +353,19 @@ impl FunctionLowerer<'_, '_> {
                     (ir::ArithOp::Mul, true, true) => method(
                         lhs,
                         "c_mul",
-                        vec![rhs, Expr::Value(rust::RustValue::Bool(basic))],
+                        vec![
+                            rhs,
+                            Expr::Value(rust::RustValue::Bool(range != ir::ComplexRange::Full)),
+                        ],
                     ),
                     (ir::ArithOp::Mul, ..) => binary(BinOp::Mul),
-                    (ir::ArithOp::Div, true, true) => method(
-                        lhs,
-                        "c_div",
-                        vec![rhs, Expr::Value(rust::RustValue::Bool(basic))],
-                    ),
+                    (ir::ArithOp::Div, true, true) => division(lhs, rhs),
                     (ir::ArithOp::Div, true, false) => binary(BinOp::Div),
                     (ir::ArithOp::Div, false, _) => {
                         let component = self
                             .complex_component(&value.ty)
                             .ok_or_else(|| unsupported_value(value))?;
-                        method(
-                            complex_literal(lhs, component_zero(component)),
-                            "c_div",
-                            vec![rhs, Expr::Value(rust::RustValue::Bool(basic))],
-                        )
+                        division(complex_literal(lhs, component_zero(component)), rhs)
                     }
                     _ => return Err(unsupported_value(value)),
                 }))

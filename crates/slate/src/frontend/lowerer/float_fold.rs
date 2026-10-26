@@ -253,6 +253,9 @@ impl Tables<'_> {
                 semantics: ir::ArithSema::ComplexFloating { floating, range },
             } if nearest_even(floating) => {
                 let basic = matches!(range, ir::ComplexRange::Basic);
+                if matches!(range, ir::ComplexRange::Improved) && matches!(op, ir::ArithOp::Div) {
+                    return None;
+                }
                 let side = |operand: &ir::Value| {
                     if self.complex_float_kind(&operand.ty).is_some() {
                         self.fold_complex::<S>(operand)
@@ -282,7 +285,9 @@ impl Tables<'_> {
                             (None, None) => return None,
                         },
                     ],
-                    (ir::ArithOp::Mul, Some(b), Some(d)) => complex_mul([a, b], [c, d], basic),
+                    (ir::ArithOp::Mul, Some(b), Some(d)) => {
+                        complex_mul([a, b], [c, d], !matches!(range, ir::ComplexRange::Full))
+                    }
                     (ir::ArithOp::Mul, Some(b), None) => [(a * c).value, (b * c).value],
                     (ir::ArithOp::Mul, None, Some(d)) => [(a * c).value, (a * d).value],
                     (ir::ArithOp::Div, Some(b), Some(d)) => complex_div([a, b], [c, d], basic),

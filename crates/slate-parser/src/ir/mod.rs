@@ -872,6 +872,7 @@ impl Value {
                     ", range={}",
                     match range {
                         ComplexRange::Basic => "basic",
+                        ComplexRange::Improved => "improved",
                         ComplexRange::Full => "full",
                     }
                 )?;

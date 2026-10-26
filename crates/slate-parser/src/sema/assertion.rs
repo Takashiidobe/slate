@@ -1,12 +1,12 @@
 use super::names::ItemResolution;
 use crate::ast::*;
 use crate::compiler_args::CompilerFlavor;
-use crate::compiler_options::InlineSemantics;
+use crate::compiler_options::{ComplexMethod, InlineSemantics};
 use crate::const_expr::{AssignOp, BinaryOp, UnaryOp};
 use crate::diagnostics::Warning;
 use crate::ir::{
-    BindingId, Linkage, NameResolution, Number, NumericType, SymbolAttributes, Type, Value,
-    ValueKind,
+    BindingId, FloatType, Linkage, NameResolution, Number, NumericType, SymbolAttributes, Type,
+    Value, ValueKind,
 };
 use crate::target_info::TargetEnvironment;
 use crate::visit::{self, Visitor};
@@ -20,7 +20,7 @@ use super::entity::ObjectRequest;
 use super::function::{builtin_deallocator, deallocator_argument};
 use super::initializer::{ElementError, InitializerSource};
 use super::module::{applies, function_symbol, linkage as declared_linkage, symbol_attributes};
-use super::numeric::{Context, ResolveError};
+use super::numeric::{Context, ResolveError, promoted_complex_format};
 use super::pragmas::{FloatingPragmas, FloatingRegion, PragmaPlacement};
 use super::seh_scopes::{SehScope, label_scopes};
 use super::typer::{Choice, Slot};
@@ -47,8 +47,12 @@ pub(super) fn validate(
         region,
         compound_start: false,
         in_function: false,
+        item: None,
+        unpromoted_division: None,
+        unpromoted_divisions: 0,
     };
     for (declaration, item) in unit.decls.iter().zip(items) {
+        checker.item = Some(declaration.id);
         for id in item.declared.clone().map(BindingId) {
             if names.implicit_functions.contains(&id) {
                 let convention = checker.types.default_convention(None);
@@ -89,6 +93,22 @@ pub(super) fn validate(
                 .insert(declaration.id, diagnostics);
         }
     }
+    if let Some((item, at)) = checker.unpromoted_division.take() {
+        let mut message = "excess precision is requested but the target does not support excess precision which may result in observable differences in complex division behavior".to_owned();
+        if checker.unpromoted_divisions > 1 {
+            message.push_str(", additional uses where the requested higher precision cannot be honored were found but not diagnosed");
+        }
+        checker
+            .types
+            .warn(Warning::HigherPrecisionForComplexDivision, &message, &at);
+        let diagnostics = std::mem::take(&mut checker.types.diagnostics);
+        checker
+            .types
+            .item_diagnostics
+            .entry(item)
+            .or_default()
+            .extend(diagnostics);
+    }
     checker.errors
 }
 
@@ -104,6 +124,9 @@ struct Checker<'a> {
     region: FloatingRegion,
     compound_start: bool,
     in_function: bool,
+    item: Option<NodeId>,
+    unpromoted_division: Option<(NodeId, Span<()>)>,
+    unpromoted_divisions: usize,
 }
 
 #[derive(Default)]
@@ -1411,6 +1434,37 @@ impl Checker<'_> {
         }
     }
 
+    fn complex_division(&mut self, expr: &Expr, left: &Expr, right: &Expr) {
+        if self.region.complex_range != ComplexMethod::Promoted {
+            return;
+        }
+        let format = |checker: &mut Self, operand: &Expr| {
+            let typed = checker.types.typed(operand).ok()?;
+            match checker.types.ir_type(typed.c) {
+                Type::Complex(NumericType::Float(format)) | Type::Imaginary(format) => {
+                    Some((format, true))
+                }
+                Type::Numeric(NumericType::Float(format)) => Some((format, false)),
+                _ => None,
+            }
+        };
+        let (Some((left, _)), Some((right, true))) = (format(self, left), format(self, right))
+        else {
+            return;
+        };
+        let target = self.types.target_info();
+        let promotable =
+            |format| format == FloatType::F16 || promoted_complex_format(target, format).is_some();
+        if promotable(left) && promotable(right) {
+            return;
+        }
+        if let Some(item) = self.item {
+            self.unpromoted_division
+                .get_or_insert_with(|| (item, expr.derive(())));
+            self.unpromoted_divisions += 1;
+        }
+    }
+
     fn comparison_warning(&mut self, expr: &Expr, left: &Expr, right: &Expr) {
         let (Ok(lc), Ok(rc)) = (
             self.types.operand_type(left),
@@ -1520,6 +1574,9 @@ impl Checker<'_> {
                 let target_expr = target;
                 self.expression(target);
                 self.expression(value);
+                if *op == AssignOp::DivAssign {
+                    self.complex_division(expr, target, value);
+                }
                 if *op == AssignOp::Assign
                     && let Ok(target) = self.types.typed(target)
                     && target.lvalue
@@ -1556,8 +1613,14 @@ impl Checker<'_> {
                 self.expression(right);
                 self.comparison_warning(expr, left, right);
             }
-            ExprKind::Binary { left, right, .. }
-            | ExprKind::Comma { left, right }
+            ExprKind::Binary { op, left, right } => {
+                self.expression(left);
+                self.expression(right);
+                if *op == BinaryOp::Div {
+                    self.complex_division(expr, left, right);
+                }
+            }
+            ExprKind::Comma { left, right }
             | ExprKind::Index {
                 base: left,
                 index: right,

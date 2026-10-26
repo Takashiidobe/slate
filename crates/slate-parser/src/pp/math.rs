@@ -3,7 +3,7 @@ use super::error::PPFailure;
 use super::syntax::{Directive, identifier};
 use crate::ast::HeaderKind;
 use crate::compiler_args::{CompilerFlavor, math_switch_argument};
-use crate::compiler_options::{MathOptions, MathSwitch, Optimization};
+use crate::compiler_options::{ComplexMethod, MathOptions, MathSwitch, Optimization};
 use crate::lexer::Token;
 use crate::target_info::TargetFamily;
 use std::path::PathBuf;
@@ -161,7 +161,11 @@ impl Preprocessor<'_> {
                     ("__STDC_IEC_60559_BFP__", None),
                 ]);
             }
-            if !iec_559 || math.cx_limited_range {
+            if !iec_559
+                || math
+                    .complex_range
+                    .is_some_and(|range| range != ComplexMethod::Full)
+            {
                 macros.extend([
                     ("__GCC_IEC_559_COMPLEX", Some("0")),
                     ("__STDC_IEC_559_COMPLEX__", None),

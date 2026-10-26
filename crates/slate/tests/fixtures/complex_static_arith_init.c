@@ -157,6 +157,10 @@ int main(void) {
 // CHECK-NEXT:         __a: num_complex::Complex<LongDouble>,
 // CHECK-NEXT:         __b: num_complex::Complex<LongDouble>,
 // CHECK-NEXT:     ) -> num_complex::Complex<LongDouble>;
+// CHECK-NEXT:     safe fn __slate_cf80_div_improved(
+// CHECK-NEXT:         __a: num_complex::Complex<LongDouble>,
+// CHECK-NEXT:         __b: num_complex::Complex<LongDouble>,
+// CHECK-NEXT:     ) -> num_complex::Complex<LongDouble>;
 // CHECK-NEXT:     safe fn __slate_cf80_neg(
 // CHECK-NEXT:         __a: num_complex::Complex<LongDouble>,
 // CHECK-NEXT:     ) -> num_complex::Complex<LongDouble>;

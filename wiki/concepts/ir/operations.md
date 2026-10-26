@@ -69,6 +69,14 @@ le gt ge`), printed with the operand type and yielding `bool`.
   explicit flag wins regardless of order, else unsafe math gives `fast`.
   It and `range=` are recorded because a consumer can use them, not
   because ignoring them is wrong.
+- `range=` (complex `mul`/`div`): `full` by default. `basic` and `improved`
+  come from the complex-range flags ([compiler-flags](../compiler-flags.md)).
+  Clang's `promoted` is expanded in sema: both operands convert to the next
+  wider type (f16 to f32 without excess precision, f32 to f64, f64 to an
+  f80/f128 long double), divide with `range=basic`, and convert back. Where
+  there is no wider type (double on windows-msvc, long double) it falls back
+  to `improved` and warns `higher-precision-for-complex-division`. On x86,
+  `_Float16` already computes in float, so promoted is basic there.
 - msvc `/fp:` (`MicrosoftFlags::floating_point`): `strict` gives
   `rounding=environment, exceptions=observable`, `except` gives
   `exceptions=observable`, `contract` gives `contract=on`, and `fast` gives
@@ -82,7 +90,8 @@ le gt ge`), printed with the operand type and yielding `bool`.
   independently; `-fwrapv` alone doesn't change them. See
   [compiler-flags](../compiler-flags.md).
 - Static and thread-storage initializers always use nearest-even with
-  ignored exceptions (C F.8.5, translation-time evaluation).
+  ignored exceptions (C F.8.5, translation-time evaluation), and `range=full`
+  whatever the flags or pragma say, as clang and gcc fold them.
 - Function-attribute overrides (`optimize`) are not wired in.
 
 ### Floating pragmas

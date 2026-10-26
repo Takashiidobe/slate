@@ -31,10 +31,11 @@ pub enum Warning {
     ExtraTokens,
     ExtraSemi,
     UnrepresentableCharacter,
+    HigherPrecisionForComplexDivision,
 }
 
 impl Warning {
-    pub const ALL: [Self; 27] = [
+    pub const ALL: [Self; 28] = [
         Self::LongLong,
         Self::C99Compat,
         Self::ImplicitlyUnsignedLiteral,
@@ -62,6 +63,7 @@ impl Warning {
         Self::ExtraTokens,
         Self::ExtraSemi,
         Self::UnrepresentableCharacter,
+        Self::HigherPrecisionForComplexDivision,
     ];
 
     pub fn name(self) -> &'static str {
@@ -95,6 +97,7 @@ impl Warning {
             Self::ExtraTokens => "extra-tokens",
             Self::ExtraSemi => "extra-semi",
             Self::UnrepresentableCharacter => "unrepresentable-character",
+            Self::HigherPrecisionForComplexDivision => "higher-precision-for-complex-division",
         }
     }
 

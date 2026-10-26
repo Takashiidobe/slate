@@ -350,6 +350,7 @@ pub enum Contraction {
 #[derive(Default, Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ComplexRange {
     Basic,
+    Improved,
     #[default]
     Full,
 }

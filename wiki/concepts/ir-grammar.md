@@ -629,7 +629,7 @@ arith_contract    = (* exact: nothing *)
                   | overflow ", amount_out_of_range=ub" [ ", negative_left=ub" ]
                   | ", amount_out_of_range=ub, fill=" ( "sign_extend" | "zero_extend" )
                   | floating ", contract=" ( "off" | "on" | "fast" )
-                  | ", complex=true" floating ", range=" ( "basic" | "full" )
+                  | ", complex=true" floating ", range=" ( "basic" | "improved" | "full" )
                   | ", complex=true" overflow [ ", by_zero=ub" ]
                   | fixed [ ", by_zero=ub" ] [ ", amount_out_of_range=ub" ] ;
 fixed             = ", overflow=" ( "ub" | "saturate" )
@@ -655,7 +655,9 @@ exceptions        = "ignore" | "observable" ;
   never fuses, `on` may fuse within one source expression, `fast` may fuse
   across statements. `range=` is the complex multiply/divide algorithm: `full`
   handles infinities and NaNs (C Annex G), `basic` may use the plain textbook
-  formulas. Both are permissions; ignoring them is always correct.
+  formulas, `improved` divides with Smith's algorithm (multiplication as
+  `basic`). Clang's `promoted` never appears: sema widens the operands with
+  excess-precision conversions, divides with `range=basic`, and narrows. Both are permissions; ignoring them is always correct.
 - A fixed-point contract is `overflow=saturate` for a `_Sat` type and
   `overflow=ub` otherwise, and always `rounding=toward_zero`, which is the
   fractional bits the operation discards. It appears on `add`/`sub`/`mul`/

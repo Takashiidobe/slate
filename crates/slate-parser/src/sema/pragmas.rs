@@ -6,9 +6,9 @@ use crate::ast::{
     TypeSpecifier,
 };
 use crate::compiler_args::{CompilerFlavor, LanguageStandard};
+use crate::compiler_options::ComplexMethod;
 use crate::ir::{
-    ComplexRange, Contraction, Exceptions, FloatingSemantics, Rounding, SymbolAttributes,
-    Visibility,
+    Contraction, Exceptions, FloatingSemantics, Rounding, SymbolAttributes, Visibility,
 };
 use crate::visit::{self, Visitor};
 use std::collections::{HashMap, HashSet};
@@ -57,7 +57,7 @@ impl Pragmas {
 pub struct FloatingRegion {
     pub floating: FloatingSemantics,
     pub contract: Contraction,
-    pub complex_range: ComplexRange,
+    pub complex_range: ComplexMethod,
     pub precise: bool,
 }
 
@@ -66,7 +66,7 @@ impl Default for FloatingRegion {
         Self {
             floating: FloatingSemantics::default(),
             contract: Contraction::On,
-            complex_range: ComplexRange::Full,
+            complex_range: ComplexMethod::Full,
             precise: true,
         }
     }
@@ -199,8 +199,8 @@ impl FloatingPragmas {
             }
             StdcPragmaOption::CxLimitedRange => {
                 region.complex_range = match value {
-                    StdcPragmaValue::On => ComplexRange::Basic,
-                    StdcPragmaValue::Off => ComplexRange::Full,
+                    StdcPragmaValue::On => ComplexMethod::Basic,
+                    StdcPragmaValue::Off => ComplexMethod::Full,
                     StdcPragmaValue::Default => self.defaults.complex_range,
                 };
             }

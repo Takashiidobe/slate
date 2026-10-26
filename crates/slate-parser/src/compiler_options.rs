@@ -280,7 +280,27 @@ pub enum MathSwitch {
     RoundingMath,
     SignalingNans,
     CxLimitedRange,
+    CxFortranRules,
+    ComplexArithmetic(ComplexMethod),
+    Model(FpModel),
     FastExcessPrecision,
+}
+
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
+pub enum ComplexMethod {
+    Basic,
+    Improved,
+    #[default]
+    Full,
+    Promoted,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum FpModel {
+    Precise,
+    Strict,
+    Fast,
+    Aggressive,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -296,7 +316,8 @@ pub struct MathOptions {
     pub reciprocal_math: bool,
     pub rounding_math: bool,
     pub signaling_nans: bool,
-    pub cx_limited_range: bool,
+    pub complex_range: Option<ComplexMethod>,
+    pub explicit_complex_range: bool,
     pub fast_excess_precision: Option<bool>,
     pub contract: Option<Contraction>,
 }
@@ -315,7 +336,8 @@ impl MathOptions {
             reciprocal_math: false,
             rounding_math: false,
             signaling_nans: false,
-            cx_limited_range: false,
+            complex_range: None,
+            explicit_complex_range: false,
             fast_excess_precision: None,
             contract: None,
         }
@@ -337,7 +359,7 @@ impl MathOptions {
     pub fn apply(&mut self, flavor: CompilerFlavor, switch: MathSwitch, value: bool) {
         let gcc = flavor.is_gcc();
         match switch {
-            MathSwitch::FastMath if !value && !gcc => *self = Self::for_flavor(flavor),
+            MathSwitch::FastMath if !value && !gcc => self.reset_keeping_environment(flavor),
             MathSwitch::FastMath => {
                 self.apply(flavor, MathSwitch::UnsafeMath, value);
                 self.finite_math_only = value;
@@ -346,6 +368,9 @@ impl MathOptions {
                     self.fast_excess_precision = Some(true);
                     self.signaling_nans = false;
                     self.rounding_math = false;
+                    self.complex_range = Some(ComplexMethod::Basic);
+                } else if !self.explicit_complex_range {
+                    self.complex_range = None;
                 }
             }
             MathSwitch::UnsafeMath => {
@@ -368,9 +393,55 @@ impl MathOptions {
             MathSwitch::FiniteMathOnly => self.finite_math_only = value,
             MathSwitch::RoundingMath => self.rounding_math = value,
             MathSwitch::SignalingNans => self.signaling_nans = value,
-            MathSwitch::CxLimitedRange => self.cx_limited_range = value,
+            MathSwitch::CxLimitedRange => {
+                self.set_complex_range(if value {
+                    ComplexMethod::Basic
+                } else {
+                    ComplexMethod::Full
+                });
+            }
+            MathSwitch::CxFortranRules => {
+                self.set_complex_range(if value {
+                    ComplexMethod::Improved
+                } else {
+                    ComplexMethod::Full
+                });
+            }
+            MathSwitch::ComplexArithmetic(range) => self.set_complex_range(range),
+            MathSwitch::Model(model) => {
+                self.reset_keeping_environment(flavor);
+                self.complex_range = Some(ComplexMethod::Full);
+                match model {
+                    FpModel::Precise => {}
+                    FpModel::Strict => {
+                        self.apply(flavor, MathSwitch::TrappingMath, true);
+                        self.rounding_math = true;
+                    }
+                    FpModel::Fast => {
+                        self.apply(flavor, MathSwitch::UnsafeMath, true);
+                        self.math_errno = Some(false);
+                        self.rounding_math = false;
+                        self.complex_range = Some(ComplexMethod::Promoted);
+                    }
+                    FpModel::Aggressive => self.apply(flavor, MathSwitch::FastMath, true),
+                }
+            }
             MathSwitch::FastExcessPrecision => self.fast_excess_precision = Some(value),
         }
+    }
+
+    fn reset_keeping_environment(&mut self, flavor: CompilerFlavor) {
+        *self = Self {
+            rounding_math: self.rounding_math,
+            trapping_math: self.trapping_math,
+            requested_trapping_math: self.requested_trapping_math,
+            ..Self::for_flavor(flavor)
+        };
+    }
+
+    fn set_complex_range(&mut self, range: ComplexMethod) {
+        self.complex_range = Some(range);
+        self.explicit_complex_range = true;
     }
 
     pub fn math_errno_or(&self, default: bool) -> bool {

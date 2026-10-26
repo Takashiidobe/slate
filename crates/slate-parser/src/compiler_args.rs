@@ -1,9 +1,9 @@
 use crate::charset::Charset;
 use crate::compiler_options::{
-    CodegenOptions, CompilerOptions, LayoutOptions, LibraryBuiltins, MathOptions, MathSwitch,
-    MicrosoftFlags, MsvcArch, MsvcArchLevel, MsvcArm64Arch, MsvcFavor, MsvcFloatingModel,
-    MsvcFloatingPoint, MsvcRuntimeChecks, MsvcRuntimeLibrary, OperationValues, Optimization, Pic,
-    SourceGraphs, StackProtector, TrivialAutoVarInit,
+    CodegenOptions, CompilerOptions, ComplexMethod, FpModel, LayoutOptions, LibraryBuiltins,
+    MathOptions, MathSwitch, MicrosoftFlags, MsvcArch, MsvcArchLevel, MsvcArm64Arch, MsvcFavor,
+    MsvcFloatingModel, MsvcFloatingPoint, MsvcRuntimeChecks, MsvcRuntimeLibrary, OperationValues,
+    Optimization, Pic, SourceGraphs, StackProtector, TrivialAutoVarInit,
 };
 use crate::diagnostics::{DiagnosticOptions, Warning};
 use crate::files::SearchPaths;
@@ -458,17 +458,27 @@ impl ParsedCompilerArgs {
         }
         let mut contract = None;
         let mut last_seen = None;
+        let mut umbrella = false;
         for (index, (switch, value)) in self.math.iter().enumerate() {
             if let Some((_, position)) = self.fp_contract
                 && position == index
             {
-                (contract, last_seen) = (explicit, explicit);
+                (contract, last_seen, umbrella) = (explicit, explicit, false);
             }
             match (switch, value) {
-                (MathSwitch::FastMath | MathSwitch::UnsafeMath, true) => {
-                    contract = Some(Contraction::Fast);
+                (MathSwitch::FastMath | MathSwitch::UnsafeMath, true)
+                | (MathSwitch::Model(FpModel::Fast | FpModel::Aggressive), _) => {
+                    (contract, umbrella) = (Some(Contraction::Fast), true);
                 }
-                (MathSwitch::FastMath | MathSwitch::UnsafeMath, false) => contract = last_seen,
+                (MathSwitch::FastMath | MathSwitch::UnsafeMath, false) if umbrella => {
+                    (contract, umbrella) = (last_seen, false);
+                }
+                (MathSwitch::Model(FpModel::Precise), _) => {
+                    (contract, umbrella) = (Some(Contraction::On), false);
+                }
+                (MathSwitch::Model(FpModel::Strict), _) => {
+                    (contract, umbrella) = (Some(Contraction::Off), false);
+                }
                 _ => {}
             }
         }
@@ -595,6 +605,9 @@ enum Opt {
     FiniteMathOnly,
     SignalingNans,
     CxLimitedRange,
+    CxFortranRules,
+    ComplexArithmetic,
+    FpModel,
     ExcessPrecision,
     PermittedFltEvalMethods,
     Gnu89Inline,
@@ -738,6 +751,9 @@ impl std::fmt::Display for Opt {
             Self::FiniteMathOnly => "finite-math-only",
             Self::SignalingNans => "signaling-nans",
             Self::CxLimitedRange => "cx-limited-range",
+            Self::CxFortranRules => "cx-fortran-rules",
+            Self::ComplexArithmetic => "fcomplex-arithmetic=",
+            Self::FpModel => "ffp-model=",
             Self::ExcessPrecision => "fexcess-precision",
             Self::PermittedFltEvalMethods => "fpermitted-flt-eval-methods",
             Self::Gnu89Inline => "gnu89-inline",
@@ -848,6 +864,7 @@ impl Opt {
             | Self::FiniteMathOnly
             | Self::SignalingNans
             | Self::CxLimitedRange
+            | Self::CxFortranRules
             | Self::ExcessPrecision
             | Self::Gnu89Inline
             | Self::Common
@@ -917,6 +934,8 @@ impl Opt {
             | Self::InlineHintFunctions
             | Self::OpenMpRuntime
             | Self::OpenMpVersion
+            | Self::ComplexArithmetic
+            | Self::FpModel
             | Self::Mllvm => &[Clang],
             Self::ConformingPreprocessor
             | Self::MsvcUnsignedChar
@@ -986,6 +1005,7 @@ impl Opt {
             Self::FiniteMathOnly => "-ffinite-math-only",
             Self::SignalingNans => "-fsignaling-nans",
             Self::CxLimitedRange => "-fcx-limited-range",
+            Self::CxFortranRules => "-fcx-fortran-rules",
             Self::Gnu89Inline => "-fgnu89-inline",
             Self::Common => "-fcommon",
             Self::ClangTrigraphs => "-ftrigraphs",
@@ -1050,6 +1070,7 @@ impl Opt {
             Self::RoundingMath => MathSwitch::RoundingMath,
             Self::SignalingNans => MathSwitch::SignalingNans,
             Self::CxLimitedRange => MathSwitch::CxLimitedRange,
+            Self::CxFortranRules => MathSwitch::CxFortranRules,
             _ => return None,
         })
     }
@@ -1413,7 +1434,7 @@ fn ignored_option(argument: &str) -> Option<IgnoredOption> {
         .then_some(IgnoredOption::Alone)
 }
 
-const SWITCH_OPTS: [Opt; 51] = [
+const SWITCH_OPTS: [Opt; 52] = [
     Opt::OpenMp,
     Opt::OpenMpSimd,
     Opt::ClangTrigraphs,
@@ -1465,6 +1486,7 @@ const SWITCH_OPTS: [Opt; 51] = [
     Opt::FiniteMathOnly,
     Opt::SignalingNans,
     Opt::CxLimitedRange,
+    Opt::CxFortranRules,
 ];
 
 pub struct CompilerArgParser;
@@ -1920,6 +1942,38 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
             parsed.saw(Opt::PackStructAlignment, argument);
             parsed.pack_struct_alignment =
                 Some(parse_value(alignment.to_owned(), argument, "alignment")?);
+        } else if let Some(range) = argument.strip_prefix("-fcomplex-arithmetic=") {
+            parsed.saw(Opt::ComplexArithmetic, argument);
+            let range = match range {
+                "basic" => ComplexMethod::Basic,
+                "improved" => ComplexMethod::Improved,
+                "full" => ComplexMethod::Full,
+                "promoted" => ComplexMethod::Promoted,
+                _ => {
+                    return Err(invalid(
+                        argument,
+                        "expected one of basic, improved, full, promoted",
+                    ));
+                }
+            };
+            parsed
+                .math
+                .push((MathSwitch::ComplexArithmetic(range), true));
+        } else if let Some(model) = argument.strip_prefix("-ffp-model=") {
+            parsed.saw(Opt::FpModel, argument);
+            let model = match model {
+                "precise" => FpModel::Precise,
+                "strict" => FpModel::Strict,
+                "fast" => FpModel::Fast,
+                "aggressive" => FpModel::Aggressive,
+                _ => {
+                    return Err(invalid(
+                        argument,
+                        "expected one of precise, strict, fast, aggressive",
+                    ));
+                }
+            };
+            parsed.math.push((MathSwitch::Model(model), true));
         } else if let Some(style) = argument.strip_prefix("-ffp-contract=") {
             parsed.saw(Opt::FpContract, argument);
             let request = FpContract::parse(style).ok_or_else(|| {
