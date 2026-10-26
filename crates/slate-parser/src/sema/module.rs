@@ -1801,8 +1801,25 @@ impl Lowerer {
             .into_iter()
             .flatten()
             .map(|reference| reference.value)
-            .filter(|id| self.types.entities.linkage(*id).is_none())
-            .collect();
+            .filter(|id| {
+                self.types.entities.linkage(*id).is_none()
+                    && !matches!(
+                        self.types.entities.storage(*id),
+                        Some(StorageDuration::Static | StorageDuration::Thread)
+                    )
+            })
+            .map(|binding| {
+                let ty = self
+                    .types
+                    .entities
+                    .ty(&binding)
+                    .ok_or(ResolveError::Internal("OpenMP shared variable has no type"))?;
+                Ok(OmpShared {
+                    binding,
+                    ty: self.types.ir_type(ty),
+                })
+            })
+            .collect::<Result<_, ResolveError>>()?;
         Ok(Statement::OmpParallel(Box::new(OmpParallel {
             num_threads,
             condition,

@@ -26,6 +26,7 @@ mod globals;
 mod intrinsics;
 mod intrinsics_table;
 mod names;
+mod openmp;
 mod padding;
 mod places;
 mod pointers;
@@ -106,6 +107,7 @@ struct Dependencies {
     asm_goto_with_outputs: bool,
     asm_strings: BTreeMap<u32, Item>,
     libatomic: bool,
+    libgomp: bool,
     slate_vector: bool,
     long_double: bool,
     complex_long_double: bool,
@@ -150,6 +152,7 @@ struct FunctionLowerer<'a, 'm> {
     uses_alloca: bool,
     in_static_initializer: bool,
     target_features: Vec<&'static str>,
+    omp_shared: HashMap<BindingId, String>,
 }
 
 impl FunctionLowerer<'_, '_> {
@@ -552,6 +555,7 @@ impl<'m> ModuleLowerer<'m> {
             uses_alloca: false,
             in_static_initializer: false,
             target_features: Vec::new(),
+            omp_shared: HashMap::new(),
         }
     }
 
@@ -914,6 +918,11 @@ impl<'m> ModuleLowerer<'m> {
                 dependencies.builtin_setjmp,
                 "__slate_builtin_setjmp",
                 include_str!("support/builtin_setjmp.rs"),
+            ),
+            (
+                dependencies.libgomp,
+                "__slate_libgomp",
+                include_str!("support/libgomp.rs"),
             ),
         ] {
             if used {

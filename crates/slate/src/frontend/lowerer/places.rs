@@ -442,6 +442,12 @@ impl FunctionLowerer<'_, '_> {
         {
             self.declaring.set(Some((id, true)));
         }
+        if let Some(pointer) = self.omp_shared.get(&id) {
+            return Expr::Unary {
+                op: rust::UnaryOp::Deref,
+                expr: Box::new(Expr::Var(pointer.as_str().into())),
+            };
+        }
         if self.dispatch_bindings.contains(&id) {
             return Expr::Unary {
                 op: rust::UnaryOp::Deref,

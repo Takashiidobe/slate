@@ -120,6 +120,15 @@ pub(super) fn collect_statement_names(
             | ir::Statement::Default { body, .. } => {
                 collect_statement_names(body, bindings, reserved)
             }
+            ir::Statement::OmpParallel(region) => {
+                for private in &region.private {
+                    bindings.insert(
+                        private.copy.id,
+                        local_binding_name(&private.copy.name, private.copy.id, reserved),
+                    );
+                }
+                collect_statement_names(&region.body, bindings, reserved);
+            }
             ir::Statement::For { init, body, .. } => {
                 collect_statement_names(init, bindings, reserved);
                 collect_statement_names(body, bindings, reserved);

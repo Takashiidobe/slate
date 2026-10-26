@@ -87,9 +87,10 @@ form was.
   to `copy` only (name resolution declares it in a scope around the body).
   A `firstprivate` copy starts as the original's value at region entry.
   Globals can be privatized too.
-- `shared` lists the automatic variables and parameters declared outside
-  the region that the body references, explicit `shared` or implicit,
-  in first-reference order. Globals and static locals are shared but not
+- `shared` lists, as `OmpShared { binding, ty }`, the automatic variables
+  and parameters declared outside the region that the body references,
+  explicit `shared` or implicit, in first-reference order. `ty` lets the
+  backend capture a VLA by its element pointer. Globals and static locals are shared but not
   listed: they need no capture.
 - Checker (`sema/assertion.rs`): clause variables must be variables, at
   most once across data-sharing clauses; a `private` variable cannot be

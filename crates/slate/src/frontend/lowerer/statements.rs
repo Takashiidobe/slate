@@ -365,6 +365,7 @@ impl FunctionLowerer<'_, '_> {
                 })?)
             }
             ir::Statement::Asm(asm) => self.lower_asm(statement, asm, &[], None)?,
+            ir::Statement::OmpParallel(region) => self.lower_omp_parallel(statement, region)?,
             ir::Statement::Null => Stmt::Block(rust::Block::default()),
             _ => {
                 return Err(Construct::Statement {

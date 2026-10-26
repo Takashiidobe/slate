@@ -266,9 +266,15 @@ pub enum Statement {
 pub struct OmpParallel {
     pub num_threads: Option<Value>,
     pub condition: Option<Value>,
-    pub shared: Vec<BindingId>,
+    pub shared: Vec<OmpShared>,
     pub private: Vec<OmpPrivate>,
     pub body: Vec<Span<Statement>>,
+}
+
+#[derive(Debug, Clone)]
+pub struct OmpShared {
+    pub binding: BindingId,
+    pub ty: Type,
 }
 
 #[derive(Debug, Clone)]

@@ -1284,6 +1284,7 @@ fn run_with_emulator(
         .args(&config.args)
         .env("LC_ALL", "C")
         .env("TZ", "UTC")
+        .env("OMP_NUM_THREADS", "4")
         .envs(&config.env)
         .stdout(Stdio::piped())
         .stderr(Stdio::piped());

@@ -718,7 +718,7 @@ impl Printer<'_> {
                         let shared = region
                             .shared
                             .iter()
-                            .map(|id| format!("%{}", id.0))
+                            .map(|shared| format!("%{}", shared.binding.0))
                             .collect::<Vec<_>>()
                             .join(", ");
                         writeln!(f, "{:indent$}    shared: {shared}", "")?;

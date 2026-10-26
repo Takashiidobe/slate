@@ -155,6 +155,9 @@ impl FunctionLowerer<'_, '_> {
             return Ok(None);
         }
         Ok(match place.kind {
+            PlaceKind::Binding(id) if let Some(pointer) = self.omp_shared.get(&id) => {
+                Some(Expr::Var(pointer.as_str().into()))
+            }
             PlaceKind::Binding(id) => Some(Expr::Cast {
                 expr: Box::new(Expr::MethodCall {
                     recv: Box::new(self.lower_binding(id)),
