@@ -349,6 +349,14 @@ pub(super) enum CustomBuiltin {
     Seh(SehIntrinsic),
     MsVaStart,
     Noop,
+    Align(AlignBuiltin),
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(super) enum AlignBuiltin {
+    Up,
+    Down,
+    IsAligned,
 }
 
 pub(super) fn custom_builtin(builtin: &ClangBuiltin) -> Option<CustomBuiltin> {
@@ -384,6 +392,9 @@ pub(super) fn custom_builtin(builtin: &ClangBuiltin) -> Option<CustomBuiltin> {
         "AbnormalTermination" => CustomBuiltin::Seh(SehIntrinsic::AbnormalTermination),
         "MSva_start" => CustomBuiltin::MsVaStart,
         "Noop" => CustomBuiltin::Noop,
+        "AlignUp" => CustomBuiltin::Align(AlignBuiltin::Up),
+        "AlignDown" => CustomBuiltin::Align(AlignBuiltin::Down),
+        "IsAligned" => CustomBuiltin::Align(AlignBuiltin::IsAligned),
         _ => return None,
     })
 }

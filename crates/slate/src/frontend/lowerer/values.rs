@@ -1507,6 +1507,51 @@ impl FunctionLowerer<'_, '_> {
                 ..
             } if matches!(
                 self.tables.builtin_name(*id),
+                Some("__builtin_extract_return_addr" | "__builtin_frob_return_addr")
+            ) =>
+            {
+                let [address] = arguments.as_slice() else {
+                    return Err(unsupported_value(value));
+                };
+                self.lower_value(address)?
+            }
+            ValueKind::Call {
+                callee: ir::Callee::Direct(id),
+                arguments,
+                ..
+            } if self.tables.builtin_name(*id) == Some("__builtin_memcpy_inline") => {
+                let [dst, src, size] = arguments.as_slice() else {
+                    return Err(unsupported_value(value));
+                };
+                let bytes = |mutable, expr| Expr::Cast {
+                    expr: Box::new(expr),
+                    ty: rust::Type::Ptr {
+                        mutable,
+                        inner: Box::new(rust::Type::Prim(Prim::U8)),
+                    },
+                };
+                Expr::Unsafe(Box::new(rust::Block {
+                    stmts: Vec::new(),
+                    tail: Some(Box::new(Expr::Call {
+                        func: Box::new(Expr::Var("core::ptr::copy_nonoverlapping".into())),
+                        args: vec![
+                            bytes(false, self.lower_value(src)?),
+                            bytes(true, self.lower_value(dst)?),
+                            Expr::Cast {
+                                expr: Box::new(self.lower_value(size)?),
+                                ty: rust::Type::Prim(Prim::Usize),
+                            },
+                        ],
+                        binding: CallBinding::Generated,
+                    })),
+                }))
+            }
+            ValueKind::Call {
+                callee: ir::Callee::Direct(id),
+                arguments,
+                ..
+            } if matches!(
+                self.tables.builtin_name(*id),
                 Some("__builtin_setjmp" | "__builtin_longjmp")
             ) =>
             {

@@ -1,4 +1,4 @@
-use super::builtins::{ClangBuiltin, CustomBuiltin};
+use super::builtins::{AlignBuiltin, ClangBuiltin, CustomBuiltin};
 use super::ctype::convert::CastKind;
 use super::ctype::{CTypeKind, CTypes, Extent, QualType};
 use super::initializer::InitializerSource;
@@ -344,6 +344,7 @@ impl Lowerer {
     ) -> Result<Operand, ResolveError> {
         match custom {
             CustomBuiltin::Overflow(op) => self.overflow_builtin(e, op, arguments),
+            CustomBuiltin::Align(kind) => self.align_builtin(e, kind, arguments),
             CustomBuiltin::FloatClass(test) => {
                 let [operand] = arguments else {
                     return Err(ResolveError::Internal("float class builtin arity"));
@@ -872,6 +873,167 @@ impl Lowerer {
                 result: result.place,
             },
         ))
+    }
+
+    fn align_builtin(
+        &mut self,
+        e: &Expr,
+        kind: AlignBuiltin,
+        arguments: &[Expr],
+    ) -> Result<Operand, ResolveError> {
+        let [value, alignment] = arguments else {
+            return Err(ResolveError::Internal("alignment builtin arity"));
+        };
+        let value = self.expr(value)?;
+        let alignment = self.expr(alignment)?;
+        let value_c = self.types.ctypes.unqualified(value.c);
+        let pointer = self.types.ctypes.is_pointer(value_c);
+        let int_c = if pointer {
+            self.types.ctypes.size_type(&self.context.target)
+        } else {
+            value_c
+        };
+        let mut captures = Vec::new();
+        let alignment = self.apply_conversion(
+            CastKind::Arithmetic,
+            alignment,
+            int_c,
+            ConversionReason::Explicit,
+        )?;
+        let one = self.flag_constant(e, int_c, 1);
+        let mask = self.wrapping_arith(e, int_c, ArithOp::Sub, alignment.value, one.value);
+        let mask = self.bind_once(mask, &mut captures);
+        let read = |this: &mut Self, c, place: &Place| {
+            this.operand(
+                e,
+                c,
+                ValueKind::Read {
+                    place: place.clone(),
+                    ordering: None,
+                },
+            )
+        };
+        let bound = pointer.then(|| self.bind_once(value.clone(), &mut captures));
+        let source = match &bound {
+            Some(place) => {
+                let pointer = read(self, value_c, place);
+                self.apply_conversion(
+                    CastKind::PtrToInt,
+                    pointer,
+                    int_c,
+                    ConversionReason::Explicit,
+                )?
+            }
+            None => value,
+        };
+        let inverted = |this: &mut Self| {
+            let mask = read(this, int_c, &mask);
+            this.operand(
+                e,
+                int_c,
+                ValueKind::Unary {
+                    op: UnaryArithOp::Not,
+                    operand: Box::new(mask.value),
+                    semantics: ArithSema::Exact,
+                },
+            )
+        };
+        let result = match kind {
+            AlignBuiltin::IsAligned => {
+                let low_mask = read(self, int_c, &mask);
+                let low = self.wrapping_arith(e, int_c, ArithOp::And, source.value, low_mask.value);
+                let zero = self.flag_constant(e, int_c, 0);
+                let c = self.types.ctypes.qual(CTypeKind::Bool);
+                return Ok(Operand {
+                    c,
+                    value: {
+                        let compare = self.operand(
+                            e,
+                            c,
+                            ValueKind::Compare {
+                                op: CompareOp::Eq,
+                                left: Box::new(low.value),
+                                right: Box::new(zero.value),
+                                exceptions: None,
+                                reason: None,
+                            },
+                        );
+                        self.captured(e, captures, compare.value)
+                    },
+                });
+            }
+            AlignBuiltin::Down if bound.is_some() => {
+                let low_mask = read(self, int_c, &mask);
+                self.wrapping_arith(e, int_c, ArithOp::And, source.value, low_mask.value)
+            }
+            AlignBuiltin::Down => {
+                let high = inverted(self);
+                self.wrapping_arith(e, int_c, ArithOp::And, source.value, high.value)
+            }
+            AlignBuiltin::Up => {
+                let add_mask = read(self, int_c, &mask);
+                let rounded =
+                    self.wrapping_arith(e, int_c, ArithOp::Add, source.value, add_mask.value);
+                let high = inverted(self);
+                let aligned =
+                    self.wrapping_arith(e, int_c, ArithOp::And, rounded.value, high.value);
+                match &bound {
+                    Some(place) => {
+                        let pointer = read(self, value_c, place);
+                        let original = self.apply_conversion(
+                            CastKind::PtrToInt,
+                            pointer,
+                            int_c,
+                            ConversionReason::Explicit,
+                        )?;
+                        self.wrapping_arith(e, int_c, ArithOp::Sub, aligned.value, original.value)
+                    }
+                    None => aligned,
+                }
+            }
+        };
+        let Some(place) = bound else {
+            return Ok(Operand {
+                c: value_c,
+                value: self.captured(e, captures, result.value),
+            });
+        };
+        let pointee = self
+            .types
+            .ctypes
+            .pointee(value_c)
+            .ok_or(ResolveError::Internal("alignment builtin pointer"))?;
+        let quals = self.types.ctypes.quals(pointee);
+        let byte = self.types.ctypes.qual(CTypeKind::UChar);
+        let byte_pointer = self.types.ctypes.pointer(byte.with(quals));
+        let pointer = read(self, value_c, &place);
+        let base = self.apply_conversion(
+            CastKind::Pointer,
+            pointer,
+            byte_pointer,
+            ConversionReason::Explicit,
+        )?;
+        let moved = self.operand(
+            e,
+            byte_pointer,
+            ValueKind::PointerOffset {
+                pointer: Box::new(base.value),
+                amount: Box::new(result.value),
+                subtract: kind == AlignBuiltin::Down,
+                element: Type::integer(8, false),
+                overflow: Overflow::Wrap,
+            },
+        );
+        let moved = self.apply_conversion(
+            CastKind::Pointer,
+            moved,
+            value_c,
+            ConversionReason::Explicit,
+        )?;
+        Ok(Operand {
+            c: value_c,
+            value: self.captured(e, captures, moved.value),
+        })
     }
 
     fn float_class_int(

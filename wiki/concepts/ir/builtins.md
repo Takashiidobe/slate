@@ -37,6 +37,14 @@ resolve through `sema/types.rs` and `sema/ctype/`.
 `__builtin_classify_type` also folds inside constant expressions (for
 `__builtin_choose_expr` conditions).
 
+`__builtin_align_up`, `__builtin_align_down` and `__builtin_is_aligned` (clang)
+take an integer or pointer and an integer alignment. They expand to wrapping
+arithmetic on a captured `mask = alignment - 1` in the value's type (pointers
+use `size_t` via `ptr_to_int`): up is `(x + mask) & ~mask`, down is `x & ~mask`,
+and `is_aligned` is `(x & mask) == 0` typed `_Bool`. Pointers are captured once
+and moved with a byte `ptr_offset` (forward by `aligned - x` for up, back by
+`x & mask` for down), so the result keeps the pointer's provenance and type.
+
 `__builtin_clear_padding(p)` becomes `intrinsic<void, slate.clear_padding>(p)`.
 Slate derives from the pointee layout which bytes and bit-field bits are data
 (named bit-fields and scalars; union members all count) and zeroes the rest

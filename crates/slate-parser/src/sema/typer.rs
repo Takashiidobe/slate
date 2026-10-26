@@ -1,5 +1,5 @@
 use super::atomic::{AtomicBuiltin, AtomicResult, FetchOp, atomic_builtin};
-use super::builtins::{CustomBuiltin, DerivedSignature};
+use super::builtins::{AlignBuiltin, CustomBuiltin, DerivedSignature};
 use super::ctype::convert::{CastKind, Conversion, ConversionContext};
 use super::ctype::{CTypeKind, Extent, FloatKind, QualType, Qualifiers};
 use super::expression::{
@@ -1413,6 +1413,22 @@ impl TypeResolver {
                     }
                 }
                 self.ctypes.int()
+            }
+            CustomBuiltin::Align(kind) => {
+                let [value, alignment] = arguments else {
+                    return Err(ResolveError::Rejected("alignment builtin arity"));
+                };
+                let value = self.operand_type(value)?;
+                let alignment = self.operand_type(alignment)?;
+                if !(self.ctypes.is_integer(value) || self.ctypes.is_pointer(value))
+                    || !self.ctypes.is_integer(alignment)
+                {
+                    return Err(ResolveError::Rejected("alignment builtin operand type"));
+                }
+                match kind {
+                    AlignBuiltin::IsAligned => self.ctypes.qual(CTypeKind::Bool),
+                    AlignBuiltin::Up | AlignBuiltin::Down => self.ctypes.unqualified(value),
+                }
             }
             CustomBuiltin::Overflow(_) => {
                 let [left, right, result] = arguments else {

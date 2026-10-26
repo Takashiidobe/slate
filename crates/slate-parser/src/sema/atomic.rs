@@ -727,7 +727,7 @@ impl Lowerer {
         Ok(place)
     }
 
-    fn flag_constant(&mut self, e: &Expr, ty: QualType, value: u8) -> Operand {
+    pub(super) fn flag_constant(&mut self, e: &Expr, ty: QualType, value: u8) -> Operand {
         let number = if matches!(self.types.ctypes.canonical_kind(ty), CTypeKind::Bool) {
             Number::Bool(value != 0)
         } else {
@@ -1092,7 +1092,7 @@ impl Lowerer {
         )
     }
 
-    fn wrapping_arith(
+    pub(super) fn wrapping_arith(
         &mut self,
         e: &Expr,
         c: QualType,
