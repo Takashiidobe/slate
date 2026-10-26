@@ -1,6 +1,6 @@
 // SLATE-FILECHECK-DEFINES IR
 // SLATE-FILECHECK-ARGS --dump-ir
-// SLATE-FILECHECK-STD IR c23
+// SLATE-FILECHECK-STD IR gnu23
 _Thread_local int t;
 
 void thread_local_symbol(void) {

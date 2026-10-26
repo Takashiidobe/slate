@@ -1,6 +1,6 @@
 // SLATE-FILECHECK-DEFINES IR
 // SLATE-FILECHECK-ARGS --dump-ir
-// SLATE-FILECHECK-STD IR c23
+// SLATE-FILECHECK-STD IR gnu23
 void conditions(int x, int y, int *r) {
     asm("cmpl %11, %10" : "=@cca"(r[0]), "=@ccae"(r[1]), "=@ccb"(r[2]), "=@ccbe"(r[3]), "=@ccc"(r[4]), "=@cce"(r[5]), "=@ccg"(r[6]), "=@ccge"(r[7]), "=@ccl"(r[8]), "=@ccle"(r[9]) : "r"(x), "r"(y));
     asm("cmpl %11, %10" : "=@ccna"(r[0]), "=@ccnae"(r[1]), "=@ccnb"(r[2]), "=@ccnbe"(r[3]), "=@ccnc"(r[4]), "=@ccne"(r[5]), "=@ccng"(r[6]), "=@ccnge"(r[7]), "=@ccnl"(r[8]), "=@ccnle"(r[9]) : "r"(x), "r"(y));

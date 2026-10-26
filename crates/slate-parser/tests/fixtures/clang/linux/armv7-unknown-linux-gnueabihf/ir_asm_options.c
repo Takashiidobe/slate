@@ -1,6 +1,6 @@
 // SLATE-FILECHECK-DEFINES IR
 // SLATE-FILECHECK-ARGS --dump-ir
-// SLATE-FILECHECK-STD IR c23
+// SLATE-FILECHECK-STD IR gnu23
 int keeps_flags(int x) {
     int r;
     asm("mov %0, %1" : "=r"(r) : "r"(x));

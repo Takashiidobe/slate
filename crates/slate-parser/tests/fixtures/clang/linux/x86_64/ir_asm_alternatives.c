@@ -1,6 +1,6 @@
 // SLATE-FILECHECK-DEFINES IR
 // SLATE-FILECHECK-ARGS --dump-ir
-// SLATE-FILECHECK-STD IR c23
+// SLATE-FILECHECK-STD IR gnu23
 struct Big { long a, b, c; };
 
 void alternatives(int x, int *p, long double f, struct Big big) {

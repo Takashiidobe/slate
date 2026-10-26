@@ -142,7 +142,7 @@ impl Preprocessor<'_> {
         self.math.errno_default = !self.macros.contains_key("__NO_MATH_ERRNO__");
         let math = self.dialect.options().math;
         let mut macros = self.math_macros(&math, false);
-        if self.dialect.flavor().is_gcc() {
+        if self.dialect.flavor().is_gcc() && !self.dialect.options().undef_predefines {
             let eval_method = defines
                 .iter()
                 .rev()

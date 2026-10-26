@@ -29,6 +29,7 @@ pub struct StandardFeatures {
     pub keyword_static_assert: Availability,
     pub keyword_thread_local: Availability,
     pub keyword_restrict: Availability,
+    pub keyword_asm: Availability,
     pub keyword_inline: Availability,
     pub keyword_typeof: Availability,
     pub keyword_typeof_unqual: Availability,
@@ -77,6 +78,7 @@ pub struct StandardFeatures {
     pub digraphs: bool,
     pub scope_token: bool,
     pub elifdef_directives: bool,
+    pub gnu_inline_asm: bool,
 }
 
 impl StandardFeatures {
@@ -96,6 +98,11 @@ impl StandardFeatures {
             keyword_static_assert: c23_keyword,
             keyword_thread_local: c23_keyword,
             keyword_restrict: if c89 { Rejected } else { Standard },
+            keyword_asm: if standard.is_gnu() {
+                Extension
+            } else {
+                Rejected
+            },
             keyword_inline: match (c89, standard.is_gnu()) {
                 (false, _) => Standard,
                 (true, true) => Extension,
@@ -162,6 +169,7 @@ impl StandardFeatures {
             digraphs: !matches!(standard, LanguageStandard::C89),
             scope_token: true,
             elifdef_directives: c23 || standard.is_gnu(),
+            gnu_inline_asm: true,
         }
     }
 

@@ -359,6 +359,10 @@ struct ParsedCompilerArgs {
     ms_extensions: Option<bool>,
     ms_compatibility: Option<bool>,
     asm_blocks: Option<bool>,
+    gnu_keywords: Option<bool>,
+    gnu_inline_asm: Option<bool>,
+    undef_predefines: bool,
+    gnuc_version: Option<[u32; 3]>,
     long_double: Option<LongDoubleFormat>,
     asm_dialect: Option<AsmDialect>,
     optimization: Option<Optimization>,
@@ -538,6 +542,10 @@ impl FpContract {
 enum Opt {
     Define,
     Undef,
+    UndefPredefines,
+    GnucVersion,
+    Asm,
+    GnuInlineAsm,
     ForceInclude,
     Imacros,
     Standard,
@@ -685,7 +693,11 @@ impl std::fmt::Display for Opt {
     fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let name = match self {
             Self::Define => "define",
-            Self::Undef => "undef",
+            Self::Undef => "U",
+            Self::UndefPredefines => "undef",
+            Self::GnucVersion => "fgnuc-version=",
+            Self::Asm => "fasm",
+            Self::GnuInlineAsm => "fgnu-inline-asm",
             Self::ForceInclude => "include",
             Self::Imacros => "imacros",
             Self::Standard => "std",
@@ -874,6 +886,8 @@ impl Opt {
             | Self::Gnu89Inline
             | Self::Common
             | Self::Ansi
+            | Self::UndefPredefines
+            | Self::Asm
             | Self::Trigraphs
             | Self::MsExtensions
             | Self::MsCompatibility
@@ -943,6 +957,8 @@ impl Opt {
             | Self::OpenMpVersion
             | Self::ComplexArithmetic
             | Self::FpModel
+            | Self::GnucVersion
+            | Self::GnuInlineAsm
             | Self::Mllvm => &[Clang],
             Self::ConformingPreprocessor
             | Self::MsvcUnsignedChar
@@ -1021,6 +1037,8 @@ impl Opt {
             Self::MsExtensions => "-fms-extensions",
             Self::MsCompatibility => "-fms-compatibility",
             Self::AsmBlocks => "-fasm-blocks",
+            Self::Asm => "-fasm",
+            Self::GnuInlineAsm => "-fgnu-inline-asm",
             Self::Freestanding => "-ffreestanding",
             Self::Hosted => "-fhosted",
             Self::Builtin => "-fbuiltin",
@@ -1444,7 +1462,9 @@ fn ignored_option(argument: &str) -> Option<IgnoredOption> {
         .then_some(IgnoredOption::Alone)
 }
 
-const SWITCH_OPTS: [Opt; 54] = [
+const SWITCH_OPTS: [Opt; 56] = [
+    Opt::Asm,
+    Opt::GnuInlineAsm,
     Opt::OpenMp,
     Opt::OpenMpSimd,
     Opt::ClangTrigraphs,
@@ -1657,6 +1677,10 @@ impl CompilerArgParser {
         options.strict_flex_arrays = raw.strict_flex_arrays.unwrap_or(0);
         options.macro_prefix_map = raw.macro_prefix_map;
         options.fixed_registers = raw.fixed_registers;
+        options.gnu_keywords = raw.gnu_keywords;
+        options.gnu_inline_asm = raw.gnu_inline_asm.unwrap_or(true);
+        options.undef_predefines = raw.undef_predefines;
+        options.gnuc_version = raw.gnuc_version;
         Ok(CompilerArgs {
             options,
             defines: raw.defines,
@@ -1686,6 +1710,27 @@ impl CompilerArgParser {
         parsed.resolve_paths_in(directory);
         Ok(parsed)
     }
+}
+
+fn parse_gnuc_version(version: &str) -> Option<[u32; 3]> {
+    let mut parts = [0; 3];
+    if version.is_empty() {
+        return Some(parts);
+    }
+    let mut pieces = version.split('.');
+    for (index, part) in parts.iter_mut().enumerate() {
+        let Some(piece) = pieces.next() else {
+            break;
+        };
+        if piece.is_empty() || !piece.bytes().all(|byte| byte.is_ascii_digit()) {
+            return None;
+        }
+        *part = piece.parse().ok()?;
+        if index > 0 && *part >= 100 {
+            return None;
+        }
+    }
+    pieces.next().is_none().then_some(parts)
 }
 
 fn parse_pedantic(argument: &str, diagnostics: &mut DiagnosticOptions) -> bool {
@@ -1770,6 +1815,8 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                     }
                 }
                 Opt::AsmBlocks => parsed.asm_blocks = Some(value),
+                Opt::Asm => parsed.gnu_keywords = Some(value),
+                Opt::GnuInlineAsm => parsed.gnu_inline_asm = Some(value),
                 Opt::Builtin => parsed.builtin = Some(value),
                 Opt::UnsignedChar => parsed.char_signed = Some(!value),
                 Opt::SignedChar => parsed.char_signed = Some(value),
@@ -2255,6 +2302,17 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
             .any(|prefix| argument.starts_with(prefix))
         {
             return Err(invalid(argument, "a C++ option does not apply to C"));
+        } else if argument == "-undef" {
+            parsed.saw(Opt::UndefPredefines, argument);
+            parsed.undef_predefines = true;
+        } else if let Some(version) = argument.strip_prefix("-fgnuc-version=") {
+            parsed.saw(Opt::GnucVersion, argument);
+            parsed.gnuc_version = Some(parse_gnuc_version(version).ok_or_else(|| {
+                invalid(
+                    argument,
+                    "expected <major>[.<minor>[.<patchlevel>]], minor and patchlevel below 100",
+                )
+            })?);
         } else if let Some(value) = option_value(argument, "U") {
             parsed.saw(Opt::Undef, argument);
             parsed
@@ -2428,7 +2486,7 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
         Some(Optimization::Speed) => vec!["__OPTIMIZE__"],
         Some(Optimization::Size) => vec!["__OPTIMIZE__", "__OPTIMIZE_SIZE__"],
     };
-    if !optimization_macros.is_empty() {
+    if !optimization_macros.is_empty() && !parsed.undef_predefines {
         let keep_no_inline = parsed.no_inline_requested();
         parsed.preprocessor_inputs.macros.splice(
             0..0,
@@ -2442,7 +2500,7 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                 ),
         );
     }
-    if parsed.exceptions == Some(true) {
+    if parsed.exceptions == Some(true) && !parsed.undef_predefines {
         parsed
             .preprocessor_inputs
             .macros
@@ -2451,6 +2509,7 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
     parsed.openmp_date = parsed.openmp_date()?;
     if let Some(date) = parsed.openmp_date
         && !parsed.msvc_undefine_predefined
+        && !parsed.undef_predefines
     {
         parsed
             .preprocessor_inputs
@@ -2463,7 +2522,11 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                 .insert(0, MacroOption::Define("_OPENMP_LLVM_RUNTIME".into()));
         }
     }
-    if parsed.pthread || (parsed.flavor.is_gcc() && parsed.openmp_date.is_some()) {
+    let reentrant = match parsed.flavor {
+        CompilerFlavor::Gcc => parsed.pthread || parsed.openmp_date.is_some(),
+        _ => parsed.pthread && !parsed.undef_predefines,
+    };
+    if reentrant {
         parsed
             .preprocessor_inputs
             .macros

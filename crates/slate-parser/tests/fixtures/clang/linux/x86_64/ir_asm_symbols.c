@@ -1,6 +1,6 @@
 // SLATE-FILECHECK-DEFINES IR
 // SLATE-FILECHECK-ARGS --dump-ir
-// SLATE-FILECHECK-STD IR c23
+// SLATE-FILECHECK-STD IR gnu23
 struct S { int a; int b[3]; } s;
 _Thread_local int t;
 int g, arr[4];

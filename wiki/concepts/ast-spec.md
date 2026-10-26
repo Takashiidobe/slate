@@ -254,6 +254,11 @@ gcc flavor, x86, gnu modes only: `__seg_fs` / `__seg_gs` are qualifiers
 `address_space(257/256)`. Sema ignores both; `_Generic` doesn't distinguish
 them.
 
+Plain `asm`, `typeof` before C23 and `inline` before C99 are keywords in the
+gnu modes only, or wherever `-fasm` forces them, and identifiers under
+`-fno-asm` (`StandardFeatures::keyword_asm`). `__asm__`, `__typeof__` and
+`__inline__` are always keywords.
+
 ### `vector_size` and `mode`
 
 - Not written as specifiers. Each `vector_size`, `ext_vector_type`, or

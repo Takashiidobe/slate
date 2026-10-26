@@ -1,6 +1,6 @@
 // SLATE-FILECHECK-DEFINES IR
 // SLATE-FILECHECK-ARGS --dump-ir
-// SLATE-FILECHECK-STD IR c23
+// SLATE-FILECHECK-STD IR gnu23
 void load(int *p) {
     asm volatile("ld1 {v0.16b}, [%0] {a|b}" : : "r"(p));
 }

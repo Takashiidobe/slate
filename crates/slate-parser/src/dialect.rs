@@ -41,6 +41,20 @@ impl Dialect {
                 features.implicit_int = Availability::Extension;
             }
         }
+        if let Some(enabled) = options.gnu_keywords {
+            let gnu = if enabled {
+                Availability::Extension
+            } else {
+                Availability::Rejected
+            };
+            features.keyword_asm = gnu;
+            for keyword in [&mut features.keyword_typeof, &mut features.keyword_inline] {
+                if *keyword != Availability::Standard {
+                    *keyword = gnu;
+                }
+            }
+        }
+        features.gnu_inline_asm = options.gnu_inline_asm;
         Self {
             flavor,
             standard,

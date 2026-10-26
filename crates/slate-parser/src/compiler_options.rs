@@ -26,6 +26,10 @@ pub struct CompilerOptions {
     pub macro_prefix_map: Vec<(String, String)>,
     pub fixed_registers: Vec<String>,
     pub graphs: SourceGraphs,
+    pub gnu_keywords: Option<bool>,
+    pub gnu_inline_asm: bool,
+    pub undef_predefines: bool,
+    pub gnuc_version: Option<[u32; 3]>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -528,6 +532,10 @@ impl Default for CompilerOptions {
             macro_prefix_map: Vec::new(),
             fixed_registers: Vec::new(),
             graphs: SourceGraphs::default(),
+            gnu_keywords: None,
+            gnu_inline_asm: true,
+            undef_predefines: false,
+            gnuc_version: None,
         }
     }
 }

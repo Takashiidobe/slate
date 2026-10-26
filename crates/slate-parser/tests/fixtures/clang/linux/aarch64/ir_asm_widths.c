@@ -1,6 +1,6 @@
 // SLATE-FILECHECK-DEFINES IR
 // SLATE-FILECHECK-ARGS --dump-ir
-// SLATE-FILECHECK-STD IR c23
+// SLATE-FILECHECK-STD IR gnu23
 typedef float v4f __attribute__((vector_size(16)));
 
 void widths(char c, int i, long l, float f, v4f v) {

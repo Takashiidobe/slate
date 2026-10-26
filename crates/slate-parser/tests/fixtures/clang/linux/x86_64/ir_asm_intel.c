@@ -1,6 +1,6 @@
 // SLATE-FILECHECK-DEFINES IR
 // SLATE-FILECHECK-ARGS --dump-ir -masm=intel
-// SLATE-FILECHECK-STD IR c23
+// SLATE-FILECHECK-STD IR gnu23
 
 void dialects(int x) {
     asm("mov{l|} {%0, %%eax|eax, %0}" : : "r"(x));

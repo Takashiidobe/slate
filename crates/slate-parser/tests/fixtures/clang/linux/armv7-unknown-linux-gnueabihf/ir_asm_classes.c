@@ -1,6 +1,6 @@
 // SLATE-FILECHECK-DEFINES IR
 // SLATE-FILECHECK-ARGS --dump-ir
-// SLATE-FILECHECK-STD IR c23
+// SLATE-FILECHECK-STD IR gnu23
 void classes(int x, float f, double d) {
     asm("@ %0 %1 %2" : "=r"(x), "=t"(f), "=w"(d));
     asm("@ %0 %1 %2" : : "I"(1), "Q"(x), "l"(x));

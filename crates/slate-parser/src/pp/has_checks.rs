@@ -22,13 +22,18 @@ pub(super) fn has_warning(option: &str) -> bool {
         .is_some_and(|group| clang::WARNING_GROUPS.binary_search(&group).is_ok())
 }
 
-pub(super) fn is_identifier(name: &str, standard: LanguageStandard, microsoft: bool) -> bool {
+pub(super) fn is_identifier(
+    name: &str,
+    standard: LanguageStandard,
+    microsoft: bool,
+    gnu_keywords: bool,
+) -> bool {
     let Ok(index) = clang::KEYWORDS.binary_search_by(|(keyword, _)| (*keyword).cmp(name)) else {
         return true;
     };
     let c99 = standard.at_least_c99();
     let c23 = standard.at_least_c23();
-    let gnu = standard.is_gnu();
+    let gnu = gnu_keywords;
     !match clang::KEYWORDS[index].1 {
         KeywordModes::Always => true,
         KeywordModes::Microsoft => microsoft,

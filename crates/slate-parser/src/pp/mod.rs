@@ -150,12 +150,11 @@ fn conditional_directive(rest: &str) -> bool {
     DirectiveName::from_spelling(name).is_conditional()
 }
 
-const GNU_COMPATIBILITY_MACROS: [(&str, &str); 5] = [
+const GNU_COMPATIBILITY_MACROS: [(&str, &str); 4] = [
     ("__GNUC__", "4"),
     ("__GNUC_MINOR__", "2"),
     ("__GNUC_PATCHLEVEL__", "1"),
     ("__GXX_ABI_VERSION", "1002"),
-    ("__STDC__", "1"),
 ];
 
 // expanded by expand_builtin_macro; msvc lacks the gnu-only ones
@@ -212,6 +211,10 @@ const MSVC_UNDEFINABLE_PREDEFINES: [&str; 23] = [
     "_M_FP_CONTRACT",
     "_M_FP_EXCEPT",
 ];
+
+fn survives_undef(name: &str) -> bool {
+    name.starts_with("__STDC") || name == "_STDC_PREDEF_H"
+}
 
 fn is_msvc_undefinable_predefine(name: &str) -> bool {
     MSVC_UNDEFINABLE_PREDEFINES.contains(&name) || name.starts_with("__ARM_")
@@ -416,8 +419,16 @@ impl<'a> Preprocessor<'a> {
         let features = self.dialect.features();
         let mut defines = Vec::new();
         let mut removed = Vec::new();
-        match (features.microsoft_compatibility, captured) {
-            (true, false) => {
+        let stdc = !features.microsoft_compatibility;
+        let gnuc_version = self.dialect.options().gnuc_version;
+        let gnu = gnuc_version.map_or(stdc, |version| version != [0; 3]);
+        match (stdc, captured) {
+            (false, false) => removed.push("__STDC__".to_owned()),
+            (true, true) => defines.push(("__STDC__".into(), "1".into())),
+            _ => {}
+        }
+        match (gnu, captured) {
+            (false, false) => {
                 removed.extend(GNU_COMPATIBILITY_MACROS.map(|(name, _)| name.to_string()));
                 removed.extend(
                     self.macros
@@ -426,7 +437,7 @@ impl<'a> Preprocessor<'a> {
                         .cloned(),
                 );
             }
-            (false, true) => {
+            (true, true) => {
                 defines.extend(
                     GNU_COMPATIBILITY_MACROS.map(|(name, value)| (name.into(), value.into())),
                 );
@@ -440,6 +451,16 @@ impl<'a> Preprocessor<'a> {
                 }
             }
             _ => {}
+        }
+        if let (true, Some(version)) = (gnu, gnuc_version) {
+            for (name, part) in ["__GNUC__", "__GNUC_MINOR__", "__GNUC_PATCHLEVEL__"]
+                .into_iter()
+                .zip(version)
+            {
+                removed.push(name.to_owned());
+                defines.retain(|(defined, _)| defined != name);
+                defines.push((name.into(), part.to_string()));
+            }
         }
         let i686 = target.family == crate::target_info::TargetFamily::X86;
         match (features.microsoft_extensions, captured) {
@@ -489,10 +510,10 @@ impl<'a> Preprocessor<'a> {
         }
 
         let mut defines = Vec::new();
+        if !self.dialect.standard().is_gnu() && !self.dialect.features().microsoft_compatibility {
+            defines.push(("__STRICT_ANSI__".to_string(), "1".to_string()));
+        }
         if self.macros.contains_key("__GNUC__") {
-            if !self.dialect.standard().is_gnu() {
-                defines.push(("__STRICT_ANSI__".to_string(), "1".to_string()));
-            }
             let inline_semantics = if self.dialect.standard().at_least_c99() {
                 "__GNUC_STDC_INLINE__"
             } else {
@@ -858,6 +879,15 @@ impl<'a> Preprocessor<'a> {
                 define
                     .split_once('=')
                     .is_none_or(|(name, _)| !is_msvc_undefinable_predefine(name))
+            });
+        }
+        if options.undef_predefines {
+            self.macros
+                .retain(|name, entry| entry.definition.builtin || survives_undef(name));
+            defines.retain(|define| {
+                define
+                    .split_once('=')
+                    .is_none_or(|(name, _)| survives_undef(name))
             });
         }
         if defines.is_empty() {
@@ -2062,7 +2092,9 @@ fn expand_has_checks(tokens: &[Span<Token>], dialect: &Dialect) -> Vec<Span<Toke
         (microsoft && attribute_support::declspec_registered(name, flavor, target)) as i64
     };
     let has_warning = |option: &str| has_checks::has_warning(option) as i64;
-    let is_identifier = |name: &str| has_checks::is_identifier(name, standard, microsoft) as i64;
+    let gnu_keywords = dialect.features().keyword_asm.is_accepted();
+    let is_identifier =
+        |name: &str| has_checks::is_identifier(name, standard, microsoft, gnu_keywords) as i64;
     let triple = dialect.target().triple.as_str();
     let mut expanded = Vec::with_capacity(tokens.len());
     let mut index = 0;
