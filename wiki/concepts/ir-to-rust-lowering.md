@@ -25,6 +25,7 @@
 | Const-qualified address                                                            | `&raw const`; mutable addresses use `&raw mut`                                                                                                                                                                                          |
 | Volatile read / write                                                              | `ptr::read_volatile` / `ptr::write_volatile` on raw addresses                                                                                                                                                                           |
 | f32 / f64 classification                                                           | Float classification methods; zero compares equal to either signed zero                                                                                                                                                                 |
+| `rounding=environment` f32/f64 `add`/`sub`/`mul`/`div`, f64→f32 `float_narrow`, inexact `int_to_float`| `__slate_fenv_*` C bridge (`frontend/shims/fenv.c`); 128-bit sources reduce to i64 in `__slate_rounding` and call the same bridge                                                                                                       |
 | Scalar `__builtin_clz*` / `ctz*` / `popcount*` calls                               | Unsigned operand's `leading_zeros()` / `trailing_zeros()` / `count_ones()`, cast to the C result type                                                                                                                                   |
 | `__builtin_expect`, `expect_with_probability`, `unpredictable`                     | The first operand (IR operands are side-effect free)                                                                                                                                                                                    |
 | `__builtin_prefetch`                                                               | Empty block                                                                                                                                                                                                                             |
@@ -54,6 +55,12 @@
   runtime stride: the captured extents times the fixed element size
   (`vla_locals.c`). A VLA local in a goto-dispatched function is a barrier: its
   slot would never be freed.
+- `rounding=environment` arithmetic goes through opaque C calls because rustc
+  assumes round-to-nearest: it folds `1.0 / 3.0` and may move a float op across
+  `fesetround`. An extern call it cannot see into blocks both. `black_box` on the
+  operands stops folding but not code motion. Ops that do not depend on the mode
+  (compares, `neg`, exact conversions) stay native; f80 already runs in
+  `long_double.c`. f16 arithmetic is not routed yet.
 - Null-based field-address differences use parser layout offsets, avoiding Rust
   null dereferences and pointer arithmetic.
 - Leading-zero counts preserve the C operand width; zero input is undefined in C.

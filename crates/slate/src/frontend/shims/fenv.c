@@ -48,8 +48,14 @@ _Bool __slate_fenv_ne_f32(float a, float b) { return a != b; }
 double __slate_fenv_i64_to_f64(long long a) { return (double)a; }
 float __slate_fenv_i64_to_f32(long long a) { return (float)a; }
 
-double __slate_fenv_u64_to_f64(unsigned long long a) { return (double)a; }
-float __slate_fenv_u64_to_f32(unsigned long long a) { return (float)a; }
+double __slate_fenv_u64_to_f64(unsigned long long a) {
+  if ((long long)a >= 0) return (double)(long long)a;
+  return (double)(long long)((a >> 1) | (a & 1)) * 2.0;
+}
+float __slate_fenv_u64_to_f32(unsigned long long a) {
+  if ((long long)a >= 0) return (float)(long long)a;
+  return (float)(long long)((a >> 1) | (a & 1)) * 2.0f;
+}
 
 long long __slate_fenv_f64_to_i64(double a) { return (long long)a; }
 long long __slate_fenv_f32_to_i64(float a) { return (long long)a; }

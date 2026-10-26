@@ -170,6 +170,32 @@ impl FunctionLowerer<'_, '_> {
         args: Vec<Expr>,
         identity: FunctionIdentity,
     ) -> Expr {
+        self.declare_c_bridge(name.clone(), params, ret, identity);
+        Expr::Unsafe(Box::new(rust::Block {
+            stmts: Vec::new(),
+            tail: Some(Box::new(Expr::Call {
+                func: Box::new(Expr::Var(name.into())),
+                args,
+                binding: match identity {
+                    FunctionIdentity::Known(_) => CallBinding::Direct {
+                        identity,
+                        canonical_type: None,
+                        trusted_declaration: None,
+                        trusted_headers: Default::default(),
+                    },
+                    FunctionIdentity::Unknown => CallBinding::Generated,
+                },
+            })),
+        }))
+    }
+
+    pub(super) fn declare_c_bridge(
+        &mut self,
+        name: String,
+        params: Vec<rust::Type>,
+        ret: rust::Type,
+        identity: FunctionIdentity,
+    ) {
         self.dependencies
             .bridges
             .entry(name.clone())
@@ -193,21 +219,5 @@ impl FunctionLowerer<'_, '_> {
                 ret: (!matches!(ret, rust::Type::Unit)).then_some(ret),
                 safe: false,
             });
-        Expr::Unsafe(Box::new(rust::Block {
-            stmts: Vec::new(),
-            tail: Some(Box::new(Expr::Call {
-                func: Box::new(Expr::Var(name.into())),
-                args,
-                binding: match identity {
-                    FunctionIdentity::Known(_) => CallBinding::Direct {
-                        identity,
-                        canonical_type: None,
-                        trusted_declaration: None,
-                        trusted_headers: Default::default(),
-                    },
-                    FunctionIdentity::Unknown => CallBinding::Generated,
-                },
-            })),
-        }))
     }
 }

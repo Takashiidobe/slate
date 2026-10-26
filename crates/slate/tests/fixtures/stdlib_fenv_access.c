@@ -29,6 +29,7 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fesetround(__rounding_direction: i32) -> i32;
 // CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn __slate_fenv_div_f64(_0: f64, _1: f64) -> f64;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
@@ -41,8 +42,12 @@ int main(void) {
 // CHECK-NEXT:     let mut contended: f64 = 0 as f64;
 // CHECK-NEXT:     let mut after: f64 = 0 as f64;
 // CHECK-NEXT:     unsafe { fesetround(1024i32) };
-// CHECK-NEXT:     contended = (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(x)) })
-// CHECK-NEXT:         / unsafe { std::ptr::read_volatile(std::ptr::addr_of!(y)) };
+// CHECK-NEXT:     contended = unsafe {
+// CHECK-NEXT:         __slate_fenv_div_f64(
+// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(x)),
+// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(y)),
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fesetround(0i32) };
 // CHECK-NEXT:     after = (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(x)) })
 // CHECK-NEXT:         + unsafe { std::ptr::read_volatile(std::ptr::addr_of!(y)) };

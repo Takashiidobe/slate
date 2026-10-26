@@ -955,32 +955,37 @@ impl FunctionLowerer<'_, '_> {
                 operand,
                 semantics:
                     ir::ConversionSema::IntToFloat {
+                        exact: false,
                         floating:
                             ir::FloatingSemantics {
                                 rounding: ir::Rounding::Environment,
                                 ..
                             },
-                        ..
                     },
                 ..
-            } if self
-                .environment_rounded_conversion(&operand.ty, &value.ty)
-                .is_some() =>
+            } if let Some(lowered) = self.lower_environment_int_to_float(operand, &value.ty)? => {
+                lowered
+            }
+            ValueKind::Convert {
+                kind: ir::ConversionKind::FloatNarrow,
+                operand,
+                semantics:
+                    ir::ConversionSema::Floating(ir::FloatingSemantics {
+                        rounding: ir::Rounding::Environment,
+                        ..
+                    }),
+                ..
+            } if self.environment_float_suffix(&operand.ty) == Some("f64")
+                && self.environment_float_suffix(&value.ty) == Some("f32") =>
             {
-                let helper = self
-                    .environment_rounded_conversion(&operand.ty, &value.ty)
-                    .ok_or_else(|| {
-                        Failure::from(Construct::Value {
-                            kind: "Convert".into(),
-                            ir: value.ty.to_string(),
-                        })
-                    })?;
-                self.dependencies.rounding = true;
-                Expr::Call {
-                    func: Box::new(Expr::Var(helper.into())),
-                    args: vec![self.lower_value(operand)?],
-                    binding: CallBinding::Generated,
-                }
+                let args = vec![self.lower_value(operand)?];
+                self.call_c_bridge(
+                    "__slate_fenv_f64_to_f32".into(),
+                    vec![rust::Type::Prim(Prim::F64)],
+                    rust::Type::Prim(Prim::F32),
+                    args,
+                    FunctionIdentity::Unknown,
+                )
             }
             ValueKind::Shuffle { left, right, mask } => {
                 self.lower_shuffle(value, left, right.as_deref(), mask)?
@@ -1107,6 +1112,24 @@ impl FunctionLowerer<'_, '_> {
                     ),
                     args: vec![self.lower_value(right)?],
                 }
+            }
+            ValueKind::Arith {
+                op,
+                left,
+                right,
+                semantics:
+                    ir::ArithSema::Floating {
+                        floating:
+                            ir::FloatingSemantics {
+                                rounding: ir::Rounding::Environment,
+                                ..
+                            },
+                        ..
+                    },
+            } if let Some(lowered) =
+                self.lower_environment_arith(*op, left, right, &value.ty)? =>
+            {
+                lowered
             }
             ValueKind::Overflow {
                 op,
@@ -2014,32 +2037,94 @@ impl FunctionLowerer<'_, '_> {
         })))
     }
 
-    fn environment_rounded_conversion(
-        &self,
-        from: &ir::Type,
+    fn environment_float_suffix(&self, ty: &ir::Type) -> Option<&'static str> {
+        match self.tables.resolve_type(ty) {
+            ir::Type::Numeric(ir::NumericType::Float(ir::FloatType::F32)) => Some("f32"),
+            ir::Type::Numeric(ir::NumericType::Float(ir::FloatType::F64)) => Some("f64"),
+            _ => None,
+        }
+    }
+
+    fn lower_environment_arith(
+        &mut self,
+        op: ir::ArithOp,
+        left: &ir::Value,
+        right: &ir::Value,
+        ty: &ir::Type,
+    ) -> Result<Option<Expr>> {
+        let Some(suffix) = self.environment_float_suffix(ty) else {
+            return Ok(None);
+        };
+        let name = match op {
+            ir::ArithOp::Add => "add",
+            ir::ArithOp::Sub => "sub",
+            ir::ArithOp::Mul => "mul",
+            ir::ArithOp::Div => "div",
+            _ => return Ok(None),
+        };
+        let float = self.lower_type(ty)?;
+        let args = vec![self.lower_value(left)?, self.lower_value(right)?];
+        Ok(Some(self.call_c_bridge(
+            format!("__slate_fenv_{name}_{suffix}"),
+            vec![float.clone(), float.clone()],
+            float,
+            args,
+            FunctionIdentity::Unknown,
+        )))
+    }
+
+    fn lower_environment_int_to_float(
+        &mut self,
+        operand: &ir::Value,
         to: &ir::Type,
-    ) -> Option<&'static str> {
+    ) -> Result<Option<Expr>> {
         let ir::Type::Numeric(ir::NumericType::Integer {
             width,
             signed,
             bit_precise: false,
-        }) = *self.tables.resolve_type(from)
+        }) = *self.tables.resolve_type(&operand.ty)
         else {
-            return None;
+            return Ok(None);
         };
-        let ir::Type::Numeric(ir::NumericType::Float(target)) = *self.tables.resolve_type(to)
-        else {
-            return None;
+        let Some(suffix) = self.environment_float_suffix(to) else {
+            return Ok(None);
         };
-        match (width, signed, target) {
-            (64, false, ir::FloatType::F64) => Some("__slate_rounding::u64_to_f64"),
-            (64, false, ir::FloatType::F32) => Some("__slate_rounding::u64_to_f32"),
-            (128, true, ir::FloatType::F64) => Some("__slate_rounding::i128_to_f64"),
-            (128, true, ir::FloatType::F32) => Some("__slate_rounding::i128_to_f32"),
-            (128, false, ir::FloatType::F64) => Some("__slate_rounding::u128_to_f64"),
-            (128, false, ir::FloatType::F32) => Some("__slate_rounding::u128_to_f32"),
-            _ => None,
+        let (source, prim) = if signed || width == 128 {
+            ("i64", Prim::I64)
+        } else {
+            ("u64", Prim::U64)
+        };
+        let shim = format!("__slate_fenv_{source}_to_{suffix}");
+        let float = self.lower_type(to)?;
+        let lowered = self.lower_value(operand)?;
+        if width == 128 {
+            self.declare_c_bridge(
+                shim.clone(),
+                vec![rust::Type::Prim(prim)],
+                float,
+                FunctionIdentity::Unknown,
+            );
+            self.dependencies.rounding = true;
+            let sign = if signed { "i" } else { "u" };
+            return Ok(Some(Expr::Call {
+                func: Box::new(Expr::Var(
+                    format!("__slate_rounding::{sign}128_to_{suffix}").into(),
+                )),
+                args: vec![lowered, Expr::Var(shim.into())],
+                binding: CallBinding::Generated,
+            }));
         }
+        let args = vec![Expr::Cast {
+            expr: Box::new(lowered),
+            ty: rust::Type::Prim(prim),
+        }];
+        Ok(Some(self.call_c_bridge(
+            shim,
+            vec![rust::Type::Prim(prim)],
+            float,
+            args,
+            FunctionIdentity::Unknown,
+        )))
     }
 
     pub(super) fn narrow_integer(&mut self, expr: Expr, ty: &ir::Type) -> Result<Expr> {
