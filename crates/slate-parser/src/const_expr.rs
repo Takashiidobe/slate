@@ -690,6 +690,10 @@ impl CharLiteral {
         execution_units(&self.spelling, self.encoding, target)
     }
 
+    pub fn unrepresentable_characters(&self, target: &TargetInfo) -> Vec<u32> {
+        unrepresentable_characters(&self.spelling, self.encoding, target)
+    }
+
     // signedness of the character type behind the constant, not of its C type:
     // a plain constant is int in C but follows char in preprocessor arithmetic
     pub fn char_type_is_signed(&self, target: &TargetInfo) -> bool {
@@ -758,6 +762,35 @@ impl StringLiteral {
         }
         units
     }
+
+    pub fn unrepresentable_characters<'a>(
+        &'a self,
+        target: &'a TargetInfo,
+    ) -> impl Iterator<Item = (&'a Span<String>, Vec<u32>)> {
+        self.pieces.iter().map(move |piece| {
+            (
+                piece,
+                unrepresentable_characters(&piece.value, self.encoding, target),
+            )
+        })
+    }
+}
+
+fn unrepresentable_characters(spelling: &str, encoding: Encoding, target: &TargetInfo) -> Vec<u32> {
+    if encoding != Encoding::Plain {
+        return Vec::new();
+    }
+    let chars: Vec<char> = spelling.chars().collect();
+    let mut characters = Vec::new();
+    for unit in crate::lexer::Lexer::decode_source_units(&chars, 0, chars.len()) {
+        if let crate::lexer::SourceUnit::Character(value) = unit
+            && !target.execution_charset.represents(value)
+            && !characters.contains(&value)
+        {
+            characters.push(value);
+        }
+    }
+    characters
 }
 
 fn execution_units(spelling: &str, encoding: Encoding, target: &TargetInfo) -> Vec<u32> {

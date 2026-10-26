@@ -30,10 +30,11 @@ pub enum Warning {
     JumpSehFinally,
     ExtraTokens,
     ExtraSemi,
+    UnrepresentableCharacter,
 }
 
 impl Warning {
-    pub const ALL: [Self; 26] = [
+    pub const ALL: [Self; 27] = [
         Self::LongLong,
         Self::C99Compat,
         Self::ImplicitlyUnsignedLiteral,
@@ -60,6 +61,7 @@ impl Warning {
         Self::JumpSehFinally,
         Self::ExtraTokens,
         Self::ExtraSemi,
+        Self::UnrepresentableCharacter,
     ];
 
     pub fn name(self) -> &'static str {
@@ -92,6 +94,7 @@ impl Warning {
             Self::JumpSehFinally => "jump-seh-finally",
             Self::ExtraTokens => "extra-tokens",
             Self::ExtraSemi => "extra-semi",
+            Self::UnrepresentableCharacter => "unrepresentable-character",
         }
     }
 

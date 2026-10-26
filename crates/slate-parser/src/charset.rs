@@ -35,6 +35,13 @@ impl Charset {
         }
     }
 
+    pub fn represents(self, value: u32) -> bool {
+        match self {
+            Self::Utf8 => true,
+            Self::Windows1252 => windows_1252_byte(value).is_some(),
+        }
+    }
+
     pub fn encode(self, value: u32, units: &mut Vec<u32>) {
         match self {
             Self::Utf8 => encode_utf8(value, units),

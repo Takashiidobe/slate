@@ -93,6 +93,9 @@ each stage is in [configuration-threading](configuration-threading.md).
     `0L`; `MicrosoftFlags::warning_level`). The last one wins, except that
     `/Wall` sticks once seen. `/W` takes a joined or separate value; another
     number is level 1 (cl.exe warns D9014), a non-number is rejected.
+    Separately, the last `/W0` or `/w` silences warnings as `-w` does
+    (`ignore_warnings`), even after `/Wall`; a later `/W1`..`/W4` or `/Wall`
+    turns them back on. Other levels do not filter warnings yet.
   - `/Gd`, `/Gr`, `/Gz` and `/Gv` set `TargetAbi::default_convention`
     (cdecl, fastcall, stdcall, vectorcall) for every function type without
     an explicit convention ([calls-abi](ir/calls-abi.md#calling-conventions)).
@@ -111,6 +114,9 @@ each stage is in [configuration-threading](configuration-threading.md).
     `E9 3F`). A UCN in an identifier prints as its character (`?` if the
     code page lacks it). One in a literal stays as written. Bytes that are not
     valid UTF-8 in a UTF-8 file are dropped (`write_preprocessed`, `pp/print.rs`).
+    A plain string or character literal whose character the execution charset
+    lacks becomes `?` and warns `unrepresentable-character`
+    ([diagnostic-severity](diagnostic-severity.md#warnings)).
   - `/fp:precise|strict|fast` pick the model (last wins) and define
     `_M_FP_PRECISE`, `_M_FP_STRICT` or `_M_FP_FAST`; none is defined without
     one. `/fp:contract` adds `_M_FP_CONTRACT`, which `fast` implies, and a

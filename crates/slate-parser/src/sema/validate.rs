@@ -948,6 +948,42 @@ fn push_literal_diagnostics(
             )),
         }
     }
+    let pieces: Vec<(Loc, Vec<u32>)> = match &expr.value {
+        ExprKind::CharLiteral(literal) => {
+            vec![(
+                expr.expansion,
+                literal.unrepresentable_characters(context.target),
+            )]
+        }
+        ExprKind::StringLiteral(literal) => literal
+            .unrepresentable_characters(context.target)
+            .map(|(piece, characters)| (piece.expansion, characters))
+            .collect(),
+        _ => Vec::new(),
+    };
+    for (loc, character) in pieces
+        .into_iter()
+        .flat_map(|(loc, characters)| characters.into_iter().map(move |c| (loc, c)))
+    {
+        errors.extend(Warning::UnrepresentableCharacter.diagnose(
+            unrepresentable_character_message(character, context.target),
+            context.diagnostics(),
+            provenance,
+            loc,
+        ));
+    }
+}
+
+fn unrepresentable_character_message(character: u32, target: &TargetInfo) -> String {
+    let name = match character {
+        0..=0xFFFF => format!("\\u{character:04X}"),
+        _ => format!("\\U{character:08X}"),
+    };
+    format!(
+        "character represented by universal-character-name '{name}' cannot be represented in \
+         the current code page ({})",
+        target.execution_charset.code_page()
+    )
 }
 
 struct LiteralVisitor<'a, 'b> {
