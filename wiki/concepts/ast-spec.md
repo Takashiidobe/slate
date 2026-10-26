@@ -1,6 +1,7 @@
 # AST Spec
 
 <!-- toc -->
+
 - [Pipeline and responsibilities](#pipeline-and-responsibilities)
 - [Parser input and name
   environment](#parser-input-and-name-environment)
@@ -210,24 +211,24 @@ The parser accepts conflicting specifiers where unambiguous; sema rejects.
 
 The base type; never pointers, arrays, or functions (those are declarators).
 
-| Variant                                                            | Source                                                                                                        |
-| ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------- |
-| `Void`, `Bool`                                                     | `void`, `_Bool`/`bool`                                                                                        |
-| `Char { signed: Option<bool> }`                                    | `char` / `signed char` / `unsigned char`; MS `__int8`                                                         |
+| Variant                                                            | Source                                                                                                          |
+| ------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------- |
+| `Void`, `Bool`                                                     | `void`, `_Bool`/`bool`                                                                                          |
+| `Char { signed: Option<bool> }`                                    | `char` / `signed char` / `unsigned char`; MS `__int8`                                                           |
 | `Int { rank: Short \| Int \| Long \| LongLong \| Int128, signed }` | incl. `__int128_t`/`__uint128_t`; MS `__int16`/`__int32`/`__int64`; `signed: None` when `signed` is not written |
-| `BitInt { width: Expr, signed }`                                   | `_BitInt(N)`, width unevaluated                                                                               |
-| `Float(FloatKind)`                                                 | `float`, `double`, `long double`, `_Float16`, `__fp16`, `_Float128`, …                                        |
-| `Float(Decimal32 \| Decimal64 \| Decimal64x \| Decimal128)`        | `_Decimal32/64/64x/128`; literals `DF`/`DD`/`DL`, `D64x`; `d`/`D` spellings of `D32`, `D64`, `D128` also work |
-| `Complex(FloatKind)`, `Imaginary(FloatKind)`                       |                                                                                                               |
-| `FixedPoint { kind, rank, signed, saturated }`                     | `_Fract`/`_Accum`, any order, signed unless `unsigned`                                                        |
-| `Atomic(TypeName)`                                                 | `_Atomic(T)`                                                                                                  |
-| `TypeOf { unqual: bool, operand: TypeOfOperand }`                  | `typeof(expr)` / `typeof(type-name)`                                                                          |
-| `TypedefName(Span<String>)`                                        | known typedef name; `NodeId` keys the reference                                                               |
-| `Tag(TagSpecifier)`                                                | `struct`/`union`/`enum`                                                                                       |
-| `TargetBuiltin(String)`                                            | `__builtin_va_list`                                                                                           |
-| `Inferred`                                                         | `__auto_type`, C23 `auto`                                                                                     |
-| `Vector { element, size }`                                         | GNU vectors                                                                                                   |
-| `Mode { base, mode }`                                              | `__attribute__((mode(M)))`, name as spelled                                                                   |
+| `BitInt { width: Expr, signed }`                                   | `_BitInt(N)`, width unevaluated                                                                                 |
+| `Float(FloatKind)`                                                 | `float`, `double`, `long double`, `_Float16`, `__fp16`, `_Float128`, …                                          |
+| `Float(Decimal32 \| Decimal64 \| Decimal64x \| Decimal128)`        | `_Decimal32/64/64x/128`; literals `DF`/`DD`/`DL`, `D64x`; `d`/`D` spellings of `D32`, `D64`, `D128` also work   |
+| `Complex(FloatKind)`, `Imaginary(FloatKind)`                       |                                                                                                                 |
+| `FixedPoint { kind, rank, signed, saturated }`                     | `_Fract`/`_Accum`, any order, signed unless `unsigned`                                                          |
+| `Atomic(TypeName)`                                                 | `_Atomic(T)`                                                                                                    |
+| `TypeOf { unqual: bool, operand: TypeOfOperand }`                  | `typeof(expr)` / `typeof(type-name)`                                                                            |
+| `TypedefName(Span<String>)`                                        | known typedef name; `NodeId` keys the reference                                                                 |
+| `Tag(TagSpecifier)`                                                | `struct`/`union`/`enum`                                                                                         |
+| `TargetBuiltin(String)`                                            | `__builtin_va_list`                                                                                             |
+| `Inferred`                                                         | `__auto_type`, C23 `auto`                                                                                       |
+| `Vector { element, size }`                                         | GNU vectors                                                                                                     |
+| `Mode { base, mode }`                                              | `__attribute__((mode(M)))`, name as spelled                                                                     |
 
 Decimal floating types are accepted in every mode and target
 (`StandardFeatures::decimal_floating_point`: `Standard` from C23, else

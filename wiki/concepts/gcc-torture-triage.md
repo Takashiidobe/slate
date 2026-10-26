@@ -1,6 +1,7 @@
 # GCC torture triage
 
 <!-- toc -->
+
 - [Buckets](#buckets)
 - [Inspect one case](#inspect-one-case)
 - [Promote and validate](#promote-and-validate)

@@ -1,6 +1,7 @@
 # Control flow and side effects
 
 <!-- toc -->
+
 - [Function bodies](#function-bodies)
 - [Structured control flow](#structured-control-flow)
   - [Structured exception handling](#structured-exception-handling)

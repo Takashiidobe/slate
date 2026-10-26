@@ -1,6 +1,7 @@
 # Builtins
 
 <!-- toc -->
+
 - [Compile-time queries and types](#compile-time-queries-and-types)
 - [Source location and function
   names](#source-location-and-function-names)
@@ -12,7 +13,7 @@
 - [Vector builtin expansion](#vector-builtin-expansion)
 - [Atomic operations](#atomic-operations)
 - [Library and target intrinsic
-  calls](#library-and-target-intrinsic-calls)
+calls](#library-and-target-intrinsic-calls)
 <!-- /toc -->
 
 Supported by slate-parser, grouped by category. Retained calls reach Slate's
@@ -255,10 +256,10 @@ looks a name up in this order:
   standard (`DEF_C99_BUILTIN` and so on) unless the mode is a GNU one. gcc
   records are the `BUILT_IN_*` enum names, so custom semantics keyed on clang
   records do not apply to gcc-only builtins such as `__builtin_add_overflow_p`. A `__builtin_X`
-declaration whose `X` is a registered library builtin also carries
-`c_builtin_library="X"`, the symbol clang calls when it does not open-code the
-builtin; Slate declares the extern with that `link_name`. Slate maps library
-symbols through `lowerer/names.rs` and intrinsic aliases through
-`lowerer/intrinsics.rs` plus `lowerer/intrinsics_table.rs`.
-`__rdtsc` expands in `sema/vector_builtins.rs`. See
-[intrinsic lowering](../intrinsic-lowering.md) for catalog and signature limits.
+  declaration whose `X` is a registered library builtin also carries
+  `c_builtin_library="X"`, the symbol clang calls when it does not open-code the
+  builtin; Slate declares the extern with that `link_name`. Slate maps library
+  symbols through `lowerer/names.rs` and intrinsic aliases through
+  `lowerer/intrinsics.rs` plus `lowerer/intrinsics_table.rs`.
+  `__rdtsc` expands in `sema/vector_builtins.rs`. See
+  [intrinsic lowering](../intrinsic-lowering.md) for catalog and signature limits.

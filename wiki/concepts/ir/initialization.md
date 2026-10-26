@@ -1,6 +1,7 @@
 # Objects, initialization, and VLAs
 
 <!-- toc -->
+
 - [Principles](#principles)
 - [Automatic variable fill](#automatic-variable-fill)
 - [Aggregate initializers](#aggregate-initializers)
@@ -43,11 +44,11 @@ subobjects in a partial initializer and never changes.
 Sema resolves flavor and target, so a consumer needs no flavor rules. Every
 byte of the object is written:
 
-| `AutoInit` | Printed | Bytes |
-| ---------- | ------- | ----- |
-| `Zero` | `[auto_init=zero]` | all zero, padding included |
+| `AutoInit`                             | Printed                                               | Bytes                                                                                                                                                                                                                                                                                                            |
+| -------------------------------------- | ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Zero`                                 | `[auto_init=zero]`                                    | all zero, padding included                                                                                                                                                                                                                                                                                       |
 | `Pattern(Typed { integer, floating })` | `[auto_init=pattern(typed, integer=.., floating=..)]` | `integer` everywhere, padding and bit-fields included; `floating` over each floating scalar's value bytes; x87 tail bytes zero. A union fills only its storage member: highest alignment, then largest size, then first declared, a bit-field counting as its width rounded up to a power-of-two number of bytes |
-| `Pattern(ValueBits(byte))` | `[auto_init=pattern(value_bits=..)]` | each value bit takes `byte`'s bit at the same position; every other bit is zero: padding, x87 tails, `_BitInt` bits above its width, and bits outside a bit-field. A `_Bool` member has 8 value bits. A union's value bits are those of any member, and a bit-field directly in a union covers whole bytes |
+| `Pattern(ValueBits(byte))`             | `[auto_init=pattern(value_bits=..)]`                  | each value bit takes `byte`'s bit at the same position; every other bit is zero: padding, x87 tails, `_BitInt` bits above its width, and bits outside a bit-field. A `_Bool` member has 8 value bits. A union's value bits are those of any member, and a bit-field directly in a union covers whole bytes       |
 
 clang is `Typed { integer: 0xAA, floating: 0xFF }`, with `integer: 0xFF` when
 pointers are narrower than 64 bits. gcc is `ValueBits(0xFE)`, except that a

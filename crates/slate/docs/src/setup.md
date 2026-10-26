@@ -17,14 +17,14 @@ Release binaries live under `target/test-cache/release/` because
 
 ## Configuration
 
-| Variable | Purpose |
-| --- | --- |
-| `SLATE_SYSROOTS` | Header installation root; defaults to `~/.local/share/slate/sysroots` |
-| `SLATE_TARGET` | Default target; otherwise the Cargo build target |
+| Variable           | Purpose                                                                               |
+| ------------------ | ------------------------------------------------------------------------------------- |
+| `SLATE_SYSROOTS`   | Header installation root; defaults to `~/.local/share/slate/sysroots`                 |
+| `SLATE_TARGET`     | Default target; otherwise the Cargo build target                                      |
 | `SLATE_CLANG_ARGS` | Inherited compiler arguments consumed by slate-parser; explicit arguments follow them |
-| `SLATE_JOBS` | Project translation workers |
-| `SLATE_CARGO` | Cargo used to compile generated code |
-| `SLATE_RUSTFMT` | Fallback formatter when prettyplease cannot parse output |
+| `SLATE_JOBS`       | Project translation workers                                                           |
+| `SLATE_CARGO`      | Cargo used to compile generated code                                                  |
+| `SLATE_RUSTFMT`    | Fallback formatter when prettyplease cannot parse output                              |
 
 ## Tests
 

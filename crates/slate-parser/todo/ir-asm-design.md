@@ -30,7 +30,7 @@ operand {
 
 `direction` folds the `=`/`+`/`&` modifiers, and the mapping is inverted from
 the naive reading — GCC's plain `=` lets the allocator reuse an input's
-register, which is Rust's *late* form:
+register, which is Rust's _late_ form:
 
 ```text
 "=r"  -> lateout        "=&r" -> out
@@ -83,7 +83,7 @@ are computed here from the volatile qualifier and the clobber list.
 
 ## naked
 
-`naked_asm!` selection belongs on the *function*, not the asm statement: the
+`naked_asm!` selection belongs on the _function_, not the asm statement: the
 condition is that the function is `__attribute__((naked))` and its body is a
 single basic asm. Record it as an IR function kind.
 

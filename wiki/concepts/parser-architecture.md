@@ -1,6 +1,7 @@
 # Architecture and principles
 
 <!-- toc -->
+
 - [Pipeline](#pipeline)
 - [Checker first, lowering trusts](#checker-first-lowering-trusts)
 - [What goes in the IR](#what-goes-in-the-ir)

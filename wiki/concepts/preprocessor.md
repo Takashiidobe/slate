@@ -1,6 +1,7 @@
 # Preprocessor
 
 <!-- toc -->
+
 - [Pipeline](#pipeline)
 - [Predefines](#predefines)
 - [Includes](#includes)
@@ -24,7 +25,7 @@ stream of `PPNode`s (`Code`, `Comment`, `Pragma`) that the parser reads as
 | `hide_set.rs`   | interned hide sets with memoized union and intersection                                                                                                              |
 | `define.rs`     | `#define` / `#undef` parsing                                                                                                                                         |
 | `include.rs`    | include resolution, `#pragma once`, depth limit, outermost system header                                                                                             |
-| `math.rs`       | fast-math predefines and `#pragma GCC optimize` / `push_options` / `pop_options` / `reset_options` |
+| `math.rs`       | fast-math predefines and `#pragma GCC optimize` / `push_options` / `pop_options` / `reset_options`                                                                   |
 | `embed.rs`      | `#embed` and `__has_embed`, sharing one embed-parameter parser                                                                                                       |
 | `has_checks.rs` | hand-maintained `__has_builtin` / `__has_feature` / … answers, seeded from clang tablegen and extended per flavor ([attributes](attributes.md#preprocessor-queries)) |
 

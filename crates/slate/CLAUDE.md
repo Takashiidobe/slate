@@ -66,11 +66,11 @@ with `cl.exe` under wine and the translated host for `x86_64-pc-windows-msvc`
 
 ## Toolchain
 
-| Var              | Default                              | Role                                                          |
-| ---------------- | ------------------------------------ | ------------------------------------------------------------- |
-| `SLATE_SYSROOTS` | `~/.local/share/slate/sysroots`      | slate-parser reads target headers from `<dir>/<triple>`; when set, host targets skip native `clang` headers. Test harnesses always set it |
-| `SLATE_CARGO`    | `cargo`                              | compiles the generated Rust                                   |
-| `SLATE_RUSTFMT`  | `rustfmt`                            | fallback formatter when syn rejects generated Rust |
+| Var              | Default                         | Role                                                                                                                                      |
+| ---------------- | ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `SLATE_SYSROOTS` | `~/.local/share/slate/sysroots` | slate-parser reads target headers from `<dir>/<triple>`; when set, host targets skip native `clang` headers. Test harnesses always set it |
+| `SLATE_CARGO`    | `cargo`                         | compiles the generated Rust                                                                                                               |
+| `SLATE_RUSTFMT`  | `rustfmt`                       | fallback formatter when syn rejects generated Rust                                                                                        |
 
 The Rust toolchain and test targets are pinned in the root
 `rust-toolchain.toml` ([Toolchain](../../AGENTS.md#toolchain)).
@@ -132,14 +132,14 @@ msvc-wine the Rust must just exit 0 with empty stdout. There are no
 `.expected` files.
 Profiles in `.config/nextest.toml` set the targets with setup scripts:
 
-| Profile         | Targets                          | Runs                    |
-| --------------- | -------------------------------- | ----------------------- |
-| `slate`         | x86_64                           | every suite             |
-| `slate-i686`    | i686, natively with `-m32`       | `generated_differential`, unsupported ratchet |
-| `slate-aarch64` | aarch64, under `qemu-aarch64-static` | `generated_differential`, unsupported ratchet |
-| `slate-targets` | all three                        | `generated_differential`, unsupported ratchet |
+| Profile         | Targets                                                      | Runs                                                                                |
+| --------------- | ------------------------------------------------------------ | ----------------------------------------------------------------------------------- |
+| `slate`         | x86_64                                                       | every suite                                                                         |
+| `slate-i686`    | i686, natively with `-m32`                                   | `generated_differential`, unsupported ratchet                                       |
+| `slate-aarch64` | aarch64, under `qemu-aarch64-static`                         | `generated_differential`, unsupported ratchet                                       |
+| `slate-targets` | all three                                                    | `generated_differential`, unsupported ratchet                                       |
 | `clang`, `gcc`  | all three, that flavor's fixtures only (`SLATE_DIFF_FLAVOR`) | `generated_differential`, unsupported ratchet, slate-parser fixtures of that flavor |
-| `msvc`          | x86_64 and i686, plus aarch64 build-only; msvc fixtures only | same, against cl.exe |
+| `msvc`          | x86_64 and i686, plus aarch64 build-only; msvc fixtures only | same, against cl.exe                                                                |
 
 `CrossTarget::for_triple` in `tests/support/mod.rs` holds each target's C
 oracle flags, Rust linker and emulator.

@@ -2,13 +2,13 @@
 
 ![Slate architecture](diagrams/architecture.svg)
 
-| Stage | Owner | Output |
-| --- | --- | --- |
-| Preprocessing, parsing and semantic analysis | `crates/slate-parser` | Typed `ir::Module` and source locations |
-| Rust lowering | `crates/slate/src/frontend/lowerer` | `rust_ast::Program` |
-| Analyses and rewrites | `crates/slate/src/backend` | Transformed Rust AST |
-| Emission and formatting | Backend codegen and prettyplease | Rust source |
-| Project generation | Slate CLI | Cargo crate and optional C runtime bridges |
+| Stage                                        | Owner                               | Output                                     |
+| -------------------------------------------- | ----------------------------------- | ------------------------------------------ |
+| Preprocessing, parsing and semantic analysis | `crates/slate-parser`               | Typed `ir::Module` and source locations    |
+| Rust lowering                                | `crates/slate/src/frontend/lowerer` | `rust_ast::Program`                        |
+| Analyses and rewrites                        | `crates/slate/src/backend`          | Transformed Rust AST                       |
+| Emission and formatting                      | Backend codegen and prettyplease    | Rust source                                |
+| Project generation                           | Slate CLI                           | Cargo crate and optional C runtime bridges |
 
 C semantics, conversions and target layout belong to slate-parser. Slate
 translates that typed IR directly. Unsupported constructs produce barriers;

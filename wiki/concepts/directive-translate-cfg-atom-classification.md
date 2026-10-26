@@ -1,6 +1,7 @@
 # Directive-translate cfg atom classification
 
 <!-- toc -->
+
 - [Evidence (zstd)](#evidence-zstd)
 - [Three buckets](#three-buckets)
 - [Algorithm](#algorithm)

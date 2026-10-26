@@ -1,6 +1,7 @@
 # Attribute pipeline
 
 <!-- toc -->
+
 - [Stages](#stages)
 - [Parsing](#parsing)
   - [C23 placement](#c23-placement)
@@ -169,16 +170,16 @@ clang 22.1.8 subject behavior; `ok` accepted, `ign`
 | `packed`, `ms_struct`, `gcc_struct`, `transparent_union` | `ign`                  | `ign`    | `ign`   | `ign`     |
 | `malloc`, `cold`, `ifunc`, `alloc_size`, …               | `ign`                  | ok       | `ign`   | `ign`     |
 
-| Written on                                                   | field           | struct/union definition      |
-| ------------------------------------------------------------ | --------------- | ---------------------------- |
-| `packed`, `aligned`, `vector_size`, `may_alias`              | ok              | ok                           |
-| `ms_struct`, `gcc_struct`                                    | `ign`           | ok (layout)                  |
-| `transparent_union`                                          | `ign`           | ok on union, `ign` on struct |
-| `mode`                                                       | ok              | `err`                        |
-| `section`, `alias`, `tls_model`                              | `err`           | `err`                        |
-| `used`, `retain`, `weak`, `common`, `nocommon`, `cleanup`, `uninitialized` | `ign` | `ign`                  |
-| `malloc`, `cold`, `noinline`, …                              | `ign`           | `ign`                        |
-| `noreturn`, `format`, `nonnull`, `alloc_size`, `alloc_align` | by type (below) | `ign`                        |
+| Written on                                                                 | field           | struct/union definition      |
+| -------------------------------------------------------------------------- | --------------- | ---------------------------- |
+| `packed`, `aligned`, `vector_size`, `may_alias`                            | ok              | ok                           |
+| `ms_struct`, `gcc_struct`                                                  | `ign`           | ok (layout)                  |
+| `transparent_union`                                                        | `ign`           | ok on union, `ign` on struct |
+| `mode`                                                                     | ok              | `err`                        |
+| `section`, `alias`, `tls_model`                                            | `err`           | `err`                        |
+| `used`, `retain`, `weak`, `common`, `nocommon`, `cleanup`, `uninitialized` | `ign`           | `ign`                        |
+| `malloc`, `cold`, `noinline`, …                                            | `ign`           | `ign`                        |
+| `noreturn`, `format`, `nonnull`, `alloc_size`, `alloc_align`               | by type (below) | `ign`                        |
 
 - `noreturn`, `format`, `nonnull`, `alloc_size`, and `alloc_align` depend on
   the declared type, not the `Subject` (`attributes.rs::function_type_attribute`).

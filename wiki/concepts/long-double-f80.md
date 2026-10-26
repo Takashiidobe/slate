@@ -1,6 +1,7 @@
 # long double (f80) representation
 
 <!-- toc -->
+
 - [Slate frontend](#slate-frontend)
 - [Why not just `f64`](#why-not-just-f64)
 - [ABI varies by target —

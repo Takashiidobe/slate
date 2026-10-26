@@ -1,6 +1,7 @@
 # Declared-entity model
 
 <!-- toc -->
+
 - [Entity](#entity)
 - [Merging](#merging)
 - [Prototype scope](#prototype-scope)

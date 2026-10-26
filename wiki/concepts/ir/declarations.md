@@ -1,6 +1,7 @@
 # Declarations, linkage, and attributes
 
 <!-- toc -->
+
 - [Globals, statics, and linkage](#globals-statics-and-linkage)
 - [Redeclaration conflicts](#redeclaration-conflicts)
 - [Overloadable functions](#overloadable-functions)
@@ -156,7 +157,7 @@ linkage and merged across redeclarations (first value wins, flags OR):
 - `ifunc("r")` names the resolver's assembler symbol; the declaration is
   printed as a bodiless `fn` with `[ifunc="r"]`. Slate emits a
   `global_asm!` block (`.type SYM, @gnu_indirect_function` / `.set SYM,
-  {sym resolver}`) on ELF targets and keeps the extern declaration; a static
+{sym resolver}`) on ELF targets and keeps the extern declaration; a static
   ifunc is exported hidden as `__slate_ifunc_<name>`. Not checked (both oracles reject): an undefined resolver,
   a body on the same function, `weak` (gcc).
 - `selectany` (clang: `weak_odr` + COMDAT) needs external linkage.

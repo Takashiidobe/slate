@@ -1,6 +1,7 @@
 # Rust rewrite engine
 
 <!-- toc -->
+
 - [Ownership](#ownership)
 - [Scheduling and facts](#scheduling-and-facts)
 - [Control-flow rewrites](#control-flow-rewrites)
@@ -66,7 +67,7 @@ conversions and layout remain slate-parser responsibilities.
   group named `T`. Types named in an `impl` header, along with `LongDouble` and
   `VaList`, stay unit-local. Each group that spans more than one unit moves to
   `src/__slate_types.rs`, and units import it as `use crate::__slate_types::S as
-  local;`, so their bodies are unchanged. A liftable export whose every
+local;`, so their bodies are unchanged. A liftable export whose every
   cross-unit decl matches its definition type for type under those groups is
   bound by path: it loses `no_mangle` and `extern "C-unwind"`, callers'
   decls become `use crate::__slate_unit_<stem>::f;`, and string_params and

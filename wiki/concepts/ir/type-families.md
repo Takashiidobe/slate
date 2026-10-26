@@ -1,6 +1,7 @@
 # Complex, imaginary, vector, and fixed-point
 
 <!-- toc -->
+
 - [Complex](#complex)
 - [Imaginary (C23 Annex G)](#imaginary-c23-annex-g)
 - [Vector](#vector)

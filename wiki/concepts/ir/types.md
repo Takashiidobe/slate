@@ -1,6 +1,7 @@
 # IR types, enums, and record layout
 
 <!-- toc -->
+
 - [Shown type vs C type](#shown-type-vs-c-type)
 - [Scalar formats](#scalar-formats)
   - [Integer type limits](#integer-type-limits)
@@ -13,7 +14,7 @@
   - [`#pragma pack` and `ms_struct`](#pragma-pack-and-ms_struct)
   - [Microsoft record layout](#microsoft-record-layout)
 - [Deduced and derived declarator
-  types](#deduced-and-derived-declarator-types)
+types](#deduced-and-derived-declarator-types)
 <!-- /toc -->
 
 Part of the [IR spec](../ir-spec.md). Complex, imaginary, vector, and
@@ -214,9 +215,9 @@ The shown type is concrete and target-resolved; the C type is metadata
 - A union bit-field occupies its width rounded up to bytes, not its
   storage unit; record alignment pads the size from there
   (`union { int : 1; }` is size 1 on x86, `#pragma pack(1)
-  union { int x : 20; }` is size 3).
+union { int x : 20; }` is size 3).
 - A bit-field starts at the current bit unless `offset % align + width >
-  size` (bits of its declared type's natural alignment and size), in which
+size` (bits of its declared type's natural alignment and size), in which
   case it moves to the next `align` boundary. This is the clang and gcc
   rule. It differs from "never cross a `size` boundary" when size exceeds
   alignment: `long long b : 40` at bit 40 stays put on i686, and

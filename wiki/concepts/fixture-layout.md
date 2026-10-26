@@ -1,6 +1,7 @@
 # Fixture layout
 
 <!-- toc -->
+
 - [Path](#path)
 - [Directives to write before
   generating](#directives-to-write-before-generating)
@@ -49,20 +50,20 @@ without the marker it needs is left unchanged with no message, so a missing
 directive looks like "nothing happened". Prefix names are free-form (`DEFAULT`, `WARN`, `IR`) and
 become the `// <PREFIX>:` check lines.
 
-| Directive                                   | Write it when                                                                          | Example                                      |
-| ------------------------------------------- | -------------------------------------------------------------------------------------- | -------------------------------------------- |
-| `DEFINES <prefix> [-DX ...]`                | a run is wanted under a named configuration (almost every IR fixture has `DEFAULT`)    | `// SLATE-FILECHECK-DEFINES DEFAULT`         |
-| `ARGS <flags>`                              | the fixture needs compiler flags for all prefixes (`--dump-ir`, `--compact-ir`, `-std=`) | `// SLATE-FILECHECK-ARGS --dump-ir`          |
-| `PREFIX-ARGS <prefix> <flags>`              | only one prefix needs the flags (`--parse-only`)                                       | `// SLATE-FILECHECK-PREFIX-ARGS AST --parse-only` |
-| `STD <prefix> <std>`                        | the prefix pins a language standard                                                    | `// SLATE-FILECHECK-STD DEFAULT gnu23`       |
-| `AST`                                       | the output is the AST instead of IR (bare line, no prefix)                             | `// SLATE-FILECHECK-AST`                     |
-| `ERROR <prefix>`                            | the run must fail in preprocessing, parsing or sema; the block holds the diagnostic    | `// SLATE-FILECHECK-ERROR PARSE`             |
-| `IR-ERROR <prefix>`                         | parsing succeeds and IR lowering must fail                                             | `// SLATE-FILECHECK-IR-ERROR DEFAULT`        |
-| `WARNING <prefix>`                          | the run must succeed and the block holds warnings                                      | `// SLATE-FILECHECK-WARNING WARN`            |
-| `PP <prefix>`                               | the block holds `slate-parser pp` output; bytes that are not UTF-8 print as `<0xE9>`   | `// SLATE-FILECHECK-PP DEFAULT`              |
-| `ISYSTEM <dirs>`                            | headers come from `inputs/` or a sysroot                                               | `// SLATE-FILECHECK-ISYSTEM inputs/sysroot`  |
-| `SHOW-IDS <prefix>`                         | the fixture checks raw ids, so id loosening must be off                                | `// SLATE-FILECHECK-SHOW-IDS DEFAULT`        |
-| `EXAMPLE <name>`                            | the output comes from a `cargo run --example <name>` instead of the CLI                | `// SLATE-FILECHECK-EXAMPLE <name>`          |
+| Directive                      | Write it when                                                                            | Example                                           |
+| ------------------------------ | ---------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| `DEFINES <prefix> [-DX ...]`   | a run is wanted under a named configuration (almost every IR fixture has `DEFAULT`)      | `// SLATE-FILECHECK-DEFINES DEFAULT`              |
+| `ARGS <flags>`                 | the fixture needs compiler flags for all prefixes (`--dump-ir`, `--compact-ir`, `-std=`) | `// SLATE-FILECHECK-ARGS --dump-ir`               |
+| `PREFIX-ARGS <prefix> <flags>` | only one prefix needs the flags (`--parse-only`)                                         | `// SLATE-FILECHECK-PREFIX-ARGS AST --parse-only` |
+| `STD <prefix> <std>`           | the prefix pins a language standard                                                      | `// SLATE-FILECHECK-STD DEFAULT gnu23`            |
+| `AST`                          | the output is the AST instead of IR (bare line, no prefix)                               | `// SLATE-FILECHECK-AST`                          |
+| `ERROR <prefix>`               | the run must fail in preprocessing, parsing or sema; the block holds the diagnostic      | `// SLATE-FILECHECK-ERROR PARSE`                  |
+| `IR-ERROR <prefix>`            | parsing succeeds and IR lowering must fail                                               | `// SLATE-FILECHECK-IR-ERROR DEFAULT`             |
+| `WARNING <prefix>`             | the run must succeed and the block holds warnings                                        | `// SLATE-FILECHECK-WARNING WARN`                 |
+| `PP <prefix>`                  | the block holds `slate-parser pp` output; bytes that are not UTF-8 print as `<0xE9>`     | `// SLATE-FILECHECK-PP DEFAULT`                   |
+| `ISYSTEM <dirs>`               | headers come from `inputs/` or a sysroot                                                 | `// SLATE-FILECHECK-ISYSTEM inputs/sysroot`       |
+| `SHOW-IDS <prefix>`            | the fixture checks raw ids, so id loosening must be off                                  | `// SLATE-FILECHECK-SHOW-IDS DEFAULT`             |
+| `EXAMPLE <name>`               | the output comes from a `cargo run --example <name>` instead of the CLI                  | `// SLATE-FILECHECK-EXAMPLE <name>`               |
 
 Common starting points:
 

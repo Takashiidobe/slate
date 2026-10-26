@@ -1,6 +1,7 @@
 # MSVC inline asm
 
 <!-- toc -->
+
 - [Oracle behavior](#oracle-behavior)
   - [Operands](#operands)
   - [Statement boundaries](#statement-boundaries)

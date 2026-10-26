@@ -1,6 +1,7 @@
 # Calls, ABI signatures, and calling conventions
 
 <!-- toc -->
+
 - [Calls](#calls)
 - [ABI signatures](#abi-signatures)
   - [`native_c` means trust rustc](#native_c-means-trust-rustc)

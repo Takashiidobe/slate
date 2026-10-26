@@ -1,6 +1,7 @@
 # OpenMP lowering
 
 <!-- toc -->
+
 - [Runtimes](#runtimes)
 - [Parallel regions](#parallel-regions)
 - [Data sharing](#data-sharing)
@@ -15,10 +16,10 @@ data-sharing resolution, checker rules) is in
 
 ## Runtimes
 
-| Flavor      | Runtime                         | Entry point     |
-| ----------- | ------------------------------- | --------------- |
-| gcc, clang  | libgomp (`#[link(name = "gomp")]`) | `GOMP_parallel` |
-| msvc        | vcomp140 (`slate-3amj.24.12`)   | `_vcomp_fork`   |
+| Flavor     | Runtime                            | Entry point     |
+| ---------- | ---------------------------------- | --------------- |
+| gcc, clang | libgomp (`#[link(name = "gomp")]`) | `GOMP_parallel` |
+| msvc       | vcomp140 (`slate-3amj.24.12`)      | `_vcomp_fork`   |
 
 Only the runtime entry points must match the C compiler. The data block
 passed to the runtime is private to slate and need not match gcc's

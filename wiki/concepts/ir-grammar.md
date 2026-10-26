@@ -1,6 +1,7 @@
 # IR Grammar
 
 <!-- toc -->
+
 - [Notation](#notation)
 - [Lexical](#lexical)
 - [Module](#module)

@@ -14,8 +14,8 @@ command from the workspace root.** `.cargo/config.toml` sends all builds to
 
 ## Toolchain
 
-We always use nightly, pinned in `rust-toolchain.toml` and bumped from time
-to time. The rustup targets the tests need are listed there too.
+Always rust nightly, pinned in `rust-toolchain.toml` and bumped from time to
+time.
 
 ## Routing work
 
@@ -45,16 +45,15 @@ cargo nextest r --release --profile parser   # crates/slate-parser: FileCheck fi
 Run the profile for each crate you changed. The crate instructions describe
 single-fixture runs.
 
-While working on one flavor's behavior (compiler options, for example the
-cl.exe options in the `slate-3amj.5` epic), iterate with that flavor's
-profile. Each runs both crates' fixtures for one flavor: slate-parser's
-`<flavor>/`, `error/<flavor>/` and `suites/*/<flavor>/`, and slate's
-`generated_differential` plus unsupported ratchet over that flavor's
-fixtures (the root and arch directories for clang, `gcc/` or `msvc/`).
-`clang` and `gcc` run x86_64, i686 and aarch64; `msvc` runs x86_64 and
-i686 against cl.exe, and builds aarch64 without running it (wine cannot run
-ARM64 binaries here). They skip slate's corpus suites, so run the full
-`slate` and `parser` profiles before committing:
+While working on one flavor's behavior (compiler options, for example the cl.exe
+options in the `slate-3amj.5` epic), iterate with that flavor's profile. Each
+runs both crates' fixtures for one flavor: slate-parser's `<flavor>/`,
+`error/<flavor>/` and `suites/*/<flavor>/`, and slate's `generated_differential`
+plus unsupported ratchet over that flavor's fixtures (the root and arch
+directories for clang, `gcc/` or `msvc/`). `clang` and `gcc` run x86_64, i686
+and aarch64; `msvc` runs x86_64 and i686 against cl.exe, and builds aarch64
+without running it (wine cannot run ARM64 binaries here). They skip slate's
+corpus suites, so run the full `slate` and `parser` profiles before committing:
 
 ```bash
 cargo nextest r --release --profile clang
@@ -79,22 +78,21 @@ bd close <id>         # Complete work
 - Run `bd prime` for detailed command reference and session close protocol
 - Use `bd remember` for persistent knowledge — do NOT use MEMORY.md files
 - Every new bead needs a parent (`bd create --parent <id>`): one of the
-  top-level epics below, or a sub-epic under one. Never create a top-level
-  bead other than a new top-level epic the user asked for.
+  top-level epics below, or a sub-epic under one. Never make a top-level bead.
 
-| Epic         | Area                                                    |
-| ------------ | ------------------------------------------------------- |
-| `slate-3amj` | Compiler flags that change semantics (all flavors)      |
-| `slate-e36k` | Clang flavor compatibility                              |
-| `slate-78pa` | GCC flavor compatibility                                |
-| `slate-j3by` | MSVC flavor and Windows ABI compatibility               |
-| `slate-5exy` | Standard C, preprocessor, and sema                      |
-| `slate-yar4` | Rust lowering, ABI, and runtime correctness             |
-| `slate-gbgp` | Rewrite correctness and Rust idioms                     |
-| `slate-f2zu` | Real-world corpus: translate, build and run C projects  |
-| `slate-3of2` | gcc-torture and gcc.dg suites                           |
-| `slate-xw0x` | Test suites and the differential harness                |
-| `slate-5q63` | Tooling, performance, and project translation           |
+| Epic         | Area                                                   |
+| ------------ | ------------------------------------------------------ |
+| `slate-3amj` | Compiler flags that change semantics (all flavors)     |
+| `slate-e36k` | Clang flavor compatibility                             |
+| `slate-78pa` | GCC flavor compatibility                               |
+| `slate-j3by` | MSVC flavor and Windows ABI compatibility              |
+| `slate-5exy` | Standard C, preprocessor, and sema                     |
+| `slate-yar4` | Rust lowering, ABI, and runtime correctness            |
+| `slate-gbgp` | Rewrite correctness and Rust idioms                    |
+| `slate-f2zu` | Real-world corpus: translate, build and run C projects |
+| `slate-3of2` | gcc-torture and gcc.dg suites                          |
+| `slate-xw0x` | Test suites and the differential harness               |
+| `slate-5q63` | Tooling, performance, and project translation          |
 
 ## Navigating code
 
@@ -106,23 +104,6 @@ Search in this order before reading or re-deriving anything:
    have been removed, which makes the bead stale.
 
 Then pick the tool by what you are searching:
-
-- Rust code you have not edited this session: the SCIP index,
-  `python3 tools/scip/scip.py <command>`. It answers instantly, with no server
-  to wait for:
-  - `def <name>`: definition site and signature
-  - `refs <name>`: every reference, with its enclosing function
-  - `callers <name>`: the functions that reference it
-  - `hover <name>`: signature and docs
-  - `outline <file>`: a file's definitions, in order
-  - `search <substring>`: defined symbols by name
-  - `status`: the commit it was built at, and the `.rs` files changed since
-
-  Qualify names to narrow them (`Preprocessor::reject_poisoned`,
-  `PPErrorKind::PoisonedIdentifier`) or pass `--crate slate-parser`. Rebuild it
-  with `python3 tools/scip/scip.py build` (about 90 s) when `status` says it is
-  stale. `python3 tools/scip/site.py` writes a browsable, cross-crate view of it
-  to `.scip/site/index.html`.
 
 - Rust code you have edited this session, or a file `status` lists as changed:
   the LSP (rust-analyzer), since the index's lines there are stale. `hover`,

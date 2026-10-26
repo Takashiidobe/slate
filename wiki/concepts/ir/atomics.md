@@ -1,6 +1,7 @@
 # Atomics
 
 <!-- toc -->
+
 - [`_Atomic` layout per flavor](#_atomic-layout-per-flavor)
   - [Argument passing](#argument-passing)
 - [Atomic updates](#atomic-updates)
@@ -8,7 +9,7 @@
   - [Orderings and arguments](#orderings-and-arguments)
   - [Arithmetic](#arithmetic)
   - [Lock-free queries](#lock-free-queries)
-<!-- /toc -->
+  <!-- /toc -->
 
 Part of the [IR spec](../ir-spec.md). How atomic accesses print is in
 [qualified access](places-pointers.md#qualified-access).

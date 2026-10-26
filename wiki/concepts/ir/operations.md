@@ -1,6 +1,7 @@
 # Operations, conversions, and floating semantics
 
 <!-- toc -->
+
 - [Operation policies](#operation-policies)
   - [Floating settings](#floating-settings)
   - [Floating pragmas](#floating-pragmas)
