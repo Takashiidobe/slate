@@ -498,6 +498,8 @@ pub struct LayoutOptions {
     pub default_max_field_alignment: Option<u64>,
     pub pack_records: bool,
     pub ms_bitfields: bool,
+    pub align_double: bool,
+    pub align_long_double: bool,
     pub unsigned_bitfields: bool,
 }
 
@@ -590,6 +592,9 @@ impl CompilerOptions {
     pub fn effective_target(&self, mut target: TargetInfo) -> TargetInfo {
         if let Some(format) = self.layout.long_double {
             target = target.with_long_double(format);
+        }
+        if self.layout.align_double {
+            target = target.with_align_double(self.layout.align_long_double);
         }
         if let Some(alignment) = self.layout.preferred_stack_alignment {
             target = target.with_preferred_stack_alignment(alignment);

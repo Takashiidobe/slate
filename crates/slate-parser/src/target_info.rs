@@ -733,6 +733,29 @@ impl TargetInfo {
         self
     }
 
+    pub fn with_align_double(mut self, long_double: bool) -> Self {
+        let mut keys = vec![
+            ScalarKey::Integer {
+                width: 64,
+                signed: false,
+            },
+            ScalarKey::Integer {
+                width: 64,
+                signed: true,
+            },
+            ScalarKey::Float(FloatType::F64),
+        ];
+        if long_double {
+            keys.push(ScalarKey::Float(self.long_double.float_type()));
+        }
+        for key in keys {
+            if let Some(layout) = self.scalars.get(key) {
+                self.scalars.set(key, layout.size_bytes, 8);
+            }
+        }
+        self
+    }
+
     pub fn with_preferred_stack_alignment(mut self, alignment: u32) -> Self {
         self.abi.preferred_stack_alignment = alignment;
         self

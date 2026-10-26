@@ -321,6 +321,7 @@ struct ParsedCompilerArgs {
     pack_struct: Option<bool>,
     pack_struct_alignment: Option<u32>,
     ms_bitfields: Option<bool>,
+    align_double: Option<bool>,
     inline: Option<bool>,
     inline_functions: Option<bool>,
     exceptions: Option<bool>,
@@ -576,6 +577,7 @@ enum Opt {
     PackStruct,
     PackStructAlignment,
     MsBitfields,
+    AlignDouble,
     FpContract,
     Inline,
     InlineFunctions,
@@ -728,6 +730,7 @@ impl std::fmt::Display for Opt {
             Self::PackStruct => "fpack-struct",
             Self::PackStructAlignment => "fpack-struct=",
             Self::MsBitfields => "mms-bitfields",
+            Self::AlignDouble => "malign-double",
             Self::FpContract => "ffp-contract=",
             Self::Inline => "finline",
             Self::InlineFunctions => "finline-functions",
@@ -913,6 +916,7 @@ impl Opt {
             | Self::PackStruct
             | Self::PackStructAlignment
             | Self::MsBitfields
+            | Self::AlignDouble
             | Self::FpContract
             | Self::Inline
             | Self::InlineFunctions
@@ -1005,7 +1009,7 @@ impl Opt {
         match self {
             Self::Freestanding | Self::Hosted => flavor.is_gcc(),
             Self::FpRetIn387 => !flavor.is_msvc(),
-            Self::UnsignedBitfields | Self::SignedBitfields => flavor.is_gcc(),
+            Self::UnsignedBitfields | Self::SignedBitfields | Self::AlignDouble => flavor.is_gcc(),
             Self::InlineHintFunctions => false,
             Self::CodegenOnly(spelling) => codegen_only_flag_named(spelling)
                 .is_some_and(|flag| flag.negation_flavors.contains(&flavor)),
@@ -1050,6 +1054,7 @@ impl Opt {
             Self::ShortEnums => "-fshort-enums",
             Self::PackStruct => "-fpack-struct",
             Self::MsBitfields => "-mms-bitfields",
+            Self::AlignDouble => "-malign-double",
             Self::Inline => "-finline",
             Self::InlineFunctions => "-finline-functions",
             Self::InlineHintFunctions => "-finline-hint-functions",
@@ -1462,7 +1467,7 @@ fn ignored_option(argument: &str) -> Option<IgnoredOption> {
         .then_some(IgnoredOption::Alone)
 }
 
-const SWITCH_OPTS: [Opt; 56] = [
+const SWITCH_OPTS: [Opt; 57] = [
     Opt::Asm,
     Opt::GnuInlineAsm,
     Opt::OpenMp,
@@ -1492,6 +1497,7 @@ const SWITCH_OPTS: [Opt; 56] = [
     Opt::ShortEnums,
     Opt::PackStruct,
     Opt::MsBitfields,
+    Opt::AlignDouble,
     Opt::Inline,
     Opt::InlineFunctions,
     Opt::InlineHintFunctions,
@@ -1585,6 +1591,8 @@ impl CompilerArgParser {
             default_max_field_alignment: raw.default_max_field_alignment(),
             pack_records: flavor.is_gcc() && raw.pack_struct == Some(true),
             ms_bitfields: raw.ms_bitfields.unwrap_or(false),
+            align_double: raw.align_double == Some(true),
+            align_long_double: flavor.is_clang() && raw.align_double == Some(true),
             unsigned_bitfields: flavor.is_gcc() && raw.unsigned_bitfields == Some(true),
         };
         let mut math = MathOptions::resolve(flavor, &raw.math);
@@ -1826,6 +1834,7 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                 Opt::ShortEnums => parsed.short_enums = Some(value),
                 Opt::PackStruct => parsed.pack_struct = Some(value),
                 Opt::MsBitfields => parsed.ms_bitfields = Some(value),
+                Opt::AlignDouble => parsed.align_double = Some(value),
                 Opt::Inline => parsed.inline = Some(value),
                 Opt::InlineFunctions | Opt::InlineHintFunctions => {
                     parsed.inline_functions = Some(value)
@@ -3124,6 +3133,16 @@ fn gcc_rules<'a>(target: &'a TargetInfo) -> Rule<'a, ParsedCompilerArgs> {
             if args.ms_bitfields.is_some() && !target.family.is_x86() {
                 Err(format!(
                     "MS bit-fields are unsupported for {}",
+                    target.triple
+                ))
+            } else {
+                Ok(())
+            }
+        }),
+        Rule::validate("GCC double alignment", move |args: &ParsedCompilerArgs| {
+            if args.align_double.is_some() && !target.family.is_x86() {
+                Err(format!(
+                    "double alignment is unsupported for {}",
                     target.triple
                 ))
             } else {

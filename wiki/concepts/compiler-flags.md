@@ -237,6 +237,7 @@ each stage is in [configuration-threading](configuration-threading.md).
 | `-fpack-struct[=N]` (and `-fno-pack-struct`) | gcc, clang | `LayoutOptions::default_max_field_alignment` is the pack in effect at the top of the TU and what `#pragma pack()`/`pack(0)` restores. clang: `=N` (any power of two, `0` is off) wins over the bare flag in any order, the bare flag is `=1`, and `-fno-pack-struct` only cancels the bare flag. gcc: `=N` must be 1, 2, 4, 8 or 16; the bare flag is independent (`pack_records`) and marks every record `packed`, so `aligned` fields keep their alignment and pragmas only add a cap. clang's non-power-of-two `=N` is not emulated |
 | `-funsigned-bitfields` / `-fsigned-bitfields` (and `-fno-`) | gcc; clang accepts the positive forms and ignores them | `LayoutOptions::unsigned_bitfields` (gcc only): a bit-field whose type is a signed `char`, `short`, `int`, `long`, `long long` or `__int128` becomes unsigned unless `signed` was written in its own specifiers or in a typedef chain's (`TypeResolver::explicitly_signed`). As in gcc, `__typeof__(signed int)` counts as not written, and enums, `_Bool` and `_BitInt` are unaffected |
 | `-mms-bitfields` (and `-mno-`) | gcc (x86 only), clang | `LayoutOptions::ms_bitfields`: every record uses `ms_struct` bit-field layout unless it has `gcc_struct`; `#pragma ms_struct off`/`reset` don't undo it. No effect on windows-msvc targets, which always use Microsoft layout |
+| `-malign-double` (gcc also `-mno-`) | gcc (x86 only), clang | `LayoutOptions::align_double` raises `double`, `long long` and `unsigned long long` to 8-byte alignment everywhere, including inside records and `_Alignof` (`TargetInfo::with_align_double`); only i686 changes, since x86_64 already has it. clang (`align_long_double`) also gives `long double` 8-byte alignment on every target, so x86_64 and aarch64 `long double` drop from 16 to 8 and i686's 12-byte `long double` gets alignment 8 (clang then rejects arrays of it; slate does not, slate-3amj.48). gcc leaves `long double` alone. No predefined macro changes |
 | `-ffp-contract=off\|on\|fast\|fast-honor-pragmas` | gcc (not `fast-honor-pragmas`), clang | `MathOptions::contract` seeds the IR's `contract=` default and `#pragma STDC FP_CONTRACT DEFAULT`. clang: argv order with the fast-math umbrellas, whose `-fno-` restores the last `-ffp-contract=` or `on`. gcc: the explicit flag wins in any order, else unsafe math gives `fast`, else `fast` in `gnu*` and `off` in ISO modes. See [ir/operations](ir/operations.md) |
 | `-ffixed-<reg>` | gcc, clang | lets a file-scope `register T x asm("<reg>")` name that register (clang rejects it otherwise); slate lowers such a global as an ordinary static |
 | `-fexceptions` (and `-fno-`) | gcc, clang | defines `__EXCEPTIONS` (off by default in C); no other effect |
@@ -388,7 +389,7 @@ the `-dM` delta, against what slate accepts. It writes
 slate-3amj epic, each with a `fixtures.unsupported/flag_*.c` fixture
 where the effect is observable at runtime. Highlights:
 
-- Layout: `-malign-double`, gcc `-fsso-struct=`.
+- Layout: gcc `-fsso-struct=`.
 - Values: gcc `-fexec-charset=`, `-fsingle-precision-constant`,
   `-fzero-init-padding-bits=`.
 - Language: gcc's `-fms-extensions`, `-fdollars-in-identifiers`,

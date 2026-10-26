@@ -119,6 +119,35 @@ impl<'m> Tables<'m> {
         )
     }
 
+    fn erased_storage(&self, size: u64, align: u64) -> (rust::Type, u64) {
+        [
+            (16, Prim::U16),
+            (32, Prim::U32),
+            (64, Prim::U64),
+            (128, Prim::U128),
+        ]
+        .into_iter()
+        .find_map(|(width, prim)| {
+            let unit = self
+                .storage_of(&ir::Type::Numeric(ir::NumericType::Integer {
+                    width,
+                    signed: false,
+                    bit_precise: false,
+                }))
+                .filter(|&(unit_size, unit_align)| {
+                    unit_align == align && size.is_multiple_of(unit_size)
+                })?;
+            Some((
+                rust::Type::Array {
+                    elem: Box::new(rust::Type::Prim(prim)),
+                    len: size / unit.0,
+                },
+                align,
+            ))
+        })
+        .unwrap_or_else(|| (byte_array(size), 1))
+    }
+
     pub(super) fn storage_of(&self, ty: &ir::Type) -> Option<(u64, u64)> {
         match self.resolve_type(ty) {
             ir::Type::Defined(id) => match &self.types.get(id)?.kind {
@@ -132,7 +161,7 @@ impl<'m> Tables<'m> {
                 .storage_of(element)
                 .map(|(size, align)| (size * length.unwrap_or(0), align)),
             ty => self
-                .target
+                .rust_layout
                 .storage_of(ty.clone())
                 .ok()
                 .map(|layout| (layout.size_bytes, layout.alignment_bytes.into())),
@@ -245,21 +274,26 @@ impl FunctionLowerer<'_, '_> {
                 let ty = self
                     .lower_type(&field.ty)
                     .map_err(|error| error.at(Site::of(field)))?;
-                let ty = if pack.is_some() && self.contains_raised_align(&field.ty) {
+                let field_align = pack.map_or(field_align, |pack| field_align.min(pack));
+                let (ty, field_align) = if pack.is_some() && self.contains_raised_align(&field.ty) {
                     self.dependencies.erased_fields.insert((id.0, index));
-                    rust::Type::Generic {
-                        name: "std::mem::MaybeUninit".into(),
-                        args: vec![byte_array(size)],
-                    }
+                    let (storage, storage_align) = self.tables.erased_storage(size, field_align);
+                    (
+                        rust::Type::Generic {
+                            name: "std::mem::MaybeUninit".into(),
+                            args: vec![storage],
+                        },
+                        storage_align,
+                    )
                 } else {
-                    ty
+                    (ty, field_align)
                 };
                 (
                     field_name(field, index),
                     ty,
                     layout.offsets[index],
                     size,
-                    pack.map_or(field_align, |pack| field_align.min(pack)),
+                    field_align,
                 )
             };
             if is_union {

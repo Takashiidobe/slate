@@ -86,7 +86,14 @@
   ordinary field's natural alignment exceeds A or its offset is misaligned
   (`packed`, `#pragma pack`, packed members). Fields are placed at
   `min(field_align, A)` plus explicit padding. Packed field updates are read
-  and write of the copied value, never references. Still barriers: packed
+  and write of the copied value, never references. A field whose type is or
+  holds a `repr(align)` type (`LongDouble`, a raised record) is erased to
+  `MaybeUninit<[uN; _]>`, `uN` the unsigned integer whose Rust alignment is
+  `min(field_align, A)` (bytes, and alignment 1, when none matches), and
+  accessed through a cast pointer. `field_align` is always Rust's alignment
+  for the scalar (the triple's base `TargetInfo`), not the IR's: flags such
+  as `-malign-double` raise the C alignment while Rust's `f64` keeps its own,
+  so the difference becomes explicit padding and `repr(align)`. Still barriers: packed
   plus a raised record alignment (`packed, aligned(N)`; Rust rejects
   `packed` with `align`), and packed records transitively containing a
   `repr(align)` record (E0588).

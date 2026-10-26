@@ -79,6 +79,7 @@ struct Tables<'m> {
     over_aligned: HashMap<BindingId, u64>,
     flexible_globals: HashMap<BindingId, String>,
     target: &'m TargetInfo,
+    rust_layout: TargetInfo,
     metadata: &'m ir::Metadata,
     comments: &'m ir::Comments,
     promote_docs: bool,
@@ -496,6 +497,8 @@ impl<'m> ModuleLowerer<'m> {
             over_aligned: HashMap::new(),
             flexible_globals: HashMap::new(),
             target: &module.target,
+            rust_layout: TargetInfo::for_triple(&module.target.triple)
+                .unwrap_or_else(|_| module.target.clone()),
             metadata: &module.metadata,
             comments: &module.comments,
             promote_docs: !options.explicit_docs_only,

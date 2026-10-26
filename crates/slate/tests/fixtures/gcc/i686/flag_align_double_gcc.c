@@ -1,0 +1,338 @@
+/* { dg-options "-mno-align-double -malign-double" } */
+int printf(const char *, ...);
+
+struct wide {
+  char c;
+  double d;
+  long long l;
+};
+
+struct extended {
+  char c;
+  long double x;
+  _Complex long double z;
+};
+
+static unsigned offset(const void *base, const void *field) {
+  return (unsigned)((const char *)field - (const char *)base);
+}
+
+int main(void) {
+  struct wide w = {1, 2.5, 3};
+  struct extended e = {2, 1.25L, 0};
+  e.z = 0.5L + 4.0Li;
+  printf("%zu %zu %u %u\n", sizeof w, _Alignof(struct wide), offset(&w, &w.d), offset(&w, &w.l));
+  printf("%zu %zu %zu %zu\n", sizeof e, _Alignof(struct extended),
+         __builtin_offsetof(struct extended, x), __builtin_offsetof(struct extended, z));
+  printf("%zu %zu %zu\n", _Alignof(double), _Alignof(long long), _Alignof(long double));
+  printf("%d %g %lld %d %g %g %g\n", w.c, w.d, w.l, e.c, (double)e.x, (double)__real__ e.z,
+         (double)__imag__ e.z);
+  return 0;
+}
+
+// SLATE-FILECHECK-BEGIN i686-unknown-linux-gnu
+// CHECK: {{^}}#![allow(non_camel_case_types)]
+// CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn printf([[V_0:__v[0-9]+]]: *const i8, ...) -> i32;
+// CHECK-NEXT:     safe fn __slate_f80_add(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_sub(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_mul(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_div(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_copysign(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_fmax(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_fmin(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_powi(__a: LongDouble, __n: i32) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_neg(__a: LongDouble) -> LongDouble;
+// CHECK-NEXT:     fn __slate_f80_va_arg(__ap: *mut core::ffi::VaList<'static>) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_abs(__a: LongDouble) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_ceil(__a: LongDouble) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_floor(__a: LongDouble) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_sqrt(__a: LongDouble) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_cbrt(__a: LongDouble) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_exp(__a: LongDouble) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_exp2(__a: LongDouble) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_expm1(__a: LongDouble) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_log(__a: LongDouble) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_log2(__a: LongDouble) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_log10(__a: LongDouble) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_log1p(__a: LongDouble) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_sin(__a: LongDouble) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_cos(__a: LongDouble) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_tan(__a: LongDouble) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_asin(__a: LongDouble) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_acos(__a: LongDouble) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_atan(__a: LongDouble) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_sinh(__a: LongDouble) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_cosh(__a: LongDouble) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_tanh(__a: LongDouble) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_asinh(__a: LongDouble) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_acosh(__a: LongDouble) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_atanh(__a: LongDouble) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_nearbyint(__a: LongDouble) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_fract(__a: LongDouble) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_round(__a: LongDouble) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_trunc(__a: LongDouble) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_rint(__a: LongDouble) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_fmod(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_remainder(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_pow(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_fdim(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_hypot(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_signbit(__a: LongDouble) -> bool;
+// CHECK-NEXT:     safe fn __slate_f80_is_fp_class(__a: LongDouble, __flags: i32) -> bool;
+// CHECK-NEXT:     safe fn __slate_cf80_add(
+// CHECK-NEXT:         __a: num_complex::Complex<LongDouble>,
+// CHECK-NEXT:         __b: num_complex::Complex<LongDouble>,
+// CHECK-NEXT:     ) -> num_complex::Complex<LongDouble>;
+// CHECK-NEXT:     safe fn __slate_cf80_sub(
+// CHECK-NEXT:         __a: num_complex::Complex<LongDouble>,
+// CHECK-NEXT:         __b: num_complex::Complex<LongDouble>,
+// CHECK-NEXT:     ) -> num_complex::Complex<LongDouble>;
+// CHECK-NEXT:     safe fn __slate_cf80_mul(
+// CHECK-NEXT:         __a: num_complex::Complex<LongDouble>,
+// CHECK-NEXT:         __b: num_complex::Complex<LongDouble>,
+// CHECK-NEXT:     ) -> num_complex::Complex<LongDouble>;
+// CHECK-NEXT:     safe fn __slate_cf80_div(
+// CHECK-NEXT:         __a: num_complex::Complex<LongDouble>,
+// CHECK-NEXT:         __b: num_complex::Complex<LongDouble>,
+// CHECK-NEXT:     ) -> num_complex::Complex<LongDouble>;
+// CHECK-NEXT:     safe fn __slate_cf80_mul_basic(
+// CHECK-NEXT:         __a: num_complex::Complex<LongDouble>,
+// CHECK-NEXT:         __b: num_complex::Complex<LongDouble>,
+// CHECK-NEXT:     ) -> num_complex::Complex<LongDouble>;
+// CHECK-NEXT:     safe fn __slate_cf80_div_basic(
+// CHECK-NEXT:         __a: num_complex::Complex<LongDouble>,
+// CHECK-NEXT:         __b: num_complex::Complex<LongDouble>,
+// CHECK-NEXT:     ) -> num_complex::Complex<LongDouble>;
+// CHECK-NEXT:     safe fn __slate_cf80_div_improved(
+// CHECK-NEXT:         __a: num_complex::Complex<LongDouble>,
+// CHECK-NEXT:         __b: num_complex::Complex<LongDouble>,
+// CHECK-NEXT:     ) -> num_complex::Complex<LongDouble>;
+// CHECK-NEXT:     safe fn __slate_cf80_neg(
+// CHECK-NEXT:         __a: num_complex::Complex<LongDouble>,
+// CHECK-NEXT:     ) -> num_complex::Complex<LongDouble>;
+// CHECK-NEXT:     safe fn __slate_f80_fma(__a: LongDouble, __b: LongDouble, __c: LongDouble) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_lt(__a: LongDouble, __b: LongDouble) -> bool;
+// CHECK-NEXT:     safe fn __slate_f80_le(__a: LongDouble, __b: LongDouble) -> bool;
+// CHECK-NEXT:     safe fn __slate_f80_gt(__a: LongDouble, __b: LongDouble) -> bool;
+// CHECK-NEXT:     safe fn __slate_f80_ge(__a: LongDouble, __b: LongDouble) -> bool;
+// CHECK-NEXT:     safe fn __slate_f80_eq(__a: LongDouble, __b: LongDouble) -> bool;
+// CHECK-NEXT:     safe fn __slate_f80_ne(__a: LongDouble, __b: LongDouble) -> bool;
+// CHECK-NEXT:     safe fn __slate_f80_from_i8(__a: i8) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_from_u8(__a: u8) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_from_i16(__a: i16) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_from_u16(__a: u16) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_from_i32(__a: i32) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_from_u32(__a: u32) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_from_i64(__a: i64) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_from_u64(__a: u64) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_from_i128(__a: i128) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_from_u128(__a: u128) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_from_f32(__a: f32) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_from_f64(__a: f64) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_from_bool(__a: bool) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_to_i8(__a: LongDouble) -> i8;
+// CHECK-NEXT:     safe fn __slate_f80_to_u8(__a: LongDouble) -> u8;
+// CHECK-NEXT:     safe fn __slate_f80_to_i16(__a: LongDouble) -> i16;
+// CHECK-NEXT:     safe fn __slate_f80_to_u16(__a: LongDouble) -> u16;
+// CHECK-NEXT:     safe fn __slate_f80_to_i32(__a: LongDouble) -> i32;
+// CHECK-NEXT:     safe fn __slate_f80_to_u32(__a: LongDouble) -> u32;
+// CHECK-NEXT:     safe fn __slate_f80_to_i64(__a: LongDouble) -> i64;
+// CHECK-NEXT:     safe fn __slate_f80_to_u64(__a: LongDouble) -> u64;
+// CHECK-NEXT:     safe fn __slate_f80_to_i128(__a: LongDouble) -> i128;
+// CHECK-NEXT:     safe fn __slate_f80_to_u128(__a: LongDouble) -> u128;
+// CHECK-NEXT:     safe fn __slate_f80_to_f32(__a: LongDouble) -> f32;
+// CHECK-NEXT:     safe fn __slate_f80_to_f64(__a: LongDouble) -> f64;
+// CHECK-NEXT:     safe fn __slate_f80_to_bool(__a: LongDouble) -> bool;
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[repr(C, align(16))]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct LongDouble([u8; 10]);
+// CHECK-EMPTY:
+// CHECK-NEXT: impl core::ops::Add for LongDouble {
+// CHECK-NEXT:     type Output = LongDouble;
+// CHECK-NEXT:     fn add(self, __o: LongDouble) -> LongDouble {
+// CHECK-NEXT:         __slate_f80_add(self, __o)
+// CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: impl core::ops::Sub for LongDouble {
+// CHECK-NEXT:     type Output = LongDouble;
+// CHECK-NEXT:     fn sub(self, __o: LongDouble) -> LongDouble {
+// CHECK-NEXT:         __slate_f80_sub(self, __o)
+// CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: impl core::ops::Mul for LongDouble {
+// CHECK-NEXT:     type Output = LongDouble;
+// CHECK-NEXT:     fn mul(self, __o: LongDouble) -> LongDouble {
+// CHECK-NEXT:         __slate_f80_mul(self, __o)
+// CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: impl core::ops::Div for LongDouble {
+// CHECK-NEXT:     type Output = LongDouble;
+// CHECK-NEXT:     fn div(self, __o: LongDouble) -> LongDouble {
+// CHECK-NEXT:         __slate_f80_div(self, __o)
+// CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: impl core::ops::AddAssign for LongDouble {
+// CHECK-NEXT:     fn add_assign(&mut self, __o: LongDouble) {
+// CHECK-NEXT:         {
+// CHECK-NEXT:             *self = __slate_f80_add(*self, __o);
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: impl core::ops::SubAssign for LongDouble {
+// CHECK-NEXT:     fn sub_assign(&mut self, __o: LongDouble) {
+// CHECK-NEXT:         {
+// CHECK-NEXT:             *self = __slate_f80_sub(*self, __o);
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: impl core::ops::MulAssign for LongDouble {
+// CHECK-NEXT:     fn mul_assign(&mut self, __o: LongDouble) {
+// CHECK-NEXT:         {
+// CHECK-NEXT:             *self = __slate_f80_mul(*self, __o);
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: impl core::ops::DivAssign for LongDouble {
+// CHECK-NEXT:     fn div_assign(&mut self, __o: LongDouble) {
+// CHECK-NEXT:         {
+// CHECK-NEXT:             *self = __slate_f80_div(*self, __o);
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: impl core::ops::Neg for LongDouble {
+// CHECK-NEXT:     type Output = LongDouble;
+// CHECK-NEXT:     fn neg(self) -> LongDouble {
+// CHECK-NEXT:         __slate_f80_neg(self)
+// CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: impl core::cmp::PartialEq for LongDouble {
+// CHECK-NEXT:     fn eq(&self, __other: &LongDouble) -> bool {
+// CHECK-NEXT:         __slate_f80_eq(*self, *__other)
+// CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: impl core::cmp::PartialOrd for LongDouble {
+// CHECK-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<std::cmp::Ordering> {
+// CHECK-NEXT:         if __slate_f80_lt(*self, *__other) {
+// CHECK-NEXT:             Some(std::cmp::Ordering::Less)
+// CHECK-NEXT:         } else {
+// CHECK-NEXT:             if __slate_f80_gt(*self, *__other) {
+// CHECK-NEXT:                 Some(std::cmp::Ordering::Greater)
+// CHECK-NEXT:             } else {
+// CHECK-NEXT:                 if __slate_f80_eq(*self, *__other) {
+// CHECK-NEXT:                     Some(std::cmp::Ordering::Equal)
+// CHECK-NEXT:                 } else {
+// CHECK-NEXT:                     None
+// CHECK-NEXT:                 }
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: // { dg-options "-mno-align-double -malign-double" }
+// CHECK-NEXT: #[repr(C, align(8))]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct wide {
+// CHECK-NEXT:     c: i8,
+// CHECK-NEXT:     __slate_pad_1: [u8; 7],
+// CHECK-NEXT:     d: f64,
+// CHECK-NEXT:     l: i64,
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[repr(C)]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct extended {
+// CHECK-NEXT:     c: i8,
+// CHECK-NEXT:     x: LongDouble,
+// CHECK-NEXT:     z: num_complex::Complex<LongDouble>,
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: fn offset(base: &(), field: *const ()) -> u32 {
+// CHECK-NEXT:     ((unsafe { (field as *const i8).offset_from((base as *const ()) as *const i8) }) as i32) as u32
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: fn __slate_main() -> i32 {
+// CHECK-NEXT:     let mut w: wide = {
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: wide = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         [[T_0]].c = 1i8;
+// CHECK-NEXT:         [[T_0]].d = 2.5f64;
+// CHECK-NEXT:         [[T_0]].l = 3i64;
+// CHECK-NEXT:         [[T_0]]
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let mut e: extended = {
+// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: extended = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         [[T_1]].c = 2i8;
+// CHECK-NEXT:         [[T_1]].x = LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 255, 63]);
+// CHECK-NEXT:         [[T_1]].z = num_complex::Complex {
+// CHECK-NEXT:             re: __slate_f80_from_i32(0i32),
+// CHECK-NEXT:             im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// CHECK-NEXT:         };
+// CHECK-NEXT:         [[T_1]]
+// CHECK-NEXT:     };
+// CHECK-NEXT:     e.z = {
+// CHECK-NEXT:         let [[T_2:__t[0-9]+]] = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 254, 63]);
+// CHECK-NEXT:         let [[T_3:__t[0-9]+]] = num_complex::Complex {
+// CHECK-NEXT:             re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// CHECK-NEXT:             im: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 64]),
+// CHECK-NEXT:         };
+// CHECK-NEXT:         num_complex::Complex {
+// CHECK-NEXT:             re: [[T_2]] + [[T_3]].re,
+// CHECK-NEXT:             im: [[T_3]].im,
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         printf(
+// CHECK-NEXT:             c"%zu %zu %u %u\n".as_ptr(),
+// CHECK-NEXT:             24u32,
+// CHECK-NEXT:             8u32,
+// CHECK-NEXT:             offset(
+// CHECK-NEXT:                 &(*(std::ptr::addr_of_mut!(w) as *const ())),
+// CHECK-NEXT:                 std::ptr::addr_of_mut!(w.d) as *const (),
+// CHECK-NEXT:             ),
+// CHECK-NEXT:             offset(
+// CHECK-NEXT:                 &(*(std::ptr::addr_of_mut!(w) as *const ())),
+// CHECK-NEXT:                 std::ptr::addr_of_mut!(w.l) as *const (),
+// CHECK-NEXT:             ),
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { printf(c"%zu %zu %zu %zu\n".as_ptr(), 40u32, 4u32, 4u32, 16u32) };
+// CHECK-NEXT:     unsafe { printf(c"%zu %zu %zu\n".as_ptr(), 8u32, 8u32, 4u32) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         printf(
+// CHECK-NEXT:             c"%d %g %lld %d %g %g %g\n".as_ptr(),
+// CHECK-NEXT:             w.c as i32,
+// CHECK-NEXT:             w.d,
+// CHECK-NEXT:             w.l,
+// CHECK-NEXT:             e.c as i32,
+// CHECK-NEXT:             __slate_f80_to_f64(e.x),
+// CHECK-NEXT:             __slate_f80_to_f64(e.z.re),
+// CHECK-NEXT:             __slate_f80_to_f64(e.z.im),
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
+// CHECK-NEXT:     0
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: unsafe extern "C-unwind" fn main(
+// CHECK-NEXT:     argc: i32,
+// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT: ) -> i32 {
+// CHECK-NEXT:     unsafe { __slate_main() }
+// CHECK-NEXT: }
+// CHECK-NOT: {{.}}
+// SLATE-FILECHECK-END
