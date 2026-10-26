@@ -380,6 +380,22 @@ impl<'a> Reachability<'a> {
                     SehHandler::Finally(body) => self.mark_stmt(body),
                 }
             }
+            StmtKind::Omp { directive, body } => {
+                for clause in &directive.value.clauses {
+                    match &clause.value {
+                        OmpClause::DataSharing { variables, .. } => {
+                            for variable in variables {
+                                self.mark_expr(variable);
+                            }
+                        }
+                        OmpClause::NumThreads(value) | OmpClause::If(value) => {
+                            self.mark_expr(value);
+                        }
+                        OmpClause::Default(_) => {}
+                    }
+                }
+                self.mark_stmt(body);
+            }
             StmtKind::NestedFunction(function) => self.mark_function(function),
             StmtKind::MsAsm(asm) => {
                 for instruction in &asm.instructions {

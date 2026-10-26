@@ -542,6 +542,7 @@ impl Walk<'_> {
                     }
                 }
             }
+            StmtKind::Omp { body, .. } => self.statement(body),
             StmtKind::SehLeave
             | StmtKind::Comment(_)
             | StmtKind::Null

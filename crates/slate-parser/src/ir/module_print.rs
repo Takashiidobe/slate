@@ -695,6 +695,48 @@ impl Printer<'_> {
                     continue;
                 }
                 Statement::SehLeave(id) => write!(f, "seh_leave %{}", id.0)?,
+                Statement::OmpParallel(region) => {
+                    f.write_str("omp_parallel")?;
+                    metadata(f, self.table(), statement.id)?;
+                    writeln!(f)?;
+                    for (label, value) in [
+                        ("num_threads", &region.num_threads),
+                        ("if", &region.condition),
+                    ] {
+                        if let Some(value) = value {
+                            writeln!(
+                                f,
+                                "{:indent$}    {label}: {}",
+                                "",
+                                value
+                                    .display_metadata(false, self.table())
+                                    .with_compact(self.compact)
+                            )?;
+                        }
+                    }
+                    if !region.shared.is_empty() {
+                        let shared = region
+                            .shared
+                            .iter()
+                            .map(|id| format!("%{}", id.0))
+                            .collect::<Vec<_>>()
+                            .join(", ");
+                        writeln!(f, "{:indent$}    shared: {shared}", "")?;
+                    }
+                    for private in &region.private {
+                        let kind = if private.firstprivate {
+                            "firstprivate"
+                        } else {
+                            "private"
+                        };
+                        write!(f, "{:indent$}    {kind} %{}: ", "", private.original.0)?;
+                        self.variable(f, &private.copy)?;
+                        writeln!(f)?;
+                    }
+                    writeln!(f, "{:indent$}    body:", "")?;
+                    self.statements(f, &region.body, indent + 8)?;
+                    continue;
+                }
                 Statement::Asm(asm) => {
                     f.write_str("asm")?;
                     if asm.volatile {

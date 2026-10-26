@@ -123,7 +123,32 @@ impl ParserInput {
         })
     }
 
-    fn take_matching(
+    pub fn take_first_pragma(
+        &self,
+        tokens: &[Span<Token>],
+        start: usize,
+        matches: impl Fn(&[Span<Token>]) -> bool,
+    ) -> Option<Span<Vec<Span<Token>>>> {
+        let position = self.position(tokens, start)?;
+        let mut annotations = self.annotations.borrow_mut();
+        let entries = annotations.get_mut(&position)?;
+        let index = entries.iter().position(
+            |annotation| matches!(&annotation.value, Annotation::Pragma(tokens) if matches(tokens)),
+        )?;
+        self.annotation_undo
+            .borrow_mut()
+            .record(|| (position, entries.clone()));
+        let taken = entries.remove(index);
+        if entries.is_empty() {
+            annotations.remove(&position);
+        }
+        match taken.value {
+            Annotation::Pragma(ref tokens) => Some(taken.derive(tokens.clone())),
+            Annotation::Comment(_) => None,
+        }
+    }
+
+    pub(super) fn take_matching(
         &self,
         tokens: &[Span<Token>],
         start: usize,

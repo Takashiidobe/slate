@@ -8,6 +8,18 @@ pub(super) struct SehScope {
     pub(super) node: NodeId,
     pub(super) handler: bool,
     pub(super) finally: bool,
+    pub(super) openmp: bool,
+}
+
+impl SehScope {
+    pub(super) fn openmp(node: NodeId) -> Self {
+        Self {
+            node,
+            handler: false,
+            finally: false,
+            openmp: true,
+        }
+    }
 }
 
 pub(super) fn label_scopes(body: &[Stmt]) -> HashMap<String, Vec<SehScope>> {
@@ -46,6 +58,7 @@ impl Visitor for Collector {
                     node: stmt.id,
                     handler,
                     finally,
+                    openmp: false,
                 };
                 self.within(scope(false, false), body)?;
                 match handler {
@@ -55,6 +68,10 @@ impl Visitor for Collector {
                     }
                     SehHandler::Finally(body) => self.within(scope(true, true), body),
                 }
+            }
+            StmtKind::Omp { directive, body } => {
+                visit::walk_omp_clauses(self, &directive.value)?;
+                self.within(SehScope::openmp(stmt.id), body)
             }
             _ => visit::walk_stmt(self, stmt),
         }

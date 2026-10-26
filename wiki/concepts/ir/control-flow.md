@@ -4,6 +4,7 @@
 - [Function bodies](#function-bodies)
 - [Structured control flow](#structured-control-flow)
   - [Structured exception handling](#structured-exception-handling)
+  - [OpenMP regions](#openmp-regions)
   - [Statement attributes](#statement-attributes)
   - [Materialized function ends](#materialized-function-ends)
 - [Side-effect hoisting](#side-effect-hoisting)
@@ -73,6 +74,36 @@ form was.
 - Slate has no Rust lowering; a function with SEH is a lowering barrier.
 - Fixtures: `clang/windows/x86_64/ir_seh.c`,
   `error/clang/windows/x86_64/seh_misuse.c`, `suites/clang-test/*/windows/*/CodeGen__exceptions-seh*.c`.
+
+### OpenMP regions
+
+- `Statement::OmpParallel(OmpParallel)` is `#pragma omp parallel`.
+  `num_threads` is converted to `unsigned int` (libgomp's parameter) and
+  `condition` (the `if` clause) to a truth value; both are hoisted before
+  the region, so they are evaluated once by the encountering thread.
+- `private` lists one `OmpPrivate { original, copy, firstprivate }` per
+  `private`/`firstprivate` variable. `copy` is a fresh automatic
+  `Variable` with the original's type and no initializer; the body refers
+  to `copy` only (name resolution declares it in a scope around the body).
+  A `firstprivate` copy starts as the original's value at region entry.
+  Globals can be privatized too.
+- `shared` lists the automatic variables and parameters declared outside
+  the region that the body references, explicit `shared` or implicit,
+  in first-reference order. Globals and static locals are shared but not
+  listed: they need no capture.
+- Checker (`sema/assertion.rs`): clause variables must be variables, at
+  most once across data-sharing clauses; a `private` variable cannot be
+  const; privatized variables must be complete and not variably modified
+  (VLA copies are unsupported). `num_threads` must be an integer, `if`
+  scalar. `default(none)` requires every outer variable the body
+  references, globals and static locals included, to be listed.
+  `return`, `break`/`continue` (named or not) and `goto` that leave or
+  enter a region are "invalid branch to/from OpenMP structured block"
+  (gcc's wording; region scopes join the SEH scope paths for `goto`).
+- Slate has no Rust lowering yet (slate-3amj.24.3); the statement is a
+  lowering barrier.
+- Fixtures: `{gcc,clang}/linux/x86_64/openmp_parallel.c`,
+  `msvc/windows/x86_64/openmp_parallel.c`, `error/*/*/x86_64/openmp-*.c`.
 
 ### Statement attributes
 

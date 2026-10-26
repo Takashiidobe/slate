@@ -50,6 +50,8 @@ page when a match site is added or removed.
 - `src/sema/assertion.rs`: `Checker::statement` has a catch-all, so the
   compiler will not flag it; add an arm for a variant that holds statements
   or expressions, or the checker never types them.
+- `src/sema/seh_scopes.rs`: `label_scopes` has a catch-all; add an arm
+  for a variant that `goto` may not enter or leave (`SehTry`, `Omp`).
 - `src/sema/effects_statements.rs` and `src/ir/module_print.rs` if the
   variant lowers to a new `ir::Statement`. Slate's IR walkers
   (`crates/slate/src/frontend/lowerer/`) have catch-alls; an unhandled

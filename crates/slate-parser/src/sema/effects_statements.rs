@@ -182,6 +182,18 @@ impl Hoister {
                     switch,
                     body: self.statements(body)?,
                 },
+                Statement::OmpParallel(mut region) => {
+                    region.condition = region
+                        .condition
+                        .map(|value| self.value(value, &mut out))
+                        .transpose()?;
+                    region.num_threads = region
+                        .num_threads
+                        .map(|value| self.value(value, &mut out))
+                        .transpose()?;
+                    region.body = self.statements(std::mem::take(&mut region.body))?;
+                    Statement::OmpParallel(region)
+                }
                 Statement::SehTry { id, body, handler } => Statement::SehTry {
                     id,
                     body: self.statements(body)?,

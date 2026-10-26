@@ -406,6 +406,65 @@ pub enum StmtKind {
         handler: SehHandler,
     },
     SehLeave,
+    Omp {
+        directive: Span<OmpDirective>,
+        body: Box<Stmt>,
+    },
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct OmpDirective {
+    pub kind: OmpDirectiveKind,
+    pub clauses: Vec<Span<OmpClause>>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum OmpDirectiveKind {
+    Parallel,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum OmpClause {
+    DataSharing {
+        sharing: OmpDataSharing,
+        variables: Vec<Expr>,
+    },
+    Default(OmpDefault),
+    NumThreads(Expr),
+    If(Expr),
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum OmpDataSharing {
+    Private,
+    Firstprivate,
+    Shared,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum OmpDefault {
+    Shared,
+    None,
+    Private,
+    Firstprivate,
+}
+
+impl OmpDirectiveKind {
+    pub fn spelling(self) -> &'static str {
+        match self {
+            Self::Parallel => "parallel",
+        }
+    }
+}
+
+impl OmpDataSharing {
+    pub fn spelling(self) -> &'static str {
+        match self {
+            Self::Private => "private",
+            Self::Firstprivate => "firstprivate",
+            Self::Shared => "shared",
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq)]

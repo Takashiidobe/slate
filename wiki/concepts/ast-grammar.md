@@ -315,12 +315,19 @@ StmtKind = "Null" | "Break" | "Continue" | "ReturnVoid"
          | "NestedFunction(" FunctionDefinition ")"
          | "Pragma(" Pragma ")"
          | SehTry { body: stmt, handler: SehHandler }
-         | "SehLeave" ;
+         | "SehLeave"
+         | Omp { directive: span<OmpDirective>, body: stmt } ;
 SwitchLabel = "Case(" expr ")"
             | CaseRange { start: expr, end: expr }
             | "Default" ;
 SehHandler = Except { filter: expr, body: stmt }
            | "Finally(" stmt ")" ;
+OmpDirective = OmpDirective { kind: "Parallel", clauses: vec<span<OmpClause>> } ;
+OmpClause = DataSharing { sharing: ("Private" | "Firstprivate" | "Shared"),
+                          variables: vec<expr> }
+          | "Default(" ("Shared" | "None" | "Private" | "Firstprivate") ")"
+          | "NumThreads(" expr ")"
+          | "If(" expr ")" ;
 ```
 
 - `Attribute` is an attribute declaration (`[[fallthrough]];`);

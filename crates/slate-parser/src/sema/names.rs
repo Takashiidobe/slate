@@ -1,13 +1,13 @@
 use crate::ast::{
     AlignAsOperand, ArraySize, Attribute, Decl, DeclKind, Declaration, Declarator, EnumItemKind,
-    Expr, ExprKind, Initializer, InitializerItem, Loc, ParameterList, SehHandler, Span, Stmt,
-    StmtKind, StorageClass, TagBody, TagId as AstTagId, TagSpecifier, TranslationUnit, TypeName,
-    TypeOfOperand, TypeSpecifier,
+    Expr, ExprKind, Initializer, InitializerItem, Loc, OmpClause, OmpDataSharing, OmpDirective,
+    ParameterList, SehHandler, Span, Stmt, StmtKind, StorageClass, TagBody, TagId as AstTagId,
+    TagSpecifier, TranslationUnit, TypeName, TypeOfOperand, TypeSpecifier,
 };
 use crate::compiler_args::CompilerFlavor;
 use crate::dialect::Dialect;
 use crate::ir::{Binding, BindingId, BindingKind, NameResolution, Reference};
-use crate::visit::Visitor;
+use crate::visit::{self, Visitor};
 use std::collections::{HashMap, HashSet};
 
 #[derive(Debug, Clone, thiserror::Error)]
@@ -74,6 +74,12 @@ struct Resolver {
     dialect: Dialect,
     next_id: u32,
     errors: Vec<ResolveError>,
+    omp_regions: Vec<OmpRegionFrame>,
+}
+
+struct OmpRegionFrame {
+    depth: usize,
+    outer: Vec<Span<BindingId>>,
 }
 
 impl Resolver {
@@ -103,6 +109,7 @@ impl Resolver {
             dialect: unit.dialect.clone(),
             next_id: 0,
             errors: Vec::new(),
+            omp_regions: Vec::new(),
         }
     }
 
@@ -298,6 +305,7 @@ impl Resolver {
                 }
                 Ok(())
             }
+            StmtKind::Omp { directive, body } => self.omp_region(statement, directive, body),
             StmtKind::Attributed { body, .. } => self.visit_stmt(body),
             StmtKind::Return(value) | StmtKind::Expr(value) | StmtKind::ComputedGoto(value) => {
                 self.visit_expr(value)
@@ -964,6 +972,7 @@ impl Resolver {
             return Ok(());
         };
         self.push_reference(name, entry, span);
+        self.record_omp_reference(name, span);
         Ok(())
     }
 
@@ -983,6 +992,71 @@ impl Resolver {
 
     fn lookup_ordinary(&self, name: &str) -> Option<&Entry> {
         self.ordinary.iter().rev().find_map(|scope| scope.get(name))
+    }
+
+    fn omp_region(
+        &mut self,
+        statement: &Stmt,
+        directive: &Span<OmpDirective>,
+        body: &Stmt,
+    ) -> Result<(), ResolveError> {
+        visit::walk_omp_clauses(self, &directive.value)?;
+        self.push_scope();
+        if !self.collecting_labels {
+            for clause in &directive.value.clauses {
+                let OmpClause::DataSharing { sharing, variables } = &clause.value else {
+                    continue;
+                };
+                if *sharing == OmpDataSharing::Shared {
+                    continue;
+                }
+                for variable in variables {
+                    let ExprKind::Identifier(name) = &variable.value else {
+                        continue;
+                    };
+                    let entry = self.new_entry(name, BindingKind::Object, variable);
+                    self.resolution.declarations.insert(variable.id, entry.id);
+                    self.ordinary
+                        .last_mut()
+                        .unwrap()
+                        .insert(name.clone(), entry);
+                }
+            }
+        }
+        self.omp_regions.push(OmpRegionFrame {
+            depth: self.ordinary.len() - 1,
+            outer: Vec::new(),
+        });
+        let result = self.visit_stmt(body);
+        let frame = self.omp_regions.pop().unwrap();
+        self.pop_scope();
+        if !self.collecting_labels {
+            self.resolution
+                .openmp_outer_references
+                .insert(statement.id, frame.outer);
+        }
+        result
+    }
+
+    fn record_omp_reference<T>(&mut self, name: &str, span: &Span<T>) {
+        let Some((depth, entry)) = self
+            .ordinary
+            .iter()
+            .enumerate()
+            .rev()
+            .find_map(|(depth, scope)| scope.get(name).map(|entry| (depth, entry)))
+        else {
+            return;
+        };
+        if !matches!(entry.kind, BindingKind::Object | BindingKind::Parameter) {
+            return;
+        }
+        let id = entry.id;
+        for frame in &mut self.omp_regions {
+            if depth < frame.depth && !frame.outer.iter().any(|outer| outer.value == id) {
+                frame.outer.push(copy_span(span, id));
+            }
+        }
     }
 
     fn reference_typedef<T>(&mut self, name: &str, span: &Span<T>) -> Result<(), ResolveError> {

@@ -1619,7 +1619,7 @@ impl<'a> Preprocessor<'a> {
             DirectiveName::Undef => self.record_undef(directive)?,
             DirectiveName::Pragma => {
                 self.record_pragma(directive)?;
-                nodes.push(self.pragma_node(directive));
+                nodes.push(self.pragma_node(directive)?);
             }
             DirectiveName::Error => self.record_directive_diagnostic(directive, Severity::Error),
             DirectiveName::Warning => {
@@ -1943,15 +1943,25 @@ impl<'a> Preprocessor<'a> {
         Ok(())
     }
 
-    fn pragma_node(&self, directive: &Directive) -> PPNode {
+    fn pragma_node(&mut self, directive: &Directive) -> Result<PPNode, PPFailure> {
         let provenance = self.provenance(directive.loc);
-        Span::new(
+        let arguments = match directive.arguments.split_first() {
+            Some((omp, operands))
+                if self.dialect.options().openmp
+                    && identifier(self.source(directive.loc.file), omp).as_deref()
+                        == Some("omp") =>
+            {
+                let mut expanded = vec![omp.clone()];
+                expanded.extend(self.expand_macros(operands)?);
+                expanded
+            }
+            _ => directive.arguments.clone(),
+        };
+        Ok(Span::new(
             PPNodeKind::Pragma {
                 text: self.spelling(directive.loc).to_string(),
-                tokens: directive
-                    .arguments
-                    .iter()
-                    .cloned()
+                tokens: arguments
+                    .into_iter()
                     .map(|token| self.classify_keyword(token))
                     .collect(),
                 provenance,
@@ -1959,7 +1969,7 @@ impl<'a> Preprocessor<'a> {
             directive.loc,
             directive.loc,
         )
-        .with_provenance(provenance)
+        .with_provenance(provenance))
     }
 
     fn classify_keyword(&self, token: Span<Token>) -> Span<Token> {

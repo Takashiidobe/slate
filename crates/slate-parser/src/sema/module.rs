@@ -1760,6 +1760,104 @@ impl Lowerer {
             .ok_or(ResolveError::Internal("unresolved named jump"))
     }
 
+    fn omp_parallel(
+        &mut self,
+        statement: &Stmt,
+        directive: &ast::OmpDirective,
+        body: &Stmt,
+        return_type: Option<QualType>,
+    ) -> Result<Statement, ResolveError> {
+        let mut num_threads = None;
+        let mut condition = None;
+        let mut private = Vec::new();
+        for clause in &directive.clauses {
+            match &clause.value {
+                ast::OmpClause::NumThreads(expr) => {
+                    let value = self.expr(expr)?;
+                    let unsigned = self.types.ctypes.unsigned_int();
+                    let value =
+                        self.convert_recorded(expr, value, unsigned, ConversionReason::Explicit)?;
+                    num_threads = Some(value.value);
+                }
+                ast::OmpClause::If(expr) => {
+                    let value = self.expr(expr)?;
+                    condition = Some(self.condition(value.value, None)?);
+                }
+                ast::OmpClause::DataSharing { sharing, variables }
+                    if *sharing != ast::OmpDataSharing::Shared =>
+                {
+                    for variable in variables {
+                        private.push(self.omp_private(variable, *sharing)?);
+                    }
+                }
+                ast::OmpClause::DataSharing { .. } | ast::OmpClause::Default(_) => {}
+            }
+        }
+        let body = self.statements(std::slice::from_ref(body), return_type)?;
+        let shared = self
+            .names
+            .openmp_outer_references
+            .get(&statement.id)
+            .into_iter()
+            .flatten()
+            .map(|reference| reference.value)
+            .filter(|id| self.types.entities.linkage(*id).is_none())
+            .collect();
+        Ok(Statement::OmpParallel(Box::new(OmpParallel {
+            num_threads,
+            condition,
+            shared,
+            private,
+            body,
+        })))
+    }
+
+    fn omp_private(
+        &mut self,
+        variable: &ast::Expr,
+        sharing: ast::OmpDataSharing,
+    ) -> Result<OmpPrivate, ResolveError> {
+        let ast::ExprKind::Identifier(name) = &variable.value else {
+            return Err(ResolveError::Internal(
+                "OpenMP clause variable is not a name",
+            ));
+        };
+        let original = self.reference(variable)?;
+        let copy = *self
+            .names
+            .declarations
+            .get(&variable.id)
+            .ok_or(ResolveError::Internal("OpenMP private copy not declared"))?;
+        let c = self
+            .types
+            .entities
+            .ty(&original)
+            .ok_or(ResolveError::Internal(
+                "OpenMP privatized variable has no type",
+            ))?;
+        self.types.entities.declare(copy, c, false);
+        let qualifiers = self.types.ctypes.quals(c);
+        Ok(OmpPrivate {
+            original,
+            copy: Variable {
+                id: copy,
+                name: name.clone(),
+                ty: self.types.ir_type(c),
+                storage: StorageDuration::Automatic,
+                restrict: qualifiers.is_restrict,
+                is_const: qualifiers.is_const,
+                access: self.types.access_of(c),
+                constexpr: false,
+                alignment: None,
+                cleanup: None,
+                register: None,
+                initializer: None,
+                auto_init: None,
+            },
+            firstprivate: sharing == ast::OmpDataSharing::Firstprivate,
+        })
+    }
+
     fn loop_body(
         &mut self,
         id: BindingId,
@@ -1948,6 +2046,9 @@ impl Lowerer {
                     body: body?,
                     handler,
                 }
+            }
+            StmtKind::Omp { directive, body } => {
+                self.omp_parallel(statement, &directive.value, body, return_type)?
             }
             StmtKind::SehLeave => Statement::SehLeave(*self.seh_leave_targets.last().ok_or(
                 ResolveError::Internal("'__leave' statement not in __try block"),

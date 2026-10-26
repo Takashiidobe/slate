@@ -5,6 +5,7 @@ mod decl;
 mod declarator;
 mod input;
 mod ms_asm;
+mod openmp;
 mod stmt;
 mod undo;
 

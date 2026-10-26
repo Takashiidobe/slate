@@ -43,6 +43,8 @@ pub struct NameResolution {
     pub overload_sets: std::collections::HashMap<BindingId, Vec<BindingId>>,
     pub passes_object_size: std::collections::HashSet<BindingId>,
     pub builtin_typedefs: std::collections::HashMap<String, BindingId>,
+    pub openmp_outer_references:
+        std::collections::HashMap<crate::ast::NodeId, Vec<Span<BindingId>>>,
 }
 
 impl fmt::Display for NameResolution {

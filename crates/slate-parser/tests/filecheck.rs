@@ -843,6 +843,7 @@ fn summarize_evaluated_decl(decl: &DeclKind) -> Vec<DeclSummary> {
                     | StmtKind::NamedContinue(_)
                     | StmtKind::SehTry { .. }
                     | StmtKind::SehLeave
+                    | StmtKind::Omp { .. }
                     | StmtKind::Break
                     | StmtKind::Continue => None,
                 })

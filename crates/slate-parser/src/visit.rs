@@ -219,6 +219,10 @@ pub fn walk_stmt<V: Visitor + ?Sized>(visitor: &mut V, stmt: &Stmt) -> Result<()
                 SehHandler::Finally(body) => visitor.visit_stmt(body),
             }
         }
+        StmtKind::Omp { directive, body } => {
+            walk_omp_clauses(visitor, &directive.value)?;
+            visitor.visit_stmt(body)
+        }
         StmtKind::Asm(asm) => walk_asm(visitor, asm),
         StmtKind::NestedFunction(function) => visitor.visit_function(function),
         StmtKind::SehLeave
@@ -234,6 +238,24 @@ pub fn walk_stmt<V: Visitor + ?Sized>(visitor: &mut V, stmt: &Stmt) -> Result<()
         | StmtKind::Break
         | StmtKind::Continue => Ok(()),
     }
+}
+
+pub fn walk_omp_clauses<V: Visitor + ?Sized>(
+    visitor: &mut V,
+    directive: &OmpDirective,
+) -> Result<(), V::Error> {
+    for clause in &directive.clauses {
+        match &clause.value {
+            OmpClause::DataSharing { variables, .. } => {
+                for variable in variables {
+                    visitor.visit_expr(variable)?;
+                }
+            }
+            OmpClause::NumThreads(value) | OmpClause::If(value) => visitor.visit_expr(value)?,
+            OmpClause::Default(_) => {}
+        }
+    }
+    Ok(())
 }
 
 pub fn walk_expr<V: Visitor + ?Sized>(visitor: &mut V, expr: &Expr) -> Result<(), V::Error> {

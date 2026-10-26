@@ -291,7 +291,8 @@ fn strip_stmt_children(stmt: &mut StmtKind) {
         }
         StmtKind::Labeled { body, .. }
         | StmtKind::SwitchLabel { body, .. }
-        | StmtKind::Attributed { body, .. } => {
+        | StmtKind::Attributed { body, .. }
+        | StmtKind::Omp { body, .. } => {
             strip_stmt_children(&mut body.value);
         }
         StmtKind::SehTry { body, handler } => {

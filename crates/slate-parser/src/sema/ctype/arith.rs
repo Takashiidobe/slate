@@ -22,6 +22,13 @@ impl CTypes {
         })
     }
 
+    pub fn unsigned_int(&mut self) -> QualType {
+        self.qual(CTypeKind::Int {
+            rank: IntRank::Int,
+            signed: false,
+        })
+    }
+
     pub fn size_type(&mut self, target: &TargetInfo) -> QualType {
         self.pointer_integer(target, false)
     }

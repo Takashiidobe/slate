@@ -259,6 +259,23 @@ pub enum Statement {
         handler: SehHandler,
     },
     SehLeave(BindingId),
+    OmpParallel(Box<OmpParallel>),
+}
+
+#[derive(Debug, Clone)]
+pub struct OmpParallel {
+    pub num_threads: Option<Value>,
+    pub condition: Option<Value>,
+    pub shared: Vec<BindingId>,
+    pub private: Vec<OmpPrivate>,
+    pub body: Vec<Span<Statement>>,
+}
+
+#[derive(Debug, Clone)]
+pub struct OmpPrivate {
+    pub original: BindingId,
+    pub copy: Variable,
+    pub firstprivate: bool,
 }
 
 #[derive(Debug, Clone)]

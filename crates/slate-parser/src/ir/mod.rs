@@ -27,8 +27,8 @@ pub use declarations::{
 };
 pub use module::{
     Comment, Deallocator, DllStorage, Evaluation, Fallthrough, Function, FunctionSemantics,
-    Inlining, Linkage, MemoryEffects, Metadata, Module, SehHandler, SehIntrinsic, Statement,
-    SymbolAttributes, TargetFeature, TlsModel, Visibility,
+    Inlining, Linkage, MemoryEffects, Metadata, Module, OmpParallel, OmpPrivate, SehHandler,
+    SehIntrinsic, Statement, SymbolAttributes, TargetFeature, TlsModel, Visibility,
 };
 
 pub use names::{Binding, BindingId, BindingKind, NameResolution, Reference};

@@ -5,8 +5,8 @@ use crate::compiler_options::{ComplexMethod, InlineSemantics};
 use crate::const_expr::{AssignOp, BinaryOp, UnaryOp};
 use crate::diagnostics::Warning;
 use crate::ir::{
-    BindingId, FloatType, Linkage, NameResolution, Number, NumericType, SymbolAttributes, Type,
-    Value, ValueKind,
+    BindingId, BindingKind, FloatType, Linkage, NameResolution, Number, NumericType,
+    SymbolAttributes, Type, Value, ValueKind,
 };
 use crate::target_info::TargetEnvironment;
 use crate::visit::{self, Visitor};
@@ -37,6 +37,7 @@ pub(super) fn validate(
     let region = Context::for_dialect(&unit.dialect).region;
     let mut checker = Checker {
         unit,
+        names,
         types,
         errors: Vec::new(),
         context: StatementContext::default(),
@@ -114,6 +115,7 @@ pub(super) fn validate(
 
 struct Checker<'a> {
     unit: &'a TranslationUnit,
+    names: &'a NameResolution,
     types: &'a mut TypeResolver,
     errors: Vec<SemaError>,
     context: StatementContext,
@@ -142,7 +144,10 @@ struct StatementContext {
     seh_scopes: Vec<SehScope>,
     label_scopes: HashMap<String, Vec<SehScope>>,
     finally: Option<FinallyEntry>,
+    omp_region: Option<FinallyEntry>,
 }
+
+const OMP_BRANCH: &str = "invalid branch to/from OpenMP structured block";
 
 #[derive(Clone, Copy)]
 struct FinallyEntry {
@@ -1149,12 +1154,15 @@ impl Checker<'_> {
             }
             StmtKind::Break => {
                 let breakables = self.context.breakables;
+                self.omp_exit(stmt, |entry| entry.breakables == breakables);
                 self.finally_exit(stmt, |entry| entry.breakables == breakables)
             }
             StmtKind::Continue => {
                 let loops = self.context.loops;
+                self.omp_exit(stmt, |entry| entry.loops == loops);
                 self.finally_exit(stmt, |entry| entry.loops == loops)
             }
+            StmtKind::Omp { directive, body } => self.omp_region(stmt, directive, body),
             StmtKind::Goto(label) => self.seh_goto(stmt, label),
             StmtKind::SehLeave if self.context.seh_try_bodies == 0 => {
                 self.reject(stmt, "'__leave' statement not in __try block")
@@ -1168,6 +1176,7 @@ impl Checker<'_> {
                     node: stmt.id,
                     handler,
                     finally,
+                    openmp: false,
                 };
                 self.context.seh_try_bodies += 1;
                 self.context.seh_scopes.push(scope(false, false));
@@ -1190,12 +1199,7 @@ impl Checker<'_> {
                         self.context.seh_except = enclosing;
                     }
                     SehHandler::Finally(body) => {
-                        let entry = FinallyEntry {
-                            loops: self.context.loops,
-                            breakables: self.context.breakables,
-                            named_targets: self.context.named_targets.len(),
-                            seh_try_bodies: self.context.seh_try_bodies,
-                        };
+                        let entry = self.exit_entry();
                         let enclosing = self.context.finally.replace(entry);
                         self.context.seh_scopes.push(scope(true, true));
                         self.statement(body);
@@ -1241,6 +1245,7 @@ impl Checker<'_> {
             StmtKind::NamedBreak(label) => self.named_jump(stmt, label, false),
             StmtKind::NamedContinue(label) => self.named_jump(stmt, label, true),
             StmtKind::Return(expr) => {
+                self.omp_exit(stmt, |_| true);
                 self.finally_exit(stmt, |_| true);
                 self.expression(expr);
                 match self.context.returns {
@@ -1257,6 +1262,7 @@ impl Checker<'_> {
                 }
             }
             StmtKind::ReturnVoid => {
+                self.omp_exit(stmt, |_| true);
                 self.finally_exit(stmt, |_| true);
                 let accepted = match self.types.flavor() {
                     CompilerFlavor::Msvc => true,
@@ -1303,6 +1309,136 @@ impl Checker<'_> {
         self.context.breakables -= 1;
     }
 
+    fn exit_entry(&self) -> FinallyEntry {
+        FinallyEntry {
+            loops: self.context.loops,
+            breakables: self.context.breakables,
+            named_targets: self.context.named_targets.len(),
+            seh_try_bodies: self.context.seh_try_bodies,
+        }
+    }
+
+    fn omp_exit(&mut self, stmt: &Stmt, leaves: impl Fn(FinallyEntry) -> bool) {
+        if self.context.omp_region.is_some_and(leaves) {
+            self.reject(stmt, OMP_BRANCH);
+        }
+    }
+
+    fn omp_region(&mut self, stmt: &Stmt, directive: &Span<OmpDirective>, body: &Stmt) {
+        let mut listed = HashSet::new();
+        for clause in &directive.value.clauses {
+            match &clause.value {
+                OmpClause::DataSharing { sharing, variables } => {
+                    for variable in variables {
+                        self.omp_variable(*sharing, variable, &mut listed);
+                    }
+                }
+                OmpClause::NumThreads(value) => {
+                    self.expression(value);
+                    if let Ok(ty) = self.types.operand_type(value) {
+                        if self.types.ctypes.is_integer(ty) {
+                            let unsigned = self.types.ctypes.unsigned_int();
+                            self.convert(value, unsigned, ConversionContext::Cast);
+                        } else {
+                            self.reject(value, "`num_threads` expression must have integral type");
+                        }
+                    }
+                }
+                OmpClause::If(condition) => self.condition(condition),
+                OmpClause::Default(_) => {}
+            }
+        }
+        let default_none = directive
+            .value
+            .clauses
+            .iter()
+            .any(|clause| matches!(clause.value, OmpClause::Default(OmpDefault::None)));
+        if default_none {
+            let names = self.names;
+            for reference in names
+                .openmp_outer_references
+                .get(&stmt.id)
+                .into_iter()
+                .flatten()
+                .filter(|reference| !listed.contains(&reference.value))
+            {
+                let name = &names.bindings[reference.value.0 as usize].name;
+                self.errors.push(error(
+                    reference.provenance,
+                    reference.expansion,
+                    format!(
+                        "variable `{name}` must have explicitly specified data-sharing attributes"
+                    ),
+                ));
+            }
+        }
+        let enclosing = self.context.omp_region.replace(self.exit_entry());
+        self.context.seh_scopes.push(SehScope::openmp(stmt.id));
+        self.statement(body);
+        self.context.seh_scopes.pop();
+        self.context.omp_region = enclosing;
+    }
+
+    fn omp_variable(
+        &mut self,
+        sharing: OmpDataSharing,
+        variable: &Expr,
+        listed: &mut HashSet<BindingId>,
+    ) {
+        let ExprKind::Identifier(name) = &variable.value else {
+            return;
+        };
+        let Some(&original) = self.types.references.get(&variable.id) else {
+            return;
+        };
+        let reject = |message: String| error(variable.provenance, variable.expansion, message);
+        let kind = self
+            .names
+            .bindings
+            .get(original.0 as usize)
+            .map(|binding| binding.kind);
+        if !matches!(kind, Some(BindingKind::Object | BindingKind::Parameter)) {
+            let clause = sharing.spelling();
+            self.errors.push(reject(format!(
+                "`{name}` is not a variable in clause `{clause}`"
+            )));
+            return;
+        }
+        if !listed.insert(original) {
+            self.errors.push(reject(format!(
+                "`{name}` appears more than once in data-sharing clauses"
+            )));
+            return;
+        }
+        if sharing == OmpDataSharing::Shared {
+            return;
+        }
+        let Some(ty) = self.types.entities.ty(&original) else {
+            return;
+        };
+        let message = if sharing == OmpDataSharing::Private && self.types.ctypes.quals(ty).is_const
+        {
+            Some(format!(
+                "const-qualified variable `{name}` cannot be private"
+            ))
+        } else if self.types.ctypes.is_void(ty) || self.types.is_incomplete_record(ty) {
+            Some(format!(
+                "variable `{name}` in a privatizing clause has incomplete type"
+            ))
+        } else if self.types.ctypes.is_variably_modified(ty) {
+            Some(format!(
+                "privatizing variable-length array `{name}` is not supported yet"
+            ))
+        } else {
+            None
+        };
+        if let Some(message) = message {
+            self.errors.push(reject(message));
+        } else if let Some(&copy) = self.names.declarations.get(&variable.id) {
+            self.types.entities.declare(copy, ty, false);
+        }
+    }
+
     fn finally_exit(&mut self, stmt: &Stmt, leaves: impl Fn(FinallyEntry) -> bool) {
         if self.context.finally.is_some_and(leaves) {
             self.jump_out_of_finally(stmt);
@@ -1329,6 +1465,13 @@ impl Checker<'_> {
             .count();
         let leaves_finally = current[common..].iter().any(|scope| scope.finally);
         let enters_scope = common < target.len();
+        if current[common..]
+            .iter()
+            .chain(&target[common..])
+            .any(|scope| scope.openmp)
+        {
+            return self.reject(stmt, OMP_BRANCH);
+        }
         if leaves_finally {
             self.jump_out_of_finally(stmt);
         }
@@ -1369,6 +1512,7 @@ impl Checker<'_> {
             Some(target) if !is_continue || target.is_loop => {
                 self.types.named_jumps.insert(stmt.id, target.statement);
                 if let Some(position) = position {
+                    self.omp_exit(stmt, |entry| position < entry.named_targets);
                     self.finally_exit(stmt, |entry| position < entry.named_targets);
                 }
                 return;

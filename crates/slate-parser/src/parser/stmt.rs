@@ -31,12 +31,32 @@ impl Parser {
         start: usize,
         end: usize,
     ) -> Result<Vec<Stmt>, ParseError> {
-        self.input
-            .take(tokens, start, end)
+        self.annotation_statements(self.input.take(tokens, start, end))
+    }
+
+    fn leading_annotations(
+        &self,
+        tokens: &[Span<Token>],
+        position: usize,
+    ) -> Result<Vec<Stmt>, ParseError> {
+        let annotations = self.input.take_matching(tokens, position, position, |annotation| {
+            !matches!(annotation, Annotation::Pragma(tokens) if self.is_omp_region(tokens))
+        });
+        self.annotation_statements(annotations)
+    }
+
+    fn annotation_statements(
+        &self,
+        annotations: Vec<Span<Annotation>>,
+    ) -> Result<Vec<Stmt>, ParseError> {
+        annotations
             .into_iter()
             .map(|annotation| {
                 let kind = match &annotation.value {
                     Annotation::Comment(group) => StmtKind::Comment(group.clone()),
+                    Annotation::Pragma(tokens) if self.is_omp_region(tokens) => {
+                        return Err(self.omp_statement_expected(tokens));
+                    }
                     Annotation::Pragma(tokens) => {
                         StmtKind::Pragma(self.parse_pragma_tokens(tokens)?)
                     }
@@ -140,7 +160,7 @@ impl Parser {
         let mut position = 0;
         let mut stmts = Vec::new();
         while position < tokens.len() {
-            stmts.extend(self.statement_annotations(tokens, position, position)?);
+            stmts.extend(self.leading_annotations(tokens, position)?);
             let start = position;
             let mut cursor = TokenCursor::new(self, tokens, position);
             let stmt = self.parse_one_stmt(&mut cursor)?;
@@ -312,6 +332,20 @@ impl Parser {
 
     fn one_stmt(&self, cursor: &mut TokenCursor) -> Result<StmtKind, ParseError> {
         let tokens = cursor.tokens;
+
+        if let Some(pragma) = self
+            .input
+            .take_first_pragma(tokens, cursor.pos, |tokens| self.is_omp_region(tokens))
+        {
+            let directive = pragma.derive(self.parse_omp_directive(&pragma.value)?);
+            if matches!(tokens.value_at(cursor.pos), None | Some(Token::RBrace))
+                || self.starts_declaration(tokens, cursor.pos)
+            {
+                return Err(self.omp_statement_expected(&pragma.value));
+            }
+            let body = self.parse_body(cursor)?;
+            return Ok(StmtKind::Omp { directive, body });
+        }
 
         if tokens.value_at(cursor.pos) == Some(&Token::Semi) {
             cursor.pos += 1;

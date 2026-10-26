@@ -282,6 +282,12 @@ statement  = simple { metadata } ";"
            | "seh_try" binding { metadata }
                "body:" body
                ( "except" evaluation ":" body | "finally:" body )
+           | "omp_parallel" { metadata }
+               [ "num_threads:" value ]
+               [ "if:" value ]
+               [ "shared:" binding { "," binding } ]
+               { ( "private" | "firstprivate" ) binding ":" variable }
+               "body:" body
            | asm
            | "{" { metadata } body "}" ;
 asm        = "asm" [ " volatile" ] [ " inline" ] [ " goto" ] string
