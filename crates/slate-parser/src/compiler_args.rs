@@ -313,6 +313,8 @@ struct ParsedCompilerArgs {
     msvc_strict_ansi: bool,
     msvc_stdc_macro: bool,
     msvc_undefine_predefined: bool,
+    msvc_openmp_llvm: bool,
+    msvc_openmp_experimental: bool,
     short_wchar: Option<bool>,
     short_enums: Option<bool>,
     pack_struct: Option<bool>,
@@ -400,6 +402,13 @@ impl ParsedCompilerArgs {
         let enabled = self.openmp == Some(true);
         if self.flavor.is_gcc() {
             return Ok(enabled.then_some(202111));
+        }
+        if self.flavor.is_msvc() {
+            return Ok(enabled.then_some(if self.msvc_openmp_experimental {
+                2019
+            } else {
+                200203
+            }));
         }
         if !self.flavor.is_clang() {
             return Ok(None);
@@ -647,6 +656,7 @@ enum Opt {
     MsvcStdcMacro,
     MsvcTrigraphs,
     MsvcUndefinePredefined,
+    MsvcOpenMp,
     Permissive,
     DeleteNullPointerChecks,
     TrivialAutoVarInit,
@@ -789,6 +799,7 @@ impl std::fmt::Display for Opt {
             Self::MsvcStdcMacro => "Zc:__STDC__",
             Self::MsvcTrigraphs => "Zc:trigraphs",
             Self::MsvcUndefinePredefined => "u",
+            Self::MsvcOpenMp => "openmp",
             Self::Permissive => "fpermissive",
             Self::DeleteNullPointerChecks => "fdelete-null-pointer-checks",
             Self::TrivialAutoVarInit => "ftrivial-auto-var-init",
@@ -939,7 +950,8 @@ impl Opt {
             | Self::MsvcExtensions
             | Self::MsvcStdcMacro
             | Self::MsvcTrigraphs
-            | Self::MsvcUndefinePredefined => &[Msvc],
+            | Self::MsvcUndefinePredefined
+            | Self::MsvcOpenMp => &[Msvc],
             Self::CodegenOnly(spelling) => {
                 codegen_only_flag_named(spelling).map_or(&[], |flag| flag.flavors)
             }
@@ -2140,6 +2152,15 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
         } else if argument == "/u" {
             parsed.saw(Opt::MsvcUndefinePredefined, argument);
             parsed.msvc_undefine_predefined = true;
+        } else if matches!(
+            argument.as_str(),
+            "/openmp" | "/openmp:llvm" | "/openmp:experimental" | "/openmp-"
+        ) {
+            parsed.saw(Opt::MsvcOpenMp, argument);
+            parsed.openmp = Some(argument != "/openmp-");
+            parsed.msvc_openmp_llvm =
+                argument == "/openmp:llvm" || (parsed.msvc_openmp_llvm && argument != "/openmp-");
+            parsed.msvc_openmp_experimental = argument == "/openmp:experimental";
         } else if argument == "/w" {
             parsed.saw(Opt::MsvcNoWarnings, argument);
             parsed.msvc_warning_level = parsed
@@ -2357,11 +2378,19 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
             .insert(0, MacroOption::Define("__EXCEPTIONS".into()));
     }
     parsed.openmp_date = parsed.openmp_date()?;
-    if let Some(date) = parsed.openmp_date {
+    if let Some(date) = parsed.openmp_date
+        && !parsed.msvc_undefine_predefined
+    {
         parsed
             .preprocessor_inputs
             .macros
             .insert(0, MacroOption::Define(format!("_OPENMP={date}")));
+        if parsed.msvc_openmp_llvm {
+            parsed
+                .preprocessor_inputs
+                .macros
+                .insert(0, MacroOption::Define("_OPENMP_LLVM_RUNTIME".into()));
+        }
     }
     if parsed.pthread || (parsed.flavor.is_gcc() && parsed.openmp_date.is_some()) {
         parsed

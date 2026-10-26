@@ -76,9 +76,19 @@ each stage is in [configuration-threading](configuration-threading.md).
     `__ARM_*` macro (`MSVC_UNDEFINABLE_PREDEFINES` in `pp/mod.rs`). It keeps
     `_MSC_EXTENSIONS`, `__STDC_HOSTED__`, `_MSVC_MT`, `_MSVC_MD`, the x86
     ISA macros (`__AVX2__`) and the other option predefines. `/D` and `/U`
-    apply after it in either order, so `/D_MSC_VER=5 /u` keeps `5`. cl.exe
-    also removes `_OPENMP` and `_OPENMP_LLVM_RUNTIME`, which slate's msvc
-    flavor does not define yet. Checked against cl.exe on x64, x86 and arm64.
+    apply after it in either order, so `/D_MSC_VER=5 /u` keeps `5`. It also
+    removes `_OPENMP` and `_OPENMP_LLVM_RUNTIME`; OpenMP stays on.
+    Checked against cl.exe on x64, x86 and arm64.
+  - `/openmp`, `/openmp:llvm`, `/openmp:experimental` and `/openmp-` turn
+    OpenMP on (off for `/openmp-`; cl.exe warns D9025 on each override, slate
+    does not). `_OPENMP` is `2019` when the last positive spelling is
+    `/openmp:experimental`, otherwise `200203`. `_OPENMP_LLVM_RUNTIME 1`
+    appears once `/openmp:llvm` is seen and stays until a later `/openmp-`, so
+    `/openmp:llvm /openmp:experimental` defines both `2019` and the runtime
+    macro. `/u` suppresses both macros. `CompilerOptions::openmp` makes
+    `#pragma omp` a parse error, as with `-fopenmp` (slate-3amj.24.2). cl.exe
+    reads other `/openmp:` spellings as the deprecated `/o`; slate rejects
+    them.
   - `/W0`..`/W4`, `/Wall` and `/w` set `_MSVC_WARNING_LEVEL` (`nL`, `100L`,
     `0L`; `MicrosoftFlags::warning_level`). The last one wins, except that
     `/Wall` sticks once seen. `/W` takes a joined or separate value; another
