@@ -79,6 +79,9 @@ Differential tests use `clang` on PATH as the C oracle. Slate frontend translati
 invoke Clang.
 
 Install a sysroot with `cargo run -p slate-c2rust -- sysroot install <triple>`.
+Then run `python3 tools/clangd_flags.py` to write the gitignored
+`compile_flags.txt` files, which point clangd at the same x86_64 linux
+compiler headers and sysroot slate-parser uses.
 
 ## Debugging a fixture
 
