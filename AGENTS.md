@@ -78,6 +78,23 @@ bd close <id>         # Complete work
   TODO lists
 - Run `bd prime` for detailed command reference and session close protocol
 - Use `bd remember` for persistent knowledge — do NOT use MEMORY.md files
+- Every new bead needs a parent (`bd create --parent <id>`): one of the
+  top-level epics below, or a sub-epic under one. Never create a top-level
+  bead other than a new top-level epic the user asked for.
+
+| Epic         | Area                                                    |
+| ------------ | ------------------------------------------------------- |
+| `slate-3amj` | Compiler flags that change semantics (all flavors)      |
+| `slate-e36k` | Clang flavor compatibility                              |
+| `slate-78pa` | GCC flavor compatibility                                |
+| `slate-j3by` | MSVC flavor and Windows ABI compatibility               |
+| `slate-5exy` | Standard C, preprocessor, and sema                      |
+| `slate-yar4` | Rust lowering, ABI, and runtime correctness             |
+| `slate-gbgp` | Rewrite correctness and Rust idioms                     |
+| `slate-f2zu` | Real-world corpus: translate, build and run C projects  |
+| `slate-3of2` | gcc-torture and gcc.dg suites                           |
+| `slate-xw0x` | Test suites and the differential harness                |
+| `slate-5q63` | Tooling, performance, and project translation           |
 
 ## Navigating code
 
