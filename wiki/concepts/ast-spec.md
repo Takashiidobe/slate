@@ -467,26 +467,36 @@ StmtKind =
 
 SwitchLabel = Case(Expr) | CaseRange { start: Expr, end: Expr } | Default
 SehHandler = Except { filter: Expr, body: Box<Stmt> } | Finally(Box<Stmt>)
-OmpDirective = { kind: OmpDirectiveKind, clauses: Vec<Span<OmpClause>> }
-OmpDirectiveKind = Parallel
+OmpDirective = { kind: OmpDirectiveKind, clauses: Vec<Span<OmpClause>>, associated_loops: usize }
+OmpDirectiveKind = Parallel | For | ParallelFor
 OmpClause = DataSharing { sharing: Private | Firstprivate | Shared, variables: Vec<Expr> }
           | Default(Shared | None | Private | Firstprivate)
           | NumThreads(Expr)
           | If(Expr)
+          | Schedule(OmpSchedule)
+          | Collapse(Expr) | Nowait
+OmpSchedule = { kind: Static | Dynamic | Guided | Auto | Runtime,
+                modifier: Option<Monotonic | Nonmonotonic>, chunk: Option<Expr> }
 ```
 
 - OpenMP (`parser/openmp.rs`), only with `CompilerOptions::openmp`: a
-  `#pragma omp parallel` annotation in front of a statement becomes `Omp`
-  wrapping that statement (`#pragma omp parallel` followed by another
-  region directive nests). The preprocessor macro-expands the operands of
-  `#pragma omp` when OpenMP is on, as gcc and clang do. Clause variables
-  are `Identifier` expressions so name resolution sees them. A missing or
-  declaration body, a duplicate `num_threads`/`if`/`default`, an unknown
-  clause and a region directive at file scope are parse errors. Other
-  OpenMP directives are "not supported yet" errors (`simd` stays an ignored
-  `Opaque` pragma); an unknown directive name is ignored by gcc and an error
-  for clang and msvc. msvc rejects the `if(parallel:)` modifier and
-  `default(private|firstprivate)`.
+  `#pragma omp parallel`, `for`, or `parallel for` becomes `Omp` wrapping that
+  statement (`#pragma omp parallel` followed by another region directive nests).
+  The preprocessor macro-expands the operands of `#pragma omp` when OpenMP is
+  on, as gcc and clang do. Clause variables are `Identifier` expressions so name
+  resolution sees them. A missing or declaration body, a duplicate
+  `num_threads`/`if`/`default`, an unknown clause and a region directive at file
+  scope are parse errors. Other OpenMP directives are "not supported yet" errors
+  (`simd` stays an ignored `Opaque` pragma); an unknown directive name is
+  ignored by gcc and an error for clang and msvc. msvc rejects the
+  `if(parallel:)` modifier and `default(private|firstprivate)`.
+
+- Loop directives require a `For` body. `associated_loops` is the positive
+  literal/arithmetic `collapse` depth, one without `collapse`, zero for a plain
+  parallel region. MSVC ignores `collapse`, including its depth. `schedule`
+  supports static/dynamic/guided/auto/runtime, an optional
+  monotonic/nonmonotonic modifier, and an optional chunk expression. MSVC
+  rejects auto and modifiers. `nowait` belongs only to standalone `for`.
 
 - SEH: `__try`, `__except`, `__finally`, and `__leave` are keywords when
   `microsoft_extensions` is on (msvc, clang on `*-windows-msvc`,

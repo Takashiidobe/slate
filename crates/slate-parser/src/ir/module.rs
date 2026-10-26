@@ -1,8 +1,9 @@
 use super::{
-    AbiSignature, Atomicity, BindingId, Comments, FenceScope, Global, InlineAsm, Parameters, Place,
-    Type, TypeDefinition, Value, Variable,
+    AbiSignature, Atomicity, BindingId, Comments, CompareOp, FenceScope, Global, InlineAsm,
+    Parameters, Place, Type, TypeDefinition, Value, Variable,
 };
 use crate::ast::{CommentAttach, CommentGroup, NodeId, Span};
+pub use crate::ast::{OmpScheduleKind, OmpScheduleModifier};
 use crate::target_info::TargetInfo;
 use std::collections::HashMap;
 
@@ -260,6 +261,7 @@ pub enum Statement {
     },
     SehLeave(BindingId),
     OmpParallel(Box<OmpParallel>),
+    OmpFor(Box<OmpFor>),
 }
 
 #[derive(Debug, Clone)]
@@ -282,6 +284,33 @@ pub struct OmpPrivate {
     pub original: BindingId,
     pub copy: Variable,
     pub firstprivate: bool,
+}
+
+#[derive(Debug, Clone)]
+pub struct OmpFor {
+    pub id: BindingId,
+    pub schedule: Option<OmpSchedule>,
+    pub nowait: bool,
+    pub private: Vec<OmpPrivate>,
+    pub loops: Vec<OmpLoop>,
+    pub body: Vec<Span<Statement>>,
+}
+
+#[derive(Debug, Clone)]
+pub struct OmpSchedule {
+    pub kind: OmpScheduleKind,
+    pub modifier: Option<OmpScheduleModifier>,
+    pub chunk: Option<Value>,
+}
+
+#[derive(Debug, Clone)]
+pub struct OmpLoop {
+    pub variable: Variable,
+    pub lower: Value,
+    pub compare: CompareOp,
+    pub upper: Value,
+    pub step: Value,
+    pub decrement: bool,
 }
 
 #[derive(Debug, Clone)]

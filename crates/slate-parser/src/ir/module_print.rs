@@ -737,6 +737,68 @@ impl Printer<'_> {
                     self.statements(f, &region.body, indent + 8)?;
                     continue;
                 }
+                Statement::OmpFor(region) => {
+                    write!(f, "omp_for %{}", region.id.0)?;
+                    metadata(f, self.table(), statement.id)?;
+                    writeln!(f)?;
+                    let value = |value: &super::Value| {
+                        value
+                            .display_metadata(false, self.table())
+                            .with_compact(self.compact)
+                            .to_string()
+                    };
+                    if let Some(schedule) = &region.schedule {
+                        write!(
+                            f,
+                            "{:indent$}    schedule: {}",
+                            "",
+                            schedule.kind.spelling()
+                        )?;
+                        if let Some(modifier) = schedule.modifier {
+                            write!(f, " {}", modifier.spelling())?;
+                        }
+                        if let Some(chunk) = &schedule.chunk {
+                            write!(f, ", chunk {}", value(chunk))?;
+                        }
+                        writeln!(f)?;
+                    }
+                    if region.nowait {
+                        writeln!(f, "{:indent$}    nowait", "")?;
+                    }
+                    for private in &region.private {
+                        let kind = if private.firstprivate {
+                            "firstprivate"
+                        } else {
+                            "private"
+                        };
+                        write!(f, "{:indent$}    {kind} %{}: ", "", private.original.0)?;
+                        self.variable(f, &private.copy)?;
+                        writeln!(f)?;
+                    }
+                    for nested in &region.loops {
+                        write!(f, "{:indent$}    loop ", "")?;
+                        self.variable(f, &nested.variable)?;
+                        writeln!(f)?;
+                        writeln!(f, "{:indent$}        lower: {}", "", value(&nested.lower))?;
+                        writeln!(
+                            f,
+                            "{:indent$}        condition: {} {}",
+                            "",
+                            nested.compare,
+                            value(&nested.upper)
+                        )?;
+                        let direction = if nested.decrement { "sub" } else { "add" };
+                        writeln!(
+                            f,
+                            "{:indent$}        step: {direction} {}",
+                            "",
+                            value(&nested.step)
+                        )?;
+                    }
+                    writeln!(f, "{:indent$}    body:", "")?;
+                    self.statements(f, &region.body, indent + 8)?;
+                    continue;
+                }
                 Statement::Asm(asm) => {
                     f.write_str("asm")?;
                     if asm.volatile {

@@ -86,10 +86,12 @@ severity(w) =
 | `traditional`                                    | off                                 | no                     | gcc only, `pp/traditional.rs`: a directive whose `#` is indented when K&R has it unindented (`#define #undef #include #if #ifdef #ifndef #else #endif #line`) or unindented when it is not (`#assert #error #pragma #warning #ident #import ...`); every `#elif`; a function-like macro name without `(`; a `U` suffix on an integer literal; a unary `+` in an evaluated part of `#if`; `\x`, `\a`, `\u`, `\U` in a string or character literal |
 | `higher-precision-for-complex-division`         | on                                  | no                     | clang `range=promoted` complex division that has no wider type (double on windows-msvc, long double); falls back to improved. Once per TU at the first use, with a suffix when more uses follow
 
+- `openmp` warns for nonpositive constant schedule chunks and MSVC `collapse`
+  clauses (ignored, matching C4849). It defaults on and is not pedantic.
 - `c99-compat` is not pedantic: clang keeps it a warning under
   `-pedantic-errors`.
-- `c23-extensions` is clang's `ExtWarn` shape. gcc is silent, but the
-  flavor doesn't change whether it's raised.
+- `c23-extensions` is clang's `ExtWarn` shape. gcc is silent, but the flavor
+  doesn't change whether it's raised.
 - Literal warnings come from the candidate `select_integer_candidate`
   (`sema/validate.rs`, shared with `sema/numeric.rs`) picked
   ([integer literals](ir/types.md#integer-literals)).

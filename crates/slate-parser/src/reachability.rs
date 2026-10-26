@@ -388,10 +388,15 @@ impl<'a> Reachability<'a> {
                                 self.mark_expr(variable);
                             }
                         }
-                        OmpClause::NumThreads(value) | OmpClause::If(value) => {
+                        OmpClause::NumThreads(value)
+                        | OmpClause::If(value)
+                        | OmpClause::Collapse(value)
+                        | OmpClause::Schedule(OmpSchedule {
+                            chunk: Some(value), ..
+                        }) => {
                             self.mark_expr(value);
                         }
-                        OmpClause::Default(_) => {}
+                        OmpClause::Default(_) | OmpClause::Schedule(_) | OmpClause::Nowait => {}
                     }
                 }
                 self.mark_stmt(body);

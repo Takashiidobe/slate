@@ -194,6 +194,27 @@ impl Hoister {
                     region.body = self.statements(std::mem::take(&mut region.body))?;
                     Statement::OmpParallel(region)
                 }
+                Statement::OmpFor(mut region) => {
+                    if let Some(schedule) = &mut region.schedule {
+                        schedule.chunk = schedule
+                            .chunk
+                            .take()
+                            .map(|value| self.value(value, &mut out))
+                            .transpose()?;
+                    }
+                    let mut loops = Vec::new();
+                    for nested in std::mem::take(&mut region.loops) {
+                        loops.push(OmpLoop {
+                            lower: self.value(nested.lower, &mut out)?,
+                            upper: self.value(nested.upper, &mut out)?,
+                            step: self.value(nested.step, &mut out)?,
+                            ..nested
+                        });
+                    }
+                    region.loops = loops;
+                    region.body = self.statements(std::mem::take(&mut region.body))?;
+                    Statement::OmpFor(region)
+                }
                 Statement::SehTry { id, body, handler } => Statement::SehTry {
                     id,
                     body: self.statements(body)?,

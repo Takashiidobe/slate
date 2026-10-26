@@ -288,6 +288,16 @@ statement  = simple { metadata } ";"
                [ "shared:" binding { "," binding } ]
                { ( "private" | "firstprivate" ) binding ":" variable }
                "body:" body
+           | "omp_for" binding { metadata }
+               [ "schedule:" ("static" | "dynamic" | "guided" | "auto" | "runtime")
+                   [ "monotonic" | "nonmonotonic" ] [ ", chunk" value ] ]
+               [ "nowait" ]
+               { ( "private" | "firstprivate" ) binding ":" variable }
+               { "loop" variable
+                   "lower:" value
+                   "condition:" compare_op value
+                   "step:" ("add" | "sub") value }
+               "body:" body
            | asm
            | "{" { metadata } body "}" ;
 asm        = "asm" [ " volatile" ] [ " inline" ] [ " goto" ] string

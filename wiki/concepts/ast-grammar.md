@@ -322,12 +322,18 @@ SwitchLabel = "Case(" expr ")"
             | "Default" ;
 SehHandler = Except { filter: expr, body: stmt }
            | "Finally(" stmt ")" ;
-OmpDirective = OmpDirective { kind: "Parallel", clauses: vec<span<OmpClause>> } ;
+OmpDirective = OmpDirective { kind: ("Parallel" | "For" | "ParallelFor"),
+                              clauses: vec<span<OmpClause>>, associated_loops: int } ;
 OmpClause = DataSharing { sharing: ("Private" | "Firstprivate" | "Shared"),
                           variables: vec<expr> }
           | "Default(" ("Shared" | "None" | "Private" | "Firstprivate") ")"
           | "NumThreads(" expr ")"
-          | "If(" expr ")" ;
+          | "If(" expr ")"
+          | "Schedule(" OmpSchedule ")"
+          | "Collapse(" expr ")" | "Nowait" ;
+OmpSchedule = OmpSchedule { kind: ("Static" | "Dynamic" | "Guided" | "Auto" | "Runtime"),
+                            modifier: option<("Monotonic" | "Nonmonotonic")>,
+                            chunk: option<expr> } ;
 ```
 
 - `Attribute` is an attribute declaration (`[[fallthrough]];`);

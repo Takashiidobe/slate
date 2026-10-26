@@ -344,6 +344,16 @@ impl Parser {
                 return Err(self.omp_statement_expected(&pragma.value));
             }
             let body = self.parse_body(cursor)?;
+            if directive.value.kind.is_loop() && !matches!(body.value, StmtKind::For { .. }) {
+                return Err(self.error_at_tokens(
+                    &pragma.value,
+                    1,
+                    format!(
+                        "statement after `#pragma omp {}` must be a for loop",
+                        directive.value.kind.spelling()
+                    ),
+                ));
+            }
             return Ok(StmtKind::Omp { directive, body });
         }
 

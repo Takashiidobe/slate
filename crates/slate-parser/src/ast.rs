@@ -416,11 +416,14 @@ pub enum StmtKind {
 pub struct OmpDirective {
     pub kind: OmpDirectiveKind,
     pub clauses: Vec<Span<OmpClause>>,
+    pub associated_loops: usize,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum OmpDirectiveKind {
     Parallel,
+    For,
+    ParallelFor,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -432,6 +435,31 @@ pub enum OmpClause {
     Default(OmpDefault),
     NumThreads(Expr),
     If(Expr),
+    Schedule(OmpSchedule),
+    Collapse(Expr),
+    Nowait,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct OmpSchedule {
+    pub kind: OmpScheduleKind,
+    pub modifier: Option<OmpScheduleModifier>,
+    pub chunk: Option<Expr>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum OmpScheduleKind {
+    Static,
+    Dynamic,
+    Guided,
+    Auto,
+    Runtime,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum OmpScheduleModifier {
+    Monotonic,
+    Nonmonotonic,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -453,8 +481,63 @@ impl OmpDirectiveKind {
     pub fn spelling(self) -> &'static str {
         match self {
             Self::Parallel => "parallel",
+            Self::For => "for",
+            Self::ParallelFor => "parallel for",
         }
     }
+
+    pub fn is_parallel(self) -> bool {
+        matches!(self, Self::Parallel | Self::ParallelFor)
+    }
+
+    pub fn is_loop(self) -> bool {
+        matches!(self, Self::For | Self::ParallelFor)
+    }
+}
+
+impl OmpScheduleKind {
+    pub fn spelling(self) -> &'static str {
+        match self {
+            Self::Static => "static",
+            Self::Dynamic => "dynamic",
+            Self::Guided => "guided",
+            Self::Auto => "auto",
+            Self::Runtime => "runtime",
+        }
+    }
+}
+
+impl OmpScheduleModifier {
+    pub fn spelling(self) -> &'static str {
+        match self {
+            Self::Monotonic => "monotonic",
+            Self::Nonmonotonic => "nonmonotonic",
+        }
+    }
+}
+
+pub fn omp_loop_nest(body: &Stmt, depth: usize) -> Vec<&Stmt> {
+    let mut nest = Vec::new();
+    let mut current = body;
+    while nest.len() < depth {
+        match &current.value {
+            StmtKind::For { body, .. } => {
+                nest.push(current);
+                current = body;
+            }
+            StmtKind::Block(statements) => {
+                let mut statements = statements
+                    .iter()
+                    .filter(|statement| !matches!(statement.value, StmtKind::Comment(_)));
+                match (statements.next(), statements.next()) {
+                    (Some(only), None) if !nest.is_empty() => current = only,
+                    _ => break,
+                }
+            }
+            _ => break,
+        }
+    }
+    nest
 }
 
 impl OmpDataSharing {

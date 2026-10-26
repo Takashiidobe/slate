@@ -85,6 +85,7 @@ pub struct TypeResolver {
     pub(super) conversions: HashMap<crate::ast::NodeId, super::ctype::convert::Conversion>,
     pub(super) operand_conversions:
         HashMap<(crate::ast::NodeId, super::typer::Slot), Vec<super::typer::Step>>,
+    pub(super) openmp_step_types: HashMap<crate::ast::NodeId, QualType>,
     pub(super) computation_types: HashMap<crate::ast::NodeId, QualType>,
     pub(super) choices: HashMap<crate::ast::NodeId, super::typer::Choice>,
     pub(super) promoted_parameters: HashMap<crate::ast::NodeId, QualType>,
@@ -127,6 +128,10 @@ pub struct TypeResolver {
 impl TypeResolver {
     pub(super) fn target_info(&self) -> &TargetInfo {
         self.dialect.target()
+    }
+
+    pub(super) fn ptrdiff_type(&mut self) -> QualType {
+        self.ctypes.ptrdiff_type(self.dialect.target())
     }
 
     pub(super) fn dialect(&self) -> &Dialect {
@@ -192,6 +197,7 @@ impl TypeResolver {
             integer_limits: HashMap::new(),
             conversions: HashMap::new(),
             operand_conversions: HashMap::new(),
+            openmp_step_types: HashMap::new(),
             computation_types: HashMap::new(),
             choices: HashMap::new(),
             promoted_parameters: HashMap::new(),

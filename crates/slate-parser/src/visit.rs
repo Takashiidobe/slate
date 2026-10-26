@@ -245,15 +245,28 @@ pub fn walk_omp_clauses<V: Visitor + ?Sized>(
     directive: &OmpDirective,
 ) -> Result<(), V::Error> {
     for clause in &directive.clauses {
-        match &clause.value {
-            OmpClause::DataSharing { variables, .. } => {
-                for variable in variables {
-                    visitor.visit_expr(variable)?;
-                }
+        walk_omp_clause(visitor, &clause.value)?;
+    }
+    Ok(())
+}
+
+pub fn walk_omp_clause<V: Visitor + ?Sized>(
+    visitor: &mut V,
+    clause: &OmpClause,
+) -> Result<(), V::Error> {
+    match clause {
+        OmpClause::DataSharing { variables, .. } => {
+            for variable in variables {
+                visitor.visit_expr(variable)?;
             }
-            OmpClause::NumThreads(value) | OmpClause::If(value) => visitor.visit_expr(value)?,
-            OmpClause::Default(_) => {}
         }
+        OmpClause::NumThreads(value)
+        | OmpClause::If(value)
+        | OmpClause::Collapse(value)
+        | OmpClause::Schedule(OmpSchedule {
+            chunk: Some(value), ..
+        }) => visitor.visit_expr(value)?,
+        OmpClause::Default(_) | OmpClause::Schedule(_) | OmpClause::Nowait => {}
     }
     Ok(())
 }

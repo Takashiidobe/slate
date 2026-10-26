@@ -2,7 +2,7 @@ use crate::ast::{
     AlignAsOperand, ArraySize, Attribute, Decl, DeclKind, Declaration, Declarator, EnumItemKind,
     Expr, ExprKind, Initializer, InitializerItem, Loc, OmpClause, OmpDataSharing, OmpDirective,
     ParameterList, SehHandler, Span, Stmt, StmtKind, StorageClass, TagBody, TagId as AstTagId,
-    TagSpecifier, TranslationUnit, TypeName, TypeOfOperand, TypeSpecifier,
+    TagSpecifier, TranslationUnit, TypeName, TypeOfOperand, TypeSpecifier, omp_loop_nest,
 };
 use crate::compiler_args::CompilerFlavor;
 use crate::dialect::Dialect;
@@ -1000,7 +1000,26 @@ impl Resolver {
         directive: &Span<OmpDirective>,
         body: &Stmt,
     ) -> Result<(), ResolveError> {
-        visit::walk_omp_clauses(self, &directive.value)?;
+        let parallel = directive.value.kind.is_parallel();
+        let combined = parallel && directive.value.kind.is_loop();
+        for clause in &directive.value.clauses {
+            if !combined || !matches!(clause.value, OmpClause::Schedule(_)) {
+                visit::walk_omp_clause(self, &clause.value)?;
+            }
+        }
+        if parallel {
+            self.omp_regions.push(OmpRegionFrame {
+                depth: self.ordinary.len(),
+                outer: Vec::new(),
+            });
+        }
+        if combined {
+            for clause in &directive.value.clauses {
+                if matches!(clause.value, OmpClause::Schedule(_)) {
+                    visit::walk_omp_clause(self, &clause.value)?;
+                }
+            }
+        }
         self.push_scope();
         if !self.collecting_labels {
             for clause in &directive.value.clauses {
@@ -1022,20 +1041,53 @@ impl Resolver {
                         .insert(name.clone(), entry);
                 }
             }
+            for nested in omp_loop_nest(body, directive.value.associated_loops) {
+                let StmtKind::For { init, .. } = &nested.value else {
+                    continue;
+                };
+                if let Some((target, _)) = super::openmp::assigned_variable(init.as_deref()) {
+                    self.privatize_iteration_variable(target);
+                }
+            }
         }
-        self.omp_regions.push(OmpRegionFrame {
-            depth: self.ordinary.len() - 1,
-            outer: Vec::new(),
-        });
         let result = self.visit_stmt(body);
-        let frame = self.omp_regions.pop().unwrap();
+        let frame = parallel.then(|| self.omp_regions.pop().unwrap());
         self.pop_scope();
-        if !self.collecting_labels {
+        if let Some(frame) = frame
+            && !self.collecting_labels
+        {
             self.resolution
                 .openmp_outer_references
                 .insert(statement.id, frame.outer);
         }
         result
+    }
+
+    fn privatize_iteration_variable(&mut self, target: &Expr) {
+        let ExprKind::Identifier(name) = &target.value else {
+            return;
+        };
+        let construct = self.ordinary.len() - 1;
+        let Some((depth, original, kind)) = self
+            .ordinary
+            .iter()
+            .enumerate()
+            .rev()
+            .find_map(|(depth, scope)| scope.get(name).map(|entry| (depth, entry.id, entry.kind)))
+        else {
+            return;
+        };
+        if depth == construct || !matches!(kind, BindingKind::Object | BindingKind::Parameter) {
+            return;
+        }
+        let entry = self.new_entry(name, BindingKind::Object, target);
+        self.resolution
+            .openmp_iteration_copies
+            .insert(entry.id, original);
+        self.ordinary
+            .last_mut()
+            .unwrap()
+            .insert(name.clone(), entry);
     }
 
     fn record_omp_reference<T>(&mut self, name: &str, span: &Span<T>) {

@@ -32,10 +32,11 @@ pub enum Warning {
     ExtraSemi,
     UnrepresentableCharacter,
     HigherPrecisionForComplexDivision,
+    Openmp,
 }
 
 impl Warning {
-    pub const ALL: [Self; 28] = [
+    pub const ALL: [Self; 29] = [
         Self::LongLong,
         Self::C99Compat,
         Self::ImplicitlyUnsignedLiteral,
@@ -64,10 +65,12 @@ impl Warning {
         Self::ExtraSemi,
         Self::UnrepresentableCharacter,
         Self::HigherPrecisionForComplexDivision,
+        Self::Openmp,
     ];
 
     pub fn name(self) -> &'static str {
         match self {
+            Self::Openmp => "openmp",
             Self::LongLong => "long-long",
             Self::C99Compat => "c99-compat",
             Self::ImplicitlyUnsignedLiteral => "implicitly-unsigned-literal",

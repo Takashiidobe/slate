@@ -77,34 +77,56 @@ form was.
 
 ### OpenMP regions
 
-- `Statement::OmpParallel(OmpParallel)` is `#pragma omp parallel`.
-  `num_threads` is converted to `unsigned int` (libgomp's parameter) and
-  `condition` (the `if` clause) to a truth value; both are hoisted before
-  the region, so they are evaluated once by the encountering thread.
+- `Statement::OmpParallel(OmpParallel)` is `#pragma omp parallel`. `num_threads`
+  is converted to `unsigned int` (libgomp's parameter) and `condition` (the `if`
+  clause) to a truth value; both are hoisted before the region, so they are
+  evaluated once by the encountering thread.
 - `private` lists one `OmpPrivate { original, copy, firstprivate }` per
-  `private`/`firstprivate` variable. `copy` is a fresh automatic
-  `Variable` with the original's type and no initializer; the body refers
-  to `copy` only (name resolution declares it in a scope around the body).
-  A `firstprivate` copy starts as the original's value at region entry.
-  Globals can be privatized too.
-- `shared` lists, as `OmpShared { binding, ty }`, the automatic variables
-  and parameters declared outside the region that the body references,
-  explicit `shared` or implicit, in first-reference order. `ty` lets the
-  backend capture a VLA by its element pointer. Globals and static locals are shared but not
+  `private`/`firstprivate` variable. `copy` is a fresh automatic `Variable` with
+  the original's type and no initializer; the body refers to `copy` only (name
+  resolution declares it in a scope around the body). A `firstprivate` copy
+  starts as the original's value at region entry. Globals can be privatized too.
+- `shared` lists, as `OmpShared { binding, ty }`, the automatic variables and
+  parameters declared outside the region that the body references, explicit
+  `shared` or implicit, in first-reference order. `ty` lets the backend capture
+  a VLA by its element pointer. Globals and static locals are shared but not
   listed: they need no capture.
-- Checker (`sema/assertion.rs`): clause variables must be variables, at
-  most once across data-sharing clauses; a `private` variable cannot be
-  const; privatized variables must be complete and not variably modified
-  (VLA copies are unsupported). `num_threads` must be an integer, `if`
-  scalar. `default(none)` requires every outer variable the body
-  references, globals and static locals included, to be listed.
-  `return`, `break`/`continue` (named or not) and `goto` that leave or
-  enter a region are "invalid branch to/from OpenMP structured block"
-  (gcc's wording; region scopes join the SEH scope paths for `goto`).
-- Slate has no Rust lowering yet (slate-3amj.24.3); the statement is a
-  lowering barrier.
+- Checker (`sema/assertion.rs`): clause variables must be variables, at most
+  once across data-sharing clauses; a `private` variable cannot be const;
+  privatized variables must be complete and not variably modified (VLA copies
+  are unsupported). `num_threads` must be an integer, `if` scalar.
+  `default(none)` requires every outer variable the body references, globals and
+  static locals included, to be listed. `return`, `break`/`continue` (named or
+  not) and `goto` that leave or enter a region are "invalid branch to/from
+  OpenMP structured block" (gcc's wording; region scopes join the SEH scope
+  paths for `goto`).
+- Rust lowering for parallel regions: [OpenMP lowering](../openmp-lowering.md).
+- `Statement::OmpFor` carries schedule, `nowait`, private copies, a vector of
+  canonical `OmpLoop` descriptors, and the innermost body. Vector length is the
+  effective collapse depth. Each descriptor contains the private iteration
+  variable, lower/upper bounds converted to its type, comparison, step and
+  add/sub direction. Pointer steps use `ptrdiff_t` in elements. Reversed
+  comparisons are normalized; signed, unsigned and pointer iterators and both
+  declaration/assignment initializers are supported.
+- `parallel for` is an `OmpParallel` whose body is an `OmpFor`: parallel clauses
+  and explicit private copies stay on the outer region, schedule and loop
+  descriptors on the inner region. Schedule chunk references bind before
+  privatization and participate in the parallel region captures. Iteration
+  variables are implicitly private, including under `default(none)`.
+- Loop checker rejects noncanonical initializers, conditions, increments,
+  nonintegral/nonpointer iterators, self-dependent upper bounds and nonintegral
+  chunks. GCC accepts nonpositive constant chunks with a warning; Slate emits
+  `-Wopenmp` for those constants. Runtime chunks must be positive.
+- MSVC ignores `collapse` (C4849), including nonconstant/repeated clauses; only
+  the outer loop is distributed. It rejects schedule modifiers/auto. Oracle
+  checks: clang/gcc `-fopenmp -fsyntax-only`, cl.exe `/openmp /Zs`.
+- Collapse depth currently accepts literal/arithmetic expressions; semantic
+  constants such as enum names/`sizeof` are tracked by `slate-3amj.24.19`.
+  Nonrectangular and imperfect nests are tracked by `slate-3amj.24.20`. `OmpFor`
+  is a Rust lowering barrier pending `slate-3amj.24.8`.
 - Fixtures: `{gcc,clang}/linux/x86_64/openmp_parallel.c`,
-  `msvc/windows/x86_64/openmp_parallel.c`, `error/*/*/x86_64/openmp-*.c`.
+  `msvc/windows/x86_64/openmp_parallel.c`, corresponding `openmp_for.c`, and
+  `error/*/*/x86_64/openmp-*.c`.
 
 ### Statement attributes
 

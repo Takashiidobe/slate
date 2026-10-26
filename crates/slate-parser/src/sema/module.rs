@@ -1790,10 +1790,20 @@ impl Lowerer {
                         private.push(self.omp_private(variable, *sharing)?);
                     }
                 }
-                ast::OmpClause::DataSharing { .. } | ast::OmpClause::Default(_) => {}
+                ast::OmpClause::DataSharing { .. }
+                | ast::OmpClause::Default(_)
+                | ast::OmpClause::Schedule(_)
+                | ast::OmpClause::Collapse(_)
+                | ast::OmpClause::Nowait => {}
             }
         }
-        let body = self.statements(std::slice::from_ref(body), return_type)?;
+        let body = if directive.kind.is_loop() {
+            let variables = self.omp_loop_variables(directive, body);
+            private.retain(|private| !variables.contains(&private.copy.id));
+            vec![statement.derive(self.omp_for(directive, body, return_type)?)]
+        } else {
+            self.statements(std::slice::from_ref(body), return_type)?
+        };
         let shared = self
             .names
             .openmp_outer_references
@@ -1853,26 +1863,235 @@ impl Lowerer {
                 "OpenMP privatized variable has no type",
             ))?;
         self.types.entities.declare(copy, c, false);
-        let qualifiers = self.types.ctypes.quals(c);
         Ok(OmpPrivate {
             original,
-            copy: Variable {
-                id: copy,
-                name: name.clone(),
-                ty: self.types.ir_type(c),
-                storage: StorageDuration::Automatic,
-                restrict: qualifiers.is_restrict,
-                is_const: qualifiers.is_const,
-                access: self.types.access_of(c),
-                constexpr: false,
-                alignment: None,
-                cleanup: None,
-                register: None,
-                initializer: None,
-                auto_init: None,
-            },
+            copy: self.omp_local(copy, name, c),
             firstprivate: sharing == ast::OmpDataSharing::Firstprivate,
         })
+    }
+
+    fn omp_local(&mut self, id: BindingId, name: &str, c: QualType) -> Variable {
+        let qualifiers = self.types.ctypes.quals(c);
+        Variable {
+            id,
+            name: name.into(),
+            ty: self.types.ir_type(c),
+            storage: StorageDuration::Automatic,
+            restrict: qualifiers.is_restrict,
+            is_const: qualifiers.is_const,
+            access: self.types.access_of(c),
+            constexpr: false,
+            alignment: None,
+            cleanup: None,
+            register: None,
+            initializer: None,
+            auto_init: None,
+        }
+    }
+
+    fn omp_loop_variables(&self, directive: &ast::OmpDirective, body: &Stmt) -> Vec<BindingId> {
+        ast::omp_loop_nest(body, directive.associated_loops)
+            .into_iter()
+            .filter_map(|nested| {
+                super::openmp::canonical_loop(
+                    nested,
+                    |expr| self.types.references.get(&expr.id).copied(),
+                    |declarator| self.types.declarations.get(&declarator.id).copied(),
+                )
+                .ok()
+            })
+            .map(|canonical| canonical.variable)
+            .collect()
+    }
+
+    fn omp_for(
+        &mut self,
+        directive: &ast::OmpDirective,
+        body: &Stmt,
+        return_type: Option<QualType>,
+    ) -> Result<Statement, ResolveError> {
+        let mut schedule = None;
+        let mut nowait = false;
+        let mut private = Vec::new();
+        for clause in &directive.clauses {
+            match &clause.value {
+                ast::OmpClause::Schedule(clause) => {
+                    let chunk = match &clause.chunk {
+                        Some(expr) => {
+                            let value = self.expr(expr)?;
+                            let long = self.types.ctypes.long();
+                            Some(
+                                self.convert_recorded(
+                                    expr,
+                                    value,
+                                    long,
+                                    ConversionReason::Explicit,
+                                )?
+                                .value,
+                            )
+                        }
+                        None => None,
+                    };
+                    schedule = Some(OmpSchedule {
+                        kind: clause.kind,
+                        modifier: clause.modifier,
+                        chunk,
+                    });
+                }
+                ast::OmpClause::Nowait => nowait = true,
+                ast::OmpClause::DataSharing { sharing, variables }
+                    if directive.kind == ast::OmpDirectiveKind::For
+                        && *sharing != ast::OmpDataSharing::Shared =>
+                {
+                    for variable in variables {
+                        private.push(self.omp_private(variable, *sharing)?);
+                    }
+                }
+                _ => {}
+            }
+        }
+        let nest = ast::omp_loop_nest(body, directive.associated_loops);
+        if nest.len() < directive.associated_loops {
+            return Err(ResolveError::Unimplemented(
+                "imperfectly nested OpenMP collapse loops",
+            ));
+        }
+        let mut loops = Vec::new();
+        let mut variables = Vec::new();
+        for nested in &nest {
+            let canonical = super::openmp::canonical_loop(
+                nested,
+                |expr| self.types.references.get(&expr.id).copied(),
+                |declarator| self.types.declarations.get(&declarator.id).copied(),
+            )
+            .map_err(|failure| ResolveError::Internal(failure.message))?;
+            let bounds = [Some(canonical.lower), Some(canonical.upper), canonical.step];
+            if bounds
+                .into_iter()
+                .flatten()
+                .any(|expr| super::openmp::mentions(expr, &self.types.references, &variables))
+            {
+                return Err(ResolveError::Unimplemented(
+                    "non-rectangular OpenMP loop nest",
+                ));
+            }
+            let StmtKind::For { init, .. } = &nested.value else {
+                return Err(ResolveError::Internal("OpenMP loop nest is not a for loop"));
+            };
+            let declared = match init.as_deref().map(|init| &init.value) {
+                Some(StmtKind::Decl(item)) => {
+                    let mut lowered = self.declaration(item, false)?;
+                    match lowered.pop().map(|statement| statement.value) {
+                        Some(Statement::Let(variable)) if lowered.is_empty() => Some(variable),
+                        _ => {
+                            return Err(ResolveError::Unimplemented(
+                                "OpenMP iteration variable declaration with setup statements",
+                            ));
+                        }
+                    }
+                }
+                _ => {
+                    if let Some(original) =
+                        self.names.openmp_iteration_copies.get(&canonical.variable)
+                    {
+                        let c = self
+                            .types
+                            .entities
+                            .ty(original)
+                            .ok_or(ResolveError::Internal(
+                                "OpenMP iteration variable has no type",
+                            ))?;
+                        self.types.entities.declare(canonical.variable, c, false);
+                    }
+                    None
+                }
+            };
+            let c = self
+                .types
+                .entities
+                .ty(&canonical.variable)
+                .ok_or(ResolveError::Internal(
+                    "OpenMP iteration variable has no type",
+                ))?;
+            let c = self.types.ctypes.unqualified(c);
+            let (variable, lower) = match declared {
+                Some(mut variable) => {
+                    let lower = variable.initializer.take().ok_or(ResolveError::Internal(
+                        "OpenMP iteration variable declaration has no initializer",
+                    ))?;
+                    (variable, lower)
+                }
+                None => {
+                    let lower = self.expr(canonical.lower)?;
+                    let name = self.names.bindings[canonical.variable.0 as usize]
+                        .name
+                        .clone();
+                    (
+                        self.omp_local(canonical.variable, &name, c),
+                        self.convert_recorded(
+                            canonical.lower,
+                            lower,
+                            c,
+                            ConversionReason::Explicit,
+                        )?
+                        .value,
+                    )
+                }
+            };
+            let upper = self.expr(canonical.upper)?;
+            let upper =
+                self.convert_recorded(canonical.upper, upper, c, ConversionReason::Explicit)?;
+            let step_type =
+                *self
+                    .types
+                    .openmp_step_types
+                    .get(&nested.id)
+                    .ok_or(ResolveError::Internal(
+                        "OpenMP loop step type was not checked",
+                    ))?;
+            let step = match canonical.step {
+                Some(expr) => {
+                    let value = self.expr(expr)?;
+                    if !self.types.ctypes.is_integer(value.c) {
+                        return Err(ResolveError::Unimplemented(
+                            "OpenMP loop step that is not an integer",
+                        ));
+                    }
+                    self.convert_recorded(expr, value, step_type, ConversionReason::Explicit)?
+                }
+                None => {
+                    let ty = self.types.ir_type(step_type);
+                    let one = super::fold::integer_number(&ty, 1.into());
+                    self.operand(*nested, step_type, ValueKind::Constant(one))
+                }
+            };
+            loops.push(OmpLoop {
+                variable,
+                lower,
+                compare: canonical.compare,
+                upper: upper.value,
+                step: step.value,
+                decrement: canonical.decrement,
+            });
+            variables.push(canonical.variable);
+        }
+        let innermost = nest.last().ok_or(ResolveError::Internal(
+            "OpenMP loop directive without a loop",
+        ))?;
+        let StmtKind::For { body: inner, .. } = &innermost.value else {
+            return Err(ResolveError::Internal("OpenMP loop nest is not a for loop"));
+        };
+        let id = self.jump_target(innermost);
+        let body = self.loop_body(id, inner, return_type)?;
+        private.retain(|private| !variables.contains(&private.copy.id));
+        Ok(Statement::OmpFor(Box::new(OmpFor {
+            id,
+            schedule,
+            nowait,
+            private,
+            loops,
+            body,
+        })))
     }
 
     fn loop_body(
@@ -2064,8 +2283,11 @@ impl Lowerer {
                     handler,
                 }
             }
-            StmtKind::Omp { directive, body } => {
+            StmtKind::Omp { directive, body } if directive.value.kind.is_parallel() => {
                 self.omp_parallel(statement, &directive.value, body, return_type)?
+            }
+            StmtKind::Omp { directive, body } => {
+                self.omp_for(&directive.value, body, return_type)?
             }
             StmtKind::SehLeave => Statement::SehLeave(*self.seh_leave_targets.last().ok_or(
                 ResolveError::Internal("'__leave' statement not in __try block"),

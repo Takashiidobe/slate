@@ -29,6 +29,13 @@ impl CTypes {
         })
     }
 
+    pub fn long(&mut self) -> QualType {
+        self.qual(CTypeKind::Int {
+            rank: IntRank::Long,
+            signed: true,
+        })
+    }
+
     pub fn size_type(&mut self, target: &TargetInfo) -> QualType {
         self.pointer_integer(target, false)
     }

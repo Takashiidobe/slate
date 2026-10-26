@@ -145,6 +145,7 @@ struct StatementContext {
     label_scopes: HashMap<String, Vec<SehScope>>,
     finally: Option<FinallyEntry>,
     omp_region: Option<FinallyEntry>,
+    omp_loop: Option<std::ops::RangeInclusive<usize>>,
 }
 
 const OMP_BRANCH: &str = "invalid branch to/from OpenMP structured block";
@@ -1154,6 +1155,15 @@ impl Checker<'_> {
             }
             StmtKind::Break => {
                 let breakables = self.context.breakables;
+                if !self.types.flavor().is_msvc()
+                    && self
+                        .context
+                        .omp_loop
+                        .as_ref()
+                        .is_some_and(|range| range.contains(&breakables))
+                {
+                    self.reject(stmt, "break statement used with OpenMP for loop");
+                }
                 self.omp_exit(stmt, |entry| entry.breakables == breakables);
                 self.finally_exit(stmt, |entry| entry.breakables == breakables)
             }
@@ -1345,7 +1355,55 @@ impl Checker<'_> {
                     }
                 }
                 OmpClause::If(condition) => self.condition(condition),
-                OmpClause::Default(_) => {}
+                OmpClause::Schedule(OmpSchedule {
+                    chunk: Some(chunk), ..
+                }) => {
+                    self.expression(chunk);
+                    if let Ok(ty) = self.types.operand_type(chunk) {
+                        if self.types.ctypes.is_integer(ty) {
+                            let target = self.types.fold_target();
+                            if self
+                                .types
+                                .constant_value(chunk)
+                                .ok()
+                                .and_then(|value| super::fold::integer_constant(&value, target))
+                                .is_some_and(|value| value.sign() != Sign::Plus)
+                            {
+                                self.types.warn(
+                                    Warning::Openmp,
+                                    "chunk size value must be positive",
+                                    chunk,
+                                );
+                            }
+                            let long = self.types.ctypes.long();
+                            self.convert(chunk, long, ConversionContext::Cast);
+                        } else {
+                            self.reject(chunk, "chunk size expression must have integral type");
+                        }
+                    }
+                }
+                OmpClause::Collapse(value) => {
+                    if self.types.flavor().is_msvc() {
+                        self.types
+                            .warn(Warning::Openmp, "OpenMP collapse clause ignored", value);
+                    } else {
+                        self.expression(value);
+                    }
+                }
+                OmpClause::Default(_) | OmpClause::Schedule(_) | OmpClause::Nowait => {}
+            }
+        }
+        let nest = omp_loop_nest(body, directive.value.associated_loops);
+        for nested in &nest {
+            let StmtKind::For { init, .. } = &nested.value else {
+                continue;
+            };
+            if let Some((target, _)) = super::openmp::assigned_variable(init.as_deref())
+                && let Some(copy) = self.types.references.get(&target.id).copied()
+                && let Some(original) = self.names.openmp_iteration_copies.get(&copy)
+                && let Some(ty) = self.types.entities.ty(original)
+            {
+                self.types.entities.declare(copy, ty, false);
             }
         }
         let default_none = directive
@@ -1372,11 +1430,79 @@ impl Checker<'_> {
                 ));
             }
         }
-        let enclosing = self.context.omp_region.replace(self.exit_entry());
+        let entry = self.exit_entry();
+        let enclosing = self.context.omp_region.replace(entry);
+        let loop_breakables =
+            (!nest.is_empty()).then(|| entry.breakables + 1..=entry.breakables + nest.len());
+        let enclosing_loop = std::mem::replace(&mut self.context.omp_loop, loop_breakables);
         self.context.seh_scopes.push(SehScope::openmp(stmt.id));
         self.statement(body);
         self.context.seh_scopes.pop();
+        self.context.omp_loop = enclosing_loop;
         self.context.omp_region = enclosing;
+        for nested in nest {
+            self.omp_canonical_loop(nested);
+        }
+    }
+
+    fn omp_canonical_loop(&mut self, statement: &Stmt) {
+        let references = &self.types.references;
+        let declarations = &self.types.declarations;
+        let canonical = super::openmp::canonical_loop(
+            statement,
+            |expr| references.get(&expr.id).copied(),
+            |declarator| declarations.get(&declarator.id).copied(),
+        );
+        let canonical = match canonical {
+            Ok(canonical) => canonical,
+            Err(failure) => {
+                let message = ResolveError::Rejected(failure.message).to_string();
+                self.errors.push(match failure.expr {
+                    Some(expr) => error(expr.provenance, expr.expansion, message),
+                    None => error(failure.at.provenance, failure.at.expansion, message),
+                });
+                return;
+            }
+        };
+        if super::openmp::mentions(
+            canonical.upper,
+            &self.types.references,
+            &[canonical.variable],
+        ) {
+            self.reject(
+                canonical.upper,
+                "condition expression refers to iteration variable",
+            );
+        }
+        let Some(ty) = self.types.entities.ty(&canonical.variable) else {
+            return;
+        };
+        if !self.types.ctypes.is_integer(ty) && !self.types.ctypes.is_pointer(ty) {
+            let name = &self.names.bindings[canonical.variable.0 as usize].name;
+            self.errors.push(error(
+                statement.provenance,
+                statement.expansion,
+                format!("invalid type for iteration variable `{name}`"),
+            ));
+            return;
+        }
+        let ty = self.types.ctypes.unqualified(ty);
+        self.convert(canonical.lower, ty, ConversionContext::Cast);
+        self.convert(canonical.upper, ty, ConversionContext::Cast);
+        let step_type = super::openmp::step_type(self.types, ty);
+        self.types.openmp_step_types.insert(statement.id, step_type);
+        if let Some(step) = canonical.step {
+            match self.types.operand_type(step) {
+                Ok(step_ty) if self.types.ctypes.is_integer(step_ty) => {
+                    self.convert(step, step_type, ConversionContext::Cast);
+                }
+                Ok(_) if !self.types.flavor().is_msvc() => {
+                    self.reject(step, "invalid increment expression in OpenMP `for` loop")
+                }
+                Ok(_) => {}
+                Err(_) => {}
+            }
+        }
     }
 
     fn omp_variable(

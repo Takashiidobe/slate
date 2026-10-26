@@ -18,6 +18,7 @@ mod ms_asm_effects;
 mod ms_asm_return;
 pub mod names;
 pub mod numeric;
+mod openmp;
 mod operand;
 pub mod pragmas;
 mod seh_scopes;
