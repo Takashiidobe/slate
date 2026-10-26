@@ -198,9 +198,16 @@ member, so Slate must pass that member's type at the boundary
   new function type without an explicit convention `fastcall`, `stdcall`
   or `vectorcall`: prototyped, K&R, unprototyped, typedef'd and implicitly
   declared functions alike. Variadic functions and functions named `main`
-  or `wmain` stay `cdecl`. On x86-64 only `/Gv` applies. cl.exe also makes
-  `WinMain`, `wWinMain` and `DllMain` `stdcall` under any option on x86;
-  slate does not.
+  or `wmain` stay `cdecl`. On x86-64 only `/Gv` applies.
+- On a windows-msvc target, a function type declared without an explicit
+  convention under the name `WinMain`, `wWinMain` or `DllMain` ignores
+  `/G*`: `stdcall` on x86, `cdecl` elsewhere (so `cdecl`, not `vectorcall`,
+  under x86-64 `/Gv`). This covers definitions and file- or block-scope
+  declarations; parameters and pointers with these names keep the default,
+  and variadic ones are `cdecl`. A typedef with one of these names gets it
+  only in the msvc flavor; clang skips typedefs (`TypeResolver::default_convention`).
+  A plain redeclaration does not inherit an earlier `__cdecl WinMain`, so the
+  pair is a convention conflict, as cl.exe's C2373 is.
 - `ms_abi` and `sysv_abi` resolve as clang's do: `ms_abi` is `cdecl` on
   Windows and `CallConv::Win64` elsewhere on x86-64 and AArch64; `sysv_abi`
   is `cdecl` off Windows and `CallConv::SysV64` on x86-64 Windows. Each is

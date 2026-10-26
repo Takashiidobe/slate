@@ -268,7 +268,7 @@ impl Checker<'_> {
             self.tag(&parameter.specifiers.ty);
             let resolved = self
                 .types
-                .resolve(&parameter.specifiers, &parameter.declarator);
+                .resolve_parameter(&parameter.specifiers, &parameter.declarator);
             self.types.provisional_extents = provisional;
             self.types.owner = owner;
             self.resolution(parameter, &resolved);

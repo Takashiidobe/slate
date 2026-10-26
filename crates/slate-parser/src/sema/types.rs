@@ -3,8 +3,8 @@ use std::collections::{HashMap, HashSet};
 use crate::ast::{
     AlignAsOperand, ArrayDeclarator, ArraySize, Attribute, DeclarationSpecifiers, Declarator,
     EnumItemKind, FieldItemKind, FixedPointKind, FixedPointRank, FloatingType, IntegerRank,
-    IntegerType, ParameterList, Span, TagBody, TagDefinition, TagId, TagKind, TagSpecifier,
-    TranslationUnit, TypeName, TypeOfOperand, TypeSpecifier,
+    IntegerType, ParameterList, Span, StorageClass, TagBody, TagDefinition, TagId, TagKind,
+    TagSpecifier, TranslationUnit, TypeName, TypeOfOperand, TypeSpecifier,
 };
 use crate::compiler_args::{CompilerFlavor, LanguageStandard};
 use crate::compiler_options::TrivialAutoVarInit;
@@ -108,6 +108,7 @@ pub struct TypeResolver {
     pub(super) diagnostics: Vec<super::SemaError>,
     pub(super) item_diagnostics: HashMap<crate::ast::NodeId, Vec<super::SemaError>>,
     prototype_scope: bool,
+    typedef_scope: bool,
     pub(super) provisional_extents: bool,
     pub(super) owner: Option<Span<()>>,
     pub(super) owners: HashMap<TypeId, Span<()>>,
@@ -213,6 +214,7 @@ impl TypeResolver {
             diagnostics: Vec::new(),
             item_diagnostics: HashMap::new(),
             prototype_scope: false,
+            typedef_scope: false,
             provisional_extents: false,
             owner: None,
             owners: HashMap::new(),
@@ -2211,10 +2213,23 @@ impl TypeResolver {
     }
 
     pub(super) fn default_convention(&self, name: Option<&str>) -> CallConv {
+        let target = self.dialect.target();
         match name {
             Some("main" | "wmain") => CallConv::C,
-            _ => self.dialect.target().abi.default_convention,
+            Some("WinMain" | "wWinMain" | "DllMain") if self.is_msvcrt_entry_point_scope() => {
+                match target.family {
+                    TargetFamily::X86 => CallConv::X86Stdcall,
+                    _ => CallConv::C,
+                }
+            }
+            _ => target.abi.default_convention,
         }
+    }
+
+    fn is_msvcrt_entry_point_scope(&self) -> bool {
+        self.dialect.target().environment == TargetEnvironment::Msvc
+            && !self.prototype_scope
+            && (!self.typedef_scope || self.dialect.flavor().is_msvc())
     }
 
     pub(super) fn inherit_convention(&mut self, id: BindingId, declared: QualType) -> QualType {
@@ -2246,7 +2261,20 @@ impl TypeResolver {
         specifiers: &DeclarationSpecifiers,
         declarator: &Declarator,
     ) -> Result<QualType, ResolveError> {
-        // the parser folds `mode` into the specifier, but clang applies it to the declared type
+        let enclosing = std::mem::replace(
+            &mut self.typedef_scope,
+            specifiers.storage == StorageClass::Typedef,
+        );
+        let resolved = self.resolve_declared(specifiers, declarator);
+        self.typedef_scope = enclosing;
+        resolved
+    }
+
+    fn resolve_declared(
+        &mut self,
+        specifiers: &DeclarationSpecifiers,
+        declarator: &Declarator,
+    ) -> Result<QualType, ResolveError> {
         if declarator.is_derived() && has_machine_mode(&specifiers.ty) {
             return Err(ResolveError::Rejected(
                 "mode attribute only supported for integer and floating-point types",
