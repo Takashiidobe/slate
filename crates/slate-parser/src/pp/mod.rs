@@ -1098,7 +1098,7 @@ impl<'a> Preprocessor<'a> {
             );
         }
         if let TargetIsa::X86(isa) = target.isa {
-            removed.extend(isa.disabled_macros());
+            removed.extend(isa.disabled_macros(dialect.flavor()));
             if let Some(cet) = codegen.cf_protection {
                 removed.push("__CET__");
                 if cet != 0 {

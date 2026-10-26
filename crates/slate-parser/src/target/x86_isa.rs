@@ -7,42 +7,26 @@ use crate::ir::TargetFeature;
 use crate::target_info::TargetFamily;
 use std::str::FromStr;
 
-const GCC_FEATURES: [X86Feature; 27] = [
-    X86Feature::X87,
-    X86Feature::Mmx,
-    X86Feature::Sse,
-    X86Feature::Sse2,
-    X86Feature::Sse3,
-    X86Feature::Ssse3,
-    X86Feature::Sse41,
-    X86Feature::Sse42,
-    X86Feature::Popcnt,
-    X86Feature::Crc32,
-    X86Feature::Xsave,
-    X86Feature::Fxsr,
-    X86Feature::Sahf,
-    X86Feature::Cx16,
-    X86Feature::Avx,
-    X86Feature::Avx2,
-    X86Feature::Fma,
-    X86Feature::F16c,
-    X86Feature::Avx512f,
-    X86Feature::Avx512bw,
-    X86Feature::Avx512cd,
-    X86Feature::Avx512dq,
-    X86Feature::Avx512vl,
-    X86Feature::Bmi,
-    X86Feature::Bmi2,
-    X86Feature::Lzcnt,
-    X86Feature::Movbe,
-];
-
 impl X86Feature {
-    fn implies(self, rules: Rules) -> X86Features {
-        match self {
-            Self::Avx if rules == Rules::Gcc => X86Features::of(&[Self::Sse42, Self::Xsave]),
-            Self::Avx512f if rules == Rules::Gcc => X86Features::of(&[Self::Avx2]),
-            _ => X86Features(self.clang_implies()),
+    fn enables(self, rules: Rules) -> X86Features {
+        match rules {
+            Rules::Clang => X86Features::of(&[self]).closure(),
+            Rules::Gcc => X86Features(self.bit() | self.gcc_enables().unwrap_or_default()),
+        }
+    }
+
+    fn disables(self, rules: Rules) -> X86Features {
+        match rules {
+            Rules::Clang => X86Features::dependents(self),
+            Rules::Gcc => X86Features(self.bit() | self.gcc_disables()),
+        }
+    }
+
+    fn macros_for(self, flavor: CompilerFlavor) -> &'static [&'static str] {
+        if flavor.is_gcc() {
+            self.gcc_macros()
+        } else {
+            self.macros()
         }
     }
 
@@ -93,13 +77,15 @@ impl X86Features {
         Self(self.0 & !other.0)
     }
 
-    fn closure(self, rules: Rules) -> Self {
+    fn closure(self) -> Self {
         let mut closed = self;
         loop {
             let next = ALL_FEATURES
                 .into_iter()
                 .filter(|feature| closed.contains(*feature))
-                .fold(closed, |set, feature| set.union(feature.implies(rules)));
+                .fold(closed, |set, feature| {
+                    set.union(Self(feature.clang_implies()))
+                });
             if next == closed {
                 return closed;
             }
@@ -107,10 +93,10 @@ impl X86Features {
         }
     }
 
-    fn dependents(feature: X86Feature, rules: Rules) -> Self {
+    fn dependents(feature: X86Feature) -> Self {
         ALL_FEATURES
             .into_iter()
-            .filter(|candidate| Self::of(&[*candidate]).closure(rules).contains(feature))
+            .filter(|candidate| Self::of(&[*candidate]).closure().contains(feature))
             .fold(Self::default(), |set, candidate| {
                 set.union(Self::of(&[candidate]))
             })
@@ -144,8 +130,12 @@ impl X86Arch {
         &CPUS[self.0]
     }
 
-    fn features(self) -> X86Features {
-        X86Features(self.cpu().features)
+    fn features(self, rules: Rules) -> X86Features {
+        let features = X86Features(self.cpu().features);
+        match rules {
+            Rules::Clang => features,
+            Rules::Gcc => features.without(X86Features::of(&[X86Feature::Crc32])),
+        }
     }
 
     fn is_level(self) -> bool {
@@ -238,10 +228,10 @@ impl X86IsaRequest {
         match self
             .flags
             .iter()
-            .find(|(feature, on)| *on && flavor.is_gcc() && !GCC_FEATURES.contains(feature))
+            .find(|(feature, _)| flavor.is_gcc() && feature.gcc_enables().is_none())
         {
             Some((feature, _)) => Err(format!(
-                "x86 feature `{}` is only emulated for the clang flavor",
+                "x86 feature `{}` is not accepted by gcc",
                 feature.spelling()
             )),
             None => Ok(()),
@@ -258,11 +248,11 @@ impl X86IsaRequest {
                 continue;
             }
             if on {
-                let added = X86Features::of(&[feature]).closure(rules);
+                let added = feature.enables(rules);
                 enabled = enabled.union(added);
                 disabled = disabled.without(added);
             } else {
-                let removed = X86Features::dependents(feature, rules);
+                let removed = feature.disables(rules);
                 disabled = disabled.union(removed);
                 enabled = enabled.without(removed);
             }
@@ -298,8 +288,12 @@ impl X86Isa {
         let rules = Rules::from(flavor);
         let arch = arch.unwrap_or(X86Arch::default_for(family, rules));
         let (enabled, disabled) = request.fold(rules);
-        let mut features = arch.features().union(enabled).without(disabled);
-        for (trigger, implied) in [(Sse42, Popcnt), (Sse42, Crc32), (Avx, Xsave)] {
+        let mut features = arch.features(rules).union(enabled).without(disabled);
+        let late_mmx = (rules == Rules::Gcc).then_some((Sse, Mmx));
+        for (trigger, implied) in [(Sse42, Popcnt), (Sse42, Crc32), (Avx, Xsave)]
+            .into_iter()
+            .chain(late_mmx)
+        {
             if features.contains(trigger) && !disabled.contains(implied) {
                 features = features.union(X86Features::of(&[implied]));
             }
@@ -369,7 +363,12 @@ impl X86Isa {
                 _ => self.features.contains(feature),
             };
             if present {
-                defines.extend(feature.macros().iter().map(|name| format!("{name}=1")));
+                defines.extend(
+                    feature
+                        .macros_for(flavor)
+                        .iter()
+                        .map(|name| format!("{name}=1")),
+                );
             }
         }
         // gcc defaults to -mfpmath=387 on 32-bit x86
@@ -383,8 +382,9 @@ impl X86Isa {
             }
         }
         if gcc {
-            let fma = self.features.contains(X86Feature::Fma)
-                || self.features.contains(X86Feature::Avx512f);
+            let fma = [X86Feature::Fma, X86Feature::Fma4, X86Feature::Avx512f]
+                .into_iter()
+                .any(|feature| self.features.contains(feature));
             if sse_math && fma {
                 defines.extend([
                     "__FP_FAST_FMA=1".into(),
@@ -434,11 +434,11 @@ impl X86Isa {
         }
     }
 
-    pub fn disabled_macros(self) -> Vec<&'static str> {
+    pub fn disabled_macros(self, flavor: CompilerFlavor) -> Vec<&'static str> {
         let mut names: Vec<&'static str> = ALL_FEATURES
             .into_iter()
             .filter(|feature| self.disabled.contains(*feature))
-            .flat_map(|feature| feature.macros().iter().copied())
+            .flat_map(|feature| feature.macros_for(flavor).iter().copied())
             .collect();
         for (feature, name) in [
             (X86Feature::Sse, "__SSE_MATH__"),

@@ -12,11 +12,17 @@ ROOT = Path(__file__).resolve().parents[1]
 SLATE = ROOT.parents[1] / "target/test-cache/release/slate-parser"
 TARGET_MACROS = re.compile(r"__FLT16_\w+|__GCC_HAVE_SYNC_COMPARE_AND_SWAP_[1248]")
 RICH_CPU = "diamondrapids"
+GCC_ORDERINGS = [
+    "-mavx -mno-avx", "-mavx2 -mno-avx", "-mno-popcnt -msse4.2", "-msse4.2 -mno-crc32",
+    "-msse -mno-mmx", "-mno-mmx -msse", "-march=x86-64-v2 -mno-sse4.2", "-mamx-bf16 -mno-amx-tile",
+    "-mavx512vp2intersect -mno-avx512dq", "-mvaes -mno-xsave", "-march=x86-64-v3 -mno-xsave -mavx",
+]
 
 
-def clang_macros(clang, triple, args):
+def oracle_macros(compiler, triple, args):
+    target = (["-m32"] if triple.startswith("i686") else []) if compiler == "gcc" else [f"--target={triple}"]
     result = subprocess.run(
-        [clang, f"--target={triple}", *args, "-dM", "-E", "-x", "c", "/dev/null"],
+        [compiler, *target, *args, "-dM", "-E", "-x", "c", "/dev/null"],
         capture_output=True,
         text=True,
     )
@@ -26,9 +32,9 @@ def clang_macros(clang, triple, args):
     return {name for name in names if not TARGET_MACROS.fullmatch(name)}
 
 
-def slate_macros(slate, probe, triple, args):
+def slate_macros(slate, flavor, probe, triple, args):
     result = subprocess.run(
-        [str(slate), "pp", str(probe), "--flavor=clang", f"-target={triple}", *args],
+        [str(slate), "pp", str(probe), f"--flavor={flavor}", f"-target={triple}", *args],
         capture_output=True,
         text=True,
     )
@@ -55,15 +61,7 @@ def x86_flags(llvm_tblgen, llvm_project):
     )
 
 
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--llvm-tblgen", type=Path, required=True)
-    parser.add_argument("--llvm-project", type=Path, required=True)
-    parser.add_argument("--clang", default="clang")
-    parser.add_argument("--slate", type=Path, default=SLATE)
-    parser.add_argument("--report", type=Path, default=ROOT / "target/x86-isa-diff.json")
-    args = parser.parse_args()
-
+def clang_cases(args):
     flags = x86_flags(args.llvm_tblgen, args.llvm_project)
     cpus = sorted(
         line.split()[0]
@@ -81,15 +79,50 @@ def main():
         cases += [(triple, [f"-march={cpu}"]) for cpu in cpus]
         cases += [(triple, [f"-m{flag}"]) for flag in flags]
     cases += [("x86_64-unknown-linux-gnu", [f"-march={RICH_CPU}", f"-mno-{flag}"]) for flag in flags]
+    return cases
+
+
+def gcc_cases():
+    tables = (ROOT / "src/target/x86_isa_tables.rs").read_text()
+    start = tables.index("fn spelling(self)")
+    spellings = re.findall(r'=> "([^"]+)"', tables[start:tables.index("\n    }\n", start)])
+    flags = [{"x87": "80387"}.get(flag, flag) for flag in spellings]
+    cases = []
+    for triple in ("x86_64-unknown-linux-gnu", "i686-unknown-linux-gnu"):
+        cases += [(triple, [f"-march={level}"]) for level in ("x86-64", "x86-64-v2", "x86-64-v3", "x86-64-v4")]
+        cases += [(triple, [f"-m{flag}"]) for flag in flags]
+        cases += [(triple, ordering.split()) for ordering in GCC_ORDERINGS]
+    rich = ["-march=x86-64-v4", *(f"-m{flag}" for flag in flags if oracle_macros("gcc", "x86_64-unknown-linux-gnu", [f"-m{flag}"]) is not None)]
+    cases += [("x86_64-unknown-linux-gnu", [*rich, f"-mno-{flag}"]) for flag in flags]
+    return cases
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--gcc", action="store_true")
+    parser.add_argument("--llvm-tblgen", type=Path)
+    parser.add_argument("--llvm-project", type=Path)
+    parser.add_argument("--clang", default="clang")
+    parser.add_argument("--slate", type=Path, default=SLATE)
+    parser.add_argument("--report", type=Path, default=ROOT / "target/x86-isa-diff.json")
+    args = parser.parse_args()
+
+    oracle, flavor = ("gcc", "gcc") if args.gcc else (args.clang, "clang")
+    if args.gcc:
+        cases = gcc_cases()
+    elif not (args.llvm_tblgen and args.llvm_project):
+        parser.error("--llvm-tblgen and --llvm-project are required without --gcc")
+    else:
+        cases = clang_cases(args)
 
     with concurrent.futures.ThreadPoolExecutor(32) as pool:
-        expected = list(pool.map(lambda case: clang_macros(args.clang, *case), cases))
+        expected = list(pool.map(lambda case: oracle_macros(oracle, *case), cases))
         accepted = [macros for macros in expected if macros is not None]
         varying = set.union(*accepted) - set.intersection(*accepted)
         with tempfile.TemporaryDirectory() as scratch:
             probe = Path(scratch) / "probe.c"
             probe.write_text("".join(f"#ifdef {m}\npresent{m}\n#endif\n" for m in sorted(varying)))
-            actual = list(pool.map(lambda case: slate_macros(args.slate, probe, *case), cases))
+            actual = list(pool.map(lambda case: slate_macros(args.slate, flavor, probe, *case), cases))
 
     failures, unsupported = [], []
     for (triple, flags_used), want, got in zip(cases, expected, actual):
@@ -97,7 +130,7 @@ def main():
         if want is None and got is None:
             continue
         if want is None:
-            failures.append({"case": case, "problem": "slate accepts what clang rejects"})
+            failures.append({"case": case, "problem": f"slate accepts what {flavor} rejects"})
         elif got is None:
             unsupported.append(case)
         else:
