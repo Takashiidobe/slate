@@ -310,6 +310,8 @@ struct ParsedCompilerArgs {
     msvc_no_default_lib: bool,
     msvc_favor: Option<MsvcFavor>,
     msvc_fpcvt: Option<bool>,
+    msvc_strict_ansi: bool,
+    msvc_stdc_macro: bool,
     short_wchar: Option<bool>,
     short_enums: Option<bool>,
     pack_struct: Option<bool>,
@@ -639,6 +641,9 @@ enum Opt {
     MsvcNoDefaultLib,
     MsvcFavor,
     MsvcFpcvt,
+    MsvcStrictAnsi,
+    MsvcExtensions,
+    MsvcStdcMacro,
     Permissive,
     DeleteNullPointerChecks,
     TrivialAutoVarInit,
@@ -776,6 +781,9 @@ impl std::fmt::Display for Opt {
             Self::MsvcNoDefaultLib => "Zl",
             Self::MsvcFavor => "favor",
             Self::MsvcFpcvt => "fpcvt",
+            Self::MsvcStrictAnsi => "Za",
+            Self::MsvcExtensions => "Ze",
+            Self::MsvcStdcMacro => "Zc:__STDC__",
             Self::Permissive => "fpermissive",
             Self::DeleteNullPointerChecks => "fdelete-null-pointer-checks",
             Self::TrivialAutoVarInit => "ftrivial-auto-var-init",
@@ -921,7 +929,10 @@ impl Opt {
             | Self::MsvcControlFlowGuard
             | Self::MsvcNoDefaultLib
             | Self::MsvcFavor
-            | Self::MsvcFpcvt => &[Msvc],
+            | Self::MsvcFpcvt
+            | Self::MsvcStrictAnsi
+            | Self::MsvcExtensions
+            | Self::MsvcStdcMacro => &[Msvc],
             Self::CodegenOnly(spelling) => {
                 codegen_only_flag_named(spelling).map_or(&[], |flag| flag.flavors)
             }
@@ -1560,6 +1571,8 @@ impl CompilerArgParser {
             no_default_lib: raw.msvc_no_default_lib,
             favor: raw.msvc_favor,
             intel_float_conversions: raw.msvc_fpcvt,
+            strict_ansi: raw.msvc_strict_ansi,
+            stdc_macro: raw.msvc_stdc_macro,
         };
         let floating_point = raw.msvc_floating_point;
         if floating_point.model == Some(MsvcFloatingModel::Strict) {
@@ -2105,6 +2118,14 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                 _ => return Err(invalid(argument, "expected one of IA, BC")),
             };
             parsed.msvc_fpcvt = Some(intel);
+        } else if argument == "/Za" {
+            parsed.saw(Opt::MsvcStrictAnsi, argument);
+            parsed.msvc_strict_ansi = true;
+        } else if argument == "/Ze" {
+            parsed.saw(Opt::MsvcExtensions, argument);
+        } else if argument == "/Zc:__STDC__" {
+            parsed.saw(Opt::MsvcStdcMacro, argument);
+            parsed.msvc_stdc_macro = true;
         } else if argument == "/w" {
             parsed.saw(Opt::MsvcNoWarnings, argument);
             parsed.msvc_warning_level = parsed
@@ -2693,6 +2714,8 @@ fn check_msvc_conflicts(occurrences: &[(Opt, String)]) -> Result<(), CompilerArg
     let mut rtti: Option<&str> = None;
     let mut kernel: Option<&str> = None;
     let mut fpcvt: Option<&str> = None;
+    let mut extensions: Option<&str> = None;
+    let mut standard: Option<&str> = None;
     let conflict = |argument: &str, previous: &str| {
         invalid(argument, &format!("incompatible with {previous}"))
     };
@@ -2762,6 +2785,27 @@ fn check_msvc_conflicts(occurrences: &[(Opt, String)]) -> Result<(), CompilerArg
                     return Err(conflict(argument, previous));
                 }
                 fpcvt = Some(argument);
+            }
+            (Opt::MsvcStrictAnsi, _) => {
+                if let Some(previous) = extensions.filter(|previous| *previous != argument) {
+                    return Err(conflict(argument, previous));
+                }
+                if let Some(previous) = standard {
+                    return Err(conflict(argument, previous));
+                }
+                extensions = Some(argument);
+            }
+            (Opt::MsvcExtensions, _) => {
+                if let Some(previous) = extensions.filter(|previous| *previous != argument) {
+                    return Err(conflict(argument, previous));
+                }
+                extensions = Some(argument);
+            }
+            (Opt::MsvcStandard, _) => {
+                if let Some(previous) = extensions.filter(|previous| *previous == "/Za") {
+                    return Err(conflict(argument, previous));
+                }
+                standard = Some(argument);
             }
             _ => {}
         }

@@ -56,6 +56,14 @@ each stage is in [configuration-threading](configuration-threading.md).
     (`MicrosoftFlags::c11_atomics`). `/std:c++*` and other values are
     rejected; cl.exe only warns about `/std:c99` and `/std:c23` (D9002) and
     ignores them.
+  - `/Zc:__STDC__` defines `__STDC__` 1, which cl.exe otherwise leaves
+    undefined. `/Za` also defines it and drops `_MSC_EXTENSIONS`
+    (`MicrosoftFlags::strict_ansi`, `stdc_macro`). `/Ze` is accepted and
+    changes nothing. `/Za` conflicts (D8016, either order) with `/Ze` and
+    with any `/std:`, checked in `check_msvc_conflicts`. cl.exe's `/Za` also
+    rejects nameless struct members (C2467), casts used as lvalues (C2105),
+    zero-size arrays (C2466) and `$` in identifiers (C2018); slate does not
+    emulate those yet.
   - `/W0`..`/W4`, `/Wall` and `/w` set `_MSVC_WARNING_LEVEL` (`nL`, `100L`,
     `0L`; `MicrosoftFlags::warning_level`). The last one wins, except that
     `/Wall` sticks once seen. `/W` takes a joined or separate value; another

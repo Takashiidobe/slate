@@ -147,6 +147,8 @@ pub struct MicrosoftFlags {
     pub no_default_lib: bool,
     pub favor: Option<MsvcFavor>,
     pub intel_float_conversions: Option<bool>,
+    pub strict_ansi: bool,
+    pub stdc_macro: bool,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

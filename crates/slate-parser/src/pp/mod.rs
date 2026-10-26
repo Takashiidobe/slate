@@ -885,6 +885,9 @@ impl<'a> Preprocessor<'a> {
         if microsoft.iso_volatile == Some(false) {
             self.macros.remove("_ISO_VOLATILE");
         }
+        if microsoft.strict_ansi {
+            self.macros.remove("_MSC_EXTENSIONS");
+        }
         let mut defines: Vec<String> = [
             ("_DEBUG", debug),
             (
@@ -910,6 +913,7 @@ impl<'a> Preprocessor<'a> {
             ("_VC_NODEFAULTLIB", microsoft.no_default_lib),
             ("__ATOM__", microsoft.favor == Some(MsvcFavor::Atom)),
             ("_NO_PREFETCHW", microsoft.favor == Some(MsvcFavor::Intel64)),
+            ("__STDC__", microsoft.strict_ansi || microsoft.stdc_macro),
         ]
         .into_iter()
         .filter(|(_, defined)| *defined)

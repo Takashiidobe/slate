@@ -1,0 +1,8 @@
+// SLATE-FILECHECK-DEFINES DEFAULT
+// SLATE-FILECHECK-ERROR DEFAULT
+// SLATE-FILECHECK-ARGS /Ze /Za
+int strict_ansi;
+
+// SLATE-FILECHECK-BEGIN DEFAULT
+// DEFAULT: Error:   × invalid compiler argument `/Za`: incompatible with /Ze
+// SLATE-FILECHECK-END DEFAULT
