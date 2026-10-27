@@ -29,7 +29,9 @@ transpile-lua: (_transpile "lua" (corpus / "lua"))
 transpile-lz4: (_transpile "lz4" (corpus / "lz4"))
 transpile-mbedtls: (_transpile "mbedtls" (corpus / "mbedtls"))
 transpile-musl: (_transpile "musl" (corpus / "musl"))
+transpile-numpy: (_transpile "numpy" (corpus / "numpy") (corpus / "numpy/build-clang/compile_commands.json"))
 transpile-nginx: (_transpile "nginx" (corpus / "nginx"))
+transpile-openblas: (_transpile "openblas" (corpus / "openblas") (corpus / "openblas/build-clang/compile_commands.json"))
 transpile-pcre2: (_transpile "pcre2" (corpus / "pcre2"))
 transpile-quickjs: (_transpile "quickjs" (corpus / "quickjs"))
 transpile-redis: (_transpile "redis" (corpus / "redis"))
@@ -52,7 +54,9 @@ check-lua: (_check "lua")
 check-lz4: (_check "lz4")
 check-mbedtls: (_check "mbedtls")
 check-musl: (_check "musl")
+check-numpy: (_check "numpy")
 check-nginx: (_check "nginx")
+check-openblas: (_check "openblas")
 check-pcre2: (_check "pcre2")
 check-quickjs: (_check "quickjs")
 check-redis: (_check "redis")
@@ -63,7 +67,7 @@ check-yyjson: (_check "yyjson")
 check-zlib: (_check "zlib")
 check-zstd: (_check "zstd")
 
-corpus_projects := "chibicc cjson curl giflib libexpat libpng libuv libyaml lua lz4 mbedtls musl nginx pcre2 quickjs redis sqlite tinycc utf8proc yyjson zlib zstd"
+corpus_projects := "chibicc cjson curl giflib libexpat libpng libuv libyaml lua lz4 mbedtls musl numpy nginx openblas pcre2 quickjs redis sqlite tinycc utf8proc yyjson zlib zstd"
 
 # transpile every c-corpus project; keeps going past per-project failures and reports them at the end
 transpile-all:

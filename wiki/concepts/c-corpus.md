@@ -78,6 +78,8 @@ python3 tools/c_corpus_setup.py [PROJECT ...] [--flavor clang|gcc|msvc ...]
 | lmdb                                                              | `make -C libraries/liblmdb CC=` in tree                                                                                                 | none                                                 |
 | stb                                                               | `make -i -C tests CC=` in tree: upstream's driver TUs define each header's `*_IMPLEMENTATION`; `-i` gets past the C++ TU's link failure | none                                                 |
 | postgres                                                          | `configure` out of tree + `make world-bin` (contrib included)                                                                           | none                                                 |
+| numpy                                                             | vendored Meson + Ninja; Cython in `.venv`, CPython development headers required                                                       | none                                                 |
+| openblas                                                          | `make CC=` under Bear (default pthread backend)                                                                                        | none                                                 |
 | linux                                                             | shallow clone; `make O=build-<flavor> CC= HOSTCC= defconfig`, then the full build (about 4 minutes)                                     | none                                                 |
 
 msvc covers only projects whose upstream ships a Windows build. musl,
@@ -229,6 +231,16 @@ stage, against the relinked tools in `test-tree/`.
   `libpcre2-8.a` and `libpcre2-posix.a`, with `pcre2test` and `pcre2grep`
   relinked (`/usr/include` for `readline`, `zlib` and `bzlib`): 3/3 ctest,
   `RunTest` and `RunGrepTest` stdout identical to native.
+
+### Translation-only projects
+
+NumPy and OpenBLAS have project-specific build recipes and parser sweeps.
+NumPy's native `test_multiarray.py` suite runs against the CPython extension;
+OpenBLAS runs its native unit and CBLAS tests during the default build. Current
+translated runs stop before test execution: NumPy's generated SIMD variants
+reuse source paths under colliding module names, and OpenBLAS function-pointer
+initializers fail Rust const evaluation. See the e2e summaries under
+`target/corpus/{numpy,openblas}/clang/`.
 
 ### Make libraries
 

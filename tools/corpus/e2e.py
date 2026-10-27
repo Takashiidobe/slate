@@ -86,6 +86,15 @@ class MakeLibrary:
     benchmark: Callable | None = None
 
 
+@dataclass
+class TranslationOnly:
+    crate_type: str = "staticlib"
+    host_includes: list[str] = field(default_factory=list)
+    archive: str | None = None
+    smoke: str | None = None
+    object_prefixes: list[str] = field(default_factory=list)
+
+
 RUST_NATIVE_LIBS = ["-lgcc_s", "-lutil", "-lrt", "-lpthread", "-lm", "-ldl", "-lc"]
 
 
@@ -423,6 +432,41 @@ def native_compile_seconds(units, out, jobs):
     return seconds, failures
 
 
+def openblas_smoke(project_dir, translated_archive, out):
+    test_dir = out / "openblas-smoke"
+    test_dir.mkdir(exist_ok=True)
+    source = test_dir / "smoke.c"
+    source.write_text("""#include <cblas.h>
+#include <stdio.h>
+int main(void) {
+    const double a[] = {1, 2, 3, 4};
+    const double b[] = {5, 6, 7, 8};
+    double c[] = {0, 0, 0, 0};
+    cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, 2, 2, 2, 1, a, 2, b, 2, 0, c, 2);
+    printf("%.0f %.0f %.0f %.0f\\n", c[0], c[1], c[2], c[3]);
+    return c[0] == 19 && c[1] == 22 && c[2] == 43 && c[3] == 50 ? 0 : 1;
+}
+""")
+    include = project_dir / "include"
+    native_archive = project_dir / "libopenblas.a"
+    records = []
+    for label, archives in (("native", [native_archive]),
+                            ("translated", [translated_archive, native_archive])):
+        executable = test_dir / label
+        command = ["clang", f"-I{include}", str(source), *map(str, archives), "-lgfortran", *RUST_NATIVE_LIBS,
+                   "-o", str(executable)]
+        result = subprocess.run(command, cwd=project_dir, capture_output=True, text=True)
+        if result.returncode:
+            (test_dir / f"{label}-link.log").write_text(result.stdout + result.stderr)
+            return 1, {"error": f"{label} smoke link failed", "log": f"openblas-smoke/{label}-link.log"}
+        result = subprocess.run([executable], capture_output=True, text=True)
+        records.append((label, result.returncode, result.stdout.strip()))
+    (test_dir / "results.json").write_text(json.dumps(records, indent=2) + "\n")
+    ok = records[0][1:] == records[1][1:] and records[0][1] == 0
+    return (0 if ok else 1), {"native": records[0][1:], "translated": records[1][1:],
+                              "log": "openblas-smoke/results.json"}
+
+
 def translation_unit(entry, source, recipe, flavor):
     argv = entry.get("arguments") or shlex.split(entry["command"])
     args = pp_diff.kept_args(argv, entry["directory"])
@@ -460,6 +504,56 @@ def translation_units(project_dir, recipe, database, variables, flavor):
     if missing:
         raise SystemExit(f"no compile command for {', '.join(missing)}")
     return [found[Path(obj).stem] for obj in objects]
+
+
+def all_c_translation_units(recipe, database, flavor, project_dir):
+    units = {}
+    members = None
+    if recipe.archive:
+        members = {Path(member).name for member in archive_members(project_dir, [recipe.archive])}
+    entries = json.loads(database.read_text())
+    if recipe.object_prefixes:
+        entries.extend(openblas_build_log_entries(project_dir, recipe.object_prefixes))
+    for entry in entries:
+        source = Path(pp_diff.absolute(entry["directory"], entry["file"])).resolve()
+        if source.suffix != ".c" or not source.exists() or source in units:
+            continue
+        output = Path(entry.get("output", "")).name
+        if members is not None and output not in members:
+            continue
+        if recipe.object_prefixes and not any(output.startswith(prefix) for prefix in recipe.object_prefixes):
+            continue
+        units[source] = translation_unit(entry, source, recipe, flavor)
+    return list(units.values())
+
+
+def openblas_build_log_entries(project_dir, prefixes):
+    entries = []
+    directory = project_dir
+    for line in (project_dir / "build-clang.log").read_text(errors="replace").splitlines():
+        match = re.search(r"Entering directory '([^']+)'", line)
+        if match:
+            directory = Path(match[1])
+            continue
+        match = re.search(r"Leaving directory '([^']+)'", line)
+        if match:
+            directory = Path(match[1]).parent
+            continue
+        try:
+            arguments = shlex.split(line)
+        except ValueError:
+            continue
+        if not arguments or Path(arguments[0]).name not in {"clang", "clang-23"} or "-c" not in arguments:
+            continue
+        if "-o" not in arguments:
+            continue
+        output = arguments[arguments.index("-o") + 1]
+        if not any(Path(output).name.startswith(prefix) for prefix in prefixes):
+            continue
+        source = next((word for word in reversed(arguments) if word.endswith(".c")), None)
+        if source:
+            entries.append({"directory": str(directory), "file": source, "arguments": arguments, "output": output})
+    return entries
 
 
 def ninja_tool(build_dir, *args):
@@ -1003,6 +1097,9 @@ RECIPES = {
         tools=["PROGS"],
         test=["bash", "-c", LMDB_TEST],
     ),
+    "numpy": TranslationOnly(),
+    "openblas": TranslationOnly(archive="libopenblas.a", smoke="openblas",
+                                object_prefixes=["cblas_dgemm.o", "cblas_xerbla.o"]),
 }
 
 
@@ -1039,6 +1136,7 @@ def main():
 
     library = isinstance(recipe, CMakeLibrary)
     make_library = isinstance(recipe, MakeLibrary)
+    translation_only = isinstance(recipe, TranslationOnly)
     code, seconds = run(["cargo", "build", "--release", "-p", "slate-c2rust"], out / "slate-build.log")
     if code:
         raise SystemExit("slate build failed")
@@ -1057,6 +1155,10 @@ def main():
         variables = None
         missing = [] if (build_dir / recipe.library).exists() else [recipe.library]
         units = library_units(build_dir, recipe, database, args.mode)
+    elif translation_only:
+        variables = None
+        missing = ([recipe.archive] if recipe.archive and not (project_dir / recipe.archive).exists() else [])
+        units = all_c_translation_units(recipe, database, args.mode, project_dir)
     else:
         names = recipe.tools if make_library else [*(name for name in recipe.objects if not name.endswith(".o")), recipe.libs]
         variables = make_variables(project_dir, recipe, COMPILERS[args.mode], names)
@@ -1072,10 +1174,11 @@ def main():
     if not finish("barriers", "ok", blocked=blocked, report="barriers.md"):
         return 0
 
-    crate = out / (args.project if library or make_library else recipe.target)
+    crate = out / (args.project if library or make_library or translation_only else recipe.target)
     if crate.exists():
         shutil.rmtree(crate)
-    crate_type = ["--crate-type", "staticlib,cdylib" if recipe.translate_tests else "staticlib"] if library else []
+    crate_type = ["--crate-type", recipe.crate_type] if translation_only else []
+    crate_type = ["--crate-type", "staticlib,cdylib" if recipe.translate_tests else "staticlib"] if library else crate_type
     crate_type = ["--crate-type", "staticlib"] if make_library else crate_type
     code, seconds = run([SLATE, "translate-project", *crate_type, "--compile-commands", commands, project_dir,
                          crate], out / "translate.log")
@@ -1093,16 +1196,25 @@ def main():
     if not finish("check", "failed" if code else "ok", errors=errors, log="check.log"):
         return 1 if code else 0
 
-    native_links = link_flags(project_dir, recipe, variables) if not (library or make_library) else \
+    native_links = link_flags(project_dir, recipe, variables) if not (library or make_library or translation_only) else \
         shared_dependencies(build_dir / recipe.library) if library and recipe.translate_tests else None
     env["RUSTFLAGS"] = " ".join(filter(None, [os.environ.get("RUSTFLAGS"), "-A warnings", native_links]))
     code, _ = run(["cargo", "build", "--profile", args.profile], out / "build.log", cwd=crate, env=env)
     profile_dir = "debug" if args.profile == "dev" else args.profile
     package = re.search(r'^name = "([^"]+)"', (crate / "Cargo.toml").read_text(), re.MULTILINE)[1]
     binary = out / "cargo-target" / profile_dir / package
-    if library or make_library:
+    if library or make_library or translation_only:
         binary = next((out / "cargo-target" / profile_dir).glob("*.a"), binary)
     if not finish("build", "failed" if code else "ok", log="build.log", binary=str(binary)):
+        return 1 if code else 0
+
+    if translation_only:
+        if recipe.smoke == "openblas":
+            code, details = openblas_smoke(project_dir, binary, out)
+            finish("test", "failed" if code else "ok", **details)
+            return 1 if code else 0
+        summary["stages"]["test"] = {"status": "not-applicable"}
+        (out / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
         return 1 if code else 0
 
     if make_library:

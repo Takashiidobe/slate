@@ -32,6 +32,9 @@ class Configure:
     configure: list[str]
     make: list[str] = field(default_factory=list)
     bootstrap: list[str] | None = None
+    python_packages: list[str] = field(default_factory=list)
+    submodules: list[str] = field(default_factory=list)
+    build_program: str = "make"
 
     def flavors(self):
         return ("gcc", "clang")
@@ -110,6 +113,22 @@ RECIPES = {
     "cpython": Configure(["{source}/configure", "CC={cc}"]),
     "libsodium": Configure(["{source}/configure", "CC={cc}"], ["check"], bootstrap=["./autogen.sh", "-s"]),
     "postgres": Configure(["{source}/configure", "CC={cc}"], ["world-bin"]),
+    "numpy": Configure(
+        ["{corpus}/.venv/bin/python", "{source}/vendored-meson/meson/meson.py", "setup",
+         "{build}", "{source}", "--buildtype=release"],
+        ["-C", "{build}"],
+        python_packages=["Cython>=3.1.0"],
+        submodules=[
+            "numpy/_core/src/common/pythoncapi-compat",
+            "numpy/_core/src/highway",
+            "numpy/_core/src/npysort/x86-simd-sort",
+            "numpy/_core/src/umath/svml",
+            "numpy/fft/pocketfft",
+            "vendored-meson/meson",
+        ],
+        build_program="ninja",
+    ),
+    "openblas": InTree(make=["CC={cc}"]),
     "linux": Configure(
         ["make", "-C", "{source}", "O={build}", "CC={cc}", "HOSTCC={cc}", "defconfig"],
         ["CC={cc}", "HOSTCC={cc}"],
@@ -197,10 +216,19 @@ def setup(corpus: Path, project: str, flavor: str) -> str:
                 run(configure, root, env, log)
                 built = run(["cmake", "--build", str(build), "--", "-k", "0", "-j", JOBS], root, env, log, required=False)
             case Configure():
+                if recipe.submodules:
+                    run(["git", "submodule", "update", "--init", "--depth=1", "--", *recipe.submodules],
+                        root, env, log)
+                if recipe.python_packages:
+                    python = python_environment(corpus, [], log, recipe.python_packages)
+                    env["PATH"] = f"{python.parent}:{env['PATH']}"
                 if recipe.bootstrap:
                     run(expand(recipe.bootstrap, values), root, env, log)
                 run(expand(recipe.configure, values), build, env, log)
-                built = run(bear(database, ["make", "-j", JOBS, *expand(recipe.make, values)]), build, env, log, required=False)
+                command = [recipe.build_program, *expand(recipe.make, values)]
+                if recipe.build_program == "make":
+                    command[1:1] = ["-j", JOBS]
+                built = run(bear(database, command), build, env, log, required=False)
             case Nmake() if flavor == "msvc":
                 argv = ["nmake", "/nologo", "/i", "/f", f"..\\{recipe.makefile}", *expand(recipe.options, values)]
                 built = run(argv, build, env, log, required=False)
@@ -219,12 +247,13 @@ def setup(corpus: Path, project: str, flavor: str) -> str:
     return "ok" if built else "database written, build incomplete"
 
 
-def python_environment(corpus: Path, requirements: list[Path], log) -> Path:
+def python_environment(corpus: Path, requirements: list[Path], log, packages: list[str] | None = None) -> Path:
     venv = corpus / ".venv"
     if not venv.exists():
         run([sys.executable, "-m", "venv", str(venv)], corpus, dict(os.environ), log)
     python = venv / "bin" / "python"
     install = [str(python), "-m", "pip", "install", "-q"]
+    install += packages or []
     for requirement in requirements:
         install += ["-r", str(requirement)]
     run(install, corpus, dict(os.environ), log)
