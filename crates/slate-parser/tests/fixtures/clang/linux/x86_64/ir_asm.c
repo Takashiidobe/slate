@@ -12,7 +12,7 @@ void extended(int x, int y, int *p) {
     __asm__ volatile inline("mov %[in], %0 %% %= %{att%|intel%} %a1 %cc2"
                             : [out] "=&r,m"(x)
                             : [in] "%rm,r"(y), "[out],m"(*p)
-                            : "memory", "cc", "unwind", "%rdx", "not_a_register");
+                            : "memory", "cc", "unwind", "%rdx");
 }
 
 void hoisted(int *p, int n) {
@@ -88,7 +88,7 @@ void memory(int x, int *p, struct Pair *s) {
 // IR-NEXT:             template: "mov " %1 ", " %0 " " %% " " %= " {att|intel} " %a1 " " %c0;
 // IR-NEXT:             inout 0 [out] "r,m" [reg, mem] width 32 place<i32>(%[[VALUE_x]]) from read<i32>(deref(read<ptr<i32>>(%[[VALUE_p]])));
 // IR-NEXT:             in 1 [in] "%rm,r" [reg | mem, reg] -> reg width 32 read<i32>(%[[VALUE_y]]);
-// IR-NEXT:             clobbers: memory, cc, unwind, "%rdx" as dx, "not_a_register";
+// IR-NEXT:             clobbers: memory, cc, unwind, "%rdx" as dx;
 // IR-NEXT:         }
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_hoisted:[0-9]+]] @hoisted(%[[VALUE_p_2:[0-9]+]] p: ptr<i32>, %[[VALUE_n:[0-9]+]] n: i32) -> void [linkage=external] [fallthrough=ret_void] {

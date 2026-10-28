@@ -35,7 +35,7 @@ foo (void)
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         asm "" [dialect=att] [options=nostack] {
-// DEFAULT-NEXT:             clobbers: cc, memory, "redzone";
+// DEFAULT-NEXT:             clobbers: cc, memory, redzone;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

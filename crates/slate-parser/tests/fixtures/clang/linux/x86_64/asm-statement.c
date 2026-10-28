@@ -3,7 +3,7 @@ void operands(int x, int y, int *p) {
   __asm__ volatile inline("mov %[in], %0 %% %= %{att%|intel%} %a1 %cc2"
                           : [out] "=&r,m"(x)
                           : [in] "%rm,r"(y), "[out],m"(*p)
-                          : "memory", "cc", "unwind", "%rdx", "not_a_register");
+                          : "memory", "cc", "unwind", "%rdx");
 }
 
 void jumps(int x) {
@@ -51,7 +51,7 @@ void dialects(int x) {
 // DEFAULT-NEXT:             template: "mov " %1 ", " %0 " " %% " " %= " {att|intel} " %a1 " " %c0;
 // DEFAULT-NEXT:             inout 0 [out] "r,m" [reg, mem] width 32 place<i32>(%[[VALUE_x]]) from read<i32>(deref(read<ptr<i32>>(%[[VALUE_p]])));
 // DEFAULT-NEXT:             in 1 [in] "%rm,r" [reg | mem, reg] -> reg width 32 read<i32>(%[[VALUE_y]]);
-// DEFAULT-NEXT:             clobbers: memory, cc, unwind, "%rdx" as dx, "not_a_register";
+// DEFAULT-NEXT:             clobbers: memory, cc, unwind, "%rdx" as dx;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_jumps:[0-9]+]] @jumps(%[[VALUE_x_2:[0-9]+]] x: i32) -> void [linkage=external] [fallthrough=ret_void] {

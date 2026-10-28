@@ -4,7 +4,7 @@ use super::{Cursor, Parser, TokenCursor, span_tokens};
 use crate::ast::{
     AsmClobber, AsmConstraint, AsmConstraintAlternative, AsmConstraintLocation,
     AsmConstraintModifier, AsmLabel, AsmOperand, AsmOperands, AsmQualifier, AsmTemplatePiece, Expr,
-    GnuAsm, Span, StorageClass,
+    GnuAsm, Register, Span, StorageClass,
 };
 use crate::error::ParseError;
 use crate::lexer::{Keyword, Lexer, Token};
@@ -229,13 +229,12 @@ impl Parser {
             && is_string_literal(cursor.peek())
         {
             loop {
+                let start = cursor.pos;
                 let clobber =
                     asm_string(tokens, &mut cursor.pos).map_err(|error| cursor.error(error))?;
-                clobbers.push(Span::new(
-                    decode_clobber(self.dialect().target().family, &clobber.value),
-                    clobber.spelling,
-                    clobber.expansion,
-                ));
+                let decoded = decode_clobber(self.dialect().target().family, &clobber.value)
+                    .map_err(|error| self.error_at_tokens(tokens, start, error))?;
+                clobbers.push(Span::new(decoded, clobber.spelling, clobber.expansion));
                 if !cursor.consume(Token::Comma) {
                     break;
                 }
@@ -473,12 +472,18 @@ fn operand_names(operands: &[RawOperand]) -> Vec<Option<&str>> {
         .collect()
 }
 
-fn decode_clobber(family: TargetFamily, name: &str) -> AsmClobber {
+fn decode_clobber(family: TargetFamily, name: &str) -> Result<AsmClobber, String> {
     match name {
-        "memory" => AsmClobber::Memory,
-        "cc" => AsmClobber::Cc,
-        "unwind" => AsmClobber::Unwind,
-        _ => AsmClobber::Register(decode_register(family, name)),
+        "memory" => Ok(AsmClobber::Memory),
+        "cc" => Ok(AsmClobber::Cc),
+        "unwind" => Ok(AsmClobber::Unwind),
+        "redzone" => Ok(AsmClobber::Redzone),
+        _ => match decode_register(family, name) {
+            Register::Other(_) if family != TargetFamily::Arm32 => {
+                Err(format!("unknown register name '{name}' in asm"))
+            }
+            register => Ok(AsmClobber::Register(register)),
+        },
     }
 }
 

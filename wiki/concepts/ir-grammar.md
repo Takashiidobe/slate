@@ -350,7 +350,7 @@ asm_piece  = string | "%" [ letter ] integer [ asm_view ] | "%l" integer
 asm_address = "addr" [ "<" identifier ">" ] "(%" integer [ " + " identifier ]
               [ " + " identifier "*" integer ] [ ( " + " | " - " ) integer ] ")" ;
 asm_view   = "(" ( integer | "high8" ) ")" ;
-clobber    = "memory" | "cc" | "unwind" | register ;
+clobber    = "memory" | "cc" | "unwind" | "redzone" | register ;
 register   = string [ "as" identifier ] ;
 simple     = "let" binding ":" type "[synthetic" [ ", unsequenced" ] "]"
              [ "=" value ]

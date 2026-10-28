@@ -183,6 +183,7 @@ impl Lowerer {
                 ast::AsmClobber::Memory => AsmClobber::Memory,
                 ast::AsmClobber::Cc => AsmClobber::Cc,
                 ast::AsmClobber::Unwind => AsmClobber::Unwind,
+                ast::AsmClobber::Redzone => AsmClobber::Redzone,
                 ast::AsmClobber::Register(reg) => AsmClobber::Register(register(reg)),
             })
             .collect();

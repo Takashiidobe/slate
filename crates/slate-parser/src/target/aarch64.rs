@@ -219,6 +219,12 @@ fn lookup_alias(spelling: &str, name: &str) -> Option<AArch64Register> {
     if name == "fp" {
         return Some(register(spelling, 29, Some(Bits64)));
     }
+    if name == "x31" {
+        return Some(register(spelling, 31, Some(Bits64)));
+    }
+    if name == "w31" {
+        return Some(register(spelling, 31, Some(Bits32)));
+    }
     if name == "lr" {
         return Some(register(spelling, 30, Some(Bits64)));
     }

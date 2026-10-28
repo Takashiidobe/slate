@@ -342,6 +342,7 @@ pub enum AsmClobber {
     Memory,
     Cc,
     Unwind,
+    Redzone,
     Register(AsmRegister),
 }
 
@@ -582,6 +583,7 @@ impl fmt::Display for AsmClobber {
             Self::Memory => f.write_str("memory"),
             Self::Cc => f.write_str("cc"),
             Self::Unwind => f.write_str("unwind"),
+            Self::Redzone => f.write_str("redzone"),
             Self::Register(register) => write!(f, "{register}"),
         }
     }

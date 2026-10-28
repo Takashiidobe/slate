@@ -988,6 +988,7 @@ pub enum AsmClobber {
     Memory,
     Cc,
     Unwind,
+    Redzone,
     Register(Register),
 }
 
