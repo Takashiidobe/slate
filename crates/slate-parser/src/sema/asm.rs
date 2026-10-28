@@ -974,6 +974,7 @@ fn classes(letters: &str, family: TargetFamily) -> Vec<AsmOperandClass> {
             (TargetFamily::AArch64, "I" | "J" | "K" | "L" | "M" | "N" | "Z") => {
                 AsmOperandClass::Immediate
             }
+            (TargetFamily::AArch64, "S") => AsmOperandClass::Symbol,
             (TargetFamily::Arm32, "t") => AsmOperandClass::Register(AsmRegisterClass::SReg),
             (TargetFamily::Arm32, "w") => AsmOperandClass::Register(AsmRegisterClass::DReg),
             (TargetFamily::Arm32, "I" | "J" | "K" | "L" | "M") => AsmOperandClass::Immediate,

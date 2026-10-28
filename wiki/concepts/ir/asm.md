@@ -144,7 +144,10 @@ whole asm: the first where every operand has a usable class.
   (`I`-`N`, `i`, `n`, `g`) sits beside it, a non-zero constant skips the
   immediate, so `"rZ"(11)` takes a register as both compilers do
   (`ir_asm_zero_register.c`).
-- `s` and x86 `Ws` offer only `Symbol`.
+- `s`, x86 `Ws` and AArch64 `S` offer only `Symbol`. Both compilers print
+  an `S` operand as the bare symbol plus offset under no modifier, `%c` or
+  `%a` (`arr+8`), so `adrp %0, %1` and `:lo12:%1` lower to `sym`
+  (`ir_asm_symbol_operand.c`, slate `aarch64/asm_aarch64_symbol_operand.c`).
 - `i` (and `g`) offer `Symbol` besides `Immediate`; `n` and target
   immediate letters offer only `Immediate`.
 - An input selects `Symbol` when it folds to a static-storage object or
