@@ -37,9 +37,9 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_cleanup_fn:[0-9]+]] @cleanup_fn(%[[VALUE_value:[0-9]+]] value: ptr<i32>) -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         read<ptr<i32>>(%[[VALUE_value]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_startup_fn:[0-9]+]] @startup_fn() -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_startup_fn:[0-9]+]] @startup_fn() -> void [linkage=internal] [constructor=65535] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_shutdown_fn:[0-9]+]] @shutdown_fn() -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_shutdown_fn:[0-9]+]] @shutdown_fn() -> void [linkage=internal] [destructor=65535] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_used_fn:[0-9]+]] @used_fn() -> void [linkage=internal] [used] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }

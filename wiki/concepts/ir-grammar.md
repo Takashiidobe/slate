@@ -192,7 +192,8 @@ tls_model    = "global-dynamic" | "local-dynamic" | "initial-exec" | "local-exec
 function    = "fn" binding "@" c_identifier "(" [ params ] ")" "->" type
               linkage symbol_attrs [ "[inline=" ( "hint" | "always" | "never" ) "]" ]
               [ "[definition=" ( "emitted" | "inline_only" ) "]" ] [ "[noreturn]" ]
-              [ "[naked]" ] [ "[interrupt]" ] [ "[overloadable]" ]
+              [ "[naked]" ] [ "[constructor=" int "]" ] [ "[destructor=" int "]" ]
+              [ "[interrupt]" ] [ "[overloadable]" ]
               [ "[target=" target_feature { "," target_feature } "]" ]
               [ "[memory=" ( "none" | "read" ) "]" ]
               { "[deallocator=%" int ", argument=" int "]" }
@@ -225,6 +226,11 @@ target_feature = ( "+" | "-" ) feature_name | "arch=" cpu_name | "tune=" cpu_nam
   `ub`.
 - `[naked]` is `__attribute__((naked))` from any declaration: no prologue or
   epilogue, fallthrough `ub`, and its asm statements print no `[options=...]`.
+- `[constructor=N]` and `[destructor=N]` are `__attribute__((constructor(N)))`
+  and `((destructor(N)))`; `N` defaults to 65535. The lowerer registers the
+  function in `.init_array`/`.fini_array` (`.N` suffix when not the default),
+  `__DATA,__mod_init_func`/`__mod_term_func` on Darwin, or `.CRT$XCU` on
+  Windows (constructors only).
 - `[interrupt]` is `__attribute__((interrupt))` from any declaration; the
   backend picks the interrupt calling convention from the function.
 - `[overloadable]` is clang's `__attribute__((overloadable))`. Several functions

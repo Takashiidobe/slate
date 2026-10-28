@@ -124,6 +124,8 @@ pub struct FunctionSemantics {
     pub noreturn: bool,
     pub naked: bool,
     pub interrupt: bool,
+    pub constructor: Option<u32>,
+    pub destructor: Option<u32>,
     pub overloadable: bool,
     pub memory: Option<MemoryEffects>,
     pub deallocators: Vec<Deallocator>,

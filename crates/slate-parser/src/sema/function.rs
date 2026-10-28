@@ -21,10 +21,20 @@ pub(super) struct FunctionDeclarations {
     noreturn: bool,
     naked: bool,
     interrupt: bool,
+    constructor: Option<u32>,
+    destructor: Option<u32>,
     memory: Option<MemoryEffects>,
     deallocators: Vec<Deallocator>,
     target: Vec<TargetFeature>,
     attributes: Vec<Attribute>,
+}
+
+const DEFAULT_INIT_PRIORITY: u32 = 65535;
+
+fn init_priority(priority: Option<i64>) -> u32 {
+    priority.map_or(DEFAULT_INIT_PRIORITY, |value| {
+        value.clamp(0, i64::from(DEFAULT_INIT_PRIORITY)) as u32
+    })
 }
 
 fn target_features(spec: &str) -> Vec<TargetFeature> {
@@ -192,6 +202,12 @@ impl Lowerer {
                 Attribute::NoReturn => state.noreturn = true,
                 Attribute::Naked => state.naked = true,
                 Attribute::Interrupt => state.interrupt = true,
+                Attribute::Constructor(priority) => {
+                    state.constructor = Some(init_priority(*priority))
+                }
+                Attribute::Destructor(priority) => {
+                    state.destructor = Some(init_priority(*priority))
+                }
                 Attribute::Target(spec) => state.target = target_features(spec),
                 Attribute::Const => state.restrict_memory(MemoryEffects::None),
                 Attribute::Pure => state.restrict_memory(MemoryEffects::Read),
@@ -282,6 +298,8 @@ impl Lowerer {
                 noreturn: state.noreturn,
                 naked: state.naked,
                 interrupt: state.interrupt,
+                constructor: state.constructor,
+                destructor: state.destructor,
                 overloadable: self.types.overload_sets.contains_key(&function.value.id),
                 memory: state.memory,
                 deallocators: if matches!(function.return_type, Some(Type::Pointer { .. })) {

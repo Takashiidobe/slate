@@ -1130,6 +1130,12 @@ impl fmt::Display for DisplayModule<'_> {
             if function.semantics.naked {
                 f.write_str(" [naked]")?;
             }
+            if let Some(priority) = function.semantics.constructor {
+                write!(f, " [constructor={priority}]")?;
+            }
+            if let Some(priority) = function.semantics.destructor {
+                write!(f, " [destructor={priority}]")?;
+            }
             if function.semantics.interrupt {
                 f.write_str(" [interrupt]")?;
             }

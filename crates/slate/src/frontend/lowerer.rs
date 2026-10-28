@@ -365,6 +365,78 @@ impl<'m> ModuleLowerer<'m> {
         Ok(())
     }
 
+    fn lower_init_hooks(&mut self, function: &ir::Function) -> Result<()> {
+        use slate_parser::target_info::TargetOs;
+        let os = self.tables.target.os;
+        let hooks = [
+            (function.semantics.constructor, "init"),
+            (function.semantics.destructor, "fini"),
+        ];
+        for (priority, kind) in hooks {
+            let Some(priority) = priority else {
+                continue;
+            };
+            let section = match (os, kind) {
+                (TargetOs::Linux | TargetOs::Android | TargetOs::FreeBsd, _) => {
+                    if priority == 65535 {
+                        format!(".{kind}_array")
+                    } else {
+                        format!(".{kind}_array.{priority:05}")
+                    }
+                }
+                (TargetOs::Darwin, "init") => "__DATA,__mod_init_func".into(),
+                (TargetOs::Darwin, _) => "__DATA,__mod_term_func".into(),
+                (TargetOs::Windows, "init") => ".CRT$XCU".into(),
+                (TargetOs::Windows, _) => {
+                    return Err(Construct::Function {
+                        name: function.name.clone(),
+                        detail: "destructor needs an ELF or Mach-O target".into(),
+                    }
+                    .into());
+                }
+            };
+            let target = self.tables.names[&function.id].rust.clone();
+            let wrapper = format!("__slate_{kind}_{target}");
+            self.items.push(Item::Fn(FnDef {
+                comments: Vec::new(),
+                attrs: Vec::new(),
+                vis: rust::Visibility::Private,
+                unsafe_: false,
+                abi: Some(rust::Abi::CUnwind),
+                name: wrapper.clone(),
+                params: Vec::new(),
+                ret: None,
+                body: vec![Stmt::Expr(Expr::Call {
+                    func: Box::new(Expr::Var(target.as_str().into())),
+                    args: Vec::new(),
+                    binding: CallBinding::Generated,
+                })],
+            }));
+            self.items.push(Item::Static {
+                comments: Vec::new(),
+                attrs: vec![
+                    Attr::Allow(vec![rust::Lint::NonUpperCaseGlobals]),
+                    Attr::Used(rust::UsedKind::Plain),
+                    Attr::LinkSection(section),
+                ],
+                vis: rust::Visibility::Private,
+                mutable: false,
+                name: format!("__SLATE_{}_{target}", kind.to_uppercase()),
+                ty: rust::Type::FnPtr {
+                    abi: rust::Abi::CUnwind,
+                    params: Vec::new(),
+                    ret: Box::new(rust::Type::Unit),
+                },
+                init: Expr::Call {
+                    func: Box::new(Expr::Var("Some".into())),
+                    args: vec![Expr::Var(wrapper.as_str().into())],
+                    binding: CallBinding::Generated,
+                },
+            });
+        }
+        Ok(())
+    }
+
     fn new(
         module: &'m ir::Module,
         files: &Files,
@@ -715,8 +787,12 @@ impl<'m> ModuleLowerer<'m> {
                 }
                 lowered => lowered,
             };
+            let lowered = lowered.and_then(|item| {
+                self.items.push(item);
+                self.lower_init_hooks(function)
+            });
             match lowered {
-                Ok(item) => self.items.push(item),
+                Ok(()) => {}
                 Err(error) => self.barriers.push(
                     error
                         .within(
