@@ -89,7 +89,9 @@ whole asm: the first where every operand has a usable class.
 - An operand naming a register variable (`register long r10 asm("r10")`)
   whose chosen register class holds that register selects
   `Explicit(r10)`, as clang emits `{r10}`; GCC guarantees only this use of
-  local register variables. The printer marks it `[reg] -> {r10}`.
+  local register variables. The printer marks it `[reg] -> {r10}`. On
+  AArch64, `r` holds `x0`-`x30`, `w` `v0`-`v31`, `x` `v0`-`v15` and `y`
+  `v0`-`v7` (`ir_asm_register_variables.c`).
 - Recorded as `InlineAsm::alternative`, `AsmOperand::selected`, and
   `AsmRejection`s. With nothing usable, `alternative` is `None` and
   operands lower unselected (`ir_asm_alternatives.c`).
@@ -196,13 +198,15 @@ const int k = 2`, `table[1]`, `s.field`, string elements, `*ptr` to a
   (`x0` for an `int`, `v0` for a `float`, as clang and gcc do), which is
   Rust's default; emission writes `{N:x}`/`{N:v}` explicitly so rustc's
   `asm_sub_register` lint stays quiet. A `vreg_low8` (`y`) operand pins
-  `v0`-`v7` and is printed by name (`s3`, `v3`). Memory operands (`Q`)
+  `v0`-`v7` and is printed by name (`s3`, `v3`). An explicit register
+  (a register variable such as `register long x8 asm("x8")`) becomes
+  `in("x8")` and is printed by name the same way. Memory operands (`Q`)
   print `[{N:x}]`, immediates print bare (`100`, no `#`), and unused
   operands go in a `//` comment.
-- AArch64 Slate barriers: explicit-register operands (register variables
-  included), clobbers of the Rust-reserved `x19`/`x29`/`sp` and of anything
-  but `x0`-`x30`/`v0`-`v31` (SVE `p`/`ffr`, `vg`, `fpmr`), vector operands
-  wider than 128 bits, and memory modifiers. ARM32 is not lowered yet.
+- AArch64 Slate barriers: operands and clobbers of the Rust-reserved
+  `x19`/`x29` (and `sp` clobbers), clobbers of anything but
+  `x0`-`x30`/`v0`-`v31` (SVE `p`/`ffr`, `vg`, `fpmr`), and memory
+  modifiers. ARM32 is not lowered yet.
 - A tied input keeps its own width at its reference sites on x86 (gcc
   prints `"=r"(char) : "0"(int)` as `%dil` and `%edi`); clang rejects the
   mismatch (`ir_asm_widths.c`).

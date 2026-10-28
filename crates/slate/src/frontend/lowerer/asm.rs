@@ -93,10 +93,13 @@ fn aarch64_register_modifier(
     modifier: Option<char>,
     view: Option<ir::AsmRegisterView>,
 ) -> Result<char> {
-    let general = matches!(
-        operand.selected,
-        Some(ir::AsmOperandClass::Register(ir::AsmRegisterClass::Reg))
-    );
+    let general = match &operand.selected {
+        Some(ir::AsmOperandClass::Register(ir::AsmRegisterClass::Reg)) => true,
+        Some(ir::AsmOperandClass::Explicit(register)) => {
+            register.canonical.is_some_and(|name| name.starts_with('x'))
+        }
+        _ => false,
+    };
     Ok(match (general, modifier, view) {
         (true, _, Some(ir::AsmRegisterView::Bits(32))) => 'w',
         (true, _, Some(ir::AsmRegisterView::Bits(64))) | (true, None, None) => 'x',
@@ -1006,6 +1009,12 @@ impl FunctionLowerer<'_, '_> {
         {
             return self.asm_vector_scratch_type(operand, class);
         }
+        if let Some(ir::AsmOperandClass::Explicit(register)) = &operand.selected
+            && self.tables.target.family == TargetFamily::AArch64
+            && register.canonical.is_some_and(|name| name.starts_with('v'))
+        {
+            return self.asm_vector_scratch_type(operand, ir::AsmRegisterClass::VReg);
+        }
         let (output, input) = match &operand.kind {
             ir::AsmOperandKind::In(value) => (&value.ty, None),
             ir::AsmOperandKind::Out { place, .. } => (&place.ty, None),
@@ -1692,10 +1701,19 @@ impl FunctionLowerer<'_, '_> {
                     rust::AsmReg::Explicit(canonical.into())
                 }
                 Some(ir::AsmOperandClass::Explicit(register)) if !x86 => {
-                    return Err(unsupported_asm(format!(
-                        "explicit register {}",
-                        register.spelling
-                    )));
+                    let canonical = register
+                        .canonical
+                        .filter(|canonical| canonical.starts_with(['x', 'v']))
+                        .ok_or_else(|| {
+                            unsupported_asm(format!("explicit register {}", register.spelling))
+                        })?;
+                    if matches!(canonical, "x19" | "x29") {
+                        return Err(unsupported_asm(format!(
+                            "reserved register operand {canonical}"
+                        )));
+                    }
+                    pinned = Some(canonical);
+                    rust::AsmReg::Explicit(canonical.into())
                 }
                 Some(ir::AsmOperandClass::Register(ir::AsmRegisterClass::RegLegacy)) => {
                     let canonical = ["ax", "cx", "dx", "si", "di"]

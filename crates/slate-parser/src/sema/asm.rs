@@ -662,8 +662,16 @@ fn holds(class: AsmRegisterClass, register: &AsmRegister) -> bool {
         .strip_prefix('r')
         .and_then(|number| number.parse::<u8>().ok())
         .is_some_and(|number| (8..=15).contains(&number));
+    let aarch64 = |prefix: char, last: u8| {
+        name.strip_prefix(prefix)
+            .and_then(|number| number.parse::<u8>().ok())
+            .is_some_and(|number| number <= last)
+    };
     match class {
-        AsmRegisterClass::Reg => legacy || numbered,
+        AsmRegisterClass::Reg => legacy || numbered || aarch64('x', 30),
+        AsmRegisterClass::VReg => aarch64('v', 31),
+        AsmRegisterClass::VRegLow16 => aarch64('v', 15),
+        AsmRegisterClass::VRegLow8 => aarch64('v', 7),
         AsmRegisterClass::RegLegacy => legacy,
         AsmRegisterClass::RegAbcd => matches!(name, "ax" | "bx" | "cx" | "dx"),
         AsmRegisterClass::XmmReg => name.starts_with("xmm"),
