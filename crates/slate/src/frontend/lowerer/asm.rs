@@ -1867,6 +1867,7 @@ impl FunctionLowerer<'_, '_> {
             }
         }
         let mut saved_rbx = saved_rbx.map(|slot| (slot, true));
+        let mut saved_reserved = Vec::new();
         let mut clobbered = BTreeSet::new();
         let position = |spill: &Spill| match spill.register {
             SpillRegister::Stack(position) => Some(position),
@@ -1919,7 +1920,18 @@ impl FunctionLowerer<'_, '_> {
                 let canonical = register.canonical.ok_or_else(|| {
                     unsupported_asm(format!("unknown clobber {}", register.spelling))
                 })?;
-                if matches!(canonical, "bp" | "sp" | "x19" | "x29") {
+                if !x86 && matches!(canonical, "x19" | "x29") {
+                    if clobbered.insert(canonical) {
+                        saved_reserved.push((canonical, operands.len()));
+                        operands.push(rust::AsmOperand::Out {
+                            reg: rust::AsmReg::Class("reg".into()),
+                            late: false,
+                            value: Expr::Var("_".into()),
+                        });
+                    }
+                    continue;
+                }
+                if matches!(canonical, "bp" | "sp") {
                     return Err(unsupported_asm(format!(
                         "reserved register clobber {canonical}"
                     )));
@@ -2021,6 +2033,10 @@ impl FunctionLowerer<'_, '_> {
                 }
             };
             template = format!("{save}\n{template}\n{restore}");
+        }
+        for (register, slot) in saved_reserved {
+            template =
+                format!("mov {{{slot}:x}}, {register}\n{template}\nmov {register}, {{{slot}:x}}");
         }
         operands.extend(explicit);
         self.dependencies.asm_unwind |= options.contains(&rust::AsmOption::MayUnwind);

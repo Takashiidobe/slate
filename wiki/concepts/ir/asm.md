@@ -213,8 +213,15 @@ const int k = 2`, `table[1]`, `s.field`, string elements, `*ptr` to a
   takes no Rust operand: `%x`/`%w` write `xzr`/`wzr` and an unmodified
   reference writes `0`, as gcc prints (clang moves the zero into a
   register; both run the same).
-- AArch64 Slate barriers: operands and clobbers of the Rust-reserved
-  `x19`/`x29` (and `sp` clobbers), clobbers of anything but
+- A clobber of the Rust-reserved `x19` or `x29`/`fp` is saved and
+  restored around the template through a non-late `out(reg) _` scratch
+  (`mov {N:x}, x19` ... `mov x19, {N:x}`), which no input can share. clang
+  does the same with a stack spill. gcc and clang both leave a clobbered
+  `x29` unrestored when it is the frame pointer (clang warns), so the
+  fixture clobbers `x29` only in leaf functions
+  (`aarch64/asm_aarch64_reserved_clobbers.c`).
+- AArch64 Slate barriers: operands of the Rust-reserved `x19`/`x29`,
+  `sp` clobbers, clobbers of anything but
   `x0`-`x30`/`v0`-`v31` (SVE `p`/`ffr`, `vg`, `fpmr`), and memory
   modifiers. ARM32 is not lowered yet.
 - A tied input keeps its own width at its reference sites on x86 (gcc
