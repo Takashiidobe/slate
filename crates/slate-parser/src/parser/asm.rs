@@ -8,7 +8,8 @@ use crate::ast::{
 };
 use crate::error::ParseError;
 use crate::lexer::{Keyword, Lexer, Token};
-use crate::target::x86::{decode_register, flag_condition};
+use crate::target::decode_register;
+use crate::target::x86::flag_condition;
 use crate::target_info::TargetFamily;
 
 pub(super) fn is_asm_keyword(token: Option<&Token>, plain_asm: bool) -> bool {
@@ -103,7 +104,10 @@ impl DeclaratorParser<'_> {
             return Err("expected `)`".into());
         }
         let label = if storage == StorageClass::Register {
-            AsmLabel::Register(decode_register(&label))
+            AsmLabel::Register(decode_register(
+                self.context.dialect().target().family,
+                &label,
+            ))
         } else {
             AsmLabel::Symbol(label)
         };
@@ -228,7 +232,7 @@ impl Parser {
                 let clobber =
                     asm_string(tokens, &mut cursor.pos).map_err(|error| cursor.error(error))?;
                 clobbers.push(Span::new(
-                    decode_clobber(&clobber.value),
+                    decode_clobber(self.dialect().target().family, &clobber.value),
                     clobber.spelling,
                     clobber.expansion,
                 ));
@@ -274,10 +278,8 @@ impl Parser {
         names.extend(read_writes.iter().map(|_| None));
         let operand_count = names.len();
         names.extend(labels.iter().map(|label| Some(label.value.as_str())));
-        let dialects = matches!(
-            self.dialect().target().family,
-            TargetFamily::X86 | TargetFamily::X86_64
-        );
+        let family = self.dialect().target().family;
+        let dialects = family.is_x86();
         let operands = TemplateOperands {
             names: &names,
             count: operand_count,
@@ -298,7 +300,7 @@ impl Parser {
             )
         };
         let resolve = |operand: &RawOperand, direction: &str| {
-            let constraint = decode_constraint(&operand.constraint.value, &output_names);
+            let constraint = decode_constraint(family, &operand.constraint.value, &output_names);
             let hard_register = constraint.alternatives.iter().any(|alternative| {
                 matches!(alternative.location, AsmConstraintLocation::HardRegister(_))
             });
@@ -471,12 +473,12 @@ fn operand_names(operands: &[RawOperand]) -> Vec<Option<&str>> {
         .collect()
 }
 
-fn decode_clobber(name: &str) -> AsmClobber {
+fn decode_clobber(family: TargetFamily, name: &str) -> AsmClobber {
     match name {
         "memory" => AsmClobber::Memory,
         "cc" => AsmClobber::Cc,
         "unwind" => AsmClobber::Unwind,
-        _ => AsmClobber::Register(decode_register(name)),
+        _ => AsmClobber::Register(decode_register(family, name)),
     }
 }
 
@@ -615,16 +617,24 @@ fn close_alternation(
     outer
 }
 
-fn decode_constraint(spelling: &str, output_names: &[Option<&str>]) -> AsmConstraint {
+fn decode_constraint(
+    family: TargetFamily,
+    spelling: &str,
+    output_names: &[Option<&str>],
+) -> AsmConstraint {
     AsmConstraint {
         alternatives: spelling
             .split(',')
-            .map(|alternative| decode_alternative(alternative, output_names))
+            .map(|alternative| decode_alternative(family, alternative, output_names))
             .collect(),
     }
 }
 
-fn decode_alternative(spelling: &str, output_names: &[Option<&str>]) -> AsmConstraintAlternative {
+fn decode_alternative(
+    family: TargetFamily,
+    spelling: &str,
+    output_names: &[Option<&str>],
+) -> AsmConstraintAlternative {
     let mut modifiers = Vec::new();
     let mut body = String::new();
     for c in spelling.chars() {
@@ -641,7 +651,7 @@ fn decode_alternative(spelling: &str, output_names: &[Option<&str>]) -> AsmConst
         .strip_prefix('{')
         .and_then(|rest| rest.strip_suffix('}'))
     {
-        AsmConstraintLocation::HardRegister(decode_register(register))
+        AsmConstraintLocation::HardRegister(decode_register(family, register))
     } else if !body.is_empty()
         && body.bytes().all(|byte| byte.is_ascii_digit())
         && let Ok(index) = body.parse()

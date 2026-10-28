@@ -1,6 +1,6 @@
 #![expect(dead_code, reason = "will be implemented soon")]
 use crate::{
-    ast::{AArch64RegisterWidth, RegisterInfo},
+    ast::{AArch64RegisterWidth, Register, RegisterInfo},
     target::x86::parse_auto_radix,
 };
 use AArch64RegisterWidth::{
@@ -188,6 +188,10 @@ const VECTOR31_ALIASES: &[(&str, usize, AArch64RegisterWidth)] = vector31_aliase
 
 const SPECIAL_ALIASES: &[(&str, usize, AArch64RegisterWidth)] = &[("wsp", 31, Bits32)];
 
+pub fn decode_register(name: &str) -> Register {
+    lookup(name).map_or_else(|| Register::Other(name.to_string()), Register::Aarch64)
+}
+
 fn lookup(name: &str) -> Option<AArch64Register> {
     let bare = name.strip_prefix(['%', '#']).unwrap_or(name);
 
@@ -211,6 +215,12 @@ fn lookup_alias(spelling: &str, name: &str) -> Option<AArch64Register> {
     // wsp is sp
     if name == "wsp" {
         return Some(register(spelling, 31, Some(Bits32)));
+    }
+    if name == "fp" {
+        return Some(register(spelling, 29, Some(Bits64)));
+    }
+    if name == "lr" {
+        return Some(register(spelling, 30, Some(Bits64)));
     }
 
     // r0..r30 / w0..w30

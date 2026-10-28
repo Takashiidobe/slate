@@ -190,13 +190,27 @@ const int k = 2`, `table[1]`, `s.field`, string elements, `*ptr` to a
   `char`), but Rust's `{0}` prints the full register, so emission adds a
   Rust modifier from the view or the width: GPR 8 `l`, 16 `x`, 32 `e`, 64
   `r`, high `h`; vector ≤128 `x`, 256 `y`, 512 `z`; AArch64 `reg` 32 `w`,
-  64 `x`, `vreg` `b`/`h`/`s`/`d`/`q`. AArch64 unmodified references already
-  match Rust. An explicit register is named at its width (`eax`).
+  64 `x`, `vreg` `b`/`h`/`s`/`d`/`q`. An x86 explicit register is named at
+  its width (`eax`).
+- AArch64 unmodified references print the full register whatever the width
+  (`x0` for an `int`, `v0` for a `float`, as clang and gcc do), which is
+  Rust's default; emission writes `{N:x}`/`{N:v}` explicitly so rustc's
+  `asm_sub_register` lint stays quiet. A `vreg_low8` (`y`) operand pins
+  `v0`-`v7` and is printed by name (`s3`, `v3`). Memory operands (`Q`)
+  print `[{N:x}]`, immediates print bare (`100`, no `#`), and unused
+  operands go in a `//` comment.
+- AArch64 Slate barriers: explicit-register operands (register variables
+  included), clobbers of the Rust-reserved `x19`/`x29`/`sp` and of anything
+  but `x0`-`x30`/`v0`-`v31` (SVE `p`/`ffr`, `vg`, `fpmr`), vector operands
+  wider than 128 bits, and memory modifiers. ARM32 is not lowered yet.
 - A tied input keeps its own width at its reference sites on x86 (gcc
   prints `"=r"(char) : "0"(int)` as `%dil` and `%edi`); clang rejects the
   mismatch (`ir_asm_widths.c`).
 - Clobbers and explicit registers carry the source spelling and, when
-  recognized, the canonical name; width is dropped.
+  recognized by the target's register table, the canonical name; width is
+  dropped. AArch64 names canonicalize to GCC's (`w1`/`r1` to `x1`,
+  `d3`/`s3` to `v3`, `lr` to `x30`, `fp` to `x29`); ARM32 names stay
+  unrecognized (`ir_asm_clobbers.c`).
 
 ## Rust options
 
