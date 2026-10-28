@@ -165,6 +165,7 @@ enum Slot {
     Register(&'static str),
     PairLow(&'static str),
     Spill(SpillRegister),
+    Zero,
 }
 
 fn spill_reference(asm: &ir::InlineAsm, register: SpillRegister) -> String {
@@ -626,6 +627,19 @@ fn asm_template(
                             )));
                         }
                         template.push_str(&spill_reference(asm, register));
+                        continue;
+                    }
+                    Slot::Zero => {
+                        template.push_str(match modifier {
+                            Some('x') => "xzr",
+                            Some('w') => "wzr",
+                            None | Some('c' | 'P' | 'p' | 'n') => "0",
+                            _ => {
+                                return Err(unsupported_asm(format!(
+                                    "immediate modifier {modifier:?}"
+                                )));
+                            }
+                        });
                         continue;
                     }
                 };
@@ -1575,6 +1589,15 @@ impl FunctionLowerer<'_, '_> {
                         return Err(unsupported_asm(format!(
                             "non-integer constant operand {index}"
                         )));
+                    }
+                    let zero = match &value.node.value {
+                        ValueKind::Constant(Number::Integer(number)) => number.bits() == 0,
+                        ValueKind::Constant(Number::SignedInteger(number)) => number.bits() == 0,
+                        _ => false,
+                    };
+                    if !x86 && zero {
+                        slots.push(Slot::Zero);
+                        continue;
                     }
                     slots.push(Slot::Positional(operands.len()));
                     operands.push(rust::AsmOperand::Const(self.lower_value(value)?));

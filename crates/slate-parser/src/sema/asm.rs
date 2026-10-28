@@ -569,7 +569,18 @@ fn choose(
         AsmConstraintLocation::Letters { letters, classes } => {
             let mut first = None;
             let mut best: Option<(u8, &AsmOperandClass)> = None;
+            let zero_only = family == TargetFamily::AArch64
+                && letters.contains('Z')
+                && !letters.contains(['I', 'J', 'K', 'L', 'M', 'N', 'i', 'n', 'g']);
             for class in classes {
+                let nonzero = source
+                    .constant
+                    .as_ref()
+                    .is_some_and(|value| value.bits() != 0);
+                if zero_only && nonzero && matches!(class, AsmOperandClass::Immediate) {
+                    first.get_or_insert(AsmRejectReason::NotConstant);
+                    continue;
+                }
                 match rank(source, class, output, family) {
                     Ok(rank) if best.is_none_or(|(best, _)| rank < best) => {
                         best = Some((rank, class));

@@ -140,6 +140,10 @@ whole asm: the first where every operand has a usable class.
 
 ### Immediates and symbols
 
+- AArch64 `Z` accepts only zero: when no other immediate letter
+  (`I`-`N`, `i`, `n`, `g`) sits beside it, a non-zero constant skips the
+  immediate, so `"rZ"(11)` takes a register as both compilers do
+  (`ir_asm_zero_register.c`).
 - `s` and x86 `Ws` offer only `Symbol`.
 - `i` (and `g`) offer `Symbol` besides `Immediate`; `n` and target
   immediate letters offer only `Immediate`.
@@ -202,7 +206,10 @@ const int k = 2`, `table[1]`, `s.field`, string elements, `*ptr` to a
   (a register variable such as `register long x8 asm("x8")`) becomes
   `in("x8")` and is printed by name the same way. Memory operands (`Q`)
   print `[{N:x}]`, immediates print bare (`100`, no `#`), and unused
-  operands go in a `//` comment.
+  operands go in a `//` comment. A zero immediate (`"rZ"(0)`, `"i"(0)`)
+  takes no Rust operand: `%x`/`%w` write `xzr`/`wzr` and an unmodified
+  reference writes `0`, as gcc prints (clang moves the zero into a
+  register; both run the same).
 - AArch64 Slate barriers: operands and clobbers of the Rust-reserved
   `x19`/`x29` (and `sp` clobbers), clobbers of anything but
   `x0`-`x30`/`v0`-`v31` (SVE `p`/`ffr`, `vg`, `fpmr`), and memory
