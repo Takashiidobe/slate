@@ -1936,7 +1936,10 @@ impl FunctionLowerer<'_, '_> {
                         "reserved register clobber {canonical}"
                     )));
                 }
-                if !x86 && !canonical.starts_with(['x', 'v']) {
+                let predicate = canonical
+                    .strip_prefix('p')
+                    .is_some_and(|number| number.parse::<u8>().is_ok_and(|number| number <= 15));
+                if !x86 && !canonical.starts_with(['x', 'v']) && !predicate && canonical != "ffr" {
                     return Err(unsupported_asm(format!("clobber {canonical}")));
                 }
                 if !clobbered.insert(canonical) {

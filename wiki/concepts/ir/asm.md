@@ -220,10 +220,16 @@ const int k = 2`, `table[1]`, `s.field`, string elements, `*ptr` to a
   `x29` unrestored when it is the frame pointer (clang warns), so the
   fixture clobbers `x29` only in leaf functions
   (`aarch64/asm_aarch64_reserved_clobbers.c`).
+- SVE clobbers: `z<n>` canonicalizes to `v<n>`, and Rust's `out("v<n>") _`
+  covers the whole `z` register (LLVM gives `Z<n>` no register units beyond
+  `Q<n>`'s). `p0`-`p15` and `ffr` become `out("p<n>") _`/`out("ffr") _`
+  (Rust's clobber-only `preg` class). clang rejects an `ffr` clobber and gcc
+  accepts it. SVE templates need `target("+sve")` on the function, which
+  lowers to `#[target_feature(enable = "sve")]`
+  (`aarch64/asm_aarch64_sve_clobbers.c`, `gcc/aarch64/asm_aarch64_sve_ffr_clobber.c`).
 - AArch64 Slate barriers: operands of the Rust-reserved `x19`/`x29`,
-  `sp` clobbers, clobbers of anything but
-  `x0`-`x30`/`v0`-`v31` (SVE `p`/`ffr`, `vg`, `fpmr`), and memory
-  modifiers. ARM32 is not lowered yet.
+  `sp` clobbers, clobbers of SME `za`/`zt0`, `vg` and `fpmr` (no Rust
+  equivalent), and memory modifiers. ARM32 is not lowered yet.
 - A tied input keeps its own width at its reference sites on x86 (gcc
   prints `"=r"(char) : "0"(int)` as `%dil` and `%edi`); clang rejects the
   mismatch (`ir_asm_widths.c`).

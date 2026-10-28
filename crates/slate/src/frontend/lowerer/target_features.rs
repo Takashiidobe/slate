@@ -1,4 +1,5 @@
 use super::*;
+use slate_parser::target_info::TargetFamily;
 
 const X86_FEATURES: &[(&str, &str)] = &[
     ("adx", "adx"),
@@ -49,8 +50,40 @@ const X86_FEATURES: &[(&str, &str)] = &[
     ("xsaves", "xsaves"),
 ];
 
+const AARCH64_FEATURES: &[(&str, &str)] = &[
+    ("aes", "aes"),
+    ("bf16", "bf16"),
+    ("crc", "crc"),
+    ("dotprod", "dotprod"),
+    ("f32mm", "f32mm"),
+    ("f64mm", "f64mm"),
+    ("fp16", "fp16"),
+    ("i8mm", "i8mm"),
+    ("lse", "lse"),
+    ("neon", "neon"),
+    ("rcpc", "rcpc"),
+    ("rdm", "rdm"),
+    ("rdma", "rdm"),
+    ("sha2", "sha2"),
+    ("sha3", "sha3"),
+    ("simd", "neon"),
+    ("sm4", "sm4"),
+    ("sve", "sve"),
+    ("sve2", "sve2"),
+    ("sve2-aes", "sve2-aes"),
+    ("sve2-bitperm", "sve2-bitperm"),
+    ("sve2-sha3", "sve2-sha3"),
+    ("sve2-sm4", "sve2-sm4"),
+];
+
 fn rustc_x86_feature(clang: &str) -> Option<&'static str> {
     X86_FEATURES
+        .iter()
+        .find_map(|(name, rustc)| (*name == clang).then_some(*rustc))
+}
+
+fn rustc_aarch64_feature(clang: &str) -> Option<&'static str> {
+    AARCH64_FEATURES
         .iter()
         .find_map(|(name, rustc)| (*name == clang).then_some(*rustc))
 }
@@ -58,6 +91,14 @@ fn rustc_x86_feature(clang: &str) -> Option<&'static str> {
 impl Tables<'_> {
     fn is_x86(&self) -> bool {
         self.target.family.is_x86()
+    }
+
+    fn rustc_feature(&self, name: &str) -> Option<&'static str> {
+        match self.target.family {
+            TargetFamily::AArch64 => rustc_aarch64_feature(name.strip_prefix('+').unwrap_or(name)),
+            family if family.is_x86() => rustc_x86_feature(name),
+            _ => None,
+        }
     }
 
     pub(super) fn target_feature_attr(&self, function: &ir::Function) -> Result<Option<Attr>> {
@@ -82,9 +123,7 @@ impl Tables<'_> {
                 ir::TargetFeature::Enable(name) if name == "default" => {}
                 ir::TargetFeature::Enable(name) => {
                     let rustc = self
-                        .is_x86()
-                        .then(|| rustc_x86_feature(name))
-                        .flatten()
+                        .rustc_feature(name)
                         .ok_or_else(|| unsupported(format!("target feature `{name}`")))?;
                     if !enabled.contains(&rustc) {
                         enabled.push(rustc);
