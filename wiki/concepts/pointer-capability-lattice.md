@@ -197,6 +197,11 @@ _before_ the per-function arena is even built — see `engine::run_function`,
   used when changing a signature would be unsound or would discard side
   effects. Unknown forwarding, insufficient allocation length, invalid UTF-8
   content, or unsupported writes still fail closed to raw pointers.
+  A constant usage-bound lift needs every offset of the pointer to sit in the
+  body of a loop guarded by `idx < N` on that offset's index, after the guard
+  (the loop's statements past an `if !(idx < N) { break; }`). The slice is the
+  largest such `N`, so an access before or after the loop, or one indexed by a
+  same-named variable that only an unrelated loop guards, keeps the pointer raw.
 
 Requeueing/accessor-cleanup machinery from the original two-`NodeRule` plan
 turned out unnecessary given the whole-Program-rewrite shape that actually

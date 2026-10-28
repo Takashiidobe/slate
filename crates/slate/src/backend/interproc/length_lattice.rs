@@ -2101,8 +2101,8 @@ fn collect_loop_bounds_stmt<'a>(
 ) {
     match stmt {
         Stmt::Loop { body, .. } => {
-            if let Some((idx, len)) = loop_break_guard(body, let_exprs) {
-                out.push((idx, len, body));
+            if let Some((guard, idx, len)) = loop_break_guard(body, let_exprs) {
+                out.push((idx, len, &body[guard + 1..]));
             }
             collect_loop_bounds(body, let_exprs, out);
         }
@@ -2142,8 +2142,11 @@ fn collect_loop_bounds_stmt<'a>(
     }
 }
 
-fn loop_break_guard(body: &[Stmt], let_exprs: &BTreeMap<String, Expr>) -> Option<(String, Expr)> {
-    body.iter().find_map(|indent| {
+fn loop_break_guard(
+    body: &[Stmt],
+    let_exprs: &BTreeMap<String, Expr>,
+) -> Option<(usize, String, Expr)> {
+    body.iter().enumerate().find_map(|(position, indent)| {
         let Stmt::If {
             cond,
             then_body,
@@ -2168,7 +2171,8 @@ fn loop_break_guard(body: &[Stmt], let_exprs: &BTreeMap<String, Expr>) -> Option
         else {
             return None;
         };
-        lt_pair(inner, let_exprs)
+        let (idx, len) = lt_pair(inner, let_exprs)?;
+        Some((position, idx, len))
     })
 }
 
@@ -2571,17 +2575,22 @@ fn const_candidates(
         let value_defs = collect_value_defs(&f.body);
         let mut bound_pairs = Vec::new();
         collect_loop_bounds(&f.body, &let_exprs, &mut bound_pairs);
-        let mut idx_bounds: BTreeMap<String, u64> = BTreeMap::new();
-        for (idx, len, _) in &bound_pairs {
-            let Some(n) = resolved_integer(len, &value_defs, 0) else {
-                continue;
-            };
-            idx_bounds
-                .entry(idx.clone())
-                .and_modify(|cur| *cur = (*cur).max(n))
-                .or_insert(n);
-        }
-        if idx_bounds.is_empty() {
+        let guarded_loops: Vec<(String, u64, Vec<*const Expr>)> = bound_pairs
+            .iter()
+            .filter_map(|(idx, len, body)| {
+                let n = resolved_integer(len, &value_defs, 0)?;
+                let mut offsets = Vec::new();
+                for indent in *body {
+                    indent.collect_offset_calls(&mut offsets);
+                }
+                let sites = offsets
+                    .into_iter()
+                    .map(|(_, _, index)| std::ptr::from_ref(index))
+                    .collect();
+                Some((idx.clone(), n, sites))
+            })
+            .collect();
+        if guarded_loops.is_empty() {
             continue;
         }
         let mut offsets = Vec::new();
@@ -2629,11 +2638,18 @@ fn const_candidates(
                     break;
                 };
                 let idx = resolve_var(&let_exprs, var);
-                let Some(n) = idx_bounds.get(idx) else {
+                let Some(n) = guarded_loops
+                    .iter()
+                    .filter(|(guard, _, sites)| {
+                        guard == idx && sites.contains(&std::ptr::from_ref(index))
+                    })
+                    .map(|(_, n, _)| *n)
+                    .min()
+                else {
                     ok = false;
                     break;
                 };
-                bound = bound.max(*n);
+                bound = bound.max(n);
             }
             if !ok || bound == 0 {
                 continue;
