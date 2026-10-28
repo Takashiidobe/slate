@@ -1497,6 +1497,7 @@ impl FunctionLowerer<'_, '_> {
         let mut explicit = Vec::new();
         let mut slots = Vec::new();
         let mut saved_rbx = None;
+        let mut reserved_operands: Vec<(&str, usize, bool, bool)> = Vec::new();
         let mut taken = asm
             .operands
             .iter()
@@ -1558,6 +1559,7 @@ impl FunctionLowerer<'_, '_> {
                 _ => false,
             };
             let mut pinned = None;
+            let mut reserved = None;
             if fixed {
                 return Err(unsupported_asm(
                     "register variable needs explicit register lowering",
@@ -1731,12 +1733,20 @@ impl FunctionLowerer<'_, '_> {
                             unsupported_asm(format!("explicit register {}", register.spelling))
                         })?;
                     if matches!(canonical, "x19" | "x29") {
-                        return Err(unsupported_asm(format!(
-                            "reserved register operand {canonical}"
-                        )));
+                        if reserved_operands
+                            .iter()
+                            .any(|(register, ..)| *register == canonical)
+                        {
+                            return Err(unsupported_asm(format!(
+                                "second reserved register operand {canonical}"
+                            )));
+                        }
+                        reserved = Some(canonical);
+                        rust::AsmReg::Class("reg".into())
+                    } else {
+                        pinned = Some(canonical);
+                        rust::AsmReg::Explicit(canonical.into())
                     }
-                    pinned = Some(canonical);
-                    rust::AsmReg::Explicit(canonical.into())
                 }
                 Some(ir::AsmOperandClass::Register(ir::AsmRegisterClass::RegLegacy)) => {
                     let canonical = ["ax", "cx", "dx", "si", "di"]
@@ -1830,6 +1840,36 @@ impl FunctionLowerer<'_, '_> {
                 }
                 _ => return Err(unsupported_asm(format!("operand kind at {index}"))),
             };
+            if let Some(canonical) = reserved {
+                let (input, output, lowered) = match lowered {
+                    rust::AsmOperand::Out { reg, value, .. } => (
+                        false,
+                        true,
+                        rust::AsmOperand::Out {
+                            reg,
+                            late: false,
+                            value,
+                        },
+                    ),
+                    rust::AsmOperand::InOut {
+                        reg, input, output, ..
+                    } => (
+                        true,
+                        true,
+                        rust::AsmOperand::InOut {
+                            reg,
+                            late: false,
+                            input,
+                            output,
+                        },
+                    ),
+                    lowered => (true, false, lowered),
+                };
+                reserved_operands.push((canonical, operands.len(), input, output));
+                slots.push(Slot::Register(canonical));
+                operands.push(lowered);
+                continue;
+            }
             match (pinned, lowered) {
                 (None, lowered) if explicit_class && saved_rbx == Some(operands.len()) => {
                     slots.push(Slot::Register("bx"));
@@ -1869,6 +1909,15 @@ impl FunctionLowerer<'_, '_> {
         let mut saved_rbx = saved_rbx.map(|slot| (slot, true));
         let mut saved_reserved = Vec::new();
         let mut clobbered = BTreeSet::new();
+        for (register, slot, input, output) in reserved_operands {
+            clobbered.insert(register);
+            saved_reserved.push((register, operands.len(), Some((slot, input, output))));
+            operands.push(rust::AsmOperand::Out {
+                reg: rust::AsmReg::Class("reg".into()),
+                late: false,
+                value: Expr::Var("_".into()),
+            });
+        }
         let position = |spill: &Spill| match spill.register {
             SpillRegister::Stack(position) => Some(position),
             SpillRegister::Mmx(_) => None,
@@ -1922,7 +1971,7 @@ impl FunctionLowerer<'_, '_> {
                 })?;
                 if !x86 && matches!(canonical, "x19" | "x29") {
                     if clobbered.insert(canonical) {
-                        saved_reserved.push((canonical, operands.len()));
+                        saved_reserved.push((canonical, operands.len(), None));
                         operands.push(rust::AsmOperand::Out {
                             reg: rust::AsmReg::Class("reg".into()),
                             late: false,
@@ -2037,9 +2086,18 @@ impl FunctionLowerer<'_, '_> {
             };
             template = format!("{save}\n{template}\n{restore}");
         }
-        for (register, slot) in saved_reserved {
-            template =
-                format!("mov {{{slot}:x}}, {register}\n{template}\nmov {register}, {{{slot}:x}}");
+        for (register, scratch, operand) in saved_reserved {
+            let mut save = format!("mov {{{scratch}:x}}, {register}");
+            let mut restore = format!("mov {register}, {{{scratch}:x}}");
+            if let Some((slot, input, output)) = operand {
+                if input {
+                    save.push_str(&format!("\nmov {register}, {{{slot}:x}}"));
+                }
+                if output {
+                    restore = format!("mov {{{slot}:x}}, {register}\n{restore}");
+                }
+            }
+            template = format!("{save}\n{template}\n{restore}");
         }
         operands.extend(explicit);
         self.dependencies.asm_unwind |= options.contains(&rust::AsmOption::MayUnwind);
