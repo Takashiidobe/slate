@@ -92,6 +92,7 @@ funcs(funcdefs)
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_a_8]], read<i32>(%[[VALUE2]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_a_8]] in neg<i32, overflow=ub>(const<i32>(10))..=const<i32>(10)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     do %[[VALUE3:[0-9]+]]

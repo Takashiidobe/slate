@@ -60,6 +60,7 @@ int main() {
 // DEFAULT-NEXT:                 write<u64>(%[[VALUE_i]], read<u64>(%[[VALUE2]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_i]] in reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)))..reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4)))
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 write<i16>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(read<ptr<i16>>(%[[VALUE_d]]), read<u64>(%[[VALUE_i]]))), call<i16, signature=fn(i16) -> i16>(%[[VALUE_foo]], read<i16>(deref(ptr_offset<ptr<const i16>, subtract=false, element=i16, overflow=ub>(read<ptr<const i16>>(%[[VALUE_s]]), read<u64>(%[[VALUE_i]]))))));
 // DEFAULT-NEXT:     }

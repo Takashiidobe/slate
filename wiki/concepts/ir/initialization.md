@@ -1,7 +1,6 @@
 # Objects, initialization, and VLAs
 
 <!-- toc -->
-
 - [Principles](#principles)
 - [Automatic variable fill](#automatic-variable-fill)
 - [Aggregate initializers](#aggregate-initializers)

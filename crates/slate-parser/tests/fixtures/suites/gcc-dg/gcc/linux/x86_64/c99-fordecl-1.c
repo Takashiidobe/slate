@@ -75,6 +75,7 @@ main (void)
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_2]], read<i32>(%[[VALUE3]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_i_2]] in const<i32>(1)..=const<i32>(10)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 let %[[VALUE4:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_j]]);
 // DEFAULT-NEXT:                 let %[[VALUE5:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE4]]), read<i32>(%[[VALUE_i_2]]));
@@ -94,6 +95,7 @@ main (void)
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_3]], read<i32>(%[[VALUE8]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_i_3]] in const<i32>(1)..=const<i32>(10)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 let %[[VALUE9:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_j]]);
 // DEFAULT-NEXT:                 let %[[VALUE10:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE9]]), read<i32>(%[[VALUE_i_3]]));
@@ -113,6 +115,7 @@ main (void)
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_4]], read<i32>(%[[VALUE13]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_i_4]] in const<i32>(1)..=const<i32>(10)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 let %[[VALUE14:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_j]]);
 // DEFAULT-NEXT:                 let %[[VALUE15:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE14]]), read<i32>(%[[VALUE_i_4]]));

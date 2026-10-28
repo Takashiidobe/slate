@@ -67,6 +67,7 @@ int main(void) {
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE2]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_i]] in const<i32>(0)..read<i32>(%[[VALUE_n]])
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     if eq<i32>(read<i32>(%[[VALUE_i]]), const<i32>(2))
@@ -83,6 +84,7 @@ int main(void) {
 // DEFAULT-NEXT:                             write<i32>(%[[VALUE_j]], read<i32>(%[[VALUE5]]));
 // DEFAULT-NEXT:                             yield void;
 // DEFAULT-NEXT:                         }
+// DEFAULT-NEXT:                         counted: %[[VALUE_j]] in const<i32>(0)..read<i32>(%[[VALUE_n]])
 // DEFAULT-NEXT:                         body:
 // DEFAULT-NEXT:                             {
 // DEFAULT-NEXT:                                 if eq<i32>(read<i32>(%[[VALUE_j]]), const<i32>(3))

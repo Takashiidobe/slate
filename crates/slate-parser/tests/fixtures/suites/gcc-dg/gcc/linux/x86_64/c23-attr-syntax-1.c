@@ -138,6 +138,7 @@ void func3 () [[]] { }
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_zz]], read<i32>(%[[VALUE9]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_zz]] in const<i32>(1)..const<i32>(10)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<i32>(%[[VALUE_var2]], const<i32>(8));

@@ -86,6 +86,7 @@ int main() {
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE2]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_i]] in const<i32>(0)..read<i32>(%[[VALUE_n]])
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     if lt<i32>(read<i32>(%[[VALUE_i]]), const<i32>(16))
@@ -101,6 +102,7 @@ int main() {
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_2]], read<i32>(%[[VALUE5]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_i_2]] in const<i32>(0)..const<i32>(16)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 let %[[VALUE6:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_s]]);
 // DEFAULT-NEXT:                 let %[[VALUE7:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE6]]), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(16)>(%[[VALUE_arr]]), read<i32>(%[[VALUE_i_2]])))));
@@ -121,6 +123,7 @@ int main() {
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_3]], read<i32>(%[[VALUE10]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_i_3]] in const<i32>(0)..read<i32>(%[[VALUE_n_2]])
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     if eq<i32>(read<i32>(%[[VALUE_x]]), and<i32>(read<i32>(%[[VALUE_i_3]]), const<i32>(37)))
@@ -142,6 +145,7 @@ int main() {
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_4]], read<i32>(%[[VALUE13]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_i_4]] in const<i32>(0)..read<i32>(%[[VALUE_n_3]])
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     if eq<i32>(read<i32>(%[[VALUE_x_2]]), and<i32>(read<i32>(%[[VALUE_i_4]]), const<i32>(37)))

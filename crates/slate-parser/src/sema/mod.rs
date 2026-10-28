@@ -4,6 +4,7 @@ mod assertion;
 mod atomic;
 mod attributes;
 mod builtins;
+mod counted_loops;
 pub mod ctype;
 mod effects;
 mod effects_statements;

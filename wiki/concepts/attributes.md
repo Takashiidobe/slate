@@ -1,7 +1,6 @@
 # Attribute pipeline
 
 <!-- toc -->
-
 - [Stages](#stages)
 - [Parsing](#parsing)
   - [C23 placement](#c23-placement)

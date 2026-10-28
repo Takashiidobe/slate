@@ -102,6 +102,7 @@ main ()
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE3]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_i]] in neg<i32, overflow=ub>(const<i32>(44))..=const<i32>(48)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 call<void, signature=fn(i32) -> void>(%[[VALUE_foo]], read<i32>(%[[VALUE_i]]));
 // DEFAULT-NEXT:     }

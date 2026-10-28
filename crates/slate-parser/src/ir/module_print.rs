@@ -579,6 +579,7 @@ impl Printer<'_> {
                     condition,
                     increment,
                     body,
+                    counted,
                 } => {
                     write!(f, "for %{}", id.0)?;
                     metadata(f, self.table(), statement.id)?;
@@ -599,6 +600,23 @@ impl Printer<'_> {
                         f.write_str("omitted")?;
                     }
                     writeln!(f)?;
+                    if let Some(counted) = counted {
+                        writeln!(
+                            f,
+                            "{:indent$}    counted: %{} in {}{}{}",
+                            "",
+                            counted.index.0,
+                            counted
+                                .start
+                                .display_metadata(false, self.table())
+                                .with_compact(self.compact),
+                            if counted.inclusive { "..=" } else { ".." },
+                            counted
+                                .end
+                                .display_metadata(false, self.table())
+                                .with_compact(self.compact),
+                        )?;
+                    }
                     writeln!(f, "{:indent$}    body:", "")?;
                     self.statements(f, body, indent + 8)?;
                     continue;

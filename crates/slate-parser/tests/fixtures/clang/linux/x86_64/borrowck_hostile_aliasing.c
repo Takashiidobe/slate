@@ -241,6 +241,7 @@ int main(void) {
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE11]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_i]] in const<i32>(0)..const<i32>(6)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     let %[[VALUE12:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_sum]]);
@@ -282,6 +283,7 @@ int main(void) {
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_2]], read<i32>(%[[VALUE25]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_i_2]] in const<i32>(0)..const<i32>(8)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(8)>(field0(%[[VALUE_buf]])), read<i32>(%[[VALUE_i_2]]))), truncate<i8, reason=explicit, fits=unknown>(add<i32, overflow=ub>(const<i32>(97), read<i32>(%[[VALUE_i_2]]))));
 // DEFAULT-NEXT:         write<ptr<i8>>(field1(%[[VALUE_buf]]), addr_of<ptr<i8>>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(8)>(field0(%[[VALUE_buf]])), const<i32>(3)))));

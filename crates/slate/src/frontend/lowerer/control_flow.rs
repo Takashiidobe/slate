@@ -373,6 +373,7 @@ impl<'a> Graph<'a> {
                 condition,
                 increment,
                 body,
+                ..
             } => {
                 let branch = self.push(Node::End);
                 let test = match condition {

@@ -67,6 +67,7 @@ int sum(const int *values, int count) {
 // OPENMP-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE2]]));
 // OPENMP-NEXT:                 yield void;
 // OPENMP-NEXT:             }
+// OPENMP-NEXT:             counted: %[[VALUE_i]] in const<i32>(0)..read<i32>(%[[VALUE_count]])
 // OPENMP-NEXT:             body:
 // OPENMP-NEXT:                 let %[[VALUE3:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_total]]);
 // OPENMP-NEXT:                 let %[[VALUE4:[0-9]+]]: i32 [synthetic] = add<i32>(read<i32>(%[[VALUE3]]), read<i32>(deref(ptr_offset<ptr<const i32>, subtract=false>(read<ptr<const i32>>(%[[VALUE_values]]), read<i32>(%[[VALUE_i]])))));
@@ -110,6 +111,7 @@ int sum(const int *values, int count) {
 // NEGATED-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE2]]));
 // NEGATED-NEXT:                 yield void;
 // NEGATED-NEXT:             }
+// NEGATED-NEXT:             counted: %[[VALUE_i]] in const<i32>(0)..read<i32>(%[[VALUE_count]])
 // NEGATED-NEXT:             body:
 // NEGATED-NEXT:                 let %[[VALUE3:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_total]]);
 // NEGATED-NEXT:                 let %[[VALUE4:[0-9]+]]: i32 [synthetic] = add<i32>(read<i32>(%[[VALUE3]]), read<i32>(deref(ptr_offset<ptr<const i32>, subtract=false>(read<ptr<const i32>>(%[[VALUE_values]]), read<i32>(%[[VALUE_i]])))));
@@ -153,6 +155,7 @@ int sum(const int *values, int count) {
 // SIMD-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE2]]));
 // SIMD-NEXT:                 yield void;
 // SIMD-NEXT:             }
+// SIMD-NEXT:             counted: %[[VALUE_i]] in const<i32>(0)..read<i32>(%[[VALUE_count]])
 // SIMD-NEXT:             body:
 // SIMD-NEXT:                 let %[[VALUE3:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_total]]);
 // SIMD-NEXT:                 let %[[VALUE4:[0-9]+]]: i32 [synthetic] = add<i32>(read<i32>(%[[VALUE3]]), read<i32>(deref(ptr_offset<ptr<const i32>, subtract=false>(read<ptr<const i32>>(%[[VALUE_values]]), read<i32>(%[[VALUE_i]])))));
@@ -197,6 +200,7 @@ int sum(const int *values, int count) {
 // VERSION-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE2]]));
 // VERSION-NEXT:                 yield void;
 // VERSION-NEXT:             }
+// VERSION-NEXT:             counted: %[[VALUE_i]] in const<i32>(0)..read<i32>(%[[VALUE_count]])
 // VERSION-NEXT:             body:
 // VERSION-NEXT:                 let %[[VALUE3:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_total]]);
 // VERSION-NEXT:                 let %[[VALUE4:[0-9]+]]: i32 [synthetic] = add<i32>(read<i32>(%[[VALUE3]]), read<i32>(deref(ptr_offset<ptr<const i32>, subtract=false>(read<ptr<const i32>>(%[[VALUE_values]]), read<i32>(%[[VALUE_i]])))));
@@ -241,6 +245,7 @@ int sum(const int *values, int count) {
 // UNKNOWN_VERSION-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE2]]));
 // UNKNOWN_VERSION-NEXT:                 yield void;
 // UNKNOWN_VERSION-NEXT:             }
+// UNKNOWN_VERSION-NEXT:             counted: %[[VALUE_i]] in const<i32>(0)..read<i32>(%[[VALUE_count]])
 // UNKNOWN_VERSION-NEXT:             body:
 // UNKNOWN_VERSION-NEXT:                 let %[[VALUE3:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_total]]);
 // UNKNOWN_VERSION-NEXT:                 let %[[VALUE4:[0-9]+]]: i32 [synthetic] = add<i32>(read<i32>(%[[VALUE3]]), read<i32>(deref(ptr_offset<ptr<const i32>, subtract=false>(read<ptr<const i32>>(%[[VALUE_values]]), read<i32>(%[[VALUE_i]])))));
@@ -284,6 +289,7 @@ int sum(const int *values, int count) {
 // LIBGOMP-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE2]]));
 // LIBGOMP-NEXT:                 yield void;
 // LIBGOMP-NEXT:             }
+// LIBGOMP-NEXT:             counted: %[[VALUE_i]] in const<i32>(0)..read<i32>(%[[VALUE_count]])
 // LIBGOMP-NEXT:             body:
 // LIBGOMP-NEXT:                 let %[[VALUE3:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_total]]);
 // LIBGOMP-NEXT:                 let %[[VALUE4:[0-9]+]]: i32 [synthetic] = add<i32>(read<i32>(%[[VALUE3]]), read<i32>(deref(ptr_offset<ptr<const i32>, subtract=false>(read<ptr<const i32>>(%[[VALUE_values]]), read<i32>(%[[VALUE_i]])))));
@@ -327,6 +333,7 @@ int sum(const int *values, int count) {
 // LIBGOMP_THEN_OPENMP-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE2]]));
 // LIBGOMP_THEN_OPENMP-NEXT:                 yield void;
 // LIBGOMP_THEN_OPENMP-NEXT:             }
+// LIBGOMP_THEN_OPENMP-NEXT:             counted: %[[VALUE_i]] in const<i32>(0)..read<i32>(%[[VALUE_count]])
 // LIBGOMP_THEN_OPENMP-NEXT:             body:
 // LIBGOMP_THEN_OPENMP-NEXT:                 let %[[VALUE3:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_total]]);
 // LIBGOMP_THEN_OPENMP-NEXT:                 let %[[VALUE4:[0-9]+]]: i32 [synthetic] = add<i32>(read<i32>(%[[VALUE3]]), read<i32>(deref(ptr_offset<ptr<const i32>, subtract=false>(read<ptr<const i32>>(%[[VALUE_values]]), read<i32>(%[[VALUE_i]])))));
@@ -371,6 +378,7 @@ int sum(const int *values, int count) {
 // LIBIOMP5-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE2]]));
 // LIBIOMP5-NEXT:                 yield void;
 // LIBIOMP5-NEXT:             }
+// LIBIOMP5-NEXT:             counted: %[[VALUE_i]] in const<i32>(0)..read<i32>(%[[VALUE_count]])
 // LIBIOMP5-NEXT:             body:
 // LIBIOMP5-NEXT:                 let %[[VALUE3:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_total]]);
 // LIBIOMP5-NEXT:                 let %[[VALUE4:[0-9]+]]: i32 [synthetic] = add<i32>(read<i32>(%[[VALUE3]]), read<i32>(deref(ptr_offset<ptr<const i32>, subtract=false>(read<ptr<const i32>>(%[[VALUE_values]]), read<i32>(%[[VALUE_i]])))));

@@ -55,6 +55,7 @@ int main() {
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_b]], read<i32>(%[[VALUE3]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_b]] in const<i32>(0)..const<i32>(4)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE___builtin_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str]])), read<i32>(%[[VALUE_b]]), read<i32>(%[[VALUE_e]]));

@@ -48,6 +48,7 @@ int main(int argc, char **argv) {
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE2]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_i]] in const<i32>(0)..const<i32>(3)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if not<bool>(ne<u8>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(1)>(deref(ptr_offset<ptr<array<u8, 1>>, subtract=false, element=array<u8, 1>, overflow=ub>(array_decay<ptr<array<u8, 1>>, length=Some(3)>(%[[VALUE_out]]), read<i32>(%[[VALUE_i]])))), const<i32>(0)))), const<u8>(0)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);

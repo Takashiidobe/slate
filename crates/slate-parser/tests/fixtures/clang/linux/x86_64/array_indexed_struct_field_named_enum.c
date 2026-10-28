@@ -70,6 +70,7 @@ int main(void) {
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE2]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_i]] in const<i32>(0)..const<i32>(2)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     if ne<u32>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE0]]>(%[[VALUE_actual]])), enum_to_int<u32, reason=promotion>(read<@type[[TYPE0]]>(field1(deref(ptr_offset<ptr<@type[[TYPE_CaseData]]>, subtract=false, element=@type[[TYPE_CaseData]], overflow=ub>(array_decay<ptr<@type[[TYPE_CaseData]]>, length=Some(2)>(%[[VALUE_cases]]), read<i32>(%[[VALUE_i]])))))))

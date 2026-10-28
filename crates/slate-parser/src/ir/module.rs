@@ -230,6 +230,7 @@ pub enum Statement {
         condition: Option<Evaluation>,
         increment: Option<Evaluation>,
         body: Vec<Span<Statement>>,
+        counted: Option<Box<CountedLoop>>,
     },
     Switch {
         id: BindingId,
@@ -264,6 +265,14 @@ pub enum Statement {
     SehLeave(BindingId),
     OmpParallel(Box<OmpParallel>),
     OmpFor(Box<OmpFor>),
+}
+
+#[derive(Debug, Clone)]
+pub struct CountedLoop {
+    pub index: BindingId,
+    pub start: Value,
+    pub end: Value,
+    pub inclusive: bool,
 }
 
 #[derive(Debug, Clone)]

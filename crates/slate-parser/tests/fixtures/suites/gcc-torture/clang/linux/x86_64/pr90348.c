@@ -67,6 +67,7 @@ int main() {
 // DEFAULT-NEXT:                 write<u32>(%[[VALUE_i]], read<u32>(%[[VALUE2]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_i]] in reinterpret<u32, reason=assign, fits=always>(const<i32>(0))..read<u32>(%[[VALUE_len]])
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<const u8>, subtract=false, element=u8, overflow=ub>(read<ptr<const u8>>(%[[VALUE_in]]), read<u32>(%[[VALUE_i]])))))), const<i32>(0))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
@@ -86,6 +87,7 @@ int main() {
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_2]], read<i32>(%[[VALUE5]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_i_2]] in const<i32>(0)..=const<i32>(4)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     let %[[VALUE_in_2:[0-9]+]] in: array<u8, 4> [storage=automatic];
@@ -99,6 +101,7 @@ int main() {
 // DEFAULT-NEXT:                             write<i32>(%[[VALUE_j]], read<i32>(%[[VALUE8]]));
 // DEFAULT-NEXT:                             yield void;
 // DEFAULT-NEXT:                         }
+// DEFAULT-NEXT:                         counted: %[[VALUE_j]] in const<i32>(0)..read<i32>(%[[VALUE_i_2]])
 // DEFAULT-NEXT:                         body:
 // DEFAULT-NEXT:                             {
 // DEFAULT-NEXT:                                 write<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(4)>(%[[VALUE_in_2]]), read<i32>(%[[VALUE_j]]))), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));

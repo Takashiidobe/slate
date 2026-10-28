@@ -1,13 +1,13 @@
 # C corpus
 
 <!-- toc -->
-
 - [Layout](#layout)
 - [Setup](#setup)
 - [Recipes](#recipes)
 - [Sweep](#sweep)
 - [End to end](#end-to-end)
   - [CMake libraries](#cmake-libraries)
+  - [Translation-only projects](#translation-only-projects)
   - [Make libraries](#make-libraries)
 - [Missing dependencies](#missing-dependencies)
 - [Gotchas](#gotchas)

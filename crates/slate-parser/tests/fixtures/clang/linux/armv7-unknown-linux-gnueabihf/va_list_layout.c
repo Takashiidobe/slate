@@ -50,6 +50,7 @@ int sum(int count, ...) {
 // IR-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE2]]));
 // IR-NEXT:                 yield void;
 // IR-NEXT:             }
+// IR-NEXT:             counted: %[[VALUE_i]] in const<i32>(0)..read<i32>(%[[VALUE_count]])
 // IR-NEXT:             body:
 // IR-NEXT:                 let %[[VALUE3:[0-9]+]]: i32 [synthetic] = va_arg<i32>(%[[VALUE_ap]]);
 // IR-NEXT:                 let %[[VALUE4:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_total]]);

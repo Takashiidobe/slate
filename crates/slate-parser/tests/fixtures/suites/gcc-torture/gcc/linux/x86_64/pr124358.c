@@ -62,6 +62,7 @@ int main() {
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE4]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_i]] in const<i32>(0)..const<i32>(1)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 for %[[VALUE5:[0-9]+]]
 // DEFAULT-NEXT:                     init:
@@ -73,6 +74,7 @@ int main() {
 // DEFAULT-NEXT:                         write<i32>(%[[VALUE_j]], read<i32>(%[[VALUE7]]));
 // DEFAULT-NEXT:                         yield void;
 // DEFAULT-NEXT:                     }
+// DEFAULT-NEXT:                     counted: %[[VALUE_j]] in const<i32>(0)..const<i32>(4)
 // DEFAULT-NEXT:                     body:
 // DEFAULT-NEXT:                         call<void, signature=fn(i32) -> void>(%[[VALUE_foo]], read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(deref(ptr_offset<ptr<array<i32, 4>>, subtract=false, element=array<i32, 4>, overflow=ub>(read<ptr<array<i32, 4>>>(%[[VALUE_p]]), read<i32>(%[[VALUE_i]])))), read<i32>(%[[VALUE_j]])))));
 // DEFAULT-NEXT:     }

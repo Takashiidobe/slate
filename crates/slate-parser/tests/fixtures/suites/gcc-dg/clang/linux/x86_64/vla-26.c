@@ -50,6 +50,7 @@ void e(int n, float s[3][n])
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE3]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_i]] in const<i32>(0)..read<i32>(%[[VALUE_n]])
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=None>(deref(ptr_offset<ptr<vla<f32, %[[VALUE0]]>>, subtract=false, element=vla<f32, %[[VALUE0]]>, overflow=ub>(read<ptr<vla<f32, %[[VALUE0]]>>>(%[[VALUE_s]]), const<i32>(1)))), read<i32>(%[[VALUE_i]]))));
 // DEFAULT-NEXT:     }

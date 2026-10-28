@@ -126,6 +126,7 @@ int main(void) {
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_2]], read<i32>(%[[VALUE6]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_i_2]] in const<i32>(0)..const<i32>(16)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<i64>(read<i64>(lane(%[[VALUE_g18]], read<i32>(%[[VALUE_i_2]]))), widen<i64, reason=usual_arith>(const<i32>(0)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);

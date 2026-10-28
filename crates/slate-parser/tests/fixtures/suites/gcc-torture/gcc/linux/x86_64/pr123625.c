@@ -144,6 +144,7 @@ int main(void) {
 // DEFAULT-NEXT:                                     write<u32>(%[[VALUE_BS_TEMP_371]], read<u32>(%[[VALUE10]]));
 // DEFAULT-NEXT:                                     yield void;
 // DEFAULT-NEXT:                                 }
+// DEFAULT-NEXT:                                 counted: %[[VALUE_BS_TEMP_371]] in reinterpret<u32, reason=assign, fits=always>(const<i32>(0))..reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(16))
 // DEFAULT-NEXT:                                 body:
 // DEFAULT-NEXT:                                     let %[[VALUE11:[0-9]+]]: ptr<i64> [synthetic] = read<ptr<i64>>(%[[VALUE_g_565]]);
 // DEFAULT-NEXT:                                     let %[[VALUE12:[0-9]+]]: i64 [synthetic] = read<i64>(deref(read<ptr<i64>>(%[[VALUE11]])));

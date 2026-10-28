@@ -53,6 +53,7 @@ int main(void) {
 // DEFAULT-NEXT:                 write<u64>(%[[VALUE_p]], read<u64>(%[[VALUE2]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_p]] in reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(1)))..read<u64>(%[[VALUE_size]])
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<const u8>, subtract=false, element=u8, overflow=ub>(pointer_cast<ptr<const u8>, reason=explicit>(read<ptr<const void>>(%[[VALUE_src]])), read<u64>(%[[VALUE_p]])))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_b]]))))

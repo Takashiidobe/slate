@@ -54,6 +54,7 @@ int main(void) {
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE2]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_i]] in neg<i32, overflow=ub>(const<i32>(100))..=const<i32>(100)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     let %[[VALUE_t:[0-9]+]] t: i32 [storage=automatic] = call<i32, signature=fn(i32) -> i32>(%[[VALUE_g]], read<i32>(%[[VALUE_i]]));

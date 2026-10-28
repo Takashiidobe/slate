@@ -59,6 +59,7 @@ int main(void) {
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_b]], read<i32>(%[[VALUE3]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_b]] in const<i32>(0)..=const<i32>(15)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(u32) -> i32>(%[[VALUE_f]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%[[VALUE_b]]))), call<i32, signature=fn(u32) -> i32>(%[[VALUE_g]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%[[VALUE_b]]))))

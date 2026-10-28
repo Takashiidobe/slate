@@ -1,7 +1,6 @@
 # Builtins
 
 <!-- toc -->
-
 - [Compile-time queries and types](#compile-time-queries-and-types)
 - [Source location and function
   names](#source-location-and-function-names)
@@ -13,7 +12,7 @@
 - [Vector builtin expansion](#vector-builtin-expansion)
 - [Atomic operations](#atomic-operations)
 - [Library and target intrinsic
-calls](#library-and-target-intrinsic-calls)
+  calls](#library-and-target-intrinsic-calls)
 <!-- /toc -->
 
 Supported by slate-parser, grouped by category. Retained calls reach Slate's

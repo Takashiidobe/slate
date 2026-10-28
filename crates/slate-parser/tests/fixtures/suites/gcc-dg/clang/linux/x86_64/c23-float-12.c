@@ -58,6 +58,7 @@ main (void)
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE3]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_i]] in const<i32>(0)..sub<i32, overflow=ub>(const<i32>(64), const<i32>(1))
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 let %[[VALUE4:[0-9]+]]: f80 [synthetic] = read<f80, volatile>(%[[VALUE_x]]);
 // DEFAULT-NEXT:                 let %[[VALUE5:[0-9]+]]: f80 [synthetic] = div<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%[[VALUE4]]), int_to_float<f80, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(2)));

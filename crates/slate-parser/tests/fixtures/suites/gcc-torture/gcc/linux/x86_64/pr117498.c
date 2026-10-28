@@ -83,6 +83,7 @@ int main() {
 // DEFAULT-NEXT:                         write<i32>(%[[VALUE_j]], read<i32>(%[[VALUE5]]));
 // DEFAULT-NEXT:                         yield void;
 // DEFAULT-NEXT:                     }
+// DEFAULT-NEXT:                     counted: %[[VALUE_j]] in const<i32>(0)..read<i32>(%[[VALUE_h]])
 // DEFAULT-NEXT:                     body:
 // DEFAULT-NEXT:                         write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_m]]), read<i32>(%[[VALUE_j]]))), read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_k]]), mul<i32, overflow=ub>(const<i32>(4), read<i32>(%[[VALUE_j]]))))));
 // DEFAULT-NEXT:     }

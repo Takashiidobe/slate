@@ -61,6 +61,7 @@ int main(void) {
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE2]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_i]] in const<i32>(0)..const<i32>(1)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 write<i8>(%[[VALUE_d]], truncate<i8, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(15))));
 // DEFAULT-NEXT:         return read<i8>(%[[VALUE_d]]);

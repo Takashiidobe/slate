@@ -123,6 +123,7 @@ int main() {
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_e]], read<i32>(%[[VALUE2]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_e]] in const<i32>(0)..const<i32>(9)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 let %[[VALUE3:[0-9]+]]: i16 [synthetic] = read<i16>(%[[VALUE_a_2]]);
 // DEFAULT-NEXT:                 let %[[VALUE4:[0-9]+]]: i16 [synthetic] = truncate<i16, reason=assign, fits=unknown>(mul<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%[[VALUE3]])), const<i32>(5)));
@@ -141,6 +142,7 @@ int main() {
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_e_2]], read<i32>(%[[VALUE7]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_e_2]] in const<i32>(0)..const<i32>(9)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 let %[[VALUE8:[0-9]+]]: i16 [synthetic] = read<i16>(%[[VALUE_a_3]]);
 // DEFAULT-NEXT:                 let %[[VALUE9:[0-9]+]]: i16 [synthetic] = truncate<i16, reason=assign, fits=unknown>(mul<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%[[VALUE8]])), neg<i32, overflow=ub>(const<i32>(5))));
@@ -159,6 +161,7 @@ int main() {
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_e_3]], read<i32>(%[[VALUE12]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_e_3]] in const<i32>(0)..const<i32>(9)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 let %[[VALUE13:[0-9]+]]: u16 [synthetic] = read<u16>(%[[VALUE_a_4]]);
 // DEFAULT-NEXT:                 let %[[VALUE14:[0-9]+]]: u16 [synthetic] = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(mul<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE13]]))), neg<i32, overflow=ub>(const<i32>(5)))));
@@ -177,6 +180,7 @@ int main() {
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_e_4]], read<i32>(%[[VALUE17]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_e_4]] in const<i32>(0)..const<i32>(9)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 let %[[VALUE18:[0-9]+]]: u16 [synthetic] = read<u16>(%[[VALUE_a_5]]);
 // DEFAULT-NEXT:                 let %[[VALUE19:[0-9]+]]: u16 [synthetic] = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(mul<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE18]]))), const<i32>(5))));
@@ -195,6 +199,7 @@ int main() {
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_e_5]], read<i32>(%[[VALUE22]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_e_5]] in const<i32>(0)..const<i32>(9)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 let %[[VALUE23:[0-9]+]]: i16 [synthetic] = read<i16>(%[[VALUE_a_6]]);
 // DEFAULT-NEXT:                 let %[[VALUE24:[0-9]+]]: i16 [synthetic] = truncate<i16, reason=assign, fits=unknown>(mul<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%[[VALUE23]])), const<i32>(5)));
@@ -213,6 +218,7 @@ int main() {
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_e_6]], read<i32>(%[[VALUE27]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_e_6]] in const<i32>(0)..const<i32>(9)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 let %[[VALUE28:[0-9]+]]: i16 [synthetic] = read<i16>(%[[VALUE_a_7]]);
 // DEFAULT-NEXT:                 let %[[VALUE29:[0-9]+]]: i16 [synthetic] = truncate<i16, reason=assign, fits=unknown>(mul<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%[[VALUE28]])), neg<i32, overflow=ub>(const<i32>(5))));
@@ -231,6 +237,7 @@ int main() {
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_e_7]], read<i32>(%[[VALUE32]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_e_7]] in const<i32>(0)..const<i32>(9)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 let %[[VALUE33:[0-9]+]]: u16 [synthetic] = read<u16>(%[[VALUE_a_8]]);
 // DEFAULT-NEXT:                 let %[[VALUE34:[0-9]+]]: u16 [synthetic] = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(mul<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE33]]))), neg<i32, overflow=ub>(const<i32>(5)))));
@@ -249,6 +256,7 @@ int main() {
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_e_8]], read<i32>(%[[VALUE37]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_e_8]] in const<i32>(0)..const<i32>(9)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 let %[[VALUE38:[0-9]+]]: u16 [synthetic] = read<u16>(%[[VALUE_a_9]]);
 // DEFAULT-NEXT:                 let %[[VALUE39:[0-9]+]]: u16 [synthetic] = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(mul<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE38]]))), const<i32>(5))));

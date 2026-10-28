@@ -214,6 +214,7 @@ main (void)
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE17]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_i]] in const<i32>(0)..const<i32>(3)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     let %[[VALUE_x:[0-9]+]] x: ptr<@type[[TYPE_s]]> [storage=automatic] = addr_of<ptr<@type[[TYPE_s]]>>(compound_literal %[[VALUE18:[0-9]+]] [storage=automatic] = aggregate<@type[[TYPE_s]], zero_fill=false>(field0 = const<i32>(1), field1 = read<i32>(%[[VALUE_i]])));
@@ -244,6 +245,7 @@ main (void)
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_2]], read<i32>(%[[VALUE27]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_i_2]] in const<i32>(0)..const<i32>(4)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     let %[[VALUE_x_2:[0-9]+]] x: ptr<i32> [storage=automatic] = array_decay<ptr<i32>, length=Some(4)>(compound_literal %[[VALUE28:[0-9]+]] [storage=automatic] = aggregate<array<i32, 4>, zero_fill=false>(index0 = const<i32>(0), index1 = read<i32>(%[[VALUE_i_2]]), index2 = add<i32, overflow=ub>(read<i32>(%[[VALUE_i_2]]), const<i32>(2)), index3 = sub<i32, overflow=ub>(read<i32>(%[[VALUE_i_2]]), const<i32>(3))));

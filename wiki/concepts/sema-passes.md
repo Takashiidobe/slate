@@ -1,7 +1,6 @@
 # Sema passes
 
 <!-- toc -->
-
 - [Pass order](#pass-order)
 - [Files by pass](#files-by-pass)
 - [`ResolveError` policy](#resolveerror-policy)

@@ -154,6 +154,7 @@ functions()
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_n]], read<i32>(%[[VALUE2]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_n]] in neg<i32, overflow=ub>(const<i32>(1))..=const<i32>(2)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_eqeq_0_v]], read<i32>(%[[VALUE_n]])), call<i32, signature=fn(i32) -> i32>(%[[VALUE_eqeq_0]], read<i32>(%[[VALUE_n]])))

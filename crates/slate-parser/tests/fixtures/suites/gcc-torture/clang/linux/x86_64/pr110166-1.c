@@ -79,6 +79,7 @@ int main(void) {
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE2]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_i]] in neg<i32, overflow=ub>(const<i32>(1))..=const<i32>(0)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     for %[[VALUE3:[0-9]+]]
@@ -91,6 +92,7 @@ int main(void) {
 // DEFAULT-NEXT:                             write<i32>(%[[VALUE_j]], read<i32>(%[[VALUE5]]));
 // DEFAULT-NEXT:                             yield void;
 // DEFAULT-NEXT:                         }
+// DEFAULT-NEXT:                         counted: %[[VALUE_j]] in neg<i32, overflow=ub>(const<i32>(1))..=const<i32>(0)
 // DEFAULT-NEXT:                         body:
 // DEFAULT-NEXT:                             {
 // DEFAULT-NEXT:                                 let %[[VALUE_t_3:[0-9]+]] t: @type[[TYPE_s]] [storage=automatic] = aggregate<@type[[TYPE_s]], zero_fill=false>(field0 = read<i32>(%[[VALUE_i]]), field1 = read<i32>(%[[VALUE_j]]));

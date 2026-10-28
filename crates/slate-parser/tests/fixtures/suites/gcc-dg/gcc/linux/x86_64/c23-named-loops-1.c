@@ -187,6 +187,7 @@ foo (int w)
 // DEFAULT-NEXT:                             write<i32>(%[[VALUE_x]], read<i32>(%[[VALUE2]]));
 // DEFAULT-NEXT:                             yield void;
 // DEFAULT-NEXT:                         }
+// DEFAULT-NEXT:                         counted: %[[VALUE_x]] in const<i32>(0)..const<i32>(32)
 // DEFAULT-NEXT:                         body:
 // DEFAULT-NEXT:                             {
 // DEFAULT-NEXT:                                 if eq<i32>(read<i32>(%[[VALUE_x]]), const<i32>(0))
@@ -366,6 +367,7 @@ foo (int w)
 // DEFAULT-NEXT:                             write<i32>(%[[VALUE_x_4]], read<i32>(%[[VALUE24]]));
 // DEFAULT-NEXT:                             yield void;
 // DEFAULT-NEXT:                         }
+// DEFAULT-NEXT:                         counted: %[[VALUE_x_4]] in const<i32>(0)..const<i32>(32)
 // DEFAULT-NEXT:                         body:
 // DEFAULT-NEXT:                             if eq<i32>(read<i32>(%[[VALUE_x_4]]), const<i32>(31))
 // DEFAULT-NEXT:                                 break %[[VALUE22]];

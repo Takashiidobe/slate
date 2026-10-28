@@ -79,6 +79,7 @@ int poll(volatile int *p, struct regs *r, vu *u, int a[restrict volatile 4]) {
 // IR-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE2]]));
 // IR-NEXT:                 yield void;
 // IR-NEXT:             }
+// IR-NEXT:             counted: %[[VALUE_i]] in const<i32>(0)..read<i32>(%[[VALUE_n]])
 // IR-NEXT:             body:
 // IR-NEXT:                 write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_dst]]), read<i32>(%[[VALUE_i]]))), read<i32>(deref(ptr_offset<ptr<const i32>, subtract=false, element=i32, overflow=ub>(read<ptr<const i32>>(%[[VALUE_src]]), read<i32>(%[[VALUE_i]])))));
 // IR-NEXT:     }

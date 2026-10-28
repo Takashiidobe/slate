@@ -1,7 +1,6 @@
 # Fixture layout
 
 <!-- toc -->
-
 - [Path](#path)
 - [Directives to write before
   generating](#directives-to-write-before-generating)

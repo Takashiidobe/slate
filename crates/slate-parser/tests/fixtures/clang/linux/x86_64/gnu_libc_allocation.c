@@ -367,6 +367,7 @@ int main(void) {
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_index]], read<i32>(%[[VALUE11]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_index]] in const<i32>(0)..const<i32>(4)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_values]]), read<i32>(%[[VALUE_index]]))), add<i32, overflow=ub>(read<i32>(%[[VALUE_index]]), const<i32>(1)));

@@ -1,7 +1,6 @@
 # Slate architecture
 
 <!-- toc -->
-
 - [Pipeline](#pipeline)
 - [Ownership](#ownership)
 - [Commands](#commands)

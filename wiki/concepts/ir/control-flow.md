@@ -1,9 +1,9 @@
 # Control flow and side effects
 
 <!-- toc -->
-
 - [Function bodies](#function-bodies)
 - [Structured control flow](#structured-control-flow)
+  - [Counted loops](#counted-loops)
   - [Structured exception handling](#structured-exception-handling)
   - [OpenMP regions](#openmp-regions)
   - [Statement attributes](#statement-attributes)
@@ -52,6 +52,40 @@ form was.
 - Labels, `goto`, and `label_addr<ptr<void>>` use label `BindingId`s,
   distinct for GNU local labels. Computed goto keeps its pointer operand.
 - Fixtures: `ir_control_*.c`.
+
+### Counted loops
+
+After side-effect hoisting, `sema/counted_loops.rs` marks a `for` whose index
+provably runs over a range: `counted: %i in start..end` (`..=` when
+inclusive). Inside the body the index holds a value in that range, only the
+increment writes it, and `end` has the same value at every condition check, so
+the loop runs exactly like `for i in start..end` in Rust. `start` and `end` are
+copies of the index's initializer and the condition's bound. The `init`,
+`condition` and `increment` stay as they are. A `for` is counted only when:
+
+- The last init statement declares the index: an integer local with automatic
+  storage, not `volatile` or `_Atomic`, no `register` asm name, no `cleanup`.
+  A loop whose index is declared before the `for` is not counted, since the
+  index can be read after it.
+- No statement in the function takes the index's address or names it as a
+  place other than a direct read or write (array decay, asm operand, OpenMP
+  clause).
+- The condition, with no hoisted statements, is `lt(read i, end)` or
+  `gt(end, read i)` with the index's own type, so `char` and `short` indices
+  (compared after promotion) are not counted. `le`/`ge` is counted only when
+  `end` is a constant below the type's maximum: `i <= UINT_MAX` loops forever
+  in C, while Rust's `0..=u32::MAX` stops.
+- `end` is built from constants, conversions, arithmetic and plain reads of
+  parameters or automatic locals that pass the same address and qualifier
+  checks as the index. A global bound is not counted, since any call can
+  change it.
+- The increment, after substituting its hoisted temporaries, writes
+  `add(read i, 1)` to the index and does nothing else (`i++`, `++i`,
+  `i += 1`, `i = i + 1`).
+- The body writes neither the index nor any binding `end` reads, and contains
+  no label, no `case` or `default` of a switch outside the body, no asm, no
+  SEH `__try`, and no OpenMP region.
+- Fixtures: `ir_counted_loops.c`, `ir_counted_loops_rejected.c`.
 
 ### Structured exception handling
 

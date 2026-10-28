@@ -376,7 +376,9 @@ impl Lowerer {
             .into_iter()
             .map(|(id, c)| (id, self.types.access_of(c)))
             .collect();
-        super::effects_statements::normalize(&mut self.module, self.next_id, access)
+        super::effects_statements::normalize(&mut self.module, self.next_id, access)?;
+        super::counted_loops::annotate(&mut self.module);
+        Ok(())
     }
 
     fn complete_declaration_abis(&mut self) -> Result<(), ResolveError> {
@@ -2235,6 +2237,7 @@ impl Lowerer {
                     condition: condition.map(Into::into),
                     increment: increment.map(|value| value.value.into()),
                     body,
+                    counted: None,
                 }
             }
             StmtKind::Break => Statement::Break(

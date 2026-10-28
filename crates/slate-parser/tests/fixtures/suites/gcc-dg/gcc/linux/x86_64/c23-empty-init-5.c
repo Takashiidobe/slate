@@ -302,6 +302,7 @@ main ()
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE15]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_i]] in const<i32>(0)..const<i32>(3)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 call<void, signature=fn(ptr<@type[[TYPE_A]]>) -> void>(%[[VALUE_check_A_padding]], addr_of<ptr<@type[[TYPE_A]]>>(deref(ptr_offset<ptr<@type[[TYPE_A]]>, subtract=false, element=@type[[TYPE_A]], overflow=ub>(array_decay<ptr<@type[[TYPE_A]]>, length=Some(3)>(field2(deref(read<ptr<@type[[TYPE_B]]>>(%[[VALUE_p_2]])))), read<i32>(%[[VALUE_i]])))));
 // DEFAULT-NEXT:     }
@@ -360,6 +361,7 @@ main ()
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_3]], read<i32>(%[[VALUE28]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_i_3]] in const<i32>(0)..const<i32>(3)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(field0(deref(ptr_offset<ptr<@type[[TYPE_A]]>, subtract=false, element=@type[[TYPE_A]], overflow=ub>(array_decay<ptr<@type[[TYPE_A]]>, length=Some(3)>(field2(deref(read<ptr<@type[[TYPE_B]]>>(%[[VALUE_b]])))), read<i32>(%[[VALUE_i_3]]))))))), const<i32>(0)), ne<i64>(read<i64>(field1(deref(ptr_offset<ptr<@type[[TYPE_A]]>, subtract=false, element=@type[[TYPE_A]], overflow=ub>(array_decay<ptr<@type[[TYPE_A]]>, length=Some(3)>(field2(deref(read<ptr<@type[[TYPE_B]]>>(%[[VALUE_b]])))), read<i32>(%[[VALUE_i_3]]))))), widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
@@ -376,6 +378,7 @@ main ()
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_4]], read<i32>(%[[VALUE31]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_i_4]] in const<i32>(0)..const<i32>(3)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(field0(deref(ptr_offset<ptr<@type[[TYPE_A]]>, subtract=false, element=@type[[TYPE_A]], overflow=ub>(array_decay<ptr<@type[[TYPE_A]]>, length=Some(3)>(field2(deref(read<ptr<@type[[TYPE_B]]>>(%[[VALUE_c]])))), read<i32>(%[[VALUE_i_4]]))))))), const<i32>(0)), ne<i64>(read<i64>(field1(deref(ptr_offset<ptr<@type[[TYPE_A]]>, subtract=false, element=@type[[TYPE_A]], overflow=ub>(array_decay<ptr<@type[[TYPE_A]]>, length=Some(3)>(field2(deref(read<ptr<@type[[TYPE_B]]>>(%[[VALUE_c]])))), read<i32>(%[[VALUE_i_4]]))))), widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
@@ -393,6 +396,7 @@ main ()
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_5]], read<i32>(%[[VALUE34]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_i_5]] in const<i32>(0)..const<i32>(2)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(field0(deref(ptr_offset<ptr<@type[[TYPE_A]]>, subtract=false, element=@type[[TYPE_A]], overflow=ub>(array_decay<ptr<@type[[TYPE_A]]>, length=Some(3)>(field2(deref(read<ptr<@type[[TYPE_B]]>>(%[[VALUE_d]])))), read<i32>(%[[VALUE_i_5]]))))))), const<i32>(0)), ne<i64>(read<i64>(field1(deref(ptr_offset<ptr<@type[[TYPE_A]]>, subtract=false, element=@type[[TYPE_A]], overflow=ub>(array_decay<ptr<@type[[TYPE_A]]>, length=Some(3)>(field2(deref(read<ptr<@type[[TYPE_B]]>>(%[[VALUE_d]])))), read<i32>(%[[VALUE_i_5]]))))), widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
@@ -412,6 +416,7 @@ main ()
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_6]], read<i32>(%[[VALUE37]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_i_6]] in const<i32>(0)..const<i32>(3)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(field0(deref(ptr_offset<ptr<@type[[TYPE_A]]>, subtract=false, element=@type[[TYPE_A]], overflow=ub>(array_decay<ptr<@type[[TYPE_A]]>, length=Some(3)>(field2(deref(read<ptr<@type[[TYPE_B]]>>(%[[VALUE_e]])))), read<i32>(%[[VALUE_i_6]]))))))), add<i32, overflow=ub>(const<i32>(3), mul<i32, overflow=ub>(const<i32>(2), read<i32>(%[[VALUE_i_6]])))), ne<i64>(read<i64>(field1(deref(ptr_offset<ptr<@type[[TYPE_A]]>, subtract=false, element=@type[[TYPE_A]], overflow=ub>(array_decay<ptr<@type[[TYPE_A]]>, length=Some(3)>(field2(deref(read<ptr<@type[[TYPE_B]]>>(%[[VALUE_e]])))), read<i32>(%[[VALUE_i_6]]))))), widen<i64, reason=usual_arith>(add<i32, overflow=ub>(const<i32>(4), mul<i32, overflow=ub>(const<i32>(2), read<i32>(%[[VALUE_i_6]]))))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
@@ -430,6 +435,7 @@ main ()
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_7]], read<i32>(%[[VALUE40]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_i_7]] in const<i32>(0)..const<i32>(3)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(field0(deref(ptr_offset<ptr<@type[[TYPE_A]]>, subtract=false, element=@type[[TYPE_A]], overflow=ub>(array_decay<ptr<@type[[TYPE_A]]>, length=Some(3)>(field2(deref(read<ptr<@type[[TYPE_B]]>>(%[[VALUE_f]])))), read<i32>(%[[VALUE_i_7]]))))))), add<i32, overflow=ub>(const<i32>(3), mul<i32, overflow=ub>(const<i32>(2), read<i32>(%[[VALUE_i_7]])))), ne<i64>(read<i64>(field1(deref(ptr_offset<ptr<@type[[TYPE_A]]>, subtract=false, element=@type[[TYPE_A]], overflow=ub>(array_decay<ptr<@type[[TYPE_A]]>, length=Some(3)>(field2(deref(read<ptr<@type[[TYPE_B]]>>(%[[VALUE_f]])))), read<i32>(%[[VALUE_i_7]]))))), widen<i64, reason=usual_arith>(add<i32, overflow=ub>(const<i32>(4), mul<i32, overflow=ub>(const<i32>(2), read<i32>(%[[VALUE_i_7]]))))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
@@ -447,6 +453,7 @@ main ()
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_8]], read<i32>(%[[VALUE43]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_i_8]] in const<i32>(0)..const<i32>(3)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(field0(deref(ptr_offset<ptr<@type[[TYPE_A]]>, subtract=false, element=@type[[TYPE_A]], overflow=ub>(array_decay<ptr<@type[[TYPE_A]]>, length=Some(3)>(field2(deref(read<ptr<@type[[TYPE_B]]>>(%[[VALUE_g]])))), read<i32>(%[[VALUE_i_8]]))))))), add<i32, overflow=ub>(const<i32>(3), mul<i32, overflow=ub>(const<i32>(2), read<i32>(%[[VALUE_i_8]])))), ne<i64>(read<i64>(field1(deref(ptr_offset<ptr<@type[[TYPE_A]]>, subtract=false, element=@type[[TYPE_A]], overflow=ub>(array_decay<ptr<@type[[TYPE_A]]>, length=Some(3)>(field2(deref(read<ptr<@type[[TYPE_B]]>>(%[[VALUE_g]])))), read<i32>(%[[VALUE_i_8]]))))), widen<i64, reason=usual_arith>(add<i32, overflow=ub>(const<i32>(4), mul<i32, overflow=ub>(const<i32>(2), read<i32>(%[[VALUE_i_8]]))))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);

@@ -92,6 +92,7 @@ int main(void) {
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE2]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_i]] in const<i32>(0)..const<i32>(2)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<ptr<fn(i32) -> @type[[TYPE0]]>>(field0(%[[VALUE_p]]), conditional<ptr<fn(i32) -> @type[[TYPE0]]>>(eq<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0)), function_decay<ptr<fn(i32) -> @type[[TYPE0]]>>(%[[VALUE_handle_ok]]), function_decay<ptr<fn(i32) -> @type[[TYPE0]]>>(%[[VALUE_handle_fail]])));

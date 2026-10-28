@@ -293,6 +293,7 @@ impl FunctionLowerer<'_, '_> {
                 condition,
                 increment,
                 body,
+                ..
             } => {
                 let mut statements = self.lower_statement_list(init)?;
                 let body = self.lower_statement_list(body)?;

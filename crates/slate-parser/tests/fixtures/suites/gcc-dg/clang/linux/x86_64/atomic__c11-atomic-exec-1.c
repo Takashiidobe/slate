@@ -2211,6 +2211,7 @@ main (void)
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_j]], read<i32>(%[[VALUE269]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_j]] in const<i32>(0)..const<i32>(1024)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 write<i16>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(array_decay<ptr<i16>, length=Some(1024)>(field0(%[[VALUE_init]])), read<i32>(%[[VALUE_j]]))), truncate<i16, reason=assign, fits=unknown>(read<i32>(%[[VALUE_j]])));
 // DEFAULT-NEXT:         let %[[VALUE270:[0-9]+]]: @type[[TYPE_s]] [synthetic] = copy<@type[[TYPE_s]], reason=assign>(read<@type[[TYPE_s]]>(%[[VALUE_init]]));

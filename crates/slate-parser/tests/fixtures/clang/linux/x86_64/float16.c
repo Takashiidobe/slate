@@ -81,6 +81,7 @@ int main(void) {
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE2]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_i]] in const<i32>(0)..read<i32>(%[[VALUE_n]])
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<f16>(%[[VALUE_total]], float_narrow<f16, reason=excess_precision, rounding=nearest_even, exceptions=ignore>(add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(float_widen<f32, reason=excess_precision>(read<f16>(%[[VALUE_total]])), float_widen<f32, reason=excess_precision>(va_arg<f16>(%[[VALUE_ap]])))));

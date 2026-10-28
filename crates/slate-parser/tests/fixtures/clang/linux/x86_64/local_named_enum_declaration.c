@@ -75,6 +75,7 @@ int main(void) {
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE2]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_i]] in const<i32>(0)..const<i32>(2)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     let %[[VALUE_expectedStatus:[0-9]+]] expectedStatus: @type[[TYPE0]] [storage=automatic] [const] = read<@type[[TYPE0]]>(field0(deref(ptr_offset<ptr<@type[[TYPE_Case]]>, subtract=false, element=@type[[TYPE_Case]], overflow=ub>(array_decay<ptr<@type[[TYPE_Case]]>, length=Some(2)>(%[[VALUE_cases]]), read<i32>(%[[VALUE_i]])))));

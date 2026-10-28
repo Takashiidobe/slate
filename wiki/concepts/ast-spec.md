@@ -1,7 +1,6 @@
 # AST Spec
 
 <!-- toc -->
-
 - [Pipeline and responsibilities](#pipeline-and-responsibilities)
 - [Parser input and name
   environment](#parser-input-and-name-environment)

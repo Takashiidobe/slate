@@ -66,6 +66,7 @@ int main(void) {
 // DEFAULT-NEXT:                 write<u64>(%[[VALUE_i]], read<u64>(%[[VALUE2]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_i]] in reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)))..const<u64>(4)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     call<i32, signature=fn(i32) -> i32>(%[[VALUE_putchar]], reinterpret<i32, reason=arg, fits=unknown>(widen<u32, reason=arg>(read<u8>(deref(ptr_offset<ptr<const u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<const u8>, length=Some(4)>(%[[VALUE_data]]), read<u64>(%[[VALUE_i]])))))));

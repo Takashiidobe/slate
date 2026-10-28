@@ -157,6 +157,7 @@ tf ()
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_ix]], read<i32>(%[[VALUE3]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_ix]] in const<i32>(2)..const<i32>(10)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                 }

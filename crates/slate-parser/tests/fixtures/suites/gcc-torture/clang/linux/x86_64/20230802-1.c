@@ -115,6 +115,7 @@ int main() {
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_t]], read<i32>(%[[VALUE2]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_t]] in neg<i32, overflow=ub>(const<i32>(1))..=const<i32>(1)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     if ne<i64>(call<i64, signature=fn(u32) -> i64>(%[[VALUE_foo]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%[[VALUE_t]]))), call<i64, signature=fn(u32) -> i64>(%[[VALUE_foo_v]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%[[VALUE_t]]))))

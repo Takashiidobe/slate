@@ -69,6 +69,7 @@ int main(void) {
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE2]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_i]] in read<i32>(%[[VALUE_z]])..sub<i32, overflow=ub>(read<i32>(%[[VALUE_y]]), read<i32>(%[[VALUE_z]]))
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 for %[[VALUE3:[0-9]+]]
 // DEFAULT-NEXT:                     init:
@@ -80,6 +81,7 @@ int main(void) {
 // DEFAULT-NEXT:                         write<i32>(%[[VALUE_j]], read<i32>(%[[VALUE5]]));
 // DEFAULT-NEXT:                         yield void;
 // DEFAULT-NEXT:                     }
+// DEFAULT-NEXT:                     counted: %[[VALUE_j]] in const<i32>(0)..read<i32>(%[[VALUE_d]])
 // DEFAULT-NEXT:                     body:
 // DEFAULT-NEXT:                         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_buf]]), add<i32, overflow=ub>(mul<i32, overflow=ub>(read<i32>(%[[VALUE_i]]), read<i32>(%[[VALUE_x]])), add<i32, overflow=ub>(sub<i32, overflow=ub>(read<i32>(%[[VALUE_x]]), read<i32>(%[[VALUE_z]])), read<i32>(%[[VALUE_j]]))))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_buf]]), add<i32, overflow=ub>(mul<i32, overflow=ub>(read<i32>(%[[VALUE_i]]), read<i32>(%[[VALUE_x]])), sub<i32, overflow=ub>(sub<i32, overflow=ub>(sub<i32, overflow=ub>(read<i32>(%[[VALUE_x]]), read<i32>(%[[VALUE_z]])), const<i32>(1)), read<i32>(%[[VALUE_j]])))))));
 // DEFAULT-NEXT:     }
@@ -94,6 +96,7 @@ int main(void) {
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_2]], read<i32>(%[[VALUE8]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_i_2]] in const<i32>(0)..read<i32>(%[[VALUE_d_2]])
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 for %[[VALUE9:[0-9]+]]
 // DEFAULT-NEXT:                     init:
@@ -105,6 +108,7 @@ int main(void) {
 // DEFAULT-NEXT:                         write<i32>(%[[VALUE_j_2]], read<i32>(%[[VALUE11]]));
 // DEFAULT-NEXT:                         yield void;
 // DEFAULT-NEXT:                     }
+// DEFAULT-NEXT:                     counted: %[[VALUE_j_2]] in read<i32>(%[[VALUE_z_2]])..sub<i32, overflow=ub>(read<i32>(%[[VALUE_x_2]]), read<i32>(%[[VALUE_z_2]]))
 // DEFAULT-NEXT:                     body:
 // DEFAULT-NEXT:                         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_buf_2]]), add<i32, overflow=ub>(read<i32>(%[[VALUE_j_2]]), mul<i32, overflow=ub>(add<i32, overflow=ub>(sub<i32, overflow=ub>(read<i32>(%[[VALUE_y_2]]), read<i32>(%[[VALUE_z_2]])), read<i32>(%[[VALUE_i_2]])), read<i32>(%[[VALUE_x_2]]))))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_buf_2]]), add<i32, overflow=ub>(read<i32>(%[[VALUE_j_2]]), mul<i32, overflow=ub>(sub<i32, overflow=ub>(sub<i32, overflow=ub>(sub<i32, overflow=ub>(read<i32>(%[[VALUE_y_2]]), read<i32>(%[[VALUE_z_2]])), const<i32>(1)), read<i32>(%[[VALUE_i_2]])), read<i32>(%[[VALUE_x_2]])))))));
 // DEFAULT-NEXT:     }
@@ -126,6 +130,7 @@ int main(void) {
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_3]], read<i32>(%[[VALUE14]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_i_3]] in const<i32>(0)..const<i32>(3)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(%[[VALUE_a]]), read<i32>(%[[VALUE_i_3]])))), const<i32>(1))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);

@@ -65,6 +65,7 @@ int main(void) {
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_index]], read<i32>(%[[VALUE3]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_index]] in const<i32>(0)..read<i32>(%[[VALUE_length]])
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     let %[[VALUE4:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_total]]);
@@ -89,6 +90,7 @@ int main(void) {
 // DEFAULT-NEXT:                     write<i32>(%[[VALUE_index_2]], read<i32>(%[[VALUE9]]));
 // DEFAULT-NEXT:                     yield void;
 // DEFAULT-NEXT:                 }
+// DEFAULT-NEXT:                 counted: %[[VALUE_index_2]] in const<i32>(0)..read<i32>(%[[VALUE_length_2]])
 // DEFAULT-NEXT:                 body:
 // DEFAULT-NEXT:                     {
 // DEFAULT-NEXT:                         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=None>(%[[VALUE_values_2]]), read<i32>(%[[VALUE_index_2]]))), add<i32, overflow=ub>(read<i32>(%[[VALUE_index_2]]), const<i32>(3)));

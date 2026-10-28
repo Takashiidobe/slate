@@ -1,7 +1,6 @@
 # IR types, enums, and record layout
 
 <!-- toc -->
-
 - [Shown type vs C type](#shown-type-vs-c-type)
 - [Scalar formats](#scalar-formats)
   - [Integer type limits](#integer-type-limits)
@@ -14,7 +13,7 @@
   - [`#pragma pack` and `ms_struct`](#pragma-pack-and-ms_struct)
   - [Microsoft record layout](#microsoft-record-layout)
 - [Deduced and derived declarator
-types](#deduced-and-derived-declarator-types)
+  types](#deduced-and-derived-declarator-types)
 <!-- /toc -->
 
 Part of the [IR spec](../ir-spec.md). Complex, imaginary, vector, and

@@ -1,7 +1,6 @@
 # Declarations, linkage, and attributes
 
 <!-- toc -->
-
 - [Globals, statics, and linkage](#globals-statics-and-linkage)
 - [Redeclaration conflicts](#redeclaration-conflicts)
 - [Overloadable functions](#overloadable-functions)

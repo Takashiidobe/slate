@@ -63,6 +63,7 @@ int main() {
 // DEFAULT-NEXT:                 write<u32>(%[[VALUE_i]], read<u32>(%[[VALUE3]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             counted: %[[VALUE_i]] in reinterpret<u32, reason=assign, fits=always>(const<i32>(0))..reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(64))
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<i32>(widen<i32, reason=promotion>(read<i8>(lane(%[[VALUE_v_2]], read<u32>(%[[VALUE_i]])))), from_bool<i32, reason=promotion>(eq<u32>(read<u32>(%[[VALUE_i]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(63)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);

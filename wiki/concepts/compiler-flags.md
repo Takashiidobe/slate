@@ -1,7 +1,6 @@
 # Compiler flags
 
 <!-- toc -->
-
 - [Contract](#contract)
 - [Implemented](#implemented)
 - [ISA gotchas](#isa-gotchas)
