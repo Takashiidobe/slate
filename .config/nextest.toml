@@ -12,8 +12,11 @@ command = ["sh", "-c", "echo SLATE_TEST_TARGETS=i686-unknown-linux-gnu >> \"$NEX
 [scripts.setup.target-aarch64]
 command = ["sh", "-c", "echo SLATE_TEST_TARGETS=aarch64-unknown-linux-gnu >> \"$NEXTEST_ENV\""]
 
+[scripts.setup.target-arm]
+command = ["sh", "-c", "echo SLATE_TEST_TARGETS=armv7-unknown-linux-gnueabihf >> \"$NEXTEST_ENV\""]
+
 [scripts.setup.target-all]
-command = ["sh", "-c", "echo SLATE_TEST_TARGETS=x86_64-unknown-linux-gnu,i686-unknown-linux-gnu,aarch64-unknown-linux-gnu >> \"$NEXTEST_ENV\""]
+command = ["sh", "-c", "echo SLATE_TEST_TARGETS=x86_64-unknown-linux-gnu,i686-unknown-linux-gnu,aarch64-unknown-linux-gnu,armv7-unknown-linux-gnueabihf >> \"$NEXTEST_ENV\""]
 
 [profile.slate-i686]
 default-filter = 'package(slate-c2rust) & (test(=generated_differential) | test(=fixtures_unsupported_tests_still_fail))'
@@ -28,6 +31,13 @@ default-filter = 'package(slate-c2rust) & (test(=generated_differential) | test(
 [[profile.slate-aarch64.scripts]]
 filter = 'test(=generated_differential) | test(/^fixtures_unsupported_/)'
 setup = "target-aarch64"
+
+[profile.slate-arm]
+default-filter = 'package(slate-c2rust) & (test(=generated_differential) | test(=fixtures_unsupported_tests_still_fail))'
+
+[[profile.slate-arm.scripts]]
+filter = 'test(=generated_differential) | test(/^fixtures_unsupported_/)'
+setup = "target-arm"
 
 [profile.slate-targets]
 default-filter = 'package(slate-c2rust) & (test(=generated_differential) | test(=fixtures_unsupported_tests_still_fail))'

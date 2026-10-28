@@ -37,11 +37,12 @@ two-TU fixtures. Additional suite coverage is tracked for restoration in
 `generated_differential` runs once per target in `SLATE_TEST_TARGETS`
 (comma-separated, default `x86_64-unknown-linux-gnu`). Each target runs the
 target-independent `tests/fixtures/*.c` plus `tests/fixtures/<arch>/`, where
-`<arch>` is the triple's first component. Put a fixture in an arch directory
+`<arch>` is the triple's first component (`arm` for `armv7`). Put a fixture in an arch directory
 only when it cannot be target-independent (inline asm, ISA intrinsics).
 `tests/fixtures/gcc/` and `tests/fixtures/gcc/<arch>/` hold gcc-flavor
 fixtures: they translate with `--flavor=gcc` and the oracle is real gcc
-(`gcc -m32` for i686, `aarch64-linux-gnu-gcc` for aarch64). Leave
+(`gcc -m32` for i686, `aarch64-linux-gnu-gcc` for aarch64,
+`arm-linux-gnueabihf-gcc` for armv7). Leave
 `--flavor=gcc` out of their `dg-options`. `tests/fixtures/msvc/` and
 `tests/fixtures/msvc/<arch>/` translate with `--flavor=msvc`, and the oracle
 is real `cl.exe` under wine ([MSVC oracle](msvc-oracle.md), `MSVC_ARCH=x64`
@@ -66,7 +67,8 @@ profiles pick targets through setup scripts in `.config/nextest.toml`:
 ```bash
 cargo nextest r --release --profile slate-i686      # natively, with -m32
 cargo nextest r --release --profile slate-aarch64   # under qemu-aarch64-static
-cargo nextest r --release --profile slate-targets   # x86_64, i686 and aarch64
+cargo nextest r --release --profile slate-arm       # armv7-unknown-linux-gnueabihf under qemu-arm-static
+cargo nextest r --release --profile slate-targets   # x86_64, i686, aarch64 and armv7
 cargo nextest r --release --profile clang           # clang fixtures of both crates
 cargo nextest r --release --profile gcc             # gcc fixtures of both crates
 cargo nextest r --release --profile msvc            # msvc fixtures of both crates

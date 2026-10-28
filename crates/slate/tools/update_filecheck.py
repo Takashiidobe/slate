@@ -21,6 +21,7 @@ ARCH_TARGETS = {
     "x86_64": "x86_64-unknown-linux-gnu",
     "i686": "i686-unknown-linux-gnu",
     "aarch64": "aarch64-unknown-linux-gnu",
+    "arm": "armv7-unknown-linux-gnueabihf",
 }
 WINDOWS_SUFFIX = "-pc-windows-msvc"
 TEST_COMMAND = ["--test", "differential", "-E", "test(=generated_differential)"]
@@ -103,7 +104,7 @@ def fixture_arch(path):
 
 def check_target(path, target):
     arch = fixture_arch(path)
-    if arch is not None and target.split("-", 1)[0] != arch:
+    if arch is not None and target.split("-", 1)[0] != ARCH_TARGETS[arch].split("-", 1)[0]:
         raise FixtureError(f"{path.relative_to(TESTS)}: {arch} fixtures only run for {arch} targets, not {target}")
 
 

@@ -91,7 +91,7 @@ fn target_fixtures(root: &Path, triple: &str) -> Vec<Fixture> {
     let selected = std::env::var("SLATE_DIFF_FIXTURE").ok();
     let flavor = selected_flavor();
     let runs = |candidate: Flavor| flavor.is_none_or(|flavor| flavor == candidate);
-    let arch = triple.split('-').next().unwrap_or(triple);
+    let arch = support::CrossTarget::fixture_arch(triple);
     let mut fixtures = Vec::new();
     if runs(Flavor::Clang) {
         collect_fixtures(root, Path::new(""), &selected, &mut fixtures);

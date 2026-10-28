@@ -77,10 +77,45 @@ impl CrossTarget {
         }
     }
 
+    pub fn armv7_linux() -> Self {
+        let sysroot = Command::new("arm-linux-gnueabihf-gcc")
+            .arg("-print-sysroot")
+            .output()
+            .ok()
+            .and_then(|output| String::from_utf8(output.stdout).ok())
+            .and_then(|sysroot| Path::new(sysroot.trim()).canonicalize().ok())
+            .expect("arm-linux-gnueabihf-gcc -print-sysroot");
+        let toolchain = sysroot.ancestors().nth(2).unwrap();
+        Self {
+            rust_triple: "armv7-unknown-linux-gnueabihf",
+            cc: "clang".into(),
+            cc_extra_args: vec![
+                "--target=arm-none-linux-gnueabihf".into(),
+                "-march=armv7-a".into(),
+                format!("--sysroot={}", sysroot.display()),
+                format!("--gcc-toolchain={}", toolchain.display()),
+            ],
+            cargo_linker_env: "CARGO_TARGET_ARMV7_UNKNOWN_LINUX_GNUEABIHF_LINKER".into(),
+            linker: "arm-linux-gnueabihf-gcc".into(),
+            cargo_env: Vec::new(),
+            qemu: Some("qemu-arm-static".into()),
+            qemu_args: vec!["-L".into(), sysroot.display().to_string()],
+            build_only: false,
+        }
+    }
+
+    pub fn fixture_arch(triple: &str) -> &str {
+        match triple.split('-').next().unwrap_or(triple) {
+            "armv7" => "arm",
+            arch => arch,
+        }
+    }
+
     fn gcc(&self) -> Result<(String, Vec<String>), String> {
         match self.rust_triple {
             "i686-unknown-linux-gnu" => Ok(("gcc".into(), vec!["-m32".into()])),
             "aarch64-unknown-linux-gnu" => Ok(("aarch64-linux-gnu-gcc".into(), Vec::new())),
+            "armv7-unknown-linux-gnueabihf" => Ok(("arm-linux-gnueabihf-gcc".into(), Vec::new())),
             triple => Err(format!("no gcc oracle configured for {triple}")),
         }
     }
@@ -90,6 +125,7 @@ impl CrossTarget {
             _ if triple == env!("SLATE_BUILD_TARGET") => None,
             "i686-unknown-linux-gnu" => Some(Self::i686_linux()),
             "aarch64-unknown-linux-gnu" => Some(Self::aarch64_linux()),
+            "armv7-unknown-linux-gnueabihf" => Some(Self::armv7_linux()),
             _ => panic!("no cross toolchain configured for test target {triple}"),
         }
     }

@@ -115,7 +115,8 @@ starts passing, `fixtures_unsupported_tests_still_fail` fails and prints the
 `generated_differential` runs once per target in `SLATE_TEST_TARGETS`
 (default `x86_64-unknown-linux-gnu`). For each target it runs the
 target-independent `tests/fixtures/*.c` plus `tests/fixtures/<arch>/`, where
-`<arch>` is the triple's first component (`x86_64`, `i686`, `aarch64`), and
+`<arch>` is the triple's first component (`x86_64`, `i686`, `aarch64`, and
+`arm` for `armv7`), and
 `tests/fixtures/gcc/` plus `tests/fixtures/gcc/<arch>/`, which translate with
 `--flavor=gcc` and use real gcc as the oracle, and `tests/fixtures/msvc/` plus
 `tests/fixtures/msvc/<arch>/`, which translate with `--flavor=msvc` and use
@@ -141,7 +142,8 @@ Profiles in `.config/nextest.toml` set the targets with setup scripts:
 | `slate`         | x86_64                                                       | every suite                                                                         |
 | `slate-i686`    | i686, natively with `-m32`                                   | `generated_differential`, unsupported ratchet                                       |
 | `slate-aarch64` | aarch64, under `qemu-aarch64-static`                         | `generated_differential`, unsupported ratchet                                       |
-| `slate-targets` | all three                                                    | `generated_differential`, unsupported ratchet                                       |
+| `slate-arm`     | armv7 (gnueabihf), under `qemu-arm-static`                   | `generated_differential`, unsupported ratchet                                       |
+| `slate-targets` | x86_64, i686, aarch64, armv7                                 | `generated_differential`, unsupported ratchet                                       |
 | `clang`, `gcc`  | all three, that flavor's fixtures only (`SLATE_DIFF_FLAVOR`) | `generated_differential`, unsupported ratchet, slate-parser fixtures of that flavor |
 | `msvc`          | x86_64 and i686, plus aarch64 build-only; msvc fixtures only | same, against cl.exe                                                                |
 
@@ -152,7 +154,9 @@ fixtures that still fail on that target. The run fails when a listed
 fixture passes (remove it from the list) or an unlisted one fails.
 `tests/fixtures.unsupported/` also runs per target (root plus `<arch>/`); a
 fixture that passes prints the `git mv`, the `update_filecheck.py` command,
-and the per-target list entries it needs. `tests/fixtures/arm/` is not collected yet (slate-5vj0.8).
+and the per-target list entries it needs. The armv7 target needs the Arm GNU
+toolchain's `arm-linux-gnueabihf-gcc` on PATH: its `-print-sysroot` is the
+glibc that clang links against and that `qemu-arm-static -L` runs with.
 
 Isolate one fixture while developing:
 
