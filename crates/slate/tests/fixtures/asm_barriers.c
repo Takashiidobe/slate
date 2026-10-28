@@ -136,7 +136,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x.wrapping_add(1)
 // CHECK-NEXT: }
-// CHECK-NEXT: fn input_barrier(p: &[u8]) -> i32 {
+// CHECK-NEXT: fn input_barrier(p: &mut [u8]) -> i32 {
 // CHECK-NEXT:     let mut sum: i32 = 0;
 // CHECK-NEXT:     let mut i: i32 = 0;
 // CHECK-NEXT:     while i < (p.len() as i32) {
@@ -145,7 +145,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "\n# {0:r}", in (reg) (p.as_ptr() as * const u8) as u64, options(nostack,
+// CHECK-NEXT:             "\n# {0:r}", in (reg) (p.as_mut_ptr() as * const u8) as u64, options(nostack,
 // CHECK-NEXT:             att_syntax)
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
@@ -206,13 +206,13 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     (1 & ((e as u32) as i32) - 1 >> 8i32) - 1
 // CHECK-NEXT: }
-// CHECK-NEXT: fn no_unroll(p: &[f32]) -> i32 {
+// CHECK-NEXT: fn no_unroll(p: &mut [f32]) -> i32 {
 // CHECK-NEXT:     let mut sum: f32 = 0i32 as f32;
 // CHECK-NEXT:     let mut i: i32 = 0;
 // CHECK-NEXT:     while i < (p.len() as i32) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             core::arch::asm!(
-// CHECK-NEXT:                 "\n# {0:r}", in (reg) (p.as_ptr() as * const f32) as u64,
+// CHECK-NEXT:                 "\n# {0:r}", in (reg) (p.as_mut_ptr() as * const f32) as u64,
 // CHECK-NEXT:                 options(nostack, att_syntax)
 // CHECK-NEXT:             );
 // CHECK-NEXT:         }
@@ -250,15 +250,16 @@ int main(void) {
 // CHECK-NEXT:         printf(c"%u %llu\n".as_ptr(), value_barrier(7u32), value_barrier_memory(41u64))
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     println!("{}", input_barrier(& bytes));
+// CHECK-NEXT:     let __slate_printf_arg0 = input_barrier(&mut bytes);
+// CHECK-NEXT:     println!("{}", __slate_printf_arg0);
 // CHECK-NEXT:     let mut zeros: [u8; 4] = {
 // CHECK-NEXT:         let mut [[T_0]]: [u8; 4] = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]][0] = 0u8;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let floats: [f32; 3] = [1.5f32, 2.5f32, 3.0f32];
+// CHECK-NEXT:     let mut floats: [f32; 3] = [1.5f32, 2.5f32, 3.0f32];
 // CHECK-NEXT:     spin_pause_memory();
-// CHECK-NEXT:     let __slate_printf_arg0 = verify_volatile(
+// CHECK-NEXT:     let __slate_printf_arg0_1 = verify_volatile(
 // CHECK-NEXT:         bytes.as_mut_ptr() as *const u8,
 // CHECK-NEXT:         bytes.as_mut_ptr() as *const u8,
 // CHECK-NEXT:         4i32,
@@ -268,9 +269,10 @@ int main(void) {
 // CHECK-NEXT:         zeros.as_mut_ptr() as *const u8,
 // CHECK-NEXT:         4i32,
 // CHECK-NEXT:     );
-// CHECK-NEXT:     println!("{} {}", __slate_printf_arg0, __slate_printf_arg1);
+// CHECK-NEXT:     println!("{} {}", __slate_printf_arg0_1, __slate_printf_arg1);
 // CHECK-NEXT:     println!("{} {}", nonvolatile_guard(& zeros), nonvolatile_guard(& bytes));
-// CHECK-NEXT:     println!("{}", no_unroll(& floats));
+// CHECK-NEXT:     let __slate_printf_arg0 = no_unroll(&mut floats);
+// CHECK-NEXT:     println!("{}", __slate_printf_arg0);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

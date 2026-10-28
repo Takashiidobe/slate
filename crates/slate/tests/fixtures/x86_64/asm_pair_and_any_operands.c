@@ -111,11 +111,11 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     r
 // CHECK-NEXT: }
-// CHECK-NEXT: fn any_operands(mut x: i32, mut big: &[[SLATERECORD_0]]) -> i32 {
+// CHECK-NEXT: fn any_operands(mut x: i32, mut big: &mut [[SLATERECORD_0]]) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "\n# {0:e}\n# {1}\n# {2}", in (reg) x as u32, const 5 as i32, in (reg) big as
-// CHECK-NEXT:             * const [[SLATERECORD_0]], options(nostack, att_syntax)
+// CHECK-NEXT:             * mut [[SLATERECORD_0]], options(nostack, att_syntax)
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut r: i32 = 0;
@@ -145,7 +145,7 @@ int main(void) {
 // CHECK-NEXT:             c"%lu %lu %d\n".as_ptr(),
 // CHECK-NEXT:             pair_in_high((11 as u128) << 64i32 | 12),
 // CHECK-NEXT:             single_a(39u64),
-// CHECK-NEXT:             any_operands(40i32, &(*std::ptr::addr_of_mut!(big))),
+// CHECK-NEXT:             any_operands(40i32, &mut (*std::ptr::addr_of_mut!(big))),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

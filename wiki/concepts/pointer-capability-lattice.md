@@ -31,6 +31,11 @@ code, address of the binding itself taken, or returned without a return-alias
 proof), `N`=nullable, `S`=string (`T` is `u8`/`char` and nul-terminated /
 string-shaped usage is observed).
 
+A pointer passed as an `asm!` operand counts as a write unless the asm has
+`options(nomem)` or `options(readonly)`: the asm may store through it (a
+`"+m"`/`"+Q"` memory operand, or a register operand with a `"memory"`
+clobber), and lifting it to `&T` would let LLVM fold reads across the asm.
+
 Core (unlike c2rust, no `Box<[T]>` — owned+indexed always resolves to
 `Vec<T>`; a `Vec<T>` that's never resized is exactly as correct as
 `Box<[T]>` for differential testing, so the `GROW` fact this would otherwise

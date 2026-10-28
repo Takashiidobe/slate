@@ -2,8 +2,9 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use crate::backend::interproc::{self, CallGraph, FnKey, Symbols};
 use crate::backend::rust_ast::{
-    BinOp, Block, CLibType, Expr, ExternDecl, ExternFnDecl, FnDef, Ident, Item, Path, Prim,
-    Program, RustValue, Stmt, StructDef, StructFields, Type, UnaryOp, Visibility, is_temp_name,
+    AsmOption, BinOp, Block, CLibType, Expr, ExternDecl, ExternFnDecl, FnDef, Ident, Item, Path,
+    Prim, Program, RustValue, Stmt, StructDef, StructFields, Type, UnaryOp, Visibility,
+    is_temp_name,
 };
 use crate::function_identity::{CallBinding, FunctionIdentity, Known};
 
@@ -927,7 +928,21 @@ impl ClassifyCtx<'_> {
                 self.place(target, true);
                 self.expr(value);
             }
-            Stmt::InlineAsm(_) => {}
+            Stmt::InlineAsm(asm) => {
+                let may_write = !asm
+                    .options
+                    .iter()
+                    .any(|option| matches!(option, AsmOption::NoMem | AsmOption::ReadOnly));
+                for operand in &asm.operands {
+                    operand.visit_exprs(&mut |expr| {
+                        if may_write {
+                            self.observe_write_target(expr);
+                        } else {
+                            self.expr(expr);
+                        }
+                    });
+                }
+            }
             Stmt::Expr(expr) => self.expr(expr),
             Stmt::Return(Some(expr)) => {
                 if let Expr::Var(name) = expr
