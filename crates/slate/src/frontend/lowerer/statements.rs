@@ -293,8 +293,13 @@ impl FunctionLowerer<'_, '_> {
                 condition,
                 increment,
                 body,
-                ..
+                counted,
             } => {
+                if let Some(counted) = counted
+                    && let Some(lowered) = self.lower_counted_for(*id, init, counted, body)?
+                {
+                    return Ok(lowered);
+                }
                 let mut statements = self.lower_statement_list(init)?;
                 let body = self.lower_statement_list(body)?;
                 let mut loop_body = Vec::new();
@@ -356,6 +361,9 @@ impl FunctionLowerer<'_, '_> {
                 .lower_switch(*id, discriminant, body)
                 .map_err(|error| error.within(Site::of(statement), "in switch".into()))?,
             ir::Statement::Break(id) => Stmt::Break(Some(break_label(*id))),
+            ir::Statement::Continue(id) if self.counted_loops.contains(id) => {
+                Stmt::Continue(Some(break_label(*id)))
+            }
             ir::Statement::Continue(id) => Stmt::Break(Some(continue_label(*id))),
             ir::Statement::Fence { ordering, scope } => {
                 Stmt::Expr(self.lower_fence(*scope, ordering).ok_or_else(|| {
@@ -392,6 +400,73 @@ impl FunctionLowerer<'_, '_> {
             }
         }
         Ok(lowered)
+    }
+
+    pub(super) fn non_index_names(
+        &self,
+        params: &[FnParam],
+        body: &[slate_parser::ast::Span<ir::Statement>],
+    ) -> HashSet<String> {
+        let mut lets = Vec::new();
+        let mut indices = HashSet::new();
+        collect_lets(body, &mut lets, &mut indices);
+        lets.into_iter()
+            .filter(|id| !indices.contains(id))
+            .map(|id| binding_name(id, &self.tables.bindings))
+            .chain(params.iter().map(|param| param.name.clone()))
+            .collect()
+    }
+
+    fn lower_counted_for(
+        &mut self,
+        id: BindingId,
+        init: &[slate_parser::ast::Span<ir::Statement>],
+        counted: &ir::CountedLoop,
+        body: &[slate_parser::ast::Span<ir::Statement>],
+    ) -> Result<Option<Stmt>> {
+        let Some((last, prefix)) = init.split_last() else {
+            return Ok(None);
+        };
+        let ir::Statement::Let(index) = &last.value else {
+            return Ok(None);
+        };
+        let name = binding_name(index.id, &self.tables.bindings);
+        if index.id != counted.index
+            || self.non_index_names.contains(&name)
+            || self
+                .tables
+                .over_alignment(&index.ty, index.alignment)
+                .is_some()
+        {
+            return Ok(None);
+        }
+        let outer = self.declaring.replace(Some((index.id, false)));
+        let start = self.lower_value(&counted.start);
+        if matches!(self.declaring.replace(outer), Some((_, true))) {
+            return Ok(None);
+        }
+        let start = start?;
+        let mut end = self.lower_value(&counted.end)?;
+        if counted.inclusive {
+            end = Expr::Binary {
+                op: rust::BinOp::Add,
+                lhs: Box::new(end),
+                rhs: Box::new(Expr::Value(rust::RustValue::I64(1))),
+            };
+        }
+        let mut statements = self.lower_statement_list(prefix)?;
+        self.counted_loops.insert(id);
+        let body = self.lower_statement_list(body)?;
+        statements.push(Stmt::For {
+            label: Some(break_label(id)),
+            pat: name,
+            iter: Expr::Range {
+                start: Box::new(start),
+                end: Box::new(end),
+            },
+            body,
+        });
+        Ok(Some(Stmt::Scope { body: statements }))
     }
 
     fn cleanup_guard(&mut self, variable: &ir::Variable, cleanup: BindingId) -> Result<[Stmt; 2]> {
@@ -461,6 +536,28 @@ impl FunctionLowerer<'_, '_> {
         Ok(std::iter::once(lowered)
             .chain(self.after_declaration.take())
             .collect())
+    }
+}
+
+fn collect_lets(
+    statements: &[slate_parser::ast::Span<ir::Statement>],
+    lets: &mut Vec<BindingId>,
+    indices: &mut HashSet<BindingId>,
+) {
+    for statement in statements {
+        match &statement.value {
+            ir::Statement::Let(variable) => lets.push(variable.id),
+            ir::Statement::For {
+                counted: Some(counted),
+                ..
+            } => {
+                indices.insert(counted.index);
+            }
+            _ => {}
+        }
+        for body in control_flow::children(&statement.value) {
+            collect_lets(body, lets, indices);
+        }
     }
 }
 

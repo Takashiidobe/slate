@@ -138,10 +138,8 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn input_barrier(p: &mut [u8]) -> i32 {
 // CHECK-NEXT:     let mut sum: i32 = 0;
-// CHECK-NEXT:     let mut i: i32 = 0;
-// CHECK-NEXT:     while i < (p.len() as i32) {
+// CHECK-NEXT:     for i in 0..p.len() as i32 {
 // CHECK-NEXT:         sum += ((unsafe { p[i as usize] }) as u32) as i32;
-// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::asm!(
@@ -189,11 +187,9 @@ int main(void) {
 // CHECK-NEXT: fn nonvolatile_guard(x: &[u8]) -> i32 {
 // CHECK-NEXT:     let mut d: u8 = 0;
 // CHECK-NEXT:     let mut e: u16 = 0;
-// CHECK-NEXT:     let mut i: i32 = 0;
-// CHECK-NEXT:     while i < (x.len() as i32) {
+// CHECK-NEXT:     for i in 0..x.len() as i32 {
 // CHECK-NEXT:         d = ((((d as u32) as i32) | (((unsafe { x[i as usize] }) as u32) as i32)) as i8)
 // CHECK-NEXT:             as u8;
-// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     e = d as u16;
 // CHECK-NEXT:     unsafe {

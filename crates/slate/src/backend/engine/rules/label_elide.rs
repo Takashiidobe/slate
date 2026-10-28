@@ -157,6 +157,9 @@ fn unlabeled_loop_jumps(arena: &Arena, id: NodeId) -> Option<Vec<NodeId>> {
     }
     | NodeKind::While {
         label: Some(label), ..
+    }
+    | NodeKind::For {
+        label: Some(label), ..
     }) = kind
     else {
         return None;
@@ -350,7 +353,7 @@ impl NodeRule for LoopLabelElide {
     }
 
     fn kinds(&self) -> &'static [NodeKindTag] {
-        &[NodeKindTag::Loop, NodeKindTag::While]
+        &[NodeKindTag::Loop, NodeKindTag::While, NodeKindTag::For]
     }
 
     fn matches(&self, arena: &FunctionOptimizer, id: NodeId) -> bool {
@@ -366,8 +369,11 @@ impl NodeRule for LoopLabelElide {
                 *label = None;
             }
         }
-        if let Some(NodeKind::Loop { label, .. } | NodeKind::While { label, .. }) =
-            arena.get_mut(id)
+        if let Some(
+            NodeKind::Loop { label, .. }
+            | NodeKind::While { label, .. }
+            | NodeKind::For { label, .. },
+        ) = arena.get_mut(id)
         {
             *label = None;
         }

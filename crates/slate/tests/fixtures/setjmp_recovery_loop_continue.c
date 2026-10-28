@@ -71,16 +71,16 @@ int main(void) {
 // CHECK-NEXT:                 failures = failures + 1;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             println!("recovered {}", i);
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             run_test(i);
-// CHECK-NEXT:             if i == 3 {
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     teardown_failures = teardown_failures + 1;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 println!("teardown ok {}", i);
-// CHECK-NEXT:             }
+// CHECK-NEXT:             continue;
 // CHECK-NEXT:         }
+// CHECK-NEXT:         run_test(i);
+// CHECK-NEXT:         if i == 3 {
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 teardown_failures = teardown_failures + 1;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             continue;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         println!("teardown ok {}", i);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "failures={} teardown_failures={}", unsafe { failures }, unsafe {

@@ -122,10 +122,8 @@ int count_vowels(const char *text) {
 // CHECK-EMPTY:
 // CHECK-NEXT: pub fn shape_area_sum(shapes: &[shape]) -> i32 {
 // CHECK-NEXT:     let mut sum: i32 = 0;
-// CHECK-NEXT:     let mut i: i32 = 0;
-// CHECK-NEXT:     while i < (shapes.len() as i32) {
+// CHECK-NEXT:     for i in 0..shapes.len() as i32 {
 // CHECK-NEXT:         sum += (unsafe { shapes[i as usize].origin.x }) * unsafe { shapes[i as usize].origin.y };
-// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     sum
 // CHECK-NEXT: }

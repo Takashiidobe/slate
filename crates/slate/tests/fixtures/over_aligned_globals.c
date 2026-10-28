@@ -103,10 +103,8 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn total(items: &[u32]) -> u32 {
 // CHECK-NEXT:     let mut sum: u32 = 0;
-// CHECK-NEXT:     let mut i: i32 = 0;
-// CHECK-NEXT:     while i < (items.len() as i32) {
+// CHECK-NEXT:     for i in 0..items.len() as i32 {
 // CHECK-NEXT:         sum = sum.wrapping_add(unsafe { items[i as usize] });
-// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     sum
 // CHECK-NEXT: }

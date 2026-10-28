@@ -61,10 +61,8 @@ int main(void) {
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: fn pairwise_swap(items: &mut [i32]) {
-// CHECK-NEXT:     let mut i: i32 = 0;
-// CHECK-NEXT:     while i < (items.len() as i32) {
-// CHECK-NEXT:         let mut j: i32 = 0;
-// CHECK-NEXT:         while j < (items.len() as i32) {
+// CHECK-NEXT:     for i in 0..items.len() as i32 {
+// CHECK-NEXT:         for j in 0..items.len() as i32 {
 // CHECK-NEXT:             if (unsafe { items[i as usize] }) > unsafe { items[j as usize] } {
 // CHECK-NEXT:                 let tmp: i32 = unsafe { items[i as usize] };
 // CHECK-NEXT:                 unsafe {
@@ -74,16 +72,12 @@ int main(void) {
 // CHECK-NEXT:                     items[j as usize] = tmp;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
-// CHECK-NEXT:             j += 1;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn pairwise_swap_tmp_reused(items: &mut [i32]) {
-// CHECK-NEXT:     let mut i: i32 = 0;
-// CHECK-NEXT:     while i < (items.len() as i32) {
-// CHECK-NEXT:         let mut j: i32 = 0;
-// CHECK-NEXT:         while j < (items.len() as i32) {
+// CHECK-NEXT:     for i in 0..items.len() as i32 {
+// CHECK-NEXT:         for j in 0..items.len() as i32 {
 // CHECK-NEXT:             if (unsafe { items[i as usize] }) > unsafe { items[j as usize] } {
 // CHECK-NEXT:                 let tmp: i32 = unsafe { items[i as usize] };
 // CHECK-NEXT:                 unsafe {
@@ -94,16 +88,12 @@ int main(void) {
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 println!("tmp={}", tmp);
 // CHECK-NEXT:             }
-// CHECK-NEXT:             j += 1;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn nested_self_swap(items: &mut [i32]) {
-// CHECK-NEXT:     let mut i: i32 = 0;
-// CHECK-NEXT:     while i < (items.len() as i32) {
-// CHECK-NEXT:         let mut j: i32 = 0;
-// CHECK-NEXT:         while j < (items.len() as i32) {
+// CHECK-NEXT:     for i in 0..items.len() as i32 {
+// CHECK-NEXT:         for j in 0..items.len() as i32 {
 // CHECK-NEXT:             if (unsafe { items[i as usize] }) > 0 {
 // CHECK-NEXT:                 let tmp: i32 = unsafe { items[j as usize] };
 // CHECK-NEXT:                 unsafe {
@@ -113,9 +103,7 @@ int main(void) {
 // CHECK-NEXT:                     items[j as usize] = tmp;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
-// CHECK-NEXT:             j += 1;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {

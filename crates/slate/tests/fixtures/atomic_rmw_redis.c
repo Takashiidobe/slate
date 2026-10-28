@@ -185,8 +185,7 @@ int main(void) {
 // CHECK-NEXT: });
 // CHECK-NEXT: extern "C-unwind" fn worker(arg: *mut ()) -> *mut () {
 // CHECK-NEXT:     let set: *mut vset = arg as *mut vset;
-// CHECK-NEXT:     let mut i: i32 = 0;
-// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: while i < 10000 {
+// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: for i in 0i32..10000i32 {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             let [[T_0:__t[0-9]+]] = 1i32;
 // CHECK-NEXT:             let [[T_1:__t[0-9]+]] = std::sync::atomic::AtomicI32::from_ptr(
@@ -220,7 +219,6 @@ int main(void) {
 // CHECK-NEXT:                 .fetch_add([[T_6]], std::sync::atomic::Ordering::Relaxed);
 // CHECK-NEXT:             [[T_7]]
 // CHECK-NEXT:         };
-// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_8:__t[0-9]+]] = 1i32;

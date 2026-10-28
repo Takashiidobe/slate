@@ -22,12 +22,10 @@ int main(void) {
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: fn fill(p: &mut [i32], val: i32) {
-// CHECK-NEXT:     let mut i: i32 = 0;
-// CHECK-NEXT:     while i < (p.len() as i32) {
+// CHECK-NEXT:     for i in 0..p.len() as i32 {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             p[i as usize] = val;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {

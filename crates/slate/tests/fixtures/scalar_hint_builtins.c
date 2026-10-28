@@ -58,22 +58,21 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn weigh(words: &[u64]) -> i64 {
 // CHECK-NEXT:     let mut total: i64 = 0;
-// CHECK-NEXT:     let mut i: i32 = 0;
-// CHECK-NEXT:     while i < (words.len() as i32) {
+// CHECK-NEXT:     for i in 0..words.len() as i32 {
 // CHECK-NEXT:         let word: u64 = unsafe { words[i as usize] };
-// CHECK-NEXT:         if word != 0 {
-// CHECK-NEXT:             total
-// CHECK-NEXT:                 += ((word.count_ones() as i32) * 100 + (word.trailing_zeros() as i32))
-// CHECK-NEXT:                     as i64;
-// CHECK-NEXT:             if word & 1 != 0 {
-// CHECK-NEXT:                 total += ((word >> 32i32).count_ones() as i32) as i64;
-// CHECK-NEXT:             }
-// CHECK-NEXT:             total
-// CHECK-NEXT:                 += ((((word as u32) | 2147483648).trailing_zeros() as i32)
-// CHECK-NEXT:                     + ((word as u32).count_ones() as i32)) as i64;
-// CHECK-NEXT:             total += (word.trailing_zeros() as i32) as i64;
+// CHECK-NEXT:         if word == 0 {
+// CHECK-NEXT:             continue;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         i += 1;
+// CHECK-NEXT:         total
+// CHECK-NEXT:             += ((word.count_ones() as i32) * 100 + (word.trailing_zeros() as i32))
+// CHECK-NEXT:                 as i64;
+// CHECK-NEXT:         if word & 1 != 0 {
+// CHECK-NEXT:             total += ((word >> 32i32).count_ones() as i32) as i64;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         total
+// CHECK-NEXT:             += ((((word as u32) | 2147483648).trailing_zeros() as i32)
+// CHECK-NEXT:                 + ((word as u32).count_ones() as i32)) as i64;
+// CHECK-NEXT:         total += (word.trailing_zeros() as i32) as i64;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }

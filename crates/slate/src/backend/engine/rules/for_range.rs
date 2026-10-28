@@ -268,6 +268,7 @@ impl NodeRule for ForRangeRecover {
         arena.set_kind(
             id,
             NodeKind::For {
+                label: None,
                 pat: plan.ind_var,
                 iter: Expr::Range {
                     start: Box::new(plan.start),

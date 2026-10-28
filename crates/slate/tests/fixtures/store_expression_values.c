@@ -159,14 +159,12 @@ int main(void) {
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     });
 // CHECK-NEXT:     let mut out: *mut i32 = buffer.0.as_mut_ptr() as *mut i32;
-// CHECK-NEXT:     let mut i: i32 = 1;
-// CHECK-NEXT:     while i <= 3 {
+// CHECK-NEXT:     for i in 1..4i32 {
 // CHECK-NEXT:         let [[V_8:__v[0-9]+]]: *mut i32 = out;
 // CHECK-NEXT:         out = unsafe { [[V_8]].add(1) };
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *[[V_8]] = i * i;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut second: Node = {
 // CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: Node = unsafe { std::mem::zeroed() };

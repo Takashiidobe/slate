@@ -34,26 +34,22 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn run() -> i32 {
 // CHECK-NEXT:     let mut out: i32 = 0;
-// CHECK-NEXT:     let mut i: i32 = 0;
-// CHECK-NEXT:     while i <= 3 {
-// CHECK-NEXT:         '[[SLATE_CONTINUE_0:__slate_continue_[0-9]+]]: {
-// CHECK-NEXT:             match i {
-// CHECK-NEXT:                 0 => {
-// CHECK-NEXT:                     out += 1;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 1 => {
-// CHECK-NEXT:                     break '[[SLATE_CONTINUE_0]];
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 2 => {
-// CHECK-NEXT:                     out += 20;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 _ => {
-// CHECK-NEXT:                     out += 100;
-// CHECK-NEXT:                 }
+// CHECK-NEXT:     for i in 0..4i32 {
+// CHECK-NEXT:         match i {
+// CHECK-NEXT:             0 => {
+// CHECK-NEXT:                 out += 1;
 // CHECK-NEXT:             }
-// CHECK-NEXT:             out += 3;
+// CHECK-NEXT:             1 => {
+// CHECK-NEXT:                 continue;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             2 => {
+// CHECK-NEXT:                 out += 20;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             _ => {
+// CHECK-NEXT:                 out += 100;
+// CHECK-NEXT:             }
 // CHECK-NEXT:         }
-// CHECK-NEXT:         i += 1;
+// CHECK-NEXT:         out += 3;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     out
 // CHECK-NEXT: }

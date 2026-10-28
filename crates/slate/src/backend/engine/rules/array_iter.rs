@@ -244,7 +244,10 @@ impl NodeRule for ForArrayIterRecover {
     }
 
     fn matches(&self, arena: &FunctionOptimizer, id: NodeId) -> bool {
-        let Some(NodeKind::For { pat, iter, body }) = arena.get(id) else {
+        let Some(NodeKind::For {
+            pat, iter, body, ..
+        }) = arena.get(id)
+        else {
             return false;
         };
         let Expr::Range { start, end } = iter else {
@@ -254,7 +257,10 @@ impl NodeRule for ForArrayIterRecover {
     }
 
     fn apply(&self, arena: &mut FunctionOptimizer, id: NodeId) -> bool {
-        let Some(NodeKind::For { pat, iter, body }) = arena.get(id) else {
+        let Some(NodeKind::For {
+            pat, iter, body, ..
+        }) = arena.get(id)
+        else {
             return false;
         };
         let Expr::Range { start, end } = iter else {

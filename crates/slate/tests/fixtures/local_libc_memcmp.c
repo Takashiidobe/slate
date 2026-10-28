@@ -32,17 +32,11 @@ int main(void) {
 // CHECK-NEXT: fn cmp_bytes(a: &[u8], b: &[u8]) -> i32 {
 // CHECK-NEXT:     let mut sa: i32 = 0;
 // CHECK-NEXT:     let mut sb: i32 = 0;
-// CHECK-NEXT:     {
-// CHECK-NEXT:         let mut i: i32 = 0;
-// CHECK-NEXT:         while i < (a.len() as i32) {
-// CHECK-NEXT:             sa += ((unsafe { a[i as usize] }) as u32) as i32;
-// CHECK-NEXT:             i += 1;
-// CHECK-NEXT:         }
+// CHECK-NEXT:     for i in 0..a.len() as i32 {
+// CHECK-NEXT:         sa += ((unsafe { a[i as usize] }) as u32) as i32;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut i: i32 = 0;
-// CHECK-NEXT:     while i < (b.len() as i32) {
+// CHECK-NEXT:     for i in 0..b.len() as i32 {
 // CHECK-NEXT:         sb += ((unsafe { b[i as usize] }) as u32) as i32;
-// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let order: i32 = unsafe { a[0usize..3 as usize].cmp(&b[0usize..3 as usize]) as i32 };
 // CHECK-NEXT:     let sign: i32 = ((order > 0) as i32) - ((order < 0) as i32);

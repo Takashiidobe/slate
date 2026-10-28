@@ -981,7 +981,15 @@ impl<W: Write> Codegen<W> {
                 self.stmts(body)?;
                 self.out.write_str("}\n")
             }
-            Stmt::For { pat, iter, body } => {
+            Stmt::For {
+                label,
+                pat,
+                iter,
+                body,
+            } => {
+                if let Some(label) = label {
+                    write!(self.out, "'{}: ", label.as_str())?;
+                }
                 write!(self.out, "for {pat} in ")?;
                 self.cond_expr(iter)?;
                 self.out.write_str(" {\n")?;

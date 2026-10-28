@@ -115,9 +115,9 @@ int main(void) {
 // CHECK-NEXT:                 failures = failures + 1;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             println!("recovered quiet {}", i);
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             unsafe { c.run.unwrap()(i, 0i32) };
+// CHECK-NEXT:             continue;
 // CHECK-NEXT:         }
+// CHECK-NEXT:         unsafe { c.run.unwrap()(i, 0i32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         g_callback = Some(panicky_callback);
@@ -129,9 +129,9 @@ int main(void) {
 // CHECK-NEXT:                 failures = failures + 1;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             println!("recovered panicky {}", i);
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             unsafe { c.run.unwrap()(i, 0i32) };
+// CHECK-NEXT:             continue;
 // CHECK-NEXT:         }
+// CHECK-NEXT:         unsafe { c.run.unwrap()(i, 0i32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("failures={}", unsafe { failures });
 // CHECK-NEXT:     0

@@ -404,6 +404,7 @@ impl FunctionLowerer<'_, '_> {
                 body: vec![self.lower_naked_body(body)?],
             }));
         }
+        self.non_index_names = self.non_index_names(&params, body);
         let mut statements = if control_flow::needs_dispatch(body) {
             self.lower_dispatch(body)?
         } else {

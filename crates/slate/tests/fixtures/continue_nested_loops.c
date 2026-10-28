@@ -32,12 +32,14 @@ int main(void) {
 // CHECK-NEXT: fn sum_grid(n: i32) -> i32 {
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     for i in 0..n {
-// CHECK-NEXT:         if i != 2 {
-// CHECK-NEXT:             for j in 0..n {
-// CHECK-NEXT:                 if j != 3 {
-// CHECK-NEXT:                     total += i * 10 + j;
-// CHECK-NEXT:                 }
+// CHECK-NEXT:         if i == 2 {
+// CHECK-NEXT:             continue;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         for j in 0..n {
+// CHECK-NEXT:             if j == 3 {
+// CHECK-NEXT:                 continue;
 // CHECK-NEXT:             }
+// CHECK-NEXT:             total += i * 10 + j;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total

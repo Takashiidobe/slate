@@ -144,6 +144,7 @@ pub(in crate::backend) enum NodeKind {
         body: Vec<NodeId>,
     },
     For {
+        label: Option<Label>,
         pat: Ident,
         iter: Expr,
         body: Vec<NodeId>,
@@ -781,6 +782,18 @@ impl FunctionOptimizer {
                 init: Some(Expr::Cast { ty, .. }),
                 ..
             } => Some(ty),
+            NodeKind::For {
+                iter: Expr::Range { start, end },
+                ..
+            } => self.bound_type(end).or_else(|| self.bound_type(start)),
+            _ => None,
+        }
+    }
+
+    fn bound_type<'s>(&'s self, bound: &'s Expr) -> Option<&'s Type> {
+        match bound {
+            Expr::Cast { ty, .. } => Some(ty),
+            Expr::Var(name) => self.var_type(*name),
             _ => None,
         }
     }
@@ -937,7 +950,13 @@ fn build_stmt(arena: &mut Arena, parent: Option<NodeId>, stmt: Stmt) -> NodeId {
             label,
             body: build_stmts(arena, Some(id), body),
         },
-        Stmt::For { pat, iter, body } => NodeKind::For {
+        Stmt::For {
+            label,
+            pat,
+            iter,
+            body,
+        } => NodeKind::For {
+            label,
             pat: pat.into(),
             iter,
             body: build_stmts(arena, Some(id), body),
@@ -1070,7 +1089,13 @@ fn reify_stmt(arena: &Arena, id: NodeId, out: &mut Vec<Stmt>) {
             label: label.clone(),
             body: reify_nested(arena, body),
         },
-        NodeKind::For { pat, iter, body } => Stmt::For {
+        NodeKind::For {
+            label,
+            pat,
+            iter,
+            body,
+        } => Stmt::For {
+            label: label.clone(),
             pat: pat.as_str().to_string(),
             iter: iter.clone(),
             body: reify_nested(arena, body),

@@ -25,11 +25,9 @@ int main(void) {
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: fn sum_items(items: &[i32]) -> i32 {
 // CHECK-NEXT:     let mut total: i32 = 0;
-// CHECK-NEXT:     let mut i: i32 = 0;
-// CHECK-NEXT:     while i < (items.len() as i32) {
+// CHECK-NEXT:     for i in 0..items.len() as i32 {
 // CHECK-NEXT:         let item: i32 = unsafe { items[i as usize] };
 // CHECK-NEXT:         total += item;
-// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }

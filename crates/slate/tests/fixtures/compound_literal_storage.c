@@ -95,8 +95,7 @@ int main(void) {
 // CHECK-NEXT:         "{} {} {}", unsafe { (* pair.first).x }, unsafe { (* pair.first).y }, unsafe { *
 // CHECK-NEXT:         unsafe { pair.values } .add(1) }
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let mut i: i32 = 0;
-// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: while i < 3 {
+// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: for i in 0i32..3i32 {
 // CHECK-NEXT:         let counter: *mut i32 = unsafe {
 // CHECK-NEXT:             std::ptr::addr_of_mut!(
 // CHECK-NEXT:                 * { [[SLATE_COMPOUND_4]] = i * 10;
@@ -108,7 +107,6 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:         print!("{} ", unsafe { * counter });
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("");
 // CHECK-NEXT:     let copied: Point = unsafe {

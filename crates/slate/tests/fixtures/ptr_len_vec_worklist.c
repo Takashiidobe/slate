@@ -35,8 +35,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn consume_values(mut values: Vec<i32>) -> i32 {
 // CHECK-NEXT:     let mut sum: i32 = 0;
-// CHECK-NEXT:     let mut i: i32 = 0;
-// CHECK-NEXT:     while i < (values.len() as i32) {
+// CHECK-NEXT:     for i in 0..values.len() as i32 {
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: *mut i32 = unsafe {
 // CHECK-NEXT:             (values.as_mut_ptr() as *mut i32).offset(i as isize)
 // CHECK-NEXT:         };
@@ -45,7 +44,6 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:         let [[V_1:__v[0-9]+]]: i32 = sum;
 // CHECK-NEXT:         sum = [[V_1]] + unsafe { *(values.as_mut_ptr() as *mut i32).offset(i as isize) };
-// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     sum
 // CHECK-NEXT: }

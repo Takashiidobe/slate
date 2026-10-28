@@ -857,6 +857,7 @@ pub enum Stmt {
         body: Vec<Stmt>,
     },
     For {
+        label: Option<Label>,
         pat: String,
         iter: Expr,
         body: Vec<Stmt>,
@@ -2349,7 +2350,9 @@ fn stmt_reads_var(stmt: &Stmt, name: &str) -> bool {
         }
         Stmt::Expr(expr) | Stmt::Return(Some(expr)) => expr.reads_var(name),
         Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => false,
-        Stmt::For { iter, body, pat } => {
+        Stmt::For {
+            iter, body, pat, ..
+        } => {
             (pat != name && iter.reads_var(name))
                 || (pat != name && body.iter().any(|stmt| stmt_reads_var(stmt, name)))
         }
@@ -2610,7 +2613,9 @@ fn stmt_collect_vars(stmt: &Stmt, out: &mut Vec<Ident>) {
         }
         Stmt::Expr(expr) | Stmt::Return(Some(expr)) => expr.collect_vars(out),
         Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => {}
-        Stmt::For { iter, body, pat } => {
+        Stmt::For {
+            iter, body, pat, ..
+        } => {
             iter.collect_vars(out);
             let mut inner = Vec::new();
             for stmt in body {
@@ -2711,7 +2716,9 @@ fn stmt_substitute_var(stmt: &mut Stmt, name: &str, replacement: &Expr) -> bool 
         }
         Stmt::Expr(expr) | Stmt::Return(Some(expr)) => expr.substitute_var(name, replacement),
         Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => false,
-        Stmt::For { iter, body, pat } => {
+        Stmt::For {
+            iter, body, pat, ..
+        } => {
             let mut changed = if pat == name {
                 false
             } else {

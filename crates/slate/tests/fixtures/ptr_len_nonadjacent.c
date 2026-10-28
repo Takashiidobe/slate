@@ -26,10 +26,8 @@ int main(void) {
 // CHECK-NEXT: fn sum_items(items: &[i32], printable: i32) -> i32 {
 // CHECK-NEXT:     println!("this is another number: {}", printable);
 // CHECK-NEXT:     let mut total: i32 = 0;
-// CHECK-NEXT:     let mut i: i32 = 0;
-// CHECK-NEXT:     while i < (items.len() as i32) {
+// CHECK-NEXT:     for i in 0..items.len() as i32 {
 // CHECK-NEXT:         total += unsafe { items[i as usize] };
-// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }

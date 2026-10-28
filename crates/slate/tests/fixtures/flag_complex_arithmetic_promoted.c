@@ -520,8 +520,7 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut hash: u64 = 0;
 // CHECK-NEXT:     let mut hashf: u64 = 0;
-// CHECK-NEXT:     let mut i: i32 = 0;
-// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: while i < 4000 {
+// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: for i in 0i32..4000i32 {
 // CHECK-NEXT:         let q: num_complex::Complex<f64> = {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             let [[T_0:__t[0-9]+]] = __slate_cf80_div_basic(
 // I686-UNKNOWN-LINUX-GNU-NEXT:             let [[T_0:__t[0-9]+]] = __slate_cf80_div_basic(
@@ -656,7 +655,6 @@ int main(void) {
 // CHECK-NEXT:         hashf = hashf
 // CHECK-NEXT:             .wrapping_mul(31)
 // CHECK-NEXT:             .wrapping_add((bitsf[0] ^ bitsf[1].wrapping_mul(7)) as u64);
-// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"hash %llx %llx\n".as_ptr(), hash, hashf) };

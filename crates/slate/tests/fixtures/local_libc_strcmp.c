@@ -31,20 +31,13 @@ int main(void) {
 // CHECK-NEXT: fn cmp_texts(a: &str, b: &str) -> i32 {
 // CHECK-NEXT:     let mut sa: i32 = 0;
 // CHECK-NEXT:     let mut sb: i32 = 0;
-// CHECK-NEXT:     {
-// CHECK-NEXT:         let mut i: i32 = 0;
-// CHECK-NEXT:         while i < (a.len() as i32) {
-// CHECK-NEXT:             let [[V_0:__v[0-9]+]]: i32 = sa;
-// CHECK-NEXT:             sa = [[V_0]]
-// CHECK-NEXT:                 + ((unsafe { *(a.as_ptr() as *const i8).offset(i as isize) }) as i32);
-// CHECK-NEXT:             i += 1;
-// CHECK-NEXT:         }
+// CHECK-NEXT:     for i in 0..a.len() as i32 {
+// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = sa;
+// CHECK-NEXT:         sa = [[V_0]] + ((unsafe { *(a.as_ptr() as *const i8).offset(i as isize) }) as i32);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut i: i32 = 0;
-// CHECK-NEXT:     while i < (b.len() as i32) {
+// CHECK-NEXT:     for i in 0..b.len() as i32 {
 // CHECK-NEXT:         let [[V_1:__v[0-9]+]]: i32 = sb;
 // CHECK-NEXT:         sb = [[V_1]] + ((unsafe { *(b.as_ptr() as *const i8).offset(i as isize) }) as i32);
-// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let order: i32 = unsafe { a.cmp(b) as i32 };
 // CHECK-NEXT:     let sign: i32 = ((order > 0) as i32) - ((order < 0) as i32);

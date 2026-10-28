@@ -432,14 +432,12 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn popcount_scalar(words: &[u64]) -> i64 {
 // CHECK-NEXT:     let mut bits: i64 = 0;
-// CHECK-NEXT:     let mut i: u64 = 0;
-// CHECK-NEXT:     while i < (words.len() as u64) {
+// CHECK-NEXT:     for i in 0..words.len() as u64 {
 // CHECK-NEXT:         let mut word: u64 = unsafe { words[i as usize] };
 // CHECK-NEXT:         while word != 0 {
 // CHECK-NEXT:             word &= word.wrapping_sub(1);
 // CHECK-NEXT:             bits += 1;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         i = i.wrapping_add(1);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     bits
 // CHECK-NEXT: }

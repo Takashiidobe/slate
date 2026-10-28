@@ -309,12 +309,10 @@ int main(void) {
 // CHECK-NEXT:     unsafe { __slate_printf__ri32_pi8_f80(c"%La\n".as_ptr(), root * root) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let mut acc: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// CHECK-NEXT:     let mut k: i32 = 1;
-// CHECK-NEXT:     while k <= 10 {
+// CHECK-NEXT:     for k in 1..11i32 {
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: LongDouble = acc;
 // CHECK-NEXT:         acc = [[V_0]]
 // CHECK-NEXT:             + LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]) / __slate_f80_from_i32(k);
-// CHECK-NEXT:         k += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { __slate_printf__ri32_pi8_f80(c"%.18Lf\n".as_ptr(), acc) };

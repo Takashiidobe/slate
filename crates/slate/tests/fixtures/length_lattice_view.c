@@ -18,10 +18,8 @@ int main(void) {
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: fn sum_n(p: &[i32]) -> i32 {
 // CHECK-NEXT:     let mut s: i32 = 0;
-// CHECK-NEXT:     let mut i: i32 = 0;
-// CHECK-NEXT:     while i < (p.len() as i32) {
+// CHECK-NEXT:     for i in 0..p.len() as i32 {
 // CHECK-NEXT:         s += unsafe { p[i as usize] };
-// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     s
 // CHECK-NEXT: }

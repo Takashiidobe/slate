@@ -87,6 +87,19 @@ copies of the index's initializer and the condition's bound. The `init`,
   SEH `__try`, and no OpenMP region.
 - Fixtures: `ir_counted_loops.c`, `ir_counted_loops_rejected.c`.
 
+Slate (`lower_counted_for` in `frontend/lowerer/statements.rs`) lowers a
+counted `for` to `'__slate_break_N: for i in start..end` (`end + 1` when
+inclusive), after the init statements before the index's `let`. `start` and
+`end` are evaluated once, as in C, where `end` is invariant. `continue`
+becomes `continue '__slate_break_N`, so no continue block is needed;
+`LoopLabelElide` drops the label when nothing nested needs it. Slate keeps the
+`loop` lowering when the index is over-aligned, its initializer reads the index,
+or its Rust name is shared with a parameter or a local that is not a counted
+index. The interprocedural passes do not track scopes, and a `for` pattern
+that shadows a pointer parameter would be rewritten as that parameter.
+`length_lattice` reads a `for` range as the loop's bound and body.
+Fixture: `crates/slate/tests/fixtures/for_range_counted.c`.
+
 ### Structured exception handling
 
 - `Statement::SehTry { id, body, handler }` keeps MS `__try` as written;

@@ -429,6 +429,7 @@ fn emit(writes: &[Write], base: &str, depth: usize) -> Vec<Stmt> {
                 }];
                 stmts.extend(emit(body, &element, depth + 1));
                 Stmt::For {
+                    label: None,
                     pat: index,
                     iter: Expr::Range {
                         start: Box::new(usize_value(0)),

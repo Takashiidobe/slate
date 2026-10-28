@@ -231,10 +231,8 @@ int main(void) {
 // CHECK-NEXT:     let t1: i32 = tally();
 // CHECK-NEXT:     let t2: i32 = tally();
 // CHECK-NEXT:     println!("{} {} {}", t1, t2, counter());
-// CHECK-NEXT:     let mut i: i32 = 1;
-// CHECK-NEXT:     while i <= 6 {
+// CHECK-NEXT:     for i in 1..7i32 {
 // CHECK-NEXT:         history(i * 10);
-// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let [[SLOTS_0:slots_[0-9]+]]: *mut i32 = history(70i32);
 // CHECK-NEXT:     println!(

@@ -87,11 +87,9 @@ int main(void) {
 // CHECK-NEXT:     out
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut i: i32 = -8;
-// CHECK-NEXT:     while i <= 8 {
+// CHECK-NEXT:     for i in -8..9i32 {
 // CHECK-NEXT:         print!("{} ", classify(i));
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "\n{} {} {} {} {}", stacked(0u64), stacked(18446744073709551615u64),

@@ -94,7 +94,9 @@ fn walk_stmt(stmt: &mut Stmt, names: &mut impl Names) {
         Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
             walk_stmts(body, names)
         }
-        Stmt::For { pat, iter, body } => {
+        Stmt::For {
+            pat, iter, body, ..
+        } => {
             walk_expr(iter, names);
             names.push();
             bind_string(pat, true, names);

@@ -37,17 +37,11 @@ int main(void) {
 // CHECK-NEXT: fn sum_both(a: &[i32], b: &[i32]) -> i32 {
 // CHECK-NEXT:     let mut sa: i32 = 0;
 // CHECK-NEXT:     let mut sb: i32 = 0;
-// CHECK-NEXT:     {
-// CHECK-NEXT:         let mut i: i32 = 0;
-// CHECK-NEXT:         while i < (a.len() as i32) {
-// CHECK-NEXT:             sa += unsafe { a[i as usize] };
-// CHECK-NEXT:             i += 1;
-// CHECK-NEXT:         }
+// CHECK-NEXT:     for i in 0..a.len() as i32 {
+// CHECK-NEXT:         sa += unsafe { a[i as usize] };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut i: i32 = 0;
-// CHECK-NEXT:     while i < (b.len() as i32) {
+// CHECK-NEXT:     for i in 0..b.len() as i32 {
 // CHECK-NEXT:         sb += unsafe { b[i as usize] };
-// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     sa * 100 + sb
 // CHECK-NEXT: }

@@ -44,8 +44,7 @@ int main(void) {
 // CHECK-NEXT:             [4294967295u32, 2u32],
 // CHECK-NEXT:             [4294967295u32, 4294967295u32],
 // CHECK-NEXT:         ]);
-// CHECK-NEXT:         let mut i: u32 = 0;
-// CHECK-NEXT:         '[[SLATE_BREAK_1:__slate_break_[0-9]+]]: while i < 4 {
+// CHECK-NEXT:         '[[SLATE_BREAK_1:__slate_break_[0-9]+]]: for i in 0u32..4u32 {
 // CHECK-NEXT:             let overflow: i32 = ({
 // CHECK-NEXT:                 let [[T_0:__t[0-9]+]]: i128 = values.0[i as usize][0] as i128;
 // CHECK-NEXT:                 let [[T_1:__t[0-9]+]]: i128 = values.0[i as usize][1] as i128;
@@ -58,7 +57,6 @@ int main(void) {
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             unsafe { printf(c"%d %llu\n".as_ptr(), overflow, r as u64) };
 // CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:             i = i.wrapping_add(1);
 // CHECK-NEXT:         }
 // CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
@@ -72,8 +70,7 @@ int main(void) {
 // CHECK-NEXT:             [18446744073709551615u64, 2u64],
 // CHECK-NEXT:             [18446744073709551615u64, 18446744073709551615u64],
 // CHECK-NEXT:         ]);
-// CHECK-NEXT:         let mut i: u32 = 0;
-// CHECK-NEXT:         '[[SLATE_BREAK_3:__slate_break_[0-9]+]]: while i < 4 {
+// CHECK-NEXT:         '[[SLATE_BREAK_3:__slate_break_[0-9]+]]: for i in 0u32..4u32 {
 // CHECK-NEXT:             let overflow: i32 = ({
 // CHECK-NEXT:                 let [[T_3:__t[0-9]+]]: i128 = values.0[i as usize][0] as i128;
 // CHECK-NEXT:                 let [[T_4:__t[0-9]+]]: i128 = values.0[i as usize][1] as i128;
@@ -86,7 +83,6 @@ int main(void) {
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             unsafe { printf(c"%d %llu\n".as_ptr(), overflow, r) };
 // CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:             i = i.wrapping_add(1);
 // CHECK-NEXT:         }
 // CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
@@ -100,8 +96,7 @@ int main(void) {
 // CHECK-NEXT:             [18446744073709551615u64, 2u64],
 // CHECK-NEXT:             [18446744073709551615u64, 18446744073709551615u64],
 // CHECK-NEXT:         ]);
-// CHECK-NEXT:         let mut i: u32 = 0;
-// CHECK-NEXT:         '[[SLATE_BREAK_5:__slate_break_[0-9]+]]: while i < 4 {
+// CHECK-NEXT:         '[[SLATE_BREAK_5:__slate_break_[0-9]+]]: for i in 0u32..4u32 {
 // CHECK-NEXT:             let overflow: i32 = ({
 // CHECK-NEXT:                 let [[T_6:__t[0-9]+]]: i128 = values.0[i as usize][0] as i128;
 // CHECK-NEXT:                 let [[T_7:__t[0-9]+]]: i128 = values.0[i as usize][1] as i128;
@@ -114,7 +109,6 @@ int main(void) {
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             unsafe { printf(c"%d %llu\n".as_ptr(), overflow, r) };
 // CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:             i = i.wrapping_add(1);
 // CHECK-NEXT:         }
 // CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;

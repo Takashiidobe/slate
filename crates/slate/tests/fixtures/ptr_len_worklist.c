@@ -24,12 +24,10 @@ int main(void) {
 // CHECK-NEXT:     fn malloc(__size: u64) -> *mut ();
 // CHECK-NEXT: }
 // CHECK-NEXT: fn fill_values(values: &mut [i32]) {
-// CHECK-NEXT:     let mut i: i32 = 0;
-// CHECK-NEXT:     while i < (values.len() as i32) {
+// CHECK-NEXT:     for i in 0..values.len() as i32 {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             values[i as usize] = i * 3;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn forward_fill(values: &mut [i32]) {

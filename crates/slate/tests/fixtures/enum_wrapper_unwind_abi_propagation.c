@@ -125,9 +125,9 @@ int main(void) {
 // CHECK-NEXT:                 failures = failures + 1;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             println!("recovered risky {}", i);
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             unsafe { d.run.unwrap()(i) };
+// CHECK-NEXT:             continue;
 // CHECK-NEXT:         }
+// CHECK-NEXT:         unsafe { d.run.unwrap()(i) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     d.run = Some(content_like);
 // CHECK-NEXT:     for i in 0i32..5i32 {
@@ -137,9 +137,9 @@ int main(void) {
 // CHECK-NEXT:                 failures = failures + 1;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             println!("recovered content_like {}", i);
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             unsafe { d.run.unwrap()(i) };
+// CHECK-NEXT:             continue;
 // CHECK-NEXT:         }
+// CHECK-NEXT:         unsafe { d.run.unwrap()(i) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("failures={}", unsafe { failures });
 // CHECK-NEXT:     0

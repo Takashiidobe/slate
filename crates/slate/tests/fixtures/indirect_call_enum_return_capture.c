@@ -53,8 +53,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut p: Parser = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut i: i32 = 0;
-// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: while i < 2 {
+// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: for i in 0i32..2i32 {
 // CHECK-NEXT:         p.processor = {
 // CHECK-NEXT:             let [[T_0:__t[0-9]+]]: Option<unsafe extern "C-unwind" fn(i32) -> u32> = if i == 0 {
 // CHECK-NEXT:                 Some(handle_ok)
@@ -69,7 +68,6 @@ int main(void) {
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             println!("fail");
 // CHECK-NEXT:         }
-// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

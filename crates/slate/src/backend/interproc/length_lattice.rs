@@ -2128,6 +2128,19 @@ fn collect_loop_bounds_stmt<'a>(
             collect_loop_bounds(then_body, let_exprs, out);
             collect_loop_bounds(else_body, let_exprs, out);
         }
+        Stmt::For {
+            pat,
+            iter: Expr::Range { end, .. },
+            body,
+            ..
+        } => {
+            let len = match peeled_var(end) {
+                Some(len) => Expr::Var(Ident::new(resolve_var(let_exprs, len))),
+                None => resolve_full(end, let_exprs, 0),
+            };
+            out.push((pat.clone(), len, body));
+            collect_loop_bounds(body, let_exprs, out);
+        }
         Stmt::For { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
             collect_loop_bounds(body, let_exprs, out);
         }

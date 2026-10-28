@@ -32,20 +32,16 @@ int main(void) {
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: fn sum(items: &[i32]) -> i32 {
 // CHECK-NEXT:     let mut total: i32 = 0;
-// CHECK-NEXT:     let mut i: i32 = 0;
-// CHECK-NEXT:     while i < (items.len() as i32) {
+// CHECK-NEXT:     for i in 0..items.len() as i32 {
 // CHECK-NEXT:         total += unsafe { items[i as usize] };
-// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: fn bump(items: &mut [i32]) {
-// CHECK-NEXT:     let mut i: i32 = 0;
-// CHECK-NEXT:     while i < (items.len() as i32) {
+// CHECK-NEXT:     for i in 0..items.len() as i32 {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             items[i as usize] = items[i as usize] + 1;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {

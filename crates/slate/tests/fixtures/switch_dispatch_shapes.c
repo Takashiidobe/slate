@@ -207,13 +207,11 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn first_over(values: &[i32], limit: i32) -> i32 {
 // CHECK-NEXT:     let mut found: i32 = -1;
-// CHECK-NEXT:     let mut i: i32 = 0;
-// CHECK-NEXT:     while i < (values.len() as i32) {
+// CHECK-NEXT:     for i in 0..values.len() as i32 {
 // CHECK-NEXT:         if (unsafe { values[i as usize] }) > limit {
 // CHECK-NEXT:             found = i;
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     found
 // CHECK-NEXT: }

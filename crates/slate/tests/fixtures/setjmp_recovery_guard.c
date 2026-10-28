@@ -91,9 +91,9 @@ int main(void) {
 // CHECK-NEXT:         if (unsafe { _setjmp(std::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag) }) != 0
 // CHECK-NEXT:         {
 // CHECK-NEXT:             record_failure(c"loop".as_ptr());
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             run_case(i, (i == 2) as i32);
+// CHECK-NEXT:             continue;
 // CHECK-NEXT:         }
+// CHECK-NEXT:         run_case(i, (i == 2) as i32);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("failures: {}", unsafe { failures });
 // CHECK-NEXT:     0

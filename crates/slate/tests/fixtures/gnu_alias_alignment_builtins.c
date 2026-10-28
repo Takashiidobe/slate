@@ -73,19 +73,14 @@ int main(void) {
 // CHECK-NEXT:         1099511627776i64,
 // CHECK-NEXT:         -1099511627776i64,
 // CHECK-NEXT:     ]);
-// CHECK-NEXT:     {
-// CHECK-NEXT:         let mut i: i32 = 0;
-// CHECK-NEXT:         '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: while i < 6 {
-// CHECK-NEXT:             println!(
-// CHECK-NEXT:                 "{} {}", { let [[T_0:__t[0-9]+]] = values.0[i as usize]; ((if [[T_0]] < 0 { (! [[T_0]])
-// CHECK-NEXT:                 .leading_zeros() } else { [[T_0]].leading_zeros() }) - 1) as i32 }, { let
-// CHECK-NEXT:                 [[T_1:__t[0-9]+]] = values.0[i as usize] as u32; ([[T_1]].count_ones() & 1) as i32 }
-// CHECK-NEXT:             );
-// CHECK-NEXT:             i += 1;
-// CHECK-NEXT:         }
+// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: for i in 0i32..6i32 {
+// CHECK-NEXT:         println!(
+// CHECK-NEXT:             "{} {}", { let [[T_0:__t[0-9]+]] = values.0[i as usize]; ((if [[T_0]] < 0 { (! [[T_0]])
+// CHECK-NEXT:             .leading_zeros() } else { [[T_0]].leading_zeros() }) - 1) as i32 }, { let [[T_1:__t[0-9]+]] =
+// CHECK-NEXT:             values.0[i as usize] as u32; ([[T_1]].count_ones() & 1) as i32 }
+// CHECK-NEXT:         );
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut i: i32 = 0;
-// CHECK-NEXT:     '[[SLATE_BREAK_1:__slate_break_[0-9]+]]: while i < 4 {
+// CHECK-NEXT:     '[[SLATE_BREAK_1:__slate_break_[0-9]+]]: for i in 0i32..4i32 {
 // CHECK-NEXT:         println!(
 // CHECK-NEXT:             "{} {} {}", { let [[T_2:__t[0-9]+]] = wide.0[i as usize]; ((if [[T_2]] < 0 { (! [[T_2]])
 // CHECK-NEXT:             .leading_zeros() } else { [[T_2]].leading_zeros() }) - 1) as i32 }, { let [[T_3:__t[0-9]+]] =
@@ -93,7 +88,6 @@ int main(void) {
 // CHECK-NEXT:             .leading_zeros() }) - 1) as i32 }, { let [[T_4:__t[0-9]+]] = wide.0[i as usize] as u64;
 // CHECK-NEXT:             ([[T_4]].count_ones() & 1) as i32 }
 // CHECK-NEXT:         );
-// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let negative: i64 = -42;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());

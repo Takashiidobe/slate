@@ -47,8 +47,7 @@ int main(void) {
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: static mut counter: i32 = 0;
 // CHECK-NEXT: extern "C-unwind" fn worker(arg: *mut ()) -> *mut () {
-// CHECK-NEXT:     let mut i: i32 = 0;
-// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: while i < 100000 {
+// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: for i in 0i32..100000i32 {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             let [[T_0:__t[0-9]+]] = 1i32;
 // CHECK-NEXT:             let [[T_1:__t[0-9]+]] = std::sync::atomic::AtomicI32::from_ptr(
@@ -57,7 +56,6 @@ int main(void) {
 // CHECK-NEXT:                 .fetch_add([[T_0]], std::sync::atomic::Ordering::SeqCst);
 // CHECK-NEXT:             [[T_1]]
 // CHECK-NEXT:         };
-// CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     std::ptr::null_mut::<()>()
 // CHECK-NEXT: }
