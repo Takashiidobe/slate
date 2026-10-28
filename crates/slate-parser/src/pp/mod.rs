@@ -866,6 +866,13 @@ impl<'a> Preprocessor<'a> {
         if !flavor.is_msvc() {
             defines.extend(self.option_predefines());
             self.math_predefines(&mut defines);
+            if !options.implicit_stdc_predef {
+                defines.retain(|define| {
+                    define
+                        .split_once('=')
+                        .is_none_or(|(name, _)| !STDC_PREDEF_MACROS.contains(&name))
+                });
+            }
         }
         for define in &defines {
             if let Some((name, _)) = define.split_once('=') {
