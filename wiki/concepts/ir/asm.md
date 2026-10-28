@@ -364,7 +364,7 @@ impossible.
   template instead of using `raw`, so symbol references can become `{N}`.
 - `memory`/`cc`/`unwind` clobbers are represented by the computed options;
   register clobbers become discarded `lateout` operands.
-- A GNU asm clobber that is not `memory`, `cc`, `unwind`, `redzone`, or a register of the target
+- A GNU asm clobber or `register ... asm("name")` label that is not `memory`, `cc`, `unwind`, `redzone`, or a register of the target
   is a parse error (`unknown register name '...' in asm`); Arm32 has no register table and
   accepts any name. `redzone` has no Rust `asm!` equivalent and is dropped.
 - Explicit GPR operands become `in("ax")` and friends, ordered after every positional operand

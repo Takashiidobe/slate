@@ -99,15 +99,15 @@ impl DeclaratorParser<'_> {
             return Err("expected `(` after `asm`".into());
         }
         let tokens = self.tokens;
+        let label_pos = self.pos;
         let label = asm_string(tokens, &mut self.pos)?.value;
         if !self.matches(Token::RParen) {
             return Err("expected `)`".into());
         }
         let label = if storage == StorageClass::Register {
-            AsmLabel::Register(decode_register(
-                self.context.dialect().target().family,
-                &label,
-            ))
+            let register = known_register(self.context.dialect().target().family, &label)
+                .inspect_err(|_| self.pos = label_pos)?;
+            AsmLabel::Register(register)
         } else {
             AsmLabel::Symbol(label)
         };
@@ -478,12 +478,16 @@ fn decode_clobber(family: TargetFamily, name: &str) -> Result<AsmClobber, String
         "cc" => Ok(AsmClobber::Cc),
         "unwind" => Ok(AsmClobber::Unwind),
         "redzone" => Ok(AsmClobber::Redzone),
-        _ => match decode_register(family, name) {
-            Register::Other(_) if family != TargetFamily::Arm32 => {
-                Err(format!("unknown register name '{name}' in asm"))
-            }
-            register => Ok(AsmClobber::Register(register)),
-        },
+        _ => known_register(family, name).map(AsmClobber::Register),
+    }
+}
+
+fn known_register(family: TargetFamily, name: &str) -> Result<Register, String> {
+    match decode_register(family, name) {
+        Register::Other(_) if family != TargetFamily::Arm32 => {
+            Err(format!("unknown register name '{name}' in asm"))
+        }
+        register => Ok(register),
     }
 }
 
