@@ -163,6 +163,14 @@ Projects that we've tested e2e that translate to Rust:
     `runtests.pl` tests, and benchmarks within 5% of native over file:// and
     HTTP transfers.
 
+### MSVC Targets
+
+Selected for the trophy case; end-to-end validation is pending:
+
+- [x] [MinHook](https://github.com/TsudaKageyu/minhook)
+- [x] [PuTTY](https://www.chiark.greenend.org.uk/~sgtatham/putty/)
+- [x] [ReactOS](https://github.com/reactos/reactos) C components
+
 ### In Progress
 
 - [ ] Passing the GCC Torture Test Suite
