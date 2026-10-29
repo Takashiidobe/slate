@@ -1,6 +1,6 @@
 [package]
 name = "slate-c2rust"
-version = "0.5.0"
+version = "0.6.0"
 edition = "2024"
 default-run = "slate"
 description = "A C to Rust transpiler with a built-in C frontend"
