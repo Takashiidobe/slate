@@ -638,6 +638,7 @@ enum Opt {
     FloatAbi,
     Fpu,
     Thumb,
+    GeneralRegsOnly,
     SveVectorBits,
     CodegenOnly(&'static str),
     Warning,
@@ -791,6 +792,7 @@ impl std::fmt::Display for Opt {
             Self::FloatAbi => "mfloat-abi",
             Self::Fpu => "mfpu",
             Self::Thumb => "mthumb",
+            Self::GeneralRegsOnly => "mgeneral-regs-only",
             Self::SveVectorBits => "msve-vector-bits",
             Self::CodegenOnly(spelling) => spelling.trim_start_matches(['-', '/']),
             Self::Warning => "W",
@@ -901,6 +903,7 @@ impl Opt {
             | Self::FloatAbi
             | Self::Fpu
             | Self::Thumb
+            | Self::GeneralRegsOnly
             | Self::SveVectorBits
             | Self::Optimize
             | Self::Freestanding
@@ -2457,6 +2460,13 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                 argument,
                 "SVE vector length",
             )?);
+        } else if matches!(
+            argument.as_str(),
+            "-mgeneral-regs-only" | "--mgeneral-regs-only"
+        ) {
+            parsed.saw(Opt::GeneralRegsOnly, argument);
+            let position = parsed.isa.x86.next_position();
+            parsed.isa.general_regs_only.push(position);
         } else if let Some(thumb) = thumb_flag(argument) {
             parsed.saw(Opt::Thumb, argument);
             parsed.isa.thumb = Some(thumb);

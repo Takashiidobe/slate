@@ -91,11 +91,12 @@ pub struct ArmIsa {
     pub fpu: ArmFpu,
     pub float_abi: ArmFloatAbi,
     pub thumb: bool,
+    pub general_regs_only: bool,
 }
 
 impl ArmIsa {
     pub fn baseline(environment: TargetEnvironment) -> Self {
-        Self::resolve(environment, None, None, None, None)
+        Self::resolve(environment, None, None, None, None, false)
     }
 
     pub fn resolve(
@@ -104,6 +105,7 @@ impl ArmIsa {
         fpu: Option<ArmFpu>,
         float_abi: Option<ArmFloatAbi>,
         thumb: Option<bool>,
+        general_regs_only: bool,
     ) -> Self {
         let version = version.unwrap_or(ArmVersion::V7);
         let windows = environment == TargetEnvironment::Msvc;
@@ -122,6 +124,7 @@ impl ArmIsa {
             fpu: fpu.unwrap_or(default_fpu),
             float_abi: float_abi.unwrap_or(default_float_abi),
             thumb: windows || thumb.unwrap_or(false),
+            general_regs_only,
         }
     }
 
@@ -145,6 +148,7 @@ impl ArmIsa {
             self.fpu
         };
         let vfp = fpu.vfp_version();
+        let neon = fpu.neon() && !self.general_regs_only;
         let mut defines = vec![format!("__ARM_ARCH={}", if v8 { 8 } else { 7 })];
         if !(gcc && v8) {
             defines.push(format!(
@@ -165,7 +169,7 @@ impl ArmIsa {
         define("__ARM_FEATURE_DIRECTED_ROUNDING", v8 && !gcc);
         define(
             "__ARM_FEATURE_NUMERIC_MAXMIN",
-            v8 && (!gcc || (fpu.neon() && vfp >= 5)),
+            v8 && (!gcc || (neon && vfp >= 5)),
         );
         for name in [
             "__ARM_FEATURE_AES",
@@ -179,8 +183,8 @@ impl ArmIsa {
         define("__ARM_VFPV3__", vfp >= 3 && !gcc);
         define("__ARM_VFPV4__", vfp >= 4 && !gcc);
         define("__ARM_FPV5__", vfp >= 5 && !gcc);
-        define("__ARM_NEON", fpu.neon());
-        define("__ARM_NEON__", fpu.neon());
+        define("__ARM_NEON", neon);
+        define("__ARM_NEON__", neon);
         define("__ARM_PCS_VFP", self.float_abi == ArmFloatAbi::Hard);
         define(
             "__SOFTFP__",
@@ -198,7 +202,7 @@ impl ArmIsa {
                 number(if fpu.half_precision() { 0xe } else { 0xc })
             ));
         }
-        if fpu.neon() {
+        if neon {
             defines.push(format!(
                 "__ARM_NEON_FP={}",
                 number(if fpu.half_precision() { 0x6 } else { 0x4 })
@@ -210,7 +214,7 @@ impl ArmIsa {
             }
         }
         if gcc {
-            let iec = if self.float_abi == ArmFloatAbi::Soft {
+            let iec = if self.float_abi == ArmFloatAbi::Soft || self.general_regs_only {
                 0
             } else {
                 2

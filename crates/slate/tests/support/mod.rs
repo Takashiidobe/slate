@@ -1420,6 +1420,7 @@ fn is_semantic_dg_flag(flag: &str) -> bool {
             | "-ansi"
             | "-fno-common"
             | "-mno-mmx"
+            | "-mgeneral-regs-only"
             | "-fsignaling-nans"
             | "-pthread"
             | "-fms-extensions"

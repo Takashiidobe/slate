@@ -16,6 +16,7 @@ GCC_ORDERINGS = [
     "-mavx -mno-avx", "-mavx2 -mno-avx", "-mno-popcnt -msse4.2", "-msse4.2 -mno-crc32",
     "-msse -mno-mmx", "-mno-mmx -msse", "-march=x86-64-v2 -mno-sse4.2", "-mamx-bf16 -mno-amx-tile",
     "-mavx512vp2intersect -mno-avx512dq", "-mvaes -mno-xsave", "-march=x86-64-v3 -mno-xsave -mavx",
+    "-mgeneral-regs-only", "-mgeneral-regs-only -mavx", "-mavx -mgeneral-regs-only",
 ]
 
 

@@ -32,6 +32,7 @@ pub struct IsaRequest {
     pub fpu: Option<ArmFpu>,
     pub thumb: Option<bool>,
     pub sve_vector_bits: Option<SveVectorBits>,
+    pub general_regs_only: Vec<usize>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -69,13 +70,12 @@ impl TargetIsa {
                     Some(March::X86(arch)) => Some(arch),
                     Some(March::Arm(_)) => return Err("expected an x86 architecture".into()),
                 };
-                request.x86.check(family, arch, flavor)?;
-                Ok(Self::X86(X86Isa::resolve(
-                    family,
-                    arch,
-                    &request.x86,
-                    flavor,
-                )))
+                let x86 = request
+                    .x86
+                    .clone()
+                    .with_general_regs_only(&request.general_regs_only);
+                x86.check(family, arch, flavor)?;
+                Ok(Self::X86(X86Isa::resolve(family, arch, &x86, flavor)))
             }
             TargetFamily::AArch64 => {
                 if request.x86 != X86IsaRequest::default() {
@@ -92,6 +92,7 @@ impl TargetIsa {
                 Ok(Self::AArch64(AArch64Isa::resolve(
                     march,
                     request.sve_vector_bits,
+                    !request.general_regs_only.is_empty(),
                     flavor,
                 )))
             }
@@ -101,6 +102,9 @@ impl TargetIsa {
                 }
                 if request.sve_vector_bits.is_some() {
                     return Err("SVE options are AArch64 options".into());
+                }
+                if !request.general_regs_only.is_empty() && !flavor.is_gcc() {
+                    return Err("-mgeneral-regs-only is unsupported for 32-bit Arm".into());
                 }
                 if environment == TargetEnvironment::Msvc
                     && request
@@ -129,6 +133,7 @@ impl TargetIsa {
                     request.fpu,
                     request.float_abi,
                     request.thumb,
+                    !request.general_regs_only.is_empty(),
                 )))
             }
         }

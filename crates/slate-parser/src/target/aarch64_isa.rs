@@ -398,21 +398,30 @@ pub struct AArch64Isa {
 
 impl AArch64Isa {
     pub fn baseline() -> Self {
-        Self::resolve(None, None, CompilerFlavor::Clang)
+        Self::resolve(None, None, false, CompilerFlavor::Clang)
     }
 
     pub fn resolve(
         march: Option<ArmMarch>,
         sve_vector_bits: Option<SveVectorBits>,
+        general_regs_only: bool,
         flavor: CompilerFlavor,
     ) -> Self {
         let rules = Rules::from(flavor);
         let march = march.unwrap_or(ArmMarch::plain(ArmVersion::V8));
+        let mut selection = march.selection(rules);
+        if general_regs_only {
+            for feature in [
+                AArch64Feature::Fp,
+                AArch64Feature::Simd,
+                AArch64Feature::Crypto,
+            ] {
+                selection.set(march.version, feature, false, rules);
+            }
+        }
         Self {
             version: march.version,
-            features: march
-                .selection(rules)
-                .apply(march.version.default_features(rules)),
+            features: selection.apply(march.version.default_features(rules)),
             sve_vector_bits,
         }
     }

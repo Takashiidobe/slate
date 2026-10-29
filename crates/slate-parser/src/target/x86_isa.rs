@@ -173,6 +173,7 @@ impl From<CompilerFlavor> for Rules {
 pub struct X86IsaRequest {
     flags: Vec<(X86Feature, bool)>,
     clang_only: Vec<usize>,
+    general_regs_only: Vec<usize>,
 }
 
 impl X86IsaRequest {
@@ -185,13 +186,17 @@ impl X86IsaRequest {
         self.set(feature, enabled);
     }
 
-    fn flags_for(&self, rules: Rules) -> Vec<(X86Feature, bool)> {
-        self.flags
-            .iter()
-            .enumerate()
-            .filter(|(index, _)| rules == Rules::Clang || !self.clang_only.contains(index))
-            .map(|(_, flag)| *flag)
-            .collect()
+    pub fn next_position(&self) -> usize {
+        self.flags.len()
+    }
+
+    pub fn with_general_regs_only(mut self, positions: &[usize]) -> Self {
+        self.general_regs_only = positions.to_vec();
+        self
+    }
+
+    fn included(&self, index: usize, rules: Rules) -> bool {
+        rules == Rules::Clang || !self.clang_only.contains(&index)
     }
 
     pub fn check(
@@ -239,11 +244,23 @@ impl X86IsaRequest {
     }
 
     fn fold(&self, rules: Rules) -> (X86Features, X86Features) {
-        let flags = self.flags_for(rules);
         let mut enabled = X86Features::default();
         let mut disabled = X86Features::default();
-        for (index, &(feature, on)) in flags.iter().enumerate() {
-            let cancelled = on && flags[index + 1..].contains(&(feature, false));
+        for index in 0..=self.flags.len() {
+            for _ in self.general_regs_only.iter().filter(|&&at| at == index) {
+                (enabled, disabled) = drop_vector_registers(rules, enabled, disabled);
+            }
+            let Some(&(feature, on)) = self
+                .flags
+                .get(index)
+                .filter(|_| self.included(index, rules))
+            else {
+                continue;
+            };
+            let cancelled = on
+                && (index + 1..self.flags.len()).any(|later| {
+                    self.included(later, rules) && self.flags[later] == (feature, false)
+                });
             if cancelled {
                 continue;
             }
@@ -259,6 +276,24 @@ impl X86IsaRequest {
         }
         (enabled, disabled)
     }
+}
+
+fn drop_vector_registers(
+    rules: Rules,
+    mut enabled: X86Features,
+    mut disabled: X86Features,
+) -> (X86Features, X86Features) {
+    let kept = if rules == Rules::Gcc && enabled.contains(X86Feature::Sse42) {
+        X86Features::of(&[X86Feature::Popcnt, X86Feature::Crc32]).without(disabled)
+    } else {
+        X86Features::default()
+    };
+    for feature in [X86Feature::Sse, X86Feature::Mmx, X86Feature::X87] {
+        let removed = feature.disables(rules);
+        disabled = disabled.union(removed);
+        enabled = enabled.without(removed);
+    }
+    (enabled.union(kept), disabled.without(kept))
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

@@ -153,7 +153,9 @@ impl Preprocessor<'_> {
             let iso_excess_precision = !self.dialect.standard().is_gnu()
                 && x87
                 && math.fast_excess_precision == Some(true);
-            let iec_559 = !math.breaks_iec_559() && !iso_excess_precision;
+            let defined = |define: &str| defines.iter().any(|candidate| candidate == define);
+            let soft_float = defined("_SOFT_FLOAT=1") && !defined("__SSE_MATH__=1");
+            let iec_559 = !math.breaks_iec_559() && !iso_excess_precision && !soft_float;
             if !iec_559 {
                 macros.extend([
                     ("__GCC_IEC_559", Some("0")),
