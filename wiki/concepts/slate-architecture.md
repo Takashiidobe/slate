@@ -65,5 +65,9 @@ cargo nextest r --release --profile slate
 - Run commands from the workspace root.
 - The profile exercises raw lowering through host differential fixtures and corpus suites.
 - Passing raw lowering tests does not establish rewrite-specific coverage.
+- Opt-in LLVM translation validation:
+  `python3 tools/alive2/validate.py crates/slate/tests/fixtures`. Discovers
+  functions and retains per-fixture artifacts; unsupported cases never count as
+  validated. See [usage and proof scope](../../tools/alive2/README.md).
 - [Differential fixtures](differential-fixtures.md) defines the supported/unsupported ratchet and triage commands.
 - Prior design records are collected in the [historical index](../historical/index.md).
