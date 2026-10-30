@@ -2,7 +2,7 @@ use miette::Severity;
 use slate_parser::compiler_args::CompilerArgParser;
 use slate_parser::dialect::Dialect;
 use slate_parser::parser::Parser;
-use slate_parser::pp::{DirectiveDiagnostic, DirectiveErrors, write_preprocessed};
+use slate_parser::pp::{DirectiveDiagnostic, DirectiveErrors, write_preprocessed, write_trace};
 use slate_parser::render::{Renderer, SExprRenderer};
 use std::env;
 use std::fs;
@@ -32,7 +32,7 @@ fn run() -> miette::Result<()> {
     let command = args.next();
     if !matches!(command.as_deref(), Some("parse" | "ir" | "pp")) {
         return Err(miette::miette!(
-            "usage: slate-parser <parse|ir|pp> <source.c> [-DNAME] [-UNAME] [-include <file>] [-imacros <file>] [-target=<triple>|-target <triple>] [--flavor=gcc|clang|msvc] [-std=<C standard>] [-I<dir>] [-iquote <dir>] [-isystem <dir>] [-idirafter <dir>] [-nostdlibinc] [-isysroot <dir>|--sysroot=<dir>] [--show-comments] [--show-ids] [--parse-only] [--sexpr] [--dump-ir] [--dump-ir-types] [--dump-ir-expressions] [--dump-ir-names] [--show-spans] [--show-metadata] [--compact-ir]"
+            "usage: slate-parser <parse|ir|pp> <source.c> [-DNAME] [-UNAME] [-include <file>] [-imacros <file>] [-target=<triple>|-target <triple>] [--flavor=gcc|clang|msvc] [-std=<C standard>] [-I<dir>] [-iquote <dir>] [-isystem <dir>] [-idirafter <dir>] [-nostdlibinc] [-isysroot <dir>|--sysroot=<dir>] [--trace] [--show-comments] [--show-ids] [--parse-only] [--sexpr] [--dump-ir] [--dump-ir-types] [--dump-ir-expressions] [--dump-ir-names] [--show-spans] [--show-metadata] [--compact-ir]"
         ));
     }
     let path = args
@@ -49,9 +49,13 @@ fn run() -> miette::Result<()> {
     let mut show_spans = false;
     let mut show_metadata = false;
     let mut compact_ir = false;
+    let mut trace = false;
     let remaining: Vec<String> = args
         .filter(|arg| {
-            if arg == "--sexpr" {
+            if arg == "--trace" {
+                trace = true;
+                false
+            } else if arg == "--sexpr" {
                 sexpr = true;
                 false
             } else if arg == "--parse-only" {
@@ -128,6 +132,9 @@ fn run() -> miette::Result<()> {
             "--show-metadata requires ir, --dump-ir, or --dump-ir-types"
         ));
     }
+    if trace && command.as_deref() != Some("pp") {
+        return Err(miette::miette!("--trace requires pp"));
+    }
     if compact_ir && !(dump_ir || dump_ir_types) {
         return Err(miette::miette!(
             "--compact-ir requires ir, --dump-ir, or --dump-ir-types"
@@ -144,6 +151,19 @@ fn run() -> miette::Result<()> {
     let code_page = dialect.flavor().is_msvc().then(|| dialect.source_charset());
     let mut parser =
         Parser::new(search, dialect).with_preprocessor_inputs(compiler_args.preprocessor_inputs);
+    if trace {
+        let traced = parser.preprocess_file_traced(Path::new(&path));
+        report_directives(parser.directive_diagnostics())?;
+        let (nodes, files, trace) = traced?;
+        let stdout = io::stdout();
+        return write_trace(
+            &nodes,
+            &files,
+            &trace,
+            &mut io::BufWriter::new(stdout.lock()),
+        )
+        .map_err(|error| miette::miette!(error));
+    }
     if command.as_deref() == Some("pp") {
         let preprocessed = parser.preprocess_file(Path::new(&path));
         report_directives(parser.directive_diagnostics())?;

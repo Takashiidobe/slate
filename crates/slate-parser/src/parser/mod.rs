@@ -17,7 +17,8 @@ use crate::error::{FrontendError, ParseError};
 use crate::files::{Files, SearchPaths, decode_source_bytes, display_path};
 use crate::lexer::Token;
 use crate::pp::{
-    DirectiveDiagnostic, MacroEntry, MacroOption, PPNode, Preprocessor, PreprocessorInputs,
+    DirectiveDiagnostic, MacroEntry, MacroOption, PPNode, PreprocessTrace, Preprocessor,
+    PreprocessorInputs,
 };
 use crate::standard_features::StandardFeatures;
 pub(crate) use context::ParseContext;
@@ -462,6 +463,30 @@ impl Parser {
         self.directive_diagnostics = std::mem::take(&mut pp.directive_diagnostics);
         nodes.extend(main.map_err(FrontendError::PP)?);
         Ok((nodes, pp.files))
+    }
+
+    pub fn preprocess_file_traced(
+        &mut self,
+        path: &Path,
+    ) -> Result<(Vec<PPNode>, Files, PreprocessTrace), FrontendError> {
+        let search = self.search.clone();
+        let dialect = self.dialect.clone();
+        let mut pp = Preprocessor::new(&search, &dialect).map_err(FrontendError::PP)?;
+        pp.enable_trace();
+        let mut nodes = self.prepare_preprocessor(&mut pp)?;
+        let main = pp.parse_file(path);
+        self.directive_diagnostics = std::mem::take(&mut pp.directive_diagnostics);
+        nodes.extend(main.map_err(FrontendError::PP)?);
+        let trace = pp.take_trace().ok_or_else(|| {
+            FrontendError::Parse(ParseError::new(
+                display_path(path),
+                "",
+                0,
+                0,
+                "preprocessor did not produce a trace",
+            ))
+        })?;
+        Ok((nodes, pp.files, trace))
     }
 
     fn error_at_tokens(

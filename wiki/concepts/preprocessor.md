@@ -9,6 +9,7 @@
 - [Expansion](#expansion)
 - [Conditionals](#conditionals)
 - [Pragmas and line control](#pragmas-and-line-control)
+- [Trace](#trace)
 - [Oracle](#oracle)
 <!-- /toc -->
 
@@ -388,6 +389,47 @@ token plus an interned `HideSet`; file tokens start empty.
   (C2177) and wraps the rest to a signed 32-bit value, so a negative
   `__LINE__` expands to `-` followed by the digits.
 - `#error` / `#warning` go to `directive_diagnostics`.
+
+## Trace
+
+`pp/trace.rs` records why each token exists, for choosing and merging
+configurations. `Parser::preprocess_file_traced` and `slate-parser pp --trace`
+turn it on; otherwise `trace` stays `None` and the `trace` vectors on
+`PPNodeKind::Code` and `Pragma` stay empty. They parallel `tokens`.
+
+- `TokenTrace`: a token's enclosing conditional arms (`ContextId`) and the macro
+  events it came through (`MacroSet`). Body tokens take the invoker's context.
+  Paste and `#` results merge their operands' traces.
+- `Conditional` and `Arm`: every `#if`, including nested ones in skipped groups,
+  with its state (`Taken`, `NotTaken`, `NotEvaluated`) and the macros it read.
+- `MacroEvent`: each `#define` and `#undef` seen after tracing starts, so
+  command-line macros are included and predefines are not.
+- `Expansion`: every macro expansion and its call site. `empty` records an
+  expansion with no tokens, where no emitted token carries the evidence
+  (`Assert` without `ZLIB_DEBUG`).
+- `PreprocessTrace::dependencies`: follows a token's arms, each arm's earlier
+  arms, the macros they read and those macros' own conditions. `roots` are
+  command-line macros and names with no definition in this run.
+
+A `#define` or `#undef` in a skipped group is also an event (`skipped`). Any
+later read or use of that name depends on it. Without this, code that exists
+only because a define was skipped has no link to the real cause:
+
+```c
+#ifndef NO_GZIP
+#define GUNZIP
+#endif
+#ifdef GUNZIP   /* under NO_GZIP this reads as plainly undefined */
+```
+
+Dependencies describe one configuration, and they over-approximate: a listed
+macro may not change the token. Not recorded:
+
+- what a header in a skipped `#include` would have defined
+- `#include` targets computed from macros
+- `__has_include` results
+- a second inclusion dropped by an include guard, which leaves no record at
+  that site
 
 ## Oracle
 

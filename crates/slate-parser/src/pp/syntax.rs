@@ -79,6 +79,7 @@ pub(super) fn directive_spelling(name: DirectiveName) -> &'static str {
         DirectiveName::Elif => "#elif",
         DirectiveName::Elifdef => "#elifdef",
         DirectiveName::Elifndef => "#elifndef",
+        DirectiveName::Else => "#else",
         _ => "#if",
     }
 }

@@ -1,7 +1,7 @@
 use super::error::{PPErrorKind, PPFailure};
 use super::hide_set::HideSet;
 use super::syntax::{Directive, DirectiveName, Line};
-use super::{FileInput, MacroDef, Preprocessor, stringized_source};
+use super::{FileInput, MacroDef, Preprocessor, TokenTrace, stringized_source};
 use crate::ast::{Loc, MacroOrigin, MacroOriginLink, Span};
 use crate::compiler_args::CompilerFlavor;
 use crate::lexer::{Token, TokenSpanExt, token_spelling};
@@ -11,8 +11,8 @@ use std::sync::Arc;
 pub(super) struct PPToken {
     pub(super) token: Span<Token>,
     pub(super) hide: HideSet,
-    // where __LINE__ reads its line: the token itself, or the end of the invocation that produced it
     end: Loc,
+    pub(super) trace: TokenTrace,
 }
 
 impl From<Span<Token>> for PPToken {
@@ -21,7 +21,15 @@ impl From<Span<Token>> for PPToken {
             end: token.expansion,
             token,
             hide: HideSet::EMPTY,
+            trace: TokenTrace::default(),
         }
+    }
+}
+
+impl PPToken {
+    pub(super) fn with_trace(mut self, trace: TokenTrace) -> Self {
+        self.trace = trace;
+        self
     }
 }
 
@@ -92,11 +100,12 @@ impl Stamp {
 }
 
 pub(super) enum Piece {
-    Code(Span<Token>),
+    Code(Span<Token>, TokenTrace),
     Pragma {
         tokens: Vec<Span<Token>>,
         spelling: Loc,
         expansion: Loc,
+        trace: TokenTrace,
     },
 }
 
@@ -155,9 +164,13 @@ impl Preprocessor<'_> {
                     if let Some(last) = line.tokens.last() {
                         self.source_position = Some(last.spelling);
                     }
-                    stream
-                        .pending
-                        .extend(line.tokens.into_iter().rev().map(PPToken::from));
+                    let trace = self.trace_context();
+                    stream.pending.extend(
+                        line.tokens
+                            .into_iter()
+                            .rev()
+                            .map(|token| PPToken::from(token).with_trace(trace)),
+                    );
                 }
             }
         }
@@ -169,6 +182,7 @@ impl Preprocessor<'_> {
         token: PPToken,
         stream: &mut Stream,
     ) -> Result<Option<PPToken>, PPFailure> {
+        let token = self.trace_unexpanded(token);
         let Token::Ident(name) = &token.token.value else {
             return Ok(Some(token));
         };
@@ -211,6 +225,7 @@ impl Preprocessor<'_> {
         let Some(parameters) = &definition.parameters else {
             let hide = self.hide_sets.with(token.hide, &name);
             let replacement = self.substitute_object_macro(&definition, &stamp)?;
+            let replacement = self.trace_expansion(&name, &token, None, replacement);
             let replacement = self.hide_all(replacement, hide);
             stream.push_front(inherit_leading_space(replacement, &token.token));
             return Ok(None);
@@ -233,7 +248,7 @@ impl Preprocessor<'_> {
             return Ok(Some(token));
         };
         let rparen_hide = rparen.hide;
-        // clang reports the end of the invocation's expansion range, gcc its name
+        let rparen_trace = rparen.trace;
         if self.dialect.flavor().is_clang() {
             stamp.end = rparen.end;
         }
@@ -276,6 +291,7 @@ impl Preprocessor<'_> {
         )?;
         let hide = self.hide_sets.intersection(token.hide, rparen_hide);
         let hide = self.hide_sets.with(hide, &name);
+        let replacement = self.trace_expansion(&name, &token, Some(rparen_trace), replacement);
         let replacement = self.hide_all(replacement, hide);
         stream.push_front(inherit_leading_space(replacement, &token.token));
         Ok(None)
@@ -491,17 +507,18 @@ impl Preprocessor<'_> {
         };
         let Some(microsoft) = microsoft else {
             self.warn_traditional_literal(&token.token);
-            pieces.push(Piece::Code(token.token));
+            pieces.push(Piece::Code(token.token, token.trace));
             return Ok(true);
         };
         let lparen = match self.next_expanded(stream, true)? {
             Some(lparen) if lparen.token.value == Token::LParen => lparen,
             next => {
                 stream.push_front(next.into_iter().collect());
-                pieces.push(Piece::Code(token.token));
+                pieces.push(Piece::Code(token.token, token.trace));
                 return Ok(true);
             }
         };
+        let trace = token.trace;
         let mut consumed = vec![token.token, lparen.token];
         let tokens = if microsoft {
             let mut depth = 1usize;
@@ -535,7 +552,7 @@ impl Preprocessor<'_> {
             }
         };
         let Some(tokens) = tokens else {
-            pieces.extend(consumed.into_iter().map(Piece::Code));
+            pieces.extend(consumed.into_iter().map(|token| Piece::Code(token, trace)));
             return Ok(true);
         };
         let origin = Span::cover((), &consumed);
@@ -550,6 +567,7 @@ impl Preprocessor<'_> {
             tokens,
             spelling: origin.spelling,
             expansion: origin.expansion,
+            trace,
         });
         Ok(true)
     }
@@ -862,7 +880,7 @@ impl Stamp {
 
 impl Preprocessor<'_> {
     fn substitute_function_macro(
-        &self,
+        &mut self,
         definition: &MacroDef,
         parameters: &[String],
         arguments: &Arguments,
@@ -918,9 +936,11 @@ impl Preprocessor<'_> {
                             PPErrorKind::NewlineInStringLiteral,
                         ));
                     }
-                    output.push(PPToken::from(
-                        stamp.apply(token).with_value(Token::StringLit(text.into())),
-                    ));
+                    let trace = self.trace_merged(&argument);
+                    output.push(
+                        PPToken::from(stamp.apply(token).with_value(Token::StringLit(text.into())))
+                            .with_trace(trace),
+                    );
                     i += 2;
                     continue;
                 }
@@ -997,7 +1017,7 @@ impl Preprocessor<'_> {
     }
 
     fn substitute_object_macro(
-        &self,
+        &mut self,
         definition: &MacroDef,
         stamp: &Stamp,
     ) -> Result<Vec<PPToken>, PPFailure> {
@@ -1017,7 +1037,11 @@ impl Preprocessor<'_> {
         Ok(output)
     }
 
-    fn paste(&self, left: PPToken, right_tokens: Vec<PPToken>) -> Result<Vec<PPToken>, PPFailure> {
+    fn paste(
+        &mut self,
+        left: PPToken,
+        right_tokens: Vec<PPToken>,
+    ) -> Result<Vec<PPToken>, PPFailure> {
         let Some(right) = right_tokens.first() else {
             return Ok(vec![left]);
         };
@@ -1052,7 +1076,8 @@ impl Preprocessor<'_> {
         )
         .with_leading_space(left.token.leading_space);
         joined.digraph = pasted.digraph;
-        Ok(std::iter::once(PPToken::from(joined))
+        let trace = self.trace_merged([&left, right]);
+        Ok(std::iter::once(PPToken::from(joined).with_trace(trace))
             .chain(right_tokens.into_iter().skip(1))
             .collect())
     }

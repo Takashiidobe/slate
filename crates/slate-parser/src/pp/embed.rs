@@ -224,10 +224,17 @@ impl Preprocessor<'_> {
             .into_iter()
             .map(|token| token.with_provenance(provenance))
             .collect();
-        Ok(
-            Span::new(PPNodeKind::Code { tokens, provenance }, loc, loc)
-                .with_provenance(provenance),
+        let trace = self.trace_of_tokens(tokens.len());
+        Ok(Span::new(
+            PPNodeKind::Code {
+                tokens,
+                provenance,
+                trace,
+            },
+            loc,
+            loc,
         )
+        .with_provenance(provenance))
     }
 
     pub(super) fn expand_has_embed(

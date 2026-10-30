@@ -8,6 +8,7 @@ mod include;
 mod math;
 mod print;
 mod syntax;
+mod trace;
 mod traditional;
 
 use crate::ast::{FileId, HeaderKind, Loc, Provenance, Span};
@@ -31,13 +32,18 @@ use expand::{PPToken, Piece, Stream};
 use hide_set::HideSets;
 use include::read_source;
 use miette::Severity;
-pub use print::write_preprocessed;
+pub use print::{write_preprocessed, write_trace};
 use std::cell::Cell;
 use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
 use std::rc::Rc;
 use std::time::SystemTime;
 use syntax::{Directive, DirectiveName, Line, TokenSource, directive_spelling, identifier};
+pub use trace::{
+    Arm, ArmState, Branch, Conditional as TracedConditional, ConditionalId, ContextId,
+    Dependencies, Expansion, MacroEvent, MacroEventId, MacroEventKind, MacroRead, MacroSet,
+    PreprocessTrace, TokenTrace,
+};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum MacroOption {
@@ -64,11 +70,13 @@ pub enum PPNodeKind {
     Code {
         tokens: Vec<Span<Token>>,
         provenance: Provenance,
+        trace: Vec<TokenTrace>,
     },
     Pragma {
         text: String,
         tokens: Vec<Span<Token>>,
         provenance: Provenance,
+        trace: Vec<TokenTrace>,
     },
 }
 
@@ -232,6 +240,7 @@ pub struct MacroDef {
 pub struct MacroEntry {
     pub definition: Rc<MacroDef>,
     pub provenance: Provenance,
+    pub trace_event: Option<MacroEventId>,
 }
 
 struct Conditional {
@@ -332,6 +341,7 @@ pub struct Preprocessor<'a> {
     hide_sets: HideSets,
     build_time: SystemTime,
     dialect: &'a Dialect,
+    trace: Option<Box<PreprocessTrace>>,
 }
 
 impl<'a> Preprocessor<'a> {
@@ -364,6 +374,7 @@ impl<'a> Preprocessor<'a> {
             counter: Cell::new(0),
             source_position: None,
             hide_sets: HideSets::new(),
+            trace: None,
             build_time: build_time(),
             dialect,
         };
@@ -727,6 +738,7 @@ impl<'a> Preprocessor<'a> {
                 MacroEntry {
                     definition: Rc::new(definition),
                     provenance,
+                    trace_event: None,
                 },
             );
         }
@@ -1427,7 +1439,12 @@ impl<'a> Preprocessor<'a> {
             self.reject_poisoned(&line.tokens)?;
             file.group.extend(&line.tokens);
             self.source_position = line.tokens.last().map(|token| token.spelling);
-            let tokens = line.tokens.into_iter().map(PPToken::from).collect();
+            let trace = self.trace_context();
+            let tokens = line
+                .tokens
+                .into_iter()
+                .map(|token| PPToken::from(token).with_trace(trace))
+                .collect();
             let mut stream = Stream::new(tokens, Some(&mut file));
             let mut pieces = Vec::new();
             while self.read_piece(&mut stream, &mut pieces)? {}
@@ -1483,7 +1500,9 @@ impl<'a> Preprocessor<'a> {
         match directive.name {
             DirectiveName::If | DirectiveName::Ifdef | DirectiveName::Ifndef => {
                 let mut open = Conditional::new(&directive);
+                self.trace_open();
                 open.taken = self.branch_taken(&directive)?;
+                self.trace_arm(&directive, Some(open.taken));
                 if open.taken || !self.skip_group(source, &mut open)? {
                     conditionals.push(open);
                 }
@@ -1502,6 +1521,7 @@ impl<'a> Preprocessor<'a> {
                     ));
                 };
                 open.advance(&directive)?;
+                self.trace_arm(&directive, None);
                 if !self.skip_group(source, &mut open)? {
                     conditionals.push(open);
                 }
@@ -1513,6 +1533,7 @@ impl<'a> Preprocessor<'a> {
                         PPErrorKind::UnexpectedConditional,
                     ));
                 }
+                self.trace_close();
             }
             _ => self.run_directive(&directive, nodes)?,
         }
@@ -1538,22 +1559,40 @@ impl<'a> Preprocessor<'a> {
             match directive.name {
                 DirectiveName::If | DirectiveName::Ifdef | DirectiveName::Ifndef => {
                     nested.push(Conditional::new(&directive));
+                    self.trace_open();
+                    self.trace_arm(&directive, None);
                 }
                 DirectiveName::Elif
                 | DirectiveName::Elifdef
                 | DirectiveName::Elifndef
                 | DirectiveName::Else => match nested.last_mut() {
-                    Some(inner) => inner.advance(&directive)?,
+                    Some(inner) => {
+                        inner.advance(&directive)?;
+                        self.trace_arm(&directive, None);
+                    }
                     None => {
                         open.advance(&directive)?;
-                        if !open.taken && self.branch_taken(&directive)? {
+                        let evaluate = !open.taken;
+                        self.trace_begin_arm();
+                        let taken = evaluate && self.branch_taken(&directive)?;
+                        self.trace_arm(&directive, evaluate.then_some(taken));
+                        if taken {
                             open.taken = true;
                             return Ok(false);
                         }
                     }
                 },
-                DirectiveName::Endif if nested.pop().is_none() => {
-                    return Ok(true);
+                DirectiveName::Endif => {
+                    self.trace_close();
+                    if nested.pop().is_none() {
+                        return Ok(true);
+                    }
+                }
+                DirectiveName::Define => {
+                    self.trace_skipped_macro(&directive, MacroEventKind::Define);
+                }
+                DirectiveName::Undef => {
+                    self.trace_skipped_macro(&directive, MacroEventKind::Undef);
                 }
                 _ => {}
             }
@@ -1662,11 +1701,13 @@ impl<'a> Preprocessor<'a> {
     fn emit_line(&self, loc: Loc, pieces: Vec<Piece>) -> Vec<PPNode> {
         let provenance = self.provenance(loc);
         let finish = |token: Span<Token>| self.classify_keyword(token).with_provenance(provenance);
-        let code_node = |code: Vec<Span<Token>>| {
+        let tracing = self.trace.is_some();
+        let code_node = |code: Vec<Span<Token>>, trace: Vec<TokenTrace>| {
             Span::new(
                 PPNodeKind::Code {
                     tokens: code,
                     provenance,
+                    trace,
                 },
                 loc,
                 loc,
@@ -1675,24 +1716,40 @@ impl<'a> Preprocessor<'a> {
         };
         let mut nodes = Vec::new();
         let mut code = Vec::new();
+        let mut code_trace = Vec::new();
         for piece in pieces {
             match piece {
-                Piece::Code(token) => code.push(finish(token)),
+                Piece::Code(token, trace) => {
+                    code.push(finish(token));
+                    if tracing {
+                        code_trace.push(trace);
+                    }
+                }
                 Piece::Pragma {
                     tokens,
                     spelling,
                     expansion,
+                    trace,
                 } => {
                     if !code.is_empty() {
-                        nodes.push(code_node(std::mem::take(&mut code)));
+                        nodes.push(code_node(
+                            std::mem::take(&mut code),
+                            std::mem::take(&mut code_trace),
+                        ));
                     }
                     let text = tokens_source(tokens.values());
+                    let pragma_trace = if tracing {
+                        vec![trace; tokens.len()]
+                    } else {
+                        Vec::new()
+                    };
                     nodes.push(
                         Span::new(
                             PPNodeKind::Pragma {
                                 text,
                                 tokens: tokens.into_iter().map(finish).collect(),
                                 provenance,
+                                trace: pragma_trace,
                             },
                             spelling,
                             expansion,
@@ -1703,13 +1760,14 @@ impl<'a> Preprocessor<'a> {
             }
         }
         if !code.is_empty() {
-            nodes.push(code_node(code));
+            nodes.push(code_node(code, code_trace));
         }
         nodes
     }
 
-    fn names_defined_macro(&self, directive: &Directive) -> Result<bool, PPFailure> {
+    fn names_defined_macro(&mut self, directive: &Directive) -> Result<bool, PPFailure> {
         let (name, _) = self.macro_name(directive, directive_spelling(directive.name))?;
+        self.trace_read_macro(&name);
         Ok(self.is_defined(&name))
     }
 
@@ -1737,6 +1795,7 @@ impl<'a> Preprocessor<'a> {
         let expanded = self.expand_has_embed(&expanded, directive.loc.file)?;
         let expanded = self.expand_has_include(&expanded, directive.loc.file);
         let expanded = expand_has_checks(&expanded, self.dialect);
+        self.trace_condition_names(&expanded);
         for token in &expanded {
             self.warn_traditional_literal(token);
         }
@@ -1964,6 +2023,7 @@ impl<'a> Preprocessor<'a> {
             }
             _ => directive.arguments.clone(),
         };
+        let trace = self.trace_of_tokens(arguments.len());
         Ok(Span::new(
             PPNodeKind::Pragma {
                 text: self.spelling(directive.loc).to_string(),
@@ -1972,6 +2032,7 @@ impl<'a> Preprocessor<'a> {
                     .map(|token| self.classify_keyword(token))
                     .collect(),
                 provenance,
+                trace,
             },
             directive.loc,
             directive.loc,

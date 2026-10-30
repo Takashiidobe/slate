@@ -1,5 +1,5 @@
-use super::{PPNode, PPNodeKind};
-use crate::ast::{FileId, Span};
+use super::{ArmState, MacroEventKind, PPNode, PPNodeKind, PreprocessTrace, TokenTrace};
+use crate::ast::{FileId, Loc, Span};
 use crate::charset::Charset;
 use crate::files::{Files, decode_source_bytes, raw_byte_for_char};
 use crate::lexer::{Token, token_spelling};
@@ -24,6 +24,134 @@ pub fn write_preprocessed(
             None => out.write_all(line.as_bytes())?,
         }
         out.write_all(b"\n")?;
+    }
+    Ok(())
+}
+
+pub fn write_trace(
+    nodes: &[PPNode],
+    files: &Files,
+    trace: &PreprocessTrace,
+    out: &mut impl Write,
+) -> io::Result<()> {
+    let site = |loc: Loc| {
+        let line = files
+            .position(loc.file, loc.offset)
+            .map(|(line, _)| line + 1);
+        let path = files.path(loc.file);
+        let name = if Some(loc.file) == trace.main_file {
+            "<main>".to_string()
+        } else {
+            path.file_name().map_or_else(
+                || path.display().to_string(),
+                |name| name.to_string_lossy().into_owned(),
+            )
+        };
+        match line {
+            Some(line) if name != "<command line>" => format!("{name}:{line}"),
+            _ => name,
+        }
+    };
+    let describe = |trace_of: TokenTrace| {
+        let context: Vec<String> = trace
+            .branches(trace_of.context)
+            .iter()
+            .map(|branch| {
+                let arm = &trace.conditional(branch.conditional).arms[branch.arm as usize];
+                format!("{}@{}", arm.directive, site(arm.loc))
+            })
+            .collect();
+        let macros: Vec<String> = trace
+            .macros(trace_of.macros)
+            .iter()
+            .map(|event| {
+                let event = trace.event(*event);
+                let kind = match event.kind {
+                    MacroEventKind::Define => "",
+                    MacroEventKind::Undef => "undef ",
+                };
+                let skipped = if event.skipped { "skipped " } else { "" };
+                format!("{skipped}{kind}{}@{}", event.name, site(event.loc))
+            })
+            .collect();
+        let roots: Vec<String> = trace.dependencies(trace_of).roots.into_iter().collect();
+        format!(
+            "context=[{}] macros=[{}] roots=[{}]",
+            context.join(", "),
+            macros.join(", "),
+            roots.join(", ")
+        )
+    };
+    for conditional in &trace.conditionals {
+        for (index, arm) in conditional.arms.iter().enumerate() {
+            let state = match arm.state {
+                ArmState::Taken => "taken",
+                ArmState::NotTaken => "not-taken",
+                ArmState::NotEvaluated => "not-evaluated",
+            };
+            let reads: Vec<String> = arm
+                .reads
+                .iter()
+                .map(|read| {
+                    let status = match (read.defined, read.event) {
+                        (true, Some(event)) => {
+                            format!("defined@{}", site(trace.event(event).loc))
+                        }
+                        (true, None) => "defined".to_string(),
+                        (false, Some(event)) => {
+                            format!("undefined@{}", site(trace.event(event).loc))
+                        }
+                        (false, None) => "undefined".to_string(),
+                    };
+                    format!("{}:{status}", read.name)
+                })
+                .collect();
+            writeln!(
+                out,
+                "{} {} {} {state} names=[{}] reads=[{}]",
+                if index == 0 { "if" } else { "arm" },
+                arm.directive,
+                site(arm.loc),
+                arm.names.join(", "),
+                reads.join(", ")
+            )?;
+        }
+    }
+    for expansion in &trace.expansions {
+        writeln!(
+            out,
+            "expansion {} {}{} {}",
+            expansion.name,
+            site(expansion.site),
+            if expansion.empty { " empty" } else { "" },
+            describe(expansion.trace)
+        )?;
+    }
+    let mut spellings = Spellings::new(files);
+    for node in nodes {
+        let (tokens, traces) = match &node.value {
+            PPNodeKind::Comment { .. } => continue,
+            PPNodeKind::Code { tokens, trace, .. } | PPNodeKind::Pragma { tokens, trace, .. } => {
+                (tokens, trace)
+            }
+        };
+        let mut start = 0;
+        while start < tokens.len() {
+            let current = traces[start];
+            let line = site(tokens[start].expansion);
+            let length = traces[start..]
+                .iter()
+                .zip(&tokens[start..])
+                .take_while(|(trace, token)| **trace == current && site(token.expansion) == line)
+                .count();
+            writeln!(
+                out,
+                "tokens {line} `{}` {}",
+                spellings.line(&tokens[start..start + length]),
+                describe(current)
+            )?;
+            start += length;
+        }
     }
     Ok(())
 }

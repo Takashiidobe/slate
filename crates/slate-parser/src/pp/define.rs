@@ -1,6 +1,6 @@
 use super::error::{PPErrorKind, PPFailure};
 use super::syntax::{Directive, identifier};
-use super::{MacroDef, MacroEntry, Preprocessor};
+use super::{MacroDef, MacroEntry, MacroEventKind, Preprocessor};
 use crate::ast::{HeaderKind, Span};
 use crate::compiler_args::CompilerFlavor;
 use crate::diagnostics::Warning;
@@ -181,11 +181,13 @@ impl Preprocessor<'_> {
             self.warn(name_token.spelling, warning, message, true);
         }
         let provenance = self.provenance(directive.loc);
+        let trace_event = self.trace_macro_event(&name, MacroEventKind::Define, directive.loc);
         self.macros.insert(
             name,
             MacroEntry {
                 definition: std::rc::Rc::new(definition),
                 provenance,
+                trace_event,
             },
         );
         Ok(())
@@ -208,6 +210,7 @@ impl Preprocessor<'_> {
             self.warn(name_token.spelling, warning, message, pedantic);
         }
         self.macros.remove(&name);
+        self.trace_macro_event(&name, MacroEventKind::Undef, directive.loc);
         Ok(())
     }
 
