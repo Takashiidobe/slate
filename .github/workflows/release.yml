@@ -83,6 +83,59 @@ jobs:
             gh release create "$GITHUB_REF_NAME" --verify-tag --generate-notes
           fi
 
+  netlify:
+    needs: release
+    runs-on: ubuntu-26.04
+    environment: release
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check Netlify credentials
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+        run: |
+          if [ -z "$NETLIFY_AUTH_TOKEN" ]; then
+            echo "Set the NETLIFY_AUTH_TOKEN repository or release environment secret." >&2
+            exit 1
+          fi
+
+      - name: Install WASI target
+        run: rustup target add wasm32-wasip1
+
+      - name: Install demo headers
+        run: |
+          cargo build --release --locked -p slate-c2rust
+          target/test-cache/release/slate sysroot install compiler-headers clang
+          target/test-cache/release/slate sysroot install compiler-headers gcc
+          for target in x86_64-unknown-linux-gnu i686-unknown-linux-gnu armv7-unknown-linux-gnueabihf aarch64-unknown-linux-gnu; do
+            target/test-cache/release/slate sysroot install "$target"
+          done
+
+      - name: Build browser demos
+        run: |
+          bash www/build.sh
+          bash www-parser/build.sh
+
+      - name: Deploy Slate demo
+        working-directory: www
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: f80be58c-fd1e-4031-a180-d2d59cea57a9
+        run: npx --yes netlify-cli@latest deploy --dir dist --prod --no-build
+
+      - name: Deploy parser explorer
+        working-directory: www-parser
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: f5acfa31-ee87-4344-b89e-0be687d6db33
+        run: npx --yes netlify-cli@latest deploy --dir dist --prod --no-build
+
   binaries:
     needs: release
     strategy:
