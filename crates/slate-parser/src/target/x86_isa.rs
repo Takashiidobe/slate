@@ -174,6 +174,40 @@ pub struct X86IsaRequest {
     flags: Vec<(X86Feature, bool)>,
     clang_only: Vec<usize>,
     general_regs_only: Vec<usize>,
+    pub fpmath: Option<FpMath>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum FpMath {
+    Sse,
+    X87,
+    Both,
+}
+
+impl FromStr for FpMath {
+    type Err = String;
+
+    fn from_str(value: &str) -> Result<Self, Self::Err> {
+        match value {
+            "sse" => Ok(Self::Sse),
+            "387" => Ok(Self::X87),
+            "both" | "sse+387" | "sse,387" | "387+sse" | "387,sse" => Ok(Self::Both),
+            _ => Err(format!("unknown FP unit '{value}'")),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct X87Formats {
+    pub float: bool,
+    pub double: bool,
+}
+
+impl X87Formats {
+    const NONE: Self = Self {
+        float: false,
+        double: false,
+    };
 }
 
 impl X86IsaRequest {
@@ -301,6 +335,7 @@ pub struct X86Isa {
     pub arch: X86Arch,
     pub features: X86Features,
     pub disabled: X86Features,
+    pub fpmath: Option<FpMath>,
 }
 
 impl X86Isa {
@@ -337,6 +372,48 @@ impl X86Isa {
             arch,
             features,
             disabled: disabled.without(features),
+            fpmath: request.fpmath,
+        }
+    }
+
+    pub fn check_fpmath(self, flavor: CompilerFlavor) -> Result<(), String> {
+        if flavor.is_gcc() {
+            return Ok(());
+        }
+        let sse = self.features.contains(X86Feature::Sse);
+        match self.fpmath {
+            Some(FpMath::Sse) if !sse => {
+                Err("the 'sse' unit is not supported with this instruction set".into())
+            }
+            Some(FpMath::X87) if sse => {
+                Err("the '387' unit is not supported with this instruction set".into())
+            }
+            Some(FpMath::Both) => Err("unknown FP unit".into()),
+            _ => Ok(()),
+        }
+    }
+
+    fn wants_sse_math(self, family: TargetFamily, gcc: bool) -> bool {
+        match self.fpmath {
+            Some(FpMath::X87) => false,
+            Some(FpMath::Sse | FpMath::Both) => true,
+            None => !(gcc && family == TargetFamily::X86),
+        }
+    }
+
+    pub fn x87_formats(self, family: TargetFamily) -> X87Formats {
+        if !self.features.contains(X86Feature::X87) {
+            return X87Formats::NONE;
+        }
+        if !self.wants_sse_math(family, true) || !self.features.contains(X86Feature::Sse) {
+            return X87Formats {
+                float: true,
+                double: true,
+            };
+        }
+        X87Formats {
+            float: false,
+            double: !self.features.contains(X86Feature::Sse2),
         }
     }
 
@@ -406,8 +483,7 @@ impl X86Isa {
                 );
             }
         }
-        // gcc defaults to -mfpmath=387 on 32-bit x86
-        let sse_math = !(gcc && family == TargetFamily::X86);
+        let sse_math = self.wants_sse_math(family, gcc);
         for (feature, name) in [
             (X86Feature::Sse, "__SSE_MATH__"),
             (X86Feature::Sse2, "__SSE2_MATH__"),
@@ -455,11 +531,14 @@ impl X86Isa {
     fn eval_method(self, family: TargetFamily, flavor: CompilerFlavor) -> Option<&'static str> {
         let has = |feature| self.features.contains(feature);
         if flavor.is_gcc() {
+            let sse_math = self.wants_sse_math(family, true) && has(X86Feature::Sse);
             match family {
                 TargetFamily::X86 if !has(X86Feature::X87) => Some("0"),
                 TargetFamily::X86_64 if !has(X86Feature::X87) => None,
-                TargetFamily::X86_64 if !has(X86Feature::Sse) => Some("2"),
-                TargetFamily::X86_64 if !has(X86Feature::Sse2) => Some("-1"),
+                TargetFamily::X86 if self.fpmath.is_none() => None,
+                _ if !sse_math => Some("2"),
+                _ if !has(X86Feature::Sse2) || self.fpmath == Some(FpMath::Both) => Some("-1"),
+                _ if self.fpmath.is_some() => Some("0"),
                 _ => None,
             }
         } else if has(X86Feature::Sse) {
@@ -479,7 +558,7 @@ impl X86Isa {
             (X86Feature::Sse, "__SSE_MATH__"),
             (X86Feature::Sse2, "__SSE2_MATH__"),
         ] {
-            if self.disabled.contains(feature) {
+            if self.disabled.contains(feature) || self.fpmath == Some(FpMath::X87) {
                 names.push(name);
             }
         }

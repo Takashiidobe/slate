@@ -142,6 +142,7 @@ int value;
 // DEFAULT-NEXT:                 (arch (X86Arch 73))
 // DEFAULT-NEXT:                 (features (X86Features 633854314333821762120540225536))
 // DEFAULT-NEXT:                 (disabled (X86Features 0))
+// DEFAULT-NEXT:                 (fpmath (None))
 // DEFAULT-NEXT:               )
 // DEFAULT-NEXT:             )
 // DEFAULT-NEXT:           )
@@ -213,6 +214,7 @@ int value;
 // DEFAULT-NEXT:             )
 // DEFAULT-NEXT:           )
 // DEFAULT-NEXT:           (iso_flt_eval_method false)
+// DEFAULT-NEXT:           (float_store false)
 // DEFAULT-NEXT:           (layout
 // DEFAULT-NEXT:             (LayoutOptions
 // DEFAULT-NEXT:               (long_double (None))

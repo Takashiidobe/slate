@@ -16,8 +16,14 @@ use crate::ir::{
     UnaryArithOp, Value, ValueKind,
 };
 use crate::standard_features::StandardFeatures;
-use crate::target_info::{LongDoubleFormat, TargetInfo};
+use crate::target::isa::TargetIsa;
+use crate::target::x86_isa::X87Formats;
+use crate::target_info::{LongDoubleFormat, TargetFamily, TargetInfo};
 use num_bigint::BigUint;
+use rustc_apfloat::{
+    Float, FloatConvert, Status,
+    ieee::{Double, Single, X87DoubleExtended},
+};
 use thiserror::Error;
 
 #[derive(Debug, Clone, Error)]
@@ -101,12 +107,73 @@ pub struct Context {
     pub pointer_wrap: bool,
     pub region: FloatingRegion,
     pub asm_dialect: AsmDialect,
+    pub x87: Option<X87Excess>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum X87Rounding {
+    Standard,
+    Fast,
+    EachOperation,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct X87Excess {
+    formats: X87Formats,
+    rounding: X87Rounding,
+    trapping_math: bool,
+    rounding_math: bool,
+}
+
+impl X87Excess {
+    pub(super) fn in_constant_initializer(self) -> Self {
+        Self {
+            trapping_math: false,
+            rounding_math: false,
+            ..self
+        }
+    }
+
+    fn for_dialect(dialect: &crate::dialect::Dialect) -> Option<Self> {
+        let target = dialect.target();
+        let TargetIsa::X86(isa) = target.isa else {
+            return None;
+        };
+        if !dialect.flavor().is_gcc() {
+            return None;
+        }
+        let options = dialect.options();
+        let math = &options.math;
+        let fast = math
+            .fast_excess_precision
+            .unwrap_or(dialect.standard().is_gnu());
+        if target.family == TargetFamily::X86
+            && isa.fpmath.is_none()
+            && fast
+            && math.gcc_requested_fast_math(true)
+        {
+            return None;
+        }
+        let formats = isa.x87_formats(target.family);
+        (formats.float || formats.double).then_some(Self {
+            formats,
+            rounding: match (fast, options.float_store) {
+                (false, _) => X87Rounding::Standard,
+                (true, false) => X87Rounding::Fast,
+                (true, true) => X87Rounding::EachOperation,
+            },
+            trapping_math: math.trapping_math,
+            rounding_math: math.rounding_math,
+        })
+    }
 }
 
 type Resolved = (Type, ValueKind);
 
 const HALF: NumericType = NumericType::Float(FloatType::F16);
 const SINGLE: NumericType = NumericType::Float(FloatType::F32);
+const DOUBLE: NumericType = NumericType::Float(FloatType::F64);
+const X87: NumericType = NumericType::Float(FloatType::F80);
 
 impl Context {
     pub fn for_dialect(dialect: &crate::dialect::Dialect) -> Self {
@@ -125,6 +192,7 @@ impl Context {
                 complex_range: options.math.complex_range.unwrap_or_default(),
             },
             asm_dialect: options.asm_dialect,
+            x87: X87Excess::for_dialect(dialect),
         }
     }
 
@@ -140,22 +208,202 @@ impl Context {
             && matches!(ty, Type::Numeric(HALF) | Type::Complex(HALF))
     }
 
-    fn widen_half(&self, value: Value) -> Result<Value, ResolveError> {
-        if !self.half_excess(&value.ty) {
-            return Ok(value);
-        }
-        let to = match value.ty {
-            Type::Complex(_) => Type::Complex(SINGLE),
-            _ => Type::Numeric(SINGLE),
+    fn excess_type(&self, ty: &Type) -> Option<Type> {
+        let (Type::Numeric(NumericType::Float(format)) | Type::Complex(NumericType::Float(format))) =
+            ty
+        else {
+            return None;
         };
+        let x87 = self.x87.map(|x87| x87.formats);
+        let wide = match format {
+            FloatType::F16 if self.target.float16_excess_precision() => SINGLE,
+            FloatType::F32 if x87.is_some_and(|formats| formats.float) => X87,
+            FloatType::F64 if x87.is_some_and(|formats| formats.double) => X87,
+            _ => return None,
+        };
+        Some(match ty {
+            Type::Complex(_) => Type::Complex(wide),
+            _ => Type::Numeric(wide),
+        })
+    }
+
+    fn x87_rounding(&self) -> Option<X87Rounding> {
+        self.x87.map(|x87| x87.rounding)
+    }
+
+    fn x87_keeps_excess(&self) -> bool {
+        self.x87_rounding()
+            .is_some_and(|rounding| rounding != X87Rounding::EachOperation)
+    }
+
+    pub(super) fn is_x87_excess(&self, value: &Value) -> bool {
+        self.x87_keeps_excess()
+            && matches!(
+                &value.node.value,
+                ValueKind::Convert {
+                    reason: ConversionReason::ExcessPrecision,
+                    operand,
+                    ..
+                } if is_x87_wide(&operand.ty)
+            )
+    }
+
+    pub(super) fn peel_x87_excess(&self, value: Value) -> Value {
+        if !self.is_x87_excess(&value) {
+            return value;
+        }
+        match value.node.value {
+            ValueKind::Convert { operand, .. } => *operand,
+            _ => value,
+        }
+    }
+
+    pub(super) fn peel_fast_x87_excess(&self, value: Value) -> Value {
+        if self.x87_rounding() == Some(X87Rounding::Fast) {
+            self.peel_x87_excess(value)
+        } else {
+            value
+        }
+    }
+
+    pub(super) fn narrow_x87_excess(&self, wide: Value, ty: Type) -> Result<Value, ResolveError> {
+        self.emit_arithmetic_conversion(wide, ty, ConversionReason::ExcessPrecision)
+    }
+
+    fn widen_excess(&self, value: Value, wide: &Type) -> Result<Value, ResolveError> {
+        let x87 = is_x87_wide(wide);
+        let keeps = !x87 || self.x87_keeps_excess();
         match value.node.value {
             ValueKind::Convert {
                 reason: ConversionReason::ExcessPrecision,
                 operand,
                 ..
-            } if operand.ty == to => Ok(*operand),
-            _ => self.emit_arithmetic_conversion(value, to, ConversionReason::ExcessPrecision),
+            } if keeps && operand.ty == *wide => Ok(*operand),
+            ValueKind::Convert {
+                reason: ConversionReason::UsualArith,
+                kind: ConversionKind::IntToFloat,
+                operand,
+                ..
+            } if x87 && keeps => self.emit_arithmetic_conversion(
+                *operand,
+                wide.clone(),
+                ConversionReason::ExcessPrecision,
+            ),
+            _ => self.emit_arithmetic_conversion(
+                value,
+                wide.clone(),
+                ConversionReason::ExcessPrecision,
+            ),
         }
+    }
+
+    pub(super) fn widen_to_excess_type(&self, value: Value) -> Result<Value, ResolveError> {
+        match self.excess_type(&value.ty) {
+            Some(wide) => self.widen_excess(value, &wide),
+            None => Ok(value),
+        }
+    }
+
+    fn x87_compare_operands(
+        &self,
+        left: Value,
+        right: Value,
+    ) -> Result<(Value, Value), ResolveError> {
+        let excess = |value: &Value| {
+            self.is_x87_excess(value)
+                || (self.x87_keeps_excess()
+                    && self
+                        .excess_type(&value.ty)
+                        .as_ref()
+                        .is_some_and(is_x87_wide)
+                    && matches!(
+                        value.node.value,
+                        ValueKind::Convert {
+                            reason: ConversionReason::UsualArith,
+                            kind: ConversionKind::IntToFloat,
+                            ..
+                        }
+                    ))
+        };
+        if !excess(&left) && !excess(&right) {
+            return Ok((left, right));
+        }
+        Ok((
+            self.widen_to_excess_type(left)?,
+            self.widen_to_excess_type(right)?,
+        ))
+    }
+
+    fn convert_x87_excess(
+        &self,
+        value: Value,
+        to: Type,
+        reason: ConversionReason,
+    ) -> Result<Value, ResolveError> {
+        let from = value.ty.clone();
+        let wide = self.peel_x87_excess(value);
+        let keeps_excess = match reason {
+            ConversionReason::UsualArith | ConversionReason::Promotion => true,
+            ConversionReason::Explicit => {
+                self.x87_rounding() == Some(X87Rounding::Fast) && float_widens(&from, &to)
+            }
+            _ => false,
+        };
+        match self.excess_type(&to).filter(is_x87_wide) {
+            Some(wide_to) if keeps_excess => {
+                let wide = self.emit_arithmetic_conversion(
+                    wide,
+                    wide_to,
+                    ConversionReason::ExcessPrecision,
+                )?;
+                self.narrow_x87_excess(wide, to)
+            }
+            _ => self.emit_arithmetic_conversion(wide, to, reason),
+        }
+    }
+
+    fn x87_fold(&self, ty: &Type, op: ArithOp, left: &Value, right: &Value) -> Option<ValueKind> {
+        let x87 = self
+            .x87
+            .filter(|x87| x87.rounding != X87Rounding::Standard)?;
+        let Type::Numeric(format) = ty else {
+            return None;
+        };
+        let bits = match *format {
+            SINGLE if x87.formats.float => x87_fold_in::<Single>(x87, op, left, right)?,
+            DOUBLE if x87.formats.double => x87_fold_in::<Double>(x87, op, left, right)?,
+            _ => return None,
+        };
+        Some(ValueKind::Constant(Number::FloatBits(bits)))
+    }
+
+    fn x87_literal(&self, expression: &Expr, literal: &FloatLiteral, ty: &Type) -> Option<Value> {
+        if self.x87_rounding() != Some(X87Rounding::Standard)
+            || !self.excess_type(ty).as_ref().is_some_and(is_x87_wide)
+        {
+            return None;
+        }
+        let wide = FloatLiteral {
+            suffix: FloatSuffix::L,
+            ..literal.clone()
+        };
+        let FloatValue::LongDouble(bits) = resolve_float(&wide).ok()?.value else {
+            return None;
+        };
+        let mut inexact = false;
+        let excess = X87DoubleExtended::from_bits(bits);
+        match ty {
+            Type::Numeric(SINGLE) => drop::<Single>(excess.convert(&mut inexact).value),
+            _ => drop::<Double>(excess.convert(&mut inexact).value),
+        }
+        if !inexact {
+            return None;
+        }
+        let value = Value {
+            ty: Type::Numeric(X87),
+            node: expression.derive(ValueKind::Constant(Number::FloatBits(bits))),
+        };
+        self.narrow_x87_excess(value, ty.clone()).ok()
     }
 
     fn excess_precision(
@@ -182,7 +430,7 @@ impl Context {
         right: Value,
         semantics: ArithSema,
     ) -> Result<Resolved, ResolveError> {
-        if !self.half_excess(&ty) {
+        let Some(wide) = self.excess_type(&ty) else {
             return Ok((
                 ty,
                 ValueKind::Arith {
@@ -192,15 +440,14 @@ impl Context {
                     semantics,
                 },
             ));
+        };
+        if let Some(folded) = self.x87_fold(&ty, op, &left, &right) {
+            return Ok((ty, folded));
         }
         let anchor = left.clone();
         self.excess_precision(ty.clone(), &anchor, || {
-            let left = self.widen_half(left)?;
-            let right = self.widen_half(right)?;
-            let wide = match ty {
-                Type::Complex(_) => Type::Complex(SINGLE),
-                _ => Type::Numeric(SINGLE),
-            };
+            let left = self.widen_to_excess_type(left)?;
+            let right = self.widen_to_excess_type(right)?;
             Ok((
                 wide,
                 ValueKind::Arith {
@@ -220,7 +467,7 @@ impl Context {
         semantics: ArithSema,
     ) -> Result<Resolved, ResolveError> {
         let promoted = op == UnaryArithOp::Neg
-            && self.half_excess(&operand.ty)
+            && (self.half_excess(&operand.ty) || self.is_x87_excess(&operand))
             && matches!(
                 operand.node.value,
                 ValueKind::Convert {
@@ -241,7 +488,7 @@ impl Context {
         let ty = operand.ty.clone();
         let anchor = operand.clone();
         self.excess_precision(ty, &anchor, || {
-            let operand = self.widen_half(operand)?;
+            let operand = self.widen_to_excess_type(operand)?;
             Ok((
                 operand.ty.clone(),
                 ValueKind::Unary {
@@ -406,10 +653,11 @@ impl Context {
                         number,
                     )
                 } else {
-                    (
-                        Type::Numeric(NumericType::Float(format)),
-                        ValueKind::Constant(number),
-                    )
+                    let ty = Type::Numeric(NumericType::Float(format));
+                    if let Some(wide) = self.x87_literal(expression, literal, &ty) {
+                        return Ok(wide);
+                    }
+                    (ty, ValueKind::Constant(number))
                 }
             }
             ExprKind::BoolLiteral(value) => (Type::Bool, ValueKind::Constant(Number::Bool(*value))),
@@ -803,6 +1051,7 @@ impl Context {
     }
 
     fn compare(&self, op: CompareOp, left: Value, right: Value) -> Result<Resolved, ResolveError> {
+        let (left, right) = self.x87_compare_operands(left, right)?;
         let left_ty = numeric(&left)?;
         Ok((Type::Bool, self.comparison(op, left_ty, left, right)))
     }
@@ -922,6 +1171,7 @@ impl Context {
         let right =
             self.emit_arithmetic_conversion(right, right_to, ConversionReason::UsualArith)?;
         if matches!(op, BinaryOp::Equal | BinaryOp::NotEqual) {
+            let (left, right) = self.x87_compare_operands(left, right)?;
             return Ok((
                 Type::Bool,
                 ValueKind::Compare {
@@ -1110,7 +1360,10 @@ impl Context {
         reason: ConversionReason,
     ) -> Result<Value, ResolveError> {
         if value.ty == to {
+            let dropped =
+                self.is_x87_excess(&value) && self.x87_rounding() == Some(X87Rounding::Fast);
             if reason == ConversionReason::Explicit
+                && !dropped
                 && let ValueKind::Convert {
                     reason: why @ ConversionReason::ExcessPrecision,
                     ..
@@ -1119,6 +1372,17 @@ impl Context {
                 *why = reason;
             }
             return Ok(value);
+        }
+        if self.is_x87_excess(&value) {
+            return self.convert_x87_excess(value, to, reason);
+        }
+        if reason == ConversionReason::Explicit
+            && self.x87_rounding() == Some(X87Rounding::Fast)
+            && matches!(value.ty, Type::Numeric(NumericType::Integer { .. }))
+            && let Some(wide) = self.excess_type(&to).filter(is_x87_wide)
+        {
+            let wide = self.emit_arithmetic_conversion(value, wide, reason)?;
+            return self.narrow_x87_excess(wide, to);
         }
         if to == Type::Bool {
             let mut value = self.condition(value);
@@ -1416,6 +1680,7 @@ impl Context {
     }
 
     pub(super) fn condition(&self, value: Value) -> Value {
+        let value = self.peel_x87_excess(value);
         let ty = match value.ty {
             Type::Numeric(ty) => ty,
             Type::Imaginary(format) => NumericType::Float(format),
@@ -1779,6 +2044,81 @@ pub(super) fn unary_rule(op: UnaryOp, operand: &Type) -> Result<(), ResolveError
             _ => Ok(()),
         },
     }
+}
+
+fn is_x87_wide(ty: &Type) -> bool {
+    matches!(ty, Type::Numeric(X87) | Type::Complex(X87))
+}
+
+fn float_widens(from: &Type, to: &Type) -> bool {
+    matches!(
+        (from, to),
+        (Type::Numeric(NumericType::Float(from)), Type::Numeric(NumericType::Float(to)))
+            if to.widens_from(*from)
+    )
+}
+
+fn x87_constant<F>(value: &Value) -> Option<F>
+where
+    F: Float,
+    Single: FloatConvert<F>,
+{
+    match &value.node.value {
+        ValueKind::Constant(Number::FloatBits(bits)) => Some(F::from_bits(*bits)),
+        ValueKind::Unary {
+            op: UnaryArithOp::Neg,
+            operand,
+            ..
+        } => Some(-x87_constant::<F>(operand)?),
+        ValueKind::Convert {
+            kind: ConversionKind::IntToFloat,
+            operand,
+            ..
+        } => match &operand.node.value {
+            ValueKind::Constant(Number::Integer(integer)) => {
+                Some(F::from_u128(u128::try_from(integer).ok()?).value)
+            }
+            _ => None,
+        },
+        ValueKind::Convert {
+            kind: ConversionKind::FloatWiden,
+            operand,
+            ..
+        } => match (&operand.ty, &operand.node.value) {
+            (Type::Numeric(SINGLE), ValueKind::Constant(Number::FloatBits(bits))) => {
+                Some(Single::from_bits(*bits).convert(&mut false).value)
+            }
+            _ => None,
+        },
+        _ => None,
+    }
+}
+
+fn x87_fold_in<F>(x87: X87Excess, op: ArithOp, left: &Value, right: &Value) -> Option<u128>
+where
+    F: Float,
+    Single: FloatConvert<F>,
+{
+    let left = x87_constant::<F>(left)?;
+    let right = x87_constant::<F>(right)?;
+    let result = match op {
+        ArithOp::Add => left + right,
+        ArithOp::Sub => left - right,
+        ArithOp::Mul => left * right,
+        ArithOp::Div => left / right,
+        _ => return None,
+    };
+    let finite_operands = !left.is_infinite() && !right.is_infinite();
+    let nan_operands = left.is_nan() || right.is_nan();
+    let raises = (result.value.is_infinite() && finite_operands)
+        || (result.value.is_nan() && !nan_operands)
+        || (op == ArithOp::Div && right.is_zero());
+    if (x87.trapping_math && raises)
+        || (x87.rounding_math && result.status.intersects(Status::INEXACT))
+    {
+        return None;
+    }
+    Some(result.value.to_bits())
 }
 
 pub(super) fn promoted_complex_format(target: &TargetInfo, format: FloatType) -> Option<FloatType> {

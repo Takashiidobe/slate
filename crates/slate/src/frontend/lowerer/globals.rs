@@ -136,11 +136,15 @@ impl Tables<'_> {
             ValueKind::Convert { .. } if self.is_long_double(&value.ty) => {
                 self.fold_long_double(value).is_some()
             }
-            ValueKind::Convert { operand, .. }
-                if self.is_complex_long_double(&value.ty)
-                    || self.is_complex_long_double(&operand.ty) =>
-            {
+            ValueKind::Convert { operand, .. } if self.is_long_double(&operand.ty) => {
+                self.fold_narrowed_long_double(value).is_some()
+                    || self.fold_integer(value).is_some()
+            }
+            ValueKind::Convert { .. } if self.is_complex_long_double(&value.ty) => {
                 self.fold_complex_long_double(value).is_some()
+            }
+            ValueKind::Convert { operand, .. } if self.is_complex_long_double(&operand.ty) => {
+                self.fold_complex_bits(value).is_some()
             }
             ValueKind::Convert { operand, .. } => {
                 !self.is_long_double(&operand.ty)

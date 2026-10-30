@@ -2840,16 +2840,19 @@ impl Lowerer {
             ExprKind::Comma { left, right } => {
                 let left = self.expr(left)?;
                 let right = self.expr(right)?;
+                let ty = right.value.ty.clone();
+                let right_value = self.context.peel_x87_excess(right.value);
+                let sequence = self.value(
+                    e,
+                    right_value.ty.clone(),
+                    ValueKind::Sequence {
+                        left: Box::new(left.value),
+                        right: Box::new(right_value),
+                    },
+                );
                 Ok(Operand {
                     c: right.c,
-                    value: self.value(
-                        e,
-                        right.ty.clone(),
-                        ValueKind::Sequence {
-                            left: Box::new(left.value),
-                            right: Box::new(right.value),
-                        },
-                    ),
+                    value: self.context.narrow_x87_excess(sequence, ty)?,
                 })
             }
             ExprKind::Conditional {
@@ -2905,7 +2908,15 @@ impl Lowerer {
                     left = self.converted(e, Slot::Then, left)?;
                     right = self.converted(e, Slot::Else, right)?;
                 }
-                let result = self.operand(
+                let ty = left.value.ty.clone();
+                let excess = self.context.is_x87_excess(&left.value)
+                    || self.context.is_x87_excess(&right.value);
+                if excess {
+                    left.value = self.context.widen_to_excess_type(left.value)?;
+                    right.value = self.context.widen_to_excess_type(right.value)?;
+                }
+                let wide = left.value.ty.clone();
+                let mut result = self.operand(
                     e,
                     left.c,
                     ValueKind::Conditional {
@@ -2914,6 +2925,10 @@ impl Lowerer {
                         else_value: Box::new(right.value),
                     },
                 );
+                if excess {
+                    result.value.ty = wide;
+                    result.value = self.context.narrow_x87_excess(result.value, ty)?;
+                }
                 let Some((id, extent)) = shared else {
                     return Ok(result);
                 };
@@ -3189,16 +3204,19 @@ impl Lowerer {
                     statements.extend(lower.statements(trailing, lower.return_type)?);
                     Ok((statements, value))
                 })?;
+                let ty = value.ty.clone();
+                let result = self.context.peel_fast_x87_excess(value.value);
+                let evaluation = self.value(
+                    e,
+                    result.ty.clone(),
+                    ValueKind::StatementExpression(Box::new(Evaluation {
+                        statements,
+                        value: result,
+                    })),
+                );
                 Ok(Operand {
                     c: value.c,
-                    value: self.value(
-                        e,
-                        value.ty.clone(),
-                        ValueKind::StatementExpression(Box::new(Evaluation {
-                            statements,
-                            value: value.value,
-                        })),
-                    ),
+                    value: self.context.narrow_x87_excess(evaluation, ty)?,
                 })
             }
             ExprKind::ConvertVector { ty, value } => {

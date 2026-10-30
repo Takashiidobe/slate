@@ -2,6 +2,7 @@ use super::attributes::{Subject, Use};
 use super::ctype::QualType;
 use super::expression::Lowerer;
 use super::initializer::InitializerSource;
+use super::numeric::X87Excess;
 use super::numeric::{Context, ResolveError};
 use super::operand::Operand;
 use super::pragmas::{FloatingPragmas, PragmaPlacement};
@@ -1492,9 +1493,11 @@ impl Lowerer {
                 Some(initializer) => {
                     let anchor = declarator.derive(());
                     let region = self.context.region;
+                    let x87 = self.context.x87;
                     if storage != StorageDuration::Automatic {
                         self.context.region.floating = FloatingSemantics::default();
                         self.context.region.complex_range = ComplexMethod::Full;
+                        self.context.x87 = x87.map(X87Excess::in_constant_initializer);
                     }
                     let value = self.initializer_value(
                         declarator.id,
@@ -1503,6 +1506,7 @@ impl Lowerer {
                         &anchor,
                     );
                     self.context.region = region;
+                    self.context.x87 = x87;
                     let mut value = value?;
                     if self.types.flavor().is_msvc()
                         && (global || storage_class == StorageClass::Static)

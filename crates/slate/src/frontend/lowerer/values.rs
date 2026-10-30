@@ -931,6 +931,23 @@ impl FunctionLowerer<'_, '_> {
                 long_double_literal(bits)
             }
             ValueKind::Convert { operand, .. }
+                if self.in_static_initializer
+                    && self.tables.is_long_double(&operand.ty)
+                    && let Some(bits) = self.tables.fold_narrowed_long_double(value) =>
+            {
+                self.lower_number(&ir::Number::FloatBits(bits), &value.ty)?
+            }
+            ValueKind::Convert { operand, .. }
+                if self.in_static_initializer
+                    && self.tables.is_long_double(&operand.ty)
+                    && let Some(integer) = self.tables.fold_integer(value) =>
+            {
+                Expr::Cast {
+                    expr: Box::new(Expr::Value(rust::RustValue::U128(integer as u128))),
+                    ty: self.lower_type(&value.ty)?,
+                }
+            }
+            ValueKind::Convert { operand, .. }
                 if self.tables.wide_int(&operand.ty).is_some()
                     || self.tables.wide_int(&value.ty).is_some() =>
             {

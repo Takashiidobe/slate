@@ -8,6 +8,7 @@
   - [Who decides](#who-decides)
   - [Promotions stay visible](#promotions-stay-visible)
   - [`_Float16` excess precision](#_float16-excess-precision)
+  - [x87 excess precision](#x87-excess-precision)
 - [Operator rules checked in sema](#operator-rules-checked-in-sema)
 <!-- /toc -->
 
@@ -196,6 +197,49 @@ Unary `-` joins a chain only when its operand is one. Comparisons, stores,
 and explicit casts see the rounded half value: a same-type cast retags the
 narrow as `reason=explicit`, which ends the chain like clang's
 `(_Float16)(a * b)`.
+
+### x87 excess precision
+
+gcc on x86 computes `float` and `double` arithmetic on the x87 stack when
+`-mfpmath=387` selects it (the i686 default, or no usable SSE;
+`X86Isa::x87_formats`; x86_64 `-mno-sse2` does so for `double` only).
+`__FLT_EVAL_METHOD__` is then 2 or -1. Sema spells this out with the same
+shape as `_Float16`: operators widen to `f80` with `reason=excess_precision`,
+compute there, and narrow with the same reason, and an operand that is already
+such a narrow is unwrapped.
+
+```text
+float_narrow<f64>(div<f80>(mul<f80>(float_widen<f80>(read<f64>(%1)), ...), ...))
+```
+
+Unlike `_Float16`, comparisons, conditions, `?:`, comma, unary `-`, and
+conversions to another type (`int`, `long double`) see the wide value. Integer
+operands of arithmetic and comparisons convert directly to `f80` (`fild` is
+exact). Stores, arguments, and returns round. `X87Excess::rounding` picks the
+remaining rules, following `-fexcess-precision` (default fast in GNU modes,
+standard in ISO modes) and `-ffloat-store`:
+
+| Rule                                 | `Standard` | `Fast`    | `EachOperation` (fast with `-ffloat-store`) |
+| ------------------------------------ | ---------- | --------- | ------------------------------------------- |
+| chain across operators               | yes        | yes       | no: each operator rounds, so double rounding remains |
+| same-type or widening explicit cast  | rounds     | keeps     | rounds                                      |
+| `(double)int` cast                   | rounds     | keeps     | rounds                                      |
+| statement expression result          | rounds     | keeps     | rounds                                      |
+| literal value                        | parsed as `f80`, then narrowed (double rounding) | own format | own format |
+| constant operands                    | computed in `f80` | folded in own format | folded in own format |
+
+`-ffloat-store` has no effect in `Standard`. Constant folding in own format
+skips anything that would raise overflow, invalid, or divide-by-zero under
+`-ftrapping-math`, or be inexact under `-frounding-math`, so `1e308 * 10 / 10`
+is still computed in `f80` at run time; static initializers fold regardless.
+A literal that `f80` narrows exactly stays a plain `const`. 32-bit `-ffast-math`
+without `-mfpmath` switches gcc to SSE math, so no excess precision applies.
+
+Not modeled, tracked in slate-3amj.49: gcc fast mode on i686 returns `double`
+in `st(0)` unrounded, and inlined builtins such as `fabs` keep excess precision
+of their operand. Fast mode above `-O0` also keeps variables in registers
+unrounded, which depends on register allocation; slate models `-O0`. clang's
+`-mno-sse` x87 evaluation stays per-operation (slate-parser-6x05.38.6).
 
 ## Operator rules checked in sema
 

@@ -115,6 +115,7 @@ impl FunctionLowerer<'_, '_> {
         ty: &ir::Type,
     ) -> Result<Expr> {
         let lowered = self.lower_value(operand)?;
+        self.dependencies.long_double = true;
         let (from, to) = (
             self.tables.is_long_double(&operand.ty),
             self.tables.is_long_double(ty),
@@ -325,6 +326,18 @@ impl Tables<'_> {
         Some(self.fold_float::<X87DoubleExtendedS>(value)?.to_bits())
     }
 
+    pub(super) fn fold_narrowed_long_double(&self, value: &ir::Value) -> Option<u128> {
+        use rustc_apfloat::{
+            Float,
+            ieee::{DoubleS, SingleS},
+        };
+        match self.float_kind(&value.ty)? {
+            ir::FloatType::F32 => Some(self.fold_float::<SingleS>(value)?.to_bits()),
+            ir::FloatType::F64 => Some(self.fold_float::<DoubleS>(value)?.to_bits()),
+            _ => None,
+        }
+    }
+
     pub(super) fn is_complex_long_double(&self, ty: &ir::Type) -> bool {
         matches!(
             self.resolve_type(ty),
@@ -373,6 +386,18 @@ impl Tables<'_> {
                 operand,
                 ..
             } => self.fold_integer(operand)?,
+            ValueKind::Convert {
+                kind: ir::ConversionKind::FloatToInt,
+                operand,
+                ..
+            } if self.is_long_double(&operand.ty) => {
+                use rustc_apfloat::{Float, Status, ieee::X87DoubleExtendedS};
+                let result = self.fold_float::<X87DoubleExtendedS>(operand)?.to_i128(128);
+                if result.status.intersects(Status::INVALID_OP) {
+                    return None;
+                }
+                result.value
+            }
             _ => return None,
         };
         if width >= 128 {

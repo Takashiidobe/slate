@@ -75,7 +75,9 @@ impl TargetIsa {
                     .clone()
                     .with_general_regs_only(&request.general_regs_only);
                 x86.check(family, arch, flavor)?;
-                Ok(Self::X86(X86Isa::resolve(family, arch, &x86, flavor)))
+                let isa = X86Isa::resolve(family, arch, &x86, flavor);
+                isa.check_fpmath(flavor)?;
+                Ok(Self::X86(isa))
             }
             TargetFamily::AArch64 => {
                 if request.x86 != X86IsaRequest::default() {

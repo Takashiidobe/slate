@@ -218,7 +218,12 @@ impl FunctionLowerer<'_, '_> {
             ValueKind::Convert { .. } | ValueKind::Arith { .. } | ValueKind::Unary { .. }
                 if self.in_static_initializer
                     && (!matches!(value.node.value, ValueKind::Convert { .. })
-                        || self.tables.is_complex_long_double(&value.ty))
+                        || self.tables.is_complex_long_double(&value.ty)
+                        || matches!(
+                            &value.node.value,
+                            ValueKind::Convert { operand, .. }
+                                if self.tables.is_complex_long_double(&operand.ty)
+                        ))
                     && let Some(component) = self.complex_component(&value.ty)
                     && let Some([re, im]) = self.tables.fold_complex_bits(value) =>
             {

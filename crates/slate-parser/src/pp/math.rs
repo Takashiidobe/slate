@@ -5,6 +5,7 @@ use crate::ast::HeaderKind;
 use crate::compiler_args::{CompilerFlavor, math_switch_argument};
 use crate::compiler_options::{ComplexMethod, MathOptions, MathSwitch, Optimization};
 use crate::lexer::Token;
+use crate::target::isa::TargetIsa;
 use crate::target_info::TargetFamily;
 use std::path::PathBuf;
 
@@ -174,7 +175,12 @@ impl Preprocessor<'_> {
                     ("__STDC_IEC_60559_COMPLEX__", None),
                 ]);
             }
+            let explicit_fpmath = matches!(
+                self.dialect.target().isa,
+                TargetIsa::X86(isa) if isa.fpmath.is_some()
+            );
             if x87
+                && !explicit_fpmath
                 && self.fast_excess_precision(&math)
                 && math.gcc_requested_fast_math(self.math.errno_default)
             {

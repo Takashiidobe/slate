@@ -133,7 +133,7 @@ fn complex_div<S: Semantics>([a, b]: Pair<S>, [c, d]: Pair<S>, basic: bool) -> P
 }
 
 impl Tables<'_> {
-    fn float_kind(&self, ty: &ir::Type) -> Option<ir::FloatType> {
+    pub(super) fn float_kind(&self, ty: &ir::Type) -> Option<ir::FloatType> {
         match self.resolve_type(ty) {
             ir::Type::Numeric(ir::NumericType::Float(kind)) => Some(*kind),
             _ => None,
@@ -171,6 +171,12 @@ impl Tables<'_> {
                 operand,
                 ..
             } => self.fold_float_as::<S>(operand),
+            ValueKind::Convert {
+                kind: ir::ConversionKind::FloatNarrow,
+                operand,
+                semantics: ir::ConversionSema::Floating(floating),
+                ..
+            } if nearest_even(floating) => self.fold_float_as::<S>(operand),
             ValueKind::Convert {
                 kind: ir::ConversionKind::ComplexToReal,
                 operand,

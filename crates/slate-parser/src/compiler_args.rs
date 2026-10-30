@@ -353,6 +353,7 @@ struct ParsedCompilerArgs {
     fast_optimization: Option<usize>,
     fp_contract: Option<(FpContract, usize)>,
     iso_flt_eval_method: bool,
+    float_store: Option<bool>,
     gnu89_inline: Option<bool>,
     common: Option<bool>,
     trigraphs: Option<bool>,
@@ -623,6 +624,7 @@ enum Opt {
     FpModel,
     ExcessPrecision,
     PermittedFltEvalMethods,
+    FloatStore,
     Gnu89Inline,
     Common,
     Trigraphs,
@@ -636,6 +638,7 @@ enum Opt {
     IsaFeature,
     Arch,
     FloatAbi,
+    FpMath,
     Fpu,
     Thumb,
     GeneralRegsOnly,
@@ -777,6 +780,7 @@ impl std::fmt::Display for Opt {
             Self::FpModel => "ffp-model=",
             Self::ExcessPrecision => "fexcess-precision",
             Self::PermittedFltEvalMethods => "fpermitted-flt-eval-methods",
+            Self::FloatStore => "ffloat-store",
             Self::Gnu89Inline => "gnu89-inline",
             Self::Common => "common",
             Self::Trigraphs => "trigraphs",
@@ -790,6 +794,7 @@ impl std::fmt::Display for Opt {
             Self::IsaFeature => "m<feature>",
             Self::Arch => "march",
             Self::FloatAbi => "mfloat-abi",
+            Self::FpMath => "mfpmath",
             Self::Fpu => "mfpu",
             Self::Thumb => "mthumb",
             Self::GeneralRegsOnly => "mgeneral-regs-only",
@@ -901,6 +906,8 @@ impl Opt {
             | Self::IsaFeature
             | Self::Arch
             | Self::FloatAbi
+            | Self::FpMath
+            | Self::FloatStore
             | Self::Fpu
             | Self::Thumb
             | Self::GeneralRegsOnly
@@ -1039,6 +1046,7 @@ impl Opt {
             Self::CxFortranRules => "-fcx-fortran-rules",
             Self::Gnu89Inline => "-fgnu89-inline",
             Self::Common => "-fcommon",
+            Self::FloatStore => "-ffloat-store",
             Self::ClangTrigraphs => "-ftrigraphs",
             Self::ClangDigraphs => "-fdigraphs",
             Self::MsExtensions => "-fms-extensions",
@@ -1470,7 +1478,8 @@ fn ignored_option(argument: &str) -> Option<IgnoredOption> {
         .then_some(IgnoredOption::Alone)
 }
 
-const SWITCH_OPTS: [Opt; 57] = [
+const SWITCH_OPTS: [Opt; 58] = [
+    Opt::FloatStore,
     Opt::Asm,
     Opt::GnuInlineAsm,
     Opt::OpenMp,
@@ -1611,6 +1620,7 @@ impl CompilerArgParser {
             },
         );
         options.iso_flt_eval_method = raw.iso_flt_eval_method;
+        options.float_store = raw.float_store == Some(true);
         options.inline_semantics = raw.gnu89_inline.map(|enabled| {
             use crate::compiler_options::InlineSemantics;
             if enabled {
@@ -1813,6 +1823,7 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                 _ if let Some(switch) = opt.math_switch() => parsed.math.push((switch, value)),
                 Opt::Gnu89Inline => parsed.gnu89_inline = Some(value),
                 Opt::Common => parsed.common = Some(value),
+                Opt::FloatStore => parsed.float_store = Some(value),
                 Opt::ClangTrigraphs => parsed.trigraphs = Some(value),
                 Opt::ClangDigraphs => parsed.digraphs = Some(value),
                 Opt::MsExtensions => {
@@ -2438,6 +2449,13 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                 next_value(arguments, &mut index, argument, value)?,
                 argument,
                 "architecture",
+            )?);
+        } else if let Some(value) = option_value(argument, "mfpmath") {
+            parsed.saw(Opt::FpMath, argument);
+            parsed.isa.x86.fpmath = Some(parse_value(
+                next_value(arguments, &mut index, argument, value)?,
+                argument,
+                "FP unit",
             )?);
         } else if let Some(value) = option_value(argument, "mfloat-abi") {
             parsed.saw(Opt::FloatAbi, argument);
