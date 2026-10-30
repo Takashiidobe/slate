@@ -178,6 +178,15 @@ file (`src/main.rs` for the unit that defines `main` and for single-file
 projects, otherwise `src/<stem>.rs`). The shared `src/__slate_types.rs` of an
 executable project has no block; the release build checks it.
 
+`tests/fixtures.plan/` fixtures pin `translate-project --plan` output instead
+of Rust. `plan_filecheck` (`tests/project_plan.rs`) treats each `.c` file as a
+one-unit project, using `<stem>.json` as its matrix when present and
+`matrix.json` otherwise, and runs it once per matrix target. The checked text
+is stdout, stderr and the exit status, then an `exhaustive:` line comparing the
+plan with every feature subset. A `// plan-args:` line replaces the arguments,
+which is how usage errors are pinned. The test also requires the same output at
+`SLATE_JOBS=1`. Nothing is compiled, so these fixtures have no runtime gate.
+
 Generate the block from the workspace root:
 
 ```bash

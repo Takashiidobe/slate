@@ -532,7 +532,7 @@ const DIGRAPHS: &[(&str, Token)] = &[
     ("%>", Token::RBrace),
 ];
 
-pub(crate) fn token_spelling(token: &Span<Token>) -> String {
+pub fn token_spelling(token: &Span<Token>) -> String {
     token
         .digraph
         .then(|| {

@@ -1,0 +1,191 @@
+{
+  "targets": [
+    {
+      "name": "linux-x86_64",
+      "triple": "x86_64-unknown-linux-gnu",
+      "flavor": "clang"
+    }
+  ],
+  "features": [
+    {
+      "name": "f0",
+      "defines": [
+        "F0"
+      ]
+    },
+    {
+      "name": "f1",
+      "defines": [
+        "F1"
+      ]
+    },
+    {
+      "name": "f2",
+      "defines": [
+        "F2"
+      ]
+    },
+    {
+      "name": "f3",
+      "defines": [
+        "F3"
+      ]
+    },
+    {
+      "name": "f4",
+      "defines": [
+        "F4"
+      ]
+    },
+    {
+      "name": "f5",
+      "defines": [
+        "F5"
+      ]
+    },
+    {
+      "name": "f6",
+      "defines": [
+        "F6"
+      ]
+    },
+    {
+      "name": "f7",
+      "defines": [
+        "F7"
+      ]
+    },
+    {
+      "name": "f8",
+      "defines": [
+        "F8"
+      ]
+    },
+    {
+      "name": "f9",
+      "defines": [
+        "F9"
+      ]
+    },
+    {
+      "name": "f10",
+      "defines": [
+        "F10"
+      ]
+    },
+    {
+      "name": "f11",
+      "defines": [
+        "F11"
+      ]
+    },
+    {
+      "name": "f12",
+      "defines": [
+        "F12"
+      ]
+    },
+    {
+      "name": "f13",
+      "defines": [
+        "F13"
+      ]
+    },
+    {
+      "name": "f14",
+      "defines": [
+        "F14"
+      ]
+    },
+    {
+      "name": "f15",
+      "defines": [
+        "F15"
+      ]
+    },
+    {
+      "name": "f16",
+      "defines": [
+        "F16"
+      ]
+    },
+    {
+      "name": "f17",
+      "defines": [
+        "F17"
+      ]
+    },
+    {
+      "name": "f18",
+      "defines": [
+        "F18"
+      ]
+    },
+    {
+      "name": "f19",
+      "defines": [
+        "F19"
+      ]
+    },
+    {
+      "name": "f20",
+      "defines": [
+        "F20"
+      ]
+    },
+    {
+      "name": "f21",
+      "defines": [
+        "F21"
+      ]
+    },
+    {
+      "name": "f22",
+      "defines": [
+        "F22"
+      ]
+    },
+    {
+      "name": "f23",
+      "defines": [
+        "F23"
+      ]
+    },
+    {
+      "name": "f24",
+      "defines": [
+        "F24"
+      ]
+    },
+    {
+      "name": "f25",
+      "defines": [
+        "F25"
+      ]
+    },
+    {
+      "name": "f26",
+      "defines": [
+        "F26"
+      ]
+    },
+    {
+      "name": "f27",
+      "defines": [
+        "F27"
+      ]
+    },
+    {
+      "name": "f28",
+      "defines": [
+        "F28"
+      ]
+    },
+    {
+      "name": "f29",
+      "defines": [
+        "F29"
+      ]
+    }
+  ]
+}

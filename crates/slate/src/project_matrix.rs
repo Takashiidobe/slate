@@ -52,6 +52,8 @@ pub enum MatrixError {
     UnknownFeature(String),
     #[error("matrix features {} cannot be combined", .0.join(", "))]
     InvalidCombination(Vec<String>),
+    #[error("cannot enumerate {features} matrix features, the limit is {limit}")]
+    TooManyFeaturesToEnumerate { features: usize, limit: usize },
     #[error("{file}: {source}", file = file.display())]
     Arguments {
         file: PathBuf,
@@ -145,12 +147,36 @@ impl Matrix {
         Ok(())
     }
 
+    pub fn is_invalid_combination(&self, features: &[String]) -> bool {
+        self.invalid_features
+            .iter()
+            .any(|group| group.iter().all(|name| features.contains(name)))
+    }
+
     pub fn commands(
         &self,
         project: &Path,
         target: &str,
         features: &[String],
     ) -> Result<Vec<CompileCommand>, MatrixError> {
+        let args = self.arguments(target, features)?;
+        self.sources
+            .iter()
+            .map(|source| command_for(project, source, &args))
+            .collect()
+    }
+
+    pub fn command(
+        &self,
+        project: &Path,
+        target: &str,
+        features: &[String],
+        source: &Path,
+    ) -> Result<CompileCommand, MatrixError> {
+        command_for(project, source, &self.arguments(target, features)?)
+    }
+
+    fn arguments(&self, target: &str, features: &[String]) -> Result<Vec<String>, MatrixError> {
         let target = self
             .targets
             .iter()
@@ -188,19 +214,19 @@ impl Matrix {
                 .flat_map(|feature| &feature.defines)
                 .map(|define| format!("-D{define}")),
         );
-        let args = crate::target::compiler_arguments(&args);
-        self.sources
-            .iter()
-            .map(|source| {
-                let file = absolute_path(project, source);
-                CompilerArgParser::parse_in(args.iter().cloned(), project)
-                    .map(|args| CompileCommand {
-                        file: file.clone(),
-                        args,
-                    })
-                    .map_err(|source| MatrixError::Arguments { file, source })
-            })
-            .collect()
+        Ok(crate::target::compiler_arguments(&args))
+    }
+}
+
+fn command_for(
+    project: &Path,
+    source: &Path,
+    args: &[String],
+) -> Result<CompileCommand, MatrixError> {
+    let file = absolute_path(project, source);
+    match CompilerArgParser::parse_in(args.iter().cloned(), project) {
+        Ok(args) => Ok(CompileCommand { file, args }),
+        Err(source) => Err(MatrixError::Arguments { file, source }),
     }
 }
 

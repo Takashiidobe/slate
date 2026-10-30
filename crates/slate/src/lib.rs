@@ -8,4 +8,5 @@ pub mod diagnostics;
 pub mod frontend;
 pub mod function_identity;
 pub mod project_matrix;
+pub mod project_plan;
 pub mod target;

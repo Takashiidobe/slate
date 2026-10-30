@@ -3,7 +3,7 @@ use rayon::prelude::*;
 use slate::backend::{self, codegen, rust_ast};
 use slate::frontend::c_shim;
 use slate::frontend::preprocess;
-use slate::{api, compile_commands, project_matrix};
+use slate::{api, compile_commands, project_matrix, project_plan};
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
@@ -629,6 +629,7 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
     let mut matrix_path = None;
     let mut matrix_target = None;
     let mut features: Vec<String> = Vec::new();
+    let mut plan_mode = None;
     let current_dir = std::env::current_dir().map_err(|e| format!("current directory: {e}"))?;
     let mut index = 0;
     while index < args.len() {
@@ -648,6 +649,8 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
                     .ok_or_else(|| "--matrix requires a file".to_string())?;
                 matrix_path = Some(PathBuf::from(path));
             }
+            "--plan" => plan_mode = Some(project_plan::Mode::Plan),
+            "--plan-exhaustive" => plan_mode = Some(project_plan::Mode::CheckExhaustive),
             "--matrix-target" => {
                 index += 1;
                 matrix_target = Some(
@@ -709,6 +712,25 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
             path => paths.push(path),
         }
         index += 1;
+    }
+    if let Some(mode) = plan_mode {
+        let matrix_path = matrix_path.ok_or("--plan requires --matrix")?;
+        if !features.is_empty() {
+            return Err("--plan chooses features itself; remove --features".into());
+        }
+        let [project] = paths.as_slice() else {
+            return Err("--plan requires only a project directory".into());
+        };
+        let project = compile_commands::absolute_path(&current_dir, Path::new(project));
+        let matrix = cli_result(project_matrix::Matrix::read(&matrix_path))?;
+        let plan = slate_worker_pool()?
+            .install(|| project_plan::plan(&matrix, &project, matrix_target.as_deref(), mode));
+        let plan = cli_result(plan)?;
+        print!("{}", plan.render(matrix.features.len()));
+        return match plan.unplanned() {
+            0 => Ok(String::new()),
+            count => Err(format!("{count} translation units could not be planned")),
+        };
     }
     if paths.len() != 2 {
         return Err("translate-project requires a project directory and crate directory".into());

@@ -157,28 +157,51 @@ impl PreprocessTrace {
     }
 
     pub fn dependencies(&self, trace: TokenTrace) -> Dependencies {
+        self.closure(
+            Vec::new(),
+            vec![trace.context],
+            self.macros(trace.macros).to_vec(),
+        )
+    }
+
+    pub fn conditional_dependencies(&self, index: usize) -> Dependencies {
+        let conditional = &self.conditionals[index];
+        self.closure(
+            vec![Branch {
+                conditional: ConditionalId(index as u32),
+                arm: conditional.arms.len().saturating_sub(1) as u32,
+            }],
+            vec![conditional.context],
+            Vec::new(),
+        )
+    }
+
+    fn closure(
+        &self,
+        mut branches: Vec<Branch>,
+        mut contexts: Vec<ContextId>,
+        mut events: Vec<MacroEventId>,
+    ) -> Dependencies {
         let mut result = Dependencies::default();
-        let mut contexts = vec![trace.context];
-        let mut events: Vec<MacroEventId> = self.macros(trace.macros).to_vec();
         loop {
-            if let Some(context) = contexts.pop() {
-                for branch in self.branches(context) {
-                    if !result.branches.insert(branch) {
-                        continue;
-                    }
-                    let arms = &self.conditional(branch.conditional).arms;
-                    for arm in &arms[..=branch.arm as usize] {
-                        for read in &arm.reads {
-                            events.extend(&read.skipped);
-                            match read.event {
-                                Some(event) => events.push(event),
-                                None => {
-                                    result.roots.insert(read.name.clone());
-                                }
+            if let Some(branch) = branches.pop() {
+                if !result.branches.insert(branch) {
+                    continue;
+                }
+                let arms = &self.conditional(branch.conditional).arms;
+                for arm in &arms[..=branch.arm as usize] {
+                    for read in &arm.reads {
+                        events.extend(&read.skipped);
+                        match read.event {
+                            Some(event) => events.push(event),
+                            None => {
+                                result.roots.insert(read.name.clone());
                             }
                         }
                     }
                 }
+            } else if let Some(context) = contexts.pop() {
+                branches.extend(self.branches(context));
             } else if let Some(event) = events.pop() {
                 if result.events.insert(event) {
                     let event = self.event(event);

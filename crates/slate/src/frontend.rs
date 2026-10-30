@@ -3,7 +3,7 @@ use slate_parser::dialect::Dialect;
 use slate_parser::files::Files;
 use slate_parser::ir::{BindingId, Module};
 use slate_parser::parser::Parser;
-use slate_parser::pp::DirectiveDiagnostic;
+use slate_parser::pp::{DirectiveDiagnostic, PPNode, PreprocessTrace};
 use slate_parser::sema::Sema;
 use std::collections::HashSet;
 use std::path::{Path, PathBuf};
@@ -242,16 +242,39 @@ pub fn parse_module_with_diagnostics(
     parse_module_from_args(path, source, args, diagnostics)
 }
 
+fn parser_from_args(args: CompilerArgs) -> Result<Parser, Error> {
+    let search = args.search_paths()?;
+    let dialect = Dialect::new(args.flavor, args.standard, args.target, args.options);
+    Ok(Parser::new(search, dialect).with_preprocessor_inputs(args.preprocessor_inputs))
+}
+
+pub type TracedPreprocess = (
+    Vec<PPNode>,
+    Files,
+    PreprocessTrace,
+    Vec<DirectiveDiagnostic>,
+);
+
+pub fn preprocess_traced(path: &Path, args: CompilerArgs) -> Result<TracedPreprocess, Error> {
+    let mut parser = parser_from_args(args)?;
+    let (nodes, files, trace) =
+        parser
+            .preprocess_file_traced(path)
+            .map_err(|error| Error::Parse {
+                path: path.to_path_buf(),
+                message: error.to_string(),
+            })?;
+    let diagnostics = parser.directive_diagnostics().to_vec();
+    Ok((nodes, files, trace, diagnostics))
+}
+
 fn parse_module_from_args(
     path: &Path,
     source: Option<String>,
     args: CompilerArgs,
     diagnostics: &mut Vec<serde_json::Value>,
 ) -> Result<(Module, Files, Vec<DirectiveDiagnostic>), Error> {
-    let search = args.search_paths()?;
-    let dialect = Dialect::new(args.flavor, args.standard, args.target, args.options);
-    let mut parser =
-        Parser::new(search, dialect).with_preprocessor_inputs(args.preprocessor_inputs);
+    let mut parser = parser_from_args(args)?;
     let (unit, files) = match source {
         Some(source) => parser.parse_file_with_source(path, source),
         None => parser.parse_file(path),
