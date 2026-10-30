@@ -4,6 +4,7 @@
 - [TargetSpec fields](#targetspec-fields)
 - [Steps](#steps)
 - [Linux musl](#linux-musl)
+- [Clang resource headers](#clang-resource-headers)
 <!-- /toc -->
 
 Every supported triple is one `TargetSpec` in `src/target_registry.rs`.
@@ -48,3 +49,15 @@ Nothing else matches on the triple string.
 - Layout and calling conventions match the corresponding Linux SysV/AAPCS
   profiles. Musl uses its own sysroot and does not add synthetic Slate macros.
 - Musl has no Debian cross-triplet include subdirectory.
+
+## Clang resource headers
+
+- `slate-sysroots/src/compiler_headers.rs` pins Debian's
+  `libclang-common-22-dev` package from a fixed snapshot with SHA-256.
+- Extract the built resource include directory and Debian copyright notice;
+  the same header bundle serves every host and supported target.
+- Source-only `clang/lib/Headers` omits generated ARM headers. Debian's built
+  bundle includes NEON, SVE, SME, MVE, CDE, and their generated dependencies.
+- When updating Clang, update the package, snapshot, checksum, extraction
+  paths, and required-header checks together. The package manifest replaces
+  installations acquired with older pins or the source-only installer.

@@ -148,7 +148,7 @@ fn compiler_header_bundles_resolve_with_target_includes() {
     for (compiler, files) in [
         (
             CompilerHeaders::Clang,
-            &["stdarg.h", "stddef.h", "immintrin.h"] as &[&str],
+            crate::compiler_headers::CLANG_REQUIRED_HEADERS,
         ),
         (
             CompilerHeaders::Gcc(GccFamily::X86),
@@ -188,8 +188,11 @@ fn compiler_header_bundles_resolve_with_target_includes() {
             paths.include_paths_with_compiler(target, compiler).unwrap(),
             vec![include.clone(), libc.clone()]
         );
-        fs::remove_file(include.join("stdarg.h")).unwrap();
-        assert!(!paths.doctor_compiler_headers(compiler)[0].present);
+        for name in files {
+            fs::remove_file(include.join(name)).unwrap();
+            assert!(!paths.doctor_compiler_headers(compiler)[0].present);
+            fs::write(include.join(name), "").unwrap();
+        }
     }
 
     assert!(
@@ -651,4 +654,66 @@ fn failed_rebuild_keeps_the_previous_sysroot() {
         fs::read_to_string(output.join("SYSROOT-MANIFEST.txt")).unwrap(),
         "old"
     );
+}
+
+#[test]
+fn clang_package_extracts_built_headers_and_license_only() {
+    let temp = TestDir::new();
+    let mut tar = tar::Builder::new(Vec::new());
+    for (name, contents) in [
+        (
+            "./usr/lib/llvm-22/lib/clang/22/include/arm_neon.h",
+            "generated neon",
+        ),
+        (
+            "./usr/lib/llvm-22/lib/clang/22/include/arm_sve.h",
+            "generated sve",
+        ),
+        (
+            "./usr/lib/llvm-22/lib/clang/22/include/subdir/header.h",
+            "nested",
+        ),
+        (
+            "./usr/share/doc/libclang-common-22-dev/copyright",
+            "license",
+        ),
+        ("./usr/bin/unwanted", "executable"),
+    ] {
+        let mut header = tar::Header::new_gnu();
+        header.set_mode(0o644);
+        header.set_size(contents.len() as u64);
+        header.set_cksum();
+        tar.append_data(&mut header, name, contents.as_bytes())
+            .unwrap();
+    }
+    let mut compressed = xz2::write::XzEncoder::new(Vec::new(), 6);
+    compressed.write_all(&tar.into_inner().unwrap()).unwrap();
+    let compressed = compressed.finish().unwrap();
+    let package = temp.0.join("headers.deb");
+    let mut ar = ar::Builder::new(fs::File::create(&package).unwrap());
+    ar.append(
+        &ar::Header::new(b"data.tar.xz".to_vec(), compressed.len() as u64),
+        compressed.as_slice(),
+    )
+    .unwrap();
+    drop(ar);
+    let root = temp.0.join("root");
+    crate::compiler_headers::extract_clang_headers(&package, &root).unwrap();
+    assert_eq!(
+        fs::read_to_string(root.join("include/arm_neon.h")).unwrap(),
+        "generated neon"
+    );
+    assert_eq!(
+        fs::read_to_string(root.join("include/arm_sve.h")).unwrap(),
+        "generated sve"
+    );
+    assert_eq!(
+        fs::read_to_string(root.join("include/subdir/header.h")).unwrap(),
+        "nested"
+    );
+    assert_eq!(
+        fs::read_to_string(root.join("LICENSE.TXT")).unwrap(),
+        "license"
+    );
+    assert!(!root.join("usr").exists());
 }

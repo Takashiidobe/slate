@@ -58,10 +58,14 @@ All four compiler names support `install`, `path`, and `doctor`.
 
 | Compiler      | Header source                                                                                             | Target use                                                         | Optional selector                                            |
 | ------------- | --------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ | ------------------------------------------------------------ |
-| `clang`       | Upstream Clang 22.1.8 resource headers; requires `git` to install                                         | Shared bundle for all supported targets                            | None                                                         |
+| `clang`       | Built Clang 22.1.8 resource headers from a pinned Debian package, verified by SHA-256                     | Shared bundle for all supported targets                            | None                                                         |
 | `apple-clang` | Resource headers copied from the active Xcode or Command Line Tools compiler; installation requires macOS | The two macOS targets                                              | None                                                         |
 | `gcc`         | GCC 16.2.0 release archive, verified by SHA-256; assembled as Linux compiler headers                      | Linux targets with the matching architecture family                | `x86`, `aarch64`, or `arm`; omitted means all families       |
 | `msvc`        | CRT headers from the pinned Microsoft packages                                                            | The four Windows MSVC targets; headers must match the exact target | A Windows MSVC target triple; omitted means all four targets |
+
+Clang installation includes generated ARM headers and requires no compiler or
+`git`. Run `install compiler-headers clang` to replace an older source-only
+bundle.
 
 GCC's `x86` family covers i686 and x86_64; `aarch64` covers aarch64;
 `arm` covers both armv7 Linux targets. Installing GCC headers always installs

@@ -1,4 +1,4 @@
-use crate::install::{install_staged_at, staging_path};
+use crate::install::{install_pinned_at, install_staged_at, staging_path};
 use crate::{DoctorCheck, Paths, Target};
 use std::collections::{HashMap, HashSet};
 use std::env;
@@ -9,6 +9,26 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 
 pub const CLANG_VERSION: &str = "22.1.8";
+const CLANG_PACKAGE: &str = "libclang-common-22-dev_22.1.8-3_amd64.deb";
+const CLANG_URL: &str = "https://snapshot.debian.org/archive/debian/20261030T000000Z/pool/main/l/llvm-toolchain-22/libclang-common-22-dev_22.1.8-3_amd64.deb";
+const CLANG_SHA256: &str = "97adf643384de951222f04b3b250e50850e952cb678190689c1ea0d2ec236611";
+const CLANG_INCLUDE: &str = "usr/lib/llvm-22/lib/clang/22/include";
+const CLANG_COPYRIGHT: &str = "usr/share/doc/libclang-common-22-dev/copyright";
+const CLANG_MANIFEST: &str = "SYSROOT-MANIFEST.txt";
+pub(crate) const CLANG_REQUIRED_HEADERS: &[&str] = &[
+    "stdarg.h",
+    "stddef.h",
+    "immintrin.h",
+    "arm_neon.h",
+    "arm_fp16.h",
+    "arm_sve.h",
+    "arm_sme.h",
+    "arm_bf16.h",
+    "arm_mve.h",
+    "arm_cde.h",
+    "arm_vector_types.h",
+];
+
 pub const GCC_VERSION: &str = "16.2.0";
 const GCC_SHA256: &str = "e6738e29597f733270731aa90600f37ffdc045079dfc27ec7e8192cc81085c3e";
 
@@ -200,10 +220,11 @@ impl Paths {
             CompilerHeaders::Clang => {
                 let include = self.compiler_header_path(compiler);
                 let output = include.parent().expect("compiler header path has a parent");
-                install_staged_at(
+                install_pinned_at(
                     output,
+                    Some(&clang_manifest()),
                     |root| validate(compiler, &root.join("include")),
-                    install_clang,
+                    |root| install_clang(&self.cache, root),
                 )?;
                 Ok(include)
             }
@@ -238,10 +259,7 @@ fn is_msvc_target(target: Target) -> bool {
 
 fn checks(compiler: CompilerHeaders, path: PathBuf) -> Vec<DoctorCheck> {
     let (label, files): (&'static str, &[&str]) = match compiler {
-        CompilerHeaders::Clang => (
-            "Clang resource headers",
-            &["stdarg.h", "stddef.h", "immintrin.h"],
-        ),
+        CompilerHeaders::Clang => ("Clang resource headers", CLANG_REQUIRED_HEADERS),
         CompilerHeaders::AppleClang => (
             "Apple Clang resource headers",
             &["stdarg.h", "stddef.h", "immintrin.h"],
@@ -429,67 +447,64 @@ fn validate(compiler: CompilerHeaders, path: &Path) -> io::Result<()> {
     }
 }
 
-fn install_clang(root: &Path) -> io::Result<()> {
-    let source = root.join("source");
-    let tag = format!("llvmorg-{CLANG_VERSION}");
-    run_git(
-        [
-            "clone",
-            "--quiet",
-            "--depth",
-            "1",
-            "--filter=blob:none",
-            "--sparse",
-            "--branch",
-            &tag,
-            "https://github.com/llvm/llvm-project.git",
-        ],
-        &source,
+fn clang_manifest() -> String {
+    format!(
+        "Compiler: upstream Clang\nVersion: {CLANG_VERSION}\nPackage: {CLANG_PACKAGE}\nSource URL: {CLANG_URL}\nSource SHA-256: {CLANG_SHA256}\nContents: built resource headers, including generated ARM headers\n"
+    )
+}
+
+fn install_clang(cache: &Path, root: &Path) -> io::Result<()> {
+    let archive = crate::download::fetch(
+        &cache.join("compiler-headers"),
+        CLANG_PACKAGE,
+        CLANG_URL,
+        CLANG_SHA256,
     )?;
-    let status = Command::new("git")
-        .arg("-C")
-        .arg(&source)
-        .args([
-            "sparse-checkout",
-            "set",
-            "--no-cone",
-            "/clang/lib/Headers/",
-            "/LICENSE.TXT",
-            "/NOTICE.TXT",
-        ])
-        .status()?;
-    if !status.success() {
-        return Err(io::Error::other(format!(
-            "git sparse-checkout failed with {status}"
-        )));
-    }
-    copy_tree(&source.join("clang/lib/Headers"), &root.join("include"))?;
-    fs::copy(source.join("LICENSE.TXT"), root.join("LICENSE.TXT"))?;
-    if source.join("NOTICE.TXT").is_file() {
-        fs::copy(source.join("NOTICE.TXT"), root.join("NOTICE.TXT"))?;
-    }
-    fs::remove_dir_all(source)?;
-    fs::write(
-        root.join("COMPILER-HEADERS-MANIFEST.txt"),
-        format!(
-            "Compiler: upstream Clang\nVersion: {CLANG_VERSION}\nSource repository: https://github.com/llvm/llvm-project.git\nSource tag: {tag}\nSource path: clang/lib/Headers\n"
-        ),
-    )?;
+    extract_clang_headers(&archive, root)?;
+    fs::write(root.join(CLANG_MANIFEST), clang_manifest())?;
     Ok(())
 }
 
-fn run_git<const N: usize>(args: [&str; N], destination: &Path) -> io::Result<()> {
-    let status = Command::new("git")
-        .args(["-c", "advice.detachedHead=false"])
-        .args(args)
-        .arg(destination)
-        .status()
-        .map_err(|error| io::Error::new(error.kind(), format!("could not run git: {error}")))?;
-    if status.success() {
-        Ok(())
-    } else {
-        Err(io::Error::other(format!("git clone failed with {status}")))
+pub(crate) fn extract_clang_headers(package: &Path, root: &Path) -> io::Result<()> {
+    let mut archive = ar::Archive::new(File::open(package)?);
+    while let Some(entry) = archive.next_entry() {
+        let entry = entry?;
+        if entry.header().identifier() != b"data.tar.xz" {
+            continue;
+        }
+        let mut tar = tar::Archive::new(xz2::read::XzDecoder::new(entry));
+        for entry in tar.entries()? {
+            let mut entry = entry?;
+            if !entry.header().entry_type().is_file() {
+                continue;
+            }
+            let path = entry.path()?;
+            let path = path.strip_prefix(".").unwrap_or(&path);
+            let output = if path == Path::new(CLANG_COPYRIGHT) {
+                root.join("LICENSE.TXT")
+            } else if let Ok(relative) = path.strip_prefix(CLANG_INCLUDE) {
+                if relative
+                    .components()
+                    .any(|part| !matches!(part, std::path::Component::Normal(_)))
+                {
+                    return Err(io::Error::new(
+                        io::ErrorKind::InvalidData,
+                        "unsafe Clang header path",
+                    ));
+                }
+                root.join("include").join(relative)
+            } else {
+                continue;
+            };
+            fs::create_dir_all(output.parent().expect("header has a parent"))?;
+            io::copy(&mut entry, &mut File::create(output)?)?;
+        }
+        return Ok(());
     }
+    Err(io::Error::new(
+        io::ErrorKind::InvalidData,
+        format!("{} has no data.tar.xz", package.display()),
+    ))
 }
 
 fn copy_tree(source: &Path, destination: &Path) -> io::Result<()> {
