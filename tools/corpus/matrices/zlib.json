@@ -1,0 +1,218 @@
+{
+  "sources": [
+    "adler32.c",
+    "compress.c",
+    "crc32.c",
+    "deflate.c",
+    "gzclose.c",
+    "gzlib.c",
+    "gzread.c",
+    "gzwrite.c",
+    "inflate.c",
+    "infback.c",
+    "inftrees.c",
+    "inffast.c",
+    "trees.c",
+    "uncompr.c",
+    "zutil.c"
+  ],
+  "args": [
+    "-DZLIB_BUILD",
+    "-DNO_FSEEKO",
+    "-I."
+  ],
+  "targets": [
+    {
+      "name": "linux-x86_64",
+      "triple": "x86_64-unknown-linux-gnu",
+      "flavor": "clang",
+      "args": [
+        "-Ibuild-clang"
+      ]
+    },
+    {
+      "name": "linux-i686",
+      "triple": "i686-unknown-linux-gnu",
+      "flavor": "clang",
+      "args": [
+        "-Ibuild-clang"
+      ]
+    },
+    {
+      "name": "linux-aarch64",
+      "triple": "aarch64-unknown-linux-gnu",
+      "flavor": "clang",
+      "args": [
+        "-Ibuild-clang"
+      ]
+    },
+    {
+      "name": "linux-arm32",
+      "triple": "armv7-unknown-linux-gnueabihf",
+      "flavor": "clang",
+      "args": [
+        "-Ibuild-clang"
+      ]
+    },
+    {
+      "name": "linux-musl-x86_64",
+      "triple": "x86_64-unknown-linux-musl",
+      "flavor": "clang",
+      "args": [
+        "-Ibuild-clang"
+      ]
+    },
+    {
+      "name": "linux-musl-aarch64",
+      "triple": "aarch64-unknown-linux-musl",
+      "flavor": "clang",
+      "args": [
+        "-Ibuild-clang"
+      ]
+    },
+    {
+      "name": "darwin-x86_64",
+      "triple": "x86_64-apple-darwin",
+      "flavor": "clang",
+      "args": [
+        "-Ibuild-clang"
+      ]
+    },
+    {
+      "name": "darwin-aarch64",
+      "triple": "aarch64-apple-darwin",
+      "flavor": "clang",
+      "args": [
+        "-Ibuild-clang"
+      ]
+    },
+    {
+      "name": "freebsd-x86_64",
+      "triple": "x86_64-unknown-freebsd",
+      "flavor": "clang",
+      "args": [
+        "-Ibuild-clang"
+      ]
+    },
+    {
+      "name": "freebsd-aarch64",
+      "triple": "aarch64-unknown-freebsd",
+      "flavor": "clang",
+      "args": [
+        "-Ibuild-clang"
+      ]
+    },
+    {
+      "name": "android-x86_64",
+      "triple": "x86_64-linux-android",
+      "flavor": "clang",
+      "args": [
+        "-Ibuild-clang"
+      ]
+    },
+    {
+      "name": "android-aarch64",
+      "triple": "aarch64-linux-android",
+      "flavor": "clang",
+      "args": [
+        "-Ibuild-clang"
+      ]
+    },
+    {
+      "name": "windows-x86_64",
+      "triple": "x86_64-pc-windows-msvc",
+      "flavor": "msvc",
+      "args": [
+        "-Ibuild-msvc",
+        "-D_CRT_NONSTDC_NO_DEPRECATE",
+        "-D_CRT_SECURE_NO_DEPRECATE"
+      ]
+    },
+    {
+      "name": "windows-i686",
+      "triple": "i686-pc-windows-msvc",
+      "flavor": "msvc",
+      "args": [
+        "-Ibuild-msvc",
+        "-D_CRT_NONSTDC_NO_DEPRECATE",
+        "-D_CRT_SECURE_NO_DEPRECATE"
+      ]
+    },
+    {
+      "name": "windows-aarch64",
+      "triple": "aarch64-pc-windows-msvc",
+      "flavor": "msvc",
+      "args": [
+        "-Ibuild-msvc",
+        "-D_CRT_NONSTDC_NO_DEPRECATE",
+        "-D_CRT_SECURE_NO_DEPRECATE"
+      ]
+    },
+    {
+      "name": "windows-arm32",
+      "triple": "thumbv7a-pc-windows-msvc",
+      "flavor": "msvc",
+      "args": [
+        "-Ibuild-msvc",
+        "-D_CRT_NONSTDC_NO_DEPRECATE",
+        "-D_CRT_SECURE_NO_DEPRECATE"
+      ]
+    }
+  ],
+  "features": [
+    {
+      "name": "no-gzip",
+      "defines": [
+        "NO_GZIP"
+      ]
+    },
+    {
+      "name": "no-gzcompress",
+      "defines": [
+        "NO_GZCOMPRESS"
+      ]
+    },
+    {
+      "name": "fastest",
+      "defines": [
+        "FASTEST"
+      ]
+    },
+    {
+      "name": "lit-mem",
+      "defines": [
+        "LIT_MEM"
+      ]
+    },
+    {
+      "name": "zlib-debug",
+      "defines": [
+        "ZLIB_DEBUG"
+      ]
+    },
+    {
+      "name": "pkzip-bug",
+      "defines": [
+        "PKZIP_BUG_WORKAROUND"
+      ]
+    },
+    {
+      "name": "no-vsnprintf",
+      "defines": [
+        "NO_vsnprintf"
+      ]
+    },
+    {
+      "name": "inflate-strict",
+      "defines": [
+        "INFLATE_STRICT"
+      ]
+    },
+    {
+      "name": "inflate-allow-invalid",
+      "defines": [
+        "INFLATE_ALLOW_INVALID_DISTANCE_TOOFAR_ARRR"
+      ]
+    }
+  ]
+}

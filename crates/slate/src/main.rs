@@ -3,7 +3,7 @@ use rayon::prelude::*;
 use slate::backend::{self, codegen, rust_ast};
 use slate::frontend::c_shim;
 use slate::frontend::preprocess;
-use slate::{api, compile_commands};
+use slate::{api, compile_commands, project_matrix};
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
@@ -626,6 +626,9 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
     let mut crate_types = Vec::new();
     let mut flavor = None;
     let mut explicit_docs_only = false;
+    let mut matrix_path = None;
+    let mut matrix_target = None;
+    let mut features: Vec<String> = Vec::new();
     let current_dir = std::env::current_dir().map_err(|e| format!("current directory: {e}"))?;
     let mut index = 0;
     while index < args.len() {
@@ -638,6 +641,28 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
                 compile_command_paths.push(PathBuf::from(commands));
             }
             "--explicit-docs-only" => explicit_docs_only = true,
+            "--matrix" => {
+                index += 1;
+                let path = args
+                    .get(index)
+                    .ok_or_else(|| "--matrix requires a file".to_string())?;
+                matrix_path = Some(PathBuf::from(path));
+            }
+            "--matrix-target" => {
+                index += 1;
+                matrix_target = Some(
+                    args.get(index)
+                        .ok_or_else(|| "--matrix-target requires a target name".to_string())?
+                        .clone(),
+                );
+            }
+            "--features" => {
+                index += 1;
+                let names = args
+                    .get(index)
+                    .ok_or_else(|| "--features requires feature names".to_string())?;
+                features.extend(names.split(',').map(str::to_string));
+            }
             "--flavor" => {
                 index += 1;
                 let name = args
@@ -687,6 +712,27 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
     }
     if paths.len() != 2 {
         return Err("translate-project requires a project directory and crate directory".into());
+    }
+    if let Some(matrix_path) = matrix_path {
+        if !compile_command_paths.is_empty() {
+            return Err("--matrix cannot be combined with --compile-commands".into());
+        }
+        if flavor.is_some() || !include_args.is_empty() {
+            return Err("--matrix cannot be combined with --flavor or include options".into());
+        }
+        let target = matrix_target.ok_or("--matrix requires --matrix-target")?;
+        let project = compile_commands::absolute_path(&current_dir, Path::new(paths[0]));
+        let matrix = cli_result(project_matrix::Matrix::read(&matrix_path))?;
+        let commands = cli_result(matrix.commands(&project, &target, &features))?;
+        return translate_slate_project(
+            Path::new(paths[1]),
+            commands,
+            &crate_types,
+            explicit_docs_only,
+        );
+    }
+    if matrix_target.is_some() || !features.is_empty() {
+        return Err("--matrix-target and --features require --matrix".into());
     }
     if compile_command_paths.is_empty() {
         return Err("translate-project requires at least one --compile-commands <file>".into());

@@ -20,6 +20,9 @@ cargo run --release -p slate-c2rust -- translate \
 
 - `translate --targets=<triple>,<triple> input.c` can merge supported whole-item configuration variants into Rust cfg items.
 - `translate-project` consumes compile commands, but rejects multiple configurations of the same translation unit. It does not generate a merged multi-target project.
+- `translate-project --matrix <file> --matrix-target <name> [--features a,b] <project> <crate>` translates one target and feature set from a hand-written matrix instead of a compile database, so host configure results cannot leak into other targets. `tools/corpus/matrices/zlib.json` is the zlib example.
+
+  The file holds `sources` and `args`, relative to `<project>`; `targets` (`name`, `triple`, `flavor`, optional `sysroot` and `args`, with generated headers given as `-I` in `args`); `features` (`name`, used as the Cargo feature name, and `defines`); and `invalid_features`, groups that cannot be selected together. Arguments apply in the order target, project, features. Leave out macros that are not real variants: zlib's `Z_PREFIX` is a rename, `MAKECRCH` adds a table-generator `main`, and `Z_SOLO` and `NO_STRERROR` do not compile under clang either.
 
 ## Building generated Rust
 

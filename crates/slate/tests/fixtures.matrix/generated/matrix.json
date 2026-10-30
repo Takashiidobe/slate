@@ -1,0 +1,30 @@
+{
+  "sources": ["main.c", "value.c"],
+  "args": ["-DPROJECT_BASE=100", "-Iinclude"],
+  "targets": [
+    {
+      "name": "linux-x86_64",
+      "triple": "x86_64-unknown-linux-gnu",
+      "flavor": "clang",
+      "args": ["-Igen-linux"]
+    },
+    {
+      "name": "linux-x86_64-gcc",
+      "triple": "x86_64-unknown-linux-gnu",
+      "flavor": "gcc",
+      "args": ["-Igen-linux", "-DTARGET_EXTRA=5"]
+    },
+    {
+      "name": "windows-x86_64",
+      "triple": "x86_64-pc-windows-msvc",
+      "flavor": "msvc",
+      "args": ["-Igen-windows"]
+    }
+  ],
+  "features": [
+    { "name": "fast", "defines": ["FAST"] },
+    { "name": "level-two", "defines": ["LEVEL=2", "HAS_LEVEL"] },
+    { "name": "small", "defines": ["SMALL"] }
+  ],
+  "invalid_features": [["fast", "small"]]
+}

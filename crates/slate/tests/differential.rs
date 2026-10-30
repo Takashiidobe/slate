@@ -642,6 +642,263 @@ fn translation_uses_builtin_frontend() {
     }
 }
 
+fn matrix_fixture(name: &str) -> PathBuf {
+    Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures.matrix")
+        .join(name)
+}
+
+fn translate_matrix(
+    work: &str,
+    matrix: &Path,
+    project: &Path,
+    selection: &[&str],
+) -> (PathBuf, Result<(), String>) {
+    let crate_dir = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("target/difftest-generated/matrix")
+        .join(work);
+    let _ = std::fs::remove_dir_all(&crate_dir);
+    let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
+        .arg("translate-project")
+        .arg("--matrix")
+        .arg(matrix)
+        .args(selection)
+        .arg(project)
+        .arg(&crate_dir)
+        .env("SLATE_SYSROOTS", slate_parser::sysroot::root())
+        .env_remove("SLATE_TARGET")
+        .env_remove("SLATE_CLANG_ARGS")
+        .output()
+        .expect("run slate translate-project");
+    let result = if output.status.success() {
+        Ok(())
+    } else {
+        Err(String::from_utf8_lossy(&output.stderr).into_owned())
+    };
+    (crate_dir, result)
+}
+
+fn run_cargo_binary(crate_dir: &Path) -> String {
+    let output = std::process::Command::new(std::env::var("SLATE_CARGO").unwrap_or("cargo".into()))
+        .args(["run", "--quiet", "--release"])
+        .current_dir(crate_dir)
+        .output()
+        .expect("run cargo");
+    assert!(
+        output.status.success(),
+        "generated crate failed:\n{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    String::from_utf8_lossy(&output.stdout).into_owned()
+}
+
+fn run_clang_binary(project: &Path, work: &str, args: &[&str]) -> String {
+    let dir = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("target/difftest-generated/matrix")
+        .join(format!("{work}-c"));
+    std::fs::create_dir_all(&dir).expect("create C output directory");
+    let binary = dir.join("program");
+    let status = std::process::Command::new("clang")
+        .current_dir(project)
+        .args(args)
+        .args(["main.c", "value.c", "-o"])
+        .arg(&binary)
+        .status()
+        .expect("run clang");
+    assert!(status.success(), "clang failed for {args:?}");
+    let output = std::process::Command::new(&binary)
+        .output()
+        .expect("run C program");
+    String::from_utf8_lossy(&output.stdout).into_owned()
+}
+
+#[test]
+fn matrix_selection_matches_c_with_same_configuration() {
+    let project = matrix_fixture("generated");
+    let matrix = project.join("matrix.json");
+    let base = ["-DPROJECT_BASE=100", "-Iinclude", "-Igen-linux"];
+    for (work, selection, extra) in [
+        ("plain", vec![], vec![]),
+        ("fast", vec!["--features", "fast"], vec!["-DFAST"]),
+        (
+            "level",
+            vec!["--features", "level-two,small"],
+            vec!["-DLEVEL=2", "-DHAS_LEVEL", "-DSMALL"],
+        ),
+    ] {
+        let mut selected = vec!["--matrix-target", "linux-x86_64"];
+        selected.extend(&selection);
+        let (crate_dir, result) = translate_matrix(work, &matrix, &project, &selected);
+        result.unwrap_or_else(|error| panic!("{work}: {error}"));
+        let c_args: Vec<&str> = base.iter().chain(&extra).copied().collect();
+        assert_eq!(
+            run_cargo_binary(&crate_dir),
+            run_clang_binary(&project, work, &c_args),
+            "{work}"
+        );
+    }
+}
+
+#[test]
+fn matrix_targets_use_their_own_generated_headers_and_args() {
+    let project = matrix_fixture("generated");
+    let matrix = project.join("matrix.json");
+    for (target, constant) in [
+        ("linux-x86_64", "100 + 1 + 0"),
+        ("linux-x86_64-gcc", "100 + 1 + 5"),
+        ("windows-x86_64", "100 + 2 + 0"),
+    ] {
+        let (crate_dir, result) =
+            translate_matrix(target, &matrix, &project, &["--matrix-target", target]);
+        result.unwrap_or_else(|error| panic!("{target}: {error}"));
+        let value = std::fs::read_to_string(crate_dir.join("src/value.rs")).expect("read value.rs");
+        assert!(value.contains(constant), "{target}: {value}");
+    }
+}
+
+#[test]
+fn matrix_rejects_invalid_input() {
+    let project = matrix_fixture("generated");
+    let matrix = project.join("matrix.json");
+    let write = |name: &str, contents: serde_json::Value| {
+        let dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-generated/matrix");
+        std::fs::create_dir_all(&dir).expect("create matrix directory");
+        let path = dir.join(format!("{name}.json"));
+        std::fs::write(&path, contents.to_string()).expect("write matrix");
+        path
+    };
+    let target = serde_json::json!({
+        "name": "a", "triple": "x86_64-unknown-linux-gnu", "flavor": "clang"
+    });
+    let selected = ["--matrix-target", "a"];
+    for (name, contents, selection, expected) in [
+        (
+            "no_target_selected",
+            None,
+            vec![],
+            "--matrix requires --matrix-target",
+        ),
+        (
+            "unknown_target",
+            None,
+            vec!["--matrix-target", "nope"],
+            "unknown matrix target nope",
+        ),
+        (
+            "unknown_feature",
+            None,
+            vec!["--matrix-target", "linux-x86_64", "--features", "nope"],
+            "unknown matrix feature nope",
+        ),
+        (
+            "invalid_combination",
+            None,
+            vec![
+                "--matrix-target",
+                "linux-x86_64",
+                "--features",
+                "small,fast",
+            ],
+            "matrix features fast, small cannot be combined",
+        ),
+        (
+            "unsupported_triple",
+            Some(serde_json::json!({"sources": ["main.c"], "targets": [
+                {"name": "a", "triple": "mips-unknown-linux-gnu", "flavor": "clang"}
+            ]})),
+            selected.to_vec(),
+            "matrix target a: unsupported target triple mips-unknown-linux-gnu",
+        ),
+        (
+            "flavor_mismatch",
+            Some(serde_json::json!({"sources": ["main.c"], "targets": [
+                {"name": "a", "triple": "x86_64-unknown-linux-musl", "flavor": "gcc"}
+            ]})),
+            selected.to_vec(),
+            "matrix target a: x86_64-unknown-linux-musl does not support flavor gcc",
+        ),
+        (
+            "duplicate_target",
+            Some(serde_json::json!({"sources": ["main.c"], "targets": [target, target]})),
+            selected.to_vec(),
+            "duplicate matrix target a",
+        ),
+        (
+            "bad_feature_name",
+            Some(
+                serde_json::json!({"sources": ["main.c"], "targets": [target],
+                "features": [{"name": "not valid", "defines": ["X"]}]}),
+            ),
+            selected.to_vec(),
+            "matrix feature \"not valid\" is not a valid Cargo feature name",
+        ),
+        (
+            "feature_without_defines",
+            Some(
+                serde_json::json!({"sources": ["main.c"], "targets": [target],
+                "features": [{"name": "x", "defines": []}]}),
+            ),
+            selected.to_vec(),
+            "matrix feature x has no defines",
+        ),
+        (
+            "invalid_names_unknown_feature",
+            Some(
+                serde_json::json!({"sources": ["main.c"], "targets": [target],
+                "features": [{"name": "x", "defines": ["X"]}],
+                "invalid_features": [["x", "y"]]}),
+            ),
+            selected.to_vec(),
+            "invalid_features names unknown matrix feature y",
+        ),
+        (
+            "empty_invalid_group",
+            Some(
+                serde_json::json!({"sources": ["main.c"], "targets": [target],
+                "invalid_features": [[]]}),
+            ),
+            selected.to_vec(),
+            "invalid_features entries need at least two features",
+        ),
+        (
+            "unknown_field",
+            Some(serde_json::json!({"sources": ["main.c"], "targets": [target], "typo": 1})),
+            selected.to_vec(),
+            "unknown field `typo`",
+        ),
+        (
+            "no_sources",
+            Some(serde_json::json!({"sources": [], "targets": [target]})),
+            selected.to_vec(),
+            "matrix has no sources",
+        ),
+    ] {
+        let path = contents.map_or(matrix.clone(), |contents| write(name, contents));
+        let (_, result) = translate_matrix(name, &path, &project, &selection);
+        let error = result.expect_err(name);
+        assert!(error.contains(expected), "{name}: {error}");
+    }
+
+    let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
+        .args(["translate-project", "--matrix"])
+        .arg(&matrix)
+        .args([
+            "--matrix-target",
+            "linux-x86_64",
+            "--compile-commands",
+            "x.json",
+        ])
+        .arg(&project)
+        .arg("unused")
+        .output()
+        .expect("run slate translate-project");
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(
+        stderr.contains("--matrix cannot be combined with --compile-commands"),
+        "{stderr}"
+    );
+}
+
 #[test]
 fn translation_uses_native_headers_without_sysroot() {
     let work =
