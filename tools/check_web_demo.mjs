@@ -19,6 +19,9 @@ for (const example of groups.flatMap(({ examples }) => examples)) {
   result = undefined;
   await onmessage({ data: { id: 0, source, flags: '', ...example } });
   if (!result?.ok) throw new Error(`${example.file}: ${result?.error ?? 'no result'}`);
+  if (result.outputs && !result.outputs.ast.text.replace(/^===.*===\n/gm, '').trimStart().startsWith('(TranslationUnit')) {
+    throw new Error(`${example.file}: AST output is not an S-expression`);
+  }
   const outputs = result.outputs ? Object.values(result.outputs) : [{ ok: true, text: result.rust }];
   for (const output of outputs) {
     if (!output.ok || !output.text?.trim()) {

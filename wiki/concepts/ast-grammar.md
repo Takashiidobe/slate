@@ -76,8 +76,9 @@ decl_line = "decl[" int "]" [ " #" int ] ": " span<DeclKind> ;
 
 ## S-expressions
 
-`render::SExprRenderer` exposes the AST as nested lists. Each Rust debug variant
-or struct becomes a list headed by its name; fields become `(field value)`
+`slate-parser parse <source.c> --sexpr` uses `render::SExprRenderer` to expose
+the AST as nested lists. The browser AST tab uses this format. Each Rust debug
+variant or struct becomes a list headed by its name; fields become `(field value)`
 lists, vectors use `[...]`, and maps use `{(key value) ...}`. Unit variants are
 single-item lists. Scalar values keep their Rust debug spelling. For example,
 `Binary { op: Add, left: ..., right: ... }` becomes

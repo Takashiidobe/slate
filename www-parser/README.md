@@ -3,9 +3,9 @@
 Runs `slate-parser` entirely in a browser worker through the vendored
 browser_wasi_shim. The C editor, examples, compiler flavors, target selection,
 flags, key bindings, share links, and resizable panes follow `../www`.
-AST and IR tabs display the CLI's `parse` and `ir` output. Each selected target
-runs separately; IR failures leave successful AST output available.
-AST uses Rust highlighting for its debug dump. IR uses the custom CodeMirror
+AST and IR tabs display the CLI's `parse --sexpr` and `ir` output. Each selected
+target runs separately; IR failures leave successful AST output available.
+AST uses S-expression highlighting. IR uses the custom CodeMirror
 mode in `frontend/assets/codemirror-slate-ir.js`, based on
 [the IR grammar](../wiki/concepts/ir-grammar.md).
 Diagnostics appear in the corresponding tab as text, including source locations.

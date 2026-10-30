@@ -103,7 +103,7 @@ async function runParser(module, headers, sysroot, source, target, compiler, fla
     new PreopenDirectory('/compiler-headers', headers.contents),
   ];
   const wasi = new WASI(
-    ['slate-parser', command, '/work/input.c', `--flavor=${compiler}`, `-target=${target}`, ...splitFlags(flags)],
+    ['slate-parser', command, '/work/input.c', ...(command === 'parse' ? ['--sexpr'] : []), `--flavor=${compiler}`, `-target=${target}`, ...splitFlags(flags)],
     ['SLATE_SYSROOTS=/sysroots', 'SLATE_COMPILER_HEADERS=/compiler-headers', 'NO_COLOR=1', 'TERM=dumb'],
     fds,
   );

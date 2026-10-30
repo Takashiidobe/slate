@@ -63,6 +63,7 @@ and c17 for msvc (cl.exe's mode without `/std:`, which also leaves
 | ----------------------- | ------------------------------------------------------------------------------------------------------------------- |
 | `--show-comments`       | Retain comments in the AST dump.                                                                                    |
 | `--show-ids`            | Include AST node identifiers.                                                                                       |
+| `--sexpr`              | Print the AST as S-expressions; requires `parse` with AST output.                                                     |
 | `--dump-ir`             | Print the IR instead of the AST with `parse`; equivalent to `ir`.                                                   |
 | `--dump-ir-types`       | Print resolved types and function signatures without lowering bodies.                                               |
 | `--dump-ir-names`       | Print name resolution and bindings.                                                                                 |

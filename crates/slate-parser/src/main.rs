@@ -3,7 +3,7 @@ use slate_parser::compiler_args::CompilerArgParser;
 use slate_parser::dialect::Dialect;
 use slate_parser::parser::Parser;
 use slate_parser::pp::{DirectiveDiagnostic, DirectiveErrors, write_preprocessed};
-use slate_parser::render::Renderer;
+use slate_parser::render::{Renderer, SExprRenderer};
 use std::env;
 use std::fs;
 use std::io;
@@ -32,13 +32,14 @@ fn run() -> miette::Result<()> {
     let command = args.next();
     if !matches!(command.as_deref(), Some("parse" | "ir" | "pp")) {
         return Err(miette::miette!(
-            "usage: slate-parser <parse|ir|pp> <source.c> [-DNAME] [-UNAME] [-include <file>] [-imacros <file>] [-target=<triple>|-target <triple>] [--flavor=gcc|clang|msvc] [-std=<C standard>] [-I<dir>] [-iquote <dir>] [-isystem <dir>] [-idirafter <dir>] [-nostdlibinc] [-isysroot <dir>|--sysroot=<dir>] [--show-comments] [--show-ids] [--parse-only] [--dump-ir] [--dump-ir-types] [--dump-ir-expressions] [--dump-ir-names] [--show-spans] [--show-metadata] [--compact-ir]"
+            "usage: slate-parser <parse|ir|pp> <source.c> [-DNAME] [-UNAME] [-include <file>] [-imacros <file>] [-target=<triple>|-target <triple>] [--flavor=gcc|clang|msvc] [-std=<C standard>] [-I<dir>] [-iquote <dir>] [-isystem <dir>] [-idirafter <dir>] [-nostdlibinc] [-isysroot <dir>|--sysroot=<dir>] [--show-comments] [--show-ids] [--parse-only] [--sexpr] [--dump-ir] [--dump-ir-types] [--dump-ir-expressions] [--dump-ir-names] [--show-spans] [--show-metadata] [--compact-ir]"
         ));
     }
     let path = args
         .next()
         .ok_or_else(|| miette::miette!("missing source path"))?;
     let mut parse_only = false;
+    let mut sexpr = false;
     let mut show_comments = false;
     let mut show_ids = false;
     let mut dump_ir_expressions = false;
@@ -50,7 +51,10 @@ fn run() -> miette::Result<()> {
     let mut compact_ir = false;
     let remaining: Vec<String> = args
         .filter(|arg| {
-            if arg == "--parse-only" {
+            if arg == "--sexpr" {
+                sexpr = true;
+                false
+            } else if arg == "--parse-only" {
                 parse_only = true;
                 false
             } else if arg == "--show-metadata" {
@@ -104,6 +108,15 @@ fn run() -> miette::Result<()> {
         return Err(miette::miette!(
             "--parse-only requires parse with AST output"
         ));
+    }
+    if sexpr
+        && (command.as_deref() != Some("parse")
+            || dump_ir
+            || dump_ir_types
+            || dump_ir_names
+            || dump_ir_expressions)
+    {
+        return Err(miette::miette!("--sexpr requires parse with AST output"));
     }
     if show_spans && !(dump_ir || dump_ir_expressions) {
         return Err(miette::miette!(
@@ -193,6 +206,11 @@ fn run() -> miette::Result<()> {
         return Ok(());
     }
     let stdout = io::stdout();
+    if sexpr {
+        return SExprRenderer::new(stdout.lock())
+            .render(&ast)
+            .map_err(|error| miette::miette!(error));
+    }
     let mut renderer = Renderer::new(stdout.lock())
         .with_show_comments(show_comments)
         .with_show_ids(show_ids);
