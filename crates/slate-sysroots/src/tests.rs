@@ -459,16 +459,21 @@ fn failed_xwin_leaves_no_installation() {
     );
     assert!(paths.doctor(target).iter().all(|check| !check.present));
     assert!(!paths.sysroot_path(target).exists());
-    assert!(
-        !paths
-            .data
-            .join(format!("sysroots/{}.lock", target.triple()))
-            .exists()
-    );
     assert_eq!(
-        fs::read_dir(paths.data.join("sysroots")).unwrap().count(),
-        0
+        fs::read_dir(paths.data.join("sysroots"))
+            .unwrap()
+            .map(|entry| entry.unwrap().file_name())
+            .collect::<Vec<_>>(),
+        vec![std::ffi::OsString::from(format!(
+            "{}.lock",
+            target.triple()
+        ))]
     );
+    windows_msvc::install_with(&paths, target, |root| {
+        fake_splat(root, "aarch64");
+        Ok(versions())
+    })
+    .unwrap();
 }
 
 #[test]
@@ -716,4 +721,108 @@ fn clang_package_extracts_built_headers_and_license_only() {
         "license"
     );
     assert!(!root.join("usr").exists());
+}
+
+#[test]
+fn installation_lock_child() {
+    let Some(base) = env::var_os("SLATE_SYSROOT_LOCK_TEST") else {
+        return;
+    };
+    let base = PathBuf::from(base);
+    let paths = Paths {
+        data: base.join("data"),
+        cache: base.join("cache"),
+    };
+    crate::install::install_staged(
+        &paths,
+        Target::X86_64UnknownLinuxGnu,
+        Some("new"),
+        |_| Ok(()),
+        |_| {
+            fs::write(base.join("ready"), "")?;
+            let mut input = String::new();
+            std::io::stdin().read_line(&mut input)?;
+            Err(std::io::Error::other("child should be killed"))
+        },
+    )
+    .unwrap();
+}
+
+#[test]
+fn interrupted_installer_releases_lock_for_install_and_remove() {
+    struct Child(std::process::Child);
+    impl Drop for Child {
+        fn drop(&mut self) {
+            let _ = self.0.kill();
+            let _ = self.0.wait();
+        }
+    }
+    let temp = TestDir::new();
+    let paths = temp.paths();
+    let target = Target::X86_64UnknownLinuxGnu;
+    let root = paths.sysroot_path(target);
+    fs::create_dir_all(&root).unwrap();
+    fs::write(root.join("SYSROOT-MANIFEST.txt"), "old").unwrap();
+    let lock = root.with_extension("lock");
+    fs::write(&lock, "stale pid").unwrap();
+    let mut child = Child(
+        std::process::Command::new(env::current_exe().unwrap())
+            .args(["--exact", "tests::installation_lock_child", "--nocapture"])
+            .env("SLATE_SYSROOT_LOCK_TEST", &temp.0)
+            .stdin(std::process::Stdio::piped())
+            .stdout(std::process::Stdio::null())
+            .spawn()
+            .unwrap(),
+    );
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(10);
+    while !temp.0.join("ready").exists() {
+        assert!(
+            child.0.try_wait().unwrap().is_none(),
+            "child exited before acquiring lock"
+        );
+        assert!(
+            std::time::Instant::now() < deadline,
+            "child did not acquire lock"
+        );
+        std::thread::sleep(std::time::Duration::from_millis(10));
+    }
+    let error = crate::install::install_staged(
+        &paths,
+        target,
+        Some("new"),
+        |_| Ok(()),
+        |_| panic!("concurrent installer entered build"),
+    )
+    .unwrap_err();
+    assert_eq!(error.kind(), std::io::ErrorKind::WouldBlock);
+    assert!(
+        error
+            .to_string()
+            .contains("installation already in progress")
+    );
+    assert_eq!(
+        paths.remove(target).unwrap_err().kind(),
+        std::io::ErrorKind::WouldBlock
+    );
+    child.0.kill().unwrap();
+    child.0.wait().unwrap();
+    assert!(lock.is_file());
+    crate::install::install_staged(
+        &paths,
+        target,
+        Some("new"),
+        |_| Ok(()),
+        |root| {
+            fs::create_dir(root)?;
+            fs::write(root.join("SYSROOT-MANIFEST.txt"), "new")
+        },
+    )
+    .unwrap();
+    assert_eq!(
+        fs::read_to_string(root.join("SYSROOT-MANIFEST.txt")).unwrap(),
+        "new"
+    );
+    paths.remove(target).unwrap();
+    assert!(!root.exists());
+    assert!(lock.is_file());
 }

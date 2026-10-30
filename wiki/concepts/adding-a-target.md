@@ -5,6 +5,7 @@
 - [Steps](#steps)
 - [Linux musl](#linux-musl)
 - [Clang resource headers](#clang-resource-headers)
+- [Sysroot installation locks](#sysroot-installation-locks)
 <!-- /toc -->
 
 Every supported triple is one `TargetSpec` in `src/target_registry.rs`.
@@ -61,3 +62,12 @@ Nothing else matches on the triple string.
 - When updating Clang, update the package, snapshot, checksum, extraction
   paths, and required-header checks together. The package manifest replaces
   installations acquired with older pins or the source-only installer.
+
+## Sysroot installation locks
+
+- Target sysroots and compiler bundles use `File::try_lock` on a sibling
+  `.lock` file; dropping the handle or terminating the process releases it.
+- Keep lock files after release. Unlinking permits concurrent installers to
+  lock different files at the same path.
+- Existing unlocked lock files, including stale PID files, are reused.
+  Contention returns `WouldBlock` with an installation-in-progress message.
