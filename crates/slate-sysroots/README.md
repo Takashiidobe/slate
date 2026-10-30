@@ -178,7 +178,8 @@ copy, or redistribute it. On macOS, `install` discovers the active SDK through
 On any host, supply an SDK path with `--sdk <path>` or `OSX_CROSS_SDK`.
 The installer creates `sysroots/<target>/SDK` as a symlink, so the SDK must
 remain at that location for `path` and `doctor` to succeed. Automatic discovery
-is available only on macOS.
+is available only on macOS. Supplying a different SDK with `--sdk` or
+`OSX_CROSS_SDK` replaces the existing registration, including a broken link.
 
 Apple Clang headers are copied locally for the user into a versioned bundle
 and are not distributed with Slate. Use of the SDK and Apple toolchain remains

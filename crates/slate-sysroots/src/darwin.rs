@@ -1,4 +1,4 @@
-use crate::install::install_staged;
+use crate::install::{MANIFEST_FILE, install_staged};
 use crate::{DoctorCheck, Paths, Target};
 use std::env;
 use std::ffi::OsStr;
@@ -8,10 +8,10 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 
 pub(crate) fn install(paths: &Paths, target: Target) -> io::Result<PathBuf> {
-    if paths.sysroot_path(target).exists() {
+    let sdk = env::var_os("OSX_CROSS_SDK");
+    if sdk.is_none() && paths.sysroot_path(target).exists() {
         return paths.resolve(target);
     }
-    let sdk = env::var_os("OSX_CROSS_SDK");
     let sdk = find_sdk(
         env::consts::OS,
         sdk.as_deref().map(Path::new),
@@ -81,18 +81,16 @@ pub(crate) fn install_with_sdk(paths: &Paths, target: Target, sdk: &Path) -> io:
             ),
         ));
     }
-    install_staged(paths, target, None, validate, |root| {
+    let manifest = format!(
+        "Target: {}\nOperating system: macOS\nSDK path: {}\nSDK version: {}\nSource: user-provided Xcode, Command Line Tools, or OSXCross SDK\nContents: SDK referenced by symlink; not copied or distributed by Slate\n",
+        target.triple(),
+        sdk.display(),
+        sdk.file_name().unwrap_or_default().to_string_lossy()
+    );
+    install_staged(paths, target, Some(&manifest), validate, |root| {
         fs::create_dir(root)?;
         link_sdk(&sdk, &root.join("SDK"))?;
-        fs::write(
-            root.join("SYSROOT-MANIFEST.txt"),
-            format!(
-                "Target: {}\nOperating system: macOS\nSDK path: {}\nSDK version: {}\nSource: user-provided Xcode, Command Line Tools, or OSXCross SDK\nContents: SDK referenced by symlink; not copied or distributed by Slate\n",
-                target.triple(),
-                sdk.display(),
-                sdk.file_name().unwrap_or_default().to_string_lossy()
-            ),
-        )?;
+        fs::write(root.join(MANIFEST_FILE), &manifest)?;
         Ok(())
     })
 }

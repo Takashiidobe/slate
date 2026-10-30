@@ -826,3 +826,48 @@ fn interrupted_installer_releases_lock_for_install_and_remove() {
     assert!(!root.exists());
     assert!(lock.is_file());
 }
+
+#[test]
+fn darwin_sdk_registration_replaces_changed_and_missing_sdks() {
+    let temp = TestDir::new();
+    let paths = temp.paths();
+    let sdks: Vec<_> = ["MacOSX-A.sdk", "MacOSX-B.sdk", "MacOSX-C.sdk"]
+        .into_iter()
+        .map(|name| {
+            let sdk = temp.0.join(name);
+            fs::create_dir_all(sdk.join("usr/include/sys")).unwrap();
+            fs::write(sdk.join("usr/include/stdio.h"), name).unwrap();
+            fs::write(sdk.join("usr/include/sys/types.h"), "").unwrap();
+            fs::canonicalize(sdk).unwrap()
+        })
+        .collect();
+    for target in [Target::X86_64AppleDarwin, Target::Aarch64AppleDarwin] {
+        let root = paths.install_darwin_with_sdk(target, &sdks[0]).unwrap();
+        fs::write(root.join("keep-on-repeat"), "").unwrap();
+        paths
+            .install_darwin_with_sdk(target, &sdks[0].join("."))
+            .unwrap();
+        assert!(root.join("keep-on-repeat").is_file());
+        paths.install_darwin_with_sdk(target, &sdks[1]).unwrap();
+        assert_eq!(fs::read_link(root.join("SDK")).unwrap(), sdks[1]);
+        assert!(!root.join("keep-on-repeat").exists());
+        assert!(
+            fs::read_to_string(root.join("SYSROOT-MANIFEST.txt"))
+                .unwrap()
+                .contains(&format!("SDK path: {}\n", sdks[1].display()))
+        );
+        let invalid = temp.0.join("invalid.sdk");
+        fs::create_dir_all(invalid.join("usr/include")).unwrap();
+        fs::write(invalid.join("usr/include/stdio.h"), "").unwrap();
+        assert!(paths.install_darwin_with_sdk(target, &invalid).is_err());
+        assert_eq!(fs::read_link(root.join("SDK")).unwrap(), sdks[1]);
+        assert!(paths.doctor(target).iter().all(|check| check.present));
+    }
+    fs::remove_dir_all(&sdks[1]).unwrap();
+    for target in [Target::X86_64AppleDarwin, Target::Aarch64AppleDarwin] {
+        assert!(paths.resolve(target).is_err());
+        let root = paths.install_darwin_with_sdk(target, &sdks[2]).unwrap();
+        assert_eq!(fs::read_link(root.join("SDK")).unwrap(), sdks[2]);
+        assert!(paths.doctor(target).iter().all(|check| check.present));
+    }
+}

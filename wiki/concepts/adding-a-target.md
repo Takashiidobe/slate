@@ -6,6 +6,7 @@
 - [Linux musl](#linux-musl)
 - [Clang resource headers](#clang-resource-headers)
 - [Sysroot installation locks](#sysroot-installation-locks)
+- [macOS SDK registration](#macos-sdk-registration)
 <!-- /toc -->
 
 Every supported triple is one `TargetSpec` in `src/target_registry.rs`.
@@ -71,3 +72,14 @@ Nothing else matches on the triple string.
   lock different files at the same path.
 - Existing unlocked lock files, including stale PID files, are reused.
   Contention returns `WouldBlock` with an installation-in-progress message.
+
+## macOS SDK registration
+
+- `slate-sysroots/src/darwin.rs` canonicalizes supplied SDK paths and uses the
+  SDK manifest as the staged install identity.
+- A different SDK replaces the registration, even if the old SDK is missing;
+  the same canonical path reuses a valid registration.
+- `OSX_CROSS_SDK` overrides existing registrations. Without an override,
+  installation reuses an existing registration before attempting discovery.
+- Validate replacement headers before publishing; failed replacement retains
+  the old registration.
