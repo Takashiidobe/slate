@@ -1,6 +1,6 @@
 typedef unsigned __int64 u64;
 
-__declspec(align(16)) struct vec4 { float x, y, z, w; };
+struct __declspec(align(16)) vec4 { float x, y, z, w; };
 
 static __forceinline u64 rotl(u64 value, int shift) {
   return (value << shift) | (value >> (64 - shift));
