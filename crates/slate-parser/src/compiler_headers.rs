@@ -19,6 +19,10 @@ pub fn include_paths(target: &TargetInfo, flavor: CompilerFlavor) -> Vec<PathBuf
 
     let profiles: Vec<(String, String)> = match flavor {
         CompilerFlavor::Clang if target.profile.clang_headers == ClangHeaders::AppleFirst => {
+            let current = root.join("apple-clang-current/include");
+            if current.is_dir() {
+                return vec![current];
+            }
             vec![
                 ("apple-clang-".into(), "include".into()),
                 ("clang-".into(), "include".into()),

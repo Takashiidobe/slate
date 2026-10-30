@@ -182,8 +182,10 @@ is available only on macOS. Supplying a different SDK with `--sdk` or
 `OSX_CROSS_SDK` replaces the existing registration, including a broken link.
 
 Apple Clang headers are copied locally for the user into a versioned bundle
-and are not distributed with Slate. Use of the SDK and Apple toolchain remains
-subject to Apple's license terms.
+and are not distributed with Slate. For macOS targets, the parser prefers
+`apple-clang-current`; if its include directory is missing, it falls back to
+the newest installed Apple Clang bundle, then upstream Clang. Use of the SDK
+and Apple toolchain remains subject to Apple's license terms.
 
 For translation and linking, currently supply the SDK through `OSX_CROSS_SDK`
 or `--sdk`; automatic handoff of the active SDK remains future integration
