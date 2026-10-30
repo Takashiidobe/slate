@@ -47,6 +47,7 @@ for target in "${sysroot_targets[@]}"; do
     [[ -d $slate_headers/sysroots/$target ]] || die "missing sysroot $target; run: slate sysroot install $target"
 done
 
+CARGO_TARGET_WASM32_WASIP1_RUSTFLAGS="-C link-arg=-zstack-size=16777216" \
 CARGO_PROFILE_RELEASE_LTO=true \
 CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1 \
 CARGO_PROFILE_RELEASE_OPT_LEVEL=s \
@@ -69,7 +70,7 @@ pack() {
     local dir=$1 name=$2 select=${3:-.}
     (cd "$dir" && find "$select" \( -path '*/include/*' -o -name 'COPYING*' -o -name 'LICENSE*' \) \( -type f -o -type l \) -print0 \
         | LC_ALL=C sort -z \
-        | tar --null -T - --dereference --format=ustar --owner=0 --group=0 --numeric-owner --mtime=@0 -cf -) \
+        | tar --null -T - --dereference --hard-dereference --format=ustar --owner=0 --group=0 --numeric-owner --mtime=@0 -cf -) \
         | gzip -9n > "$out/headers/$name.tar.gz"
     local bytes path
     bytes=$(stat -c %s "$out/headers/$name.tar.gz")

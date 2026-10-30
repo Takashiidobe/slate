@@ -63,8 +63,10 @@ struct SysrootRawArgs {
     args: Vec<String>,
 }
 
+#[cfg(not(target_family = "wasm"))]
 const MAIN_STACK_BYTES: usize = 256 << 20;
 
+#[cfg(not(target_family = "wasm"))]
 fn main() -> ExitCode {
     std::thread::Builder::new()
         .stack_size(MAIN_STACK_BYTES)
@@ -74,7 +76,13 @@ fn main() -> ExitCode {
         .unwrap_or(ExitCode::FAILURE)
 }
 
+#[cfg(target_family = "wasm")]
+fn main() -> ExitCode {
+    run_cli()
+}
+
 fn run_cli() -> ExitCode {
+    #[cfg(not(target_family = "wasm"))]
     let _ = rayon::ThreadPoolBuilder::new()
         .stack_size(WORKER_STACK_BYTES)
         .build_global();

@@ -63,6 +63,11 @@ cargo nextest r --release --profile slate
 ```
 
 - Run commands from the workspace root.
+- Browser demos: build with `bash www/build.sh` and `bash www-parser/build.sh`;
+  run `node tools/check_web_demo.mjs <site>/dist` for each before deployment.
+- WASI runs the CLI directly with a 16 MiB linker stack; native CLI entry uses
+  a dedicated thread. Browser header archives must dereference symbolic and
+  hard links because the worker unpacker reads regular files only.
 - The profile exercises raw lowering through host differential fixtures and corpus suites.
 - Passing raw lowering tests does not establish rewrite-specific coverage.
 - Opt-in LLVM translation validation:

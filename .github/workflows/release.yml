@@ -122,6 +122,11 @@ jobs:
           bash www/build.sh
           bash www-parser/build.sh
 
+      - name: Check browser demos
+        run: |
+          node tools/check_web_demo.mjs www/dist
+          node tools/check_web_demo.mjs www-parser/dist
+
       - name: Deploy Slate demo
         working-directory: www
         env:
