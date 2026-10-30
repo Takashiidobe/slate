@@ -208,12 +208,12 @@ int main(void) {
 // CHECK-NEXT: #![allow(arithmetic_overflow, unconditional_panic)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn malloc(__size: u64) -> *mut ();
-// CHECK-NEXT:     fn free(__ptr: *mut ());
-// CHECK-NEXT:     fn memcpy(__dest: *mut (), __src: *const (), __n: u64) -> *mut ();
-// CHECK-NEXT:     fn memset(__s: *mut (), __c: i32, __n: u64) -> *mut ();
-// CHECK-NEXT:     fn strlen(__s: *const i8) -> u64;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn malloc([[ARG_0]]: u64) -> *mut ();
+// CHECK-NEXT:     fn free([[ARG_0]]: *mut ());
+// CHECK-NEXT:     fn memcpy([[ARG_0]]: *mut (), [[ARG_1:arg[0-9]+]]: *const (), [[ARG_2:arg[0-9]+]]: u64) -> *mut ();
+// CHECK-NEXT:     fn memset([[ARG_0]]: *mut (), [[ARG_1]]: i32, [[ARG_2]]: u64) -> *mut ();
+// CHECK-NEXT:     fn strlen([[ARG_0]]: *const i8) -> u64;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
@@ -446,9 +446,9 @@ int main(void) {
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 (*header).payload_type = (i as i8) as u8;
 // CHECK-NEXT:             }
-// CHECK-NEXT:             let [[V_4:__v[0-9]+]]: u64 = unsafe { (*header).payload_len };
+// CHECK-NEXT:             let [[V_1]]: u64 = unsafe { (*header).payload_len };
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 (*header).payload_len = [[V_4]].wrapping_add(7);
+// CHECK-NEXT:                 (*header).payload_len = [[V_1]].wrapping_add(7);
 // CHECK-NEXT:             }
 // CHECK-NEXT:             used = used.wrapping_add(9u64.wrapping_add((i as i64) as u64));
 // CHECK-NEXT:             i += 1;

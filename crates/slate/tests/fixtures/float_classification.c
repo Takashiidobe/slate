@@ -26,18 +26,18 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn nan(__tagb: *const i8) -> f64;
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn nan([[ARG_0:arg[0-9]+]]: *const i8) -> f64;
+// CHECK-NEXT:     fn printf([[ARG_0]]: *const i8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: union [[SLATERECORD_0:__SlateRecord[0-9]+]] {
+// CHECK-NEXT: union __SlateRecord_float_classification_c_8 {
 // CHECK-NEXT:     bits: u64,
 // CHECK-NEXT:     value: f64,
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: union [[SLATERECORD_1:__SlateRecord[0-9]+]] {
+// CHECK-NEXT: union __SlateRecord_float_classification_c_9 {
 // CHECK-NEXT:     bits: u32,
 // CHECK-NEXT:     value: f32,
 // CHECK-NEXT: }
@@ -51,23 +51,31 @@ int main(void) {
 // CHECK-NEXT:     x
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let inf: [[SLATERECORD_0]] = {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [[SLATERECORD_0]] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let inf: __SlateRecord_float_classification_c_8 = {
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: __SlateRecord_float_classification_c_8 = unsafe {
+// CHECK-NEXT:             std::mem::zeroed()
+// CHECK-NEXT:         };
 // CHECK-NEXT:         [[T_0]].bits = 9218868437227405312u64;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let nan: [[SLATERECORD_0]] = {
-// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: [[SLATERECORD_0]] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let nan: __SlateRecord_float_classification_c_8 = {
+// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: __SlateRecord_float_classification_c_8 = unsafe {
+// CHECK-NEXT:             std::mem::zeroed()
+// CHECK-NEXT:         };
 // CHECK-NEXT:         [[T_1]].bits = 9221120237041090561u64;
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let finf: [[SLATERECORD_1]] = {
-// CHECK-NEXT:         let mut [[T_2:__t[0-9]+]]: [[SLATERECORD_1]] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let finf: __SlateRecord_float_classification_c_9 = {
+// CHECK-NEXT:         let mut [[T_2:__t[0-9]+]]: __SlateRecord_float_classification_c_9 = unsafe {
+// CHECK-NEXT:             std::mem::zeroed()
+// CHECK-NEXT:         };
 // CHECK-NEXT:         [[T_2]].bits = 2139095040u32;
 // CHECK-NEXT:         [[T_2]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let fnan: [[SLATERECORD_1]] = {
-// CHECK-NEXT:         let mut [[T_3:__t[0-9]+]]: [[SLATERECORD_1]] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let fnan: __SlateRecord_float_classification_c_9 = {
+// CHECK-NEXT:         let mut [[T_3:__t[0-9]+]]: __SlateRecord_float_classification_c_9 = unsafe {
+// CHECK-NEXT:             std::mem::zeroed()
+// CHECK-NEXT:         };
 // CHECK-NEXT:         [[T_3]].bits = 2143289345u32;
 // CHECK-NEXT:         [[T_3]]
 // CHECK-NEXT:     };

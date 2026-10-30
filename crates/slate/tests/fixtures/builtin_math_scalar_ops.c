@@ -20,23 +20,23 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT:     #[link_name = "fma"]
-// CHECK-NEXT:     fn __builtin_fma([[V_0:__v[0-9]+]]: f64, [[V_1:__v[0-9]+]]: f64, [[V_2:__v[0-9]+]]: f64) -> f64;
+// CHECK-NEXT:     fn __builtin_fma([[ARG_0]]: f64, [[ARG_1:arg[0-9]+]]: f64, [[ARG_2:arg[0-9]+]]: f64) -> f64;
 // CHECK-NEXT:     #[link_name = "hypot"]
-// CHECK-NEXT:     fn __builtin_hypot([[V_3:__v[0-9]+]]: f64, [[V_4:__v[0-9]+]]: f64) -> f64;
+// CHECK-NEXT:     fn __builtin_hypot([[ARG_0]]: f64, [[ARG_1]]: f64) -> f64;
 // CHECK-NEXT:     #[link_name = "fdim"]
-// CHECK-NEXT:     fn __builtin_fdim([[V_5:__v[0-9]+]]: f64, [[V_6:__v[0-9]+]]: f64) -> f64;
+// CHECK-NEXT:     fn __builtin_fdim([[ARG_0]]: f64, [[ARG_1]]: f64) -> f64;
 // CHECK-NEXT:     #[link_name = "cbrt"]
-// CHECK-NEXT:     fn __builtin_cbrt([[V_7:__v[0-9]+]]: f64) -> f64;
+// CHECK-NEXT:     fn __builtin_cbrt([[ARG_0]]: f64) -> f64;
 // CHECK-NEXT:     #[link_name = "ldexp"]
-// CHECK-NEXT:     fn __builtin_ldexp([[V_8:__v[0-9]+]]: f64, [[V_9:__v[0-9]+]]: i32) -> f64;
+// CHECK-NEXT:     fn __builtin_ldexp([[ARG_0]]: f64, [[ARG_1]]: i32) -> f64;
 // CHECK-NEXT:     #[link_name = "scalbn"]
-// CHECK-NEXT:     fn __builtin_scalbn([[V_10:__v[0-9]+]]: f64, [[V_11:__v[0-9]+]]: i32) -> f64;
+// CHECK-NEXT:     fn __builtin_scalbn([[ARG_0]]: f64, [[ARG_1]]: i32) -> f64;
 // CHECK-NEXT:     #[link_name = "logb"]
-// CHECK-NEXT:     fn __builtin_logb([[V_12:__v[0-9]+]]: f64) -> f64;
+// CHECK-NEXT:     fn __builtin_logb([[ARG_0]]: f64) -> f64;
 // CHECK-NEXT:     #[link_name = "ilogb"]
-// CHECK-NEXT:     fn __builtin_ilogb([[V_13:__v[0-9]+]]: f64) -> i32;
+// CHECK-NEXT:     fn __builtin_ilogb([[ARG_0]]: f64) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;

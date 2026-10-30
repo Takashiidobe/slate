@@ -14,10 +14,10 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn tolower(__c: i32) -> i32;
-// CHECK-NEXT:     fn toupper(__c: i32) -> i32;
-// CHECK-NEXT:     fn setlocale(__category: i32, __locale: *const i8) -> *mut i8;
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn tolower([[ARG_0:arg[0-9]+]]: i32) -> i32;
+// CHECK-NEXT:     fn toupper([[ARG_0]]: i32) -> i32;
+// CHECK-NEXT:     fn setlocale([[ARG_0]]: i32, [[ARG_1:arg[0-9]+]]: *const i8) -> *mut i8;
+// CHECK-NEXT:     fn printf([[ARG_0]]: *const i8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe { setlocale(6i32, c"".as_ptr()) };

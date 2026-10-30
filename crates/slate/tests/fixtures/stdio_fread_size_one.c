@@ -27,13 +27,13 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn remove(__filename: *const i8) -> i32;
-// CHECK-NEXT:     fn fclose(__stream: *mut _IO_FILE) -> i32;
-// CHECK-NEXT:     fn fopen(__filename: *const i8, __modes: *const i8) -> *mut _IO_FILE;
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn fputs(__s: *const i8, __stream: *mut _IO_FILE) -> i32;
-// CHECK-NEXT:     fn puts(__s: *const i8) -> i32;
-// CHECK-NEXT:     fn fread(__ptr: *mut (), __size: u64, __n: u64, __stream: *mut _IO_FILE) -> u64;
+// CHECK-NEXT:     fn remove([[ARG_0:arg[0-9]+]]: *const i8) -> i32;
+// CHECK-NEXT:     fn fclose([[ARG_0]]: *mut _IO_FILE) -> i32;
+// CHECK-NEXT:     fn fopen([[ARG_0]]: *const i8, [[ARG_1:arg[0-9]+]]: *const i8) -> *mut _IO_FILE;
+// CHECK-NEXT:     fn printf([[ARG_0]]: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn fputs([[ARG_0]]: *const i8, [[ARG_1]]: *mut _IO_FILE) -> i32;
+// CHECK-NEXT:     fn puts([[ARG_0]]: *const i8) -> i32;
+// CHECK-NEXT:     fn fread([[ARG_0]]: *mut (), [[ARG_1]]: u64, [[ARG_2:arg[0-9]+]]: u64, [[ARG_3:arg[0-9]+]]: *mut _IO_FILE) -> u64;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;

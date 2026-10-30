@@ -49,14 +49,14 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn pthread_create(
-// CHECK-NEXT:         __newthread: *mut u64,
-// CHECK-NEXT:         __attr: *const pthread_attr_t,
-// CHECK-NEXT:         __start_routine: Option<unsafe extern "C-unwind" fn(*mut ()) -> *mut ()>,
-// CHECK-NEXT:         __arg: *mut (),
+// CHECK-NEXT:         [[ARG_0:arg[0-9]+]]: *mut u64,
+// CHECK-NEXT:         [[ARG_1:arg[0-9]+]]: *const pthread_attr_t,
+// CHECK-NEXT:         [[ARG_2:arg[0-9]+]]: Option<unsafe extern "C-unwind" fn(*mut ()) -> *mut ()>,
+// CHECK-NEXT:         [[ARG_3:arg[0-9]+]]: *mut (),
 // CHECK-NEXT:     ) -> i32;
-// CHECK-NEXT:     fn pthread_join(__th: u64, __thread_return: *mut *mut ()) -> i32;
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn strlen(__s: *const i8) -> u64;
+// CHECK-NEXT:     fn pthread_join([[ARG_0]]: u64, [[ARG_1]]: *mut *mut ()) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0]]: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn strlen([[ARG_0]]: *const i8) -> u64;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;

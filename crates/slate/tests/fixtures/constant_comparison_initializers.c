@@ -29,11 +29,11 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct [[SLATERECORD_0:__SlateRecord[0-9]+]] {
+// CHECK-NEXT: struct __SlateRecord_constant_comparison_initializers_c_7 {
 // CHECK-NEXT:     kind: i32,
 // CHECK-NEXT:     size: i32,
 // CHECK-NEXT:     is_unsigned: bool,
@@ -46,11 +46,13 @@ int main(void) {
 // CHECK-NEXT: static mut both: i32 = (1i32 != 0i32 && 0i32 != 0i32) as i32;
 // CHECK-NEXT: static mut either: i32 = (0i32 != 0i32 || 7i32 != 0i32) as i32;
 // CHECK-NEXT: static mut float_order: i32 = (1.5f64 < 2.5f64) as i32;
-// CHECK-NEXT: static mut uchar: *mut [[SLATERECORD_0]] = unsafe {
-// CHECK-NEXT:     std::ptr::addr_of_mut!([[SLATE_COMPOUND_0:__slate_compound_[0-9]+]])
+// CHECK-NEXT: static mut uchar: *mut __SlateRecord_constant_comparison_initializers_c_7 = unsafe {
+// CHECK-NEXT:     std::ptr::addr_of_mut!(__slate_compound_uchar_0)
 // CHECK-NEXT: };
-// CHECK-NEXT: static mut plain: [[SLATERECORD_0]] = {
-// CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: [[SLATERECORD_0]] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT: static mut plain: __SlateRecord_constant_comparison_initializers_c_7 = {
+// CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: __SlateRecord_constant_comparison_initializers_c_7 = unsafe {
+// CHECK-NEXT:         std::mem::zeroed()
+// CHECK-NEXT:     };
 // CHECK-NEXT:     [[T_0]].kind = 2i32;
 // CHECK-NEXT:     [[T_0]].size = 4i32;
 // CHECK-NEXT:     [[T_0]].is_unsigned = 0i32 != 0i32;
@@ -68,8 +70,10 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut [[SLATE_COMPOUND_0]]: [[SLATERECORD_0]] = {
-// CHECK-NEXT:     let mut [[T_0]]: [[SLATERECORD_0]] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT: static mut __slate_compound_uchar_0: __SlateRecord_constant_comparison_initializers_c_7 = {
+// CHECK-NEXT:     let mut [[T_0]]: __SlateRecord_constant_comparison_initializers_c_7 = unsafe {
+// CHECK-NEXT:         std::mem::zeroed()
+// CHECK-NEXT:     };
 // CHECK-NEXT:     [[T_0]].kind = 1i32;
 // CHECK-NEXT:     [[T_0]].size = 1i32;
 // CHECK-NEXT:     [[T_0]].is_unsigned = 1i32 != 0i32;

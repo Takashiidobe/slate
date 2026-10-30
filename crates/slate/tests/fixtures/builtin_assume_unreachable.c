@@ -45,9 +45,9 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT:     fn __builtin_unreachable();
-// CHECK-NEXT:     fn __builtin_assume([[V_0:__v[0-9]+]]: bool);
+// CHECK-NEXT:     fn __builtin_assume([[ARG_0]]: bool);
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
@@ -76,11 +76,11 @@ int main(void) {
 // CHECK-NEXT:     x / 2
 // CHECK-NEXT: }
 // CHECK-NEXT: fn bump(counter: &mut i32) -> i32 {
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i32 = (unsafe { *counter }) + 1;
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = (unsafe { *counter }) + 1;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *counter = [[V_1]];
+// CHECK-NEXT:         *counter = [[V_0]];
 // CHECK-NEXT:     }
-// CHECK-NEXT:     [[V_1]]
+// CHECK-NEXT:     [[V_0]]
 // CHECK-NEXT: }
 // CHECK-NEXT: fn checked(x: u32) -> u32 {
 // CHECK-NEXT:     if x < 100 {

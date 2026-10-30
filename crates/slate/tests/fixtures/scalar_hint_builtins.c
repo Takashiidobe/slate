@@ -38,10 +38,10 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn __builtin_prefetch([[V_0:__v[0-9]+]]: *const (), ...);
-// CHECK-NEXT:     fn __builtin_expect([[V_1:__v[0-9]+]]: i64, [[V_2:__v[0-9]+]]: i64) -> i64;
-// CHECK-NEXT:     fn __builtin_expect_with_probability([[V_3:__v[0-9]+]]: i64, [[V_4:__v[0-9]+]]: i64, [[V_5:__v[0-9]+]]: f64) -> i64;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn __builtin_prefetch([[ARG_0]]: *const (), ...);
+// CHECK-NEXT:     fn __builtin_expect([[ARG_0]]: i64, [[ARG_1:arg[0-9]+]]: i64) -> i64;
+// CHECK-NEXT:     fn __builtin_expect_with_probability([[ARG_0]]: i64, [[ARG_1]]: i64, [[ARG_2:arg[0-9]+]]: f64) -> i64;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
@@ -50,11 +50,11 @@ int main(void) {
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: static mut calls: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT: fn next() -> i32 {
-// CHECK-NEXT:     let [[V_6:__v[0-9]+]]: i32 = (unsafe { calls }) + 1;
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = (unsafe { calls }) + 1;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         calls = [[V_6]];
+// CHECK-NEXT:         calls = [[V_0]];
 // CHECK-NEXT:     }
-// CHECK-NEXT:     [[V_6]]
+// CHECK-NEXT:     [[V_0]]
 // CHECK-NEXT: }
 // CHECK-NEXT: fn weigh(words: &[u64]) -> i64 {
 // CHECK-NEXT:     let mut total: i64 = 0;

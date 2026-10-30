@@ -78,7 +78,7 @@ impl FunctionLowerer<'_, '_> {
     pub(super) fn lower_vla_let(&mut self, variable: &ir::Variable) -> Result<Stmt> {
         let (storage, buffer) = self.vla_buffer(variable)?;
         Ok(Stmt::Let {
-            name: binding_name(variable.id, &self.tables.bindings),
+            name: self.binding_name(variable.id),
             mutable: true,
             ty: Some(storage),
             init: Some(buffer),

@@ -23,7 +23,7 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const u8, ...) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const u8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "sve")]
 // CHECK-NEXT: unsafe fn all_lanes_faulted_in() -> i32 {

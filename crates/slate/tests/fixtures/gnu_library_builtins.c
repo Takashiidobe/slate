@@ -25,29 +25,29 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     #[link_name = "malloc"]
-// CHECK-NEXT:     fn __builtin_malloc([[V_0:__v[0-9]+]]: u64) -> *mut ();
+// CHECK-NEXT:     fn __builtin_malloc([[ARG_0:arg[0-9]+]]: u64) -> *mut ();
 // CHECK-NEXT:     #[link_name = "strcpy"]
-// CHECK-NEXT:     fn __builtin_strcpy([[V_1:__v[0-9]+]]: *mut i8, [[V_2:__v[0-9]+]]: *const i8) -> *mut i8;
+// CHECK-NEXT:     fn __builtin_strcpy([[ARG_0]]: *mut i8, [[ARG_1:arg[0-9]+]]: *const i8) -> *mut i8;
 // CHECK-NEXT:     #[link_name = "strncpy"]
-// CHECK-NEXT:     fn __builtin_strncpy([[V_3:__v[0-9]+]]: *mut i8, [[V_4:__v[0-9]+]]: *const i8, [[V_5:__v[0-9]+]]: u64) -> *mut i8;
+// CHECK-NEXT:     fn __builtin_strncpy([[ARG_0]]: *mut i8, [[ARG_1]]: *const i8, [[ARG_2:arg[0-9]+]]: u64) -> *mut i8;
 // CHECK-NEXT:     #[link_name = "sprintf"]
-// CHECK-NEXT:     fn __builtin_sprintf([[V_6:__v[0-9]+]]: *mut i8, [[V_7:__v[0-9]+]]: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn __builtin_sprintf([[ARG_0]]: *mut i8, [[ARG_1]]: *const i8, ...) -> i32;
 // CHECK-NEXT:     #[link_name = "strlen"]
-// CHECK-NEXT:     fn __builtin_strlen([[V_8:__v[0-9]+]]: *const i8) -> u64;
+// CHECK-NEXT:     fn __builtin_strlen([[ARG_0]]: *const i8) -> u64;
 // CHECK-NEXT:     #[link_name = "snprintf"]
-// CHECK-NEXT:     fn __builtin_snprintf([[V_9:__v[0-9]+]]: *mut i8, [[V_10:__v[0-9]+]]: u64, [[V_11:__v[0-9]+]]: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn __builtin_snprintf([[ARG_0]]: *mut i8, [[ARG_1]]: u64, [[ARG_2]]: *const i8, ...) -> i32;
 // CHECK-NEXT:     #[link_name = "memchr"]
-// CHECK-NEXT:     fn __builtin_memchr([[V_12:__v[0-9]+]]: *const (), [[V_13:__v[0-9]+]]: i32, [[V_14:__v[0-9]+]]: u64) -> *mut ();
+// CHECK-NEXT:     fn __builtin_memchr([[ARG_0]]: *const (), [[ARG_1]]: i32, [[ARG_2]]: u64) -> *mut ();
 // CHECK-NEXT:     #[link_name = "printf"]
-// CHECK-NEXT:     fn __builtin_printf([[V_15:__v[0-9]+]]: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn __builtin_printf([[ARG_0]]: *const i8, ...) -> i32;
 // CHECK-NEXT:     #[link_name = "strcmp"]
-// CHECK-NEXT:     fn __builtin_strcmp([[V_16:__v[0-9]+]]: *const i8, [[V_17:__v[0-9]+]]: *const i8) -> i32;
+// CHECK-NEXT:     fn __builtin_strcmp([[ARG_0]]: *const i8, [[ARG_1]]: *const i8) -> i32;
 // CHECK-NEXT:     #[link_name = "abs"]
-// CHECK-NEXT:     fn __builtin_abs([[V_18:__v[0-9]+]]: i32) -> i32;
+// CHECK-NEXT:     fn __builtin_abs([[ARG_0]]: i32) -> i32;
 // CHECK-NEXT:     #[link_name = "labs"]
-// CHECK-NEXT:     fn __builtin_labs([[V_19:__v[0-9]+]]: i64) -> i64;
+// CHECK-NEXT:     fn __builtin_labs([[ARG_0]]: i64) -> i64;
 // CHECK-NEXT:     #[link_name = "free"]
-// CHECK-NEXT:     fn __builtin_free([[V_20:__v[0-9]+]]: *mut ());
+// CHECK-NEXT:     fn __builtin_free([[ARG_0]]: *mut ());
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;

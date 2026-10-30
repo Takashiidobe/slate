@@ -94,7 +94,7 @@ int main(void) {
 // CHECK-NEXT: #![feature(asm_goto_with_outputs)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT:     fn gnu_basic_asm_function() -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut gnu_basic_asm_value: i32 = unsafe { std::mem::zeroed() };

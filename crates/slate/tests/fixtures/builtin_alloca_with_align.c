@@ -151,12 +151,12 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn memset(__s: *mut (), __c: i32, __n: u64) -> *mut ();
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn memset([[ARG_0]]: *mut (), [[ARG_1:arg[0-9]+]]: i32, [[ARG_2:arg[0-9]+]]: u64) -> *mut ();
 // CHECK-NEXT:     #[link_name = "alloca"]
-// CHECK-NEXT:     fn __builtin_alloca([[V_0:__v[0-9]+]]: u64) -> *mut ();
-// CHECK-NEXT:     fn __builtin_alloca_with_align([[V_1:__v[0-9]+]]: u64, [[V_2:__v[0-9]+]]: u64) -> *mut ();
-// CHECK-NEXT:     fn __builtin_alloca_with_align_uninitialized([[V_3:__v[0-9]+]]: u64, [[V_4:__v[0-9]+]]: u64) -> *mut ();
+// CHECK-NEXT:     fn __builtin_alloca([[ARG_0]]: u64) -> *mut ();
+// CHECK-NEXT:     fn __builtin_alloca_with_align([[ARG_0]]: u64, [[ARG_1]]: u64) -> *mut ();
+// CHECK-NEXT:     fn __builtin_alloca_with_align_uninitialized([[ARG_0]]: u64, [[ARG_1]]: u64) -> *mut ();
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
@@ -181,11 +181,11 @@ int main(void) {
 // CHECK-NEXT:         ((n as i64) as u64) as usize,
 // CHECK-NEXT:         (32768 as usize) / 8usize,
 // CHECK-NEXT:     ) as *mut ()) as *mut i8;
-// CHECK-NEXT:     let [[V_5:__v[0-9]+]]: bool = aligned_to(a as *mut (), 8u64) != 0
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: bool = aligned_to(a as *mut (), 8u64) != 0
 // CHECK-NEXT:         && aligned_to(b as *mut (), 64u64) != 0;
-// CHECK-NEXT:     let [[V_6:__v[0-9]+]]: bool = [[V_5]] && aligned_to(c as *mut (), 4096u64) != 0;
-// CHECK-NEXT:     let [[V_7:__v[0-9]+]]: i32 = [[V_6]] as i32;
-// CHECK-NEXT:     ok &= [[V_7]];
+// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: bool = [[V_0]] && aligned_to(c as *mut (), 4096u64) != 0;
+// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: i32 = [[V_1]] as i32;
+// CHECK-NEXT:     ok &= [[V_2]];
 // CHECK-NEXT:     unsafe { std::ptr::write_bytes(small as *mut u8, 1u8, 3 as usize) };
 // CHECK-NEXT:     unsafe { std::ptr::write_bytes(a as *mut u8, 2u8, ((n as i64) as u64) as usize) };
 // CHECK-NEXT:     unsafe { std::ptr::write_bytes(b as *mut u8, 3u8, ((n as i64) as u64) as usize) };
@@ -222,9 +222,9 @@ int main(void) {
 // CHECK-NEXT:             (2048 as usize) / 8usize,
 // CHECK-NEXT:         ) as *mut ()) as *mut u8;
 // CHECK-NEXT:         unsafe { std::ptr::write_bytes(p as *mut u8, 5u8, 1100000 as usize) };
-// CHECK-NEXT:         let [[V_8:__v[0-9]+]]: i32 = aligned_to(p as *mut (), 256u64)
+// CHECK-NEXT:         let [[V_0]]: i32 = aligned_to(p as *mut (), 256u64)
 // CHECK-NEXT:             * (((unsafe { *p.add(1099999) }) as u32) as i32);
-// CHECK-NEXT:         total += [[V_8]] as i64;
+// CHECK-NEXT:         total += [[V_0]] as i64;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }

@@ -14,9 +14,9 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fclose(__stream: *mut _IO_FILE) -> i32;
-// CHECK-NEXT:     fn fopen(__filename: *const i8, __modes: *const i8) -> *mut _IO_FILE;
-// CHECK-NEXT:     fn perror(__s: *const i8);
+// CHECK-NEXT:     fn fclose([[ARG_0:arg[0-9]+]]: *mut _IO_FILE) -> i32;
+// CHECK-NEXT:     fn fopen([[ARG_0]]: *const i8, [[ARG_1:arg[0-9]+]]: *const i8) -> *mut _IO_FILE;
+// CHECK-NEXT:     fn perror([[ARG_0]]: *const i8);
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]

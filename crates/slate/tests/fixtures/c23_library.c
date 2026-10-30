@@ -159,46 +159,40 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn snprintf(__s: *mut i8, __maxlen: u64, __format: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn sscanf(__s: *const i8, __format: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn strfromd(__dest: *mut i8, __size: u64, __format: *const i8, __f: f64) -> i32;
-// CHECK-NEXT:     fn strfromf(__dest: *mut i8, __size: u64, __format: *const i8, __f: f32) -> i32;
-// CHECK-NEXT:     fn free(__ptr: *mut ());
-// CHECK-NEXT:     fn memccpy(__dest: *mut (), __src: *const (), __c: i32, __n: u64) -> *mut ();
-// CHECK-NEXT:     fn memset_explicit(__s: *mut (), __c: i32, __n: u64) -> *mut ();
-// CHECK-NEXT:     fn memchr(__s: *const (), __c: i32, __n: u64) -> *mut ();
-// CHECK-NEXT:     fn strcmp(__s1: *const i8, __s2: *const i8) -> i32;
-// CHECK-NEXT:     fn strdup(__s: *const i8) -> *mut i8;
-// CHECK-NEXT:     fn strndup(__string: *const i8, __n: u64) -> *mut i8;
-// CHECK-NEXT:     fn strchr(__s: *const i8, __c: i32) -> *mut i8;
-// CHECK-NEXT:     fn strstr(__haystack: *const i8, __needle: *const i8) -> *mut i8;
-// CHECK-NEXT:     fn strftime(
-// CHECK-NEXT:         __s: *mut i8,
-// CHECK-NEXT:         __maxsize: u64,
-// CHECK-NEXT:         __format: *const i8,
-// CHECK-NEXT:         __tp: *const tm,
-// CHECK-NEXT:     ) -> u64;
-// CHECK-NEXT:     fn gmtime_r(__timer: *const i64, __tp: *mut tm) -> *mut tm;
-// CHECK-NEXT:     fn localtime_r(__timer: *const i64, __tp: *mut tm) -> *mut tm;
-// CHECK-NEXT:     fn timegm(__tp: *mut tm) -> i64;
-// CHECK-NEXT:     fn timespec_getres(__ts: *mut timespec, __base: i32) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn snprintf([[ARG_0]]: *mut i8, [[ARG_1:arg[0-9]+]]: u64, [[ARG_2:arg[0-9]+]]: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn sscanf([[ARG_0]]: *const i8, [[ARG_1]]: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn strfromd([[ARG_0]]: *mut i8, [[ARG_1]]: u64, [[ARG_2]]: *const i8, [[ARG_3:arg[0-9]+]]: f64) -> i32;
+// CHECK-NEXT:     fn strfromf([[ARG_0]]: *mut i8, [[ARG_1]]: u64, [[ARG_2]]: *const i8, [[ARG_3]]: f32) -> i32;
+// CHECK-NEXT:     fn free([[ARG_0]]: *mut ());
+// CHECK-NEXT:     fn memccpy([[ARG_0]]: *mut (), [[ARG_1]]: *const (), [[ARG_2]]: i32, [[ARG_3]]: u64) -> *mut ();
+// CHECK-NEXT:     fn memset_explicit([[ARG_0]]: *mut (), [[ARG_1]]: i32, [[ARG_2]]: u64) -> *mut ();
+// CHECK-NEXT:     fn memchr([[ARG_0]]: *const (), [[ARG_1]]: i32, [[ARG_2]]: u64) -> *mut ();
+// CHECK-NEXT:     fn strcmp([[ARG_0]]: *const i8, [[ARG_1]]: *const i8) -> i32;
+// CHECK-NEXT:     fn strdup([[ARG_0]]: *const i8) -> *mut i8;
+// CHECK-NEXT:     fn strndup([[ARG_0]]: *const i8, [[ARG_1]]: u64) -> *mut i8;
+// CHECK-NEXT:     fn strchr([[ARG_0]]: *const i8, [[ARG_1]]: i32) -> *mut i8;
+// CHECK-NEXT:     fn strstr([[ARG_0]]: *const i8, [[ARG_1]]: *const i8) -> *mut i8;
+// CHECK-NEXT:     fn strftime([[ARG_0]]: *mut i8, [[ARG_1]]: u64, [[ARG_2]]: *const i8, [[ARG_3]]: *const tm) -> u64;
+// CHECK-NEXT:     fn gmtime_r([[ARG_0]]: *const i64, [[ARG_1]]: *mut tm) -> *mut tm;
+// CHECK-NEXT:     fn localtime_r([[ARG_0]]: *const i64, [[ARG_1]]: *mut tm) -> *mut tm;
+// CHECK-NEXT:     fn timegm([[ARG_0]]: *mut tm) -> i64;
+// CHECK-NEXT:     fn timespec_getres([[ARG_0]]: *mut timespec, [[ARG_1]]: i32) -> i32;
 // CHECK-NEXT:     fn mbrtoc8(
-// CHECK-NEXT:         __pc8: *mut u8,
-// CHECK-NEXT:         __s: *const i8,
-// CHECK-NEXT:         __n: u64,
-// CHECK-NEXT:         __p: *mut [[SLATERECORD_0:__SlateRecord[0-9]+]],
+// CHECK-NEXT:         [[ARG_0]]: *mut u8,
+// CHECK-NEXT:         [[ARG_1]]: *const i8,
+// CHECK-NEXT:         [[ARG_2]]: u64,
+// CHECK-NEXT:         [[ARG_3]]: *mut __SlateRecord___mbstate_t_h_21,
 // CHECK-NEXT:     ) -> u64;
-// CHECK-NEXT:     fn c8rtomb(__s: *mut i8, __c8: u8, __ps: *mut [[SLATERECORD_0]]) -> u64;
-// CHECK-NEXT:     fn wcscmp(__s1: *const i32, __s2: *const i32) -> i32;
-// CHECK-NEXT:     fn wcschr(__wcs: *const i32, __wc: i32) -> *mut i32;
-// CHECK-NEXT:     fn wcsstr(__haystack: *const i32, __needle: *const i32) -> *mut i32;
-// CHECK-NEXT:     fn wcsftime(
-// CHECK-NEXT:         __s: *mut i32,
-// CHECK-NEXT:         __maxsize: u64,
-// CHECK-NEXT:         __format: *const i32,
-// CHECK-NEXT:         __tp: *const tm,
+// CHECK-NEXT:     fn c8rtomb(
+// CHECK-NEXT:         [[ARG_0]]: *mut i8,
+// CHECK-NEXT:         [[ARG_1]]: u8,
+// CHECK-NEXT:         [[ARG_2]]: *mut __SlateRecord___mbstate_t_h_21,
 // CHECK-NEXT:     ) -> u64;
+// CHECK-NEXT:     fn wcscmp([[ARG_0]]: *const i32, [[ARG_1]]: *const i32) -> i32;
+// CHECK-NEXT:     fn wcschr([[ARG_0]]: *const i32, [[ARG_1]]: i32) -> *mut i32;
+// CHECK-NEXT:     fn wcsstr([[ARG_0]]: *const i32, [[ARG_1]]: *const i32) -> *mut i32;
+// CHECK-NEXT:     fn wcsftime([[ARG_0]]: *mut i32, [[ARG_1]]: u64, [[ARG_2]]: *const i32, [[ARG_3]]: *const tm) -> u64;
 // CHECK-NEXT:     safe fn __slate_f80_add(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_sub(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_mul(__a: LongDouble, __b: LongDouble) -> LongDouble;
@@ -374,13 +368,13 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct [[SLATERECORD_0]] {
+// CHECK-NEXT: struct __SlateRecord___mbstate_t_h_21 {
 // CHECK-NEXT:     __count: i32,
-// CHECK-NEXT:     __value: [[SLATERECORD_1:__SlateRecord[0-9]+]],
+// CHECK-NEXT:     __value: __SlateRecord___mbstate_t_h_21_2,
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: union [[SLATERECORD_1]] {
+// CHECK-NEXT: union __SlateRecord___mbstate_t_h_21_2 {
 // CHECK-NEXT:     __wch: u32,
 // CHECK-NEXT:     __wchb: [i8; 4],
 // CHECK-NEXT: }
@@ -538,12 +532,12 @@ int main(void) {
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: fn c23_utf8() -> i32 {
-// CHECK-NEXT:     let mut input_state: [[SLATERECORD_0]] = {
-// CHECK-NEXT:         let mut [[T_0]]: [[SLATERECORD_0]] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut input_state: __SlateRecord___mbstate_t_h_21 = {
+// CHECK-NEXT:         let mut [[T_0]]: __SlateRecord___mbstate_t_h_21 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut output_state: [[SLATERECORD_0]] = {
-// CHECK-NEXT:         let mut [[T_1]]: [[SLATERECORD_0]] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut output_state: __SlateRecord___mbstate_t_h_21 = {
+// CHECK-NEXT:         let mut [[T_1]]: __SlateRecord___mbstate_t_h_21 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut character: u8 = 0;
@@ -624,22 +618,22 @@ int main(void) {
 // CHECK-NEXT:     let mut_hit: *mut i8 = unsafe {
 // CHECK-NEXT:         strchr(mutable_phrase.as_mut_ptr() as *const i8, 119i32)
 // CHECK-NEXT:     };
+// CHECK-NEXT:     let [[V_2]]: i32 = total;
+// CHECK-NEXT:     total = [[V_2]] + ((!const_hit.is_null() && !mut_hit.is_null()) as i32);
 // CHECK-NEXT:     let [[V_6:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_6]] + ((!const_hit.is_null() && !mut_hit.is_null()) as i32);
+// CHECK-NEXT:     total = [[V_6]]
+// CHECK-NEXT:         + (!((unsafe { memchr(phrase as *const (), 111i32, 11u64) }) as *const ())
+// CHECK-NEXT:             .is_null() as i32);
 // CHECK-NEXT:     let [[V_7:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_7]]
-// CHECK-NEXT:         + (!((unsafe { memchr(phrase as *const (), 111i32, 11u64) }) as *const ())
+// CHECK-NEXT:         + (!unsafe { memchr(mutable_phrase.as_mut_ptr() as *const (), 111i32, 11u64) }
 // CHECK-NEXT:             .is_null() as i32);
 // CHECK-NEXT:     let [[V_8:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_8]]
-// CHECK-NEXT:         + (!unsafe { memchr(mutable_phrase.as_mut_ptr() as *const (), 111i32, 11u64) }
-// CHECK-NEXT:             .is_null() as i32);
-// CHECK-NEXT:     let [[V_9:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_9]]
 // CHECK-NEXT:         + (!((unsafe { strstr(phrase, c"world".as_ptr()) }) as *const i8).is_null()
 // CHECK-NEXT:             as i32);
-// CHECK-NEXT:     let [[V_10:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_10]]
+// CHECK-NEXT:     let [[V_9:__v[0-9]+]]: i32 = total;
+// CHECK-NEXT:     total = [[V_9]]
 // CHECK-NEXT:         + (!unsafe {
 // CHECK-NEXT:             strstr(mutable_phrase.as_mut_ptr() as *const i8, c"world".as_ptr())
 // CHECK-NEXT:         }
@@ -674,21 +668,21 @@ int main(void) {
 // CHECK-NEXT:             std::ptr::addr_of_mut!(utc),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) == std::ptr::addr_of_mut!(utc)) as i32;
-// CHECK-NEXT:     let [[V_11:__v[0-9]+]]: i32 = ((unsafe {
+// CHECK-NEXT:     let [[V_0]]: i32 = ((unsafe {
 // CHECK-NEXT:         localtime_r(
 // CHECK-NEXT:             std::ptr::addr_of_mut!(timestamp) as *const i64,
 // CHECK-NEXT:             std::ptr::addr_of_mut!(local),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) == std::ptr::addr_of_mut!(local)) as i32;
-// CHECK-NEXT:     total += [[V_11]];
-// CHECK-NEXT:     let [[V_12:__v[0-9]+]]: i32 = ((unsafe {
+// CHECK-NEXT:     total += [[V_0]];
+// CHECK-NEXT:     let [[V_1]]: i32 = ((unsafe {
 // CHECK-NEXT:         timespec_getres(std::ptr::addr_of_mut!(resolution), 1i32)
 // CHECK-NEXT:     }) == 1) as i32;
-// CHECK-NEXT:     total += [[V_12]];
+// CHECK-NEXT:     total += [[V_1]];
 // CHECK-NEXT:     total += (resolution.tv_sec > 0 || resolution.tv_nsec > 0) as i32;
-// CHECK-NEXT:     let [[V_13:__v[0-9]+]]: i32 = ((unsafe { timegm(std::ptr::addr_of_mut!(utc)) }) == 0) as i32;
-// CHECK-NEXT:     total += [[V_13]];
-// CHECK-NEXT:     let [[V_14:__v[0-9]+]]: i32 = ((unsafe {
+// CHECK-NEXT:     let [[V_6]]: i32 = ((unsafe { timegm(std::ptr::addr_of_mut!(utc)) }) == 0) as i32;
+// CHECK-NEXT:     total += [[V_6]];
+// CHECK-NEXT:     let [[V_10:__v[0-9]+]]: i32 = ((unsafe {
 // CHECK-NEXT:         strftime(
 // CHECK-NEXT:             month.0.as_mut_ptr() as *mut i8,
 // CHECK-NEXT:             32u64,
@@ -696,12 +690,12 @@ int main(void) {
 // CHECK-NEXT:             std::ptr::addr_of_mut!(utc) as *const tm,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) == 7) as i32;
-// CHECK-NEXT:     total += [[V_14]];
-// CHECK-NEXT:     let [[V_15:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_15]]
+// CHECK-NEXT:     total += [[V_10]];
+// CHECK-NEXT:     let [[V_9]]: i32 = total;
+// CHECK-NEXT:     total = [[V_9]]
 // CHECK-NEXT:         + (((unsafe { strcmp(month.0.as_mut_ptr() as *const i8, c"January".as_ptr()) })
 // CHECK-NEXT:             == 0) as i32);
-// CHECK-NEXT:     let [[V_16:__v[0-9]+]]: i32 = ((unsafe {
+// CHECK-NEXT:     let [[V_11:__v[0-9]+]]: i32 = ((unsafe {
 // CHECK-NEXT:         wcsftime(
 // CHECK-NEXT:             wide_month.0.as_mut_ptr() as *mut i32,
 // CHECK-NEXT:             32u64,
@@ -709,9 +703,9 @@ int main(void) {
 // CHECK-NEXT:             std::ptr::addr_of_mut!(utc) as *const tm,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) == 7) as i32;
-// CHECK-NEXT:     total += [[V_16]];
-// CHECK-NEXT:     let [[V_17:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_17]]
+// CHECK-NEXT:     total += [[V_11]];
+// CHECK-NEXT:     let [[V_12:__v[0-9]+]]: i32 = total;
+// CHECK-NEXT:     total = [[V_12]]
 // CHECK-NEXT:         + (((unsafe {
 // CHECK-NEXT:             wcscmp(
 // CHECK-NEXT:                 wide_month.0.as_mut_ptr() as *const i32,
@@ -719,15 +713,15 @@ int main(void) {
 // CHECK-NEXT:             )
 // CHECK-NEXT:         }) == 0) as i32);
 // CHECK-NEXT:     let const_month: *const i32 = wide_month.0.as_mut_ptr() as *const i32;
-// CHECK-NEXT:     let [[V_18:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_18]]
+// CHECK-NEXT:     let [[V_13:__v[0-9]+]]: i32 = total;
+// CHECK-NEXT:     total = [[V_13]]
 // CHECK-NEXT:         + (!((unsafe { wcschr(const_month, 110i32) }) as *const i32).is_null() as i32);
-// CHECK-NEXT:     let [[V_19:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_19]]
+// CHECK-NEXT:     let [[V_14:__v[0-9]+]]: i32 = total;
+// CHECK-NEXT:     total = [[V_14]]
 // CHECK-NEXT:         + (!unsafe { wcschr(wide_month.0.as_mut_ptr() as *const i32, 110i32) }.is_null()
 // CHECK-NEXT:             as i32);
-// CHECK-NEXT:     let [[V_20:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_20]]
+// CHECK-NEXT:     let [[V_15:__v[0-9]+]]: i32 = total;
+// CHECK-NEXT:     total = [[V_15]]
 // CHECK-NEXT:         + (!((unsafe {
 // CHECK-NEXT:             wcsstr(
 // CHECK-NEXT:                 const_month,
@@ -735,8 +729,8 @@ int main(void) {
 // CHECK-NEXT:             )
 // CHECK-NEXT:         }) as *const i32)
 // CHECK-NEXT:             .is_null() as i32);
-// CHECK-NEXT:     let [[V_21:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_21]]
+// CHECK-NEXT:     let [[V_16:__v[0-9]+]]: i32 = total;
+// CHECK-NEXT:     total = [[V_16]]
 // CHECK-NEXT:         + (!unsafe {
 // CHECK-NEXT:             wcsstr(
 // CHECK-NEXT:                 wide_month.0.as_mut_ptr() as *const i32,

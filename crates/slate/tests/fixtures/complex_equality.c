@@ -23,7 +23,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe extern "C" {}
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const u8, ...) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const u8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let f: num_complex::Complex<f32> = num_complex::Complex {

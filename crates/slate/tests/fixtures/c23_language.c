@@ -219,8 +219,8 @@ int main(void) {
 // CHECK-NEXT: const __SLATE_WARNING_0: () = {};
 // CHECK-NEXT: const _: () = __SLATE_WARNING_0;
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn exit(__status: i32);
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn exit([[ARG_0]]: i32);
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut c23_embedded: [u8; 3] = [67, 50, 51];
 // CHECK-NEXT: #[repr(C, align(32))]

@@ -165,10 +165,10 @@ int main(void) {
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT: }
 // AARCH64-UNKNOWN-LINUX-GNU-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fesetround(__rounding_direction: i32) -> i32;
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:     fn printf(__format: *const i8, ...) -> i32;
-// I686-UNKNOWN-LINUX-GNU-NEXT:     fn printf(__format: *const i8, ...) -> i32;
-// AARCH64-UNKNOWN-LINUX-GNU-NEXT:     fn printf(__format: *const u8, ...) -> i32;
+// CHECK-NEXT:     fn fesetround([[ARG_0:arg[0-9]+]]: i32) -> i32;
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:     fn printf([[ARG_0]]: *const i8, ...) -> i32;
+// I686-UNKNOWN-LINUX-GNU-NEXT:     fn printf([[ARG_0]]: *const i8, ...) -> i32;
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:     fn printf([[ARG_0]]: *const u8, ...) -> i32;
 // CHECK-NEXT:     fn __slate_fenv_add_f64(_0: f64, _1: f64) -> f64;
 // CHECK-NEXT:     fn __slate_fenv_div_f32(_0: f32, _1: f32) -> f32;
 // CHECK-NEXT:     fn __slate_fenv_div_f64(_0: f64, _1: f64) -> f64;

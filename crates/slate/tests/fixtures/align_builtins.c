@@ -33,7 +33,7 @@ int main(void) {
 // CHECK-NEXT: #![allow(arithmetic_overflow, unconditional_panic)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
@@ -53,25 +53,25 @@ int main(void) {
 // CHECK-NEXT:     let small: u8 = 13;
 // CHECK-NEXT:     let mut i: i32 = 0;
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: u64 = 15u64;
-// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: *mut i8 = base;
+// CHECK-NEXT:     let [[V_0]]: *mut i8 = base;
 // CHECK-NEXT:     let up: *mut i8 = (unsafe {
-// CHECK-NEXT:         ([[V_2]] as *mut u8)
+// CHECK-NEXT:         ([[V_0]] as *mut u8)
 // CHECK-NEXT:             .offset(
-// CHECK-NEXT:                 (([[V_2]] as u64).wrapping_add([[V_1]]) & ![[V_1]]).wrapping_sub([[V_2]] as u64)
+// CHECK-NEXT:                 (([[V_0]] as u64).wrapping_add([[V_1]]) & ![[V_1]]).wrapping_sub([[V_0]] as u64)
 // CHECK-NEXT:                     as isize,
 // CHECK-NEXT:             )
 // CHECK-NEXT:     }) as *mut i8;
-// CHECK-NEXT:     let [[V_3:__v[0-9]+]]: u64 = 15u64;
-// CHECK-NEXT:     let [[V_4:__v[0-9]+]]: *mut i8 = base;
+// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: u64 = 15u64;
+// CHECK-NEXT:     let [[V_3:__v[0-9]+]]: *mut i8 = base;
 // CHECK-NEXT:     let down: *mut i8 = (unsafe {
-// CHECK-NEXT:         ([[V_4]] as *mut u8).sub((([[V_4]] as u64) & [[V_3]]) as usize)
+// CHECK-NEXT:         ([[V_3]] as *mut u8).sub((([[V_3]] as u64) & [[V_2]]) as usize)
 // CHECK-NEXT:     }) as *mut i8;
-// CHECK-NEXT:     let [[V_5:__v[0-9]+]]: u64 = 7u64;
-// CHECK-NEXT:     let [[V_6:__v[0-9]+]]: *const i32 = cp;
+// CHECK-NEXT:     let [[V_4:__v[0-9]+]]: u64 = 7u64;
+// CHECK-NEXT:     let [[V_5:__v[0-9]+]]: *const i32 = cp;
 // CHECK-NEXT:     let cup: *const i32 = (unsafe {
-// CHECK-NEXT:         ([[V_6]] as *const u8)
+// CHECK-NEXT:         ([[V_5]] as *const u8)
 // CHECK-NEXT:             .offset(
-// CHECK-NEXT:                 (([[V_6]] as u64).wrapping_add([[V_5]]) & ![[V_5]]).wrapping_sub([[V_6]] as u64)
+// CHECK-NEXT:                 (([[V_5]] as u64).wrapping_add([[V_4]]) & ![[V_4]]).wrapping_sub([[V_5]] as u64)
 // CHECK-NEXT:                     as isize,
 // CHECK-NEXT:             )
 // CHECK-NEXT:     }) as *const i32;
@@ -87,47 +87,46 @@ int main(void) {
 // CHECK-NEXT:         }) as i64) as i32) == ((((base as u64) % 16) as u32) as i32)) as i32, ((cup as
 // CHECK-NEXT:         u64) % 8 == 0) as i32
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let [[V_7:__v[0-9]+]]: u64 = 15u64;
-// CHECK-NEXT:     let [[V_8:__v[0-9]+]]: *mut i8 = up;
-// CHECK-NEXT:     let [[V_9:__v[0-9]+]]: u64 = 0u64;
-// CHECK-NEXT:     let [[V_10:__v[0-9]+]]: *mut i8 = unsafe { (buffer.0.as_mut_ptr() as *mut i8).add(1) };
+// CHECK-NEXT:     let [[V_6:__v[0-9]+]]: u64 = 15u64;
+// CHECK-NEXT:     let [[V_7:__v[0-9]+]]: *mut i8 = up;
+// CHECK-NEXT:     let [[V_8:__v[0-9]+]]: u64 = 0u64;
+// CHECK-NEXT:     let [[V_9:__v[0-9]+]]: *mut i8 = unsafe { (buffer.0.as_mut_ptr() as *mut i8).add(1) };
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {}", (([[V_8]] as u64) & [[V_7]] == 0) as i32, (([[V_10]] as u64) & [[V_9]] == 0) as
-// CHECK-NEXT:         i32
+// CHECK-NEXT:         "{} {}", (([[V_7]] as u64) & [[V_6]] == 0) as i32, (([[V_9]] as u64) & [[V_8]] == 0) as i32
 // CHECK-NEXT:     );
+// CHECK-NEXT:     let [[V_10:__v[0-9]+]]: u8 = 3u8;
 // CHECK-NEXT:     let [[V_11:__v[0-9]+]]: u8 = 3u8;
-// CHECK-NEXT:     let [[V_12:__v[0-9]+]]: u8 = 3u8;
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", ((small.wrapping_add([[V_11]]) & ! [[V_11]]) as u32) as i32, ((small & !
-// CHECK-NEXT:         [[V_12]]) as u32) as i32, 1i32
+// CHECK-NEXT:         "{} {} {}", ((small.wrapping_add([[V_10]]) & ! [[V_10]]) as u32) as i32, ((small & !
+// CHECK-NEXT:         [[V_11]]) as u32) as i32, 1i32
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let [[V_13:__v[0-9]+]]: i32 = next().wrapping_sub(1);
-// CHECK-NEXT:     println!("{} {}", 100i32.wrapping_add([[V_13]]) & ! [[V_13]], unsafe { calls });
+// CHECK-NEXT:     let [[V_12:__v[0-9]+]]: i32 = next().wrapping_sub(1);
+// CHECK-NEXT:     println!("{} {}", 100i32.wrapping_add([[V_12]]) & ! [[V_12]], unsafe { calls });
 // CHECK-NEXT:     let mut p: *mut i8 = unsafe { (buffer.0.as_mut_ptr() as *mut i8).add(1) };
-// CHECK-NEXT:     let [[V_14:__v[0-9]+]]: u64 = 3u64;
-// CHECK-NEXT:     let [[V_15:__v[0-9]+]]: *mut i8 = p;
-// CHECK-NEXT:     p = unsafe { [[V_15]].add(1) };
-// CHECK-NEXT:     let [[V_16:__v[0-9]+]]: *mut i8 = [[V_15]];
+// CHECK-NEXT:     let [[V_13:__v[0-9]+]]: u64 = 3u64;
+// CHECK-NEXT:     let [[V_14:__v[0-9]+]]: *mut i8 = p;
+// CHECK-NEXT:     p = unsafe { [[V_14]].add(1) };
+// CHECK-NEXT:     let [[V_15:__v[0-9]+]]: *mut i8 = [[V_14]];
 // CHECK-NEXT:     let q: *mut i8 = (unsafe {
-// CHECK-NEXT:         ([[V_16]] as *mut u8)
+// CHECK-NEXT:         ([[V_15]] as *mut u8)
 // CHECK-NEXT:             .offset(
-// CHECK-NEXT:                 (([[V_16]] as u64).wrapping_add([[V_14]]) & ![[V_14]]).wrapping_sub([[V_16]] as u64)
+// CHECK-NEXT:                 (([[V_15]] as u64).wrapping_add([[V_13]]) & ![[V_13]]).wrapping_sub([[V_15]] as u64)
 // CHECK-NEXT:                     as isize,
 // CHECK-NEXT:             )
 // CHECK-NEXT:     }) as *mut i8;
-// CHECK-NEXT:     let [[V_17:__v[0-9]+]]: u64 = 3u64;
-// CHECK-NEXT:     let [[V_18:__v[0-9]+]]: *mut i8 = q;
+// CHECK-NEXT:     let [[V_16:__v[0-9]+]]: u64 = 3u64;
+// CHECK-NEXT:     let [[V_17:__v[0-9]+]]: *mut i8 = q;
 // CHECK-NEXT:     let __slate_printf_arg0 = ((unsafe {
 // CHECK-NEXT:         p.offset_from(buffer.0.as_mut_ptr() as *mut i8)
 // CHECK-NEXT:     }) as i64) as i32;
-// CHECK-NEXT:     println!("{} {}", __slate_printf_arg0, (([[V_18]] as u64) & [[V_17]] == 0) as i32);
+// CHECK-NEXT:     println!("{} {}", __slate_printf_arg0, (([[V_17]] as u64) & [[V_16]] == 0) as i32);
+// CHECK-NEXT:     let [[V_18:__v[0-9]+]]: i32 = 3i32;
 // CHECK-NEXT:     let [[V_19:__v[0-9]+]]: i32 = 3i32;
-// CHECK-NEXT:     let [[V_20:__v[0-9]+]]: i32 = 3i32;
-// CHECK-NEXT:     println!("{} {}", - 7 & ! [[V_19]], (- 7i32).wrapping_add([[V_20]]) & ! [[V_20]]);
-// CHECK-NEXT:     let [[V_21:__v[0-9]+]]: i32 = 1i32;
-// CHECK-NEXT:     let [[V_22:__v[0-9]+]]: i32 = i;
-// CHECK-NEXT:     i = [[V_22]] + 1;
-// CHECK-NEXT:     println!("{}", (([[V_22]] & [[V_21]] == 0) as i32) + i);
+// CHECK-NEXT:     println!("{} {}", - 7 & ! [[V_18]], (- 7i32).wrapping_add([[V_19]]) & ! [[V_19]]);
+// CHECK-NEXT:     let [[V_20:__v[0-9]+]]: i32 = 1i32;
+// CHECK-NEXT:     let [[V_21:__v[0-9]+]]: i32 = i;
+// CHECK-NEXT:     i = [[V_21]] + 1;
+// CHECK-NEXT:     println!("{}", (([[V_21]] & [[V_20]] == 0) as i32) + i);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

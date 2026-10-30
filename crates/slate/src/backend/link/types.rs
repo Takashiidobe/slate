@@ -126,17 +126,11 @@ impl SharedTypes {
             .collect();
         hoisted.sort();
         let mut taken = BTreeSet::new();
-        let mut anonymous = 0usize;
         let mut shared_names = BTreeMap::new();
         let mut representatives = Vec::new();
         for &(representative, class) in &hoisted {
             let node = &nodes[representative];
-            let base = if is_anonymous(&node.name) {
-                anonymous += 1;
-                format!("__SlateRecord{}", anonymous - 1)
-            } else {
-                node.name.clone()
-            };
+            let base = node.name.clone();
             let mut name = base.clone();
             let mut suffix = 0;
             while !taken.insert(name.clone()) {
@@ -722,6 +716,5 @@ fn rename_types(ty: &mut Type, rename: &mut impl FnMut(&str) -> Option<String>) 
 }
 
 fn is_anonymous(name: &str) -> bool {
-    name.strip_prefix("__SlateRecord")
-        .is_some_and(|id| !id.is_empty() && id.bytes().all(|byte| byte.is_ascii_digit()))
+    name.starts_with("__SlateRecord_")
 }

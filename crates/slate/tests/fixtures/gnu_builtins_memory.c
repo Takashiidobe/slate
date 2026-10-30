@@ -164,84 +164,75 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT:     #[link_name = "alloca"]
-// CHECK-NEXT:     fn __builtin_alloca([[V_0:__v[0-9]+]]: u64) -> *mut ();
-// CHECK-NEXT:     fn __builtin_alloca_with_align([[V_1:__v[0-9]+]]: u64, [[V_2:__v[0-9]+]]: u64) -> *mut ();
+// CHECK-NEXT:     fn __builtin_alloca([[ARG_0]]: u64) -> *mut ();
+// CHECK-NEXT:     fn __builtin_alloca_with_align([[ARG_0]]: u64, [[ARG_1:arg[0-9]+]]: u64) -> *mut ();
 // CHECK-NEXT:     #[link_name = "memset"]
-// CHECK-NEXT:     fn __builtin_memset([[V_3:__v[0-9]+]]: *mut (), [[V_4:__v[0-9]+]]: i32, [[V_5:__v[0-9]+]]: u64) -> *mut ();
+// CHECK-NEXT:     fn __builtin_memset([[ARG_0]]: *mut (), [[ARG_1]]: i32, [[ARG_2:arg[0-9]+]]: u64) -> *mut ();
 // CHECK-NEXT:     #[link_name = "mempcpy"]
-// CHECK-NEXT:     fn __builtin_mempcpy([[V_6:__v[0-9]+]]: *mut (), [[V_7:__v[0-9]+]]: *const (), [[V_8:__v[0-9]+]]: u64) -> *mut ();
-// CHECK-NEXT:     fn __builtin_memcpy_inline([[V_9:__v[0-9]+]]: *mut (), [[V_10:__v[0-9]+]]: *const (), [[V_11:__v[0-9]+]]: u64);
+// CHECK-NEXT:     fn __builtin_mempcpy([[ARG_0]]: *mut (), [[ARG_1]]: *const (), [[ARG_2]]: u64) -> *mut ();
+// CHECK-NEXT:     fn __builtin_memcpy_inline([[ARG_0]]: *mut (), [[ARG_1]]: *const (), [[ARG_2]]: u64);
 // CHECK-NEXT:     #[link_name = "memcpy"]
-// CHECK-NEXT:     fn __builtin_memcpy([[V_12:__v[0-9]+]]: *mut (), [[V_13:__v[0-9]+]]: *const (), [[V_14:__v[0-9]+]]: u64) -> *mut ();
+// CHECK-NEXT:     fn __builtin_memcpy([[ARG_0]]: *mut (), [[ARG_1]]: *const (), [[ARG_2]]: u64) -> *mut ();
 // CHECK-NEXT:     #[link_name = "memmove"]
-// CHECK-NEXT:     fn __builtin_memmove([[V_15:__v[0-9]+]]: *mut (), [[V_16:__v[0-9]+]]: *const (), [[V_17:__v[0-9]+]]: u64) -> *mut ();
+// CHECK-NEXT:     fn __builtin_memmove([[ARG_0]]: *mut (), [[ARG_1]]: *const (), [[ARG_2]]: u64) -> *mut ();
 // CHECK-NEXT:     #[link_name = "bzero"]
-// CHECK-NEXT:     fn __builtin_bzero([[V_18:__v[0-9]+]]: *mut (), [[V_19:__v[0-9]+]]: u64);
+// CHECK-NEXT:     fn __builtin_bzero([[ARG_0]]: *mut (), [[ARG_1]]: u64);
 // CHECK-NEXT:     #[link_name = "__memcpy_chk"]
 // CHECK-NEXT:     fn __builtin___memcpy_chk(
-// CHECK-NEXT:         [[V_20:__v[0-9]+]]: *mut (),
-// CHECK-NEXT:         [[V_21:__v[0-9]+]]: *const (),
-// CHECK-NEXT:         [[V_22:__v[0-9]+]]: u64,
-// CHECK-NEXT:         [[V_23:__v[0-9]+]]: u64,
+// CHECK-NEXT:         [[ARG_0]]: *mut (),
+// CHECK-NEXT:         [[ARG_1]]: *const (),
+// CHECK-NEXT:         [[ARG_2]]: u64,
+// CHECK-NEXT:         [[ARG_3:arg[0-9]+]]: u64,
 // CHECK-NEXT:     ) -> *mut ();
 // CHECK-NEXT:     #[link_name = "__memmove_chk"]
 // CHECK-NEXT:     fn __builtin___memmove_chk(
-// CHECK-NEXT:         [[V_24:__v[0-9]+]]: *mut (),
-// CHECK-NEXT:         [[V_25:__v[0-9]+]]: *const (),
-// CHECK-NEXT:         [[V_26:__v[0-9]+]]: u64,
-// CHECK-NEXT:         [[V_27:__v[0-9]+]]: u64,
+// CHECK-NEXT:         [[ARG_0]]: *mut (),
+// CHECK-NEXT:         [[ARG_1]]: *const (),
+// CHECK-NEXT:         [[ARG_2]]: u64,
+// CHECK-NEXT:         [[ARG_3]]: u64,
 // CHECK-NEXT:     ) -> *mut ();
 // CHECK-NEXT:     #[link_name = "__memset_chk"]
-// CHECK-NEXT:     fn __builtin___memset_chk(
-// CHECK-NEXT:         [[V_28:__v[0-9]+]]: *mut (),
-// CHECK-NEXT:         [[V_29:__v[0-9]+]]: i32,
-// CHECK-NEXT:         [[V_30:__v[0-9]+]]: u64,
-// CHECK-NEXT:         [[V_31:__v[0-9]+]]: u64,
-// CHECK-NEXT:     ) -> *mut ();
+// CHECK-NEXT:     fn __builtin___memset_chk([[ARG_0]]: *mut (), [[ARG_1]]: i32, [[ARG_2]]: u64, [[ARG_3]]: u64) -> *mut ();
 // CHECK-NEXT:     #[link_name = "memcmp"]
-// CHECK-NEXT:     fn __builtin_memcmp([[V_32:__v[0-9]+]]: *const (), [[V_33:__v[0-9]+]]: *const (), [[V_34:__v[0-9]+]]: u64) -> i32;
+// CHECK-NEXT:     fn __builtin_memcmp([[ARG_0]]: *const (), [[ARG_1]]: *const (), [[ARG_2]]: u64) -> i32;
 // CHECK-NEXT:     #[link_name = "bcmp"]
-// CHECK-NEXT:     fn __builtin_bcmp([[V_35:__v[0-9]+]]: *const (), [[V_36:__v[0-9]+]]: *const (), [[V_37:__v[0-9]+]]: u64) -> i32;
+// CHECK-NEXT:     fn __builtin_bcmp([[ARG_0]]: *const (), [[ARG_1]]: *const (), [[ARG_2]]: u64) -> i32;
 // CHECK-NEXT:     #[link_name = "memchr"]
-// CHECK-NEXT:     fn __builtin_memchr([[V_38:__v[0-9]+]]: *const (), [[V_39:__v[0-9]+]]: i32, [[V_40:__v[0-9]+]]: u64) -> *mut ();
+// CHECK-NEXT:     fn __builtin_memchr([[ARG_0]]: *const (), [[ARG_1]]: i32, [[ARG_2]]: u64) -> *mut ();
 // CHECK-NEXT:     #[link_name = "strcpy"]
-// CHECK-NEXT:     fn __builtin_strcpy([[V_41:__v[0-9]+]]: *mut i8, [[V_42:__v[0-9]+]]: *const i8) -> *mut i8;
+// CHECK-NEXT:     fn __builtin_strcpy([[ARG_0]]: *mut i8, [[ARG_1]]: *const i8) -> *mut i8;
 // CHECK-NEXT:     #[link_name = "stpcpy"]
-// CHECK-NEXT:     fn __builtin_stpcpy([[V_43:__v[0-9]+]]: *mut i8, [[V_44:__v[0-9]+]]: *const i8) -> *mut i8;
+// CHECK-NEXT:     fn __builtin_stpcpy([[ARG_0]]: *mut i8, [[ARG_1]]: *const i8) -> *mut i8;
 // CHECK-NEXT:     #[link_name = "strncpy"]
-// CHECK-NEXT:     fn __builtin_strncpy([[V_45:__v[0-9]+]]: *mut i8, [[V_46:__v[0-9]+]]: *const i8, [[V_47:__v[0-9]+]]: u64) -> *mut i8;
+// CHECK-NEXT:     fn __builtin_strncpy([[ARG_0]]: *mut i8, [[ARG_1]]: *const i8, [[ARG_2]]: u64) -> *mut i8;
 // CHECK-NEXT:     #[link_name = "strcat"]
-// CHECK-NEXT:     fn __builtin_strcat([[V_48:__v[0-9]+]]: *mut i8, [[V_49:__v[0-9]+]]: *const i8) -> *mut i8;
+// CHECK-NEXT:     fn __builtin_strcat([[ARG_0]]: *mut i8, [[ARG_1]]: *const i8) -> *mut i8;
 // CHECK-NEXT:     #[link_name = "__strcpy_chk"]
-// CHECK-NEXT:     fn __builtin___strcpy_chk([[V_50:__v[0-9]+]]: *mut i8, [[V_51:__v[0-9]+]]: *const i8, [[V_52:__v[0-9]+]]: u64) -> *mut i8;
+// CHECK-NEXT:     fn __builtin___strcpy_chk([[ARG_0]]: *mut i8, [[ARG_1]]: *const i8, [[ARG_2]]: u64) -> *mut i8;
 // CHECK-NEXT:     #[link_name = "__stpcpy_chk"]
-// CHECK-NEXT:     fn __builtin___stpcpy_chk([[V_53:__v[0-9]+]]: *mut i8, [[V_54:__v[0-9]+]]: *const i8, [[V_55:__v[0-9]+]]: u64) -> *mut i8;
+// CHECK-NEXT:     fn __builtin___stpcpy_chk([[ARG_0]]: *mut i8, [[ARG_1]]: *const i8, [[ARG_2]]: u64) -> *mut i8;
 // CHECK-NEXT:     #[link_name = "__strcat_chk"]
-// CHECK-NEXT:     fn __builtin___strcat_chk(
-// CHECK-NEXT:         [[V_56:__v[0-9]+]]: *mut i8,
-// CHECK-NEXT:         [[V_57:__v[0-9]+]]: *const i8,
-// CHECK-NEXT:         [[V_58:__v[0-9]+]]: u64,
-// CHECK-NEXT:     ) -> *mut i8;
+// CHECK-NEXT:     fn __builtin___strcat_chk([[ARG_0]]: *mut i8, [[ARG_1]]: *const i8, [[ARG_2]]: u64) -> *mut i8;
 // CHECK-NEXT:     #[link_name = "strlen"]
-// CHECK-NEXT:     fn __builtin_strlen([[V_59:__v[0-9]+]]: *const i8) -> u64;
+// CHECK-NEXT:     fn __builtin_strlen([[ARG_0]]: *const i8) -> u64;
 // CHECK-NEXT:     #[link_name = "strcmp"]
-// CHECK-NEXT:     fn __builtin_strcmp([[V_60:__v[0-9]+]]: *const i8, [[V_61:__v[0-9]+]]: *const i8) -> i32;
+// CHECK-NEXT:     fn __builtin_strcmp([[ARG_0]]: *const i8, [[ARG_1]]: *const i8) -> i32;
 // CHECK-NEXT:     #[link_name = "strncmp"]
-// CHECK-NEXT:     fn __builtin_strncmp([[V_62:__v[0-9]+]]: *const i8, [[V_63:__v[0-9]+]]: *const i8, [[V_64:__v[0-9]+]]: u64) -> i32;
+// CHECK-NEXT:     fn __builtin_strncmp([[ARG_0]]: *const i8, [[ARG_1]]: *const i8, [[ARG_2]]: u64) -> i32;
 // CHECK-NEXT:     #[link_name = "strchr"]
-// CHECK-NEXT:     fn __builtin_strchr([[V_65:__v[0-9]+]]: *const i8, [[V_66:__v[0-9]+]]: i32) -> *mut i8;
+// CHECK-NEXT:     fn __builtin_strchr([[ARG_0]]: *const i8, [[ARG_1]]: i32) -> *mut i8;
 // CHECK-NEXT:     #[link_name = "strrchr"]
-// CHECK-NEXT:     fn __builtin_strrchr([[V_67:__v[0-9]+]]: *const i8, [[V_68:__v[0-9]+]]: i32) -> *mut i8;
+// CHECK-NEXT:     fn __builtin_strrchr([[ARG_0]]: *const i8, [[ARG_1]]: i32) -> *mut i8;
 // CHECK-NEXT:     #[link_name = "strstr"]
-// CHECK-NEXT:     fn __builtin_strstr([[V_69:__v[0-9]+]]: *const i8, [[V_70:__v[0-9]+]]: *const i8) -> *mut i8;
+// CHECK-NEXT:     fn __builtin_strstr([[ARG_0]]: *const i8, [[ARG_1]]: *const i8) -> *mut i8;
 // CHECK-NEXT:     #[link_name = "strspn"]
-// CHECK-NEXT:     fn __builtin_strspn([[V_71:__v[0-9]+]]: *const i8, [[V_72:__v[0-9]+]]: *const i8) -> u64;
+// CHECK-NEXT:     fn __builtin_strspn([[ARG_0]]: *const i8, [[ARG_1]]: *const i8) -> u64;
 // CHECK-NEXT:     #[link_name = "strcspn"]
-// CHECK-NEXT:     fn __builtin_strcspn([[V_73:__v[0-9]+]]: *const i8, [[V_74:__v[0-9]+]]: *const i8) -> u64;
+// CHECK-NEXT:     fn __builtin_strcspn([[ARG_0]]: *const i8, [[ARG_1]]: *const i8) -> u64;
 // CHECK-NEXT:     #[link_name = "strpbrk"]
-// CHECK-NEXT:     fn __builtin_strpbrk([[V_75:__v[0-9]+]]: *const i8, [[V_76:__v[0-9]+]]: *const i8) -> *mut i8;
+// CHECK-NEXT:     fn __builtin_strpbrk([[ARG_0]]: *const i8, [[ARG_1]]: *const i8) -> *mut i8;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);

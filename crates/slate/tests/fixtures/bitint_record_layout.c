@@ -32,7 +32,7 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
@@ -47,12 +47,12 @@ int main(void) {
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct NestedBitInt {
 // CHECK-NEXT:     tag: i8,
-// CHECK-NEXT:     inner: [[SLATERECORD_0:__SlateRecord[0-9]+]],
+// CHECK-NEXT:     inner: __SlateRecord_bitint_record_layout_c_10,
 // CHECK-NEXT:     tail: i16,
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct [[SLATERECORD_0]] {
+// CHECK-NEXT: struct __SlateRecord_bitint_record_layout_c_10 {
 // CHECK-NEXT:     prefix: i32,
 // CHECK-NEXT:     value: bitint::BInt<65, 2, 16, bitint::A8>,
 // CHECK-NEXT: }
@@ -63,7 +63,9 @@ int main(void) {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: NestedBitInt = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].tag = 1i8;
 // CHECK-NEXT:         [[T_0]].inner = {
-// CHECK-NEXT:             let mut [[T_1:__t[0-9]+]]: [[SLATERECORD_0]] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:             let mut [[T_1:__t[0-9]+]]: __SlateRecord_bitint_record_layout_c_10 = unsafe {
+// CHECK-NEXT:                 std::mem::zeroed()
+// CHECK-NEXT:             };
 // CHECK-NEXT:             [[T_1]].prefix = 2i32;
 // CHECK-NEXT:             [[T_1]].value = <bitint::BInt<
 // CHECK-NEXT:                 65,
@@ -80,7 +82,9 @@ int main(void) {
 // CHECK-NEXT:         let mut [[T_2:__t[0-9]+]]: NestedBitInt = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:         [[T_2]].tag = 5i8;
 // CHECK-NEXT:         [[T_2]].inner = {
-// CHECK-NEXT:             let mut [[T_3:__t[0-9]+]]: [[SLATERECORD_0]] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:             let mut [[T_3:__t[0-9]+]]: __SlateRecord_bitint_record_layout_c_10 = unsafe {
+// CHECK-NEXT:                 std::mem::zeroed()
+// CHECK-NEXT:             };
 // CHECK-NEXT:             [[T_3]].prefix = 6i32;
 // CHECK-NEXT:             [[T_3]].value = <bitint::BInt<
 // CHECK-NEXT:                 65,

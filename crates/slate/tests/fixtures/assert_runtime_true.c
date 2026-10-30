@@ -12,14 +12,9 @@ int main(int argc, char **argv) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn __assert_fail(
-// CHECK-NEXT:         __assertion: *const i8,
-// CHECK-NEXT:         __file: *const i8,
-// CHECK-NEXT:         __line: u32,
-// CHECK-NEXT:         __function: *const i8,
-// CHECK-NEXT:     );
-// CHECK-NEXT:     fn __assert_single_arg([[V_0:__v[0-9]+]]: bool) -> bool;
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn __assert_fail([[ARG_0:arg[0-9]+]]: *const i8, [[ARG_1:arg[0-9]+]]: *const i8, [[ARG_2:arg[0-9]+]]: u32, [[ARG_3:arg[0-9]+]]: *const i8);
+// CHECK-NEXT:     fn __assert_single_arg([[ARG_0]]: bool) -> bool;
+// CHECK-NEXT:     fn printf([[ARG_0]]: *const i8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main(argc: i32, argv: *mut *mut i8) -> i32 {
 // CHECK-NEXT:     println!("before");

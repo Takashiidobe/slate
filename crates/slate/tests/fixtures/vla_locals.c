@@ -92,32 +92,34 @@ int main(void) {
 // CHECK-NEXT: #![allow(arithmetic_overflow, unconditional_panic)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn snprintf(__s: *mut i8, __maxlen: u64, __format: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn memset(__s: *mut (), __c: i32, __n: u64) -> *mut ();
-// CHECK-NEXT:     fn strlen(__s: *const i8) -> u64;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn snprintf([[ARG_0]]: *mut i8, [[ARG_1:arg[0-9]+]]: u64, [[ARG_2:arg[0-9]+]]: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn memset([[ARG_0]]: *mut (), [[ARG_1]]: i32, [[ARG_2]]: u64) -> *mut ();
+// CHECK-NEXT:     fn strlen([[ARG_0]]: *const i8) -> u64;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct [[SLATERECORD_0:__SlateRecord[0-9]+]] {
+// CHECK-NEXT: struct __SlateRecord_vla_locals_c_7 {
 // CHECK-NEXT:     kind: i32,
 // CHECK-NEXT:     payload: i64,
 // CHECK-NEXT: }
 // CHECK-NEXT: fn wrap_objects(argc: i32) -> i64 {
 // CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: u64 = (argc as i64) as u64;
-// CHECK-NEXT:     let mut objects: Vec<[[SLATERECORD_0]]> = {
-// CHECK-NEXT:         let mut __slate_vla: Vec<[[SLATERECORD_0]]> = Vec::with_capacity([[V_0]] as usize);
+// CHECK-NEXT:     let mut objects: Vec<__SlateRecord_vla_locals_c_7> = {
+// CHECK-NEXT:         let mut __slate_vla: Vec<__SlateRecord_vla_locals_c_7> = Vec::with_capacity(
+// CHECK-NEXT:             [[V_0]] as usize,
+// CHECK-NEXT:         );
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             __slate_vla.as_mut_ptr().write_bytes(0u8, [[V_0]] as usize);
 // CHECK-NEXT:         }
 // CHECK-NEXT:         __slate_vla
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut [[V_1:__v[0-9]+]]: u64 = (argc as i64) as u64;
-// CHECK-NEXT:     let mut argv: Vec<*mut [[SLATERECORD_0]]> = {
-// CHECK-NEXT:         let mut __slate_vla: Vec<*mut [[SLATERECORD_0]]> = Vec::with_capacity(
+// CHECK-NEXT:     let mut argv: Vec<*mut __SlateRecord_vla_locals_c_7> = {
+// CHECK-NEXT:         let mut __slate_vla: Vec<*mut __SlateRecord_vla_locals_c_7> = Vec::with_capacity(
 // CHECK-NEXT:             [[V_1]] as usize,
 // CHECK-NEXT:         );
 // CHECK-NEXT:         unsafe {
@@ -127,15 +129,19 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     for j in 0..argc {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             (*(objects.as_mut_ptr() as *mut [[SLATERECORD_0]]).offset(j as isize)).kind = j;
+// CHECK-NEXT:             (*(objects.as_mut_ptr() as *mut __SlateRecord_vla_locals_c_7)
+// CHECK-NEXT:                 .offset(j as isize))
+// CHECK-NEXT:                 .kind = j;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             (*(objects.as_mut_ptr() as *mut [[SLATERECORD_0]]).offset(j as isize))
+// CHECK-NEXT:             (*(objects.as_mut_ptr() as *mut __SlateRecord_vla_locals_c_7)
+// CHECK-NEXT:                 .offset(j as isize))
 // CHECK-NEXT:                 .payload = (j as i64) * 100;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *(argv.as_mut_ptr() as *mut *mut [[SLATERECORD_0]]).offset(j as isize) = (objects
-// CHECK-NEXT:                 .as_mut_ptr() as *mut [[SLATERECORD_0]])
+// CHECK-NEXT:             *(argv.as_mut_ptr() as *mut *mut __SlateRecord_vla_locals_c_7)
+// CHECK-NEXT:                 .offset(j as isize) = (objects.as_mut_ptr()
+// CHECK-NEXT:                 as *mut __SlateRecord_vla_locals_c_7)
 // CHECK-NEXT:                 .offset(j as isize);
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -144,11 +150,12 @@ int main(void) {
 // CHECK-NEXT:         let [[V_2:__v[0-9]+]]: i64 = total;
 // CHECK-NEXT:         total = [[V_2]]
 // CHECK-NEXT:             + (((unsafe {
-// CHECK-NEXT:                 (*(*(argv.as_mut_ptr() as *mut *mut [[SLATERECORD_0]]).offset(j as isize)))
+// CHECK-NEXT:                 (*(*(argv.as_mut_ptr() as *mut *mut __SlateRecord_vla_locals_c_7)
+// CHECK-NEXT:                     .offset(j as isize)))
 // CHECK-NEXT:                     .kind
 // CHECK-NEXT:             }) as i64)
 // CHECK-NEXT:                 + unsafe {
-// CHECK-NEXT:                     (*(*(argv.as_mut_ptr() as *mut *mut [[SLATERECORD_0]])
+// CHECK-NEXT:                     (*(*(argv.as_mut_ptr() as *mut *mut __SlateRecord_vla_locals_c_7)
 // CHECK-NEXT:                         .offset(j as isize)))
 // CHECK-NEXT:                         .payload
 // CHECK-NEXT:                 });
@@ -159,32 +166,27 @@ int main(void) {
 // CHECK-NEXT:     let length: i32 = unsafe {
 // CHECK-NEXT:         snprintf(std::ptr::null_mut::<i8>(), 0u64, c"%d".as_ptr(), port)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut [[V_3:__v[0-9]+]]: u64 = ((length + 1) as i64) as u64;
+// CHECK-NEXT:     let mut [[V_0]]: u64 = ((length + 1) as i64) as u64;
 // CHECK-NEXT:     let mut buf: Vec<i8> = {
-// CHECK-NEXT:         let mut __slate_vla: Vec<i8> = Vec::with_capacity([[V_3]] as usize);
+// CHECK-NEXT:         let mut __slate_vla: Vec<i8> = Vec::with_capacity([[V_0]] as usize);
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             __slate_vla.as_mut_ptr().write_bytes(0u8, [[V_3]] as usize);
+// CHECK-NEXT:             __slate_vla.as_mut_ptr().write_bytes(0u8, [[V_0]] as usize);
 // CHECK-NEXT:         }
 // CHECK-NEXT:         __slate_vla
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         snprintf(
-// CHECK-NEXT:             buf.as_mut_ptr() as *mut i8,
-// CHECK-NEXT:             [[V_3]].wrapping_mul(1),
-// CHECK-NEXT:             c"%d".as_ptr(),
-// CHECK-NEXT:             port,
-// CHECK-NEXT:         )
+// CHECK-NEXT:         snprintf(buf.as_mut_ptr() as *mut i8, [[V_0]].wrapping_mul(1), c"%d".as_ptr(), port)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     (((unsafe { strlen(buf.as_mut_ptr() as *const i8) }) as u32) as i32) * 1000
 // CHECK-NEXT:         + ((unsafe { *(buf.as_mut_ptr() as *mut i8).add(0) }) as i32)
 // CHECK-NEXT: }
 // CHECK-NEXT: fn const_bound() -> i32 {
 // CHECK-NEXT:     let bufflen: i32 = 16;
-// CHECK-NEXT:     let mut [[V_4:__v[0-9]+]]: u64 = (bufflen as i64) as u64;
+// CHECK-NEXT:     let mut [[V_0]]: u64 = (bufflen as i64) as u64;
 // CHECK-NEXT:     let mut buf: Vec<i8> = {
-// CHECK-NEXT:         let mut __slate_vla: Vec<i8> = Vec::with_capacity([[V_4]] as usize);
+// CHECK-NEXT:         let mut __slate_vla: Vec<i8> = Vec::with_capacity([[V_0]] as usize);
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             __slate_vla.as_mut_ptr().write_bytes(0u8, [[V_4]] as usize);
+// CHECK-NEXT:             __slate_vla.as_mut_ptr().write_bytes(0u8, [[V_0]] as usize);
 // CHECK-NEXT:         }
 // CHECK-NEXT:         __slate_vla
 // CHECK-NEXT:     };
@@ -192,7 +194,7 @@ int main(void) {
 // CHECK-NEXT:         std::ptr::write_bytes(
 // CHECK-NEXT:             buf.as_mut_ptr() as *mut u8,
 // CHECK-NEXT:             120u8,
-// CHECK-NEXT:             [[V_4]].wrapping_mul(1).wrapping_sub(1) as usize,
+// CHECK-NEXT:             [[V_0]].wrapping_mul(1).wrapping_sub(1) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
@@ -201,16 +203,14 @@ int main(void) {
 // CHECK-NEXT:     ((unsafe { strlen(buf.as_mut_ptr() as *const i8) }) as u32) as i32
 // CHECK-NEXT: }
 // CHECK-NEXT: fn matrix(rows: i32, cols: i32) -> i32 {
-// CHECK-NEXT:     let mut [[V_5:__v[0-9]+]]: u64 = (rows as i64) as u64;
-// CHECK-NEXT:     let mut [[V_6:__v[0-9]+]]: u64 = (cols as i64) as u64;
+// CHECK-NEXT:     let mut [[V_0]]: u64 = (rows as i64) as u64;
+// CHECK-NEXT:     let mut [[V_1]]: u64 = (cols as i64) as u64;
 // CHECK-NEXT:     let mut grid: Vec<i32> = {
 // CHECK-NEXT:         let mut __slate_vla: Vec<i32> = Vec::with_capacity(
-// CHECK-NEXT:             ([[V_5]] as usize) * ([[V_6]] as usize),
+// CHECK-NEXT:             ([[V_0]] as usize) * ([[V_1]] as usize),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             __slate_vla
-// CHECK-NEXT:                 .as_mut_ptr()
-// CHECK-NEXT:                 .write_bytes(0u8, ([[V_5]] as usize) * ([[V_6]] as usize));
+// CHECK-NEXT:             __slate_vla.as_mut_ptr().write_bytes(0u8, ([[V_0]] as usize) * ([[V_1]] as usize));
 // CHECK-NEXT:         }
 // CHECK-NEXT:         __slate_vla
 // CHECK-NEXT:     };
@@ -220,33 +220,32 @@ int main(void) {
 // CHECK-NEXT:                 *((grid.as_mut_ptr() as *mut [i32; 0])
 // CHECK-NEXT:                     .byte_offset(
 // CHECK-NEXT:                         (r as isize)
-// CHECK-NEXT:                             * ((([[V_6]] as usize) * std::mem::size_of::<i32>()) as isize),
+// CHECK-NEXT:                             * ((([[V_1]] as usize) * std::mem::size_of::<i32>()) as isize),
 // CHECK-NEXT:                     ) as *mut i32)
 // CHECK-NEXT:                     .offset(c as isize) = r * 10 + c;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_7:__v[0-9]+]]: u64 = (cols as i64) as u64;
+// CHECK-NEXT:     let [[V_3:__v[0-9]+]]: u64 = (cols as i64) as u64;
 // CHECK-NEXT:     let row: *mut [i32; 0] = (unsafe {
 // CHECK-NEXT:         (grid.as_mut_ptr() as *mut [i32; 0])
-// CHECK-NEXT:             .byte_offset(1 * ((([[V_6]] as usize) * std::mem::size_of::<i32>()) as isize))
+// CHECK-NEXT:             .byte_offset(1 * ((([[V_1]] as usize) * std::mem::size_of::<i32>()) as isize))
 // CHECK-NEXT:     }) as *mut [i32; 0];
 // CHECK-NEXT:     let mut sum: i32 = 0;
 // CHECK-NEXT:     for c in 0..cols {
-// CHECK-NEXT:         let [[V_8:__v[0-9]+]]: i32 = sum;
-// CHECK-NEXT:         sum = [[V_8]]
+// CHECK-NEXT:         let [[V_4:__v[0-9]+]]: i32 = sum;
+// CHECK-NEXT:         sum = [[V_4]]
 // CHECK-NEXT:             + ((unsafe {
 // CHECK-NEXT:                 *(row
 // CHECK-NEXT:                     .byte_offset(
-// CHECK-NEXT:                         0 * ((([[V_7]] as usize) * std::mem::size_of::<i32>()) as isize),
+// CHECK-NEXT:                         0 * ((([[V_3]] as usize) * std::mem::size_of::<i32>()) as isize),
 // CHECK-NEXT:                     ) as *mut i32)
 // CHECK-NEXT:                     .offset(c as isize)
 // CHECK-NEXT:             })
 // CHECK-NEXT:                 + unsafe {
 // CHECK-NEXT:                     *(row
 // CHECK-NEXT:                         .byte_offset(
-// CHECK-NEXT:                             1
-// CHECK-NEXT:                                 * ((([[V_7]] as usize) * std::mem::size_of::<i32>()) as isize),
+// CHECK-NEXT:                             1 * ((([[V_3]] as usize) * std::mem::size_of::<i32>()) as isize),
 // CHECK-NEXT:                         ) as *mut i32)
 // CHECK-NEXT:                         .offset(c as isize)
 // CHECK-NEXT:                 });
@@ -255,25 +254,25 @@ int main(void) {
 // CHECK-NEXT:         ((grid.as_mut_ptr() as *mut [i32; 0])
 // CHECK-NEXT:             .byte_offset(
 // CHECK-NEXT:                 (rows as isize)
-// CHECK-NEXT:                     * ((([[V_6]] as usize) * std::mem::size_of::<i32>()) as isize),
+// CHECK-NEXT:                     * ((([[V_1]] as usize) * std::mem::size_of::<i32>()) as isize),
 // CHECK-NEXT:             )
-// CHECK-NEXT:             .byte_offset(-1 * ((([[V_6]] as usize) * std::mem::size_of::<i32>()) as isize))
+// CHECK-NEXT:             .byte_offset(-1 * ((([[V_1]] as usize) * std::mem::size_of::<i32>()) as isize))
 // CHECK-NEXT:             as *const u8)
 // CHECK-NEXT:             .offset_from(grid.as_mut_ptr() as *const u8)
-// CHECK-NEXT:     }) / ((([[V_6]] as usize) * std::mem::size_of::<i32>()) as isize)) as i64;
+// CHECK-NEXT:     }) / ((([[V_1]] as usize) * std::mem::size_of::<i32>()) as isize)) as i64;
 // CHECK-NEXT:     sum * 100 + (distance as i32) * 10
-// CHECK-NEXT:         + ((([[V_5]].wrapping_mul([[V_6]].wrapping_mul(4)) / [[V_6]].wrapping_mul(4)) as u32)
+// CHECK-NEXT:         + ((([[V_0]].wrapping_mul([[V_1]].wrapping_mul(4)) / [[V_1]].wrapping_mul(4)) as u32)
 // CHECK-NEXT:             as i32)
 // CHECK-NEXT: }
 // CHECK-NEXT: fn per_iteration(rounds: i32) -> i32 {
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     let mut i: i32 = 1;
 // CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: while i <= rounds {
-// CHECK-NEXT:         let mut [[V_9:__v[0-9]+]]: u64 = (i as i64) as u64;
+// CHECK-NEXT:         let mut [[V_0]]: u64 = (i as i64) as u64;
 // CHECK-NEXT:         let mut scratch: Vec<i32> = {
-// CHECK-NEXT:             let mut __slate_vla: Vec<i32> = Vec::with_capacity([[V_9]] as usize);
+// CHECK-NEXT:             let mut __slate_vla: Vec<i32> = Vec::with_capacity([[V_0]] as usize);
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 __slate_vla.as_mut_ptr().write_bytes(0u8, [[V_9]] as usize);
+// CHECK-NEXT:                 __slate_vla.as_mut_ptr().write_bytes(0u8, [[V_0]] as usize);
 // CHECK-NEXT:             }
 // CHECK-NEXT:             __slate_vla
 // CHECK-NEXT:         };
@@ -282,8 +281,8 @@ int main(void) {
 // CHECK-NEXT:                 *(scratch.as_mut_ptr() as *mut i32).offset(k as isize) = k + i;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
-// CHECK-NEXT:         let [[V_10:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:         total = [[V_10]]
+// CHECK-NEXT:         let [[V_5:__v[0-9]+]]: i32 = total;
+// CHECK-NEXT:         total = [[V_5]]
 // CHECK-NEXT:             + unsafe { *(scratch.as_mut_ptr() as *mut i32).offset((i - 1) as isize) };
 // CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
@@ -298,11 +297,11 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let length: i32 = 5;
-// CHECK-NEXT:     let mut [[V_11:__v[0-9]+]]: u64 = (length as i64) as u64;
+// CHECK-NEXT:     let mut [[V_0]]: u64 = (length as i64) as u64;
 // CHECK-NEXT:     let mut values: Vec<i32> = {
-// CHECK-NEXT:         let mut __slate_vla: Vec<i32> = Vec::with_capacity([[V_11]] as usize);
+// CHECK-NEXT:         let mut __slate_vla: Vec<i32> = Vec::with_capacity([[V_0]] as usize);
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             __slate_vla.as_mut_ptr().write_bytes(0u8, [[V_11]] as usize);
+// CHECK-NEXT:             __slate_vla.as_mut_ptr().write_bytes(0u8, [[V_0]] as usize);
 // CHECK-NEXT:         }
 // CHECK-NEXT:         __slate_vla
 // CHECK-NEXT:     };

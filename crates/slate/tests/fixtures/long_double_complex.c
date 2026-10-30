@@ -123,32 +123,32 @@ int main(void) {
 // CHECK-NEXT:     unsafe extern "C" {}
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn cacosl(__z: num_complex::Complex<f128>) -> num_complex::Complex<f128>;
-// CHECK-NEXT:     fn casinl(__z: num_complex::Complex<f128>) -> num_complex::Complex<f128>;
-// CHECK-NEXT:     fn catanl(__z: num_complex::Complex<f128>) -> num_complex::Complex<f128>;
-// CHECK-NEXT:     fn ccosl(__z: num_complex::Complex<f128>) -> num_complex::Complex<f128>;
-// CHECK-NEXT:     fn csinl(__z: num_complex::Complex<f128>) -> num_complex::Complex<f128>;
-// CHECK-NEXT:     fn ctanl(__z: num_complex::Complex<f128>) -> num_complex::Complex<f128>;
-// CHECK-NEXT:     fn cacoshl(__z: num_complex::Complex<f128>) -> num_complex::Complex<f128>;
-// CHECK-NEXT:     fn casinhl(__z: num_complex::Complex<f128>) -> num_complex::Complex<f128>;
-// CHECK-NEXT:     fn catanhl(__z: num_complex::Complex<f128>) -> num_complex::Complex<f128>;
-// CHECK-NEXT:     fn ccoshl(__z: num_complex::Complex<f128>) -> num_complex::Complex<f128>;
-// CHECK-NEXT:     fn csinhl(__z: num_complex::Complex<f128>) -> num_complex::Complex<f128>;
-// CHECK-NEXT:     fn ctanhl(__z: num_complex::Complex<f128>) -> num_complex::Complex<f128>;
-// CHECK-NEXT:     fn cexpl(__z: num_complex::Complex<f128>) -> num_complex::Complex<f128>;
-// CHECK-NEXT:     fn clogl(__z: num_complex::Complex<f128>) -> num_complex::Complex<f128>;
+// CHECK-NEXT:     fn cacosl([[ARG_0:arg[0-9]+]]: num_complex::Complex<f128>) -> num_complex::Complex<f128>;
+// CHECK-NEXT:     fn casinl([[ARG_0]]: num_complex::Complex<f128>) -> num_complex::Complex<f128>;
+// CHECK-NEXT:     fn catanl([[ARG_0]]: num_complex::Complex<f128>) -> num_complex::Complex<f128>;
+// CHECK-NEXT:     fn ccosl([[ARG_0]]: num_complex::Complex<f128>) -> num_complex::Complex<f128>;
+// CHECK-NEXT:     fn csinl([[ARG_0]]: num_complex::Complex<f128>) -> num_complex::Complex<f128>;
+// CHECK-NEXT:     fn ctanl([[ARG_0]]: num_complex::Complex<f128>) -> num_complex::Complex<f128>;
+// CHECK-NEXT:     fn cacoshl([[ARG_0]]: num_complex::Complex<f128>) -> num_complex::Complex<f128>;
+// CHECK-NEXT:     fn casinhl([[ARG_0]]: num_complex::Complex<f128>) -> num_complex::Complex<f128>;
+// CHECK-NEXT:     fn catanhl([[ARG_0]]: num_complex::Complex<f128>) -> num_complex::Complex<f128>;
+// CHECK-NEXT:     fn ccoshl([[ARG_0]]: num_complex::Complex<f128>) -> num_complex::Complex<f128>;
+// CHECK-NEXT:     fn csinhl([[ARG_0]]: num_complex::Complex<f128>) -> num_complex::Complex<f128>;
+// CHECK-NEXT:     fn ctanhl([[ARG_0]]: num_complex::Complex<f128>) -> num_complex::Complex<f128>;
+// CHECK-NEXT:     fn cexpl([[ARG_0]]: num_complex::Complex<f128>) -> num_complex::Complex<f128>;
+// CHECK-NEXT:     fn clogl([[ARG_0]]: num_complex::Complex<f128>) -> num_complex::Complex<f128>;
 // CHECK-NEXT:     fn cpowl(
-// CHECK-NEXT:         __x: num_complex::Complex<f128>,
-// CHECK-NEXT:         __y: num_complex::Complex<f128>,
+// CHECK-NEXT:         [[ARG_0]]: num_complex::Complex<f128>,
+// CHECK-NEXT:         [[ARG_1:arg[0-9]+]]: num_complex::Complex<f128>,
 // CHECK-NEXT:     ) -> num_complex::Complex<f128>;
-// CHECK-NEXT:     fn csqrtl(__z: num_complex::Complex<f128>) -> num_complex::Complex<f128>;
-// CHECK-NEXT:     fn cabsl(__z: num_complex::Complex<f128>) -> f128;
-// CHECK-NEXT:     fn cargl(__z: num_complex::Complex<f128>) -> f128;
-// CHECK-NEXT:     fn conjl(__z: num_complex::Complex<f128>) -> num_complex::Complex<f128>;
-// CHECK-NEXT:     fn cprojl(__z: num_complex::Complex<f128>) -> num_complex::Complex<f128>;
-// CHECK-NEXT:     fn cimagl(__z: num_complex::Complex<f128>) -> f128;
-// CHECK-NEXT:     fn creall(__z: num_complex::Complex<f128>) -> f128;
-// CHECK-NEXT:     fn printf(__format: *const u8, ...) -> i32;
+// CHECK-NEXT:     fn csqrtl([[ARG_0]]: num_complex::Complex<f128>) -> num_complex::Complex<f128>;
+// CHECK-NEXT:     fn cabsl([[ARG_0]]: num_complex::Complex<f128>) -> f128;
+// CHECK-NEXT:     fn cargl([[ARG_0]]: num_complex::Complex<f128>) -> f128;
+// CHECK-NEXT:     fn conjl([[ARG_0]]: num_complex::Complex<f128>) -> num_complex::Complex<f128>;
+// CHECK-NEXT:     fn cprojl([[ARG_0]]: num_complex::Complex<f128>) -> num_complex::Complex<f128>;
+// CHECK-NEXT:     fn cimagl([[ARG_0]]: num_complex::Complex<f128>) -> f128;
+// CHECK-NEXT:     fn creall([[ARG_0]]: num_complex::Complex<f128>) -> f128;
+// CHECK-NEXT:     fn printf([[ARG_0]]: *const u8, ...) -> i32;
 // CHECK-NEXT:     fn abort();
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {

@@ -824,10 +824,10 @@ impl FunctionLowerer<'_, '_> {
             return Ok(Expr::Var(function.rust.as_str().into()));
         }
         if let Some(bytes) = self.tables.strings.get(&id) {
-            let name = format!("__slate_asm_string_{}", id.0);
+            let name = format!("__slate_asm_string_{}_{}", self.owner, self.local_index(id));
             self.dependencies
                 .asm_strings
-                .entry(id.0)
+                .entry(name.clone())
                 .or_insert_with(|| Item::Static {
                     comments: Vec::new(),
                     attrs: Vec::new(),
@@ -846,9 +846,7 @@ impl FunctionLowerer<'_, '_> {
             return Ok(Expr::Var(name.as_str().into()));
         }
         if self.tables.statics.contains(&id) {
-            return Ok(Expr::Var(
-                binding_name(id, &self.tables.bindings).as_str().into(),
-            ));
+            return Ok(Expr::Var(self.binding_name(id).as_str().into()));
         }
         Err(unsupported_asm(format!("symbol binding {id:?}")))
     }

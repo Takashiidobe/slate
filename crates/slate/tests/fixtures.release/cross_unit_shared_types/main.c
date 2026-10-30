@@ -27,8 +27,8 @@ int main(void) {
 // CHECK-NEXT: #[path = "shapes.rs"]
 // CHECK-NEXT: mod __slate_unit_shapes;
 // CHECK-EMPTY:
-// CHECK-NEXT: use crate::__slate_types::[[SLATERECORD_0:__SlateRecord[0-9]+]] as [[SLATERECORD_1:__SlateRecord[0-9]+]];
-// CHECK-NEXT: use crate::__slate_types::[[SLATERECORD_2:__SlateRecord[0-9]+]] as [[SLATERECORD_3:__SlateRecord[0-9]+]];
+// CHECK-NEXT: use crate::__slate_types::__SlateRecord_shapes_h_9;
+// CHECK-NEXT: use crate::__slate_types::__SlateRecord_shapes_h_18;
 // CHECK-NEXT: use crate::__slate_types::flags;
 // CHECK-NEXT: use crate::__slate_types::registry;
 // CHECK-NEXT: use crate::__slate_types::shape;
@@ -42,7 +42,7 @@ int main(void) {
 // CHECK-NEXT: use crate::__slate_unit_shapes::tag_score;
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
@@ -56,7 +56,7 @@ int main(void) {
 // CHECK-NEXT:     let mut shapes: __SlateAlign16<[shape; 3]> = __SlateAlign16([
 // CHECK-NEXT:         shape {
 // CHECK-NEXT:             next: std::ptr::null_mut::<shape>(),
-// CHECK-NEXT:             origin: [[SLATERECORD_1]] { x: 1, y: 2 },
+// CHECK-NEXT:             origin: __SlateRecord_shapes_h_9 { x: 1, y: 2 },
 // CHECK-NEXT:             flags: {
 // CHECK-NEXT:                 let mut [[T_0:__t[0-9]+]]: flags = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:                 [[T_0]].__slate_bits_0.__set_ready(1u32);
@@ -67,7 +67,7 @@ int main(void) {
 // CHECK-NEXT:         },
 // CHECK-NEXT:         shape {
 // CHECK-NEXT:             next: std::ptr::null_mut::<shape>(),
-// CHECK-NEXT:             origin: [[SLATERECORD_1]] { x: 3, y: 4 },
+// CHECK-NEXT:             origin: __SlateRecord_shapes_h_9 { x: 3, y: 4 },
 // CHECK-NEXT:             flags: {
 // CHECK-NEXT:                 let mut [[T_1:__t[0-9]+]]: flags = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:                 [[T_1]].__slate_bits_0.__set_ready(0u32);
@@ -78,7 +78,7 @@ int main(void) {
 // CHECK-NEXT:         },
 // CHECK-NEXT:         shape {
 // CHECK-NEXT:             next: std::ptr::null_mut::<shape>(),
-// CHECK-NEXT:             origin: [[SLATERECORD_1]] { x: 5, y: 6 },
+// CHECK-NEXT:             origin: __SlateRecord_shapes_h_9 { x: 5, y: 6 },
 // CHECK-NEXT:             flags: {
 // CHECK-NEXT:                 let mut [[T_2:__t[0-9]+]]: flags = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:                 [[T_2]].__slate_bits_0.__set_ready(1u32);
@@ -104,8 +104,8 @@ int main(void) {
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut tag: [[SLATERECORD_3]] = {
-// CHECK-NEXT:         let mut [[T_3:__t[0-9]+]]: [[SLATERECORD_3]] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut tag: __SlateRecord_shapes_h_18 = {
+// CHECK-NEXT:         let mut [[T_3:__t[0-9]+]]: __SlateRecord_shapes_h_18 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:         [[T_3]].label = c"heavy".as_ptr();
 // CHECK-NEXT:         [[T_3]].weight = 21i32;
 // CHECK-NEXT:         [[T_3]]
@@ -126,7 +126,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {}",
-// CHECK-NEXT:         unsafe { tag_score(&(*(std::ptr::addr_of_mut!(tag) as *const [[SLATERECORD_3]]))) },
+// CHECK-NEXT:         unsafe { tag_score(&(*(std::ptr::addr_of_mut!(tag) as *const __SlateRecord_shapes_h_18))) },
 // CHECK-NEXT:         unsafe { count_vowels(c"translation unit".as_ptr()) }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe { registry_free(registry) };

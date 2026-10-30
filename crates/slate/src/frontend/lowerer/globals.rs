@@ -245,6 +245,7 @@ impl FunctionLowerer<'_, '_> {
         &mut self,
         global: &ir::Global,
     ) -> Result<(rust::Type, Option<Expr>)> {
+        self.owner = owner_name(&global.variable.name);
         let tables = self.tables;
         let variable = &global.variable;
         let symbol = ir::SymbolAttributes {

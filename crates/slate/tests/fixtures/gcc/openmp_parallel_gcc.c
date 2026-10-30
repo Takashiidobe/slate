@@ -153,7 +153,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT:     fn omp_get_thread_num() -> i32;
 // CHECK-NEXT:     fn omp_get_num_threads() -> i32;
 // CHECK-NEXT:     fn omp_get_level() -> i32;
@@ -178,11 +178,11 @@ int main(void) {
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     });
 // CHECK-NEXT:     let mut team: i32 = 0;
-// CHECK-NEXT:     let __slate_omp_9 = std::ptr::addr_of_mut!(sizes.0);
+// CHECK-NEXT:     let __slate_omp_0 = std::ptr::addr_of_mut!(sizes.0);
 // CHECK-NEXT:     __slate_libgomp::parallel(requested as u32, || unsafe {
 // CHECK-NEXT:         {
 // CHECK-NEXT:             let mut id: i32 = omp_get_thread_num();
-// CHECK-NEXT:             (*__slate_omp_9)[id as usize] = omp_get_num_threads();
+// CHECK-NEXT:             (*__slate_omp_0)[id as usize] = omp_get_num_threads();
 // CHECK-NEXT:             let mut [[V_0:__v[0-9]+]]: *mut i32 =
 // CHECK-NEXT:                 (std::ptr::addr_of_mut!(global_hits.0) as *mut i32).offset(id as isize);
 // CHECK-NEXT:             let mut [[V_1:__v[0-9]+]]: i32 = *[[V_0]];
@@ -210,22 +210,22 @@ int main(void) {
 // CHECK-NEXT:         __slate_vla
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut total: i32 = 0;
-// CHECK-NEXT:     let __slate_omp_14 = std::ptr::addr_of_mut!(n);
-// CHECK-NEXT:     let __slate_omp_15 = values.as_mut_ptr() as *mut [i32; 0];
+// CHECK-NEXT:     let __slate_omp_1 = std::ptr::addr_of_mut!(n);
+// CHECK-NEXT:     let __slate_omp_2 = values.as_mut_ptr() as *mut [i32; 0];
 // CHECK-NEXT:     __slate_libgomp::parallel(4u32, || unsafe {
 // CHECK-NEXT:         {
 // CHECK-NEXT:             let mut id: i32 = omp_get_thread_num();
-// CHECK-NEXT:             if id < *__slate_omp_14 {
+// CHECK-NEXT:             if id < *__slate_omp_1 {
 // CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     *(__slate_omp_15 as *mut i32).offset(id as isize) = id * *__slate_omp_14;
+// CHECK-NEXT:                     *(__slate_omp_2 as *mut i32).offset(id as isize) = id * *__slate_omp_1;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     });
 // CHECK-NEXT:     let mut i: i32 = 0;
 // CHECK-NEXT:     while i < n {
-// CHECK-NEXT:         let [[V_4:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:         total = [[V_4]] + unsafe { *(values.as_mut_ptr() as *mut i32).offset(i as isize) };
+// CHECK-NEXT:         let [[V_2]]: i32 = total;
+// CHECK-NEXT:         total = [[V_2]] + unsafe { *(values.as_mut_ptr() as *mut i32).offset(i as isize) };
 // CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
@@ -234,10 +234,10 @@ int main(void) {
 // CHECK-NEXT: fn bump() -> i32 {
 // CHECK-NEXT:     __slate_libgomp::parallel(4u32, || unsafe {
 // CHECK-NEXT:         if omp_get_thread_num() == 1 {
-// CHECK-NEXT:             let mut [[V_5:__v[0-9]+]]: i32 = calls;
-// CHECK-NEXT:             let mut [[V_6:__v[0-9]+]]: i32 = [[V_5]] + 5;
+// CHECK-NEXT:             let mut [[V_3]]: i32 = calls;
+// CHECK-NEXT:             let mut [[V_0]]: i32 = [[V_3]] + 5;
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 calls = [[V_6]];
+// CHECK-NEXT:                 calls = [[V_0]];
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     });
@@ -252,7 +252,7 @@ int main(void) {
 // CHECK-NEXT:     let second: i32 = bump();
 // CHECK-NEXT:     println!("static {} {}", first, second);
 // CHECK-NEXT:     let mut reached: i32 = 0;
-// CHECK-NEXT:     let __slate_omp_25 = std::ptr::addr_of_mut!(reached);
+// CHECK-NEXT:     let __slate_omp_0 = std::ptr::addr_of_mut!(reached);
 // CHECK-NEXT:     __slate_libgomp::parallel(4u32, || unsafe {
 // CHECK-NEXT:         let mut __slate_state: usize = 2usize;
 // CHECK-NEXT:         unsafe {
@@ -263,7 +263,7 @@ int main(void) {
 // CHECK-NEXT:                         break '__slate_dispatch;
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                     1 => {
-// CHECK-NEXT:                         *__slate_omp_25 = 1i32;
+// CHECK-NEXT:                         *__slate_omp_0 = 1i32;
 // CHECK-NEXT:                         __slate_state = 0usize;
 // CHECK-NEXT:                         continue '__slate_dispatch;
 // CHECK-NEXT:                     }
@@ -289,9 +289,9 @@ int main(void) {
 // CHECK-NEXT:         [[T_0]][0] = 0i32;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     });
-// CHECK-NEXT:     let __slate_omp_26 = std::ptr::addr_of_mut!(sizes.0);
+// CHECK-NEXT:     let __slate_omp_1 = std::ptr::addr_of_mut!(sizes.0);
 // CHECK-NEXT:     __slate_libgomp::parallel(0u32, || unsafe {
-// CHECK-NEXT:         (*__slate_omp_26)[omp_get_thread_num() as usize] = omp_get_num_threads();
+// CHECK-NEXT:         (*__slate_omp_1)[omp_get_thread_num() as usize] = omp_get_num_threads();
 // CHECK-NEXT:     });
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "default {} {} {} {} {}",
@@ -312,9 +312,9 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let mut serial: i32 = 0;
 // CHECK-NEXT:     let off: i32 = 0;
-// CHECK-NEXT:     let __slate_omp_27 = std::ptr::addr_of_mut!(serial);
+// CHECK-NEXT:     let __slate_omp_2 = std::ptr::addr_of_mut!(serial);
 // CHECK-NEXT:     __slate_libgomp::parallel(if off != 0 { 4u32 } else { 1u32 }, || unsafe {
-// CHECK-NEXT:         *__slate_omp_27 = omp_get_num_threads();
+// CHECK-NEXT:         *__slate_omp_2 = omp_get_num_threads();
 // CHECK-NEXT:     });
 // CHECK-NEXT:     println!("if {}", serial);
 // CHECK-NEXT:     let p: i32 = 5;
@@ -323,12 +323,12 @@ int main(void) {
 // CHECK-NEXT:         [[T_1]][0] = 0i32;
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     });
-// CHECK-NEXT:     let __slate_omp_30 = std::ptr::addr_of_mut!(written.0);
+// CHECK-NEXT:     let __slate_omp_3 = std::ptr::addr_of_mut!(written.0);
 // CHECK-NEXT:     __slate_libgomp::parallel(4u32, || unsafe {
 // CHECK-NEXT:         let mut p: i32 = 0i32;
 // CHECK-NEXT:         {
 // CHECK-NEXT:             p = omp_get_thread_num() * 10;
-// CHECK-NEXT:             (*__slate_omp_30)[omp_get_thread_num() as usize] = p + 1;
+// CHECK-NEXT:             (*__slate_omp_3)[omp_get_thread_num() as usize] = p + 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     });
 // CHECK-NEXT:     println!(
@@ -342,23 +342,23 @@ int main(void) {
 // CHECK-NEXT:         [[T_2]][0] = 0i32;
 // CHECK-NEXT:         [[T_2]]
 // CHECK-NEXT:     });
-// CHECK-NEXT:     let __slate_omp_34 = std::ptr::addr_of_mut!(seen.0);
-// CHECK-NEXT:     let __slate_omp_first_35 = std::ptr::addr_of!(f);
-// CHECK-NEXT:     let __slate_omp_first_36 = std::ptr::addr_of!(pr);
+// CHECK-NEXT:     let __slate_omp_4 = std::ptr::addr_of_mut!(seen.0);
+// CHECK-NEXT:     let __slate_omp_first_5 = std::ptr::addr_of!(f);
+// CHECK-NEXT:     let __slate_omp_first_6 = std::ptr::addr_of!(pr);
 // CHECK-NEXT:     __slate_libgomp::parallel(4u32, || unsafe {
 // CHECK-NEXT:         let mut f: i32 = 0i32;
-// CHECK-NEXT:         f = std::ptr::read(__slate_omp_first_35);
+// CHECK-NEXT:         f = std::ptr::read(__slate_omp_first_5);
 // CHECK-NEXT:         let mut pr: pair = std::mem::zeroed();
-// CHECK-NEXT:         pr = std::ptr::read(__slate_omp_first_36);
+// CHECK-NEXT:         pr = std::ptr::read(__slate_omp_first_6);
 // CHECK-NEXT:         {
 // CHECK-NEXT:             let mut id: i32 = omp_get_thread_num();
-// CHECK-NEXT:             let mut [[V_7:__v[0-9]+]]: i32 = f;
-// CHECK-NEXT:             let mut [[V_8:__v[0-9]+]]: i32 = [[V_7]] + id;
-// CHECK-NEXT:             f = [[V_8]];
-// CHECK-NEXT:             let mut [[V_9:__v[0-9]+]]: i32 = pr.b;
-// CHECK-NEXT:             let mut [[V_10:__v[0-9]+]]: i32 = [[V_9]] + f;
-// CHECK-NEXT:             pr.b = [[V_10]];
-// CHECK-NEXT:             (*__slate_omp_34)[id as usize] = pr.a * 100 + pr.b;
+// CHECK-NEXT:             let mut [[V_4:__v[0-9]+]]: i32 = f;
+// CHECK-NEXT:             let mut [[V_5:__v[0-9]+]]: i32 = [[V_4]] + id;
+// CHECK-NEXT:             f = [[V_5]];
+// CHECK-NEXT:             let mut [[V_6:__v[0-9]+]]: i32 = pr.b;
+// CHECK-NEXT:             let mut [[V_7:__v[0-9]+]]: i32 = [[V_6]] + f;
+// CHECK-NEXT:             pr.b = [[V_7]];
+// CHECK-NEXT:             (*__slate_omp_4)[id as usize] = pr.a * 100 + pr.b;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     });
 // CHECK-NEXT:     println!(
@@ -367,29 +367,29 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let mut shared: i32 = 0;
 // CHECK-NEXT:     let mut scale: f64 = 2.5f64;
-// CHECK-NEXT:     let __slate_omp_38 = std::ptr::addr_of_mut!(shared);
-// CHECK-NEXT:     let __slate_omp_39 = std::ptr::addr_of_mut!(scale);
+// CHECK-NEXT:     let __slate_omp_11 = std::ptr::addr_of_mut!(shared);
+// CHECK-NEXT:     let __slate_omp_12 = std::ptr::addr_of_mut!(scale);
 // CHECK-NEXT:     __slate_libgomp::parallel(4u32, || unsafe {
 // CHECK-NEXT:         {
 // CHECK-NEXT:             if omp_get_thread_num() == 2 {
-// CHECK-NEXT:                 *__slate_omp_38 = (*__slate_omp_39 * (4i32 as f64)) as i32;
+// CHECK-NEXT:                 *__slate_omp_11 = (*__slate_omp_12 * (4i32 as f64)) as i32;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     });
 // CHECK-NEXT:     println!("shared {}", shared);
 // CHECK-NEXT:     let mut outer: i32 = 1;
-// CHECK-NEXT:     let __slate_omp_40 = std::ptr::addr_of_mut!(outer);
+// CHECK-NEXT:     let __slate_omp_13 = std::ptr::addr_of_mut!(outer);
 // CHECK-NEXT:     __slate_libgomp::parallel(2u32, || unsafe {
 // CHECK-NEXT:         {
 // CHECK-NEXT:             let mut inner: i32 = omp_get_thread_num();
 // CHECK-NEXT:             {
-// CHECK-NEXT:                 let __slate_omp_40 = std::ptr::addr_of_mut!(*__slate_omp_40);
-// CHECK-NEXT:                 let __slate_omp_first_42 = std::ptr::addr_of!(inner);
+// CHECK-NEXT:                 let __slate_omp_13 = std::ptr::addr_of_mut!(*__slate_omp_13);
+// CHECK-NEXT:                 let __slate_omp_first_14 = std::ptr::addr_of!(inner);
 // CHECK-NEXT:                 __slate_libgomp::parallel(2u32, || {
 // CHECK-NEXT:                     let mut inner: i32 = 0i32;
-// CHECK-NEXT:                     inner = std::ptr::read(__slate_omp_first_42);
+// CHECK-NEXT:                     inner = std::ptr::read(__slate_omp_first_14);
 // CHECK-NEXT:                     if omp_get_thread_num() == 0 && inner == 1 {
-// CHECK-NEXT:                         *__slate_omp_40 = 40 + omp_get_level();
+// CHECK-NEXT:                         *__slate_omp_13 = 40 + omp_get_level();
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                 });
 // CHECK-NEXT:             }

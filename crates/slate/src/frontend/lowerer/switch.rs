@@ -201,7 +201,7 @@ impl FunctionLowerer<'_, '_> {
             },
         });
         Ok(Stmt::LabeledBlock {
-            label: break_label(id),
+            label: self.break_label(id),
             body: vec![Stmt::Match {
                 expr: self.lower_match_scrutinee(discriminant)?,
                 arms: match_arms,
@@ -320,7 +320,7 @@ impl FunctionLowerer<'_, '_> {
         arms: &[SwitchArm],
         mut body_prefix: Vec<Stmt>,
     ) -> Result<Stmt> {
-        let label = break_label(id);
+        let label = self.break_label(id);
         let case_index = |index: usize| Expr::Value(rust::RustValue::I64(index as i64));
         let mut match_arms = Vec::new();
         for (index, arm) in arms.iter().enumerate() {

@@ -18,7 +18,7 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
@@ -27,7 +27,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct [[SLATERECORD_0:__SlateRecord[0-9]+]] {
+// CHECK-NEXT: struct __SlateRecord_anon_struct_name_collision_c_12 {
 // CHECK-NEXT:     x: i32,
 // CHECK-NEXT:     y: i32,
 // CHECK-NEXT: }
@@ -35,7 +35,10 @@ int main(void) {
 // CHECK-NEXT:     let named: __slate_anonymous_struct_0 = __slate_anonymous_struct_0 {
 // CHECK-NEXT:         value: 7,
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let point: [[SLATERECORD_0]] = [[SLATERECORD_0]] { x: 3, y: 4 };
+// CHECK-NEXT:     let point: __SlateRecord_anon_struct_name_collision_c_12 = __SlateRecord_anon_struct_name_collision_c_12 {
+// CHECK-NEXT:         x: 3,
+// CHECK-NEXT:         y: 4,
+// CHECK-NEXT:     };
 // CHECK-NEXT:     println!("{}", named.value + point.x + point.y);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

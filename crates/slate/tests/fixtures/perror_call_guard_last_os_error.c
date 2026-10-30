@@ -13,8 +13,8 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn remove(__filename: *const i8) -> i32;
-// CHECK-NEXT:     fn perror(__s: *const i8);
+// CHECK-NEXT:     fn remove([[ARG_0:arg[0-9]+]]: *const i8) -> i32;
+// CHECK-NEXT:     fn perror([[ARG_0]]: *const i8);
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let rc: i32 = unsafe { remove(c"slate_perror_call_guard_missing.tmp".as_ptr()) };

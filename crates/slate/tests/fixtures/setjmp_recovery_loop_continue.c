@@ -34,13 +34,13 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn _setjmp(__env: *mut __jmp_buf_tag) -> i32;
-// CHECK-NEXT:     fn longjmp(__env: *mut __jmp_buf_tag, __val: i32);
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn _setjmp([[ARG_0:arg[0-9]+]]: *mut __jmp_buf_tag) -> i32;
+// CHECK-NEXT:     fn longjmp([[ARG_0]]: *mut __jmp_buf_tag, [[ARG_1:arg[0-9]+]]: i32);
+// CHECK-NEXT:     fn printf([[ARG_0]]: *const i8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct [[SLATERECORD_0:__SlateRecord[0-9]+]] {
+// CHECK-NEXT: struct __SlateRecord___sigset_t_h_8 {
 // CHECK-NEXT:     __val: [u64; 16],
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
@@ -48,7 +48,7 @@ int main(void) {
 // CHECK-NEXT: struct __jmp_buf_tag {
 // CHECK-NEXT:     __jmpbuf: [i64; 8],
 // CHECK-NEXT:     __mask_was_saved: i32,
-// CHECK-NEXT:     __saved_mask: [[SLATERECORD_0]],
+// CHECK-NEXT:     __saved_mask: __SlateRecord___sigset_t_h_8,
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);

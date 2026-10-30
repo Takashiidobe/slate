@@ -47,14 +47,14 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct [[SLATERECORD_0:__SlateRecord[0-9]+]] {
+// CHECK-NEXT: struct __SlateRecord_asm_pair_and_any_operands_c_3 {
 // CHECK-NEXT:     a: i64,
 // CHECK-NEXT:     b: i64,
 // CHECK-NEXT:     c: i64,
@@ -111,11 +111,15 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     r
 // CHECK-NEXT: }
-// CHECK-NEXT: fn any_operands(mut x: i32, mut big: &mut [[SLATERECORD_0]]) -> i32 {
+// CHECK-NEXT: fn any_operands(
+// CHECK-NEXT:     mut x: i32,
+// CHECK-NEXT:     mut big: &mut __SlateRecord_asm_pair_and_any_operands_c_3,
+// CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "\n# {0:e}\n# {1}\n# {2}", in (reg) x as u32, const 5 as i32, in (reg) big as
-// CHECK-NEXT:             * mut [[SLATERECORD_0]], options(nostack, att_syntax)
+// CHECK-NEXT:             * mut __SlateRecord_asm_pair_and_any_operands_c_3, options(nostack,
+// CHECK-NEXT:             att_syntax)
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut r: i32 = 0;
@@ -132,7 +136,11 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let a: u128 = pair_out();
 // CHECK-NEXT:     let b: u128 = pair_inout((4 as u128) << 64i32 | (18446744073709551615u64 as u128));
-// CHECK-NEXT:     let mut big: [[SLATERECORD_0]] = [[SLATERECORD_0]] { a: 1, b: 2, c: 3 };
+// CHECK-NEXT:     let mut big: __SlateRecord_asm_pair_and_any_operands_c_3 = __SlateRecord_asm_pair_and_any_operands_c_3 {
+// CHECK-NEXT:         a: 1,
+// CHECK-NEXT:         b: 2,
+// CHECK-NEXT:         c: 3,
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%lu %lu\n".as_ptr(), (a >> 64i32) as u64, a as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

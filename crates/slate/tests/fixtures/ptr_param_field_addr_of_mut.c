@@ -36,16 +36,23 @@ int main(void) {
 // @check-fn-end
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
-// CHECK-LABEL: {{^}}fn freeCResources(ress: &mut {{__SlateRecord[0-9]+}}) {
-// CHECK-NEXT:     freeDict(unsafe { std::ptr::addr_of_mut!((*(ress as *mut [[SLATERECORD_0:__SlateRecord[0-9]+]])).dict) });
-// CHECK-NEXT:     syncDestroy(unsafe { std::ptr::addr_of_mut!((*(ress as *mut [[SLATERECORD_0]])).io) });
+// CHECK-LABEL: {{^}}fn freeCResources(ress: &mut __SlateRecord_ptr_param_field_addr_of_mut_c_16) {
+// CHECK-NEXT:     freeDict(unsafe {
+// CHECK-NEXT:         std::ptr::addr_of_mut!(
+// CHECK-NEXT:             (*(ress as *mut __SlateRecord_ptr_param_field_addr_of_mut_c_16)).dict
+// CHECK-NEXT:         )
+// CHECK-NEXT:     });
+// CHECK-NEXT:     syncDestroy(unsafe {
+// CHECK-NEXT:         std::ptr::addr_of_mut!((*(ress as *mut __SlateRecord_ptr_param_field_addr_of_mut_c_16)).io)
+// CHECK-NEXT:     });
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut r: [[SLATERECORD_0:__SlateRecord[0-9]+]] = [[SLATERECORD_0]] {
-// CHECK-NEXT:         dict: [[SLATERECORD_1:__SlateRecord[0-9]+]] { x: 5 },
-// CHECK-NEXT:         cctx: 9,
-// CHECK-NEXT:         io: [[SLATERECORD_2:__SlateRecord[0-9]+]] { y: 7 },
-// CHECK-NEXT:     };
+// CHECK-NEXT:     let mut r: __SlateRecord_ptr_param_field_addr_of_mut_c_16 =
+// CHECK-NEXT:         __SlateRecord_ptr_param_field_addr_of_mut_c_16 {
+// CHECK-NEXT:             dict: __SlateRecord_ptr_param_field_addr_of_mut_c_6 { x: 5 },
+// CHECK-NEXT:             cctx: 9,
+// CHECK-NEXT:             io: __SlateRecord_ptr_param_field_addr_of_mut_c_10 { y: 7 },
+// CHECK-NEXT:         };
 // CHECK-NEXT:     freeCResources(unsafe { &mut (*std::ptr::addr_of_mut!(r)) });
 // CHECK-NEXT:     println!("{} {} {}", r.dict.x, r.io.y, r.cctx);
 // CHECK-NEXT:     0

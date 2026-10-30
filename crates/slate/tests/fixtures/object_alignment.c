@@ -81,7 +81,7 @@ int main(void) {
 // CHECK-NEXT: #![feature(simd_ffi)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
@@ -168,17 +168,16 @@ int main(void) {
 // CHECK-NEXT:             if aligned((*[[SLATE_SLOT_0]]).as_mut_ptr() as *const (), 16u64) == 0 {
 // CHECK-NEXT:                 return -1;
 // CHECK-NEXT:             } else {
-// CHECK-NEXT:                 let [[V_5:__v[0-9]+]]: u64 = sum_vectors(
+// CHECK-NEXT:                 let [[V_4]]: u64 = sum_vectors(
 // CHECK-NEXT:                     (*[[SLATE_SLOT_0]]).as_mut_ptr() as *const u64,
 // CHECK-NEXT:                     2i32,
 // CHECK-NEXT:                 );
-// CHECK-NEXT:                 let [[V_6:__v[0-9]+]]: *mut u64 = ((*[[SLATE_SLOT_0]]).as_mut_ptr() as *mut u64)
-// CHECK-NEXT:                     .add(0);
-// CHECK-NEXT:                 let [[V_7:__v[0-9]+]]: u64 = *[[V_6]];
-// CHECK-NEXT:                 *[[V_6]] = [[V_7]].wrapping_add([[V_5]]);
-// CHECK-NEXT:                 let [[V_8:__v[0-9]+]]: i32 = count + 1;
-// CHECK-NEXT:                 count = [[V_8]];
-// CHECK-NEXT:                 if [[V_8]] >= n {
+// CHECK-NEXT:                 let [[V_3]]: *mut u64 = ((*[[SLATE_SLOT_0]]).as_mut_ptr() as *mut u64).add(0);
+// CHECK-NEXT:                 let [[V_2]]: u64 = *[[V_3]];
+// CHECK-NEXT:                 *[[V_3]] = [[V_2]].wrapping_add([[V_4]]);
+// CHECK-NEXT:                 let [[V_5:__v[0-9]+]]: i32 = count + 1;
+// CHECK-NEXT:                 count = [[V_5]];
+// CHECK-NEXT:                 if [[V_5]] >= n {
 // CHECK-NEXT:                     break;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }

@@ -44,23 +44,23 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     static mut error_message_count: u32;
 // CHECK-NEXT:     static mut error_one_per_line: i32;
-// CHECK-NEXT:     fn error(__status: i32, __errnum: i32, __format: *const i8, ...);
+// CHECK-NEXT:     fn error([[ARG_0:arg[0-9]+]]: i32, [[ARG_1:arg[0-9]+]]: i32, [[ARG_2:arg[0-9]+]]: *const i8, ...);
 // CHECK-NEXT:     fn error_at_line(
-// CHECK-NEXT:         __status: i32,
-// CHECK-NEXT:         __errnum: i32,
-// CHECK-NEXT:         __fname: *const i8,
-// CHECK-NEXT:         __lineno: u32,
-// CHECK-NEXT:         __format: *const i8,
+// CHECK-NEXT:         [[ARG_0]]: i32,
+// CHECK-NEXT:         [[ARG_1]]: i32,
+// CHECK-NEXT:         [[ARG_2]]: *const i8,
+// CHECK-NEXT:         [[ARG_3:arg[0-9]+]]: u32,
+// CHECK-NEXT:         [[ARG_4:arg[0-9]+]]: *const i8,
 // CHECK-NEXT:         ...
 // CHECK-NEXT:     );
-// CHECK-NEXT:     fn mcheck(__abortfunc: Option<unsafe extern "C-unwind" fn(i32)>) -> i32;
-// CHECK-NEXT:     fn mprobe(__ptr: *mut ()) -> i32;
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn malloc(__size: u64) -> *mut ();
-// CHECK-NEXT:     fn free(__ptr: *mut ());
+// CHECK-NEXT:     fn mcheck([[ARG_0]]: Option<unsafe extern "C-unwind" fn(i32)>) -> i32;
+// CHECK-NEXT:     fn mprobe([[ARG_0]]: *mut ()) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0]]: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn malloc([[ARG_0]]: u64) -> *mut ();
+// CHECK-NEXT:     fn free([[ARG_0]]: *mut ());
 // CHECK-NEXT:     fn on_exit(
-// CHECK-NEXT:         __func: Option<unsafe extern "C-unwind" fn(i32, *mut ())>,
-// CHECK-NEXT:         __arg: *mut (),
+// CHECK-NEXT:         [[ARG_0]]: Option<unsafe extern "C-unwind" fn(i32, *mut ())>,
+// CHECK-NEXT:         [[ARG_1]]: *mut (),
 // CHECK-NEXT:     ) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {

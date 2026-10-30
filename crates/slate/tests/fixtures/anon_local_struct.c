@@ -33,30 +33,33 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct [[SLATERECORD_0:__SlateRecord[0-9]+]] {
+// CHECK-NEXT: struct __SlateRecord_anon_local_struct_c_7 {
 // CHECK-NEXT:     start: *mut i32,
 // CHECK-NEXT:     end: *mut i32,
 // CHECK-NEXT:     pointer: *mut i32,
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct [[SLATERECORD_1:__SlateRecord[0-9]+]] {
+// CHECK-NEXT: struct __SlateRecord_anon_local_struct_c_13 {
 // CHECK-NEXT:     x: i32,
 // CHECK-NEXT:     y: i32,
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let point: [[SLATERECORD_1]] = [[SLATERECORD_1]] { x: 3, y: 4 };
+// CHECK-NEXT:     let point: __SlateRecord_anon_local_struct_c_13 = __SlateRecord_anon_local_struct_c_13 {
+// CHECK-NEXT:         x: 3,
+// CHECK-NEXT:         y: 4,
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let mut storage: __SlateAlign16<[i32; 4]> = __SlateAlign16([0i32; 4]);
-// CHECK-NEXT:     let mut buf: [[SLATERECORD_0]] = [[SLATERECORD_0]] {
+// CHECK-NEXT:     let mut buf: __SlateRecord_anon_local_struct_c_7 = __SlateRecord_anon_local_struct_c_7 {
 // CHECK-NEXT:         start: std::ptr::null_mut::<i32>(),
 // CHECK-NEXT:         end: std::ptr::null_mut::<i32>(),
 // CHECK-NEXT:         pointer: std::ptr::null_mut::<i32>(),

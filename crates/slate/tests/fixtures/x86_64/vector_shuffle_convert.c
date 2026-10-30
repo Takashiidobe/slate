@@ -99,8 +99,8 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn __builtin_cpu_supports([[V_0:__v[0-9]+]]: *const i8) -> bool;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn __builtin_cpu_supports([[ARG_0]]: *const i8) -> bool;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
@@ -159,11 +159,11 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx")]
 // CHECK-NEXT: unsafe fn _mm256_set_epi64x(__a: i64, __b: i64, __c: i64, __d: i64) -> std::simd::Simd<i64, 4> {
-// CHECK-NEXT:     let mut [[SLATE_COMPOUND_1:__slate_compound_[0-9]+]]: std::simd::Simd<i64, 4> = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut [[SLATE_COMPOUND_0]]: std::simd::Simd<i64, 4> = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         *{
-// CHECK-NEXT:             [[SLATE_COMPOUND_1]] = std::simd::Simd::from_array([__d, __c, __b, __a]);
-// CHECK-NEXT:             std::ptr::addr_of_mut!([[SLATE_COMPOUND_1]])
+// CHECK-NEXT:             [[SLATE_COMPOUND_0]] = std::simd::Simd::from_array([__d, __c, __b, __a]);
+// CHECK-NEXT:             std::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -324,8 +324,8 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut [[SLATE_COMPOUND_2:__slate_compound_[0-9]+]]: std::simd::Simd<i32, 4> = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut [[SLATE_COMPOUND_3:__slate_compound_[0-9]+]]: std::simd::Simd<f32, 4> = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut [[SLATE_COMPOUND_1:__slate_compound_[0-9]+]]: std::simd::Simd<i32, 4> = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut [[SLATE_COMPOUND_2:__slate_compound_[0-9]+]]: std::simd::Simd<f32, 4> = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     let a: std::simd::Simd<i32, 4> = std::simd::Simd::from_array([1i32, -2i32, 3i32, -4i32]);
 // CHECK-NEXT:     let b: std::simd::Simd<i32, 4> = std::simd::Simd::from_array([100i32, 200i32, 300i32, 400i32]);
 // CHECK-NEXT:     loop {
@@ -524,9 +524,9 @@ int main(void) {
 // CHECK-NEXT:         '[[SLATE_BREAK_1:__slate_break_[0-9]+]]: for i in 0i32..4i32 {
 // CHECK-NEXT:             lanes.0[i as usize] = std::simd::num::SimdInt::cast::<i16>(unsafe {
 // CHECK-NEXT:                 *{
-// CHECK-NEXT:                     [[SLATE_COMPOUND_2]] =
+// CHECK-NEXT:                     [[SLATE_COMPOUND_1]] =
 // CHECK-NEXT:                         std::simd::Simd::from_array([70000i32, -70000i32, 32767i32, -32769i32]);
-// CHECK-NEXT:                     std::ptr::addr_of_mut!([[SLATE_COMPOUND_2]])
+// CHECK-NEXT:                     std::ptr::addr_of_mut!([[SLATE_COMPOUND_1]])
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             })[i as usize] as i64;
 // CHECK-NEXT:         }
@@ -548,9 +548,9 @@ int main(void) {
 // CHECK-NEXT:         floats
 // CHECK-NEXT:             * unsafe {
 // CHECK-NEXT:                 *{
-// CHECK-NEXT:                     [[SLATE_COMPOUND_3]] =
+// CHECK-NEXT:                     [[SLATE_COMPOUND_2]] =
 // CHECK-NEXT:                         std::simd::Simd::from_array([1.5f32, 1.5f32, 1.5f32, 1.5f32]);
-// CHECK-NEXT:                     std::ptr::addr_of_mut!([[SLATE_COMPOUND_3]])
+// CHECK-NEXT:                     std::ptr::addr_of_mut!([[SLATE_COMPOUND_2]])
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             },
 // CHECK-NEXT:     );

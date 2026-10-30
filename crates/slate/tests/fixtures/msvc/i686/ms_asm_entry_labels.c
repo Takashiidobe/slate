@@ -205,39 +205,39 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn both(mut value: i32) -> i32 {
 // CHECK-NEXT:     let mut result: std::mem::MaybeUninit<i32> = std::mem::MaybeUninit::uninit();
-// CHECK-NEXT:     let [[SLATE_SLOT_2:__slate_slot_[0-9]+]]: *mut i32 = std::ptr::addr_of_mut!(result) as *mut i32;
-// CHECK-NEXT:     let mut [[V_3:__v[0-9]+]]: u32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let [[SLATE_SLOT_0]]: *mut i32 = std::ptr::addr_of_mut!(result) as *mut i32;
+// CHECK-NEXT:     let mut [[V_1]]: u32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     let mut __slate_state: usize = 4usize;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             match __slate_state {
 // CHECK-NEXT:                 0 => {
-// CHECK-NEXT:                     return -(*[[SLATE_SLOT_2]]);
+// CHECK-NEXT:                     return -(*[[SLATE_SLOT_0]]);
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 1 => {
-// CHECK-NEXT:                     return *[[SLATE_SLOT_2]];
+// CHECK-NEXT:                     return *[[SLATE_SLOT_0]];
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 2 => {
 // CHECK-NEXT:                     __slate_state = 1usize;
 // CHECK-NEXT:                     let [[T_0]]: u32;
-// CHECK-NEXT:                     core::arch::asm!("mov dword ptr [{0}], 5\n2:\nadd dword ptr [{0}], 7\ncmp dword ptr [{1}], 50\njg {2}", in(reg) std::ptr::addr_of_mut!(*[[SLATE_SLOT_2]]), in(reg) std::ptr::addr_of!(value), label {
+// CHECK-NEXT:                     core::arch::asm!("mov dword ptr [{0}], 5\n2:\nadd dword ptr [{0}], 7\ncmp dword ptr [{1}], 50\njg {2}", in(reg) std::ptr::addr_of_mut!(*[[SLATE_SLOT_0]]), in(reg) std::ptr::addr_of!(value), label {
 // CHECK-NEXT: __slate_state = 0usize;
 // CHECK-NEXT: }, lateout("ax") [[T_0]]);
-// CHECK-NEXT:                     [[V_3]] = unsafe { std::mem::transmute::<u32, u32>([[T_0]] as u32) };
+// CHECK-NEXT:                     [[V_1]] = unsafe { std::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:                     continue;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 3 => {
 // CHECK-NEXT:                     __slate_state = 1usize;
 // CHECK-NEXT:                     let [[T_1:__t[0-9]+]]: u32;
-// CHECK-NEXT:                     core::arch::asm!("jmp 2f\nmov dword ptr [{0}], 5\n2:\nadd dword ptr [{0}], 7\ncmp dword ptr [{1}], 50\njg {2}", in(reg) std::ptr::addr_of_mut!(*[[SLATE_SLOT_2]]), in(reg) std::ptr::addr_of!(value), label {
+// CHECK-NEXT:                     core::arch::asm!("jmp 2f\nmov dword ptr [{0}], 5\n2:\nadd dword ptr [{0}], 7\ncmp dword ptr [{1}], 50\njg {2}", in(reg) std::ptr::addr_of_mut!(*[[SLATE_SLOT_0]]), in(reg) std::ptr::addr_of!(value), label {
 // CHECK-NEXT: __slate_state = 0usize;
 // CHECK-NEXT: }, lateout("ax") [[T_1]]);
-// CHECK-NEXT:                     [[V_3]] = unsafe { std::mem::transmute::<u32, u32>([[T_1]] as u32) };
+// CHECK-NEXT:                     [[V_1]] = unsafe { std::mem::transmute::<u32, u32>([[T_1]] as u32) };
 // CHECK-NEXT:                     continue;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 4 => {
-// CHECK-NEXT:                     [[V_3]] = 0;
-// CHECK-NEXT:                     std::ptr::write([[SLATE_SLOT_2]], 0i32);
+// CHECK-NEXT:                     [[V_1]] = 0;
+// CHECK-NEXT:                     std::ptr::write([[SLATE_SLOT_0]], 0i32);
 // CHECK-NEXT:                     if value > 0 {
 // CHECK-NEXT:                         __slate_state = 3usize;
 // CHECK-NEXT:                         continue;
@@ -253,7 +253,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         return [[V_3]] as i32;
+// CHECK-NEXT:         return [[V_1]] as i32;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:

@@ -20,12 +20,12 @@ int main(void) {
 }
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
-// CHECK-LABEL: {{^}}fn fill(out: &mut {{__SlateRecord[0-9]+}}, x: i32, y: i32) {
+// CHECK-LABEL: {{^}}fn fill(out: &mut __SlateRecord_ptr_param_field_store_c_6, x: i32, y: i32) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*(out as *mut [[SLATERECORD_0:__SlateRecord[0-9]+]])).a = x;
+// CHECK-NEXT:         (*(out as *mut __SlateRecord_ptr_param_field_store_c_6)).a = x;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*(out as *mut [[SLATERECORD_0]])).b = y;
+// CHECK-NEXT:         (*(out as *mut __SlateRecord_ptr_param_field_store_c_6)).b = y;
 // CHECK-NEXT:     }
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

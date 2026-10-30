@@ -250,9 +250,9 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn exp(__x: f64) -> f64;
-// CHECK-NEXT:     fn canonicalizel(__cx: *mut LongDouble, __x: *const LongDouble) -> i32;
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn exp([[ARG_0:arg[0-9]+]]: f64) -> f64;
+// CHECK-NEXT:     fn canonicalizel([[ARG_0]]: *mut LongDouble, [[ARG_1:arg[0-9]+]]: *const LongDouble) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0]]: *const i8, ...) -> i32;
 // CHECK-NEXT:     fn abort();
 // CHECK-NEXT:     safe fn __slate_f80_add(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_sub(__a: LongDouble, __b: LongDouble) -> LongDouble;

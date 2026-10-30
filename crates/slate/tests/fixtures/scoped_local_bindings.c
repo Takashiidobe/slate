@@ -92,7 +92,7 @@ int read_static_total(void) { return total; }
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
@@ -145,7 +145,7 @@ int read_static_total(void) { return total; }
 // CHECK-NEXT:     let first: i32 = 2;
 // CHECK-NEXT:     let second: i32 = first * 3;
 // CHECK-NEXT:     let third: i32 = second + first;
-// CHECK-NEXT:     let [[TOTAL_0:total_[0-9]+]]: i32 = third + 1;
+// CHECK-NEXT:     let total__0: i32 = third + 1;
 // CHECK-NEXT:     let r#type: i32 = 1;
 // CHECK-NEXT:     let r#match: i32 = 2;
 // CHECK-NEXT:     let r#loop: i32 = 3;
@@ -176,10 +176,10 @@ int read_static_total(void) { return total; }
 // CHECK-NEXT:         sum += step;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("{} {} {} {} {}", x, outer_seen, first, second, third);
-// CHECK-NEXT:     println!("{} {} {}", [[TOTAL_0]], keywords, shadow_params(2i32, 3i32));
+// CHECK-NEXT:     println!("{} {} {}", total__0, keywords, shadow_params(2i32, 3i32));
 // CHECK-NEXT:     unsafe { printf(c"%d %ld %ld %d %d\n".as_ptr(), filled, a, b, chosen, sum) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     [[TOTAL_0]] + x & 63
+// CHECK-NEXT:     total__0 + x & 63
 // CHECK-NEXT: }
 // CHECK-NEXT: fn read_static_total() -> i32 {
 // CHECK-NEXT:     unsafe { total }

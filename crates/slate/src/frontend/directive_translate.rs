@@ -975,7 +975,7 @@ fn item_lines(
     files: &slate_parser::files::Files,
 ) -> BTreeMap<String, usize> {
     let main = path.canonicalize().unwrap_or_else(|_| path.to_path_buf());
-    frontend::lowerer::definition_items(module)
+    frontend::lowerer::definition_items(module, files)
         .into_iter()
         .filter(|(_, loc)| files.get_path(loc.file) == Some(main.as_path()))
         .filter_map(|(key, loc)| Some((key, files.position(loc.file, loc.offset)?.0 + 1)))

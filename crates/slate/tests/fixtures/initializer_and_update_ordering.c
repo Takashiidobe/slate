@@ -40,8 +40,8 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn __builtin_prefetch([[V_0:__v[0-9]+]]: *const (), ...);
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn __builtin_prefetch([[ARG_0]]: *const (), ...);
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
@@ -57,9 +57,9 @@ int main(void) {
 // CHECK-NEXT: static mut flags: [u32; 1] = [2];
 // CHECK-NEXT: static mut calls: i32 = 0;
 // CHECK-NEXT: fn mark() -> u32 {
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: *mut u32 = unsafe { (std::ptr::addr_of_mut!(flags) as *mut u32).add(0) };
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut u32 = unsafe { (std::ptr::addr_of_mut!(flags) as *mut u32).add(0) };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_1]] = *[[V_1]] | 128;
+// CHECK-NEXT:         *[[V_0]] = *[[V_0]] | 128;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     1
 // CHECK-NEXT: }
@@ -98,10 +98,10 @@ int main(void) {
 // CHECK-NEXT:         "{} {} {}", (self_.next == std::ptr::addr_of_mut!(self_)) as i32, unsafe { (*
 // CHECK-NEXT:         ring.0[0].next).value }, unsafe { (* ring.0[1].next).value }
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: u32 = mark();
-// CHECK-NEXT:     let [[V_3:__v[0-9]+]]: *mut u32 = unsafe { (std::ptr::addr_of_mut!(flags) as *mut u32).add(0) };
+// CHECK-NEXT:     let [[V_0]]: u32 = mark();
+// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: *mut u32 = unsafe { (std::ptr::addr_of_mut!(flags) as *mut u32).add(0) };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_3]] = *[[V_3]] | [[V_2]];
+// CHECK-NEXT:         *[[V_1]] = *[[V_1]] | [[V_0]];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%u\n".as_ptr(), flags[0]) };
@@ -113,8 +113,8 @@ int main(void) {
 // CHECK-NEXT:         let _ = advance(p) as *const ();
 // CHECK-NEXT:     };
 // CHECK-NEXT:     i += 1;
-// CHECK-NEXT:     let [[V_4:__v[0-9]+]]: *mut i32 = p;
-// CHECK-NEXT:     p = unsafe { [[V_4]].add(1) };
+// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: *mut i32 = p;
+// CHECK-NEXT:     p = unsafe { [[V_2]].add(1) };
 // CHECK-NEXT:     println!("{} {} {}", unsafe { calls }, i, unsafe { * p });
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

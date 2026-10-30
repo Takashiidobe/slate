@@ -89,36 +89,36 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn feenableexcept(__excepts: i32) -> i32;
-// CHECK-NEXT:     fn fedisableexcept(__excepts: i32) -> i32;
+// CHECK-NEXT:     fn feenableexcept([[ARG_0:arg[0-9]+]]: i32) -> i32;
+// CHECK-NEXT:     fn fedisableexcept([[ARG_0]]: i32) -> i32;
 // CHECK-NEXT:     fn fegetexcept() -> i32;
-// CHECK-NEXT:     fn cos(__x: f64) -> f64;
-// CHECK-NEXT:     fn sin(__x: f64) -> f64;
-// CHECK-NEXT:     fn sincos(__x: f64, __sinx: *mut f64, __cosx: *mut f64);
-// CHECK-NEXT:     fn exp10(__x: f64) -> f64;
-// CHECK-NEXT:     fn fabs(__x: f64) -> f64;
-// CHECK-NEXT:     fn drem(__x: f64, __y: f64) -> f64;
-// CHECK-NEXT:     fn significand(__x: f64) -> f64;
-// CHECK-NEXT:     fn j0([[V_0:__v[0-9]+]]: f64) -> f64;
-// CHECK-NEXT:     fn j1([[V_1:__v[0-9]+]]: f64) -> f64;
-// CHECK-NEXT:     fn jn([[V_2:__v[0-9]+]]: i32, [[V_3:__v[0-9]+]]: f64) -> f64;
-// CHECK-NEXT:     fn y0([[V_4:__v[0-9]+]]: f64) -> f64;
-// CHECK-NEXT:     fn y1([[V_5:__v[0-9]+]]: f64) -> f64;
-// CHECK-NEXT:     fn yn([[V_6:__v[0-9]+]]: i32, [[V_7:__v[0-9]+]]: f64) -> f64;
-// CHECK-NEXT:     fn lgamma([[V_8:__v[0-9]+]]: f64) -> f64;
-// CHECK-NEXT:     fn lgamma_r([[V_9:__v[0-9]+]]: f64, __signgamp: *mut i32) -> f64;
-// CHECK-NEXT:     fn scalb(__x: f64, __n: f64) -> f64;
-// CHECK-NEXT:     fn cosf(__x: f32) -> f32;
-// CHECK-NEXT:     fn sinf(__x: f32) -> f32;
-// CHECK-NEXT:     fn sincosf(__x: f32, __sinx: *mut f32, __cosx: *mut f32);
-// CHECK-NEXT:     fn exp10f(__x: f32) -> f32;
-// CHECK-NEXT:     fn fabsf(__x: f32) -> f32;
-// CHECK-NEXT:     fn dremf(__x: f32, __y: f32) -> f32;
-// CHECK-NEXT:     fn significandf(__x: f32) -> f32;
-// CHECK-NEXT:     fn j0f([[V_10:__v[0-9]+]]: f32) -> f32;
-// CHECK-NEXT:     fn y0f([[V_11:__v[0-9]+]]: f32) -> f32;
-// CHECK-NEXT:     fn scalbf(__x: f32, __n: f32) -> f32;
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn cos([[ARG_0]]: f64) -> f64;
+// CHECK-NEXT:     fn sin([[ARG_0]]: f64) -> f64;
+// CHECK-NEXT:     fn sincos([[ARG_0]]: f64, [[ARG_1:arg[0-9]+]]: *mut f64, [[ARG_2:arg[0-9]+]]: *mut f64);
+// CHECK-NEXT:     fn exp10([[ARG_0]]: f64) -> f64;
+// CHECK-NEXT:     fn fabs([[ARG_0]]: f64) -> f64;
+// CHECK-NEXT:     fn drem([[ARG_0]]: f64, [[ARG_1]]: f64) -> f64;
+// CHECK-NEXT:     fn significand([[ARG_0]]: f64) -> f64;
+// CHECK-NEXT:     fn j0([[ARG_0]]: f64) -> f64;
+// CHECK-NEXT:     fn j1([[ARG_0]]: f64) -> f64;
+// CHECK-NEXT:     fn jn([[ARG_0]]: i32, [[ARG_1]]: f64) -> f64;
+// CHECK-NEXT:     fn y0([[ARG_0]]: f64) -> f64;
+// CHECK-NEXT:     fn y1([[ARG_0]]: f64) -> f64;
+// CHECK-NEXT:     fn yn([[ARG_0]]: i32, [[ARG_1]]: f64) -> f64;
+// CHECK-NEXT:     fn lgamma([[ARG_0]]: f64) -> f64;
+// CHECK-NEXT:     fn lgamma_r([[ARG_0]]: f64, [[ARG_1]]: *mut i32) -> f64;
+// CHECK-NEXT:     fn scalb([[ARG_0]]: f64, [[ARG_1]]: f64) -> f64;
+// CHECK-NEXT:     fn cosf([[ARG_0]]: f32) -> f32;
+// CHECK-NEXT:     fn sinf([[ARG_0]]: f32) -> f32;
+// CHECK-NEXT:     fn sincosf([[ARG_0]]: f32, [[ARG_1]]: *mut f32, [[ARG_2]]: *mut f32);
+// CHECK-NEXT:     fn exp10f([[ARG_0]]: f32) -> f32;
+// CHECK-NEXT:     fn fabsf([[ARG_0]]: f32) -> f32;
+// CHECK-NEXT:     fn dremf([[ARG_0]]: f32, [[ARG_1]]: f32) -> f32;
+// CHECK-NEXT:     fn significandf([[ARG_0]]: f32) -> f32;
+// CHECK-NEXT:     fn j0f([[ARG_0]]: f32) -> f32;
+// CHECK-NEXT:     fn y0f([[ARG_0]]: f32) -> f32;
+// CHECK-NEXT:     fn scalbf([[ARG_0]]: f32, [[ARG_1]]: f32) -> f32;
+// CHECK-NEXT:     fn printf([[ARG_0]]: *const i8, ...) -> i32;
 // CHECK-NEXT:     safe fn __slate_f80_add(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_sub(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_mul(__a: LongDouble, __b: LongDouble) -> LongDouble;
@@ -316,110 +316,110 @@ int main(void) {
 // CHECK-NEXT:             std::ptr::addr_of_mut!(cosine_l),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let [[V_12:__v[0-9]+]]: i32 = ((unsafe { fabs(sine - sin(0.5f64)) }) == 0.0f64) as i32;
-// CHECK-NEXT:     total += [[V_12]];
-// CHECK-NEXT:     let [[V_13:__v[0-9]+]]: i32 = ((unsafe { fabs(cosine - cos(0.5f64)) }) == 0.0f64) as i32;
-// CHECK-NEXT:     total += [[V_13]];
-// CHECK-NEXT:     let [[V_14:__v[0-9]+]]: i32 = ((unsafe { fabsf(sine_f - sinf(0.5f32)) }) == 0.0f32) as i32;
-// CHECK-NEXT:     total += [[V_14]];
-// CHECK-NEXT:     let [[V_15:__v[0-9]+]]: i32 = ((unsafe { fabsf(cosine_f - cosf(0.5f32)) }) == 0.0f32) as i32;
-// CHECK-NEXT:     total += [[V_15]];
-// CHECK-NEXT:     let [[V_16:__v[0-9]+]]: i32 = ((unsafe {
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = ((unsafe { fabs(sine - sin(0.5f64)) }) == 0.0f64) as i32;
+// CHECK-NEXT:     total += [[V_0]];
+// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i32 = ((unsafe { fabs(cosine - cos(0.5f64)) }) == 0.0f64) as i32;
+// CHECK-NEXT:     total += [[V_1]];
+// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: i32 = ((unsafe { fabsf(sine_f - sinf(0.5f32)) }) == 0.0f32) as i32;
+// CHECK-NEXT:     total += [[V_2]];
+// CHECK-NEXT:     let [[V_3:__v[0-9]+]]: i32 = ((unsafe { fabsf(cosine_f - cosf(0.5f32)) }) == 0.0f32) as i32;
+// CHECK-NEXT:     total += [[V_3]];
+// CHECK-NEXT:     let [[V_4:__v[0-9]+]]: i32 = ((unsafe {
 // CHECK-NEXT:         __slate_fabsl__rf80_f80(
 // CHECK-NEXT:             sine_l
 // CHECK-NEXT:                 - __slate_sinl__rf80_f80(LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 254, 63])),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) == LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0])) as i32;
-// CHECK-NEXT:     total += [[V_16]];
-// CHECK-NEXT:     let [[V_17:__v[0-9]+]]: i32 = ((unsafe {
+// CHECK-NEXT:     total += [[V_4]];
+// CHECK-NEXT:     let [[V_5:__v[0-9]+]]: i32 = ((unsafe {
 // CHECK-NEXT:         __slate_fabsl__rf80_f80(
 // CHECK-NEXT:             cosine_l
 // CHECK-NEXT:                 - __slate_cosl__rf80_f80(LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 254, 63])),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) == LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0])) as i32;
-// CHECK-NEXT:     total += [[V_17]];
+// CHECK-NEXT:     total += [[V_5]];
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: fn gnu_exponential_extensions() -> i32 {
 // CHECK-NEXT:     let mut sign: i32 = 0;
 // CHECK-NEXT:     let mut total: i32 = 0;
-// CHECK-NEXT:     let [[V_18:__v[0-9]+]]: i32 = ((unsafe { exp10(2.0f64) }) == 100.0f64) as i32;
-// CHECK-NEXT:     total += [[V_18]];
-// CHECK-NEXT:     let [[V_19:__v[0-9]+]]: i32 = ((unsafe { exp10f(2.0f32) }) == 100.0f32) as i32;
-// CHECK-NEXT:     total += [[V_19]];
-// CHECK-NEXT:     let [[V_20:__v[0-9]+]]: i32 = ((unsafe {
+// CHECK-NEXT:     let [[V_0]]: i32 = ((unsafe { exp10(2.0f64) }) == 100.0f64) as i32;
+// CHECK-NEXT:     total += [[V_0]];
+// CHECK-NEXT:     let [[V_1]]: i32 = ((unsafe { exp10f(2.0f32) }) == 100.0f32) as i32;
+// CHECK-NEXT:     total += [[V_1]];
+// CHECK-NEXT:     let [[V_2]]: i32 = ((unsafe {
 // CHECK-NEXT:         __slate_exp10l__rf80_f80(LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]))
 // CHECK-NEXT:     }) == LongDouble([0, 0, 0, 0, 0, 0, 0, 200, 5, 64])) as i32;
-// CHECK-NEXT:     total += [[V_20]];
-// CHECK-NEXT:     let [[V_21:__v[0-9]+]]: i32 = ((unsafe { lgamma_r(0.5f64, std::ptr::addr_of_mut!(sign)) })
+// CHECK-NEXT:     total += [[V_2]];
+// CHECK-NEXT:     let [[V_3]]: i32 = ((unsafe { lgamma_r(0.5f64, std::ptr::addr_of_mut!(sign)) })
 // CHECK-NEXT:         == unsafe { lgamma(0.5f64) }) as i32;
-// CHECK-NEXT:     total += [[V_21]];
+// CHECK-NEXT:     total += [[V_3]];
 // CHECK-NEXT:     total += (sign == 1) as i32;
-// CHECK-NEXT:     let [[V_22:__v[0-9]+]]: i32 = ((unsafe { significand(12.0f64) }) == 1.5f64) as i32;
-// CHECK-NEXT:     total += [[V_22]];
-// CHECK-NEXT:     let [[V_23:__v[0-9]+]]: i32 = ((unsafe { significandf(12.0f32) }) == 1.5f32) as i32;
-// CHECK-NEXT:     total += [[V_23]];
-// CHECK-NEXT:     let [[V_24:__v[0-9]+]]: i32 = ((unsafe { drem(7.0f64, 3.0f64) }) == 1.0f64) as i32;
-// CHECK-NEXT:     total += [[V_24]];
-// CHECK-NEXT:     let [[V_25:__v[0-9]+]]: i32 = ((unsafe { dremf(7.0f32, 3.0f32) }) == 1.0f32) as i32;
-// CHECK-NEXT:     total += [[V_25]];
-// CHECK-NEXT:     let [[V_26:__v[0-9]+]]: i32 = ((unsafe { scalb(1.5f64, 3.0f64) }) == 12.0f64) as i32;
-// CHECK-NEXT:     total += [[V_26]];
-// CHECK-NEXT:     let [[V_27:__v[0-9]+]]: i32 = ((unsafe { scalbf(1.5f32, 3.0f32) }) == 12.0f32) as i32;
-// CHECK-NEXT:     total += [[V_27]];
+// CHECK-NEXT:     let [[V_6:__v[0-9]+]]: i32 = ((unsafe { significand(12.0f64) }) == 1.5f64) as i32;
+// CHECK-NEXT:     total += [[V_6]];
+// CHECK-NEXT:     let [[V_7:__v[0-9]+]]: i32 = ((unsafe { significandf(12.0f32) }) == 1.5f32) as i32;
+// CHECK-NEXT:     total += [[V_7]];
+// CHECK-NEXT:     let [[V_8:__v[0-9]+]]: i32 = ((unsafe { drem(7.0f64, 3.0f64) }) == 1.0f64) as i32;
+// CHECK-NEXT:     total += [[V_8]];
+// CHECK-NEXT:     let [[V_9:__v[0-9]+]]: i32 = ((unsafe { dremf(7.0f32, 3.0f32) }) == 1.0f32) as i32;
+// CHECK-NEXT:     total += [[V_9]];
+// CHECK-NEXT:     let [[V_10:__v[0-9]+]]: i32 = ((unsafe { scalb(1.5f64, 3.0f64) }) == 12.0f64) as i32;
+// CHECK-NEXT:     total += [[V_10]];
+// CHECK-NEXT:     let [[V_11:__v[0-9]+]]: i32 = ((unsafe { scalbf(1.5f32, 3.0f32) }) == 12.0f32) as i32;
+// CHECK-NEXT:     total += [[V_11]];
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: fn gnu_bessel_extensions() -> i32 {
 // CHECK-NEXT:     let mut total: i32 = 0;
-// CHECK-NEXT:     let [[V_28:__v[0-9]+]]: bool = (unsafe { j0(1.0f64) }) == unsafe { j0(1.0f64) }
+// CHECK-NEXT:     let [[V_0]]: bool = (unsafe { j0(1.0f64) }) == unsafe { j0(1.0f64) }
 // CHECK-NEXT:         && (unsafe { j0(1.0f64) }) > 0.7f64;
-// CHECK-NEXT:     let [[V_29:__v[0-9]+]]: i32 = [[V_28]] as i32;
-// CHECK-NEXT:     total += [[V_29]];
-// CHECK-NEXT:     let [[V_30:__v[0-9]+]]: i32 = ((unsafe { j1(1.0f64) }) > 0.4f64) as i32;
-// CHECK-NEXT:     total += [[V_30]];
-// CHECK-NEXT:     let [[V_31:__v[0-9]+]]: i32 = ((unsafe { jn(2i32, 1.0f64) }) > 0.1f64) as i32;
-// CHECK-NEXT:     total += [[V_31]];
-// CHECK-NEXT:     let [[V_32:__v[0-9]+]]: i32 = ((unsafe { y0(1.0f64) }) > 0.08f64) as i32;
-// CHECK-NEXT:     total += [[V_32]];
-// CHECK-NEXT:     let [[V_33:__v[0-9]+]]: i32 = ((unsafe { y1(1.0f64) }) < 0.0f64) as i32;
-// CHECK-NEXT:     total += [[V_33]];
-// CHECK-NEXT:     let [[V_34:__v[0-9]+]]: i32 = ((unsafe { yn(2i32, 1.0f64) }) < 0.0f64) as i32;
-// CHECK-NEXT:     total += [[V_34]];
-// CHECK-NEXT:     let [[V_35:__v[0-9]+]]: i32 = ((unsafe { j0f(1.0f32) }) > 0.7f32) as i32;
-// CHECK-NEXT:     total += [[V_35]];
-// CHECK-NEXT:     let [[V_36:__v[0-9]+]]: i32 = ((unsafe { y0f(1.0f32) }) > 0.08f32) as i32;
-// CHECK-NEXT:     total += [[V_36]];
+// CHECK-NEXT:     let [[V_12:__v[0-9]+]]: i32 = [[V_0]] as i32;
+// CHECK-NEXT:     total += [[V_12]];
+// CHECK-NEXT:     let [[V_13:__v[0-9]+]]: i32 = ((unsafe { j1(1.0f64) }) > 0.4f64) as i32;
+// CHECK-NEXT:     total += [[V_13]];
+// CHECK-NEXT:     let [[V_14:__v[0-9]+]]: i32 = ((unsafe { jn(2i32, 1.0f64) }) > 0.1f64) as i32;
+// CHECK-NEXT:     total += [[V_14]];
+// CHECK-NEXT:     let [[V_15:__v[0-9]+]]: i32 = ((unsafe { y0(1.0f64) }) > 0.08f64) as i32;
+// CHECK-NEXT:     total += [[V_15]];
+// CHECK-NEXT:     let [[V_16:__v[0-9]+]]: i32 = ((unsafe { y1(1.0f64) }) < 0.0f64) as i32;
+// CHECK-NEXT:     total += [[V_16]];
+// CHECK-NEXT:     let [[V_17:__v[0-9]+]]: i32 = ((unsafe { yn(2i32, 1.0f64) }) < 0.0f64) as i32;
+// CHECK-NEXT:     total += [[V_17]];
+// CHECK-NEXT:     let [[V_18:__v[0-9]+]]: i32 = ((unsafe { j0f(1.0f32) }) > 0.7f32) as i32;
+// CHECK-NEXT:     total += [[V_18]];
+// CHECK-NEXT:     let [[V_19:__v[0-9]+]]: i32 = ((unsafe { y0f(1.0f32) }) > 0.08f32) as i32;
+// CHECK-NEXT:     total += [[V_19]];
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: fn gnu_fenv_extensions() -> i32 {
 // CHECK-NEXT:     let mut total: i32 = 0;
-// CHECK-NEXT:     let [[V_37:__v[0-9]+]]: i32 = ((unsafe { feenableexcept(4i32) }) != -1) as i32;
-// CHECK-NEXT:     total += [[V_37]];
-// CHECK-NEXT:     let [[V_38:__v[0-9]+]]: i32 = ((unsafe { fegetexcept() }) & 4 != 0) as i32;
-// CHECK-NEXT:     total += [[V_38]];
-// CHECK-NEXT:     let [[V_39:__v[0-9]+]]: i32 = ((unsafe { fedisableexcept(4i32) }) != -1) as i32;
-// CHECK-NEXT:     total += [[V_39]];
-// CHECK-NEXT:     let [[V_40:__v[0-9]+]]: i32 = ((unsafe { fegetexcept() }) & 4 == 0) as i32;
-// CHECK-NEXT:     total += [[V_40]];
+// CHECK-NEXT:     let [[V_0]]: i32 = ((unsafe { feenableexcept(4i32) }) != -1) as i32;
+// CHECK-NEXT:     total += [[V_0]];
+// CHECK-NEXT:     let [[V_1]]: i32 = ((unsafe { fegetexcept() }) & 4 != 0) as i32;
+// CHECK-NEXT:     total += [[V_1]];
+// CHECK-NEXT:     let [[V_2]]: i32 = ((unsafe { fedisableexcept(4i32) }) != -1) as i32;
+// CHECK-NEXT:     total += [[V_2]];
+// CHECK-NEXT:     let [[V_3]]: i32 = ((unsafe { fegetexcept() }) & 4 == 0) as i32;
+// CHECK-NEXT:     total += [[V_3]];
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: fn gnu_constant_extensions() -> i32 {
 // CHECK-NEXT:     let mut total: i32 = 0;
-// CHECK-NEXT:     let [[V_41:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_41]]
+// CHECK-NEXT:     let [[V_0]]: i32 = total;
+// CHECK-NEXT:     total = [[V_0]]
 // CHECK-NEXT:         + ((__slate_f80_to_f64(LongDouble([53, 194, 104, 33, 162, 218, 15, 201, 0, 64]))
 // CHECK-NEXT:             == 3.141592653589793f64) as i32);
-// CHECK-NEXT:     let [[V_42:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_42]]
+// CHECK-NEXT:     let [[V_20:__v[0-9]+]]: i32 = total;
+// CHECK-NEXT:     total = [[V_20]]
 // CHECK-NEXT:         + ((__slate_f80_to_f64(LongDouble([155, 74, 187, 162, 88, 84, 248, 173, 0, 64]))
 // CHECK-NEXT:             == 2.718281828459045f64) as i32);
-// CHECK-NEXT:     let [[V_43:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_43]]
+// CHECK-NEXT:     let [[V_13]]: i32 = total;
+// CHECK-NEXT:     total = [[V_13]]
 // CHECK-NEXT:         + ((__slate_f80_to_f64(
 // CHECK-NEXT:             LongDouble([132, 100, 222, 249, 51, 243, 4, 181, 255, 63]),
 // CHECK-NEXT:         ) == 1.4142135623730951f64) as i32);
-// CHECK-NEXT:     let [[V_44:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_44]]
+// CHECK-NEXT:     let [[V_2]]: i32 = total;
+// CHECK-NEXT:     total = [[V_2]]
 // CHECK-NEXT:         + ((__slate_f80_to_f64(
 // CHECK-NEXT:             LongDouble([172, 121, 207, 209, 247, 23, 114, 177, 254, 63]),
 // CHECK-NEXT:         ) == 0.6931471805599453f64) as i32);

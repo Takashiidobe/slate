@@ -60,7 +60,7 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
@@ -188,7 +188,7 @@ int main(void) {
 // CHECK-NEXT: fn r_u9() {
 // CHECK-NEXT:     let x: u16 = 421u16;
 // CHECK-NEXT:     let mut i: u32 = 0;
-// CHECK-NEXT:     '[[SLATE_BREAK_1:__slate_break_[0-9]+]]: while (i as u64) < 96 / 4 {
+// CHECK-NEXT:     '[[SLATE_BREAK_0]]: while (i as u64) < 96 / 4 {
 // CHECK-NEXT:         let l: u16 = {
 // CHECK-NEXT:             let [[T_0]] = x;
 // CHECK-NEXT:             let [[T_1]] = ((unsafe { counts.0[i as usize] }) as i64).rem_euclid(9) as u32;
@@ -208,7 +208,7 @@ int main(void) {
 // CHECK-NEXT: fn r_u33() {
 // CHECK-NEXT:     let x: u64 = 7532965393;
 // CHECK-NEXT:     let mut i: u32 = 0;
-// CHECK-NEXT:     '[[SLATE_BREAK_2:__slate_break_[0-9]+]]: while (i as u64) < 96 / 4 {
+// CHECK-NEXT:     '[[SLATE_BREAK_0]]: while (i as u64) < 96 / 4 {
 // CHECK-NEXT:         let l: u64 = {
 // CHECK-NEXT:             let [[T_0]] = x;
 // CHECK-NEXT:             let [[T_1]] = ((unsafe { counts.0[i as usize] }) as i64).rem_euclid(33) as u32;

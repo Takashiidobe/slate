@@ -1,15 +1,15 @@
 use super::*;
 use slate_parser::target_info::TargetEnvironment;
 
-fn shared_pointer(id: BindingId) -> String {
-    format!("__slate_omp_{}", id.0)
-}
-
-fn firstprivate_pointer(id: BindingId) -> String {
-    format!("__slate_omp_first_{}", id.0)
-}
-
 impl FunctionLowerer<'_, '_> {
+    fn shared_pointer(&self, id: BindingId) -> String {
+        format!("__slate_omp_{}", self.local_index(id))
+    }
+
+    fn firstprivate_pointer(&self, id: BindingId) -> String {
+        format!("__slate_omp_first_{}", self.local_index(id))
+    }
+
     pub(super) fn lower_omp_parallel(
         &mut self,
         statement: &Span<ir::Statement>,
@@ -42,7 +42,7 @@ impl FunctionLowerer<'_, '_> {
                 kind: PlaceKind::Binding(variable.binding),
                 access: Default::default(),
             };
-            let pointer = shared_pointer(variable.binding);
+            let pointer = self.shared_pointer(variable.binding);
             outer.push(Stmt::Let {
                 name: pointer.clone(),
                 mutable: false,
@@ -65,7 +65,7 @@ impl FunctionLowerer<'_, '_> {
                     kind: PlaceKind::Binding(private.original),
                     access: Default::default(),
                 };
-                let pointer = firstprivate_pointer(private.copy.id);
+                let pointer = self.firstprivate_pointer(private.copy.id);
                 outer.push(Stmt::Let {
                     name: pointer.clone(),
                     mutable: false,

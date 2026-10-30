@@ -13,9 +13,9 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT:     #[link_name = "bcopy"]
-// CHECK-NEXT:     fn __builtin_bcopy([[V_0:__v[0-9]+]]: *const (), [[V_1:__v[0-9]+]]: *mut (), [[V_2:__v[0-9]+]]: u64);
+// CHECK-NEXT:     fn __builtin_bcopy([[ARG_0]]: *const (), [[ARG_1:arg[0-9]+]]: *mut (), [[ARG_2:arg[0-9]+]]: u64);
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut buf: [i8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];

@@ -44,53 +44,61 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct [[SLATERECORD_0:__SlateRecord[0-9]+]] {
+// CHECK-NEXT: struct __SlateRecord_zero_width_bitfield_abi_c_6 {
 // CHECK-NEXT:     value: i32,
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct [[SLATERECORD_1:__SlateRecord[0-9]+]] {
+// CHECK-NEXT: struct __SlateRecord_zero_width_bitfield_abi_c_12 {
 // CHECK-NEXT:     tag: i8,
 // CHECK-NEXT:     value: i32,
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, packed)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct [[SLATERECORD_2:__SlateRecord[0-9]+]] {
+// CHECK-NEXT: struct __SlateRecord_zero_width_bitfield_abi_c_18 {
 // CHECK-NEXT:     tag: i8,
 // CHECK-NEXT:     __slate_pad_1: [u8; 3],
 // CHECK-NEXT:     value: i32,
 // CHECK-NEXT: }
-// CHECK-NEXT: fn take_aligned(value: [[SLATERECORD_0]]) -> i32 {
+// CHECK-NEXT: fn take_aligned(value: __SlateRecord_zero_width_bitfield_abi_c_6) -> i32 {
 // CHECK-NEXT:     value.value + 16
 // CHECK-NEXT: }
-// CHECK-NEXT: fn round_trip(mut value: [[SLATERECORD_1]]) -> [[SLATERECORD_1]] {
+// CHECK-NEXT: fn round_trip(
+// CHECK-NEXT:     mut value: __SlateRecord_zero_width_bitfield_abi_c_12,
+// CHECK-NEXT: ) -> __SlateRecord_zero_width_bitfield_abi_c_12 {
 // CHECK-NEXT:     value.value += value.tag as i32;
 // CHECK-NEXT:     return value;
 // CHECK-NEXT: }
-// CHECK-NEXT: fn take_packed(value: [[SLATERECORD_2]]) -> i32 {
+// CHECK-NEXT: fn take_packed(value: __SlateRecord_zero_width_bitfield_abi_c_18) -> i32 {
 // CHECK-NEXT:     (value.tag as i32) + value.value + 8
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let aligned: [[SLATERECORD_0]] = {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [[SLATERECORD_0]] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let aligned: __SlateRecord_zero_width_bitfield_abi_c_6 = {
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: __SlateRecord_zero_width_bitfield_abi_c_6 = unsafe {
+// CHECK-NEXT:             std::mem::zeroed()
+// CHECK-NEXT:         };
 // CHECK-NEXT:         [[T_0]].value = 7i32;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut middle: [[SLATERECORD_1]] = {
-// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: [[SLATERECORD_1]] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut middle: __SlateRecord_zero_width_bitfield_abi_c_12 = {
+// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: __SlateRecord_zero_width_bitfield_abi_c_12 = unsafe {
+// CHECK-NEXT:             std::mem::zeroed()
+// CHECK-NEXT:         };
 // CHECK-NEXT:         [[T_1]].tag = 3i8;
 // CHECK-NEXT:         [[T_1]].value = 20i32;
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let packed: [[SLATERECORD_2]] = {
-// CHECK-NEXT:         let mut [[T_2:__t[0-9]+]]: [[SLATERECORD_2]] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let packed: __SlateRecord_zero_width_bitfield_abi_c_18 = {
+// CHECK-NEXT:         let mut [[T_2:__t[0-9]+]]: __SlateRecord_zero_width_bitfield_abi_c_18 = unsafe {
+// CHECK-NEXT:             std::mem::zeroed()
+// CHECK-NEXT:         };
 // CHECK-NEXT:         [[T_2]].tag = 4i8;
 // CHECK-NEXT:         [[T_2]].value = 30i32;
 // CHECK-NEXT:         [[T_2]]

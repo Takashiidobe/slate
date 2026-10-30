@@ -97,23 +97,23 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn __builtin_extract_return_addr([[V_0:__v[0-9]+]]: *mut ()) -> *mut ();
-// CHECK-NEXT:     fn __builtin_frob_return_addr([[V_1:__v[0-9]+]]: *mut ()) -> *mut ();
-// CHECK-NEXT:     fn __builtin_assume_aligned([[V_2:__v[0-9]+]]: *const (), [[V_3:__v[0-9]+]]: u64, ...) -> *mut ();
-// CHECK-NEXT:     fn __builtin_expect([[V_4:__v[0-9]+]]: i64, [[V_5:__v[0-9]+]]: i64) -> i64;
-// CHECK-NEXT:     fn __builtin_expect_with_probability([[V_6:__v[0-9]+]]: i64, [[V_7:__v[0-9]+]]: i64, [[V_8:__v[0-9]+]]: f64) -> i64;
-// CHECK-NEXT:     fn __builtin_assume([[V_9:__v[0-9]+]]: bool);
-// CHECK-NEXT:     fn __builtin_prefetch([[V_10:__v[0-9]+]]: *const (), ...);
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn __builtin_extract_return_addr([[ARG_0]]: *mut ()) -> *mut ();
+// CHECK-NEXT:     fn __builtin_frob_return_addr([[ARG_0]]: *mut ()) -> *mut ();
+// CHECK-NEXT:     fn __builtin_assume_aligned([[ARG_0]]: *const (), [[ARG_1:arg[0-9]+]]: u64, ...) -> *mut ();
+// CHECK-NEXT:     fn __builtin_expect([[ARG_0]]: i64, [[ARG_1]]: i64) -> i64;
+// CHECK-NEXT:     fn __builtin_expect_with_probability([[ARG_0]]: i64, [[ARG_1]]: i64, [[ARG_2:arg[0-9]+]]: f64) -> i64;
+// CHECK-NEXT:     fn __builtin_assume([[ARG_0]]: bool);
+// CHECK-NEXT:     fn __builtin_prefetch([[ARG_0]]: *const (), ...);
 // CHECK-NEXT:     fn __builtin_unreachable();
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "llvm-intrinsic" {
 // CHECK-NEXT:     #[link_name = "llvm.frameaddress.p0"]
-// CHECK-NEXT:     fn __slate_intrinsic_2d7c29df8fdf6378([[ARG_0:arg[0-9]+]]: i32) -> *mut ();
+// CHECK-NEXT:     fn __slate_intrinsic_2d7c29df8fdf6378([[ARG_0]]: i32) -> *mut ();
 // CHECK-NEXT:     #[link_name = "llvm.trap"]
 // CHECK-NEXT:     fn __slate_intrinsic_46d8fd79c9d1f86c();
 // CHECK-NEXT:     #[link_name = "llvm.clear_cache"]
-// CHECK-NEXT:     fn __slate_intrinsic_7eb885185d29c159([[ARG_0]]: *mut (), [[ARG_1:arg[0-9]+]]: *mut ());
+// CHECK-NEXT:     fn __slate_intrinsic_7eb885185d29c159([[ARG_0]]: *mut (), [[ARG_1]]: *mut ());
 // CHECK-NEXT:     #[link_name = "llvm.debugtrap"]
 // CHECK-NEXT:     fn __slate_intrinsic_b996fac1ccf0610c();
 // CHECK-NEXT:     #[link_name = "llvm.returnaddress.p0"]
@@ -198,13 +198,13 @@ int main(void) {
 // CHECK-NEXT:     let mut value: i32 = 37;
 // CHECK-NEXT:     let address: *mut i32 = std::ptr::addr_of_mut!(value);
 // CHECK-NEXT:     let mut up: u64 = 0;
-// CHECK-NEXT:     let [[V_11:__v[0-9]+]]: u64 = 15u64;
-// CHECK-NEXT:     up = 65u64.wrapping_add([[V_11]]) & ![[V_11]];
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: u64 = 15u64;
+// CHECK-NEXT:     up = 65u64.wrapping_add([[V_0]]) & ![[V_0]];
 // CHECK-NEXT:     let mut down: u64 = 0;
 // CHECK-NEXT:     down = 64u64;
-// CHECK-NEXT:     let [[V_12:__v[0-9]+]]: u64 = 15u64;
+// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: u64 = 15u64;
 // CHECK-NEXT:     24 + 24 + 12 + ((address == std::ptr::addr_of_mut!(value)) as i32)
-// CHECK-NEXT:         + ((up as u32) as i32) + ((down as u32) as i32) + ((up & [[V_12]] == 0) as i32)
+// CHECK-NEXT:         + ((up as u32) as i32) + ((down as u32) as i32) + ((up & [[V_1]] == 0) as i32)
 // CHECK-NEXT:         + ((1i32 != 0) as i32)
 // CHECK-NEXT: }
 // CHECK-NEXT: fn gnu_builtin_source() -> i32 {

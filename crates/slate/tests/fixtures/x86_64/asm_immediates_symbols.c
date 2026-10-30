@@ -23,7 +23,7 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
@@ -91,7 +91,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_5:__t[0-9]+]]: u64;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "leaq {1}(%rip), {0:r}", lateout(reg) [[T_5]], sym __slate_asm_string_12,
+// CHECK-NEXT:             "leaq {1}(%rip), {0:r}", lateout(reg) [[T_5]], sym __slate_asm_string_main_0,
 // CHECK-NEXT:             options(pure, nomem, nostack, att_syntax)
 // CHECK-NEXT:         );
 // CHECK-NEXT:         text = unsafe { std::mem::transmute::<u64, *const i8>([[T_5]] as u64) };
@@ -110,7 +110,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
-// CHECK-NEXT: static __slate_asm_string_12: [u8; 6] = *b"hello\0";
+// CHECK-NEXT: static __slate_asm_string_main_0: [u8; 6] = *b"hello\0";
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

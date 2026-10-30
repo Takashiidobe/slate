@@ -470,23 +470,23 @@ fn jump(index: usize) -> Vec<Stmt> {
     ]
 }
 
-fn slot_name(id: BindingId) -> String {
-    format!("__slate_slot_{}", id.0)
-}
-
-pub(super) fn slot_pointer(id: BindingId) -> Expr {
-    Expr::Var(slot_name(id).into())
-}
-
-fn vla_name(id: BindingId) -> String {
-    format!("__slate_vla_{}", id.0)
-}
-
-pub(super) fn vla_storage(id: BindingId) -> Expr {
-    Expr::Var(vla_name(id).into())
-}
-
 impl FunctionLowerer<'_, '_> {
+    fn slot_name(&self, id: BindingId) -> String {
+        format!("__slate_slot_{}", self.local_index(id))
+    }
+
+    pub(super) fn slot_pointer(&self, id: BindingId) -> Expr {
+        Expr::Var(self.slot_name(id).into())
+    }
+
+    fn vla_name(&self, id: BindingId) -> String {
+        format!("__slate_vla_{}", self.local_index(id))
+    }
+
+    pub(super) fn vla_storage(&self, id: BindingId) -> Expr {
+        Expr::Var(self.vla_name(id).into())
+    }
+
     pub(super) fn lower_dispatch(&mut self, statements: &[Statement]) -> Result<Vec<Stmt>> {
         let mut graph = Graph::default();
         collect_labels(statements, &mut graph.targets);
@@ -506,7 +506,7 @@ impl FunctionLowerer<'_, '_> {
             if self.tables.variably_modified(ir_ty) {
                 storage_positions.insert(id, lowered.len());
                 lowered.push(Stmt::Let {
-                    name: vla_name(id),
+                    name: self.vla_name(id),
                     mutable: true,
                     ty: Some(self.vla_vec_type(ir_ty)?),
                     init: Some(Expr::Call {
@@ -520,12 +520,12 @@ impl FunctionLowerer<'_, '_> {
             let ty = self.lower_type(ir_ty)?;
             let stored = match self.tables.over_alignment(ir_ty, alignment) {
                 Some(alignment) => {
-                    let name = binding_name(id, &self.tables.bindings);
+                    let name = self.binding_name(id);
                     self.align_wrapped(&name, alignment, ty.clone())?
                 }
                 None => ty.clone(),
             };
-            let storage = binding_name(id, &self.tables.bindings).to_string();
+            let storage = self.binding_name(id).to_string();
             storage_positions.insert(id, lowered.len());
             lowered.push(Stmt::Let {
                 name: storage.clone(),
@@ -545,7 +545,7 @@ impl FunctionLowerer<'_, '_> {
                 inner: Box::new(ty),
             };
             lowered.push(Stmt::Let {
-                name: slot_name(id),
+                name: self.slot_name(id),
                 mutable: false,
                 ty: Some(pointer.clone()),
                 init: Some(Expr::Cast {
@@ -612,13 +612,13 @@ impl FunctionLowerer<'_, '_> {
                                     && self.tables.variably_modified(&variable.ty) =>
                             {
                                 vec![Stmt::Assign {
-                                    target: vla_storage(variable.id),
+                                    target: self.vla_storage(variable.id),
                                     value: self.vla_buffer(variable)?.1,
                                 }]
                             }
                             Some((id, Some(initializer))) => vec![Stmt::Expr(Expr::Call {
                                 func: Box::new(Expr::Var("std::ptr::write".into())),
-                                args: vec![slot_pointer(id), self.lower_value(initializer)?],
+                                args: vec![self.slot_pointer(id), self.lower_value(initializer)?],
                                 binding: CallBinding::Generated,
                             })],
                             Some((_, None))
@@ -628,12 +628,12 @@ impl FunctionLowerer<'_, '_> {
                                 if let Some(value) = self.auto_init_value(&variable.ty, auto)? {
                                     vec![Stmt::Expr(Expr::Call {
                                         func: Box::new(Expr::Var("std::ptr::write".into())),
-                                        args: vec![slot_pointer(variable.id), value],
+                                        args: vec![self.slot_pointer(variable.id), value],
                                         binding: CallBinding::Generated,
                                     })]
                                 } else {
                                     let target = Expr::Cast {
-                                        expr: Box::new(slot_pointer(variable.id)),
+                                        expr: Box::new(self.slot_pointer(variable.id)),
                                         ty: rust::Type::Ptr {
                                             mutable: true,
                                             inner: Box::new(rust::Type::Prim(Prim::U8)),

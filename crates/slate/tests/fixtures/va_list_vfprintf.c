@@ -19,9 +19,9 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     static mut stdout: *mut _IO_FILE;
 // CHECK-NEXT:     fn vfprintf(
-// CHECK-NEXT:         __s: *mut _IO_FILE,
-// CHECK-NEXT:         __format: *const i8,
-// CHECK-NEXT:         __arg: core::ffi::VaList<'static>,
+// CHECK-NEXT:         [[ARG_0:arg[0-9]+]]: *mut _IO_FILE,
+// CHECK-NEXT:         [[ARG_1:arg[0-9]+]]: *const i8,
+// CHECK-NEXT:         [[ARG_2:arg[0-9]+]]: core::ffi::VaList<'static>,
 // CHECK-NEXT:     ) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {

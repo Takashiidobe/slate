@@ -45,11 +45,11 @@ int main(void) {
 // CHECK-NEXT: #![feature(simd_ffi)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "llvm-intrinsic" {
 // CHECK-NEXT:     #[link_name = "llvm.vector.reduce.add.v4i32"]
-// CHECK-NEXT:     fn __slate_intrinsic_1d26b5d36a7eb498([[ARG_0:arg[0-9]+]]: std::simd::Simd<i32, 4>) -> i32;
+// CHECK-NEXT:     fn __slate_intrinsic_1d26b5d36a7eb498([[ARG_0]]: std::simd::Simd<i32, 4>) -> i32;
 // CHECK-NEXT:     #[link_name = "llvm.vector.reduce.fmax.v4f32"]
 // CHECK-NEXT:     fn __slate_intrinsic_26093aef5960597([[ARG_0]]: std::simd::Simd<f32, 4>) -> f32;
 // CHECK-NEXT:     #[link_name = "llvm.vector.reduce.xor.v4i32"]

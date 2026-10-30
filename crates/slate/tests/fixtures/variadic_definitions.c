@@ -91,7 +91,7 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
@@ -153,8 +153,8 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     for i in 0..pairs {
-// CHECK-NEXT:         let [[V_1:__v[0-9]+]]: i32 = next_pair(unsafe { &mut (*std::ptr::addr_of_mut!(ap)) });
-// CHECK-NEXT:         total += [[V_1]];
+// CHECK-NEXT:         let [[V_0]]: i32 = next_pair(unsafe { &mut (*std::ptr::addr_of_mut!(ap)) });
+// CHECK-NEXT:         total += [[V_0]];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
@@ -168,13 +168,13 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut total: i64 = 0;
 // CHECK-NEXT:     loop {
-// CHECK-NEXT:         let [[V_2:__v[0-9]+]]: i32 = count;
-// CHECK-NEXT:         count = [[V_2]] - 1;
-// CHECK-NEXT:         if [[V_2]] <= 0 {
+// CHECK-NEXT:         let [[V_1:__v[0-9]+]]: i32 = count;
+// CHECK-NEXT:         count = [[V_1]] - 1;
+// CHECK-NEXT:         if [[V_1]] <= 0 {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         let [[V_3:__v[0-9]+]]: i64 = unsafe { ap.next_arg::<i64>() };
-// CHECK-NEXT:         total += [[V_3]];
+// CHECK-NEXT:         let [[V_0]]: i64 = unsafe { ap.next_arg::<i64>() };
+// CHECK-NEXT:         total += [[V_0]];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }

@@ -34,13 +34,13 @@ int main(void) {
 // CHECK-NEXT: #![feature(thread_local)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT:     fn thrd_create(
-// CHECK-NEXT:         __thr: *mut u64,
-// CHECK-NEXT:         __func: Option<unsafe extern "C-unwind" fn(*mut ()) -> i32>,
-// CHECK-NEXT:         __arg: *mut (),
+// CHECK-NEXT:         [[ARG_0]]: *mut u64,
+// CHECK-NEXT:         [[ARG_1:arg[0-9]+]]: Option<unsafe extern "C-unwind" fn(*mut ()) -> i32>,
+// CHECK-NEXT:         [[ARG_2:arg[0-9]+]]: *mut (),
 // CHECK-NEXT:     ) -> i32;
-// CHECK-NEXT:     fn thrd_join(__thr: u64, __res: *mut i32) -> i32;
+// CHECK-NEXT:     fn thrd_join([[ARG_0]]: u64, [[ARG_1]]: *mut i32) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[thread_local]
 // CHECK-NEXT: static mut file_value: i32 = 5;

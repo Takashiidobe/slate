@@ -60,7 +60,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: //! { dg-options "-fms-extensions" }
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn loop_label(mut n: i32) -> i32 {
@@ -75,28 +75,28 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn forward(mut v: i32) -> i32 {
-// CHECK-NEXT:     let mut [[V_1:__v[0-9]+]]: u32 = 0;
+// CHECK-NEXT:     let mut [[V_0]]: u32 = 0;
 // CHECK-NEXT:     let mut out: i32 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u32;
 // CHECK-NEXT:         core::arch::asm!("mov eax, [{0}]\ntest eax, eax\njz 2f\nmov eax, 100\n2:\nmov [{1}], eax", in(reg) std::ptr::addr_of!(v), in(reg) std::ptr::addr_of_mut!(out), out("ax") [[T_0]]);
-// CHECK-NEXT:         [[V_1]] = unsafe { std::mem::transmute::<u32, u32>([[T_0]] as u32) };
+// CHECK-NEXT:         [[V_0]] = unsafe { std::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     out
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn two_blocks(mut n: i32) -> i32 {
-// CHECK-NEXT:     let mut [[V_2:__v[0-9]+]]: u32 = 0;
+// CHECK-NEXT:     let mut [[V_0]]: u32 = 0;
 // CHECK-NEXT:     let mut out: i32 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u32;
 // CHECK-NEXT:         core::arch::asm!("mov ecx, [{0}]\nxor eax, eax\n2:\ninc eax\ndec ecx\njnz 2b\nmov [{1}], eax", in(reg) std::ptr::addr_of!(n), in(reg) std::ptr::addr_of_mut!(out), out("ax") [[T_0]], out("cx") _);
-// CHECK-NEXT:         [[V_2]] = unsafe { std::mem::transmute::<u32, u32>([[T_0]] as u32) };
+// CHECK-NEXT:         [[V_0]] = unsafe { std::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]]: u32;
 // CHECK-NEXT:         core::arch::asm!("mov ecx, 3\n2:\ninc dword ptr [{0}]\ndec ecx\njnz 2b", in(reg) std::ptr::addr_of_mut!(out), lateout("ax") [[T_1]], out("cx") _);
-// CHECK-NEXT:         [[V_2]] = unsafe { std::mem::transmute::<u32, u32>([[T_1]] as u32) };
+// CHECK-NEXT:         [[V_0]] = unsafe { std::mem::transmute::<u32, u32>([[T_1]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     out
 // CHECK-NEXT: }

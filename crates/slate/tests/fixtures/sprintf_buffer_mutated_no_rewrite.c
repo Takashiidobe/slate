@@ -12,8 +12,8 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn sprintf(__s: *mut i8, __format: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn puts(__s: *const i8) -> i32;
+// CHECK-NEXT:     fn sprintf([[ARG_0:arg[0-9]+]]: *mut i8, [[ARG_1:arg[0-9]+]]: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn puts([[ARG_0]]: *const i8) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;

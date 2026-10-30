@@ -451,13 +451,13 @@ impl FunctionLowerer<'_, '_> {
         if self.dispatch_bindings.contains(&id) {
             return Expr::Unary {
                 op: rust::UnaryOp::Deref,
-                expr: Box::new(control_flow::slot_pointer(id)),
+                expr: Box::new(self.slot_pointer(id)),
             };
         }
         if self.dispatch_vlas.contains(&id) {
-            return control_flow::vla_storage(id);
+            return self.vla_storage(id);
         }
-        let binding = Expr::Var(binding_name(id, &self.tables.bindings).as_str().into());
+        let binding = Expr::Var(self.binding_name(id).as_str().into());
         if let Some(record) = self.tables.flexible_globals.get(&id) {
             return Expr::Unary {
                 op: rust::UnaryOp::Deref,
@@ -582,7 +582,12 @@ impl FunctionLowerer<'_, '_> {
         storage: ir::StorageDuration,
         initializer: &ir::Value,
     ) -> Result<Expr> {
-        let name = format!("__slate_compound_{}", object.0);
+        let index = self.local_index(object);
+        let name = if matches!(storage, ir::StorageDuration::Static) {
+            format!("__slate_compound_{}_{index}", self.owner)
+        } else {
+            format!("__slate_compound_{index}")
+        };
         let ty = self.lower_type(&initializer.ty)?;
         let init = self.lower_value(initializer)?;
         if matches!(storage, ir::StorageDuration::Static) {

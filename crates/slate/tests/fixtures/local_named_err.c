@@ -26,23 +26,23 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn describe(code: i32) -> *const i8 {
-// CHECK-NEXT:     let mut [[ERR_0:Err_[0-9]+]]: *const i8 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut Err__0: *const i8 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     if code == 0 {
-// CHECK-NEXT:         [[ERR_0]] = c"ok".as_ptr();
+// CHECK-NEXT:         Err__0 = c"ok".as_ptr();
 // CHECK-NEXT:     } else {
-// CHECK-NEXT:         [[ERR_0]] = c"bad".as_ptr();
+// CHECK-NEXT:         Err__0 = c"bad".as_ptr();
 // CHECK-NEXT:     }
-// CHECK-NEXT:     [[ERR_0]]
+// CHECK-NEXT:     Err__0
 // CHECK-NEXT: }
-// CHECK-NEXT: fn pick([[OK_0:Ok_[0-9]+]]: i32, [[NONE_0:None_[0-9]+]]: i32) -> i32 {
-// CHECK-NEXT:     let [[SOME_0:Some_[0-9]+]]: i32 = [[OK_0]] + [[NONE_0]];
-// CHECK-NEXT:     [[SOME_0]] * 2
+// CHECK-NEXT: fn pick(Ok__0: i32, None__1: i32) -> i32 {
+// CHECK-NEXT:     let Some__2: i32 = Ok__0 + None__1;
+// CHECK-NEXT:     Some__2 * 2
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());

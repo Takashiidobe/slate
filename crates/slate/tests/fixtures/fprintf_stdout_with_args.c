@@ -11,8 +11,8 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     static mut stdout: *mut _IO_FILE;
-// CHECK-NEXT:     fn fprintf(__stream: *mut _IO_FILE, __format: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn fputs(__s: *const i8, __stream: *mut _IO_FILE) -> i32;
+// CHECK-NEXT:     fn fprintf([[ARG_0:arg[0-9]+]]: *mut _IO_FILE, [[ARG_1:arg[0-9]+]]: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn fputs([[ARG_0]]: *const i8, [[ARG_1]]: *mut _IO_FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;

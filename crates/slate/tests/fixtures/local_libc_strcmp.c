@@ -25,8 +25,8 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn strcmp(__s1: *const i8, __s2: *const i8) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn strcmp([[ARG_0]]: *const i8, [[ARG_1:arg[0-9]+]]: *const i8) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn cmp_texts(a: &str, b: &str) -> i32 {
 // CHECK-NEXT:     let mut sa: i32 = 0;

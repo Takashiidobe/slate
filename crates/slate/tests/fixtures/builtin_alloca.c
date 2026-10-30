@@ -229,13 +229,13 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn memcpy(__dest: *mut (), __src: *const (), __n: u64) -> *mut ();
-// CHECK-NEXT:     fn memset(__s: *mut (), __c: i32, __n: u64) -> *mut ();
-// CHECK-NEXT:     fn strcmp(__s1: *const i8, __s2: *const i8) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn memcpy([[ARG_0]]: *mut (), [[ARG_1:arg[0-9]+]]: *const (), [[ARG_2:arg[0-9]+]]: u64) -> *mut ();
+// CHECK-NEXT:     fn memset([[ARG_0]]: *mut (), [[ARG_1]]: i32, [[ARG_2]]: u64) -> *mut ();
+// CHECK-NEXT:     fn strcmp([[ARG_0]]: *const i8, [[ARG_1]]: *const i8) -> i32;
 // CHECK-NEXT:     #[link_name = "alloca"]
-// CHECK-NEXT:     fn __builtin_alloca([[V_0:__v[0-9]+]]: u64) -> *mut ();
-// CHECK-NEXT:     fn __builtin_alloca_uninitialized([[V_1:__v[0-9]+]]: u64) -> *mut ();
+// CHECK-NEXT:     fn __builtin_alloca([[ARG_0]]: u64) -> *mut ();
+// CHECK-NEXT:     fn __builtin_alloca_uninitialized([[ARG_0]]: u64) -> *mut ();
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
@@ -336,12 +336,12 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn ternary_alloca(scratch: *mut i8, n: i32) -> i32 {
 // CHECK-NEXT:     let __slate_alloca_mark = __slate_alloca::Mark::new();
-// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: *mut () = if !scratch.is_null() {
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut () = if !scratch.is_null() {
 // CHECK-NEXT:         scratch as *mut ()
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         __slate_alloca::alloca(((n as i64) as u64) as usize, 16usize) as *mut ()
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let buf: *mut i8 = [[V_2]] as *mut i8;
+// CHECK-NEXT:     let buf: *mut i8 = [[V_0]] as *mut i8;
 // CHECK-NEXT:     for i in 0..n {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *buf.offset(i as isize) = i as i8;
@@ -406,8 +406,8 @@ int main(void) {
 // CHECK-NEXT: fn repeated_large() -> i64 {
 // CHECK-NEXT:     let mut total: i64 = 0;
 // CHECK-NEXT:     for i in 0i32..4i32 {
-// CHECK-NEXT:         let [[V_3:__v[0-9]+]]: i64 = large_alloca(1i32);
-// CHECK-NEXT:         total += [[V_3]];
+// CHECK-NEXT:         let [[V_0]]: i64 = large_alloca(1i32);
+// CHECK-NEXT:         total += [[V_0]];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }

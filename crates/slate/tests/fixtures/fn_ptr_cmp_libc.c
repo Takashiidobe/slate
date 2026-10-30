@@ -17,7 +17,7 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn malloc(__size: u64) -> *mut ();
+// CHECK-NEXT:     fn malloc([[ARG_0:arg[0-9]+]]: u64) -> *mut ();
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]

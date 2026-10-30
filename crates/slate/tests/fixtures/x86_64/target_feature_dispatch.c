@@ -115,16 +115,16 @@ int main(void) {
 // CHECK-NEXT: #![feature(simd_ffi)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn memset(__s: *mut (), __c: i32, __n: u64) -> *mut ();
-// CHECK-NEXT:     fn __builtin_cpu_supports([[V_0:__v[0-9]+]]: *const i8) -> bool;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn memset([[ARG_0]]: *mut (), [[ARG_1:arg[0-9]+]]: i32, [[ARG_2:arg[0-9]+]]: u64) -> *mut ();
+// CHECK-NEXT:     fn __builtin_cpu_supports([[ARG_0]]: *const i8) -> bool;
 // CHECK-NEXT:     fn __builtin_cpu_init();
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "llvm-intrinsic" {
 // CHECK-NEXT:     #[link_name = "llvm.x86.avx2.pshuf.b"]
 // CHECK-NEXT:     fn __slate_intrinsic_43a5f143669e69c1(
-// CHECK-NEXT:         [[ARG_0:arg[0-9]+]]: std::simd::Simd<u8, 32>,
-// CHECK-NEXT:         [[ARG_1:arg[0-9]+]]: std::simd::Simd<u8, 32>,
+// CHECK-NEXT:         [[ARG_0]]: std::simd::Simd<u8, 32>,
+// CHECK-NEXT:         [[ARG_1]]: std::simd::Simd<u8, 32>,
 // CHECK-NEXT:     ) -> std::simd::Simd<u8, 32>;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
@@ -205,9 +205,7 @@ int main(void) {
 // CHECK-NEXT:     __b01: i8,
 // CHECK-NEXT:     __b00: i8,
 // CHECK-NEXT: ) -> std::simd::Simd<i64, 4> {
-// CHECK-NEXT:     let mut [[SLATE_COMPOUND_0:__slate_compound_[0-9]+]]: std::simd::Simd<i8, 32> = unsafe {
-// CHECK-NEXT:         std::mem::zeroed()
-// CHECK-NEXT:     };
+// CHECK-NEXT:     let mut [[SLATE_COMPOUND_0:__slate_compound_[0-9]+]]: std::simd::Simd<i8, 32> = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         std::mem::transmute::<
 // CHECK-NEXT:             std::simd::Simd<i8, 32>,
@@ -605,12 +603,12 @@ int main(void) {
 // CHECK-NEXT:             ^ i << 40i32;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut bits: i64 = 0;
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i64 = if std::arch::is_x86_feature_detected!("popcnt") {
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i64 = if std::arch::is_x86_feature_detected!("popcnt") {
 // CHECK-NEXT:         unsafe { popcount_hw(words.0.as_mut_ptr() as *const u64, 37u64) }
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         popcount_scalar(&words.0)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     bits = [[V_1]];
+// CHECK-NEXT:     bits = [[V_0]];
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"bits %lld %lld\n".as_ptr(), bits, popcount_scalar(&words.0)) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

@@ -37,19 +37,19 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT:     fn bsearch(
-// CHECK-NEXT:         __key: *const (),
-// CHECK-NEXT:         __base: *const (),
-// CHECK-NEXT:         __nmemb: u64,
-// CHECK-NEXT:         __size: u64,
-// CHECK-NEXT:         __compar: Option<unsafe extern "C-unwind" fn(*const (), *const ()) -> i32>,
+// CHECK-NEXT:         [[ARG_0]]: *const (),
+// CHECK-NEXT:         [[ARG_1:arg[0-9]+]]: *const (),
+// CHECK-NEXT:         [[ARG_2:arg[0-9]+]]: u64,
+// CHECK-NEXT:         [[ARG_3:arg[0-9]+]]: u64,
+// CHECK-NEXT:         [[ARG_4:arg[0-9]+]]: Option<unsafe extern "C-unwind" fn(*const (), *const ()) -> i32>,
 // CHECK-NEXT:     ) -> *mut ();
 // CHECK-NEXT:     fn qsort(
-// CHECK-NEXT:         __base: *mut (),
-// CHECK-NEXT:         __nmemb: u64,
-// CHECK-NEXT:         __size: u64,
-// CHECK-NEXT:         __compar: Option<unsafe extern "C-unwind" fn(*const (), *const ()) -> i32>,
+// CHECK-NEXT:         [[ARG_0]]: *mut (),
+// CHECK-NEXT:         [[ARG_1]]: u64,
+// CHECK-NEXT:         [[ARG_2]]: u64,
+// CHECK-NEXT:         [[ARG_3]]: Option<unsafe extern "C-unwind" fn(*const (), *const ()) -> i32>,
 // CHECK-NEXT:     );
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]

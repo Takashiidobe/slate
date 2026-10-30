@@ -21,7 +21,7 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT:     safe fn __slate_f80_add(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_sub(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_mul(__a: LongDouble, __b: LongDouble) -> LongDouble;
@@ -209,9 +209,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut total: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 // CHECK-NEXT:     for i in 0..count {
-// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: LongDouble = unsafe {
-// CHECK-NEXT:             __slate_f80_va_arg(std::ptr::addr_of_mut!(ap))
-// CHECK-NEXT:         };
+// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: LongDouble = unsafe { __slate_f80_va_arg(std::ptr::addr_of_mut!(ap)) };
 // CHECK-NEXT:         total += [[V_0]];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total

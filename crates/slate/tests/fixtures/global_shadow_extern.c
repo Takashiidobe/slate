@@ -43,7 +43,7 @@ int late = 99;
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
@@ -66,8 +66,8 @@ int late = 99;
 // CHECK-NEXT:         *[[V_0]] = *[[V_0]] + by;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
-// CHECK-NEXT: fn shadow_param([[TOTAL_0:total_[0-9]+]]: i32) -> i32 {
-// CHECK-NEXT:     [[TOTAL_0]] * 2
+// CHECK-NEXT: fn shadow_param(total__0: i32) -> i32 {
+// CHECK-NEXT:     total__0 * 2
 // CHECK-NEXT: }
 // CHECK-NEXT: fn record(t: *mut Tally, weight: i64) {
 // CHECK-NEXT:     unsafe {
@@ -79,9 +79,9 @@ int late = 99;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let before: i32 = unsafe { total };
-// CHECK-NEXT:     let mut [[TOTAL_1:total_[0-9]+]]: i32 = 3;
-// CHECK-NEXT:     bump(std::ptr::addr_of_mut!([[TOTAL_1]]), 4i32);
-// CHECK-NEXT:     println!("local {}", [[TOTAL_1]]);
+// CHECK-NEXT:     let mut total__0: i32 = 3;
+// CHECK-NEXT:     bump(std::ptr::addr_of_mut!(total__0), 4i32);
+// CHECK-NEXT:     println!("local {}", total__0);
 // CHECK-NEXT:     bump(unsafe { std::ptr::addr_of_mut!(total) }, 5i32);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         scale = 7;

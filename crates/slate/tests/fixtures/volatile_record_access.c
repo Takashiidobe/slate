@@ -36,7 +36,7 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
@@ -51,13 +51,13 @@ int main(void) {
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct State {
 // CHECK-NEXT:     before: i32,
-// CHECK-NEXT:     [[SLATE_ANON_0:__slate_anon_[0-9]+]]: [[SLATERECORD_0:__SlateRecord[0-9]+]],
+// CHECK-NEXT:     [[SLATE_ANON_0:__slate_anon_[0-9]+]]: __SlateRecord_volatile_record_access_c_6,
 // CHECK-NEXT:     counters: [u16; 3],
 // CHECK-NEXT:     pointer: *mut i32,
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: union [[SLATERECORD_0]] {
+// CHECK-NEXT: union __SlateRecord_volatile_record_access_c_6 {
 // CHECK-NEXT:     interrupted: i32,
 // CHECK-NEXT:     padding: f64,
 // CHECK-NEXT: }

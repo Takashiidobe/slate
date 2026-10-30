@@ -47,12 +47,12 @@ int main(void) {
 // CHECK-NEXT: #![feature(simd_ffi)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "llvm-intrinsic" {
 // CHECK-NEXT:     #[link_name = "llvm.x86.ssse3.pshuf.b.128"]
 // CHECK-NEXT:     fn __slate_intrinsic_2d3482082e0b2cf1(
-// CHECK-NEXT:         [[ARG_0:arg[0-9]+]]: std::simd::Simd<u8, 16>,
+// CHECK-NEXT:         [[ARG_0]]: std::simd::Simd<u8, 16>,
 // CHECK-NEXT:         [[ARG_1:arg[0-9]+]]: std::simd::Simd<u8, 16>,
 // CHECK-NEXT:     ) -> std::simd::Simd<u8, 16>;
 // CHECK-NEXT: }
@@ -137,14 +137,14 @@ int main(void) {
 // CHECK-NEXT:     __b1: i8,
 // CHECK-NEXT:     __b0: i8,
 // CHECK-NEXT: ) -> std::simd::Simd<i64, 2> {
-// CHECK-NEXT:     let mut [[SLATE_COMPOUND_1:__slate_compound_[0-9]+]]: std::simd::Simd<i8, 16> = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut [[SLATE_COMPOUND_0]]: std::simd::Simd<i8, 16> = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         std::mem::transmute::<
 // CHECK-NEXT:             std::simd::Simd<i8, 16>,
 // CHECK-NEXT:             std::simd::Simd<i64, 2>,
 // CHECK-NEXT:         >(unsafe {
 // CHECK-NEXT:             *{
-// CHECK-NEXT:                 [[SLATE_COMPOUND_1]] = std::simd::Simd::from_array([
+// CHECK-NEXT:                 [[SLATE_COMPOUND_0]] = std::simd::Simd::from_array([
 // CHECK-NEXT:                     __b0,
 // CHECK-NEXT:                     __b1,
 // CHECK-NEXT:                     __b2,
@@ -162,7 +162,7 @@ int main(void) {
 // CHECK-NEXT:                     __b14,
 // CHECK-NEXT:                     __b15,
 // CHECK-NEXT:                 ]);
-// CHECK-NEXT:                 std::ptr::addr_of_mut!([[SLATE_COMPOUND_1]])
+// CHECK-NEXT:                 std::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
 // CHECK-NEXT:             }
 // CHECK-NEXT:         })
 // CHECK-NEXT:     };
@@ -196,11 +196,11 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "sse2")]
 // CHECK-NEXT: unsafe fn _mm_setzero_si128() -> std::simd::Simd<i64, 2> {
-// CHECK-NEXT:     let mut [[SLATE_COMPOUND_2:__slate_compound_[0-9]+]]: std::simd::Simd<i64, 2> = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut [[SLATE_COMPOUND_0]]: std::simd::Simd<i64, 2> = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         *{
-// CHECK-NEXT:             [[SLATE_COMPOUND_2]] = std::simd::Simd::from_array([0i64, 0i64]);
-// CHECK-NEXT:             std::ptr::addr_of_mut!([[SLATE_COMPOUND_2]])
+// CHECK-NEXT:             [[SLATE_COMPOUND_0]] = std::simd::Simd::from_array([0i64, 0i64]);
+// CHECK-NEXT:             std::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -297,14 +297,14 @@ int main(void) {
 // CHECK-NEXT:     __i6: i32,
 // CHECK-NEXT:     __i7: i32,
 // CHECK-NEXT: ) -> std::simd::Simd<i64, 4> {
-// CHECK-NEXT:     let mut [[SLATE_COMPOUND_3:__slate_compound_[0-9]+]]: std::simd::Simd<i32, 8> = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut [[SLATE_COMPOUND_0]]: std::simd::Simd<i32, 8> = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         std::mem::transmute::<
 // CHECK-NEXT:             std::simd::Simd<i32, 8>,
 // CHECK-NEXT:             std::simd::Simd<i64, 4>,
 // CHECK-NEXT:         >(unsafe {
 // CHECK-NEXT:             *{
-// CHECK-NEXT:                 [[SLATE_COMPOUND_3]] = std::simd::Simd::from_array([
+// CHECK-NEXT:                 [[SLATE_COMPOUND_0]] = std::simd::Simd::from_array([
 // CHECK-NEXT:                     __i7,
 // CHECK-NEXT:                     __i6,
 // CHECK-NEXT:                     __i5,
@@ -314,7 +314,7 @@ int main(void) {
 // CHECK-NEXT:                     __i1,
 // CHECK-NEXT:                     __i0,
 // CHECK-NEXT:                 ]);
-// CHECK-NEXT:                 std::ptr::addr_of_mut!([[SLATE_COMPOUND_3]])
+// CHECK-NEXT:                 std::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
 // CHECK-NEXT:             }
 // CHECK-NEXT:         })
 // CHECK-NEXT:     };

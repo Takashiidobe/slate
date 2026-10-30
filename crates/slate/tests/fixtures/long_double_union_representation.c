@@ -18,7 +18,7 @@ int main(void) { printf("%d\n", convert(6.75L)); }
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT:     safe fn __slate_f80_add(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_sub(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_mul(__a: LongDouble, __b: LongDouble) -> LongDouble;
@@ -188,12 +188,14 @@ int main(void) { printf("%d\n", convert(6.75L)); }
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: union [[SLATERECORD_0:__SlateRecord[0-9]+]] {
+// CHECK-NEXT: union __SlateRecord_long_double_union_representation_c_8 {
 // CHECK-NEXT:     f80: LongDouble,
 // CHECK-NEXT:     u64: [u64; 2],
 // CHECK-NEXT: }
 // CHECK-NEXT: fn convert(value: LongDouble) -> i32 {
-// CHECK-NEXT:     let mut bits: [[SLATERECORD_0]] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut bits: __SlateRecord_long_double_union_representation_c_8 = unsafe {
+// CHECK-NEXT:         std::mem::zeroed()
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         bits.u64[0] = 0;
 // CHECK-NEXT:     }

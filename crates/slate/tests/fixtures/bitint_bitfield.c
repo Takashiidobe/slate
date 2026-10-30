@@ -84,7 +84,7 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
@@ -442,9 +442,7 @@ int main(void) {
 // CHECK-NEXT:     m.__slate_bits_1.__set_small([[T_10]]);
 // CHECK-NEXT:     dump(unsafe { &mut (*std::ptr::addr_of_mut!(m)) });
 // CHECK-NEXT:     let mut copy: Mixed = m;
-// CHECK-NEXT:     let mut [[V_4:__v[0-9]+]]: bitint::BInt<100, 2, 16, bitint::A8> = copy
-// CHECK-NEXT:         .__slate_bits_0
-// CHECK-NEXT:         .__get_mid();
+// CHECK-NEXT:     let mut [[V_4:__v[0-9]+]]: bitint::BInt<100, 2, 16, bitint::A8> = copy.__slate_bits_0.__get_mid();
 // CHECK-NEXT:     let [[V_5:__v[0-9]+]]: bitint::BInt<100, 2, 16, bitint::A8> = [[V_4]]
 // CHECK-NEXT:         .wrapping_add(<bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(1 as i128));
 // CHECK-NEXT:     copy.__slate_bits_0.__set_mid([[V_5]]);

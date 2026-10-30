@@ -25,8 +25,8 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: //! { dg-options "-fcx-fortran-rules" }
 // CHECK-NEXT: unsafe extern "C" {
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:     fn printf(__format: *const i8, ...) -> i32;
-// I686-UNKNOWN-LINUX-GNU-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
+// I686-UNKNOWN-LINUX-GNU-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // I686-UNKNOWN-LINUX-GNU-NEXT:     safe fn __slate_f80_add(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // I686-UNKNOWN-LINUX-GNU-NEXT:     safe fn __slate_f80_sub(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // I686-UNKNOWN-LINUX-GNU-NEXT:     safe fn __slate_f80_mul(__a: LongDouble, __b: LongDouble) -> LongDouble;
@@ -137,7 +137,7 @@ int main(void) {
 // I686-UNKNOWN-LINUX-GNU-NEXT:     safe fn __slate_f80_to_f32(__a: LongDouble) -> f32;
 // I686-UNKNOWN-LINUX-GNU-NEXT:     safe fn __slate_f80_to_f64(__a: LongDouble) -> f64;
 // I686-UNKNOWN-LINUX-GNU-NEXT:     safe fn __slate_f80_to_bool(__a: LongDouble) -> bool;
-// AARCH64-UNKNOWN-LINUX-GNU-NEXT:     fn printf(__format: *const u8, ...) -> i32;
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const u8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {

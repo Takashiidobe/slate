@@ -31,11 +31,11 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn strncmp(__s1: *const i8, __s2: *const i8, __n: u64) -> i32;
-// CHECK-NEXT:     fn strcspn(__s: *const i8, __reject: *const i8) -> u64;
-// CHECK-NEXT:     fn strspn(__s: *const i8, __accept: *const i8) -> u64;
-// CHECK-NEXT:     fn strnlen(__string: *const i8, __maxlen: u64) -> u64;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn strncmp([[ARG_0]]: *const i8, [[ARG_1:arg[0-9]+]]: *const i8, [[ARG_2:arg[0-9]+]]: u64) -> i32;
+// CHECK-NEXT:     fn strcspn([[ARG_0]]: *const i8, [[ARG_1]]: *const i8) -> u64;
+// CHECK-NEXT:     fn strspn([[ARG_0]]: *const i8, [[ARG_1]]: *const i8) -> u64;
+// CHECK-NEXT:     fn strnlen([[ARG_0]]: *const i8, [[ARG_1]]: u64) -> u64;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;

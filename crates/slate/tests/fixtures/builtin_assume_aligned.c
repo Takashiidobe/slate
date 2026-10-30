@@ -23,8 +23,8 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn __builtin_assume_aligned([[V_0:__v[0-9]+]]: *const (), [[V_1:__v[0-9]+]]: u64, ...) -> *mut ();
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn __builtin_assume_aligned([[ARG_0]]: *const (), [[ARG_1:arg[0-9]+]]: u64, ...) -> *mut ();
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(32))]
 // CHECK-NEXT: struct __SlateAlign32<T>(T);

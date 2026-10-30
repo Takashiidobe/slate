@@ -43,10 +43,10 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: //! { dg-additional-options "-O1" }
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn __builtin_expect([[V_0:__v[0-9]+]]: i64, [[V_1:__v[0-9]+]]: i64) -> i64;
-// CHECK-NEXT:     fn __builtin_expect_with_probability([[V_2:__v[0-9]+]]: i64, [[V_3:__v[0-9]+]]: i64, [[V_4:__v[0-9]+]]: f64) -> i64;
-// CHECK-NEXT:     fn __builtin_unpredictable([[V_5:__v[0-9]+]]: i64) -> i64;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn __builtin_expect([[ARG_0]]: i64, [[ARG_1:arg[0-9]+]]: i64) -> i64;
+// CHECK-NEXT:     fn __builtin_expect_with_probability([[ARG_0]]: i64, [[ARG_1]]: i64, [[ARG_2:arg[0-9]+]]: f64) -> i64;
+// CHECK-NEXT:     fn __builtin_unpredictable([[ARG_0]]: i64) -> i64;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut side_effect_calls: i32 = 0;

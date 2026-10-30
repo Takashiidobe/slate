@@ -44,8 +44,8 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn malloc(__size: u64) -> *mut ();
-// CHECK-NEXT:     fn free(__ptr: *mut ());
+// CHECK-NEXT:     fn malloc([[ARG_0:arg[0-9]+]]: u64) -> *mut ();
+// CHECK-NEXT:     fn free([[ARG_0]]: *mut ());
 // CHECK-NEXT:     safe fn __slate_f80_add(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_sub(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_mul(__a: LongDouble, __b: LongDouble) -> LongDouble;

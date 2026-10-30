@@ -15,10 +15,10 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn remove(__filename: *const i8) -> i32;
-// CHECK-NEXT:     fn fclose(__stream: *mut _IO_FILE) -> i32;
-// CHECK-NEXT:     fn fopen(__filename: *const i8, __modes: *const i8) -> *mut _IO_FILE;
-// CHECK-NEXT:     fn fprintf(__stream: *mut _IO_FILE, __format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn remove([[ARG_0:arg[0-9]+]]: *const i8) -> i32;
+// CHECK-NEXT:     fn fclose([[ARG_0]]: *mut _IO_FILE) -> i32;
+// CHECK-NEXT:     fn fopen([[ARG_0]]: *const i8, [[ARG_1:arg[0-9]+]]: *const i8) -> *mut _IO_FILE;
+// CHECK-NEXT:     fn fprintf([[ARG_0]]: *mut _IO_FILE, [[ARG_1]]: *const i8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;

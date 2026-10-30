@@ -58,16 +58,16 @@ int count_vowels(const char *text) {
 }
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
-// CHECK: {{^}}use crate::__slate_types::[[SLATERECORD_0:__SlateRecord[0-9]+]] as [[SLATERECORD_1:__SlateRecord[0-9]+]];
-// CHECK-NEXT: use crate::__slate_types::[[SLATERECORD_2:__SlateRecord[0-9]+]] as [[SLATERECORD_3:__SlateRecord[0-9]+]];
+// CHECK: {{^}}use crate::__slate_types::__SlateRecord_shapes_h_9;
+// CHECK-NEXT: use crate::__slate_types::__SlateRecord_shapes_h_18;
 // CHECK-NEXT: use crate::__slate_types::flags;
 // CHECK-NEXT: use crate::__slate_types::registry;
 // CHECK-NEXT: use crate::__slate_types::registry_stats;
 // CHECK-NEXT: use crate::__slate_types::shape;
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn malloc(__size: u64) -> *mut ();
-// CHECK-NEXT:     fn free(__ptr: *mut ());
+// CHECK-NEXT:     fn malloc([[ARG_0:arg[0-9]+]]: u64) -> *mut ();
+// CHECK-NEXT:     fn free([[ARG_0]]: *mut ());
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: pub fn registry_new() -> *mut registry {
@@ -128,8 +128,8 @@ int count_vowels(const char *text) {
 // CHECK-NEXT:     sum
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: pub fn tag_score(tag: &[[SLATERECORD_3]]) -> i32 {
-// CHECK-NEXT:     (unsafe { (*(tag as *const [[SLATERECORD_3]])).weight }) * 2
+// CHECK-NEXT: pub fn tag_score(tag: &__SlateRecord_shapes_h_18) -> i32 {
+// CHECK-NEXT:     (unsafe { (*(tag as *const __SlateRecord_shapes_h_18)).weight }) * 2
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: pub fn count_vowels(text: *const i8) -> i32 {

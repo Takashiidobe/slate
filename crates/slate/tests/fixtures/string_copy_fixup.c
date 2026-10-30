@@ -21,12 +21,12 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn strcpy(__dest: *mut i8, __src: *const i8) -> *mut i8;
-// CHECK-NEXT:     fn strncpy(__dest: *mut i8, __src: *const i8, __n: u64) -> *mut i8;
-// CHECK-NEXT:     fn strcat(__dest: *mut i8, __src: *const i8) -> *mut i8;
-// CHECK-NEXT:     fn strncat(__dest: *mut i8, __src: *const i8, __n: u64) -> *mut i8;
-// CHECK-NEXT:     fn strlen(__s: *const i8) -> u64;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn strcpy([[ARG_0]]: *mut i8, [[ARG_1:arg[0-9]+]]: *const i8) -> *mut i8;
+// CHECK-NEXT:     fn strncpy([[ARG_0]]: *mut i8, [[ARG_1]]: *const i8, [[ARG_2:arg[0-9]+]]: u64) -> *mut i8;
+// CHECK-NEXT:     fn strcat([[ARG_0]]: *mut i8, [[ARG_1]]: *const i8) -> *mut i8;
+// CHECK-NEXT:     fn strncat([[ARG_0]]: *mut i8, [[ARG_1]]: *const i8, [[ARG_2]]: u64) -> *mut i8;
+// CHECK-NEXT:     fn strlen([[ARG_0]]: *const i8) -> u64;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;

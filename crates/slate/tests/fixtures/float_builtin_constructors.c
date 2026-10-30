@@ -16,23 +16,23 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn nan(__tagb: *const i8) -> f64;
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn nan([[ARG_0:arg[0-9]+]]: *const i8) -> f64;
+// CHECK-NEXT:     fn printf([[ARG_0]]: *const i8, ...) -> i32;
 // CHECK-NEXT:     #[link_name = "nan"]
-// CHECK-NEXT:     fn __builtin_nan([[V_0:__v[0-9]+]]: *const i8) -> f64;
+// CHECK-NEXT:     fn __builtin_nan([[ARG_0]]: *const i8) -> f64;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: union [[SLATERECORD_0:__SlateRecord[0-9]+]] {
+// CHECK-NEXT: union __SlateRecord_float_builtin_constructors_c_9 {
 // CHECK-NEXT:     value: f32,
 // CHECK-NEXT:     bits: u32,
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: union [[SLATERECORD_1:__SlateRecord[0-9]+]] {
+// CHECK-NEXT: union __SlateRecord_float_builtin_constructors_c_10 {
 // CHECK-NEXT:     value: f64,
 // CHECK-NEXT:     bits: u64,
 // CHECK-NEXT: }
@@ -47,13 +47,17 @@ int main(void) {
 // CHECK-NEXT:     let infinity: f32 = f32::INFINITY;
 // CHECK-NEXT:     let huge: f64 = f64::INFINITY;
 // CHECK-NEXT:     let nan: f32 = f32::from_bits(0x7fc00000);
-// CHECK-NEXT:     let f: [[SLATERECORD_0]] = {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [[SLATERECORD_0]] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let f: __SlateRecord_float_builtin_constructors_c_9 = {
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: __SlateRecord_float_builtin_constructors_c_9 = unsafe {
+// CHECK-NEXT:             std::mem::zeroed()
+// CHECK-NEXT:         };
 // CHECK-NEXT:         [[T_0]].value = f32::from_bits(0x7fc00123);
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let d: [[SLATERECORD_1]] = {
-// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: [[SLATERECORD_1]] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let d: __SlateRecord_float_builtin_constructors_c_10 = {
+// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: __SlateRecord_float_builtin_constructors_c_10 = unsafe {
+// CHECK-NEXT:             std::mem::zeroed()
+// CHECK-NEXT:         };
 // CHECK-NEXT:         [[T_1]].value = unsafe { __builtin_nan(payload()) };
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };

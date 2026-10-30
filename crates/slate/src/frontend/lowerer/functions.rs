@@ -332,7 +332,7 @@ impl FunctionLowerer<'_, '_> {
                 .map(|parameter| {
                     Ok(FnParam {
                         comments: Vec::new(),
-                        name: binding_name(parameter.value.id, &self.tables.bindings),
+                        name: self.binding_name(parameter.value.id),
                         mutable: false,
                         ty: self
                             .lower_type(&parameter.ty)
@@ -352,6 +352,7 @@ impl FunctionLowerer<'_, '_> {
         function: &slate_parser::ast::Span<ir::Function>,
         body: &[slate_parser::ast::Span<ir::Statement>],
     ) -> Result<Item> {
+        self.owner = owner_name(&function.name);
         let fixed = types::fixed_parameters(&function.parameters);
         let variadic = matches!(
             function.parameters,
@@ -372,7 +373,7 @@ impl FunctionLowerer<'_, '_> {
             .map(|param| {
                 Ok(FnParam {
                     comments: self.claim_comments(param.id),
-                    name: binding_name(param.value.id, &self.tables.bindings),
+                    name: self.binding_name(param.value.id),
                     mutable: true,
                     ty: self
                         .lower_type(&param.ty)

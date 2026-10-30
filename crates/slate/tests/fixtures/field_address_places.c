@@ -70,7 +70,7 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
@@ -95,9 +95,9 @@ int main(void) {
 // CHECK-NEXT:         *[[V_0]] = *[[V_0]] + by;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
-// CHECK-NEXT: fn scale([[V_1:__v[0-9]+]]: *mut f64, factor: f64) {
+// CHECK-NEXT: fn scale([[V_0]]: *mut f64, factor: f64) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_1]] = *[[V_1]] * factor;
+// CHECK-NEXT:         *[[V_0]] = *[[V_0]] * factor;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn pick(outer: &mut Outer, which: i32) -> *mut i32 {
@@ -146,9 +146,9 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *slot = *slot * 2;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: *mut i32 = pick(unsafe { &mut (*std::ptr::addr_of_mut!(local)) }, 0i32);
+// CHECK-NEXT:     let [[V_0]]: *mut i32 = pick(unsafe { &mut (*std::ptr::addr_of_mut!(local)) }, 0i32);
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_2]] = *[[V_2]] + 1000;
+// CHECK-NEXT:         *[[V_0]] = *[[V_0]] + 1000;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let inner: *mut Inner = inner_of(unsafe { &mut (*std::ptr::addr_of_mut!(local)) });
 // CHECK-NEXT:     unsafe {

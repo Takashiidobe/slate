@@ -1,14 +1,14 @@
 use super::*;
 
-pub(super) fn break_label(id: BindingId) -> rust::Label {
-    rust::Label::new(format!("__slate_break_{}", id.0))
-}
-
-pub(super) fn continue_label(id: BindingId) -> rust::Label {
-    rust::Label::new(format!("__slate_continue_{}", id.0))
-}
-
 impl FunctionLowerer<'_, '_> {
+    pub(super) fn break_label(&self, id: BindingId) -> rust::Label {
+        rust::Label::new(format!("__slate_break_{}", self.local_index(id)))
+    }
+
+    pub(super) fn continue_label(&self, id: BindingId) -> rust::Label {
+        rust::Label::new(format!("__slate_continue_{}", self.local_index(id)))
+    }
+
     pub(super) fn lower_assignment(&mut self, place: &ir::Place, value: Expr) -> Result<Stmt> {
         if place.access.volatile {
             if let Some(write) = self.volatile_bit_field_write(place, value.clone())? {
@@ -97,7 +97,7 @@ impl FunctionLowerer<'_, '_> {
                 initializer,
                 ..
             } => Stmt::Let {
-                name: binding_name(*id, &self.tables.bindings),
+                name: self.binding_name(*id),
                 mutable: true,
                 ty: Some(self.lower_type(ty)?),
                 init: initializer
@@ -194,7 +194,7 @@ impl FunctionLowerer<'_, '_> {
                     }
                 }
                 Stmt::Let {
-                    name: binding_name(variable.id, &self.tables.bindings),
+                    name: self.binding_name(variable.id),
                     mutable: true,
                     ty: Some(ty),
                     init,
@@ -279,11 +279,11 @@ impl FunctionLowerer<'_, '_> {
                     else_body: Vec::new(),
                 });
                 prefix.push(Stmt::LabeledBlock {
-                    label: continue_label(*id),
+                    label: self.continue_label(*id),
                     body,
                 });
                 Stmt::Loop {
-                    label: Some(break_label(*id)),
+                    label: Some(self.break_label(*id)),
                     body: prefix,
                 }
             }
@@ -316,14 +316,14 @@ impl FunctionLowerer<'_, '_> {
                     });
                 }
                 loop_body.push(Stmt::LabeledBlock {
-                    label: continue_label(*id),
+                    label: self.continue_label(*id),
                     body,
                 });
                 if let Some(increment) = increment {
                     loop_body.extend(self.lower_evaluation_statements(increment)?);
                 }
                 statements.push(Stmt::Loop {
-                    label: Some(break_label(*id)),
+                    label: Some(self.break_label(*id)),
                     body: loop_body,
                 });
                 Stmt::Scope { body: statements }
@@ -335,7 +335,7 @@ impl FunctionLowerer<'_, '_> {
             } => {
                 let body = self.lower_statement_list(body)?;
                 let mut loop_body = vec![Stmt::LabeledBlock {
-                    label: continue_label(*id),
+                    label: self.continue_label(*id),
                     body,
                 }];
                 let (prefix, condition) = self.lower_evaluation(condition)?;
@@ -349,7 +349,7 @@ impl FunctionLowerer<'_, '_> {
                     else_body: Vec::new(),
                 });
                 Stmt::Loop {
-                    label: Some(break_label(*id)),
+                    label: Some(self.break_label(*id)),
                     body: loop_body,
                 }
             }
@@ -360,11 +360,11 @@ impl FunctionLowerer<'_, '_> {
             } => self
                 .lower_switch(*id, discriminant, body)
                 .map_err(|error| error.within(Site::of(statement), "in switch".into()))?,
-            ir::Statement::Break(id) => Stmt::Break(Some(break_label(*id))),
+            ir::Statement::Break(id) => Stmt::Break(Some(self.break_label(*id))),
             ir::Statement::Continue(id) if self.counted_loops.contains(id) => {
-                Stmt::Continue(Some(break_label(*id)))
+                Stmt::Continue(Some(self.break_label(*id)))
             }
-            ir::Statement::Continue(id) => Stmt::Break(Some(continue_label(*id))),
+            ir::Statement::Continue(id) => Stmt::Break(Some(self.continue_label(*id))),
             ir::Statement::Fence { ordering, scope } => {
                 Stmt::Expr(self.lower_fence(*scope, ordering).ok_or_else(|| {
                     Failure::from(Construct::Statement {
@@ -412,7 +412,7 @@ impl FunctionLowerer<'_, '_> {
         collect_lets(body, &mut lets, &mut indices);
         lets.into_iter()
             .filter(|id| !indices.contains(id))
-            .map(|id| binding_name(id, &self.tables.bindings))
+            .map(|id| self.binding_name(id))
             .chain(params.iter().map(|param| param.name.clone()))
             .collect()
     }
@@ -430,7 +430,7 @@ impl FunctionLowerer<'_, '_> {
         let ir::Statement::Let(index) = &last.value else {
             return Ok(None);
         };
-        let name = binding_name(index.id, &self.tables.bindings);
+        let name = self.binding_name(index.id);
         if index.id != counted.index
             || self.non_index_names.contains(&name)
             || self
@@ -458,7 +458,7 @@ impl FunctionLowerer<'_, '_> {
         self.counted_loops.insert(id);
         let body = self.lower_statement_list(body)?;
         statements.push(Stmt::For {
-            label: Some(break_label(id)),
+            label: Some(self.break_label(id)),
             pat: name,
             iter: Expr::Range {
                 start: Box::new(start),
@@ -475,8 +475,8 @@ impl FunctionLowerer<'_, '_> {
         let handler = names
             .get(&cleanup)
             .ok_or(Invariant::UnknownCallee(cleanup))?;
-        let target = binding_name(variable.id, &self.tables.bindings);
-        let pointer = format!("__slate_cleanup_ptr_{}", variable.id.0);
+        let target = self.binding_name(variable.id);
+        let pointer = format!("__slate_cleanup_ptr_{}", self.local_index(variable.id));
         let call = Expr::Call {
             func: Box::new(Expr::Var(handler.rust.as_str().into())),
             args: vec![Expr::Cast {
@@ -504,7 +504,7 @@ impl FunctionLowerer<'_, '_> {
                 }),
             },
             Stmt::Let {
-                name: format!("__slate_cleanup_{}", variable.id.0),
+                name: format!("__slate_cleanup_{}", self.local_index(variable.id)),
                 mutable: false,
                 ty: None,
                 init: Some(Expr::Call {

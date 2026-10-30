@@ -187,6 +187,11 @@ plan with every feature subset. A `// plan-args:` line replaces the arguments,
 which is how usage errors are pinned. The test also requires the same output at
 `SLATE_JOBS=1`. Nothing is compiled, so these fixtures have no runtime gate.
 
+`tests/fixtures.lowered-names/` fixtures pin which items change when a feature
+is toggled. `lowered_names_filecheck` (`tests/lowered_names.rs`) translates each
+`.c` file with and without each feature and checks the list of added and removed
+items, so a name that depends on unrelated code shows up as a changed item.
+
 Generate the block from the workspace root:
 
 ```bash

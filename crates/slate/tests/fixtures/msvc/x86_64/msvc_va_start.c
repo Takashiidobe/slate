@@ -61,22 +61,22 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: //! { dg-options "/Zc:preprocessor" }
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn __va_start([[V_0:__v[0-9]+]]: *mut *mut i8, ...);
-// CHECK-NEXT:     fn __acrt_iob_func(_Ix: u32) -> *mut _iobuf;
+// CHECK-NEXT:     fn __va_start([[ARG_0:arg[0-9]+]]: *mut *mut i8, ...);
+// CHECK-NEXT:     fn __acrt_iob_func([[ARG_0]]: u32) -> *mut _iobuf;
 // CHECK-NEXT:     fn __stdio_common_vfprintf(
-// CHECK-NEXT:         _Options: u64,
-// CHECK-NEXT:         _Stream: *mut _iobuf,
-// CHECK-NEXT:         _Format: *const i8,
-// CHECK-NEXT:         _Locale: *mut __crt_locale_pointers,
-// CHECK-NEXT:         _ArgList: *mut i8,
+// CHECK-NEXT:         [[ARG_0]]: u64,
+// CHECK-NEXT:         [[ARG_1:arg[0-9]+]]: *mut _iobuf,
+// CHECK-NEXT:         [[ARG_2:arg[0-9]+]]: *const i8,
+// CHECK-NEXT:         [[ARG_3:arg[0-9]+]]: *mut __crt_locale_pointers,
+// CHECK-NEXT:         [[ARG_4:arg[0-9]+]]: *mut i8,
 // CHECK-NEXT:     ) -> i32;
 // CHECK-NEXT:     fn __stdio_common_vsprintf(
-// CHECK-NEXT:         _Options: u64,
-// CHECK-NEXT:         _Buffer: *mut i8,
-// CHECK-NEXT:         _BufferCount: u64,
-// CHECK-NEXT:         _Format: *const i8,
-// CHECK-NEXT:         _Locale: *mut __crt_locale_pointers,
-// CHECK-NEXT:         _ArgList: *mut i8,
+// CHECK-NEXT:         [[ARG_0]]: u64,
+// CHECK-NEXT:         [[ARG_1]]: *mut i8,
+// CHECK-NEXT:         [[ARG_2]]: u64,
+// CHECK-NEXT:         [[ARG_3]]: *const i8,
+// CHECK-NEXT:         [[ARG_4]]: *mut __crt_locale_pointers,
+// CHECK-NEXT:         [[ARG_5:arg[0-9]+]]: *mut i8,
 // CHECK-NEXT:     ) -> i32;
 // CHECK-NEXT:     fn abort();
 // CHECK-NEXT: }
@@ -175,19 +175,19 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut total: i64 = 0;
 // CHECK-NEXT:     for i in 0..n {
-// CHECK-NEXT:         let [[V_1:__v[0-9]+]]: i32 = if false || 0u64 != 0 {
-// CHECK-NEXT:             let [[V_2:__v[0-9]+]]: *mut i8 = ap;
-// CHECK-NEXT:             let [[V_3:__v[0-9]+]]: *mut i8 = unsafe { [[V_2]].add(8) };
-// CHECK-NEXT:             ap = [[V_3]];
-// CHECK-NEXT:             unsafe { *(*([[V_3]].sub(8) as *mut *mut i32)) }
+// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = if false || 0u64 != 0 {
+// CHECK-NEXT:             let [[V_1:__v[0-9]+]]: *mut i8 = ap;
+// CHECK-NEXT:             let [[V_2:__v[0-9]+]]: *mut i8 = unsafe { [[V_1]].add(8) };
+// CHECK-NEXT:             ap = [[V_2]];
+// CHECK-NEXT:             unsafe { *(*([[V_2]].sub(8) as *mut *mut i32)) }
 // CHECK-NEXT:         } else {
-// CHECK-NEXT:             let [[V_4:__v[0-9]+]]: *mut i8 = ap;
-// CHECK-NEXT:             let [[V_5:__v[0-9]+]]: *mut i8 = unsafe { [[V_4]].add(8) };
-// CHECK-NEXT:             ap = [[V_5]];
-// CHECK-NEXT:             unsafe { *([[V_5]].sub(8) as *mut i32) }
+// CHECK-NEXT:             let [[V_3:__v[0-9]+]]: *mut i8 = ap;
+// CHECK-NEXT:             let [[V_4:__v[0-9]+]]: *mut i8 = unsafe { [[V_3]].add(8) };
+// CHECK-NEXT:             ap = [[V_4]];
+// CHECK-NEXT:             unsafe { *([[V_4]].sub(8) as *mut i32) }
 // CHECK-NEXT:         };
-// CHECK-NEXT:         let [[V_6:__v[0-9]+]]: i32 = [[V_1]];
-// CHECK-NEXT:         total += [[V_6]] as i64;
+// CHECK-NEXT:         let [[V_5:__v[0-9]+]]: i32 = [[V_0]];
+// CHECK-NEXT:         total += [[V_5]] as i64;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     ap = std::ptr::null_mut::<i8>();
 // CHECK-NEXT:     total
@@ -203,45 +203,45 @@ int main(void) {
 // CHECK-NEXT:     copy = ap;
 // CHECK-NEXT:     let mut total: f64 = 0i32 as f64;
 // CHECK-NEXT:     for i in 0..n {
-// CHECK-NEXT:         let [[V_7:__v[0-9]+]]: f64 = if false || 0u64 != 0 {
-// CHECK-NEXT:             let [[V_8:__v[0-9]+]]: *mut i8 = ap;
-// CHECK-NEXT:             let [[V_9:__v[0-9]+]]: *mut i8 = unsafe { [[V_8]].add(8) };
-// CHECK-NEXT:             ap = [[V_9]];
-// CHECK-NEXT:             unsafe { *(*([[V_9]].sub(8) as *mut *mut f64)) }
+// CHECK-NEXT:         let [[V_0]]: f64 = if false || 0u64 != 0 {
+// CHECK-NEXT:             let [[V_1]]: *mut i8 = ap;
+// CHECK-NEXT:             let [[V_2]]: *mut i8 = unsafe { [[V_1]].add(8) };
+// CHECK-NEXT:             ap = [[V_2]];
+// CHECK-NEXT:             unsafe { *(*([[V_2]].sub(8) as *mut *mut f64)) }
 // CHECK-NEXT:         } else {
-// CHECK-NEXT:             let [[V_10:__v[0-9]+]]: *mut i8 = ap;
-// CHECK-NEXT:             let [[V_11:__v[0-9]+]]: *mut i8 = unsafe { [[V_10]].add(8) };
-// CHECK-NEXT:             ap = [[V_11]];
-// CHECK-NEXT:             unsafe { *([[V_11]].sub(8) as *mut f64) }
+// CHECK-NEXT:             let [[V_3]]: *mut i8 = ap;
+// CHECK-NEXT:             let [[V_4]]: *mut i8 = unsafe { [[V_3]].add(8) };
+// CHECK-NEXT:             ap = [[V_4]];
+// CHECK-NEXT:             unsafe { *([[V_4]].sub(8) as *mut f64) }
 // CHECK-NEXT:         };
-// CHECK-NEXT:         total += [[V_7]];
-// CHECK-NEXT:         let [[V_12:__v[0-9]+]]: big = if true || 16u64 != 0 {
-// CHECK-NEXT:             let [[V_13:__v[0-9]+]]: *mut i8 = ap;
-// CHECK-NEXT:             let [[V_14:__v[0-9]+]]: *mut i8 = unsafe { [[V_13]].add(8) };
-// CHECK-NEXT:             ap = [[V_14]];
-// CHECK-NEXT:             unsafe { *(*([[V_14]].sub(8) as *mut *mut big)) }
+// CHECK-NEXT:         total += [[V_0]];
+// CHECK-NEXT:         let [[V_6:__v[0-9]+]]: big = if true || 16u64 != 0 {
+// CHECK-NEXT:             let [[V_7:__v[0-9]+]]: *mut i8 = ap;
+// CHECK-NEXT:             let [[V_8:__v[0-9]+]]: *mut i8 = unsafe { [[V_7]].add(8) };
+// CHECK-NEXT:             ap = [[V_8]];
+// CHECK-NEXT:             unsafe { *(*([[V_8]].sub(8) as *mut *mut big)) }
 // CHECK-NEXT:         } else {
-// CHECK-NEXT:             let [[V_15:__v[0-9]+]]: *mut i8 = ap;
-// CHECK-NEXT:             let [[V_16:__v[0-9]+]]: *mut i8 = unsafe { [[V_15]].add(8) };
-// CHECK-NEXT:             ap = [[V_16]];
-// CHECK-NEXT:             unsafe { *([[V_16]].sub(8) as *mut big) }
+// CHECK-NEXT:             let [[V_9:__v[0-9]+]]: *mut i8 = ap;
+// CHECK-NEXT:             let [[V_10:__v[0-9]+]]: *mut i8 = unsafe { [[V_9]].add(8) };
+// CHECK-NEXT:             ap = [[V_10]];
+// CHECK-NEXT:             unsafe { *([[V_10]].sub(8) as *mut big) }
 // CHECK-NEXT:         };
-// CHECK-NEXT:         let b: big = [[V_12]];
+// CHECK-NEXT:         let b: big = [[V_6]];
 // CHECK-NEXT:         total += (b.a + b.b + b.c) as f64;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_17:__v[0-9]+]]: f64 = if false || 0u64 != 0 {
-// CHECK-NEXT:         let [[V_18:__v[0-9]+]]: *mut i8 = copy;
-// CHECK-NEXT:         let [[V_19:__v[0-9]+]]: *mut i8 = unsafe { [[V_18]].add(8) };
-// CHECK-NEXT:         copy = [[V_19]];
-// CHECK-NEXT:         unsafe { *(*([[V_19]].sub(8) as *mut *mut f64)) }
+// CHECK-NEXT:     let [[V_11:__v[0-9]+]]: f64 = if false || 0u64 != 0 {
+// CHECK-NEXT:         let [[V_12:__v[0-9]+]]: *mut i8 = copy;
+// CHECK-NEXT:         let [[V_13:__v[0-9]+]]: *mut i8 = unsafe { [[V_12]].add(8) };
+// CHECK-NEXT:         copy = [[V_13]];
+// CHECK-NEXT:         unsafe { *(*([[V_13]].sub(8) as *mut *mut f64)) }
 // CHECK-NEXT:     } else {
-// CHECK-NEXT:         let [[V_20:__v[0-9]+]]: *mut i8 = copy;
-// CHECK-NEXT:         let [[V_21:__v[0-9]+]]: *mut i8 = unsafe { [[V_20]].add(8) };
-// CHECK-NEXT:         copy = [[V_21]];
-// CHECK-NEXT:         unsafe { *([[V_21]].sub(8) as *mut f64) }
+// CHECK-NEXT:         let [[V_14:__v[0-9]+]]: *mut i8 = copy;
+// CHECK-NEXT:         let [[V_15:__v[0-9]+]]: *mut i8 = unsafe { [[V_14]].add(8) };
+// CHECK-NEXT:         copy = [[V_15]];
+// CHECK-NEXT:         unsafe { *([[V_15]].sub(8) as *mut f64) }
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let [[V_22:__v[0-9]+]]: f64 = [[V_17]];
-// CHECK-NEXT:     total += [[V_22]];
+// CHECK-NEXT:     let [[V_16:__v[0-9]+]]: f64 = [[V_11]];
+// CHECK-NEXT:     total += [[V_16]];
 // CHECK-NEXT:     copy = std::ptr::null_mut::<i8>();
 // CHECK-NEXT:     ap = std::ptr::null_mut::<i8>();
 // CHECK-NEXT:     total

@@ -27,15 +27,15 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn __builtin_rotateleft8([[V_0:__v[0-9]+]]: u8, [[V_1:__v[0-9]+]]: u8) -> u8;
-// CHECK-NEXT:     fn __builtin_rotateright8([[V_2:__v[0-9]+]]: u8, [[V_3:__v[0-9]+]]: u8) -> u8;
-// CHECK-NEXT:     fn __builtin_rotateleft16([[V_4:__v[0-9]+]]: u16, [[V_5:__v[0-9]+]]: u16) -> u16;
-// CHECK-NEXT:     fn __builtin_rotateright16([[V_6:__v[0-9]+]]: u16, [[V_7:__v[0-9]+]]: u16) -> u16;
-// CHECK-NEXT:     fn __builtin_rotateleft32([[V_8:__v[0-9]+]]: u32, [[V_9:__v[0-9]+]]: u32) -> u32;
-// CHECK-NEXT:     fn __builtin_rotateright32([[V_10:__v[0-9]+]]: u32, [[V_11:__v[0-9]+]]: u32) -> u32;
-// CHECK-NEXT:     fn __builtin_rotateleft64([[V_12:__v[0-9]+]]: u64, [[V_13:__v[0-9]+]]: u64) -> u64;
-// CHECK-NEXT:     fn __builtin_rotateright64([[V_14:__v[0-9]+]]: u64, [[V_15:__v[0-9]+]]: u64) -> u64;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn __builtin_rotateleft8([[ARG_0]]: u8, [[ARG_1:arg[0-9]+]]: u8) -> u8;
+// CHECK-NEXT:     fn __builtin_rotateright8([[ARG_0]]: u8, [[ARG_1]]: u8) -> u8;
+// CHECK-NEXT:     fn __builtin_rotateleft16([[ARG_0]]: u16, [[ARG_1]]: u16) -> u16;
+// CHECK-NEXT:     fn __builtin_rotateright16([[ARG_0]]: u16, [[ARG_1]]: u16) -> u16;
+// CHECK-NEXT:     fn __builtin_rotateleft32([[ARG_0]]: u32, [[ARG_1]]: u32) -> u32;
+// CHECK-NEXT:     fn __builtin_rotateright32([[ARG_0]]: u32, [[ARG_1]]: u32) -> u32;
+// CHECK-NEXT:     fn __builtin_rotateleft64([[ARG_0]]: u64, [[ARG_1]]: u64) -> u64;
+// CHECK-NEXT:     fn __builtin_rotateright64([[ARG_0]]: u64, [[ARG_1]]: u64) -> u64;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
@@ -138,11 +138,11 @@ int main(void) {
 // CHECK-NEXT:     let mut x: u32 = 3;
 // CHECK-NEXT:     let mut n: u32 = 1;
 // CHECK-NEXT:     let mut r: u32 = 0;
-// CHECK-NEXT:     let [[V_16:__v[0-9]+]]: u32 = x;
-// CHECK-NEXT:     x = [[V_16]].wrapping_add(1);
-// CHECK-NEXT:     let [[V_17:__v[0-9]+]]: u32 = n;
-// CHECK-NEXT:     n = [[V_17]].wrapping_add(1);
-// CHECK-NEXT:     r = [[V_16]].rotate_left([[V_17]] as u32);
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: u32 = x;
+// CHECK-NEXT:     x = [[V_0]].wrapping_add(1);
+// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: u32 = n;
+// CHECK-NEXT:     n = [[V_1]].wrapping_add(1);
+// CHECK-NEXT:     r = [[V_0]].rotate_left([[V_1]] as u32);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { printf(c"%u %u %u\n".as_ptr(), r, x, n) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

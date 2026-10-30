@@ -15,6 +15,8 @@ TESTS = CRATE / "tests"
 FIXTURES = TESTS / "fixtures"
 RELEASE = TESTS / "fixtures.release"
 PLAN = TESTS / "fixtures.plan"
+LOWERED_NAMES = TESTS / "fixtures.lowered-names"
+PLAN_SUITES = {PLAN: "plan", LOWERED_NAMES: "lowered-names"}
 WORK = CRATE / "target" / "difftest-generated"
 
 DEFAULT_TARGET = "x86_64-unknown-linux-gnu"
@@ -28,6 +30,7 @@ WINDOWS_SUFFIX = "-pc-windows-msvc"
 TEST_COMMAND = ["--test", "differential", "-E", "test(=generated_differential)"]
 RELEASE_TEST_COMMAND = ["--test", "differential", "-E", "test(=release_build_differential)"]
 PLAN_TEST_COMMAND = ["--test", "project_plan", "-E", "test(=plan_filecheck)"]
+LOWERED_NAMES_TEST_COMMAND = ["--test", "lowered_names", "-E", "test(=lowered_names_filecheck)"]
 
 BEGIN = "// SLATE-FILECHECK-BEGIN"
 END = "// SLATE-FILECHECK-END"
@@ -67,7 +70,7 @@ GENERATED_IDENTIFIER = re.compile(
         | __slate_(?:break|continue|slot|storage|compound|anon)_[0-9]+
         | __slate_alloca_frame[0-9]+ | __state[0-9]+
         | __dispatch[0-9]+(?:_[lv][0-9]+)? | __switch[0-9]+_l[0-9]+
-        | __join_[0-9]+ | __SlateRecord[0-9]+
+        | __join_[0-9]+
     )\b""",
     re.X,
 )
@@ -115,7 +118,7 @@ def is_release(path):
 
 
 def is_plan(path):
-    return PLAN in path.resolve().parents
+    return path.resolve().parent in PLAN_SUITES
 
 
 def release_project(path):
@@ -124,7 +127,7 @@ def release_project(path):
 
 def generated_rust(target, path):
     if is_plan(path):
-        return WORK / "plan" / target / f"{path.stem}.generated.rs"
+        return WORK / PLAN_SUITES[path.resolve().parent] / target / f"{path.stem}.generated.rs"
     if is_release(path):
         src = WORK / "release" / release_project(path) / "src"
         unit = src / f"{'__slate_unit_main' if path.stem == 'main' else path.stem}.rs"
@@ -370,11 +373,13 @@ def update_source(source, outputs):
 def run_harness(targets, fixtures):
     generated = [path for path in fixtures if not is_release(path) and not is_plan(path)]
     release = [path for path in fixtures if is_release(path)]
-    plan = [path for path in fixtures if is_plan(path)]
+    plan = [path for path in fixtures if path.resolve().parent == PLAN]
+    lowered_names = [path for path in fixtures if path.resolve().parent == LOWERED_NAMES]
     for names, test_command in (
         ({path.stem for path in generated}, TEST_COMMAND),
         ({release_project(path) for path in release}, RELEASE_TEST_COMMAND),
         ({path.stem for path in plan}, PLAN_TEST_COMMAND),
+        ({path.stem for path in lowered_names}, LOWERED_NAMES_TEST_COMMAND),
     ):
         if not names:
             continue
@@ -398,7 +403,7 @@ def all_fixtures():
         for path in RELEASE.rglob("*.c")
         if BEGIN in path.read_text(errors="surrogateescape")
     )
-    return sorted([*generated, *release, *PLAN.glob("*.c")])
+    return sorted([*generated, *release, *PLAN.glob("*.c"), *LOWERED_NAMES.glob("*.c")])
 
 
 def expand_glob(argument):
@@ -449,7 +454,7 @@ def fixture_targets(path, requested, extra):
 
 def main(argv):
     parser = argparse.ArgumentParser(
-        description="Regenerate the FileCheck blocks of tests/fixtures, tests/fixtures.release and tests/fixtures.plan fixtures: the whole generated output, or only the @check-fn-wrapped functions."
+        description="Regenerate the FileCheck blocks of tests/fixtures, tests/fixtures.release, tests/fixtures.plan and tests/fixtures.lowered-names fixtures: the whole generated output, or only the @check-fn-wrapped functions."
     )
     parser.add_argument(
         "fixtures",

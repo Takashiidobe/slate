@@ -36,9 +36,13 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     ((unsafe { *repeatMode }) as u32).wrapping_add(count)
 // CHECK: {{^}}}
-// CHECK-LABEL: {{^}}fn run(e: &mut {{__SlateRecord[0-9]+}}, count: u32) -> i32 {
+// CHECK-LABEL: {{^}}fn run(e: &mut __SlateRecord_enum_field_ptr_call_arg_c_5, count: u32) -> i32 {
 // CHECK-NEXT:     select_type(
-// CHECK-NEXT:         unsafe { std::ptr::addr_of_mut!((* (e as * mut [[SLATERECORD_0:__SlateRecord[0-9]+]])).mode) },
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             std::ptr::addr_of_mut!(
+// CHECK-NEXT:                 (* (e as * mut __SlateRecord_enum_field_ptr_call_arg_c_5)).mode
+// CHECK-NEXT:             )
+// CHECK-NEXT:         },
 // CHECK-NEXT:         count,
 // CHECK-NEXT:     ) as i32
 // CHECK: {{^}}}

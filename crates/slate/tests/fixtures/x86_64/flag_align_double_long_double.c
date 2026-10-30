@@ -36,7 +36,7 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[V_0:__v[0-9]+]]: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT:     safe fn __slate_f80_add(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_sub(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_mul(__a: LongDouble, __b: LongDouble) -> LongDouble;
@@ -334,11 +334,11 @@ int main(void) {
 // CHECK-NEXT:             __slate_f80_to_f64(z.z.im),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: LongDouble =
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: LongDouble =
 // CHECK-NEXT:         unsafe { (std::ptr::addr_of!(e.x) as *const LongDouble).read_unaligned() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (std::ptr::addr_of_mut!(e.x) as *mut LongDouble)
-// CHECK-NEXT:             .write_unaligned([[V_1]] + LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]));
+// CHECK-NEXT:             .write_unaligned([[V_0]] + LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]));
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(

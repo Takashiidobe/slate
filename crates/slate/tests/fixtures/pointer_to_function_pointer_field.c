@@ -34,13 +34,13 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn malloc(__size: u64) -> *mut ();
-// CHECK-NEXT:     fn free(__ptr: *mut ());
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn malloc([[ARG_0]]: u64) -> *mut ();
+// CHECK-NEXT:     fn free([[ARG_0]]: *mut ());
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct [[SLATERECORD_0:__SlateRecord[0-9]+]] {
+// CHECK-NEXT: struct __SlateRecord_pointer_to_function_pointer_field_c_9 {
 // CHECK-NEXT:     tests: *mut Option<unsafe extern "C-unwind" fn()>,
 // CHECK-NEXT:     ntests: i32,
 // CHECK-NEXT: }
@@ -58,7 +58,9 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut suite: [[SLATERECORD_0]] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut suite: __SlateRecord_pointer_to_function_pointer_field_c_9 = unsafe {
+// CHECK-NEXT:         std::mem::zeroed()
+// CHECK-NEXT:     };
 // CHECK-NEXT:     suite.tests = (unsafe { malloc(16u64) })
 // CHECK-NEXT:         as *mut Option<unsafe extern "C-unwind" fn()>;
 // CHECK-NEXT:     unsafe {

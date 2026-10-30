@@ -26,7 +26,7 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
@@ -43,11 +43,11 @@ int main(void) {
 // CHECK-NEXT: static mut table: [i32; 3] = [-1, -6, -3];
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct [[SLATERECORD_0:__SlateRecord[0-9]+]] {
+// CHECK-NEXT: struct __SlateRecord_global_constant_arith_c_13 {
 // CHECK-NEXT:     lo: i32,
 // CHECK-NEXT:     hi: i32,
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut range: [[SLATERECORD_0]] = [[SLATERECORD_0]] {
+// CHECK-NEXT: static mut range: __SlateRecord_global_constant_arith_c_13 = __SlateRecord_global_constant_arith_c_13 {
 // CHECK-NEXT:     lo: -5i32,
 // CHECK-NEXT:     hi: 5i32,
 // CHECK-NEXT: };

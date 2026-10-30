@@ -154,7 +154,7 @@ int main(void) {
 // CHECK-NEXT:     float!(f32, f64);
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
@@ -224,12 +224,12 @@ int main(void) {
 // CHECK-NEXT:         4,
 // CHECK-NEXT:         __slate_vector::Align64,
 // CHECK-NEXT:     > = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut [[SLATE_COMPOUND_4:__slate_compound_[0-9]+]]: __slate_vector::__SlateVector<
+// CHECK-NEXT:     let mut [[SLATE_COMPOUND_0]]: __slate_vector::__SlateVector<
 // CHECK-NEXT:         i128,
 // CHECK-NEXT:         4,
 // CHECK-NEXT:         __slate_vector::Align64,
 // CHECK-NEXT:     > = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut [[SLATE_COMPOUND_5:__slate_compound_[0-9]+]]: __slate_vector::__SlateVector<
+// CHECK-NEXT:     let mut [[SLATE_COMPOUND_4:__slate_compound_[0-9]+]]: __slate_vector::__SlateVector<
 // CHECK-NEXT:         u128,
 // CHECK-NEXT:         2,
 // CHECK-NEXT:         __slate_vector::Align32,
@@ -282,13 +282,13 @@ int main(void) {
 // CHECK-NEXT:         + s
 // CHECK-NEXT:             % unsafe {
 // CHECK-NEXT:                 *{
-// CHECK-NEXT:                     [[SLATE_COMPOUND_4]] = __slate_vector::__SlateVector::from_array([
+// CHECK-NEXT:                     [[SLATE_COMPOUND_0]] = __slate_vector::__SlateVector::from_array([
 // CHECK-NEXT:                         3 as i128,
 // CHECK-NEXT:                         3 as i128,
 // CHECK-NEXT:                         5 as i128,
 // CHECK-NEXT:                         5 as i128,
 // CHECK-NEXT:                     ]);
-// CHECK-NEXT:                     std::ptr::addr_of_mut!([[SLATE_COMPOUND_4]])
+// CHECK-NEXT:                     std::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             };
 // CHECK-NEXT:     for i in 0i32..4i32 {
@@ -333,11 +333,11 @@ int main(void) {
 // CHECK-NEXT:     let [[V_3:__v[0-9]+]]: __slate_vector::__SlateVector<u128, 2, __slate_vector::Align32> = [[V_2]]
 // CHECK-NEXT:         + unsafe {
 // CHECK-NEXT:             *{
-// CHECK-NEXT:                 [[SLATE_COMPOUND_5]] = __slate_vector::__SlateVector::from_array([
+// CHECK-NEXT:                 [[SLATE_COMPOUND_4]] = __slate_vector::__SlateVector::from_array([
 // CHECK-NEXT:                     1 as u128,
 // CHECK-NEXT:                     1 as u128,
 // CHECK-NEXT:                 ]);
-// CHECK-NEXT:                 std::ptr::addr_of_mut!([[SLATE_COMPOUND_5]])
+// CHECK-NEXT:                 std::ptr::addr_of_mut!([[SLATE_COMPOUND_4]])
 // CHECK-NEXT:             }
 // CHECK-NEXT:         };
 // CHECK-NEXT:     h.lanes = [[V_3]];

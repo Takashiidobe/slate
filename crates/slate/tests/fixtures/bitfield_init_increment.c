@@ -17,8 +17,10 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut x: [[SLATERECORD_0:__SlateRecord[0-9]+]] = {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [[SLATERECORD_0]] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut x: __SlateRecord_bitfield_init_increment_c_7 = {
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: __SlateRecord_bitfield_init_increment_c_7 = unsafe {
+// CHECK-NEXT:             std::mem::zeroed()
+// CHECK-NEXT:         };
 // CHECK-NEXT:         [[T_0]].__slate_bits_0.__set_a(1i32);
 // CHECK-NEXT:         [[T_0]].__slate_bits_0.__set_b(2i32);
 // CHECK-NEXT:         [[T_0]].__slate_bits_0.__set_c(3i32);

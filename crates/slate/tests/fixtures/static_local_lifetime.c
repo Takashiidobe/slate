@@ -112,7 +112,7 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
@@ -127,28 +127,28 @@ int main(void) {
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: static mut global_base: i32 = 100;
 // CHECK-NEXT: fn counter() -> i32 {
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = (unsafe { [[COUNT_0:count_[0-9]+]] }) + 1;
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = (unsafe { count__11 }) + 1;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         [[COUNT_0]] = [[V_0]];
+// CHECK-NEXT:         count__11 = [[V_0]];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     [[V_0]]
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut [[COUNT_0]]: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT: static mut count__11: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT: fn other_counter() -> i32 {
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i32 = unsafe { [[COUNT_1:count_[0-9]+]] };
+// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i32 = unsafe { count__16 };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         [[COUNT_1]] = [[V_1]] + 1;
+// CHECK-NEXT:         count__16 = [[V_1]] + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     [[V_1]]
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut [[COUNT_1]]: i32 = 50;
+// CHECK-NEXT: static mut count__16: i32 = 50;
 // CHECK-NEXT: fn history(value: i32) -> *mut i32 {
-// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: i32 = unsafe { next };
+// CHECK-NEXT:     let [[V_1]]: i32 = unsafe { next };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         next = [[V_2]] + 1;
+// CHECK-NEXT:         next = [[V_1]] + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         slots.0[([[V_2]] % 4) as usize] = value;
+// CHECK-NEXT:         slots.0[([[V_1]] % 4) as usize] = value;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { std::ptr::addr_of_mut!(slots.0) as *mut i32 }
 // CHECK-NEXT: }
@@ -176,19 +176,19 @@ int main(void) {
 // CHECK-NEXT:             deepest = n;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_3:__v[0-9]+]]: i32 = if n == 0 { unsafe { deepest } } else { depth(n - 1) };
-// CHECK-NEXT:     [[V_3]]
+// CHECK-NEXT:     let [[V_1]]: i32 = if n == 0 { unsafe { deepest } } else { depth(n - 1) };
+// CHECK-NEXT:     [[V_1]]
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut deepest: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT: fn running_mean(sample: f64) -> f64 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         sum = sum + sample;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_4:__v[0-9]+]]: i32 = (unsafe { samples }) + 1;
+// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: i32 = (unsafe { samples }) + 1;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         samples = [[V_4]];
+// CHECK-NEXT:         samples = [[V_2]];
 // CHECK-NEXT:     }
-// CHECK-NEXT:     (unsafe { sum }) / ([[V_4]] as f64)
+// CHECK-NEXT:     (unsafe { sum }) / ([[V_2]] as f64)
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut sum: f64 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT: static mut samples: i32 = unsafe { std::mem::zeroed() };
@@ -203,24 +203,24 @@ int main(void) {
 // CHECK-NEXT: fn loop_scoped() -> i32 {
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     for i in 0i32..3i32 {
-// CHECK-NEXT:         let [[V_5:__v[0-9]+]]: i32 = unsafe { seen };
+// CHECK-NEXT:         let [[V_1]]: i32 = unsafe { seen };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             seen = [[V_5]] + 1;
+// CHECK-NEXT:             seen = [[V_1]] + 1;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         let [[V_6:__v[0-9]+]]: i32 = [[V_5]];
-// CHECK-NEXT:         total += [[V_6]];
+// CHECK-NEXT:         let [[V_3:__v[0-9]+]]: i32 = [[V_1]];
+// CHECK-NEXT:         total += [[V_3]];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut seen: i32 = 7;
 // CHECK-NEXT: fn tally() -> i32 {
-// CHECK-NEXT:     let [[V_7:__v[0-9]+]]: i32 = unsafe { [[COUNTER_0:counter_[0-9]+]] };
+// CHECK-NEXT:     let [[V_1]]: i32 = unsafe { counter__68 };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         [[COUNTER_0]] = [[V_7]] + 1;
+// CHECK-NEXT:         counter__68 = [[V_1]] + 1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     [[V_7]]
+// CHECK-NEXT:     [[V_1]]
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut [[COUNTER_0]]: i32 = 100;
+// CHECK-NEXT: static mut counter__68: i32 = 100;
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let c1: i32 = counter();
 // CHECK-NEXT:     let c2: i32 = counter();
@@ -234,21 +234,21 @@ int main(void) {
 // CHECK-NEXT:     for i in 1..7i32 {
 // CHECK-NEXT:         history(i * 10);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[SLOTS_0:slots_[0-9]+]]: *mut i32 = history(70i32);
+// CHECK-NEXT:     let slots__0: *mut i32 = history(70i32);
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {}", unsafe { * [[SLOTS_0]].add(0) }, unsafe { * [[SLOTS_0]].add(1) }, unsafe
-// CHECK-NEXT:         { * [[SLOTS_0]].add(2) }, unsafe { * [[SLOTS_0]].add(3) }
+// CHECK-NEXT:         "{} {} {} {}", unsafe { * slots__0.add(0) }, unsafe { * slots__0.add(1) }, unsafe
+// CHECK-NEXT:         { * slots__0.add(2) }, unsafe { * slots__0.add(3) }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     moved(3i32);
-// CHECK-NEXT:     let [[POINT_0:point_[0-9]+]]: *mut Point = moved(4i32);
-// CHECK-NEXT:     println!("{} {}", unsafe { (* [[POINT_0]]).x }, unsafe { (* [[POINT_0]]).y });
+// CHECK-NEXT:     let point__1: *mut Point = moved(4i32);
+// CHECK-NEXT:     println!("{} {}", unsafe { (* point__1).x }, unsafe { (* point__1).y });
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*[[POINT_0]]).x = 0;
+// CHECK-NEXT:         (*point__1).x = 0;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("{}", unsafe { (* moved(1i32)).x });
-// CHECK-NEXT:     let [[V_8:__v[0-9]+]]: *mut i32 = base_pointer();
+// CHECK-NEXT:     let [[V_0]]: *mut i32 = base_pointer();
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_8]] = *[[V_8]] + 5;
+// CHECK-NEXT:         *[[V_0]] = *[[V_0]] + 5;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let through: i32 = unsafe { *base_pointer() };
 // CHECK-NEXT:     println!("{} {}", unsafe { global_base }, through);

@@ -15,7 +15,7 @@ int main(void) {
 // CHECK-NEXT: #![feature(link_llvm_intrinsics)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT:     safe fn __slate_f80_add(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_sub(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_mul(__a: LongDouble, __b: LongDouble) -> LongDouble;
@@ -102,7 +102,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "llvm-intrinsic" {
 // CHECK-NEXT:     #[link_name = "llvm.fabs.f32"]
-// CHECK-NEXT:     fn __slate_intrinsic_1a7588489948374([[ARG_0:arg[0-9]+]]: f32) -> f32;
+// CHECK-NEXT:     fn __slate_intrinsic_1a7588489948374([[ARG_0]]: f32) -> f32;
 // CHECK-NEXT:     #[link_name = "llvm.fabs.f64"]
 // CHECK-NEXT:     fn __slate_intrinsic_999a0f45e9537850([[ARG_0]]: f64) -> f64;
 // CHECK-NEXT: }

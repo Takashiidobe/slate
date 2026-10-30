@@ -74,8 +74,8 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     static mut stdout: *mut _IO_FILE;
-// CHECK-NEXT:     fn fprintf(__stream: *mut _IO_FILE, __format: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn fprintf([[ARG_0:arg[0-9]+]]: *mut _IO_FILE, [[ARG_1:arg[0-9]+]]: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0]]: *const i8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
@@ -140,12 +140,12 @@ int main(void) {
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union Overlay {
 // CHECK-NEXT:     whole: u32,
-// CHECK-NEXT:     parts: [[SLATERECORD_0:__SlateRecord[0-9]+]],
+// CHECK-NEXT:     parts: __SlateRecord_bitfield_records_c_21,
 // CHECK-NEXT:     __slate_bits_0: __slate_bits::__SlateBits10U0,
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct [[SLATERECORD_0]] {
+// CHECK-NEXT: struct __SlateRecord_bitfield_records_c_21 {
 // CHECK-NEXT:     __slate_bits_0: __slate_bits::__SlateBits11U0,
 // CHECK-NEXT: }
 // CHECK-NEXT: mod __slate_bits {

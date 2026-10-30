@@ -129,58 +129,53 @@ int main(void) {
 // CHECK-NEXT:     static mut optarg: *mut i8;
 // CHECK-NEXT:     static mut optind: i32;
 // CHECK-NEXT:     static mut opterr: i32;
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT:     fn getopt_long(
-// CHECK-NEXT:         ___argc: i32,
-// CHECK-NEXT:         ___argv: *const *mut i8,
-// CHECK-NEXT:         __shortopts: *const i8,
-// CHECK-NEXT:         __longopts: *const option,
-// CHECK-NEXT:         __longind: *mut i32,
+// CHECK-NEXT:         [[ARG_0]]: i32,
+// CHECK-NEXT:         [[ARG_1:arg[0-9]+]]: *const *mut i8,
+// CHECK-NEXT:         [[ARG_2:arg[0-9]+]]: *const i8,
+// CHECK-NEXT:         [[ARG_3:arg[0-9]+]]: *const option,
+// CHECK-NEXT:         [[ARG_4:arg[0-9]+]]: *mut i32,
 // CHECK-NEXT:     ) -> i32;
 // CHECK-NEXT:     fn argp_parse(
-// CHECK-NEXT:         __argp: *const argp,
-// CHECK-NEXT:         __argc: i32,
-// CHECK-NEXT:         __argv: *mut *mut i8,
-// CHECK-NEXT:         __flags: u32,
-// CHECK-NEXT:         __arg_index: *mut i32,
-// CHECK-NEXT:         __input: *mut (),
+// CHECK-NEXT:         [[ARG_0]]: *const argp,
+// CHECK-NEXT:         [[ARG_1]]: i32,
+// CHECK-NEXT:         [[ARG_2]]: *mut *mut i8,
+// CHECK-NEXT:         [[ARG_3]]: u32,
+// CHECK-NEXT:         [[ARG_4]]: *mut i32,
+// CHECK-NEXT:         [[ARG_5:arg[0-9]+]]: *mut (),
 // CHECK-NEXT:     ) -> i32;
 // CHECK-NEXT:     fn hsearch_r(
-// CHECK-NEXT:         __item: entry,
-// CHECK-NEXT:         __action: u32,
-// CHECK-NEXT:         __retval: *mut *mut entry,
-// CHECK-NEXT:         __htab: *mut hsearch_data,
+// CHECK-NEXT:         [[ARG_0]]: entry,
+// CHECK-NEXT:         [[ARG_1]]: u32,
+// CHECK-NEXT:         [[ARG_2]]: *mut *mut entry,
+// CHECK-NEXT:         [[ARG_3]]: *mut hsearch_data,
 // CHECK-NEXT:     ) -> i32;
-// CHECK-NEXT:     fn hcreate_r(__nel: u64, __htab: *mut hsearch_data) -> i32;
-// CHECK-NEXT:     fn hdestroy_r(__htab: *mut hsearch_data);
+// CHECK-NEXT:     fn hcreate_r([[ARG_0]]: u64, [[ARG_1]]: *mut hsearch_data) -> i32;
+// CHECK-NEXT:     fn hdestroy_r([[ARG_0]]: *mut hsearch_data);
 // CHECK-NEXT:     fn tsearch(
-// CHECK-NEXT:         __key: *const (),
-// CHECK-NEXT:         __rootp: *mut *mut (),
-// CHECK-NEXT:         __compar: Option<unsafe extern "C-unwind" fn(*const (), *const ()) -> i32>,
+// CHECK-NEXT:         [[ARG_0]]: *const (),
+// CHECK-NEXT:         [[ARG_1]]: *mut *mut (),
+// CHECK-NEXT:         [[ARG_2]]: Option<unsafe extern "C-unwind" fn(*const (), *const ()) -> i32>,
 // CHECK-NEXT:     ) -> *mut ();
 // CHECK-NEXT:     fn tfind(
-// CHECK-NEXT:         __key: *const (),
-// CHECK-NEXT:         __rootp: *const *mut (),
-// CHECK-NEXT:         __compar: Option<unsafe extern "C-unwind" fn(*const (), *const ()) -> i32>,
+// CHECK-NEXT:         [[ARG_0]]: *const (),
+// CHECK-NEXT:         [[ARG_1]]: *const *mut (),
+// CHECK-NEXT:         [[ARG_2]]: Option<unsafe extern "C-unwind" fn(*const (), *const ()) -> i32>,
 // CHECK-NEXT:     ) -> *mut ();
-// CHECK-NEXT:     fn tdestroy(
-// CHECK-NEXT:         __root: *mut (),
-// CHECK-NEXT:         __freefct: Option<unsafe extern "C-unwind" fn(*mut ())>,
-// CHECK-NEXT:     );
-// CHECK-NEXT:     fn atoi(__nptr: *const i8) -> i32;
-// CHECK-NEXT:     fn malloc(__size: u64) -> *mut ();
-// CHECK-NEXT:     fn free(__ptr: *mut ());
+// CHECK-NEXT:     fn tdestroy([[ARG_0]]: *mut (), [[ARG_1]]: Option<unsafe extern "C-unwind" fn(*mut ())>);
+// CHECK-NEXT:     fn atoi([[ARG_0]]: *const i8) -> i32;
+// CHECK-NEXT:     fn malloc([[ARG_0]]: u64) -> *mut ();
+// CHECK-NEXT:     fn free([[ARG_0]]: *mut ());
 // CHECK-NEXT:     fn qsort_r(
-// CHECK-NEXT:         __base: *mut (),
-// CHECK-NEXT:         __nmemb: u64,
-// CHECK-NEXT:         __size: u64,
-// CHECK-NEXT:         __compar: Option<
-// CHECK-NEXT:             unsafe extern "C-unwind" fn(*const (), *const (), *mut ()) -> i32,
-// CHECK-NEXT:         >,
-// CHECK-NEXT:         __arg: *mut (),
+// CHECK-NEXT:         [[ARG_0]]: *mut (),
+// CHECK-NEXT:         [[ARG_1]]: u64,
+// CHECK-NEXT:         [[ARG_2]]: u64,
+// CHECK-NEXT:         [[ARG_3]]: Option<unsafe extern "C-unwind" fn(*const (), *const (), *mut ()) -> i32>,
+// CHECK-NEXT:         [[ARG_4]]: *mut (),
 // CHECK-NEXT:     );
-// CHECK-NEXT:     fn strcmp(__s1: *const i8, __s2: *const i8) -> i32;
-// CHECK-NEXT:     fn index(__s: *const i8, __c: i32) -> *mut i8;
+// CHECK-NEXT:     fn strcmp([[ARG_0]]: *const i8, [[ARG_1]]: *const i8) -> i32;
+// CHECK-NEXT:     fn index([[ARG_0]]: *const i8, [[ARG_1]]: i32) -> *mut i8;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]

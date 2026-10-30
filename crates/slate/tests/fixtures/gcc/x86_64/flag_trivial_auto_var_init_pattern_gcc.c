@@ -169,7 +169,7 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[V_0:__v[0-9]+]]: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT:     safe fn __slate_f80_add(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_sub(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_mul(__a: LongDouble, __b: LongDouble) -> LongDouble;
@@ -457,12 +457,12 @@ int main(void) {
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union nested_bits {
-// CHECK-NEXT:     s: [[SLATERECORD_0:__SlateRecord[0-9]+]],
+// CHECK-NEXT:     s: __SlateRecord_flag_trivial_auto_var_init_pattern_gcc_c_65,
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(4))]
 // CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct [[SLATERECORD_0]] {
+// CHECK-NEXT: struct __SlateRecord_flag_trivial_auto_var_init_pattern_gcc_c_65 {
 // CHECK-NEXT:     c: i8,
 // CHECK-NEXT:     __slate_bits_0: __slate_bits::__SlateBits12U0,
 // CHECK-NEXT: }
@@ -470,13 +470,13 @@ int main(void) {
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union padded_member {
-// CHECK-NEXT:     s: [[SLATERECORD_1:__SlateRecord[0-9]+]],
+// CHECK-NEXT:     s: __SlateRecord_flag_trivial_auto_var_init_pattern_gcc_c_72,
 // CHECK-NEXT:     f: f32,
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct [[SLATERECORD_1]] {
+// CHECK-NEXT: struct __SlateRecord_flag_trivial_auto_var_init_pattern_gcc_c_72 {
 // CHECK-NEXT:     c: i8,
 // CHECK-NEXT:     i: i32,
 // CHECK-NEXT: }

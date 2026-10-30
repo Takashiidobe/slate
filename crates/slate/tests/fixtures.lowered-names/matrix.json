@@ -1,0 +1,8 @@
+{
+  "targets": [
+    { "name": "linux-x86_64", "triple": "x86_64-unknown-linux-gnu", "flavor": "clang" }
+  ],
+  "features": [
+    { "name": "early", "defines": ["EARLY"] }
+  ]
+}

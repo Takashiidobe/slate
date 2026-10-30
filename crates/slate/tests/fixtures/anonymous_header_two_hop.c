@@ -11,19 +11,21 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct [[SLATERECORD_0:__SlateRecord[0-9]+]] {
+// CHECK-NEXT: struct __SlateRecord_anonymous_header_types_h_10 {
 // CHECK-NEXT:     count: i32,
-// CHECK-NEXT:     value: [[SLATERECORD_1:__SlateRecord[0-9]+]],
+// CHECK-NEXT:     value: __SlateRecord_anonymous_header_types_h_10_2,
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: union [[SLATERECORD_1]] {
+// CHECK-NEXT: union __SlateRecord_anonymous_header_types_h_10_2 {
 // CHECK-NEXT:     wide: i32,
 // CHECK-NEXT:     bytes: [i8; 4],
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut state: [[SLATERECORD_0]] = {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [[SLATERECORD_0]] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut state: __SlateRecord_anonymous_header_types_h_10 = {
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: __SlateRecord_anonymous_header_types_h_10 = unsafe {
+// CHECK-NEXT:             std::mem::zeroed()
+// CHECK-NEXT:         };
 // CHECK-NEXT:         [[T_0]].count = 0i32;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };

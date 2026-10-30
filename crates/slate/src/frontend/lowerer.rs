@@ -48,7 +48,6 @@ use functions::*;
 use globals::*;
 use names::*;
 use pointers::*;
-use statements::*;
 use types::*;
 use values::*;
 
@@ -106,7 +105,7 @@ struct Dependencies {
     known_panics: bool,
     huge_stack: bool,
     asm_goto_with_outputs: bool,
-    asm_strings: BTreeMap<u32, Item>,
+    asm_strings: BTreeMap<String, Item>,
     libatomic: bool,
     libgomp: bool,
     slate_vector: bool,
@@ -142,6 +141,8 @@ struct FunctionLowerer<'a, 'm> {
     tables: &'a Tables<'m>,
     dependencies: &'a mut Dependencies,
     temps: u32,
+    locals: std::cell::RefCell<HashMap<BindingId, u32>>,
+    owner: String,
     hoisted: Vec<Stmt>,
     dispatch_bindings: HashSet<BindingId>,
     dispatch_vlas: HashSet<BindingId>,
@@ -163,6 +164,20 @@ impl FunctionLowerer<'_, '_> {
         let index = self.temps;
         self.temps += 1;
         format!("__t{index}")
+    }
+
+    fn binding_name(&self, id: BindingId) -> String {
+        self.tables
+            .bindings
+            .get(&id)
+            .cloned()
+            .unwrap_or_else(|| format!("__v{}", self.local_index(id)))
+    }
+
+    fn local_index(&self, id: BindingId) -> u32 {
+        let mut locals = self.locals.borrow_mut();
+        let next = locals.len() as u32;
+        *locals.entry(id).or_insert(next)
     }
 }
 
@@ -236,13 +251,16 @@ pub(crate) fn function_rust_name(function: &ir::Function) -> String {
     }
 }
 
-pub fn definition_items(module: &ir::Module) -> Vec<(String, slate_parser::ast::Loc)> {
+pub fn definition_items(
+    module: &ir::Module,
+    files: &Files,
+) -> Vec<(String, slate_parser::ast::Loc)> {
     let function_names: Vec<_> = module
         .functions
         .iter()
         .map(|function| function_rust_name(function))
         .collect();
-    let names = global_names(module, function_names.iter().map(String::as_str));
+    let names = global_names(module, files, function_names.iter().map(String::as_str));
     let functions = module
         .functions
         .iter()
@@ -520,28 +538,26 @@ impl<'m> ModuleLowerer<'m> {
                 )
             })
             .collect();
-        let mut bindings = global_names(module, names.values().map(|name| name.rust.as_str()));
+        let mut bindings =
+            global_names(module, files, names.values().map(|name| name.rust.as_str()));
         let static_names: HashSet<_> = statics
             .iter()
             .map(|global| bindings[&global.variable.id].clone())
             .collect();
         for function in &module.functions {
+            let mut next = 0;
             if let ir::Parameters::Prototype { fixed, .. } = &function.value.parameters {
-                for parameter in fixed {
-                    let id = parameter.value.id;
-                    bindings.insert(
-                        id,
-                        parameter
-                            .value
-                            .name
-                            .as_deref()
-                            .map(|name| local_binding_name(name, id, &static_names))
-                            .unwrap_or_else(|| format!("__v{}", id.0)),
-                    );
+                for (index, parameter) in fixed.iter().enumerate() {
+                    if function.value.body.is_none() {
+                        bindings.insert(parameter.value.id, format!("arg{index}"));
+                    } else if let Some(name) = parameter.value.name.as_deref() {
+                        let name = local_binding_name(name, &mut next, &static_names);
+                        bindings.insert(parameter.value.id, name);
+                    }
                 }
             }
             if let Some(body) = &function.value.body {
-                collect_statement_names(body, &mut bindings, &static_names);
+                collect_statement_names(body, &mut bindings, &static_names, &mut next);
             }
         }
         let mut tables = Tables {
@@ -582,7 +598,7 @@ impl<'m> ModuleLowerer<'m> {
                 .iter()
                 .map(|definition| (definition.value.id, definition))
                 .collect(),
-            record_names: record_names(module),
+            record_names: record_names(module, files),
         };
         tables.over_aligned = statics
             .iter()
@@ -621,6 +637,8 @@ impl<'m> ModuleLowerer<'m> {
             tables: &self.tables,
             dependencies: &mut self.dependencies,
             temps: 0,
+            locals: Default::default(),
+            owner: String::new(),
             hoisted: Vec::new(),
             dispatch_bindings: HashSet::new(),
             dispatch_vlas: HashSet::new(),

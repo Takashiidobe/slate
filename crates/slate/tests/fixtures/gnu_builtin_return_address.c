@@ -17,11 +17,11 @@ int main(void) {
 // CHECK-NEXT: #![feature(link_llvm_intrinsics)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "llvm-intrinsic" {
 // CHECK-NEXT:     #[link_name = "llvm.frameaddress.p0"]
-// CHECK-NEXT:     fn __slate_intrinsic_2d7c29df8fdf6378([[ARG_0:arg[0-9]+]]: i32) -> *mut ();
+// CHECK-NEXT:     fn __slate_intrinsic_2d7c29df8fdf6378([[ARG_0]]: i32) -> *mut ();
 // CHECK-NEXT:     #[link_name = "llvm.returnaddress.p0"]
 // CHECK-NEXT:     fn __slate_intrinsic_ded315013ea6523([[ARG_0]]: i32) -> *mut ();
 // CHECK-NEXT: }

@@ -58,7 +58,9 @@ int main(void) {
 // CHECK-NEXT:         -1
 // CHECK-NEXT:     };
 // CHECK-NEXT:     thread_joined = [[V_0]];
-// CHECK-NEXT:     let mut control: [[SLATERECORD_0:__SlateRecord[0-9]+]] = [[SLATERECORD_0]] { __data: 0 };
+// CHECK-NEXT:     let mut control: __SlateRecord_thread_shared_types_h_112 = __SlateRecord_thread_shared_types_h_112 {
+// CHECK-NEXT:         __data: 0,
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { call_once(std::ptr::addr_of_mut!(control), Some(once_handler)) };
 // CHECK-NEXT:     unsafe { call_once(std::ptr::addr_of_mut!(control), Some(once_handler)) };
 // CHECK-NEXT:     let key_created: i32 = unsafe {

@@ -15,9 +15,9 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     static mut stdout: *mut _IO_FILE;
-// CHECK-NEXT:     fn remove(__filename: *const i8) -> i32;
-// CHECK-NEXT:     fn fflush(__stream: *mut _IO_FILE) -> i32;
-// CHECK-NEXT:     fn perror(__s: *const i8);
+// CHECK-NEXT:     fn remove([[ARG_0:arg[0-9]+]]: *const i8) -> i32;
+// CHECK-NEXT:     fn fflush([[ARG_0]]: *mut _IO_FILE) -> i32;
+// CHECK-NEXT:     fn perror([[ARG_0]]: *const i8);
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]

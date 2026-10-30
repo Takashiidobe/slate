@@ -36,14 +36,14 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct [[SLATERECORD_0:__SlateRecord[0-9]+]] {
+// CHECK-NEXT: struct __SlateRecord_libyaml_type_shapes_c_10 {
 // CHECK-NEXT:     read_handler: Option<
 // CHECK-NEXT:         unsafe extern "C-unwind" fn(*mut (), *mut u8, u64, *mut u64) -> i32,
 // CHECK-NEXT:     >,
@@ -80,7 +80,9 @@ int main(void) {
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut size_read: u64 = 0;
-// CHECK-NEXT:     let mut parser: [[SLATERECORD_0]] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut parser: __SlateRecord_libyaml_type_shapes_c_10 = unsafe {
+// CHECK-NEXT:         std::mem::zeroed()
+// CHECK-NEXT:     };
 // CHECK-NEXT:     parser.read_handler = Some(read_bytes);
 // CHECK-NEXT:     parser.read_handler_data = input.as_mut_ptr() as *mut ();
 // CHECK-NEXT:     let ok: i32 = unsafe {

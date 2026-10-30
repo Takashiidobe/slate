@@ -161,11 +161,11 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn feclearexcept(__excepts: i32) -> i32;
-// CHECK-NEXT:     fn fetestexcept(__excepts: i32) -> i32;
-// CHECK-NEXT:     fn printf(__format: *const u8, ...) -> i32;
-// CHECK-NEXT:     fn malloc(__size: u64) -> *mut ();
-// CHECK-NEXT:     fn free(__ptr: *mut ());
+// CHECK-NEXT:     fn feclearexcept([[ARG_0:arg[0-9]+]]: i32) -> i32;
+// CHECK-NEXT:     fn fetestexcept([[ARG_0]]: i32) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0]]: *const u8, ...) -> i32;
+// CHECK-NEXT:     fn malloc([[ARG_0]]: u64) -> *mut ();
+// CHECK-NEXT:     fn free([[ARG_0]]: *mut ());
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {

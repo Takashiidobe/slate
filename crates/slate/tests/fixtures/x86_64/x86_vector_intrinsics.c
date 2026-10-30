@@ -29,12 +29,12 @@ int main(void) {
 // CHECK-NEXT: #![feature(simd_ffi)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "llvm-intrinsic" {
 // CHECK-NEXT:     #[link_name = "llvm.x86.sse2.psll.d"]
 // CHECK-NEXT:     fn __slate_intrinsic_65fb1843bfbf1b54(
-// CHECK-NEXT:         [[ARG_0:arg[0-9]+]]: std::simd::Simd<i32, 4>,
+// CHECK-NEXT:         [[ARG_0]]: std::simd::Simd<i32, 4>,
 // CHECK-NEXT:         [[ARG_1:arg[0-9]+]]: std::simd::Simd<i32, 4>,
 // CHECK-NEXT:     ) -> std::simd::Simd<i32, 4>;
 // CHECK-NEXT:     #[link_name = "llvm.x86.sse2.pmulhu.w"]

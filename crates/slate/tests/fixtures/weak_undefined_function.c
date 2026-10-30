@@ -18,7 +18,7 @@ int main(void) {
 // CHECK-NEXT: #![feature(linkage)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT:     #[linkage = "extern_weak"]
 // CHECK-NEXT:     static missing: Option<unsafe extern "C-unwind" fn(i32) -> i32>;
 // CHECK-NEXT:     #[linkage = "extern_weak"]

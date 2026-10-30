@@ -69,7 +69,7 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
@@ -800,7 +800,7 @@ int main(void) {
 // CHECK-NEXT:     let mut i: u32 = 0;
 // CHECK-NEXT:     '[[SLATE_BREAK_8:__slate_break_[0-9]+]]: while (i as u64) < 192 / 8 {
 // CHECK-NEXT:         let s: u64 = unsafe { seeds.0[i as usize] };
-// CHECK-NEXT:         '[[SLATE_BREAK_9:__slate_break_[0-9]+]]: loop {
+// CHECK-NEXT:         '[[SLATE_BREAK_1]]: loop {
 // CHECK-NEXT:             let x: u8 = s as u8;
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             unsafe {
@@ -895,7 +895,7 @@ int main(void) {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
-// CHECK-NEXT:         '[[SLATE_BREAK_10:__slate_break_[0-9]+]]: loop {
+// CHECK-NEXT:         '[[SLATE_BREAK_2]]: loop {
 // CHECK-NEXT:             let x: u16 = s as u16;
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             unsafe {
@@ -990,7 +990,7 @@ int main(void) {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
-// CHECK-NEXT:         '[[SLATE_BREAK_11:__slate_break_[0-9]+]]: loop {
+// CHECK-NEXT:         '[[SLATE_BREAK_3]]: loop {
 // CHECK-NEXT:             let x: u32 = s as u32;
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             unsafe {
@@ -1085,7 +1085,7 @@ int main(void) {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
-// CHECK-NEXT:         '[[SLATE_BREAK_12:__slate_break_[0-9]+]]: loop {
+// CHECK-NEXT:         '[[SLATE_BREAK_4]]: loop {
 // CHECK-NEXT:             let x: u64 = s;
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             unsafe {
@@ -1180,7 +1180,7 @@ int main(void) {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
-// CHECK-NEXT:         '[[SLATE_BREAK_13:__slate_break_[0-9]+]]: loop {
+// CHECK-NEXT:         '[[SLATE_BREAK_5]]: loop {
 // CHECK-NEXT:             let x: u8 = (s as u8) & 1;
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             unsafe {
@@ -1281,7 +1281,7 @@ int main(void) {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
-// CHECK-NEXT:         '[[SLATE_BREAK_14:__slate_break_[0-9]+]]: loop {
+// CHECK-NEXT:         '[[SLATE_BREAK_6]]: loop {
 // CHECK-NEXT:             let x: u8 = (s as u8) & 127;
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             unsafe {
@@ -1389,7 +1389,7 @@ int main(void) {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
-// CHECK-NEXT:         '[[SLATE_BREAK_15:__slate_break_[0-9]+]]: loop {
+// CHECK-NEXT:         '[[SLATE_BREAK_7]]: loop {
 // CHECK-NEXT:             let x: u16 = (s as u16) & 8191;
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             unsafe {
@@ -1498,7 +1498,7 @@ int main(void) {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
-// CHECK-NEXT:         '[[SLATE_BREAK_16:__slate_break_[0-9]+]]: loop {
+// CHECK-NEXT:         '[[SLATE_BREAK_0]]: loop {
 // CHECK-NEXT:             let x: u64 = (s as u64) & 137438953471;
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             unsafe {
@@ -1612,7 +1612,7 @@ int main(void) {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
-// CHECK-NEXT:         '[[SLATE_BREAK_17:__slate_break_[0-9]+]]: loop {
+// CHECK-NEXT:         '[[SLATE_BREAK_9:__slate_break_[0-9]+]]: loop {
 // CHECK-NEXT:             let x: u64 = s as u64;
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             unsafe {
@@ -1708,7 +1708,7 @@ int main(void) {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
-// CHECK-NEXT:         '[[SLATE_BREAK_18:__slate_break_[0-9]+]]: loop {
+// CHECK-NEXT:         '[[SLATE_BREAK_10:__slate_break_[0-9]+]]: loop {
 // CHECK-NEXT:             let x: u8 = (!((s as u8) & 127) as u8) & 127;
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             unsafe {
@@ -1817,7 +1817,7 @@ int main(void) {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
-// CHECK-NEXT:         '[[SLATE_BREAK_19:__slate_break_[0-9]+]]: loop {
+// CHECK-NEXT:         '[[SLATE_BREAK_11:__slate_break_[0-9]+]]: loop {
 // CHECK-NEXT:             let x: u16 = (!((s as u16) & 8191) as u16) & 8191;
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             unsafe {
@@ -1926,7 +1926,7 @@ int main(void) {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
-// CHECK-NEXT:         '[[SLATE_BREAK_20:__slate_break_[0-9]+]]: loop {
+// CHECK-NEXT:         '[[SLATE_BREAK_12:__slate_break_[0-9]+]]: loop {
 // CHECK-NEXT:             let x: u64 = (!((s as u64) & 137438953471) as u64) & 137438953471;
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             unsafe {

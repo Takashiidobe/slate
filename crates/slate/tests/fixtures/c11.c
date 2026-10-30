@@ -299,56 +299,64 @@ int main(void) {
 // CHECK-NEXT: #![feature(thread_local)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn cimag(__z: num_complex::Complex<f64>) -> f64;
-// CHECK-NEXT:     fn creal(__z: num_complex::Complex<f64>) -> f64;
+// CHECK-NEXT:     fn cimag([[ARG_0:arg[0-9]+]]: num_complex::Complex<f64>) -> f64;
+// CHECK-NEXT:     fn creal([[ARG_0]]: num_complex::Complex<f64>) -> f64;
 // CHECK-NEXT:     fn __errno_location() -> *mut i32;
-// CHECK-NEXT:     fn remove(__filename: *const i8) -> i32;
-// CHECK-NEXT:     fn fclose(__stream: *mut _IO_FILE) -> i32;
-// CHECK-NEXT:     fn fopen(__filename: *const i8, __modes: *const i8) -> *mut _IO_FILE;
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn putchar(__c: i32) -> i32;
-// CHECK-NEXT:     fn free(__ptr: *mut ());
-// CHECK-NEXT:     fn aligned_alloc(__alignment: u64, __size: u64) -> *mut ();
-// CHECK-NEXT:     fn at_quick_exit(__func: Option<unsafe extern "C-unwind" fn()>) -> i32;
-// CHECK-NEXT:     fn quick_exit(__status: i32);
+// CHECK-NEXT:     fn remove([[ARG_0]]: *const i8) -> i32;
+// CHECK-NEXT:     fn fclose([[ARG_0]]: *mut _IO_FILE) -> i32;
+// CHECK-NEXT:     fn fopen([[ARG_0]]: *const i8, [[ARG_1:arg[0-9]+]]: *const i8) -> *mut _IO_FILE;
+// CHECK-NEXT:     fn printf([[ARG_0]]: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn putchar([[ARG_0]]: i32) -> i32;
+// CHECK-NEXT:     fn free([[ARG_0]]: *mut ());
+// CHECK-NEXT:     fn aligned_alloc([[ARG_0]]: u64, [[ARG_1]]: u64) -> *mut ();
+// CHECK-NEXT:     fn at_quick_exit([[ARG_0]]: Option<unsafe extern "C-unwind" fn()>) -> i32;
+// CHECK-NEXT:     fn quick_exit([[ARG_0]]: i32);
 // CHECK-NEXT:     fn call_once(
-// CHECK-NEXT:         __flag: *mut [[SLATERECORD_0:__SlateRecord[0-9]+]],
-// CHECK-NEXT:         __func: Option<unsafe extern "C-unwind" fn()>,
+// CHECK-NEXT:         [[ARG_0]]: *mut __SlateRecord_thread_shared_types_h_112,
+// CHECK-NEXT:         [[ARG_1]]: Option<unsafe extern "C-unwind" fn()>,
 // CHECK-NEXT:     );
-// CHECK-NEXT:     fn timespec_get(__ts: *mut timespec, __base: i32) -> i32;
+// CHECK-NEXT:     fn timespec_get([[ARG_0]]: *mut timespec, [[ARG_1]]: i32) -> i32;
 // CHECK-NEXT:     fn thrd_create(
-// CHECK-NEXT:         __thr: *mut u64,
-// CHECK-NEXT:         __func: Option<unsafe extern "C-unwind" fn(*mut ()) -> i32>,
-// CHECK-NEXT:         __arg: *mut (),
+// CHECK-NEXT:         [[ARG_0]]: *mut u64,
+// CHECK-NEXT:         [[ARG_1]]: Option<unsafe extern "C-unwind" fn(*mut ()) -> i32>,
+// CHECK-NEXT:         [[ARG_2:arg[0-9]+]]: *mut (),
 // CHECK-NEXT:     ) -> i32;
-// CHECK-NEXT:     fn thrd_join(__thr: u64, __res: *mut i32) -> i32;
-// CHECK-NEXT:     fn mtx_init(__mutex: *mut [[SLATERECORD_1:__SlateRecord[0-9]+]], __type: i32) -> i32;
-// CHECK-NEXT:     fn mtx_lock(__mutex: *mut [[SLATERECORD_1]]) -> i32;
-// CHECK-NEXT:     fn mtx_unlock(__mutex: *mut [[SLATERECORD_1]]) -> i32;
-// CHECK-NEXT:     fn mtx_destroy(__mutex: *mut [[SLATERECORD_1]]);
-// CHECK-NEXT:     fn cnd_init(__cond: *mut [[SLATERECORD_2:__SlateRecord[0-9]+]]) -> i32;
-// CHECK-NEXT:     fn cnd_destroy(__COND: *mut [[SLATERECORD_2]]);
+// CHECK-NEXT:     fn thrd_join([[ARG_0]]: u64, [[ARG_1]]: *mut i32) -> i32;
+// CHECK-NEXT:     fn mtx_init([[ARG_0]]: *mut __SlateRecord_threads_h_66, [[ARG_1]]: i32) -> i32;
+// CHECK-NEXT:     fn mtx_lock([[ARG_0]]: *mut __SlateRecord_threads_h_66) -> i32;
+// CHECK-NEXT:     fn mtx_unlock([[ARG_0]]: *mut __SlateRecord_threads_h_66) -> i32;
+// CHECK-NEXT:     fn mtx_destroy([[ARG_0]]: *mut __SlateRecord_threads_h_66);
+// CHECK-NEXT:     fn cnd_init([[ARG_0]]: *mut __SlateRecord_threads_h_72) -> i32;
+// CHECK-NEXT:     fn cnd_destroy([[ARG_0]]: *mut __SlateRecord_threads_h_72);
 // CHECK-NEXT:     fn tss_create(
-// CHECK-NEXT:         __tss_id: *mut u32,
-// CHECK-NEXT:         __destructor: Option<unsafe extern "C-unwind" fn(*mut ())>,
+// CHECK-NEXT:         [[ARG_0]]: *mut u32,
+// CHECK-NEXT:         [[ARG_1]]: Option<unsafe extern "C-unwind" fn(*mut ())>,
 // CHECK-NEXT:     ) -> i32;
-// CHECK-NEXT:     fn tss_get(__tss_id: u32) -> *mut ();
-// CHECK-NEXT:     fn tss_set(__tss_id: u32, __val: *mut ()) -> i32;
-// CHECK-NEXT:     fn tss_delete(__tss_id: u32);
+// CHECK-NEXT:     fn tss_get([[ARG_0]]: u32) -> *mut ();
+// CHECK-NEXT:     fn tss_set([[ARG_0]]: u32, [[ARG_1]]: *mut ()) -> i32;
+// CHECK-NEXT:     fn tss_delete([[ARG_0]]: u32);
 // CHECK-NEXT:     fn mbrtoc16(
-// CHECK-NEXT:         __pc16: *mut u16,
-// CHECK-NEXT:         __s: *const i8,
-// CHECK-NEXT:         __n: u64,
-// CHECK-NEXT:         __p: *mut [[SLATERECORD_3:__SlateRecord[0-9]+]],
+// CHECK-NEXT:         [[ARG_0]]: *mut u16,
+// CHECK-NEXT:         [[ARG_1]]: *const i8,
+// CHECK-NEXT:         [[ARG_2]]: u64,
+// CHECK-NEXT:         [[ARG_3:arg[0-9]+]]: *mut __SlateRecord___mbstate_t_h_21,
 // CHECK-NEXT:     ) -> u64;
-// CHECK-NEXT:     fn c16rtomb(__s: *mut i8, __c16: u16, __ps: *mut [[SLATERECORD_3]]) -> u64;
+// CHECK-NEXT:     fn c16rtomb(
+// CHECK-NEXT:         [[ARG_0]]: *mut i8,
+// CHECK-NEXT:         [[ARG_1]]: u16,
+// CHECK-NEXT:         [[ARG_2]]: *mut __SlateRecord___mbstate_t_h_21,
+// CHECK-NEXT:     ) -> u64;
 // CHECK-NEXT:     fn mbrtoc32(
-// CHECK-NEXT:         __pc32: *mut u32,
-// CHECK-NEXT:         __s: *const i8,
-// CHECK-NEXT:         __n: u64,
-// CHECK-NEXT:         __p: *mut [[SLATERECORD_3]],
+// CHECK-NEXT:         [[ARG_0]]: *mut u32,
+// CHECK-NEXT:         [[ARG_1]]: *const i8,
+// CHECK-NEXT:         [[ARG_2]]: u64,
+// CHECK-NEXT:         [[ARG_3]]: *mut __SlateRecord___mbstate_t_h_21,
 // CHECK-NEXT:     ) -> u64;
-// CHECK-NEXT:     fn c32rtomb(__s: *mut i8, __c32: u32, __ps: *mut [[SLATERECORD_3]]) -> u64;
+// CHECK-NEXT:     fn c32rtomb(
+// CHECK-NEXT:         [[ARG_0]]: *mut i8,
+// CHECK-NEXT:         [[ARG_1]]: u32,
+// CHECK-NEXT:         [[ARG_2]]: *mut __SlateRecord___mbstate_t_h_21,
+// CHECK-NEXT:     ) -> u64;
 // CHECK-NEXT:     safe fn __slate_f80_add(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_sub(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_mul(__a: LongDouble, __b: LongDouble) -> LongDouble;
@@ -521,13 +529,13 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct [[SLATERECORD_3]] {
+// CHECK-NEXT: struct __SlateRecord___mbstate_t_h_21 {
 // CHECK-NEXT:     __count: i32,
-// CHECK-NEXT:     __value: [[SLATERECORD_4:__SlateRecord[0-9]+]],
+// CHECK-NEXT:     __value: __SlateRecord___mbstate_t_h_21_2,
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: union [[SLATERECORD_4]] {
+// CHECK-NEXT: union __SlateRecord___mbstate_t_h_21_2 {
 // CHECK-NEXT:     __wch: u32,
 // CHECK-NEXT:     __wchb: [i8; 4],
 // CHECK-NEXT: }
@@ -578,7 +586,7 @@ int main(void) {
 // CHECK-NEXT: struct _IO_wide_data {}
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct [[SLATERECORD_0]] {
+// CHECK-NEXT: struct __SlateRecord_thread_shared_types_h_112 {
 // CHECK-NEXT:     __data: i32,
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
@@ -589,31 +597,31 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: union [[SLATERECORD_1]] {
+// CHECK-NEXT: union __SlateRecord_threads_h_66 {
 // CHECK-NEXT:     __size: [i8; 40],
 // CHECK-NEXT:     __align: i64,
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: union [[SLATERECORD_2]] {
+// CHECK-NEXT: union __SlateRecord_threads_h_72 {
 // CHECK-NEXT:     __size: [i8; 48],
 // CHECK-NEXT:     __align: i64,
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct C11Anonymous {
-// CHECK-NEXT:     [[SLATE_ANON_0:__slate_anon_[0-9]+]]: [[SLATERECORD_5:__SlateRecord[0-9]+]],
-// CHECK-NEXT:     [[SLATE_ANON_1:__slate_anon_[0-9]+]]: [[SLATERECORD_6:__SlateRecord[0-9]+]],
+// CHECK-NEXT:     [[SLATE_ANON_0:__slate_anon_[0-9]+]]: __SlateRecord_c11_c_56,
+// CHECK-NEXT:     [[SLATE_ANON_1:__slate_anon_[0-9]+]]: __SlateRecord_c11_c_60,
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: union [[SLATERECORD_5]] {
+// CHECK-NEXT: union __SlateRecord_c11_c_56 {
 // CHECK-NEXT:     integer: i32,
 // CHECK-NEXT:     real: f64,
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct [[SLATERECORD_6]] {
+// CHECK-NEXT: struct __SlateRecord_c11_c_60 {
 // CHECK-NEXT:     x: i32,
 // CHECK-NEXT:     y: i32,
 // CHECK-NEXT: }
@@ -719,7 +727,7 @@ int main(void) {
 // CHECK-NEXT:     let mut anonymous: C11Anonymous = {
 // CHECK-NEXT:         let mut [[T_1]]: C11Anonymous = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:         [[T_1]].[[SLATE_ANON_0]] = {
-// CHECK-NEXT:             let mut [[T_0]]: [[SLATERECORD_5]] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:             let mut [[T_0]]: __SlateRecord_c11_c_56 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:             [[T_0]].integer = 0i32;
 // CHECK-NEXT:             [[T_0]]
 // CHECK-NEXT:         };
@@ -730,13 +738,13 @@ int main(void) {
 // CHECK-NEXT:         [[T_2]].value = 0u8;
 // CHECK-NEXT:         [[T_2]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut utf16_state: [[SLATERECORD_3]] = {
-// CHECK-NEXT:         let mut [[T_3:__t[0-9]+]]: [[SLATERECORD_3]] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut utf16_state: __SlateRecord___mbstate_t_h_21 = {
+// CHECK-NEXT:         let mut [[T_3:__t[0-9]+]]: __SlateRecord___mbstate_t_h_21 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:         [[T_3]].__count = 0i32;
 // CHECK-NEXT:         [[T_3]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut utf32_state: [[SLATERECORD_3]] = {
-// CHECK-NEXT:         let mut [[T_4:__t[0-9]+]]: [[SLATERECORD_3]] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut utf32_state: __SlateRecord___mbstate_t_h_21 = {
+// CHECK-NEXT:         let mut [[T_4:__t[0-9]+]]: __SlateRecord___mbstate_t_h_21 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:         [[T_4]].__count = 0i32;
 // CHECK-NEXT:         [[T_4]]
 // CHECK-NEXT:     };
@@ -746,9 +754,11 @@ int main(void) {
 // CHECK-NEXT:     let mut multibyte32: __SlateAlign16<[i8; 16]> = __SlateAlign16([0i8; 16]);
 // CHECK-NEXT:     let mut current_time: timespec = timespec { tv_sec: 0, tv_nsec: 0 };
 // CHECK-NEXT:     let mut thread: u64 = 0;
-// CHECK-NEXT:     let mut mutex: [[SLATERECORD_1]] = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut condition: [[SLATERECORD_2]] = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut once_control: [[SLATERECORD_0]] = [[SLATERECORD_0]] { __data: 0 };
+// CHECK-NEXT:     let mut mutex: __SlateRecord_threads_h_66 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut condition: __SlateRecord_threads_h_72 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut once_control: __SlateRecord_thread_shared_types_h_112 = __SlateRecord_thread_shared_types_h_112 {
+// CHECK-NEXT:         __data: 0,
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let mut thread_key: u32 = 0;
 // CHECK-NEXT:     let mut thread_increment: i32 = 7;
 // CHECK-NEXT:     let mut thread_result: i32 = 0;

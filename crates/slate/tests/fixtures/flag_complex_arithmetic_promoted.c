@@ -59,10 +59,10 @@ int main(void) {
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT: }
 // AARCH64-UNKNOWN-LINUX-GNU-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:     fn printf(__format: *const i8, ...) -> i32;
-// I686-UNKNOWN-LINUX-GNU-NEXT:     fn printf(__format: *const i8, ...) -> i32;
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:     fn memcpy(__dest: *mut (), __src: *const (), __n: u64) -> *mut ();
-// I686-UNKNOWN-LINUX-GNU-NEXT:     fn memcpy(__dest: *mut (), __src: *const (), __n: u32) -> *mut ();
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
+// I686-UNKNOWN-LINUX-GNU-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:     fn memcpy([[ARG_0]]: *mut (), [[ARG_1:arg[0-9]+]]: *const (), [[ARG_2:arg[0-9]+]]: u64) -> *mut ();
+// I686-UNKNOWN-LINUX-GNU-NEXT:     fn memcpy([[ARG_0]]: *mut (), [[ARG_1:arg[0-9]+]]: *const (), [[ARG_2:arg[0-9]+]]: u32) -> *mut ();
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:     safe fn __slate_f80_add(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // I686-UNKNOWN-LINUX-GNU-NEXT:     safe fn __slate_f80_add(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:     safe fn __slate_f80_sub(__a: LongDouble, __b: LongDouble) -> LongDouble;
@@ -285,8 +285,8 @@ int main(void) {
 // I686-UNKNOWN-LINUX-GNU-NEXT:     safe fn __slate_f80_to_bool(__a: LongDouble) -> bool;
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:     fn __slate_printf__ri32_pi8_f80_f80(_0: *const i8, _1: LongDouble, _2: LongDouble) -> i32;
 // I686-UNKNOWN-LINUX-GNU-NEXT:     fn __slate_printf__ri32_pi8_f80_f80(_0: *const i8, _1: LongDouble, _2: LongDouble) -> i32;
-// AARCH64-UNKNOWN-LINUX-GNU-NEXT:     fn printf(__format: *const u8, ...) -> i32;
-// AARCH64-UNKNOWN-LINUX-GNU-NEXT:     fn memcpy(__dest: *mut (), __src: *const (), __n: u64) -> *mut ();
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const u8, ...) -> i32;
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:     fn memcpy([[ARG_0]]: *mut (), [[ARG_1:arg[0-9]+]]: *const (), [[ARG_2:arg[0-9]+]]: u64) -> *mut ();
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {

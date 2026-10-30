@@ -14,13 +14,13 @@ int main(void) {
 // CHECK-NEXT: #![feature(link_llvm_intrinsics)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "llvm-intrinsic" {
 // CHECK-NEXT:     #[link_name = "llvm.thread.pointer.p0"]
 // CHECK-NEXT:     fn __slate_intrinsic_3b4650fdfadac1ac() -> *mut ();
 // CHECK-NEXT:     #[link_name = "llvm.clear_cache"]
-// CHECK-NEXT:     fn __slate_intrinsic_7eb885185d29c159([[ARG_0:arg[0-9]+]]: *mut (), [[ARG_1:arg[0-9]+]]: *mut ());
+// CHECK-NEXT:     fn __slate_intrinsic_7eb885185d29c159([[ARG_0]]: *mut (), [[ARG_1:arg[0-9]+]]: *mut ());
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);

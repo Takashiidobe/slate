@@ -102,35 +102,35 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn parse_printf_format(__fmt: *const i8, __n: u64, __argtypes: *mut i32) -> u64;
-// CHECK-NEXT:     fn fclose(__stream: *mut _IO_FILE) -> i32;
-// CHECK-NEXT:     fn fflush(__stream: *mut _IO_FILE) -> i32;
+// CHECK-NEXT:     fn parse_printf_format([[ARG_0:arg[0-9]+]]: *const i8, [[ARG_1:arg[0-9]+]]: u64, [[ARG_2:arg[0-9]+]]: *mut i32) -> u64;
+// CHECK-NEXT:     fn fclose([[ARG_0]]: *mut _IO_FILE) -> i32;
+// CHECK-NEXT:     fn fflush([[ARG_0]]: *mut _IO_FILE) -> i32;
 // CHECK-NEXT:     fn fopencookie(
-// CHECK-NEXT:         __magic_cookie: *mut (),
-// CHECK-NEXT:         __modes: *const i8,
-// CHECK-NEXT:         __io_funcs: _IO_cookie_io_functions_t,
+// CHECK-NEXT:         [[ARG_0]]: *mut (),
+// CHECK-NEXT:         [[ARG_1]]: *const i8,
+// CHECK-NEXT:         [[ARG_2]]: _IO_cookie_io_functions_t,
 // CHECK-NEXT:     ) -> *mut _IO_FILE;
-// CHECK-NEXT:     fn fmemopen(__s: *mut (), __len: u64, __modes: *const i8) -> *mut _IO_FILE;
-// CHECK-NEXT:     fn open_memstream(__bufloc: *mut *mut i8, __sizeloc: *mut u64) -> *mut _IO_FILE;
-// CHECK-NEXT:     fn fprintf(__stream: *mut _IO_FILE, __format: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn asprintf(__ptr: *mut *mut i8, __fmt: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn fmemopen([[ARG_0]]: *mut (), [[ARG_1]]: u64, [[ARG_2]]: *const i8) -> *mut _IO_FILE;
+// CHECK-NEXT:     fn open_memstream([[ARG_0]]: *mut *mut i8, [[ARG_1]]: *mut u64) -> *mut _IO_FILE;
+// CHECK-NEXT:     fn fprintf([[ARG_0]]: *mut _IO_FILE, [[ARG_1]]: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0]]: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn asprintf([[ARG_0]]: *mut *mut i8, [[ARG_1]]: *const i8, ...) -> i32;
 // CHECK-NEXT:     fn getdelim(
-// CHECK-NEXT:         __lineptr: *mut *mut i8,
-// CHECK-NEXT:         __n: *mut u64,
-// CHECK-NEXT:         __delimiter: i32,
-// CHECK-NEXT:         __stream: *mut _IO_FILE,
+// CHECK-NEXT:         [[ARG_0]]: *mut *mut i8,
+// CHECK-NEXT:         [[ARG_1]]: *mut u64,
+// CHECK-NEXT:         [[ARG_2]]: i32,
+// CHECK-NEXT:         [[ARG_3:arg[0-9]+]]: *mut _IO_FILE,
 // CHECK-NEXT:     ) -> i64;
-// CHECK-NEXT:     fn getline(__lineptr: *mut *mut i8, __n: *mut u64, __stream: *mut _IO_FILE) -> i64;
-// CHECK-NEXT:     fn __fbufsize(__fp: *mut _IO_FILE) -> u64;
-// CHECK-NEXT:     fn __freading(__fp: *mut _IO_FILE) -> i32;
-// CHECK-NEXT:     fn __fwriting(__fp: *mut _IO_FILE) -> i32;
-// CHECK-NEXT:     fn __fpending(__fp: *mut _IO_FILE) -> u64;
-// CHECK-NEXT:     fn free(__ptr: *mut ());
-// CHECK-NEXT:     fn memcpy(__dest: *mut (), __src: *const (), __n: u64) -> *mut ();
-// CHECK-NEXT:     fn memcmp(__s1: *const (), __s2: *const (), __n: u64) -> i32;
-// CHECK-NEXT:     fn strcmp(__s1: *const i8, __s2: *const i8) -> i32;
-// CHECK-NEXT:     fn strlen(__s: *const i8) -> u64;
+// CHECK-NEXT:     fn getline([[ARG_0]]: *mut *mut i8, [[ARG_1]]: *mut u64, [[ARG_2]]: *mut _IO_FILE) -> i64;
+// CHECK-NEXT:     fn __fbufsize([[ARG_0]]: *mut _IO_FILE) -> u64;
+// CHECK-NEXT:     fn __freading([[ARG_0]]: *mut _IO_FILE) -> i32;
+// CHECK-NEXT:     fn __fwriting([[ARG_0]]: *mut _IO_FILE) -> i32;
+// CHECK-NEXT:     fn __fpending([[ARG_0]]: *mut _IO_FILE) -> u64;
+// CHECK-NEXT:     fn free([[ARG_0]]: *mut ());
+// CHECK-NEXT:     fn memcpy([[ARG_0]]: *mut (), [[ARG_1]]: *const (), [[ARG_2]]: u64) -> *mut ();
+// CHECK-NEXT:     fn memcmp([[ARG_0]]: *const (), [[ARG_1]]: *const (), [[ARG_2]]: u64) -> i32;
+// CHECK-NEXT:     fn strcmp([[ARG_0]]: *const i8, [[ARG_1]]: *const i8) -> i32;
+// CHECK-NEXT:     fn strlen([[ARG_0]]: *const i8) -> u64;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
@@ -296,9 +296,9 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut total: i32 = 0;
-// CHECK-NEXT:     let [[V_10:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_10]] + (!stream.is_null() as i32);
-// CHECK-NEXT:     let [[V_11:__v[0-9]+]]: i32 = ((unsafe {
+// CHECK-NEXT:     let [[V_1]]: i32 = total;
+// CHECK-NEXT:     total = [[V_1]] + (!stream.is_null() as i32);
+// CHECK-NEXT:     let [[V_10:__v[0-9]+]]: i32 = ((unsafe {
 // CHECK-NEXT:         getdelim(
 // CHECK-NEXT:             std::ptr::addr_of_mut!(line),
 // CHECK-NEXT:             std::ptr::addr_of_mut!(capacity),
@@ -306,23 +306,23 @@ int main(void) {
 // CHECK-NEXT:             stream,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) == 6) as i32;
-// CHECK-NEXT:     total += [[V_11]];
-// CHECK-NEXT:     let [[V_12:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_12]]
+// CHECK-NEXT:     total += [[V_10]];
+// CHECK-NEXT:     let [[V_3]]: i32 = total;
+// CHECK-NEXT:     total = [[V_3]]
 // CHECK-NEXT:         + (((unsafe { strcmp(line as *const i8, c"alpha|".as_ptr()) }) == 0) as i32);
-// CHECK-NEXT:     let [[V_13:__v[0-9]+]]: i32 = ((unsafe {
+// CHECK-NEXT:     let [[V_4]]: i32 = ((unsafe {
 // CHECK-NEXT:         getline(std::ptr::addr_of_mut!(line), std::ptr::addr_of_mut!(capacity), stream)
 // CHECK-NEXT:     }) == 5) as i32;
-// CHECK-NEXT:     total += [[V_13]];
-// CHECK-NEXT:     let [[V_14:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_14]]
+// CHECK-NEXT:     total += [[V_4]];
+// CHECK-NEXT:     let [[V_5]]: i32 = total;
+// CHECK-NEXT:     total = [[V_5]]
 // CHECK-NEXT:         + (((unsafe { strcmp(line as *const i8, c"beta\n".as_ptr()) }) == 0) as i32);
-// CHECK-NEXT:     let [[V_15:__v[0-9]+]]: i32 = ((unsafe { __freading(stream) }) != 0) as i32;
-// CHECK-NEXT:     total += [[V_15]];
-// CHECK-NEXT:     let [[V_16:__v[0-9]+]]: i32 = ((unsafe { __fbufsize(stream) }) > 0) as i32;
-// CHECK-NEXT:     total += [[V_16]];
-// CHECK-NEXT:     let [[V_17:__v[0-9]+]]: i32 = ((unsafe { fclose(stream) }) == 0) as i32;
-// CHECK-NEXT:     total += [[V_17]];
+// CHECK-NEXT:     let [[V_11:__v[0-9]+]]: i32 = ((unsafe { __freading(stream) }) != 0) as i32;
+// CHECK-NEXT:     total += [[V_11]];
+// CHECK-NEXT:     let [[V_12:__v[0-9]+]]: i32 = ((unsafe { __fbufsize(stream) }) > 0) as i32;
+// CHECK-NEXT:     total += [[V_12]];
+// CHECK-NEXT:     let [[V_13:__v[0-9]+]]: i32 = ((unsafe { fclose(stream) }) == 0) as i32;
+// CHECK-NEXT:     total += [[V_13]];
 // CHECK-NEXT:     unsafe { free(line as *mut ()) };
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
@@ -341,18 +341,18 @@ int main(void) {
 // CHECK-NEXT:     let stream: *mut _IO_FILE = unsafe {
 // CHECK-NEXT:         fopencookie(std::ptr::addr_of_mut!(cookie) as *mut (), c"w".as_ptr(), functions)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let [[V_18:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_18]] + (!stream.is_null() as i32);
-// CHECK-NEXT:     let [[V_19:__v[0-9]+]]: i32 = ((unsafe {
+// CHECK-NEXT:     let [[V_1]]: i32 = total;
+// CHECK-NEXT:     total = [[V_1]] + (!stream.is_null() as i32);
+// CHECK-NEXT:     let [[V_10]]: i32 = ((unsafe {
 // CHECK-NEXT:         fprintf(stream, c"%s:%d".as_ptr(), c"cookie".as_ptr() as *mut i8, 7i32)
 // CHECK-NEXT:     }) == 8) as i32;
-// CHECK-NEXT:     total += [[V_19]];
-// CHECK-NEXT:     let [[V_20:__v[0-9]+]]: i32 = ((unsafe { fclose(stream) }) == 0) as i32;
-// CHECK-NEXT:     total += [[V_20]];
+// CHECK-NEXT:     total += [[V_10]];
+// CHECK-NEXT:     let [[V_3]]: i32 = ((unsafe { fclose(stream) }) == 0) as i32;
+// CHECK-NEXT:     total += [[V_3]];
 // CHECK-NEXT:     total += (cookie.closed == 1) as i32;
 // CHECK-NEXT:     total += (cookie.length == 8) as i32;
-// CHECK-NEXT:     let [[V_21:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_21]]
+// CHECK-NEXT:     let [[V_11]]: i32 = total;
+// CHECK-NEXT:     total = [[V_11]]
 // CHECK-NEXT:         + (((unsafe {
 // CHECK-NEXT:             memcmp(
 // CHECK-NEXT:                 cookie.bytes.as_mut_ptr() as *const (),

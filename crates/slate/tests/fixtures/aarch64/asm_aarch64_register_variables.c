@@ -43,8 +43,8 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     static mut stdout: *mut _IO_FILE;
-// CHECK-NEXT:     fn fflush(__stream: *mut _IO_FILE) -> i32;
-// CHECK-NEXT:     fn printf(__format: *const u8, ...) -> i32;
+// CHECK-NEXT:     fn fflush([[ARG_0:arg[0-9]+]]: *mut _IO_FILE) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0]]: *const u8, ...) -> i32;
 // CHECK-NEXT:     fn getpid() -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]

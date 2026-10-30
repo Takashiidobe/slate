@@ -28,7 +28,7 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut hits: i32 = 0;
 // CHECK-NEXT: fn mark(value: i32) -> i32 {
@@ -42,8 +42,8 @@ int main(void) {
 // CHECK-NEXT:     [[V_0]] as i32
 // CHECK-NEXT: }
 // CHECK-NEXT: fn logical_or(a: i32, b: i32) -> i32 {
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: bool = a != 0 || mark(b) != 0;
-// CHECK-NEXT:     [[V_1]] as i32
+// CHECK-NEXT:     let [[V_0]]: bool = a != 0 || mark(b) != 0;
+// CHECK-NEXT:     [[V_0]] as i32
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe {

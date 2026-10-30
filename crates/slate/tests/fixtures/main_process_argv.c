@@ -24,13 +24,13 @@ int main(int argc, char **argv, char **envp) {
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     static mut environ: *mut *mut i8;
-// CHECK-NEXT:     fn open(__file: *const i8, __oflag: i32, ...) -> i32;
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn memcpy(__dest: *mut (), __src: *const (), __n: u64) -> *mut ();
-// CHECK-NEXT:     fn memset(__s: *mut (), __c: i32, __n: u64) -> *mut ();
-// CHECK-NEXT:     fn strlen(__s: *const i8) -> u64;
-// CHECK-NEXT:     fn close(__fd: i32) -> i32;
-// CHECK-NEXT:     fn read(__fd: i32, __buf: *mut (), __nbytes: u64) -> i64;
+// CHECK-NEXT:     fn open([[ARG_0:arg[0-9]+]]: *const i8, [[ARG_1:arg[0-9]+]]: i32, ...) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0]]: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn memcpy([[ARG_0]]: *mut (), [[ARG_1]]: *const (), [[ARG_2:arg[0-9]+]]: u64) -> *mut ();
+// CHECK-NEXT:     fn memset([[ARG_0]]: *mut (), [[ARG_1]]: i32, [[ARG_2]]: u64) -> *mut ();
+// CHECK-NEXT:     fn strlen([[ARG_0]]: *const i8) -> u64;
+// CHECK-NEXT:     fn close([[ARG_0]]: i32) -> i32;
+// CHECK-NEXT:     fn read([[ARG_0]]: i32, [[ARG_1]]: *mut (), [[ARG_2]]: u64) -> i64;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;

@@ -124,9 +124,9 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[V_0:__v[0-9]+]]: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT:     #[link_name = "memset"]
-// CHECK-NEXT:     fn __builtin_memset([[V_1:__v[0-9]+]]: *mut (), [[V_2:__v[0-9]+]]: i32, [[V_3:__v[0-9]+]]: u32) -> *mut ();
+// CHECK-NEXT:     fn __builtin_memset([[ARG_0]]: *mut (), [[ARG_1:arg[0-9]+]]: i32, [[ARG_2:arg[0-9]+]]: u32) -> *mut ();
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: // { dg-options "-malign-double" }

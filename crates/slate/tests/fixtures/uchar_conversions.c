@@ -24,45 +24,53 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf(__format: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT:     fn mbrtoc16(
-// CHECK-NEXT:         __pc16: *mut u16,
-// CHECK-NEXT:         __s: *const i8,
-// CHECK-NEXT:         __n: u64,
-// CHECK-NEXT:         __p: *mut [[SLATERECORD_0:__SlateRecord[0-9]+]],
+// CHECK-NEXT:         [[ARG_0]]: *mut u16,
+// CHECK-NEXT:         [[ARG_1:arg[0-9]+]]: *const i8,
+// CHECK-NEXT:         [[ARG_2:arg[0-9]+]]: u64,
+// CHECK-NEXT:         [[ARG_3:arg[0-9]+]]: *mut __SlateRecord___mbstate_t_h_21,
 // CHECK-NEXT:     ) -> u64;
-// CHECK-NEXT:     fn c16rtomb(__s: *mut i8, __c16: u16, __ps: *mut [[SLATERECORD_0]]) -> u64;
+// CHECK-NEXT:     fn c16rtomb(
+// CHECK-NEXT:         [[ARG_0]]: *mut i8,
+// CHECK-NEXT:         [[ARG_1]]: u16,
+// CHECK-NEXT:         [[ARG_2]]: *mut __SlateRecord___mbstate_t_h_21,
+// CHECK-NEXT:     ) -> u64;
 // CHECK-NEXT:     fn mbrtoc32(
-// CHECK-NEXT:         __pc32: *mut u32,
-// CHECK-NEXT:         __s: *const i8,
-// CHECK-NEXT:         __n: u64,
-// CHECK-NEXT:         __p: *mut [[SLATERECORD_0]],
+// CHECK-NEXT:         [[ARG_0]]: *mut u32,
+// CHECK-NEXT:         [[ARG_1]]: *const i8,
+// CHECK-NEXT:         [[ARG_2]]: u64,
+// CHECK-NEXT:         [[ARG_3]]: *mut __SlateRecord___mbstate_t_h_21,
 // CHECK-NEXT:     ) -> u64;
-// CHECK-NEXT:     fn c32rtomb(__s: *mut i8, __c32: u32, __ps: *mut [[SLATERECORD_0]]) -> u64;
+// CHECK-NEXT:     fn c32rtomb(
+// CHECK-NEXT:         [[ARG_0]]: *mut i8,
+// CHECK-NEXT:         [[ARG_1]]: u32,
+// CHECK-NEXT:         [[ARG_2]]: *mut __SlateRecord___mbstate_t_h_21,
+// CHECK-NEXT:     ) -> u64;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct [[SLATERECORD_0]] {
+// CHECK-NEXT: struct __SlateRecord___mbstate_t_h_21 {
 // CHECK-NEXT:     __count: i32,
-// CHECK-NEXT:     __value: [[SLATERECORD_1:__SlateRecord[0-9]+]],
+// CHECK-NEXT:     __value: __SlateRecord___mbstate_t_h_21_2,
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: union [[SLATERECORD_1]] {
+// CHECK-NEXT: union __SlateRecord___mbstate_t_h_21_2 {
 // CHECK-NEXT:     __wch: u32,
 // CHECK-NEXT:     __wchb: [i8; 4],
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut state16: [[SLATERECORD_0]] = {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [[SLATERECORD_0]] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut state16: __SlateRecord___mbstate_t_h_21 = {
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: __SlateRecord___mbstate_t_h_21 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].__count = 0i32;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut state32: [[SLATERECORD_0]] = {
-// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: [[SLATERECORD_0]] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut state32: __SlateRecord___mbstate_t_h_21 = {
+// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: __SlateRecord___mbstate_t_h_21 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:         [[T_1]].__count = 0i32;
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
