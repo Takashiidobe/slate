@@ -895,6 +895,7 @@ pub(in crate::backend) fn insert_stmts(
 fn build_stmt(arena: &mut Arena, parent: Option<NodeId>, stmt: Stmt) -> NodeId {
     let id = arena.reserve(parent);
     let kind = match stmt {
+        Stmt::Cfg { .. } => unreachable!("only the project merge gates statements"),
         Stmt::Comment(comment) => NodeKind::Comment(comment),
         Stmt::Let {
             name,

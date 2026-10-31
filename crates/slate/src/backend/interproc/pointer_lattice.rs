@@ -855,6 +855,7 @@ impl ClassifyCtx<'_> {
 
     fn stmt(&mut self, stmt: &Stmt) {
         match stmt {
+            Stmt::Cfg { .. } => unreachable!("only the project merge gates statements"),
             Stmt::Comment(_) => {}
             Stmt::Let {
                 name,
@@ -2072,6 +2073,7 @@ fn rewrite_block(block: &mut Block, ctx: &LiftCtx) {
 
 fn rewrite_stmt(stmt: &mut Stmt, ctx: &LiftCtx) {
     match stmt {
+        Stmt::Cfg { .. } => unreachable!("only the project merge gates statements"),
         Stmt::Comment(_) => {}
         Stmt::Assign { target, value } => {
             if let Some((name, LiftKind::Cell)) = deref_of_tracked(target, ctx.own) {

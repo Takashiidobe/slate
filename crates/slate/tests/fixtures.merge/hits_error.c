@@ -27,9 +27,9 @@ int main(void) {
 // CHECK-NEXT:   hits_error.c: [alpha,beta] 3 compiled
 // CHECK-NEXT:     infeasible [alpha,beta]: {{.*}}tests/fixtures.merge/hits_error.c: analyze {{.*}}tests/fixtures.merge/hits_error.c: #error alpha and beta cannot be combined here
 // CHECK-NEXT: total: 8 compiles across 2 targets
-// CHECK-NEXT: unit hits_error: 19 items, 17 gated, 1 duplicated functions
-// CHECK-NEXT:   duplicated fn:__slate_main: 2 variants
+// CHECK-NEXT: unit hits_error: 18 items, 15 gated, 0 duplicated functions
 // CHECK-NEXT:   hoisted fn:value: 3 variants
+// CHECK-NEXT:   spliced fn:__slate_main: 2 variants
 // CHECK-NEXT: projection: 10 checked, 2 not translatable, 0 mismatches
 // CHECK-NEXT: signatures: 0 shared symbols, 0 mismatches
 // CHECK-NEXT: exit: 0
@@ -140,15 +140,15 @@ int main(void) {
 // CHECK-NEXT:     __SLATE_HOIST_value
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"))]
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     println!("{}", value());
-// CHECK-NEXT:     0
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(target_arch = "x86_64", windows, target_env = "msvc"))]
-// CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     unsafe { printf(c"%d\n".as_ptr(), value()) };
+// CHECK-NEXT:     #[cfg(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"))]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         println!("{}", value());
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(all(target_arch = "x86_64", windows, target_env = "msvc"))]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         unsafe { printf(c"%d\n".as_ptr(), value()) };
+// CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

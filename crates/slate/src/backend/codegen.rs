@@ -455,6 +455,11 @@ impl<W: Write> Codegen<W> {
             for comment in &field.comments {
                 self.comment(comment, 1)?;
             }
+            if let Some(cfg) = &field.cfg {
+                self.out.write_str("    #[cfg(")?;
+                self.cfg(cfg)?;
+                self.out.write_str(")]\n")?;
+            }
             self.out.write_str("    ")?;
             if let Some(vis) = r.field_vis.keyword() {
                 write!(self.out, "{vis} ")?;
@@ -630,6 +635,13 @@ impl<W: Write> Codegen<W> {
             Attr::ThreadLocal => self.out.write_str("thread_local"),
             Attr::WeakLinkage => self.out.write_str("linkage = \"weak\""),
             Attr::ExternWeakLinkage => self.out.write_str("linkage = \"extern_weak\""),
+            Attr::CfgAttr(cfg, attr) => {
+                self.out.write_str("cfg_attr(")?;
+                self.cfg(cfg)?;
+                self.out.write_str(", ")?;
+                self.attr(attr)?;
+                self.out.write_char(')')
+            }
             Attr::LinkSection(section) => {
                 write!(
                     self.out,
@@ -883,6 +895,21 @@ impl<W: Write> Codegen<W> {
     pub fn stmt(&mut self, stmt: &Stmt) -> fmt::Result {
         match stmt {
             Stmt::Comment(comment) => self.plain_comment(comment, 0),
+            Stmt::Cfg { cfg, body } => {
+                self.out.write_str("#[cfg(")?;
+                self.cfg(cfg)?;
+                self.out.write_str(")]\n")?;
+                match body.as_slice() {
+                    [stmt @ (Stmt::Let { .. } | Stmt::LetIf { .. } | Stmt::Block(_))] => {
+                        self.stmt(stmt)
+                    }
+                    _ => {
+                        self.out.write_str("{\n")?;
+                        self.stmts(body)?;
+                        self.out.write_str("}\n")
+                    }
+                }
+            }
             Stmt::Let {
                 name,
                 mutable,

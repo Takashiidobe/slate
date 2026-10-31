@@ -459,6 +459,7 @@ fn expr_any(expr: &Expr, pred: &mut dyn FnMut(&Expr) -> bool) -> bool {
 
 fn stmt_any_expr(stmt: &Stmt, pred: &mut dyn FnMut(&Expr) -> bool) -> bool {
     match stmt {
+        Stmt::Cfg { .. } => unreachable!("only the project merge gates statements"),
         Stmt::Comment(_) => false,
         Stmt::Let { init, .. } => init.as_ref().is_some_and(|e| expr_any(e, pred)),
         Stmt::LetIf {
@@ -524,6 +525,7 @@ fn stmt_any_expr(stmt: &Stmt, pred: &mut dyn FnMut(&Expr) -> bool) -> bool {
 
 fn stmt_e_ident_count(stmt: &Stmt, name: Ident) -> usize {
     match stmt {
+        Stmt::Cfg { .. } => unreachable!("only the project merge gates statements"),
         Stmt::Comment(_) => 0,
         Stmt::Let { init, .. } => init.as_ref().map_or(0, |e| e_ident_count(e, name)),
         Stmt::LetIf {

@@ -25,9 +25,9 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 6 compiles
 // CHECK-NEXT:   many_ifdefs.c: [alpha,beta,gamma] 6 compiled
 // CHECK-NEXT: total: 12 compiles across 2 targets
-// CHECK-NEXT: unit many_ifdefs: 21 items, 20 gated, 2 duplicated functions
-// CHECK-NEXT:   duplicated fn:flags: 6 variants
-// CHECK-NEXT:   duplicated fn:__slate_main: 2 variants
+// CHECK-NEXT: unit many_ifdefs: 15 items, 12 gated, 0 duplicated functions
+// CHECK-NEXT:   spliced fn:flags: 6 variants
+// CHECK-NEXT:   spliced fn:__slate_main: 2 variants
 // CHECK-NEXT: projection: 12 checked, 0 not translatable, 0 mismatches
 // CHECK-NEXT: signatures: 0 shared symbols, 0 mismatches
 // CHECK-NEXT: exit: 0
@@ -124,64 +124,36 @@ int main(void) {
 // CHECK-NEXT:     fn printf([[ARG_0]]: *const i8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(not(feature = "alpha"), not(feature = "beta"), not(feature = "gamma")))]
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn flags() -> i32 {
+// CHECK-NEXT:     #[cfg(all(not(feature = "alpha"), not(feature = "beta"), not(feature = "gamma")))]
 // CHECK-NEXT:     let value: i32 = 0;
-// CHECK-NEXT:     value
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(feature = "alpha", not(feature = "beta"), not(feature = "gamma")))]
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: extern "C-unwind" fn flags() -> i32 {
+// CHECK-NEXT:     #[cfg(any(feature = "alpha", feature = "beta", feature = "gamma"))]
 // CHECK-NEXT:     let mut value: i32 = 0;
-// CHECK-NEXT:     value += 1;
+// CHECK-NEXT:     #[cfg(feature = "alpha")]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         value += 1;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(feature = "beta")]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         value += 2;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(feature = "gamma")]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         value += 3 * 4;
+// CHECK-NEXT:     }
 // CHECK-NEXT:     value
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(not(feature = "alpha"), feature = "beta"))]
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: extern "C-unwind" fn flags() -> i32 {
-// CHECK-NEXT:     let mut value: i32 = 0;
-// CHECK-NEXT:     value += 2;
-// CHECK-NEXT:     value
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(feature = "alpha", feature = "beta"))]
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: extern "C-unwind" fn flags() -> i32 {
-// CHECK-NEXT:     let mut value: i32 = 0;
-// CHECK-NEXT:     value += 1;
-// CHECK-NEXT:     value += 2;
-// CHECK-NEXT:     value
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(not(feature = "alpha"), feature = "gamma"))]
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: extern "C-unwind" fn flags() -> i32 {
-// CHECK-NEXT:     let mut value: i32 = 0;
-// CHECK-NEXT:     value += 3 * 4;
-// CHECK-NEXT:     value
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(feature = "alpha", feature = "gamma"))]
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: extern "C-unwind" fn flags() -> i32 {
-// CHECK-NEXT:     let mut value: i32 = 0;
-// CHECK-NEXT:     value += 1;
-// CHECK-NEXT:     value += 3 * 4;
-// CHECK-NEXT:     value
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"))]
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     println!("{}", flags());
-// CHECK-NEXT:     0
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(target_arch = "x86_64", windows, target_env = "msvc"))]
-// CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     unsafe { printf(c"%d\n".as_ptr(), flags()) };
+// CHECK-NEXT:     #[cfg(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"))]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         println!("{}", flags());
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(all(target_arch = "x86_64", windows, target_env = "msvc"))]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         unsafe { printf(c"%d\n".as_ptr(), flags()) };
+// CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

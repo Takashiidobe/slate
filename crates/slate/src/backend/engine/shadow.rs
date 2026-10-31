@@ -1,4 +1,4 @@
-use crate::backend::rust_ast::{AtomicPlace, Block, Expr, FnParam, Ident, Pattern, Stmt};
+use crate::backend::rust_ast::{AtomicPlace, Block, Expr, FnParam, Ident, Label, Pattern, Stmt};
 use std::collections::HashSet;
 
 trait Names {
@@ -6,6 +6,7 @@ trait Names {
     fn pop(&mut self) {}
     fn bind(&mut self, name: &mut Ident, local: bool);
     fn var(&mut self, name: &mut Ident);
+    fn label(&mut self, _name: &mut Label, _binds: bool) {}
 }
 
 fn walk_stmts(stmts: &mut [Stmt], names: &mut impl Names) {
@@ -46,7 +47,13 @@ fn bind_string(name: &mut String, local: bool, names: &mut impl Names) {
 
 fn walk_stmt(stmt: &mut Stmt, names: &mut impl Names) {
     match stmt {
-        Stmt::Comment(_) | Stmt::Break(_) | Stmt::Continue(_) | Stmt::Return(None) => {}
+        Stmt::Comment(_) | Stmt::Return(None) => {}
+        Stmt::Break(label) | Stmt::Continue(label) => {
+            if let Some(label) = label {
+                names.label(label, false);
+            }
+        }
+        Stmt::Cfg { body, .. } => walk_stmts(body, names),
         Stmt::Let { name, init, .. } => {
             if let Some(init) = init {
                 walk_expr(init, names);
@@ -78,7 +85,10 @@ fn walk_stmt(stmt: &mut Stmt, names: &mut impl Names) {
         }
         Stmt::Expr(expr) | Stmt::Return(Some(expr)) => walk_expr(expr, names),
         Stmt::Unsafe { body } | Stmt::Block(body) => walk_block(body, names),
-        Stmt::While { cond, body, .. } => {
+        Stmt::While { label, cond, body } => {
+            if let Some(label) = label {
+                names.label(label, true);
+            }
             walk_expr(cond, names);
             walk_block(body, names);
         }
@@ -91,12 +101,26 @@ fn walk_stmt(stmt: &mut Stmt, names: &mut impl Names) {
             walk_stmts(then_body, names);
             walk_stmts(else_body, names);
         }
-        Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
+        Stmt::Loop { label, body } => {
+            if let Some(label) = label {
+                names.label(label, true);
+            }
             walk_stmts(body, names)
         }
+        Stmt::LabeledBlock { label, body } => {
+            names.label(label, true);
+            walk_stmts(body, names)
+        }
+        Stmt::Scope { body } => walk_stmts(body, names),
         Stmt::For {
-            pat, iter, body, ..
+            label,
+            pat,
+            iter,
+            body,
         } => {
+            if let Some(label) = label {
+                names.label(label, true);
+            }
             walk_expr(iter, names);
             names.push();
             bind_string(pat, true, names);
@@ -443,4 +467,24 @@ pub(super) fn restore(body: &mut [Stmt], params: &[FnParam], renamed: &[(Ident, 
         taken.insert(to);
         walk_stmts(body, &mut Rename { from: fresh, to });
     }
+}
+
+struct Visit<F>(F);
+
+impl<F: FnMut(&mut Ident, bool)> Names for Visit<F> {
+    fn bind(&mut self, name: &mut Ident, _: bool) {
+        (self.0)(name, true);
+    }
+
+    fn var(&mut self, name: &mut Ident) {
+        (self.0)(name, false);
+    }
+
+    fn label(&mut self, name: &mut Label, binds: bool) {
+        (self.0)(name.ident_mut(), binds);
+    }
+}
+
+pub fn visit_names(stmt: &mut Stmt, visit: impl FnMut(&mut Ident, bool)) {
+    walk_stmt(stmt, &mut Visit(visit));
 }

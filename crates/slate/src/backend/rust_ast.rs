@@ -293,6 +293,7 @@ pub enum Attr {
     WeakLinkage,
     ExternWeakLinkage,
     LinkSection(String),
+    CfgAttr(Cfg, Box<Attr>),
     Used(UsedKind),
     Deprecated(Option<String>),
     TargetFeature(String),
@@ -545,6 +546,7 @@ pub struct EnumDef {
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct RecordField {
+    pub cfg: Option<Cfg>,
     pub comments: Vec<Comment>,
     pub name: Ident,
     pub ty: Type,
@@ -885,6 +887,10 @@ pub enum Stmt {
         body: Block,
     },
     Block(Block),
+    Cfg {
+        cfg: Cfg,
+        body: Vec<Stmt>,
+    },
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -1060,6 +1066,10 @@ impl Label {
 
     pub fn as_str(&self) -> &str {
         self.0.as_str()
+    }
+
+    pub fn ident_mut(&mut self) -> &mut Ident {
+        &mut self.0
     }
 }
 
@@ -1558,6 +1568,7 @@ impl Stmt {
 
     pub fn child_bodies_mut(&mut self) -> Vec<&mut Vec<Stmt>> {
         match self {
+            Stmt::Cfg { body, .. } => vec![body],
             Stmt::Comment(_) => Vec::new(),
             Stmt::LetIf {
                 then_body,
@@ -2321,6 +2332,7 @@ impl Expr {
 
 fn stmt_reads_var(stmt: &Stmt, name: &str) -> bool {
     match stmt {
+        Stmt::Cfg { .. } => unreachable!("only the project merge gates statements"),
         Stmt::Comment(_) => false,
         Stmt::Let {
             init: Some(expr), ..
@@ -2399,6 +2411,7 @@ fn stmt_reads_var(stmt: &Stmt, name: &str) -> bool {
 
 fn stmt_collect_offset_calls<'a>(stmt: &'a Stmt, out: &mut Vec<(&'a Ident, &'a str, &'a Expr)>) {
     match stmt {
+        Stmt::Cfg { .. } => unreachable!("only the project merge gates statements"),
         Stmt::Comment(_) => {}
         Stmt::Let {
             init: Some(expr), ..
@@ -2491,6 +2504,7 @@ fn stmt_collect_offset_calls<'a>(stmt: &'a Stmt, out: &mut Vec<(&'a Ident, &'a s
 
 fn stmt_collect_calls<'a>(stmt: &'a Stmt, out: &mut Vec<(&'a Ident, &'a [Expr])>) {
     match stmt {
+        Stmt::Cfg { .. } => unreachable!("only the project merge gates statements"),
         Stmt::Comment(_) => {}
         Stmt::Let {
             init: Some(expr), ..
@@ -2583,6 +2597,7 @@ fn stmt_collect_calls<'a>(stmt: &'a Stmt, out: &mut Vec<(&'a Ident, &'a [Expr])>
 
 fn stmt_collect_vars(stmt: &Stmt, out: &mut Vec<Ident>) {
     match stmt {
+        Stmt::Cfg { .. } => unreachable!("only the project merge gates statements"),
         Stmt::Comment(_) => {}
         Stmt::Let {
             init: Some(expr), ..
@@ -2683,6 +2698,7 @@ fn stmt_collect_vars(stmt: &Stmt, out: &mut Vec<Ident>) {
 
 fn stmt_substitute_var(stmt: &mut Stmt, name: &str, replacement: &Expr) -> bool {
     match stmt {
+        Stmt::Cfg { .. } => unreachable!("only the project merge gates statements"),
         Stmt::Comment(_) => false,
         Stmt::Let {
             init: Some(expr), ..

@@ -312,6 +312,7 @@ impl FunctionLowerer<'_, '_> {
             end = end.max(offset + size);
             align = align.max(field_align);
             lowered.push(rust::RecordField {
+                cfg: None,
                 comments: std::mem::take(&mut pending),
                 name: field_name.into(),
                 ty,
@@ -823,6 +824,7 @@ fn byte_array(len: u64) -> rust::Type {
 
 fn padding_field(position: usize, len: u64) -> rust::RecordField {
     rust::RecordField {
+        cfg: None,
         comments: Vec::new(),
         name: format!("__slate_pad_{position}").into(),
         ty: byte_array(len),

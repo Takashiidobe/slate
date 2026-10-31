@@ -448,6 +448,7 @@ fn walk_exprs(body: &[Stmt], f: &mut impl FnMut(&Expr)) {
 
 fn stmt_visit_exprs(stmt: &Stmt, f: &mut impl FnMut(&Expr)) {
     match stmt {
+        Stmt::Cfg { .. } => unreachable!("only the project merge gates statements"),
         Stmt::Comment(_) => {}
         Stmt::Let {
             init: Some(expr), ..
@@ -648,6 +649,7 @@ fn body_reads_ok(body: &[Stmt], tracked: &BTreeSet<String>, ctx: &Ctx) -> bool {
 
 fn stmt_ok(stmt: &Stmt, tracked: &BTreeSet<String>, ctx: &Ctx) -> bool {
     match stmt {
+        Stmt::Cfg { .. } => unreachable!("only the project merge gates statements"),
         Stmt::Comment(_) => true,
         Stmt::Let {
             ty: Some(ty),
@@ -1058,6 +1060,7 @@ fn rewrite_calls_in_stmts(body: &mut [Stmt], ctx: &RewriteCtx) -> bool {
 
 fn rewrite_calls_in_stmt(stmt: &mut Stmt, ctx: &RewriteCtx) -> bool {
     match stmt {
+        Stmt::Cfg { .. } => unreachable!("only the project merge gates statements"),
         Stmt::Comment(_) => false,
         Stmt::Let { init: Some(e), .. } => rewrite_calls_in_expr(e, ctx),
         Stmt::Let { init: None, .. } => false,

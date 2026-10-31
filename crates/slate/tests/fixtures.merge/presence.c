@@ -24,8 +24,8 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 4 compiles
 // CHECK-NEXT:   presence.c: [alpha,beta] 4 compiled
 // CHECK-NEXT: total: 8 compiles across 2 targets
-// CHECK-NEXT: unit presence: 24 items, 23 gated, 1 duplicated functions
-// CHECK-NEXT:   duplicated fn:__slate_main: 8 variants
+// CHECK-NEXT: unit presence: 17 items, 15 gated, 0 duplicated functions
+// CHECK-NEXT:   spliced fn:__slate_main: 8 variants
 // CHECK-NEXT: projection: 12 checked, 0 not translatable, 0 mismatches
 // CHECK-NEXT: signatures: 0 shared symbols, 0 mismatches
 // CHECK-NEXT: exit: 0
@@ -135,103 +135,56 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: static mut table: [i32; 2] = [1, 2];
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(
-// CHECK-NEXT:     target_arch = "x86_64",
-// CHECK-NEXT:     target_os = "linux",
-// CHECK-NEXT:     target_env = "gnu",
-// CHECK-NEXT:     not(feature = "alpha"),
-// CHECK-NEXT:     not(feature = "beta")
-// CHECK-NEXT: ))]
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     println!("{}", 3i32);
-// CHECK-NEXT:     0
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(
-// CHECK-NEXT:     target_arch = "x86_64",
-// CHECK-NEXT:     target_os = "linux",
-// CHECK-NEXT:     target_env = "gnu",
-// CHECK-NEXT:     feature = "alpha",
-// CHECK-NEXT:     not(feature = "beta")
-// CHECK-NEXT: ))]
-// CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     println!("{}", only_alpha());
-// CHECK-NEXT:     println!("{}", 3i32);
-// CHECK-NEXT:     0
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(
-// CHECK-NEXT:     target_arch = "x86_64",
-// CHECK-NEXT:     target_os = "linux",
-// CHECK-NEXT:     target_env = "gnu",
-// CHECK-NEXT:     not(feature = "alpha"),
-// CHECK-NEXT:     feature = "beta"
-// CHECK-NEXT: ))]
-// CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     println!("{}", 2i32);
-// CHECK-NEXT:     0
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(
-// CHECK-NEXT:     target_arch = "x86_64",
-// CHECK-NEXT:     target_os = "linux",
-// CHECK-NEXT:     target_env = "gnu",
-// CHECK-NEXT:     feature = "alpha",
-// CHECK-NEXT:     feature = "beta"
-// CHECK-NEXT: ))]
-// CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     println!("{}", only_alpha());
-// CHECK-NEXT:     println!("{}", 2i32);
-// CHECK-NEXT:     0
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(
-// CHECK-NEXT:     target_arch = "x86_64",
-// CHECK-NEXT:     windows,
-// CHECK-NEXT:     target_env = "msvc",
-// CHECK-NEXT:     not(feature = "alpha"),
-// CHECK-NEXT:     not(feature = "beta")
-// CHECK-NEXT: ))]
-// CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     unsafe { printf(c"%d\n".as_ptr(), 3i32) };
-// CHECK-NEXT:     0
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(
-// CHECK-NEXT:     target_arch = "x86_64",
-// CHECK-NEXT:     windows,
-// CHECK-NEXT:     target_env = "msvc",
-// CHECK-NEXT:     feature = "alpha",
-// CHECK-NEXT:     not(feature = "beta")
-// CHECK-NEXT: ))]
-// CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     unsafe { printf(c"%d\n".as_ptr(), only_alpha()) };
-// CHECK-NEXT:     unsafe { printf(c"%d\n".as_ptr(), 3i32) };
-// CHECK-NEXT:     0
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(
-// CHECK-NEXT:     target_arch = "x86_64",
-// CHECK-NEXT:     windows,
-// CHECK-NEXT:     target_env = "msvc",
-// CHECK-NEXT:     not(feature = "alpha"),
-// CHECK-NEXT:     feature = "beta"
-// CHECK-NEXT: ))]
-// CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     unsafe { printf(c"%d\n".as_ptr(), 2i32) };
-// CHECK-NEXT:     0
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(
-// CHECK-NEXT:     target_arch = "x86_64",
-// CHECK-NEXT:     windows,
-// CHECK-NEXT:     target_env = "msvc",
-// CHECK-NEXT:     feature = "alpha",
-// CHECK-NEXT:     feature = "beta"
-// CHECK-NEXT: ))]
-// CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     unsafe { printf(c"%d\n".as_ptr(), only_alpha()) };
-// CHECK-NEXT:     unsafe { printf(c"%d\n".as_ptr(), 2i32) };
+// CHECK-NEXT:     #[cfg(all(
+// CHECK-NEXT:         target_arch = "x86_64",
+// CHECK-NEXT:         target_os = "linux",
+// CHECK-NEXT:         target_env = "gnu",
+// CHECK-NEXT:         feature = "alpha"
+// CHECK-NEXT:     ))]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         println!("{}", only_alpha());
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(all(
+// CHECK-NEXT:         target_arch = "x86_64",
+// CHECK-NEXT:         target_os = "linux",
+// CHECK-NEXT:         target_env = "gnu",
+// CHECK-NEXT:         not(feature = "beta")
+// CHECK-NEXT:     ))]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         println!("{}", 3i32);
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(all(
+// CHECK-NEXT:         target_arch = "x86_64",
+// CHECK-NEXT:         target_os = "linux",
+// CHECK-NEXT:         target_env = "gnu",
+// CHECK-NEXT:         feature = "beta"
+// CHECK-NEXT:     ))]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         println!("{}", 2i32);
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(all(
+// CHECK-NEXT:         target_arch = "x86_64",
+// CHECK-NEXT:         windows,
+// CHECK-NEXT:         target_env = "msvc",
+// CHECK-NEXT:         feature = "alpha"
+// CHECK-NEXT:     ))]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         unsafe { printf(c"%d\n".as_ptr(), only_alpha()) };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(all(
+// CHECK-NEXT:         target_arch = "x86_64",
+// CHECK-NEXT:         windows,
+// CHECK-NEXT:         target_env = "msvc",
+// CHECK-NEXT:         not(feature = "beta")
+// CHECK-NEXT:     ))]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         unsafe { printf(c"%d\n".as_ptr(), 3i32) };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(all(target_arch = "x86_64", windows, target_env = "msvc", feature = "beta"))]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         unsafe { printf(c"%d\n".as_ptr(), 2i32) };
+// CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

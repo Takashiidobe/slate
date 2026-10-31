@@ -23,11 +23,12 @@ int main(void) {
 // CHECK-NEXT:   signature_mismatch.c: [] 1 compiled
 // CHECK-NEXT:   units/signature_mismatch_helper.c: [alpha,beta,gamma] 6 compiled
 // CHECK-NEXT: total: 14 compiles across 2 targets
-// CHECK-NEXT: unit signature_mismatch: 20 items, 14 gated, 1 duplicated functions
-// CHECK-NEXT:   duplicated fn:__slate_main: 2 variants
-// CHECK-NEXT: unit signature_mismatch_helper: 11 items, 10 gated, 1 duplicated functions
-// CHECK-NEXT:   duplicated fn:make_pair: 2 variants
+// CHECK-NEXT: unit signature_mismatch: 19 items, 12 gated, 0 duplicated functions
+// CHECK-NEXT:   spliced fn:__slate_main: 2 variants
+// CHECK-NEXT: unit signature_mismatch_helper: 8 items, 5 gated, 0 duplicated functions
 // CHECK-NEXT:   hoisted fn:widen: 2 variants
+// CHECK-NEXT:   spliced record:pair: 3 variants
+// CHECK-NEXT:   spliced fn:make_pair: 2 variants
 // CHECK-NEXT: projection: 12 checked, 0 not translatable, 0 mismatches
 // CHECK-NEXT: signatures: 6 shared symbols, 4 mismatches
 // CHECK-NEXT:   linux-x86_64 [beta]: make_pair: signature_mismatch `extern "C" fn(i32) -> struct{i32}` vs signature_mismatch_helper `extern "C" fn(i32) -> struct{i32, i64}`
@@ -147,39 +148,38 @@ int main(void) {
 // CHECK-NEXT:     first: i32,
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"))]
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut [[SLATE_COMPOUND_0:__slate_compound_[0-9]+]]: pair = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}",
-// CHECK-NEXT:         unsafe { widen(1i32) },
+// CHECK-NEXT:     #[cfg(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"))]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         println!(
+// CHECK-NEXT:             "{} {} {}",
+// CHECK-NEXT:             unsafe { widen(1i32) },
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 (*{
+// CHECK-NEXT:                     [[SLATE_COMPOUND_0]] = make_pair(2i32);
+// CHECK-NEXT:                     std::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
+// CHECK-NEXT:                 })
+// CHECK-NEXT:                 .first
+// CHECK-NEXT:             },
+// CHECK-NEXT:             unsafe { table_size }
+// CHECK-NEXT:         );
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(all(target_arch = "x86_64", windows, target_env = "msvc"))]
+// CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             (*{
-// CHECK-NEXT:                 [[SLATE_COMPOUND_0]] = make_pair(2i32);
-// CHECK-NEXT:                 std::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
-// CHECK-NEXT:             })
-// CHECK-NEXT:             .first
-// CHECK-NEXT:         },
-// CHECK-NEXT:         unsafe { table_size }
-// CHECK-NEXT:     );
-// CHECK-NEXT:     0
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(target_arch = "x86_64", windows, target_env = "msvc"))]
-// CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut [[SLATE_COMPOUND_0]]: pair = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%d %d %d\n".as_ptr(),
-// CHECK-NEXT:             widen(1i32),
-// CHECK-NEXT:             (*{
-// CHECK-NEXT:                 [[SLATE_COMPOUND_0]] = make_pair(2i32);
-// CHECK-NEXT:                 std::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
-// CHECK-NEXT:             })
-// CHECK-NEXT:             .first,
-// CHECK-NEXT:             table_size,
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
+// CHECK-NEXT:             printf(
+// CHECK-NEXT:                 c"%d %d %d\n".as_ptr(),
+// CHECK-NEXT:                 widen(1i32),
+// CHECK-NEXT:                 (*{
+// CHECK-NEXT:                     [[SLATE_COMPOUND_0]] = make_pair(2i32);
+// CHECK-NEXT:                     std::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
+// CHECK-NEXT:                 })
+// CHECK-NEXT:                 .first,
+// CHECK-NEXT:                 table_size,
+// CHECK-NEXT:             )
+// CHECK-NEXT:         };
+// CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -192,31 +192,18 @@ int main(void) {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }
 // CHECK-NEXT: file signature_mismatch_helper.rs
-// CHECK-NEXT: #[cfg(not(feature = "beta"))]
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct pair {
 // CHECK-NEXT:     first: i32,
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(
-// CHECK-NEXT:     target_arch = "x86_64",
-// CHECK-NEXT:     target_os = "linux",
-// CHECK-NEXT:     target_env = "gnu",
-// CHECK-NEXT:     feature = "beta"
-// CHECK-NEXT: ))]
-// CHECK-NEXT: #[repr(C)]
-// CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct pair {
-// CHECK-NEXT:     first: i32,
+// CHECK-NEXT:     #[cfg(all(
+// CHECK-NEXT:         target_arch = "x86_64",
+// CHECK-NEXT:         target_os = "linux",
+// CHECK-NEXT:         target_env = "gnu",
+// CHECK-NEXT:         feature = "beta"
+// CHECK-NEXT:     ))]
 // CHECK-NEXT:     second: i64,
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(target_arch = "x86_64", windows, target_env = "msvc", feature = "beta"))]
-// CHECK-NEXT: #[repr(C)]
-// CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct pair {
-// CHECK-NEXT:     first: i32,
+// CHECK-NEXT:     #[cfg(all(target_arch = "x86_64", windows, target_env = "msvc", feature = "beta"))]
 // CHECK-NEXT:     second: i32,
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -244,17 +231,11 @@ int main(void) {
 // CHECK-NEXT:     x + 1
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(not(feature = "beta"))]
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn make_pair(x: i32) -> pair {
+// CHECK-NEXT:     #[cfg(not(feature = "beta"))]
 // CHECK-NEXT:     let mut pair: pair = pair { first: 0 };
-// CHECK-NEXT:     pair.first = x;
-// CHECK-NEXT:     return pair;
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(feature = "beta")]
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: extern "C-unwind" fn make_pair(x: i32) -> pair {
+// CHECK-NEXT:     #[cfg(feature = "beta")]
 // CHECK-NEXT:     let mut pair: pair = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: pair = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].first = 0i32;

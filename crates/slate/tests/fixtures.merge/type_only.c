@@ -22,9 +22,9 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 2 compiles
 // CHECK-NEXT:   type_only.c: [alpha] 2 compiled
 // CHECK-NEXT: total: 4 compiles across 2 targets
-// CHECK-NEXT: unit type_only: 20 items, 17 gated, 1 duplicated functions
-// CHECK-NEXT:   duplicated fn:__slate_main: 2 variants
+// CHECK-NEXT: unit type_only: 19 items, 15 gated, 0 duplicated functions
 // CHECK-NEXT:   hoisted fn:state_size: 3 variants
+// CHECK-NEXT:   spliced fn:__slate_main: 2 variants
 // CHECK-NEXT: projection: 12 checked, 0 not translatable, 0 mismatches
 // CHECK-NEXT: signatures: 0 shared symbols, 0 mismatches
 // CHECK-NEXT: exit: 0
@@ -150,21 +150,21 @@ int main(void) {
 // CHECK-NEXT:     x + 1
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"))]
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     println!("{} {}", (state_size() > 4) as i32, unrelated(1i32));
-// CHECK-NEXT:     0
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(target_arch = "x86_64", windows, target_env = "msvc"))]
-// CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%d %d\n".as_ptr(),
-// CHECK-NEXT:             (state_size() > 4) as i32,
-// CHECK-NEXT:             unrelated(1i32),
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
+// CHECK-NEXT:     #[cfg(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"))]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         println!("{} {}", (state_size() > 4) as i32, unrelated(1i32));
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(all(target_arch = "x86_64", windows, target_env = "msvc"))]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             printf(
+// CHECK-NEXT:                 c"%d %d\n".as_ptr(),
+// CHECK-NEXT:                 (state_size() > 4) as i32,
+// CHECK-NEXT:                 unrelated(1i32),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         };
+// CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

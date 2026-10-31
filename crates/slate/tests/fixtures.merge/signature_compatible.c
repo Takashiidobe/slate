@@ -40,11 +40,12 @@ int main(void) {
 // CHECK-NEXT:   signature_compatible.c: [alpha] 2 compiled
 // CHECK-NEXT:   units/signature_compatible_helper.c: [alpha,beta] 4 compiled
 // CHECK-NEXT: total: 12 compiles across 2 targets
-// CHECK-NEXT: unit signature_compatible: 33 items, 20 gated, 1 duplicated functions
-// CHECK-NEXT:   duplicated fn:__slate_main: 3 variants
-// CHECK-NEXT: unit signature_compatible_helper: 21 items, 8 gated, 1 duplicated functions
+// CHECK-NEXT: unit signature_compatible: 31 items, 17 gated, 0 duplicated functions
+// CHECK-NEXT:   spliced fn:__slate_main: 3 variants
+// CHECK-NEXT: unit signature_compatible_helper: 20 items, 6 gated, 1 duplicated functions
 // CHECK-NEXT:   duplicated fn:native_long: 2 variants
 // CHECK-NEXT:   hoisted fn:scale: 2 variants
+// CHECK-NEXT:   spliced record:opaque: 2 variants
 // CHECK-NEXT: projection: 12 checked, 0 not translatable, 0 mismatches
 // CHECK-NEXT: signatures: 22 shared symbols, 0 mismatches
 // CHECK-NEXT: exit: 0
@@ -193,76 +194,74 @@ int main(void) {
 // CHECK-NEXT:     q: i32,
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(
-// CHECK-NEXT:     target_arch = "x86_64",
-// CHECK-NEXT:     target_os = "linux",
-// CHECK-NEXT:     target_env = "gnu",
-// CHECK-NEXT:     not(feature = "alpha")
-// CHECK-NEXT: ))]
 // CHECK-NEXT: fn __slate_main() -> i32 {
+// CHECK-NEXT:     #[cfg(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"))]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%ld %ld %d %d %d %d %s %d %d\n".as_ptr(),
-// CHECK-NEXT:             scale(2i32) as i64,
-// CHECK-NEXT:             native_long(3i64),
-// CHECK-NEXT:             unprototyped(4i32),
-// CHECK-NEXT:             *(std::ptr::addr_of_mut!(table) as *mut i32).add(1),
-// CHECK-NEXT:             *(std::ptr::addr_of_mut!(big_unsized) as *mut i32).add(2),
-// CHECK-NEXT:             big_sized[3],
-// CHECK-NEXT:             label(),
-// CHECK-NEXT:             read_opaque(make_opaque()),
-// CHECK-NEXT:             read_handle(std::ptr::null_mut::<__SlateRecord_signature_compatible_c_13>()),
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     unsafe { quit(0i32) };
-// CHECK-NEXT:     1
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(
-// CHECK-NEXT:     target_arch = "x86_64",
-// CHECK-NEXT:     target_os = "linux",
-// CHECK-NEXT:     target_env = "gnu",
-// CHECK-NEXT:     feature = "alpha"
-// CHECK-NEXT: ))]
-// CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%ld %ld %d %d %d %d %s %d %d\n".as_ptr(),
-// CHECK-NEXT:             scale(2i64),
-// CHECK-NEXT:             native_long(3i64),
-// CHECK-NEXT:             unprototyped(4i32),
-// CHECK-NEXT:             *(std::ptr::addr_of_mut!(table) as *mut i32).add(1),
-// CHECK-NEXT:             *(std::ptr::addr_of_mut!(big_unsized) as *mut i32).add(2),
-// CHECK-NEXT:             big_sized[3],
-// CHECK-NEXT:             label(),
-// CHECK-NEXT:             read_opaque(make_opaque()),
-// CHECK-NEXT:             read_handle(std::ptr::null_mut::<__SlateRecord_signature_compatible_c_13>()),
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     unsafe { quit(0i32) };
-// CHECK-NEXT:     1
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(target_arch = "x86_64", windows, target_env = "msvc"))]
-// CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%ld %ld %d %d %d %d %s %d %d\n".as_ptr(),
-// CHECK-NEXT:             scale(2i32),
-// CHECK-NEXT:             native_long(3i32),
-// CHECK-NEXT:             unprototyped(4i32),
-// CHECK-NEXT:             *(std::ptr::addr_of_mut!(table) as *mut i32).add(1),
-// CHECK-NEXT:             *(std::ptr::addr_of_mut!(big_unsized) as *mut i32).add(2),
-// CHECK-NEXT:             big_sized[3],
-// CHECK-NEXT:             label(),
-// CHECK-NEXT:             read_opaque(make_opaque()),
-// CHECK-NEXT:             read_handle(std::ptr::null_mut::<__SlateRecord_signature_compatible_c_13>()),
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
+// CHECK-NEXT:     #[cfg(all(
+// CHECK-NEXT:         target_arch = "x86_64",
+// CHECK-NEXT:         target_os = "linux",
+// CHECK-NEXT:         target_env = "gnu",
+// CHECK-NEXT:         not(feature = "alpha")
+// CHECK-NEXT:     ))]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             printf(
+// CHECK-NEXT:                 c"%ld %ld %d %d %d %d %s %d %d\n".as_ptr(),
+// CHECK-NEXT:                 scale(2i32) as i64,
+// CHECK-NEXT:                 native_long(3i64),
+// CHECK-NEXT:                 unprototyped(4i32),
+// CHECK-NEXT:                 *(std::ptr::addr_of_mut!(table) as *mut i32).add(1),
+// CHECK-NEXT:                 *(std::ptr::addr_of_mut!(big_unsized) as *mut i32).add(2),
+// CHECK-NEXT:                 big_sized[3],
+// CHECK-NEXT:                 label(),
+// CHECK-NEXT:                 read_opaque(make_opaque()),
+// CHECK-NEXT:                 read_handle(std::ptr::null_mut::<__SlateRecord_signature_compatible_c_13>()),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(all(
+// CHECK-NEXT:         target_arch = "x86_64",
+// CHECK-NEXT:         target_os = "linux",
+// CHECK-NEXT:         target_env = "gnu",
+// CHECK-NEXT:         feature = "alpha"
+// CHECK-NEXT:     ))]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             printf(
+// CHECK-NEXT:                 c"%ld %ld %d %d %d %d %s %d %d\n".as_ptr(),
+// CHECK-NEXT:                 scale(2i64),
+// CHECK-NEXT:                 native_long(3i64),
+// CHECK-NEXT:                 unprototyped(4i32),
+// CHECK-NEXT:                 *(std::ptr::addr_of_mut!(table) as *mut i32).add(1),
+// CHECK-NEXT:                 *(std::ptr::addr_of_mut!(big_unsized) as *mut i32).add(2),
+// CHECK-NEXT:                 big_sized[3],
+// CHECK-NEXT:                 label(),
+// CHECK-NEXT:                 read_opaque(make_opaque()),
+// CHECK-NEXT:                 read_handle(std::ptr::null_mut::<__SlateRecord_signature_compatible_c_13>()),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"))]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(all(target_arch = "x86_64", windows, target_env = "msvc"))]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             printf(
+// CHECK-NEXT:                 c"%ld %ld %d %d %d %d %s %d %d\n".as_ptr(),
+// CHECK-NEXT:                 scale(2i32),
+// CHECK-NEXT:                 native_long(3i32),
+// CHECK-NEXT:                 unprototyped(4i32),
+// CHECK-NEXT:                 *(std::ptr::addr_of_mut!(table) as *mut i32).add(1),
+// CHECK-NEXT:                 *(std::ptr::addr_of_mut!(big_unsized) as *mut i32).add(2),
+// CHECK-NEXT:                 big_sized[3],
+// CHECK-NEXT:                 label(),
+// CHECK-NEXT:                 read_opaque(make_opaque()),
+// CHECK-NEXT:                 read_handle(std::ptr::null_mut::<__SlateRecord_signature_compatible_c_13>()),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         };
+// CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { quit(0i32) };
 // CHECK-NEXT:     1
 // CHECK-NEXT: }
@@ -280,18 +279,11 @@ int main(void) {
 // CHECK-NEXT:     fn exit([[ARG_0]]: i32);
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(not(feature = "beta"))]
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct opaque {
 // CHECK-NEXT:     value: i32,
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(feature = "beta")]
-// CHECK-NEXT: #[repr(C)]
-// CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct opaque {
-// CHECK-NEXT:     value: i32,
+// CHECK-NEXT:     #[cfg(feature = "beta")]
 // CHECK-NEXT:     extra: i32,
 // CHECK-NEXT: }
 // CHECK-EMPTY:

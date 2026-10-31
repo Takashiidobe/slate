@@ -5,7 +5,7 @@
 
 /// Rust source emission and code-generation helpers.
 pub mod codegen;
-mod engine;
+pub(crate) mod engine;
 mod format;
 mod interproc;
 pub mod link;
@@ -14,6 +14,7 @@ pub mod rust_ast;
 
 use crate::backend::rust_ast::Program;
 
+pub use engine::shadow::visit_names;
 pub use format::{format_rust, pretty_rust, write_pretty_rust, write_rust};
 pub use interproc::Exports;
 

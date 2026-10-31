@@ -8,6 +8,7 @@ use crate::frontend::{self, lowerer};
 use crate::project_hoist;
 use crate::project_matrix::Matrix;
 use crate::project_plan;
+use crate::project_splice::{self, Variants};
 use rayon::prelude::*;
 use slate_parser::files::Files;
 use slate_parser::ir::{Linkage, Module};
@@ -659,6 +660,7 @@ struct MergedUnit {
     gated: usize,
     duplicated: Vec<(String, usize)>,
     hoisted: Vec<(String, usize)>,
+    spliced: Vec<(String, usize)>,
 }
 
 fn hoist_values(key: &str, values: &[Value]) -> Option<project_hoist::Hoisted> {
@@ -673,6 +675,51 @@ fn hoist_values(key: &str, values: &[Value]) -> Option<project_hoist::Hoisted> {
         })
         .collect::<Option<Vec<_>>>()?;
     project_hoist::hoist(&variants)
+}
+
+fn splice_values(
+    key: &str,
+    values: &[Value],
+    gate: &mut impl FnMut(&Variants, &Variants) -> Option<Cfg>,
+) -> Option<(Item, Vec<(Variants, Item)>)> {
+    if key.contains('#') {
+        return None;
+    }
+    match &values[0].item {
+        Item::Fn(_) => {
+            let variants = values
+                .iter()
+                .map(|value| match &value.item {
+                    Item::Fn(function) => Some(function),
+                    _ => None,
+                })
+                .collect::<Option<Vec<_>>>()?;
+            project_splice::splice_function(&variants, gate)
+                .map(|spliced| (Item::Fn(spliced.function), spliced.bindings))
+        }
+        Item::Record(_) => {
+            let variants = values
+                .iter()
+                .map(|value| match &value.item {
+                    Item::Record(record) => Some(record),
+                    _ => None,
+                })
+                .collect::<Option<Vec<_>>>()?;
+            project_splice::splice_record(&variants, gate)
+                .map(|record| (Item::Record(record), Vec::new()))
+        }
+        _ => None,
+    }
+}
+
+fn union_on(values: &[Value], chosen: &Variants, targets: usize) -> Vec<BTreeSet<u32>> {
+    let mut on = vec![BTreeSet::new(); targets];
+    for &variant in chosen {
+        for (all, masks) in on.iter_mut().zip(&values[variant].on) {
+            all.extend(masks);
+        }
+    }
+    on
 }
 
 fn merge_unit(stem: &str, index: usize, targets: &[TargetBuild]) -> MergedUnit {
@@ -727,34 +774,78 @@ fn merge_unit(stem: &str, index: usize, targets: &[TargetBuild]) -> MergedUnit {
         gated: 0,
         duplicated: Vec::new(),
         hoisted: Vec::new(),
+        spliced: Vec::new(),
     };
-    let cfg_of = |on: &[BTreeSet<u32>]| -> Option<Cfg> {
+    let cfg_within = |on: &[BTreeSet<u32>], within: &[BTreeSet<u32>]| -> Option<Cfg> {
         let mut groups: BTreeMap<Option<Cfg>, Vec<Cfg>> = BTreeMap::new();
+        let mut present = 0;
         for (target_index, target) in targets.iter().enumerate() {
+            if within[target_index].is_empty() {
+                continue;
+            }
+            present += 1;
             let on = &on[target_index];
             if on.is_empty() {
                 continue;
             }
             let relevant = &target.units[index].relevant;
-            let implicants = minimize(on, &cares[target_index], relevant.len());
+            let implicants = minimize(on, &within[target_index], relevant.len());
             groups
                 .entry(condition(&implicants, relevant))
                 .or_default()
                 .push(target.cfg.clone());
         }
-        combined_cfg(groups, targets.len())
+        combined_cfg(groups, present)
     };
+    let cfg_of = |on: &[BTreeSet<u32>]| cfg_within(on, &cares);
     for key in order {
         let values = table.remove(&key).expect("ordered key is in the table");
-        if values.len() > 1 && key.starts_with("fn:") {
-            if let Some(hoisted) = hoist_values(&key, &values) {
-                out.hoisted.push((key.clone(), values.len()));
-                let mut on = vec![BTreeSet::new(); targets.len()];
-                for (value, binding) in values.iter().zip(hoisted.bindings) {
-                    for (all, variant) in on.iter_mut().zip(&value.on) {
-                        all.extend(variant);
-                    }
-                    let cfg = cfg_of(&value.on);
+        if values.len() > 1
+            && key.starts_with("fn:")
+            && let Some(hoisted) = hoist_values(&key, &values)
+        {
+            out.hoisted.push((key.clone(), values.len()));
+            let mut on = vec![BTreeSet::new(); targets.len()];
+            for (value, binding) in values.iter().zip(hoisted.bindings) {
+                for (all, variant) in on.iter_mut().zip(&value.on) {
+                    all.extend(variant);
+                }
+                let cfg = cfg_of(&value.on);
+                out.gated += usize::from(cfg.is_some());
+                out.entries.push(MergedEntry {
+                    cfg,
+                    key: item_key(&binding),
+                    item: binding,
+                    binding: true,
+                });
+            }
+            let cfg = cfg_of(&on);
+            out.gated += usize::from(cfg.is_some());
+            out.entries.push(MergedEntry {
+                cfg,
+                key,
+                item: Item::Fn(hoisted.function),
+                binding: false,
+            });
+            continue;
+        }
+        if values.len() > 1 {
+            let mut cache: HashMap<(Variants, Variants), Option<Cfg>> = HashMap::new();
+            let mut gate = |on: &Variants, within: &Variants| {
+                cache
+                    .entry((on.clone(), within.clone()))
+                    .or_insert_with(|| {
+                        cfg_within(
+                            &union_on(&values, on, targets.len()),
+                            &union_on(&values, within, targets.len()),
+                        )
+                    })
+                    .clone()
+            };
+            if let Some((item, bindings)) = splice_values(&key, &values, &mut gate) {
+                out.spliced.push((key.clone(), values.len()));
+                for (on, binding) in bindings {
+                    let cfg = cfg_of(&union_on(&values, &on, targets.len()));
                     out.gated += usize::from(cfg.is_some());
                     out.entries.push(MergedEntry {
                         cfg,
@@ -763,16 +854,19 @@ fn merge_unit(stem: &str, index: usize, targets: &[TargetBuild]) -> MergedUnit {
                         binding: true,
                     });
                 }
-                let cfg = cfg_of(&on);
+                let all: Variants = (0..values.len()).collect();
+                let cfg = cfg_of(&union_on(&values, &all, targets.len()));
                 out.gated += usize::from(cfg.is_some());
                 out.entries.push(MergedEntry {
                     cfg,
                     key,
-                    item: Item::Fn(hoisted.function),
+                    item,
                     binding: false,
                 });
                 continue;
             }
+        }
+        if values.len() > 1 && key.starts_with("fn:") {
             out.duplicated.push((key.clone(), values.len()));
         }
         for value in values {
@@ -953,7 +1047,7 @@ fn check_config(
                 continue;
             }
             match resolved.remove(entry.key.as_str()) {
-                Some(item) if same_except_added_section(item, &entry.item, &bindings) => {}
+                Some(item) if same_except_added_section(item, &entry.item, &bindings, &atoms) => {}
                 Some(_) => mismatches.push(format!("{context}: {stem}: {} differs", entry.key)),
                 None => mismatches.push(format!("{context}: {stem}: {} is missing", entry.key)),
             }
@@ -971,19 +1065,25 @@ fn same_except_added_section(
     merged: &Item,
     direct: &Item,
     bindings: &BTreeMap<&str, &Item>,
+    atoms: &BTreeSet<Cfg>,
 ) -> bool {
     if merged == direct {
         return true;
     }
+    let holds_here = |cfg: &Cfg| holds(cfg, atoms);
+    if let (Item::Record(merged), Item::Record(direct)) = (merged, direct) {
+        return project_splice::resolve_record(merged, &holds_here) == *direct;
+    }
     let (Item::Fn(merged), Item::Fn(direct)) = (merged, direct) else {
         return false;
     };
-    let mut stripped = merged.clone();
-    project_hoist::expand(&mut stripped, bindings);
-    stripped
+    let mut expanded = merged.clone();
+    project_hoist::expand(&mut expanded, bindings);
+    let mut resolved = project_splice::resolve_function(&expanded, &holds_here);
+    resolved
         .attrs
         .retain(|attr| !matches!(attr, Attr::LinkSection(_)) || direct.attrs.contains(attr));
-    stripped == *direct
+    resolved == project_splice::resolve_function(direct, &holds_here)
 }
 
 fn check_projection(
@@ -1153,6 +1253,9 @@ pub fn merge(
         }
         for (key, variants) in &unit.hoisted {
             let _ = writeln!(report, "  hoisted {key}: {variants} variants");
+        }
+        for (key, variants) in &unit.spliced {
+            let _ = writeln!(report, "  spliced {key}: {variants} variants");
         }
     }
     if projection != Projection::Skip {

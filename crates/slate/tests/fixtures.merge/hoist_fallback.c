@@ -31,10 +31,10 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 1 compiles
 // CHECK-NEXT:   hoist_fallback.c: [] 1 compiled
 // CHECK-NEXT: total: 2 compiles across 2 targets
-// CHECK-NEXT: unit hoist_fallback: 8 items, 6 gated, 3 duplicated functions
+// CHECK-NEXT: unit hoist_fallback: 7 items, 4 gated, 2 duplicated functions
 // CHECK-NEXT:   duplicated fn:two_values: 2 variants
-// CHECK-NEXT:   duplicated fn:two_statements: 2 variants
 // CHECK-NEXT:   duplicated fn:mixed_types: 2 variants
+// CHECK-NEXT:   spliced fn:two_statements: 2 variants
 // CHECK-NEXT: projection: 12 checked, 0 not translatable, 0 mismatches
 // CHECK-NEXT: signatures: 0 shared symbols, 0 mismatches
 // CHECK-NEXT: exit: 0
@@ -53,16 +53,12 @@ int main(void) {
 // CHECK-NEXT:     1 * 10 + 2
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"))]
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: extern "C-unwind" fn two_statements(value: i32) -> i32 {
-// CHECK-NEXT:     value
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(target_arch = "x86_64", windows, target_env = "msvc"))]
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn two_statements(mut value: i32) -> i32 {
-// CHECK-NEXT:     value += 1;
+// CHECK-NEXT:     #[cfg(all(target_arch = "x86_64", windows, target_env = "msvc"))]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         value += 1;
+// CHECK-NEXT:     }
 // CHECK-NEXT:     value
 // CHECK-NEXT: }
 // CHECK-EMPTY:

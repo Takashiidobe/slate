@@ -26,10 +26,10 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 2 compiles
 // CHECK-NEXT:   by_target.c: [alpha] 2 compiled
 // CHECK-NEXT: total: 4 compiles across 2 targets
-// CHECK-NEXT: unit by_target: 11 items, 7 gated, 1 duplicated functions
-// CHECK-NEXT:   duplicated fn:__slate_main: 2 variants
+// CHECK-NEXT: unit by_target: 10 items, 5 gated, 0 duplicated functions
 // CHECK-NEXT:   hoisted fn:platform: 2 variants
 // CHECK-NEXT:   hoisted fn:platform_alpha: 2 variants
+// CHECK-NEXT:   spliced fn:__slate_main: 2 variants
 // CHECK-NEXT: projection: 12 checked, 0 not translatable, 0 mismatches
 // CHECK-NEXT: signatures: 0 shared symbols, 0 mismatches
 // CHECK-NEXT: exit: 0
@@ -74,22 +74,17 @@ int main(void) {
 // CHECK-NEXT:     __SLATE_HOIST_platform_alpha.as_ptr()
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(not(feature = "alpha"))]
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { puts(platform()) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     0
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(feature = "alpha")]
-// CHECK-NEXT: fn __slate_main() -> i32 {
+// CHECK-NEXT:     #[cfg(feature = "alpha")]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { puts(platform()) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { puts(platform_alpha()) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     #[cfg(feature = "alpha")]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         unsafe { puts(platform_alpha()) };
+// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

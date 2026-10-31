@@ -19,10 +19,10 @@ int main(void) {
 // CHECK-NEXT:   two_units.c: [] 1 compiled
 // CHECK-NEXT:   units/two_units_helper.c: [alpha] 2 compiled
 // CHECK-NEXT: total: 6 compiles across 2 targets
-// CHECK-NEXT: unit two_units: 18 items, 14 gated, 1 duplicated functions
-// CHECK-NEXT:   duplicated fn:__slate_main: 2 variants
-// CHECK-NEXT: unit two_units_helper: 4 items, 4 gated, 1 duplicated functions
-// CHECK-NEXT:   duplicated fn:helper: 2 variants
+// CHECK-NEXT: unit two_units: 17 items, 12 gated, 0 duplicated functions
+// CHECK-NEXT:   spliced fn:__slate_main: 2 variants
+// CHECK-NEXT: unit two_units_helper: 3 items, 2 gated, 0 duplicated functions
+// CHECK-NEXT:   spliced fn:helper: 2 variants
 // CHECK-NEXT: projection: 12 checked, 0 not translatable, 0 mismatches
 // CHECK-NEXT: signatures: 4 shared symbols, 0 mismatches
 // CHECK-NEXT: exit: 0
@@ -132,21 +132,18 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: static mut shared_common: i32 = unsafe { std::mem::zeroed() };
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"))]
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         shared_common = 2;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     println!("{}", unsafe { helper(10i32) });
-// CHECK-NEXT:     0
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(target_arch = "x86_64", windows, target_env = "msvc"))]
-// CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         shared_common = 2;
+// CHECK-NEXT:     #[cfg(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"))]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         println!("{}", unsafe { helper(10i32) });
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { printf(c"%d\n".as_ptr(), helper(10i32)) };
+// CHECK-NEXT:     #[cfg(all(target_arch = "x86_64", windows, target_env = "msvc"))]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         unsafe { printf(c"%d\n".as_ptr(), helper(10i32)) };
+// CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -168,16 +165,12 @@ int main(void) {
 // CHECK-NEXT:     static mut shared_common: i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(not(feature = "alpha"))]
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: extern "C-unwind" fn helper(x: i32) -> i32 {
-// CHECK-NEXT:     x * unsafe { shared_common }
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(feature = "alpha")]
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn helper(mut x: i32) -> i32 {
-// CHECK-NEXT:     x += 1;
+// CHECK-NEXT:     #[cfg(feature = "alpha")]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         x += 1;
+// CHECK-NEXT:     }
 // CHECK-NEXT:     x * unsafe { shared_common }
 // CHECK-NEXT: }
 // CHECK-NOT: {{.}}

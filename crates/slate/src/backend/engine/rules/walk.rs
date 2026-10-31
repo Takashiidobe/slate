@@ -188,6 +188,7 @@ pub(super) fn kind_has_stmt_exprs(kind: &NodeKind) -> bool {
 
 pub(super) fn stmt_exprs<'a>(stmt: &'a Stmt, out: &mut Vec<&'a Expr>) {
     match stmt {
+        Stmt::Cfg { .. } => unreachable!("only the project merge gates statements"),
         Stmt::Let {
             init: Some(expr), ..
         }
@@ -277,6 +278,7 @@ fn block_exprs<'a>(block: &'a Block, out: &mut Vec<&'a Expr>) {
 
 pub(super) fn stmt_exprs_mut<'a>(stmt: &'a mut Stmt, out: &mut Vec<&'a mut Expr>) {
     match stmt {
+        Stmt::Cfg { .. } => unreachable!("only the project merge gates statements"),
         Stmt::Let {
             init: Some(expr), ..
         }

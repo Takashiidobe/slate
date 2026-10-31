@@ -1218,6 +1218,7 @@ fn rewrite_signature_stmt(
     proofs: &mut BTreeMap<(FnKey, FnKey), VecDeque<CallProof>>,
 ) {
     match stmt {
+        Stmt::Cfg { .. } => unreachable!("only the project merge gates statements"),
         Stmt::Comment(_) => {}
         Stmt::Let {
             init: Some(expr), ..
@@ -2229,6 +2230,7 @@ fn expr_read_count(expr: &Expr, name: &str) -> usize {
 
 fn stmt_read_count(stmt: &Stmt, name: &str) -> usize {
     match stmt {
+        Stmt::Cfg { .. } => unreachable!("only the project merge gates statements"),
         Stmt::Comment(_) => 0,
         Stmt::Let {
             init: Some(init), ..
@@ -2862,6 +2864,7 @@ fn rewrite_const_call_items(items: &mut [Item], ctx: &ConstCtx) {
 
 fn rewrite_const_call_stmt(stmt: &mut Stmt, ctx: &ConstCtx) {
     match stmt {
+        Stmt::Cfg { .. } => unreachable!("only the project merge gates statements"),
         Stmt::Comment(_) => {}
         Stmt::Let {
             init: Some(expr), ..
@@ -3439,6 +3442,7 @@ fn retained_stmt_safe(
         return is_match || !expr_reads_alias(arg, aliases);
     }
     match stmt {
+        Stmt::Cfg { .. } => unreachable!("only the project merge gates statements"),
         Stmt::Comment(_) => true,
         Stmt::Let { name, init, .. } if name == binding => init
             .as_ref()
@@ -4118,6 +4122,7 @@ fn rewrite_return_call_item(item: &mut Item, elems: &BTreeMap<String, Type>) {
 
 fn rewrite_return_call_stmt(stmt: &mut Stmt, elems: &BTreeMap<String, Type>) {
     match stmt {
+        Stmt::Cfg { .. } => unreachable!("only the project merge gates statements"),
         Stmt::Comment(_) => {}
         Stmt::Let {
             init: Some(expr), ..

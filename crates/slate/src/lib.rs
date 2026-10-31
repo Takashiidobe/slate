@@ -11,4 +11,5 @@ pub mod project_hoist;
 pub mod project_matrix;
 pub mod project_merge;
 pub mod project_plan;
+pub mod project_splice;
 pub mod target;

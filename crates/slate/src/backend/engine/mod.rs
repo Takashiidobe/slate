@@ -2,7 +2,7 @@ mod arena;
 mod prelude;
 mod printf_format;
 mod rules;
-mod shadow;
+pub mod shadow;
 
 use arena::{Arena, FunctionOptimizer, NodeId, NodeKindTag};
 use std::collections::{BTreeSet, HashMap};
