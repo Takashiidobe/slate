@@ -43,6 +43,12 @@ int main(void) {
 // CHECK-NEXT: //! merge-sources: units/signature_mismatch_helper.c
 // CHECK-NEXT: //!
 // CHECK-NEXT: //! merge-expect-exit: 1
+// CHECK-NEXT: #[cfg(not(any(
+// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"),
+// CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc")
+// CHECK-NEXT: )))]
+// CHECK-NEXT: compile_error!("this crate was not translated for this target");
+// CHECK-EMPTY:
 // CHECK-NEXT: #[path = "signature_mismatch_helper.rs"]
 // CHECK-NEXT: mod __slate_unit_signature_mismatch_helper;
 // CHECK-EMPTY:

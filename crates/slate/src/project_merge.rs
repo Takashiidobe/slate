@@ -1,5 +1,5 @@
 use crate::backend::link::signatures::{self, UnitCompiles};
-use crate::backend::rust_ast::{Attr, Cfg, CrateAttr, ExternDecl, Item, Program};
+use crate::backend::rust_ast::{Attr, Cfg, CrateAttr, Expr, ExternDecl, Item, Program};
 use crate::backend::{self, Exports};
 use crate::compile_commands::CompileCommand;
 use crate::frontend::directive_translate::{factor_cfgs, item_key, target_cfg};
@@ -23,6 +23,7 @@ const MAX_RELEVANT_FEATURES: usize = 12;
 const MAX_ENUMERATED_FEATURES: usize = 20;
 const MAX_REPORTED_MISMATCHES: usize = 20;
 const SAMPLE_SEED: u64 = 0x5eed_0f5a_a7e0_0001;
+const UNTRANSLATED_TARGET: &str = "this crate was not translated for this target";
 
 pub struct Unit {
     pub stem: String,
@@ -216,6 +217,7 @@ pub struct Merged {
     pub units: Vec<(String, Program)>,
     pub root: Option<String>,
     pub features: BTreeSet<String>,
+    pub target_guard: Item,
     report: String,
     pub mismatches: usize,
     pub signature_mismatches: usize,
@@ -1645,6 +1647,15 @@ pub fn merge(
         .iter()
         .map(|feature| feature.name.clone())
         .collect();
+    let target_guard = gate(
+        Some(Cfg::Not(Box::new(factor_cfgs(
+            builds.iter().map(|build| build.cfg.clone()).collect(),
+        )))),
+        Item::Macro {
+            name: "compile_error".into(),
+            args: vec![Expr::Str(UNTRANSLATED_TARGET.into())],
+        },
+    );
     Ok(Merged {
         units: merged
             .iter()
@@ -1652,6 +1663,7 @@ pub fn merge(
             .collect(),
         root,
         features,
+        target_guard,
         report,
         mismatches: result.mismatches.len(),
         signature_mismatches: signature_mismatches.len(),

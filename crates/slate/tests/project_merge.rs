@@ -287,6 +287,40 @@ fn merge_filecheck() {
 }
 
 #[test]
+fn target_outside_matrix_hits_guard() {
+    let base = std::fs::read(fixtures().join("matrix.json")).expect("read matrix");
+    let mut matrix: serde_json::Value = serde_json::from_slice(&base).expect("parse matrix");
+    matrix["sources"] = serde_json::json!(["by_target.c"]);
+    std::fs::create_dir_all(work()).expect("create work");
+    let matrix_path = work().join("target_guard.json");
+    std::fs::write(&matrix_path, matrix.to_string()).expect("write matrix");
+    let crate_dir = work().join("crates/target_guard");
+    let (stdout, stderr, code) = merge(&matrix_path, &crate_dir, None);
+    assert_eq!(code, 0, "{stdout}{stderr}");
+    let check = |triple: &str| {
+        Command::new(std::env::var("SLATE_CARGO").unwrap_or_else(|_| "cargo".into()))
+            .args(["check", "--quiet", "--target", triple])
+            .current_dir(&crate_dir)
+            .env("CARGO_TARGET_DIR", work().join("cargo-target"))
+            .output()
+            .expect("run cargo check")
+    };
+    let inside = check(TRIPLE);
+    assert!(
+        inside.status.success(),
+        "{}",
+        String::from_utf8_lossy(&inside.stderr)
+    );
+    let outside = check("i686-unknown-linux-gnu");
+    let stderr = String::from_utf8_lossy(&outside.stderr);
+    assert!(
+        !outside.status.success()
+            && stderr.contains("this crate was not translated for this target"),
+        "{stderr}"
+    );
+}
+
+#[test]
 fn zlib_projection_sample() {
     let Some(home) = std::env::var_os("HOME") else {
         return;

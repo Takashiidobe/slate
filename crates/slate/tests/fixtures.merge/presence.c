@@ -32,6 +32,12 @@ int main(void) {
 // CHECK-NEXT: file main.rs
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(not(any(
+// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"),
+// CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc")
+// CHECK-NEXT: )))]
+// CHECK-NEXT: compile_error!("this crate was not translated for this target");
+// CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(all(target_arch = "x86_64", windows, target_env = "msvc"))]
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn __va_start([[ARG_0:arg[0-9]+]]: *mut *mut i8, ...);

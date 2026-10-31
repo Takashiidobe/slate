@@ -774,6 +774,7 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
             merged.root,
             &crate_types,
             &merged.features,
+            Some(merged.target_guard),
         )?;
         if mismatches > 0 {
             print!("{written}");
@@ -948,6 +949,7 @@ fn translate_slate_project(
         root,
         crate_types,
         &BTreeSet::new(),
+        None,
     )
 }
 
@@ -958,6 +960,7 @@ fn write_project_crate(
     root: Option<String>,
     crate_types: &[String],
     declared_features: &BTreeSet<String>,
+    target_guard: Option<rust_ast::Item>,
 ) -> Result<String, String> {
     let lib_crate_types = match &root {
         Some(root) => {
@@ -981,8 +984,9 @@ fn write_project_crate(
         name: rust_ast::Ident::new(slate::backend::SHARED_TYPES_MODULE),
         path: None,
     });
-    let children: Vec<rust_ast::Item> = shared_module
+    let children: Vec<rust_ast::Item> = target_guard
         .into_iter()
+        .chain(shared_module)
         .chain(
             programs
                 .iter()
