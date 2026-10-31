@@ -134,7 +134,7 @@ impl FunctionLowerer<'_, '_> {
                         args: vec![offset],
                     })),
                 }))),
-                ty: self.lower_type(&value.ty)?,
+                ty: self.lower_value_type(value)?,
             },
             ir::Type::Function { .. } => Expr::Transmute {
                 from: byte_pointer_type(),
@@ -180,7 +180,7 @@ impl FunctionLowerer<'_, '_> {
                 expr: Box::new(Expr::Value(rust::RustValue::I128(
                     (i128::from(left) - i128::from(right)) / i128::from(stride),
                 ))),
-                ty: self.lower_type(&value.ty)?,
+                ty: self.lower_value_type(value)?,
             });
         }
         Ok(match element {
@@ -197,7 +197,7 @@ impl FunctionLowerer<'_, '_> {
                     }))),
                     rhs: Box::new(self.runtime_stride(element)?),
                 }),
-                ty: self.lower_type(&value.ty)?,
+                ty: self.lower_value_type(value)?,
             },
             ir::Type::Void => Expr::Cast {
                 expr: Box::new(Expr::Unsafe(Box::new(rust::Block {
@@ -208,7 +208,7 @@ impl FunctionLowerer<'_, '_> {
                         args: vec![self.byte_pointer(right)?],
                     })),
                 }))),
-                ty: self.lower_type(&value.ty)?,
+                ty: self.lower_value_type(value)?,
             },
             ir::Type::Function { .. } => Expr::Cast {
                 expr: Box::new(Expr::MethodCall {
@@ -222,7 +222,7 @@ impl FunctionLowerer<'_, '_> {
                         ty: rust::Type::Prim(Prim::Isize),
                     }],
                 }),
-                ty: self.lower_type(&value.ty)?,
+                ty: self.lower_value_type(value)?,
             },
             _ => Expr::Cast {
                 expr: Box::new(Expr::Unsafe(Box::new(rust::Block {
@@ -232,11 +232,11 @@ impl FunctionLowerer<'_, '_> {
                         method: "offset_from".into(),
                         args: vec![Expr::Cast {
                             expr: Box::new(self.lower_value(right)?),
-                            ty: self.lower_type(&left.ty)?,
+                            ty: self.lower_value_type(left)?,
                         }],
                     })),
                 }))),
-                ty: self.lower_type(&value.ty)?,
+                ty: self.lower_value_type(value)?,
             },
         })
     }
@@ -247,7 +247,7 @@ impl FunctionLowerer<'_, '_> {
             self.lower_type(&value.ty)?;
             return Ok(Expr::Var("None".into()));
         }
-        let rust::Type::Ptr { mutable, inner } = self.lower_type(&value.ty)? else {
+        let rust::Type::Ptr { mutable, inner } = self.lower_value_type(value)? else {
             return Err(unsupported_value(value));
         };
         Ok(Expr::Call {

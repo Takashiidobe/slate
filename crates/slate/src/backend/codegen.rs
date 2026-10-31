@@ -3,9 +3,9 @@ use std::fmt::{self, Write};
 use crate::backend::rust_ast::{
     Abi, AsmKind, AsmOperand, AsmReg, AtomicOrdering, AtomicPlace, AtomicRmwOp, AtomicType, Attr,
     Block, Cfg, Comment, CommentAttach, CrateAttr, Derive, Expr, ExternDecl, FnDef, GenericParam,
-    ImplBlock, ImplItem, InlineAsm, InlineHint, Item, Method, Path, Pattern, Precedence, Program,
-    RecordDef, RecordField, Repr, RustValue, SelfKind, Stmt, StructDef, StructFields, TraitBound,
-    TraitRef, Type,
+    ImplBlock, ImplItem, InlineAsm, InlineHint, Item, Method, Path, Pattern, Precedence, Prim,
+    Program, RecordDef, RecordField, Repr, RustValue, SelfKind, Stmt, StructDef, StructFields,
+    TraitBound, TraitRef, Type,
 };
 
 const INDENT: &str = "    ";
@@ -1588,6 +1588,12 @@ impl<W: Write> Codegen<W> {
             RustValue::Usize(n) => write!(self.out, "{n}usize"),
             RustValue::I128(n) => write!(self.out, "{n}"),
             RustValue::U128(n) => write!(self.out, "{n}"),
+            RustValue::TypedInt(n, Prim::Named(named)) => {
+                write!(self.out, "({n} as {})", named.name)
+            }
+            RustValue::TypedUInt(n, Prim::Named(named)) => {
+                write!(self.out, "({n} as {})", named.name)
+            }
             RustValue::TypedInt(n, ty) => write!(self.out, "{n}{}", ty.spelling()),
             RustValue::TypedUInt(n, ty) => write!(self.out, "{n}{}", ty.spelling()),
             RustValue::Float(n) => {

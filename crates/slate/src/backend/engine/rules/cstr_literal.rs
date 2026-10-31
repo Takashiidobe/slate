@@ -4,17 +4,18 @@ use crate::backend::engine::arena::{FunctionOptimizer, NodeId, NodeKindTag};
 use crate::backend::rust_ast::{CLibType, Expr, Prim, Type};
 
 fn is_const_c_char_ptr(ty: &Type, c_char: Prim) -> bool {
-    matches!(ty, Type::Ptr { mutable: false, inner } if **inner == Type::CLib(CLibType::CHAR) || **inner == Type::Prim(c_char))
+    matches!(ty, Type::Ptr { mutable: false, inner } if **inner == Type::CLib(CLibType::CHAR) || matches!(**inner, Type::Prim(prim) if prim.resolved() == c_char))
 }
 
 fn is_byte_ptr(ty: &Type) -> bool {
     let Type::Ptr { inner, .. } = ty else {
         return false;
     };
-    matches!(
-        **inner,
-        Type::CLib(CLibType::CHAR) | Type::Prim(Prim::I8) | Type::Prim(Prim::U8)
-    )
+    match **inner {
+        Type::CLib(CLibType::CHAR) => true,
+        Type::Prim(prim) => matches!(prim.resolved(), Prim::I8 | Prim::U8),
+        _ => false,
+    }
 }
 
 fn cstr_content(expr: &Expr) -> Option<Vec<u8>> {

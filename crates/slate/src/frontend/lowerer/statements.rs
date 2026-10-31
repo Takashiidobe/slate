@@ -99,7 +99,7 @@ impl FunctionLowerer<'_, '_> {
             } => Stmt::Let {
                 name: self.binding_name(*id),
                 mutable: true,
-                ty: Some(self.lower_type(ty)?),
+                ty: Some(self.lower_binding_type(ty, *id)?),
                 init: initializer
                     .as_ref()
                     .map(|value| self.lower_value(value))
@@ -162,7 +162,7 @@ impl FunctionLowerer<'_, '_> {
                         _ => zeroed(),
                     }),
                 };
-                let ty = self.lower_type(&variable.ty)?;
+                let ty = self.lower_binding_type(&variable.ty, variable.id)?;
                 let (ty, init) = match alignment {
                     Some(alignment) => (
                         self.align_wrapped(&variable.name, alignment, ty)?,

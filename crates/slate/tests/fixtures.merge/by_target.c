@@ -26,7 +26,7 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 2 compiles
 // CHECK-NEXT:   by_target.c: [alpha] 2 compiled
 // CHECK-NEXT: total: 4 compiles across 2 targets
-// CHECK-NEXT: unit by_target: 10 items, 5 gated, 0 duplicated functions
+// CHECK-NEXT: unit by_target: 11 items, 5 gated, 0 duplicated functions
 // CHECK-NEXT:   hoisted fn:platform: 2 variants
 // CHECK-NEXT:   hoisted fn:platform_alpha: 2 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
@@ -43,9 +43,11 @@ int main(void) {
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn puts([[ARG_0:arg[0-9]+]]: *const i8) -> i32;
+// CHECK-NEXT:     fn puts([[ARG_0:arg[0-9]+]]: *const c_char) -> i32;
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: type c_char = i8;
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"))]
 // CHECK-NEXT: const __SLATE_HOIST_platform: &core::ffi::CStr = c"unix";
@@ -54,7 +56,7 @@ int main(void) {
 // CHECK-NEXT: const __SLATE_HOIST_platform: &core::ffi::CStr = c"windows";
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: extern "C-unwind" fn platform() -> *const i8 {
+// CHECK-NEXT: extern "C-unwind" fn platform() -> *const c_char {
 // CHECK-NEXT:     __SLATE_HOIST_platform.as_ptr()
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -76,7 +78,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(feature = "alpha")]
 // CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: extern "C-unwind" fn platform_alpha() -> *const i8 {
+// CHECK-NEXT: extern "C-unwind" fn platform_alpha() -> *const c_char {
 // CHECK-NEXT:     __SLATE_HOIST_platform_alpha.as_ptr()
 // CHECK-NEXT: }
 // CHECK-EMPTY:

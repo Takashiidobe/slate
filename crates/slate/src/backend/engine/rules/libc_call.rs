@@ -175,7 +175,7 @@ fn unwrap_aligned(ty: &Type) -> &Type {
 }
 
 fn is_byte_elem(ty: &Type) -> bool {
-    matches!(ty, Type::Prim(Prim::U8 | Prim::I8))
+    matches!(ty, Type::Prim(prim) if matches!(prim.resolved(), Prim::U8 | Prim::I8))
 }
 
 fn const_len(expr: &Expr) -> Option<u64> {

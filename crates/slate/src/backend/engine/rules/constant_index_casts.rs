@@ -4,7 +4,7 @@ use crate::backend::engine::arena::{FunctionOptimizer, NodeId, NodeKindTag};
 use crate::backend::rust_ast::{Expr, Prim, RustValue, Type};
 
 fn nonnegative_bound(prim: Prim) -> Option<i128> {
-    match prim {
+    match prim.resolved() {
         Prim::I8 => Some(i8::MAX as i128),
         Prim::I16 => Some(i16::MAX as i128),
         Prim::I32 => Some(i32::MAX as i128),

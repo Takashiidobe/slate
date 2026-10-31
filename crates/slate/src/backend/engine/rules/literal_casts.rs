@@ -30,6 +30,7 @@ fn bounds(prim: Prim) -> Option<(i128, i128)> {
         Prim::U32 | Prim::Usize => (0, u32::MAX.into()),
         Prim::U64 => (0, u64::MAX.into()),
         Prim::U128 => (0, i128::MAX),
+        Prim::Named(_) => return bounds(prim.resolved()),
         _ => return None,
     })
 }

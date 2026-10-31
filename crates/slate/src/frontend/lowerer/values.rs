@@ -157,7 +157,7 @@ fn rotate_method(builtin: &str) -> Option<&'static str> {
 }
 
 pub(super) fn prim_width(prim: Prim) -> u32 {
-    match prim {
+    match prim.resolved() {
         Prim::I8 | Prim::U8 => 8,
         Prim::I16 | Prim::U16 => 16,
         Prim::I32 | Prim::U32 => 32,
@@ -430,7 +430,13 @@ impl FunctionLowerer<'_, '_> {
             return Ok(lowered);
         }
         Ok(match &value.node.value {
-            ValueKind::Constant(number) => self.lower_number(number, &value.ty)?,
+            ValueKind::Constant(number) => {
+                let mut literal = self.lower_number(number, &value.ty)?;
+                if let Expr::Cast { ty, .. } = &mut literal {
+                    *ty = self.lower_value_type(value)?;
+                }
+                literal
+            }
             ValueKind::CodeUnits(units) => {
                 let ir::Type::Array { element, .. } = &value.ty else {
                     return Err(unsupported_value(value));
@@ -852,7 +858,7 @@ impl FunctionLowerer<'_, '_> {
             {
                 Expr::Cast {
                     expr: Box::new(address),
-                    ty: self.lower_type(&value.ty)?,
+                    ty: self.lower_value_type(value)?,
                 }
             }
             ValueKind::AddressOf(place) | ValueKind::ArrayDecay { place, .. }
@@ -862,7 +868,7 @@ impl FunctionLowerer<'_, '_> {
                     stmts: Vec::new(),
                     tail: Some(Box::new(Expr::Cast {
                         expr: Box::new(address),
-                        ty: self.lower_type(&value.ty)?,
+                        ty: self.lower_value_type(value)?,
                     })),
                 }))
             }
@@ -872,7 +878,7 @@ impl FunctionLowerer<'_, '_> {
             {
                 Expr::Cast {
                     expr: Box::new(Expr::Value(rust::RustValue::Usize(offset as usize))),
-                    ty: self.lower_type(&value.ty)?,
+                    ty: self.lower_value_type(value)?,
                 }
             }
             ValueKind::AddressOf(place) => match place.kind {
@@ -944,7 +950,7 @@ impl FunctionLowerer<'_, '_> {
             {
                 Expr::Cast {
                     expr: Box::new(Expr::Value(rust::RustValue::U128(integer as u128))),
-                    ty: self.lower_type(&value.ty)?,
+                    ty: self.lower_value_type(value)?,
                 }
             }
             ValueKind::Convert { operand, .. }
@@ -1013,6 +1019,12 @@ impl FunctionLowerer<'_, '_> {
                 self.lower_vector_unary(value, *op, operand)?
             }
             ValueKind::Convert { operand, .. } => {
+                let operand = if odd_width(self.tables.resolve_type(&value.ty)).is_none() {
+                    let target = self.lower_value_type(value)?;
+                    self.peel_widening_to_named(operand, &target)
+                } else {
+                    operand
+                };
                 let from = match odd_width(self.tables.resolve_type(&operand.ty)) {
                     Some((_, _, container)) => rust::Type::Prim(container),
                     None => self.lower_type(&operand.ty)?,
@@ -1021,7 +1033,7 @@ impl FunctionLowerer<'_, '_> {
                 if odd_width(self.tables.resolve_type(&value.ty)).is_none() {
                     return Ok(convert_function_pointer(
                         from,
-                        self.lower_type(&value.ty)?,
+                        self.lower_value_type(value)?,
                         Box::new(expr),
                     ));
                 }
@@ -1066,7 +1078,7 @@ impl FunctionLowerer<'_, '_> {
                                 }
                             },
                         ),
-                        ty: self.lower_type(&value.ty)?,
+                        ty: self.lower_value_type(value)?,
                     };
                     return Ok(if self.tables.place_is_unsafe(place) {
                         Expr::Unsafe(Box::new(rust::Block {
@@ -1083,7 +1095,7 @@ impl FunctionLowerer<'_, '_> {
                         method: "as_ptr".into(),
                         args: Vec::new(),
                     }),
-                    ty: self.lower_type(&value.ty)?,
+                    ty: self.lower_value_type(value)?,
                 }
             }
             ValueKind::Arith { .. } | ValueKind::Unary { .. }
@@ -1362,7 +1374,7 @@ impl FunctionLowerer<'_, '_> {
                         control_flow::label_code(*left) as i64
                             - control_flow::label_code(*right) as i64,
                     ))),
-                    ty: self.lower_type(&value.ty)?,
+                    ty: self.lower_value_type(value)?,
                 }
             }
             ValueKind::PointerDifference {
@@ -1439,7 +1451,7 @@ impl FunctionLowerer<'_, '_> {
                 expr: Box::new(Expr::Value(rust::RustValue::Usize(
                     control_flow::label_code(*id),
                 ))),
-                ty: self.lower_type(&value.ty)?,
+                ty: self.lower_value_type(value)?,
             },
             ValueKind::Call {
                 callee: ir::Callee::Direct(id),
@@ -1515,7 +1527,7 @@ impl FunctionLowerer<'_, '_> {
                         args: vec![as_usize(self.lower_value(size)?), align],
                         binding: CallBinding::Generated,
                     }),
-                    ty: self.lower_type(&value.ty)?,
+                    ty: self.lower_value_type(value)?,
                 }
             }
             ValueKind::Call {
@@ -1614,7 +1626,7 @@ impl FunctionLowerer<'_, '_> {
                             }],
                             tail: Some(Box::new(Expr::Cast {
                                 expr: Box::new(call("_setjmp", vec![env_ptr()])),
-                                ty: self.lower_type(&value.ty)?,
+                                ty: self.lower_value_type(value)?,
                             })),
                         }))
                     }
@@ -1775,7 +1787,7 @@ impl FunctionLowerer<'_, '_> {
                 };
                 Expr::Cast {
                     expr: Box::new(self.lower_value(pointer)?),
-                    ty: self.lower_type(&value.ty)?,
+                    ty: self.lower_value_type(value)?,
                 }
             }
             ValueKind::Call {
@@ -2187,6 +2199,31 @@ impl FunctionLowerer<'_, '_> {
             args,
             FunctionIdentity::Unknown,
         )))
+    }
+
+    fn peel_widening_to_named<'v>(
+        &self,
+        mut operand: &'v ir::Value,
+        target: &rust::Type,
+    ) -> &'v ir::Value {
+        if !matches!(target, rust::Type::Prim(Prim::Named(_))) {
+            return operand;
+        }
+        while let ValueKind::Convert {
+            kind: ir::ConversionKind::Widen,
+            operand: inner,
+            ..
+        } = &operand.node.value
+            && matches!(
+                self.tables.resolve_type(&inner.ty),
+                ir::Type::Numeric(ir::NumericType::Integer { .. })
+            )
+            && odd_width(self.tables.resolve_type(&inner.ty)).is_none()
+            && self.tables.wide_int(&inner.ty).is_none()
+        {
+            operand = inner;
+        }
+        operand
     }
 
     pub(super) fn narrow_integer(&mut self, expr: Expr, ty: &ir::Type) -> Result<Expr> {

@@ -266,7 +266,7 @@ impl FunctionLowerer<'_, '_> {
             }
             .into());
         }
-        let ty = self.lower_type(&variable.ty)?;
+        let ty = self.lower_binding_type(&variable.ty, variable.id)?;
         if !global.definition {
             return Ok((ty, None));
         }

@@ -869,12 +869,15 @@ fn is_malloc_call(expr: &Expr) -> bool {
 }
 
 fn primitive_size(ty: &Type) -> Option<u64> {
-    match ty {
-        Type::Prim(Prim::I8 | Prim::U8) => Some(1),
-        Type::Prim(Prim::I16 | Prim::U16 | Prim::F16) => Some(2),
-        Type::Prim(Prim::I32 | Prim::U32 | Prim::F32) => Some(4),
-        Type::Prim(Prim::I64 | Prim::U64 | Prim::F64) => Some(8),
-        Type::Prim(Prim::I128 | Prim::U128 | Prim::F128) => Some(16),
+    let Type::Prim(prim) = ty else {
+        return None;
+    };
+    match prim.resolved() {
+        Prim::I8 | Prim::U8 => Some(1),
+        Prim::I16 | Prim::U16 | Prim::F16 => Some(2),
+        Prim::I32 | Prim::U32 | Prim::F32 => Some(4),
+        Prim::I64 | Prim::U64 | Prim::F64 => Some(8),
+        Prim::I128 | Prim::U128 | Prim::F128 => Some(16),
         _ => None,
     }
 }
@@ -1477,22 +1480,23 @@ fn apply_items(unit: usize, items: &mut [Item], pairings: &BTreeMap<PointerBindi
 }
 
 fn is_integer_type(ty: &Type) -> bool {
+    let Type::Prim(prim) = ty else {
+        return false;
+    };
     matches!(
-        ty,
-        Type::Prim(
-            Prim::I8
-                | Prim::I16
-                | Prim::I32
-                | Prim::I64
-                | Prim::I128
-                | Prim::Isize
-                | Prim::U8
-                | Prim::U16
-                | Prim::U32
-                | Prim::U64
-                | Prim::U128
-                | Prim::Usize
-        )
+        prim.resolved(),
+        Prim::I8
+            | Prim::I16
+            | Prim::I32
+            | Prim::I64
+            | Prim::I128
+            | Prim::Isize
+            | Prim::U8
+            | Prim::U16
+            | Prim::U32
+            | Prim::U64
+            | Prim::U128
+            | Prim::Usize
     )
 }
 

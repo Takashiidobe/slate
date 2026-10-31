@@ -10,7 +10,7 @@ type VarTypes = HashMap<Ident, Type>;
 
 fn is_unsigned_prim(prim: Prim) -> bool {
     matches!(
-        prim,
+        prim.resolved(),
         Prim::U8 | Prim::U16 | Prim::U32 | Prim::U64 | Prim::U128 | Prim::Usize
     )
 }

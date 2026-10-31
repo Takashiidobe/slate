@@ -165,7 +165,7 @@ fn is_char_ptr(ty: &Type) -> bool {
         return false;
     };
     match &**inner {
-        Type::Prim(Prim::I8 | Prim::U8) => true,
+        Type::Prim(prim) => matches!(prim.resolved(), Prim::I8 | Prim::U8),
         Type::CLib(CLibType::CHAR) => true,
         Type::Custom(name) => name == "libc::c_char",
         _ => false,
@@ -293,7 +293,7 @@ fn literal_string_locals(body: &[Stmt]) -> BTreeMap<String, Vec<u8>> {
             ty: Some(Type::Array { elem, .. }),
             ..
         } = stmt
-            && matches!(**elem, Type::Prim(Prim::I8 | Prim::U8))
+            && matches!(**elem, Type::Prim(prim) if matches!(prim.resolved(), Prim::I8 | Prim::U8))
         {
             arrays.insert(name.clone());
         }

@@ -65,7 +65,7 @@ int main(void) {
 // CHECK-NEXT:   cover_refine.c: [alpha,beta,gamma,delta,epsilon] 27 compiled
 // CHECK-NEXT:     6 assignments preprocess like a compiled one
 // CHECK-NEXT: total: 42 compiles across 2 targets
-// CHECK-NEXT: unit cover_refine: 24 items, 17 gated, 0 duplicated functions
+// CHECK-NEXT: unit cover_refine: 26 items, 18 gated, 0 duplicated functions
 // CHECK-NEXT:   hoisted fn:state_size: 5 variants
 // CHECK-NEXT:   spliced fn:nested: 5 variants
 // CHECK-NEXT:   spliced fn:joint: 4 variants
@@ -86,16 +86,23 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(all(target_arch = "x86_64", windows, target_env = "msvc"))]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn __va_start([[ARG_0:arg[0-9]+]]: *mut *mut i8, ...);
+// CHECK-NEXT:     fn __va_start([[ARG_0:arg[0-9]+]]: *mut *mut c_char, ...);
 // CHECK-NEXT:     fn __acrt_iob_func([[ARG_0]]: u32) -> *mut _iobuf;
 // CHECK-NEXT:     fn __stdio_common_vfprintf(
 // CHECK-NEXT:         [[ARG_0]]: u64,
 // CHECK-NEXT:         [[ARG_1:arg[0-9]+]]: *mut _iobuf,
-// CHECK-NEXT:         [[ARG_2:arg[0-9]+]]: *const i8,
+// CHECK-NEXT:         [[ARG_2:arg[0-9]+]]: *const c_char,
 // CHECK-NEXT:         [[ARG_3:arg[0-9]+]]: *mut __crt_locale_pointers,
-// CHECK-NEXT:         [[ARG_4:arg[0-9]+]]: *mut i8,
+// CHECK-NEXT:         [[ARG_4:arg[0-9]+]]: *mut c_char,
 // CHECK-NEXT:     ) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"))]
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn printf([[ARG_0]]: *const c_char, ...) -> i32;
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: type c_char = i8;
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(all(target_arch = "x86_64", windows, target_env = "msvc"))]
 // CHECK-NEXT: #[repr(C)]
@@ -133,9 +140,9 @@ int main(void) {
 // CHECK-NEXT: #[cfg(all(target_arch = "x86_64", windows, target_env = "msvc"))]
 // CHECK-NEXT: fn _vfprintf_l(
 // CHECK-NEXT:     _Stream: *mut _iobuf,
-// CHECK-NEXT:     _Format: *const i8,
+// CHECK-NEXT:     _Format: *const c_char,
 // CHECK-NEXT:     _Locale: *mut __crt_locale_pointers,
-// CHECK-NEXT:     _ArgList: *mut i8,
+// CHECK-NEXT:     _ArgList: *mut c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __stdio_common_vfprintf(
@@ -149,9 +156,9 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(all(target_arch = "x86_64", windows, target_env = "msvc"))]
-// CHECK-NEXT: unsafe extern "C-unwind" fn printf(_Format: *const i8, mut __va_args: ...) -> i32 {
+// CHECK-NEXT: unsafe extern "C-unwind" fn printf(_Format: *const c_char, mut __va_args: ...) -> i32 {
 // CHECK-NEXT:     let mut _Result: i32 = 0;
-// CHECK-NEXT:     let mut _ArgList: *mut i8 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut _ArgList: *mut c_char = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *std::ptr::addr_of_mut!(_ArgList) =
 // CHECK-NEXT:             core::mem::transmute::<core::ffi::VaList<'_>, *mut i8>(__va_args.clone());
@@ -162,14 +169,12 @@ int main(void) {
 // CHECK-NEXT:         std::ptr::null_mut::<__crt_locale_pointers>(),
 // CHECK-NEXT:         _ArgList,
 // CHECK-NEXT:     );
-// CHECK-NEXT:     _ArgList = std::ptr::null_mut::<i8>();
+// CHECK-NEXT:     _ArgList = std::ptr::null_mut::<c_char>();
 // CHECK-NEXT:     _Result
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"))]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
+// CHECK-NEXT: type c_ulong = u64;
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(all(not(feature = "alpha"), not(feature = "beta")))]
 // CHECK-NEXT: const __SLATE_HOIST_state_size: i32 = 4;

@@ -484,7 +484,7 @@ fn elem_is_byte(ty: &Type) -> bool {
         return false;
     };
     match &**inner {
-        Type::Prim(Prim::I8 | Prim::U8) => true,
+        Type::Prim(prim) => matches!(prim.resolved(), Prim::I8 | Prim::U8),
         Type::CLib(CLibType::CHAR) => true,
         Type::Custom(name) => name == "libc::c_char",
         _ => false,

@@ -82,6 +82,8 @@ struct Tables<'m> {
     metadata: &'m ir::Metadata,
     comments: &'m ir::Comments,
     promote_docs: bool,
+    named_c_types: bool,
+    c_types: &'m ir::CTypeTable,
     unit: &'m str,
     types: HashMap<TypeId, &'m Span<ir::TypeDefinition>>,
     record_names: HashMap<TypeId, String>,
@@ -129,6 +131,7 @@ struct Dependencies {
     long_double_exports: BTreeMap<String, String>,
     bit_units: Vec<Item>,
     bit_unit_impls: Vec<Item>,
+    named_prims: BTreeMap<&'static str, Prim>,
 }
 
 enum Record {
@@ -187,6 +190,7 @@ pub struct LowerOptions {
     pub explicit_docs_only: bool,
     pub imported_commons: BTreeSet<String>,
     pub unit: String,
+    pub named_c_types: bool,
 }
 
 pub struct Lowered {
@@ -593,6 +597,8 @@ impl<'m> ModuleLowerer<'m> {
             metadata: &module.metadata,
             comments: &module.comments,
             promote_docs: !options.explicit_docs_only,
+            named_c_types: options.named_c_types,
+            c_types: &module.c_types,
             unit: &options.unit,
             types: module
                 .types
@@ -874,6 +880,16 @@ impl<'m> ModuleLowerer<'m> {
                 .chain(wrappers)
                 .chain(bit_units)
                 .chain(dependencies.bit_unit_impls),
+        );
+        items.splice(
+            0..0,
+            dependencies
+                .named_prims
+                .iter()
+                .map(|(name, resolved)| Item::TypeAlias {
+                    name: (*name).to_string(),
+                    ty: rust::Type::Prim(*resolved),
+                }),
         );
         items.extend(dependencies.compound_literals);
         items.extend(dependencies.asm_strings.into_values());

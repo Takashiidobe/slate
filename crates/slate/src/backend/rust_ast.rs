@@ -1383,11 +1383,46 @@ pub enum Prim {
     F32,
     F64,
     F128,
+    Named(NamedPrim),
+}
+
+#[derive(Debug, Clone, Copy)]
+pub struct NamedPrim {
+    pub name: &'static str,
+    pub width: u8,
+    pub signed: bool,
+}
+
+impl PartialEq for NamedPrim {
+    fn eq(&self, other: &Self) -> bool {
+        self.name == other.name
+    }
+}
+
+impl Eq for NamedPrim {}
+
+impl PartialOrd for NamedPrim {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for NamedPrim {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.name.cmp(other.name)
+    }
+}
+
+impl std::hash::Hash for NamedPrim {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.name.hash(state);
+    }
 }
 
 impl Prim {
     pub fn spelling(self) -> &'static str {
         match self {
+            Prim::Named(named) => named.name,
             Prim::Bool => "bool",
             Prim::I8 => "i8",
             Prim::I16 => "i16",
@@ -1405,6 +1440,22 @@ impl Prim {
             Prim::F32 => "f32",
             Prim::F64 => "f64",
             Prim::F128 => "f128",
+        }
+    }
+
+    pub fn resolved(self) -> Prim {
+        match self {
+            Prim::Named(named) => match (named.width, named.signed) {
+                (8, true) => Prim::I8,
+                (16, true) => Prim::I16,
+                (32, true) => Prim::I32,
+                (8, false) => Prim::U8,
+                (16, false) => Prim::U16,
+                (32, false) => Prim::U32,
+                (_, true) => Prim::I64,
+                (_, false) => Prim::U64,
+            },
+            prim => prim,
         }
     }
 

@@ -940,6 +940,7 @@ fn translate_slate_project(
             explicit_docs_only,
             root.as_deref(),
             project_merge::Sections::ByProject,
+            false,
         )
     })?;
     write_project_crate(

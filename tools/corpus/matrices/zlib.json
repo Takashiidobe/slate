@@ -27,7 +27,9 @@
       "triple": "x86_64-unknown-linux-gnu",
       "flavor": "clang",
       "args": [
-        "-Ibuild-clang"
+        "-Ibuild-clang",
+        "-DHAVE_UNISTD_H",
+        "-DHAVE_STDARG_H"
       ]
     },
     {
@@ -35,7 +37,9 @@
       "triple": "i686-unknown-linux-gnu",
       "flavor": "clang",
       "args": [
-        "-Ibuild-clang"
+        "-Ibuild-clang",
+        "-DHAVE_UNISTD_H",
+        "-DHAVE_STDARG_H"
       ]
     },
     {
@@ -43,7 +47,9 @@
       "triple": "aarch64-unknown-linux-gnu",
       "flavor": "clang",
       "args": [
-        "-Ibuild-clang"
+        "-Ibuild-clang",
+        "-DHAVE_UNISTD_H",
+        "-DHAVE_STDARG_H"
       ]
     },
     {
@@ -51,7 +57,9 @@
       "triple": "armv7-unknown-linux-gnueabihf",
       "flavor": "clang",
       "args": [
-        "-Ibuild-clang"
+        "-Ibuild-clang",
+        "-DHAVE_UNISTD_H",
+        "-DHAVE_STDARG_H"
       ]
     },
     {
@@ -59,7 +67,9 @@
       "triple": "x86_64-unknown-linux-musl",
       "flavor": "clang",
       "args": [
-        "-Ibuild-clang"
+        "-Ibuild-clang",
+        "-DHAVE_UNISTD_H",
+        "-DHAVE_STDARG_H"
       ]
     },
     {
@@ -67,7 +77,9 @@
       "triple": "aarch64-unknown-linux-musl",
       "flavor": "clang",
       "args": [
-        "-Ibuild-clang"
+        "-Ibuild-clang",
+        "-DHAVE_UNISTD_H",
+        "-DHAVE_STDARG_H"
       ]
     },
     {
@@ -75,7 +87,9 @@
       "triple": "x86_64-apple-darwin",
       "flavor": "clang",
       "args": [
-        "-Ibuild-clang"
+        "-Ibuild-clang",
+        "-DHAVE_UNISTD_H",
+        "-DHAVE_STDARG_H"
       ]
     },
     {
@@ -83,7 +97,9 @@
       "triple": "aarch64-apple-darwin",
       "flavor": "clang",
       "args": [
-        "-Ibuild-clang"
+        "-Ibuild-clang",
+        "-DHAVE_UNISTD_H",
+        "-DHAVE_STDARG_H"
       ]
     },
     {
@@ -91,7 +107,9 @@
       "triple": "x86_64-unknown-freebsd",
       "flavor": "clang",
       "args": [
-        "-Ibuild-clang"
+        "-Ibuild-clang",
+        "-DHAVE_UNISTD_H",
+        "-DHAVE_STDARG_H"
       ]
     },
     {
@@ -99,7 +117,9 @@
       "triple": "aarch64-unknown-freebsd",
       "flavor": "clang",
       "args": [
-        "-Ibuild-clang"
+        "-Ibuild-clang",
+        "-DHAVE_UNISTD_H",
+        "-DHAVE_STDARG_H"
       ]
     },
     {
@@ -107,7 +127,9 @@
       "triple": "x86_64-linux-android",
       "flavor": "clang",
       "args": [
-        "-Ibuild-clang"
+        "-Ibuild-clang",
+        "-DHAVE_UNISTD_H",
+        "-DHAVE_STDARG_H"
       ]
     },
     {
@@ -115,7 +137,9 @@
       "triple": "aarch64-linux-android",
       "flavor": "clang",
       "args": [
-        "-Ibuild-clang"
+        "-Ibuild-clang",
+        "-DHAVE_UNISTD_H",
+        "-DHAVE_STDARG_H"
       ]
     },
     {
@@ -124,6 +148,7 @@
       "flavor": "msvc",
       "args": [
         "-Ibuild-msvc",
+        "-DHAVE_STDARG_H",
         "-D_CRT_NONSTDC_NO_DEPRECATE",
         "-D_CRT_SECURE_NO_DEPRECATE"
       ]
@@ -134,6 +159,7 @@
       "flavor": "msvc",
       "args": [
         "-Ibuild-msvc",
+        "-DHAVE_STDARG_H",
         "-D_CRT_NONSTDC_NO_DEPRECATE",
         "-D_CRT_SECURE_NO_DEPRECATE"
       ]
@@ -144,6 +170,7 @@
       "flavor": "msvc",
       "args": [
         "-Ibuild-msvc",
+        "-DHAVE_STDARG_H",
         "-D_CRT_NONSTDC_NO_DEPRECATE",
         "-D_CRT_SECURE_NO_DEPRECATE"
       ]
@@ -154,6 +181,7 @@
       "flavor": "msvc",
       "args": [
         "-Ibuild-msvc",
+        "-DHAVE_STDARG_H",
         "-D_CRT_NONSTDC_NO_DEPRECATE",
         "-D_CRT_SECURE_NO_DEPRECATE"
       ]

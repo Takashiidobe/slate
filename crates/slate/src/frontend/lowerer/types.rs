@@ -1,4 +1,5 @@
 use super::*;
+use slate_parser::sema::ctype::{CTypeKind, CTypes, IntRank, QualType};
 use slate_parser::target_info::{Endian, TargetEnvironment};
 
 pub(super) const BIT_UNIT_MODULE: &str = "__slate_bits";
@@ -272,7 +273,7 @@ impl FunctionLowerer<'_, '_> {
                     unsupported_record(name, &format!("layout of {}", field.ty)).at(Site::of(field))
                 })?;
                 let ty = self
-                    .lower_type(&field.ty)
+                    .lower_c_type(&field.ty, self.tables.c_types.nodes.get(&field.id).copied())
                     .map_err(|error| error.at(Site::of(field)))?;
                 let field_align = pack.map_or(field_align, |pack| field_align.min(pack));
                 let (ty, field_align) = if pack.is_some() && self.contains_raised_align(&field.ty) {
@@ -624,6 +625,131 @@ impl FunctionLowerer<'_, '_> {
         Ok((unit_type, 1))
     }
 
+    pub(super) fn lower_value_type(&mut self, value: &ir::Value) -> Result<rust::Type> {
+        self.lower_c_type(&value.ty, self.tables.c_types.value(value))
+    }
+
+    pub(super) fn lower_binding_type(
+        &mut self,
+        ty: &ir::Type,
+        binding: ir::BindingId,
+    ) -> Result<rust::Type> {
+        self.lower_c_type(ty, self.tables.c_types.bindings.get(&binding).copied())
+    }
+
+    pub(super) fn lower_c_type(
+        &mut self,
+        ty: &ir::Type,
+        c: Option<QualType>,
+    ) -> Result<rust::Type> {
+        let Some(c) = c.filter(|_| self.tables.named_c_types) else {
+            return self.lower_type(ty);
+        };
+        let tables = self.tables;
+        let types = &tables.c_types.types;
+        let shape = types.kind(types.desugar(c).ty);
+        match (ty, shape) {
+            (ir::Type::Defined(id), _) => match tables.types.get(id).map(|d| &d.kind) {
+                Some(ir::TypeDefinitionKind::Alias(inner)) => self.lower_c_type(inner, Some(c)),
+                _ => self.lower_type(ty),
+            },
+            (ir::Type::Numeric(ir::NumericType::Integer { .. }), _) => {
+                let lowered = self.lower_type(ty)?;
+                let rust::Type::Prim(resolved) = lowered else {
+                    return Ok(lowered);
+                };
+                Ok(rust::Type::Prim(self.named_prim(c, resolved)))
+            }
+            (
+                ir::Type::Pointer {
+                    pointee, is_const, ..
+                },
+                CTypeKind::Pointer(c_pointee, _),
+            ) if !matches!(**pointee, ir::Type::Function { .. }) => Ok(rust::Type::Ptr {
+                mutable: !is_const,
+                inner: Box::new(self.lower_c_type(pointee, Some(*c_pointee))?),
+            }),
+            (ir::Type::Pointer { pointee, .. }, CTypeKind::Pointer(c_pointee, _)) => {
+                let lowered = self.lower_type(ty)?;
+                let (
+                    ir::Type::Function {
+                        return_type,
+                        parameters,
+                        ..
+                    },
+                    CTypeKind::Function {
+                        ret: c_ret,
+                        params: c_params,
+                        ..
+                    },
+                    rust::Type::FnPtr { abi, params, ret },
+                ) = (
+                    &**pointee,
+                    types.kind(types.desugar(*c_pointee).ty),
+                    lowered.clone(),
+                )
+                else {
+                    return Ok(lowered);
+                };
+                if parameters.len() != c_params.len() {
+                    return Ok(lowered);
+                }
+                let mut named = params;
+                for (index, parameter) in parameters.iter().enumerate() {
+                    named[index] = self.lower_c_type(parameter, Some(c_params[index]))?;
+                }
+                let ret = match return_type {
+                    Some(return_type) => Box::new(self.lower_c_type(return_type, Some(*c_ret))?),
+                    None => ret,
+                };
+                Ok(rust::Type::FnPtr {
+                    abi,
+                    params: named,
+                    ret,
+                })
+            }
+            (
+                ir::Type::Array { element, length },
+                CTypeKind::Array {
+                    element: c_element, ..
+                },
+            ) => Ok(rust::Type::Array {
+                elem: Box::new(self.lower_c_type(element, Some(*c_element))?),
+                len: length.unwrap_or(0),
+            }),
+            _ => self.lower_type(ty),
+        }
+    }
+
+    fn named_prim(&mut self, c: QualType, resolved: Prim) -> Prim {
+        let Some(name) = known_c_name(&self.tables.c_types.types, c).filter(|name| {
+            !self
+                .tables
+                .record_names
+                .values()
+                .any(|record| record == name)
+        }) else {
+            return resolved;
+        };
+        let (width, signed) = match resolved {
+            Prim::I8 => (8, true),
+            Prim::I16 => (16, true),
+            Prim::I32 => (32, true),
+            Prim::I64 => (64, true),
+            Prim::U8 => (8, false),
+            Prim::U16 => (16, false),
+            Prim::U32 => (32, false),
+            Prim::U64 => (64, false),
+            _ => return resolved,
+        };
+        self.dependencies.named_prims.insert(name, resolved);
+        Prim::Named(rust::NamedPrim {
+            name,
+            width,
+            signed,
+        })
+    }
+
     pub(super) fn lower_type(&mut self, ty: &ir::Type) -> Result<rust::Type> {
         let primitive = match ty {
             ir::Type::Void => return Ok(rust::Type::Unit),
@@ -801,6 +927,83 @@ impl FunctionLowerer<'_, '_> {
             _ => return Err(unsupported_type(ty)),
         };
         Ok(rust::Type::Prim(primitive))
+    }
+}
+
+const FIXED_WIDTH_TYPEDEFS: &[&str] = &[
+    "int8_t",
+    "int16_t",
+    "int32_t",
+    "int64_t",
+    "uint8_t",
+    "uint16_t",
+    "uint32_t",
+    "uint64_t",
+    "__int8_t",
+    "__int16_t",
+    "__int32_t",
+    "__int64_t",
+    "__uint8_t",
+    "__uint16_t",
+    "__uint32_t",
+    "__uint64_t",
+    "u_int8_t",
+    "u_int16_t",
+    "u_int32_t",
+    "u_int64_t",
+];
+
+const NAMED_TYPEDEFS: &[&str] = &[
+    "size_t",
+    "ssize_t",
+    "ptrdiff_t",
+    "intptr_t",
+    "uintptr_t",
+    "intmax_t",
+    "uintmax_t",
+    "wchar_t",
+    "wint_t",
+    "off_t",
+    "off64_t",
+    "time_t",
+    "clock_t",
+    "pid_t",
+    "uid_t",
+    "gid_t",
+    "mode_t",
+    "dev_t",
+    "ino_t",
+    "nlink_t",
+    "socklen_t",
+];
+
+fn known_c_name(types: &CTypes, mut c: QualType) -> Option<&'static str> {
+    loop {
+        c = match types.kind(c.ty) {
+            CTypeKind::Typedef {
+                name, underlying, ..
+            } => {
+                if FIXED_WIDTH_TYPEDEFS.contains(&name.as_str()) {
+                    return None;
+                }
+                if let Some(known) = NAMED_TYPEDEFS.iter().find(|known| **known == name) {
+                    return Some(known);
+                }
+                *underlying
+            }
+            CTypeKind::TypeOf { underlying, .. } => *underlying,
+            CTypeKind::AtomicSpecifier(inner) => *inner,
+            CTypeKind::Char => return Some("c_char"),
+            CTypeKind::Int {
+                rank: IntRank::Long,
+                signed: true,
+            } => return Some("c_long"),
+            CTypeKind::Int {
+                rank: IntRank::Long,
+                signed: false,
+            } => return Some("c_ulong"),
+            _ => return None,
+        };
     }
 }
 

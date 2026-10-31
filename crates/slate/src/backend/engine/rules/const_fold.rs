@@ -25,7 +25,7 @@ struct Val {
 }
 
 fn width(prim: Prim) -> Option<(u32, bool)> {
-    Some(match prim {
+    Some(match prim.resolved() {
         Prim::I8 => (8, true),
         Prim::I16 => (16, true),
         Prim::I32 => (32, true),

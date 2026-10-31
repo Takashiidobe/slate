@@ -1,4 +1,5 @@
 use super::*;
+use slate_parser::sema::ctype::CTypeKind;
 use slate_parser::target_info::TargetFamily;
 
 pub(super) fn codegen_builtin(metadata: &[(String, String)]) -> bool {
@@ -335,7 +336,10 @@ impl FunctionLowerer<'_, '_> {
                         name: self.binding_name(parameter.value.id),
                         mutable: false,
                         ty: self
-                            .lower_type(&parameter.ty)
+                            .lower_c_type(
+                                &parameter.ty,
+                                self.tables.c_types.nodes.get(&parameter.id).copied(),
+                            )
                             .map_err(|e| e.used_at(Site::of(parameter)))?,
                     })
                 })
@@ -376,7 +380,7 @@ impl FunctionLowerer<'_, '_> {
                     name: self.binding_name(param.value.id),
                     mutable: true,
                     ty: self
-                        .lower_type(&param.ty)
+                        .lower_c_type(&param.ty, self.tables.c_types.nodes.get(&param.id).copied())
                         .map_err(|e| e.used_at(Site::of(param)))?,
                 })
             })
@@ -521,7 +525,14 @@ impl FunctionLowerer<'_, '_> {
                 .find(|(key, _)| key == "c_return")
                 .map(|(_, value)| value.clone())
         });
-        self.lower_type(ty)
+        let c_return = self.tables.c_types.nodes.get(&function.id).and_then(|c| {
+            let types = &self.tables.c_types.types;
+            match types.kind(types.desugar(*c).ty) {
+                CTypeKind::Function { ret, .. } => Some(*ret),
+                _ => None,
+            }
+        });
+        self.lower_c_type(ty, c_return)
             .map(Some)
             .map_err(|e| e.returned_by(Site::of(function), returns))
     }

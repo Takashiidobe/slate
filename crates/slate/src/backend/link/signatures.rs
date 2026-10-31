@@ -189,6 +189,7 @@ impl<'a> Scope<'a> {
 
     fn render(&self, ty: &Type, behind_pointer: bool) -> String {
         match ty {
+            Type::Prim(prim) => prim.resolved().spelling().to_string(),
             Type::Custom(name) => self.named(name, &[], behind_pointer),
             Type::Generic { name, args } => self.named(name, args, behind_pointer),
             Type::Ptr { mutable, inner } | Type::Ref { mutable, inner } => format!(

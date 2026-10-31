@@ -133,6 +133,7 @@ pub fn translate_units(
     explicit_docs_only: bool,
     liftable_root: Option<&str>,
     sections: Sections,
+    named_c_types: bool,
 ) -> Result<Translated, String> {
     let jobs: Vec<_> = units
         .iter()
@@ -142,6 +143,7 @@ pub fn translate_units(
                 explicit_docs_only,
                 imported_commons: imported.remove(&unit.stem).unwrap_or_default(),
                 unit: unit.stem.clone(),
+                named_c_types,
             };
             (unit, options)
         })
@@ -375,6 +377,7 @@ fn compile_isolated(
         false,
         None,
         Sections::Deferred,
+        true,
     )?;
     let (_, program) = translated
         .programs
@@ -1335,8 +1338,8 @@ fn check_config(
         units.push(parse(command).map_err(|_| ())?);
     }
     let imported = imported_commons(&units);
-    let translated =
-        translate_units(&units, imported, false, None, Sections::ByProject).map_err(|_| ())?;
+    let translated = translate_units(&units, imported, false, None, Sections::ByProject, true)
+        .map_err(|_| ())?;
     let mut atoms = BTreeSet::new();
     target_atoms(&target.cfg, &mut atoms);
     atoms.extend(features.iter().map(|name| feature_atom(name)));

@@ -40,11 +40,11 @@ int main(void) {
 // CHECK-NEXT:   signature_compatible.c: [alpha] 2 compiled
 // CHECK-NEXT:   units/signature_compatible_helper.c: [alpha,beta] 4 compiled
 // CHECK-NEXT: total: 12 compiles across 2 targets
-// CHECK-NEXT: unit signature_compatible: 31 items, 17 gated, 0 duplicated functions
-// CHECK-NEXT:   spliced fn:__slate_main: 3 variants
-// CHECK-NEXT: unit signature_compatible_helper: 20 items, 6 gated, 1 duplicated functions
-// CHECK-NEXT:   duplicated fn:native_long: 2 variants
+// CHECK-NEXT: unit signature_compatible: 33 items, 17 gated, 0 duplicated functions
+// CHECK-NEXT:   spliced fn:__slate_main: 4 variants
+// CHECK-NEXT: unit signature_compatible_helper: 25 items, 9 gated, 0 duplicated functions
 // CHECK-NEXT:   hoisted fn:scale: 2 variants
+// CHECK-NEXT:   hoisted fn:native_long: 2 variants
 // CHECK-NEXT:   spliced record:opaque: 2 variants
 // CHECK-NEXT: projection: 12 checked, 0 not translatable, 0 mismatches
 // CHECK-NEXT: signatures: 22 shared symbols, 0 mismatches
@@ -66,9 +66,10 @@ int main(void) {
 // CHECK-NEXT:     static mut table: [i32; 0];
 // CHECK-NEXT:     static mut big_unsized: [i32; 0];
 // CHECK-NEXT:     static mut big_sized: [i32; 32];
+// CHECK-NEXT:     fn native_long([[ARG_0:arg[0-9]+]]: c_long) -> c_long;
 // CHECK-NEXT:     fn unprototyped(...) -> i32;
-// CHECK-NEXT:     fn label() -> *const i8;
-// CHECK-NEXT:     fn read_opaque([[ARG_0:arg[0-9]+]]: *mut opaque) -> i32;
+// CHECK-NEXT:     fn label() -> *const c_char;
+// CHECK-NEXT:     fn read_opaque([[ARG_0]]: *mut opaque) -> i32;
 // CHECK-NEXT:     fn make_opaque() -> *mut opaque;
 // CHECK-NEXT:     fn read_handle([[ARG_0]]: *mut __SlateRecord_signature_compatible_c_13) -> i32;
 // CHECK-NEXT:     fn quit([[ARG_0]]: i32);
@@ -76,47 +77,40 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(all(target_arch = "x86_64", windows, target_env = "msvc"))]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn __va_start([[ARG_0]]: *mut *mut i8, ...);
+// CHECK-NEXT:     fn __va_start([[ARG_0]]: *mut *mut c_char, ...);
 // CHECK-NEXT:     fn __acrt_iob_func([[ARG_0]]: u32) -> *mut _iobuf;
 // CHECK-NEXT:     fn __stdio_common_vfprintf(
 // CHECK-NEXT:         [[ARG_0]]: u64,
 // CHECK-NEXT:         [[ARG_1:arg[0-9]+]]: *mut _iobuf,
-// CHECK-NEXT:         [[ARG_2:arg[0-9]+]]: *const i8,
+// CHECK-NEXT:         [[ARG_2:arg[0-9]+]]: *const c_char,
 // CHECK-NEXT:         [[ARG_3:arg[0-9]+]]: *mut __crt_locale_pointers,
-// CHECK-NEXT:         [[ARG_4:arg[0-9]+]]: *mut i8,
+// CHECK-NEXT:         [[ARG_4:arg[0-9]+]]: *mut c_char,
 // CHECK-NEXT:     ) -> i32;
-// CHECK-NEXT:     fn native_long([[ARG_0]]: i32) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"))]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0]]: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn native_long([[ARG_0]]: i64) -> i64;
+// CHECK-NEXT:     fn printf([[ARG_0]]: *const c_char, ...) -> i32;
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(any(
-// CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc"),
-// CHECK-NEXT:     all(
-// CHECK-NEXT:         target_arch = "x86_64",
-// CHECK-NEXT:         target_os = "linux",
-// CHECK-NEXT:         target_env = "gnu",
-// CHECK-NEXT:         not(feature = "alpha")
-// CHECK-NEXT:     )
-// CHECK-NEXT: ))]
+// CHECK-NEXT: #[cfg(not(feature = "alpha"))]
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn scale([[ARG_0]]: i32) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(
-// CHECK-NEXT:     target_arch = "x86_64",
-// CHECK-NEXT:     target_os = "linux",
-// CHECK-NEXT:     target_env = "gnu",
-// CHECK-NEXT:     feature = "alpha"
-// CHECK-NEXT: ))]
+// CHECK-NEXT: #[cfg(feature = "alpha")]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn scale([[ARG_0]]: i64) -> i64;
+// CHECK-NEXT:     fn scale([[ARG_0]]: c_long) -> c_long;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: type c_char = i8;
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"))]
+// CHECK-NEXT: type c_long = i64;
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(all(target_arch = "x86_64", windows, target_env = "msvc"))]
+// CHECK-NEXT: type c_long = i32;
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(all(target_arch = "x86_64", windows, target_env = "msvc"))]
 // CHECK-NEXT: #[repr(C)]
@@ -158,9 +152,9 @@ int main(void) {
 // CHECK-NEXT: #[cfg(all(target_arch = "x86_64", windows, target_env = "msvc"))]
 // CHECK-NEXT: fn _vfprintf_l(
 // CHECK-NEXT:     _Stream: *mut _iobuf,
-// CHECK-NEXT:     _Format: *const i8,
+// CHECK-NEXT:     _Format: *const c_char,
 // CHECK-NEXT:     _Locale: *mut __crt_locale_pointers,
-// CHECK-NEXT:     _ArgList: *mut i8,
+// CHECK-NEXT:     _ArgList: *mut c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __stdio_common_vfprintf(
@@ -174,9 +168,9 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(all(target_arch = "x86_64", windows, target_env = "msvc"))]
-// CHECK-NEXT: unsafe extern "C-unwind" fn printf(_Format: *const i8, mut __va_args: ...) -> i32 {
+// CHECK-NEXT: unsafe extern "C-unwind" fn printf(_Format: *const c_char, mut __va_args: ...) -> i32 {
 // CHECK-NEXT:     let mut _Result: i32 = 0;
-// CHECK-NEXT:     let mut _ArgList: *mut i8 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut _ArgList: *mut c_char = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *std::ptr::addr_of_mut!(_ArgList) =
 // CHECK-NEXT:             core::mem::transmute::<core::ffi::VaList<'_>, *mut i8>(__va_args.clone());
@@ -187,7 +181,7 @@ int main(void) {
 // CHECK-NEXT:         std::ptr::null_mut::<__crt_locale_pointers>(),
 // CHECK-NEXT:         _ArgList,
 // CHECK-NEXT:     );
-// CHECK-NEXT:     _ArgList = std::ptr::null_mut::<i8>();
+// CHECK-NEXT:     _ArgList = std::ptr::null_mut::<c_char>();
 // CHECK-NEXT:     _Result
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -210,8 +204,8 @@ int main(void) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             printf(
 // CHECK-NEXT:                 c"%ld %ld %d %d %d %d %s %d %d\n".as_ptr(),
-// CHECK-NEXT:                 scale(2i32) as i64,
-// CHECK-NEXT:                 native_long(3i64),
+// CHECK-NEXT:                 scale(2i32) as c_long,
+// CHECK-NEXT:                 native_long((3 as c_long)),
 // CHECK-NEXT:                 unprototyped(4i32),
 // CHECK-NEXT:                 *(std::ptr::addr_of_mut!(table) as *mut i32).add(1),
 // CHECK-NEXT:                 *(std::ptr::addr_of_mut!(big_unsized) as *mut i32).add(2),
@@ -232,8 +226,8 @@ int main(void) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             printf(
 // CHECK-NEXT:                 c"%ld %ld %d %d %d %d %s %d %d\n".as_ptr(),
-// CHECK-NEXT:                 scale(2i64),
-// CHECK-NEXT:                 native_long(3i64),
+// CHECK-NEXT:                 scale((2 as c_long)),
+// CHECK-NEXT:                 native_long((3 as c_long)),
 // CHECK-NEXT:                 unprototyped(4i32),
 // CHECK-NEXT:                 *(std::ptr::addr_of_mut!(table) as *mut i32).add(1),
 // CHECK-NEXT:                 *(std::ptr::addr_of_mut!(big_unsized) as *mut i32).add(2),
@@ -248,13 +242,40 @@ int main(void) {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(all(target_arch = "x86_64", windows, target_env = "msvc"))]
+// CHECK-NEXT:     #[cfg(all(
+// CHECK-NEXT:         target_arch = "x86_64",
+// CHECK-NEXT:         windows,
+// CHECK-NEXT:         target_env = "msvc",
+// CHECK-NEXT:         not(feature = "alpha")
+// CHECK-NEXT:     ))]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             printf(
 // CHECK-NEXT:                 c"%ld %ld %d %d %d %d %s %d %d\n".as_ptr(),
 // CHECK-NEXT:                 scale(2i32),
-// CHECK-NEXT:                 native_long(3i32),
+// CHECK-NEXT:                 native_long((3 as c_long)),
+// CHECK-NEXT:                 unprototyped(4i32),
+// CHECK-NEXT:                 *(std::ptr::addr_of_mut!(table) as *mut i32).add(1),
+// CHECK-NEXT:                 *(std::ptr::addr_of_mut!(big_unsized) as *mut i32).add(2),
+// CHECK-NEXT:                 big_sized[3],
+// CHECK-NEXT:                 label(),
+// CHECK-NEXT:                 read_opaque(make_opaque()),
+// CHECK-NEXT:                 read_handle(std::ptr::null_mut::<__SlateRecord_signature_compatible_c_13>()),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(all(
+// CHECK-NEXT:         target_arch = "x86_64",
+// CHECK-NEXT:         windows,
+// CHECK-NEXT:         target_env = "msvc",
+// CHECK-NEXT:         feature = "alpha"
+// CHECK-NEXT:     ))]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             printf(
+// CHECK-NEXT:                 c"%ld %ld %d %d %d %d %s %d %d\n".as_ptr(),
+// CHECK-NEXT:                 scale((2 as c_long)),
+// CHECK-NEXT:                 native_long((3 as c_long)),
 // CHECK-NEXT:                 unprototyped(4i32),
 // CHECK-NEXT:                 *(std::ptr::addr_of_mut!(table) as *mut i32).add(1),
 // CHECK-NEXT:                 *(std::ptr::addr_of_mut!(big_unsized) as *mut i32).add(2),
@@ -282,6 +303,17 @@ int main(void) {
 // CHECK-NEXT:     fn exit([[ARG_0]]: i32);
 // CHECK-NEXT: }
 // CHECK-EMPTY:
+// CHECK-NEXT: type c_char = i8;
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"))]
+// CHECK-NEXT: type c_long = i64;
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(all(target_arch = "x86_64", windows, target_env = "msvc"))]
+// CHECK-NEXT: type c_long = i32;
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"))]
+// CHECK-NEXT: type c_ulong = u64;
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct opaque {
@@ -299,24 +331,11 @@ int main(void) {
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(any(
-// CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc"),
-// CHECK-NEXT:     all(
-// CHECK-NEXT:         target_arch = "x86_64",
-// CHECK-NEXT:         target_os = "linux",
-// CHECK-NEXT:         target_env = "gnu",
-// CHECK-NEXT:         not(feature = "alpha")
-// CHECK-NEXT:     )
-// CHECK-NEXT: ))]
+// CHECK-NEXT: #[cfg(not(feature = "alpha"))]
 // CHECK-NEXT: type __SlateHoist_scale = i32;
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(
-// CHECK-NEXT:     target_arch = "x86_64",
-// CHECK-NEXT:     target_os = "linux",
-// CHECK-NEXT:     target_env = "gnu",
-// CHECK-NEXT:     feature = "alpha"
-// CHECK-NEXT: ))]
-// CHECK-NEXT: type __SlateHoist_scale = i64;
+// CHECK-NEXT: #[cfg(feature = "alpha")]
+// CHECK-NEXT: type __SlateHoist_scale = c_long;
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn scale(x: __SlateHoist_scale) -> __SlateHoist_scale {
@@ -324,15 +343,14 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"))]
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: extern "C-unwind" fn native_long(x: i64) -> i64 {
-// CHECK-NEXT:     x + 8
-// CHECK-NEXT: }
+// CHECK-NEXT: const __SLATE_HOIST_native_long: c_long = 8;
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(all(target_arch = "x86_64", windows, target_env = "msvc"))]
+// CHECK-NEXT: const __SLATE_HOIST_native_long: c_long = 4;
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: extern "C-unwind" fn native_long(x: i32) -> i32 {
-// CHECK-NEXT:     x + 4
+// CHECK-NEXT: extern "C-unwind" fn native_long(x: c_long) -> c_long {
+// CHECK-NEXT:     x + __SLATE_HOIST_native_long
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
@@ -363,7 +381,7 @@ int main(void) {
 // CHECK-NEXT: });
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: extern "C-unwind" fn label() -> *const i8 {
+// CHECK-NEXT: extern "C-unwind" fn label() -> *const c_char {
 // CHECK-NEXT:     c"ok".as_ptr()
 // CHECK-NEXT: }
 // CHECK-EMPTY:

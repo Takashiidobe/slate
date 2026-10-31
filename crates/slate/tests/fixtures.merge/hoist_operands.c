@@ -41,12 +41,11 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 2 compiles
 // CHECK-NEXT:   hoist_operands.c: [alpha] 2 compiled
 // CHECK-NEXT: total: 4 compiles across 2 targets
-// CHECK-NEXT: unit hoist_operands: 21 items, 13 gated, 1 duplicated functions
+// CHECK-NEXT: unit hoist_operands: 22 items, 13 gated, 1 duplicated functions
 // CHECK-NEXT:   duplicated fn:repeated: 2 variants
 // CHECK-NEXT:   hoisted fn:number: 2 variants
 // CHECK-NEXT:   hoisted fn:in_cast: 2 variants
 // CHECK-NEXT:   hoisted fn:name: 2 variants
-// CHECK-NEXT:   hoisted fn:same_type_everywhere: 2 variants
 // CHECK-NEXT:   hoisted fn:gated: 2 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 4 variants
 // CHECK-NEXT: projection: 12 checked, 0 not translatable, 0 mismatches
@@ -62,9 +61,17 @@ int main(void) {
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn puts([[ARG_0:arg[0-9]+]]: *const i8) -> i32;
+// CHECK-NEXT:     fn puts([[ARG_0:arg[0-9]+]]: *const c_char) -> i32;
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: type c_char = i8;
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"))]
+// CHECK-NEXT: type c_long = i64;
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(all(target_arch = "x86_64", windows, target_env = "msvc"))]
+// CHECK-NEXT: type c_long = i32;
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"))]
 // CHECK-NEXT: const __SLATE_HOIST_number: i32 = 295;
@@ -107,21 +114,13 @@ int main(void) {
 // CHECK-NEXT: const __SLATE_HOIST_name: &core::ffi::CStr = c"windows";
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: extern "C-unwind" fn name() -> *const i8 {
+// CHECK-NEXT: extern "C-unwind" fn name() -> *const c_char {
 // CHECK-NEXT:     __SLATE_HOIST_name.as_ptr()
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"))]
-// CHECK-NEXT: type __SlateHoist_same_type_everywhere = i64;
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(target_arch = "x86_64", windows, target_env = "msvc"))]
-// CHECK-NEXT: type __SlateHoist_same_type_everywhere = i32;
-// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: extern "C-unwind" fn same_type_everywhere(
-// CHECK-NEXT:     value: __SlateHoist_same_type_everywhere,
-// CHECK-NEXT: ) -> __SlateHoist_same_type_everywhere {
-// CHECK-NEXT:     let doubled: __SlateHoist_same_type_everywhere = value + value;
+// CHECK-NEXT: extern "C-unwind" fn same_type_everywhere(value: c_long) -> c_long {
+// CHECK-NEXT:     let doubled: c_long = value + value;
 // CHECK-NEXT:     doubled
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -164,7 +163,9 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"))]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         number() + in_cast() + repeated(295i32) - 3 * 295 + (same_type_everywhere(2i64) as i32) - 4
+// CHECK-NEXT:         number() + in_cast() + repeated(295i32) - 3 * 295
+// CHECK-NEXT:             + (same_type_everywhere((2 as c_long)) as i32)
+// CHECK-NEXT:             - 4
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(all(
 // CHECK-NEXT:         target_arch = "x86_64",
@@ -179,7 +180,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(all(target_arch = "x86_64", windows, target_env = "msvc"))]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         number() + in_cast() + repeated(387i32) - 3 * 387 + same_type_everywhere(2i32) - 4
+// CHECK-NEXT:         number() + in_cast() + repeated(387i32) - 3 * 387 + same_type_everywhere((2 as c_long)) - 4
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
