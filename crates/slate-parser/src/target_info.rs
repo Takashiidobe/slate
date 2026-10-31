@@ -780,9 +780,11 @@ impl TargetInfo {
     // x86-64 psABI: an array object of at least this many bytes gets this alignment;
     // clang and gcc apply it on every x86-64 OS unless the declaration says `aligned`
     pub fn large_array_alignment(&self) -> Option<u64> {
-        (self.family == TargetFamily::X86_64).then_some(16)
+        (self.family == TargetFamily::X86_64).then_some(LARGE_ARRAY_BYTES)
     }
 }
+
+pub const LARGE_ARRAY_BYTES: u64 = 16;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum LongDoubleFormat {

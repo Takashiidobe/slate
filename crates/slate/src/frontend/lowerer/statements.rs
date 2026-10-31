@@ -164,9 +164,9 @@ impl FunctionLowerer<'_, '_> {
                 };
                 let ty = self.lower_binding_type(&variable.ty, variable.id)?;
                 let (ty, init) = match alignment {
-                    Some(alignment) => (
-                        self.align_wrapped(&variable.name, alignment, ty)?,
-                        init.map(|init| align_wrap(alignment, init)),
+                    Some(wrapper) => (
+                        self.align_wrapped(&variable.name, wrapper, ty)?,
+                        init.map(|init| align_wrap(wrapper, init)),
                     ),
                     None => (ty, init),
                 };

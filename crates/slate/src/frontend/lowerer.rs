@@ -75,7 +75,7 @@ struct Tables<'m> {
     constexprs: HashMap<BindingId, &'m ir::Value>,
     asm_names: HashMap<String, BindingId>,
     register_globals: HashMap<BindingId, &'static str>,
-    over_aligned: HashMap<BindingId, u64>,
+    over_aligned: HashMap<BindingId, AlignWrapper>,
     flexible_globals: HashMap<BindingId, String>,
     target: &'m TargetInfo,
     rust_layout: TargetInfo,
@@ -120,6 +120,7 @@ struct Dependencies {
     intrinsics: BTreeMap<String, rust::ExternFnDecl>,
     bridges: BTreeMap<String, rust::ExternFnDecl>,
     align_wrappers: BTreeSet<u32>,
+    large_array_wrapper: bool,
     records: BTreeMap<u32, Record>,
     erased_fields: BTreeSet<(u32, usize)>,
     flexible_records: Vec<Item>,
@@ -609,7 +610,7 @@ impl<'m> ModuleLowerer<'m> {
         };
         tables.over_aligned = statics
             .iter()
-            .filter(|global| global.definition)
+            .filter(|global| global.definition && !global.variable.name.starts_with('.'))
             .filter_map(|global| {
                 Some((
                     global.variable.id,
@@ -845,22 +846,36 @@ impl<'m> ModuleLowerer<'m> {
             barriers,
             ..
         } = self;
-        let wrappers = dependencies.align_wrappers.iter().map(|&alignment| {
-            Item::Struct(rust::StructDef {
-                attrs: vec![Attr::Repr(vec![
-                    rust::Repr::C,
-                    rust::Repr::Align(alignment),
-                ])],
-                vis: rust::Visibility::Private,
-                field_vis: rust::Visibility::Private,
-                generics: vec![rust::GenericParam {
-                    name: "T".into(),
-                    bounds: Vec::new(),
-                }],
-                name: align_wrapper(alignment.into()),
-                fields: rust::StructFields::Tuple(vec![rust::Type::Custom("T".into())]),
-            })
-        });
+        let large_array_alignment = tables
+            .target
+            .large_array_alignment()
+            .and_then(|alignment| u32::try_from(alignment).ok());
+        let exact_wrappers = dependencies
+            .align_wrappers
+            .iter()
+            .map(|&alignment| (AlignWrapper::Exact(alignment.into()), Some(alignment)));
+        let large_array_wrapper = dependencies
+            .large_array_wrapper
+            .then_some((AlignWrapper::LargeArray, large_array_alignment));
+        let wrappers = exact_wrappers
+            .chain(large_array_wrapper)
+            .map(|(wrapper, alignment)| {
+                Item::Struct(rust::StructDef {
+                    attrs: vec![Attr::Repr(
+                        std::iter::once(rust::Repr::C)
+                            .chain(alignment.map(rust::Repr::Align))
+                            .collect(),
+                    )],
+                    vis: rust::Visibility::Private,
+                    field_vis: rust::Visibility::Private,
+                    generics: vec![rust::GenericParam {
+                        name: "T".into(),
+                        bounds: Vec::new(),
+                    }],
+                    name: wrapper.name(),
+                    fields: rust::StructFields::Tuple(vec![rust::Type::Custom("T".into())]),
+                })
+            });
         let records = dependencies
             .records
             .into_values()

@@ -1,5 +1,5 @@
 use super::*;
-use slate_parser::target_info::TargetFamily;
+use slate_parser::target_info::{LARGE_ARRAY_BYTES, TargetFamily};
 
 pub(super) fn lower_string_global(global: &ir::Global) -> Option<Result<Vec<u8>>> {
     if !global.variable.name.starts_with('.') {
@@ -93,15 +93,53 @@ impl FunctionLowerer<'_, '_> {
     }
 }
 
-pub(super) fn align_wrapper(alignment: u64) -> String {
-    format!("__SlateAlign{alignment}")
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum AlignWrapper {
+    Exact(u64),
+    LargeArray,
+}
+
+impl AlignWrapper {
+    pub(super) fn name(self) -> String {
+        match self {
+            Self::Exact(alignment) => format!("__SlateAlign{alignment}"),
+            Self::LargeArray => "__SlateAlignLargeArray".into(),
+        }
+    }
 }
 
 impl Tables<'_> {
-    pub(super) fn over_alignment(&self, ty: &ir::Type, alignment: Option<u64>) -> Option<u64> {
+    pub(super) fn over_alignment(
+        &self,
+        ty: &ir::Type,
+        alignment: Option<u64>,
+    ) -> Option<AlignWrapper> {
+        if self.named_c_types && self.has_large_array_alignment(ty, alignment) {
+            return Some(AlignWrapper::LargeArray);
+        }
         let alignment = alignment?;
         let (_, natural) = self.storage_of(ty)?;
-        (alignment > natural).then_some(alignment)
+        (alignment > natural).then_some(AlignWrapper::Exact(alignment))
+    }
+
+    fn has_large_array_alignment(&self, ty: &ir::Type, alignment: Option<u64>) -> bool {
+        if !matches!(
+            ty,
+            ir::Type::Array {
+                length: Some(_),
+                ..
+            }
+        ) {
+            return false;
+        }
+        let Some((size, natural)) = self.storage_of(ty) else {
+            return false;
+        };
+        let abi = self
+            .target
+            .large_array_alignment()
+            .map_or(natural, |large| natural.max(large));
+        size >= LARGE_ARRAY_BYTES && alignment.unwrap_or(natural) == abi
     }
 
     pub(super) fn is_constant_initializer(&self, value: &ir::Value) -> bool {
@@ -296,12 +334,12 @@ impl FunctionLowerer<'_, '_> {
                 .at(Site::of(&value.node)));
             }
         };
-        let Some(&alignment) = tables.over_aligned.get(&variable.id) else {
+        let Some(&wrapper) = tables.over_aligned.get(&variable.id) else {
             return Ok((ty, Some(init)));
         };
         Ok((
-            self.align_wrapped(&variable.name, alignment, ty)?,
-            Some(align_wrap(alignment, init)),
+            self.align_wrapped(&variable.name, wrapper, ty)?,
+            Some(align_wrap(wrapper, init)),
         ))
     }
 
@@ -368,25 +406,30 @@ impl FunctionLowerer<'_, '_> {
     pub(super) fn align_wrapped(
         &mut self,
         name: &str,
-        alignment: u64,
+        wrapper: AlignWrapper,
         ty: rust::Type,
     ) -> Result<rust::Type> {
-        self.dependencies
-            .align_wrappers
-            .insert(u32::try_from(alignment).map_err(|_| Construct::Global {
-                name: name.into(),
-                detail: format!("alignment {alignment}"),
-            })?);
+        match wrapper {
+            AlignWrapper::Exact(alignment) => {
+                self.dependencies
+                    .align_wrappers
+                    .insert(u32::try_from(alignment).map_err(|_| Construct::Global {
+                        name: name.into(),
+                        detail: format!("alignment {alignment}"),
+                    })?);
+            }
+            AlignWrapper::LargeArray => self.dependencies.large_array_wrapper = true,
+        }
         Ok(rust::Type::Generic {
-            name: align_wrapper(alignment),
+            name: wrapper.name(),
             args: vec![ty],
         })
     }
 }
 
-pub(super) fn align_wrap(alignment: u64, value: Expr) -> Expr {
+pub(super) fn align_wrap(wrapper: AlignWrapper, value: Expr) -> Expr {
     Expr::Call {
-        func: Box::new(Expr::Var(align_wrapper(alignment).into())),
+        func: Box::new(Expr::Var(wrapper.name().into())),
         args: vec![value],
         binding: CallBinding::Generated,
     }

@@ -519,9 +519,9 @@ impl FunctionLowerer<'_, '_> {
             }
             let ty = self.lower_type(ir_ty)?;
             let stored = match self.tables.over_alignment(ir_ty, alignment) {
-                Some(alignment) => {
+                Some(wrapper) => {
                     let name = self.binding_name(id);
-                    self.align_wrapped(&name, alignment, ty.clone())?
+                    self.align_wrapped(&name, wrapper, ty.clone())?
                 }
                 None => ty.clone(),
             };

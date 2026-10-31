@@ -3,7 +3,7 @@ use std::collections::{BTreeMap, BTreeSet, HashMap};
 use super::types::{BITS_MODULE, is_anonymous};
 use crate::backend::codegen::type_to_string;
 use crate::backend::rust_ast::{
-    Abi, Attr, ExternDecl, FnParam, Item, Repr, StructDef, StructFields, Type,
+    Abi, Attr, ExternDecl, FnParam, Item, StructDef, StructFields, Type,
 };
 
 pub struct UnitCompiles<'a> {
@@ -275,9 +275,10 @@ impl<'a> Scope<'a> {
 fn is_alignment_wrapper(definition: &StructDef) -> bool {
     matches!(definition.generics.as_slice(), [_])
         && matches!(&definition.fields, StructFields::Tuple(fields) if fields.len() == 1)
-        && definition.attrs.iter().any(|attr| {
-            matches!(attr, Attr::Repr(reprs) if reprs.iter().any(|repr| matches!(repr, Repr::Align(_))))
-        })
+        && definition
+            .attrs
+            .iter()
+            .any(|attr| matches!(attr, Attr::Repr(_)))
 }
 
 fn call_convention(abi: &str) -> &str {

@@ -309,7 +309,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
-// CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: struct __SlateAlignLargeArray<T>(T);
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(not(feature = "alpha"))]
 // CHECK-NEXT: type __SlateHoist_scale = i32;
@@ -342,7 +342,7 @@ int main(void) {
 // CHECK-NEXT: static mut table: [i32; 3] = [1, 2, 3];
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: static mut big_unsized: __SlateAlign16<[i32; 32]> = __SlateAlign16({
+// CHECK-NEXT: static mut big_unsized: __SlateAlignLargeArray<[i32; 32]> = __SlateAlignLargeArray({
 // CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: [i32; 32] = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     [[T_0]][0] = 1i32;
 // CHECK-NEXT:     [[T_0]][1] = 2i32;
@@ -351,7 +351,7 @@ int main(void) {
 // CHECK-NEXT: });
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: static mut big_sized: __SlateAlign16<[i32; 32]> = __SlateAlign16({
+// CHECK-NEXT: static mut big_sized: __SlateAlignLargeArray<[i32; 32]> = __SlateAlignLargeArray({
 // CHECK-NEXT:     let mut [[T_0]]: [i32; 32] = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     [[T_0]][0] = 1i32;
 // CHECK-NEXT:     [[T_0]][1] = 2i32;
