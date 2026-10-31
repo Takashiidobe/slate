@@ -5,7 +5,7 @@ use crate::backend::rust_ast::{
     Ident, Item, Path, Program, RecordDef, StructDef, StructFields, TraitRef, Type, Visibility,
 };
 
-const BITS_MODULE: &str = "__slate_bits";
+pub(super) const BITS_MODULE: &str = "__slate_bits";
 const PLACEHOLDER: &str = "\0";
 pub(in crate::backend) const SHARED_MODULE: &str = "__slate_types";
 
@@ -715,6 +715,6 @@ fn rename_types(ty: &mut Type, rename: &mut impl FnMut(&str) -> Option<String>) 
     }
 }
 
-fn is_anonymous(name: &str) -> bool {
+pub(super) fn is_anonymous(name: &str) -> bool {
     name.starts_with("__SlateRecord_")
 }

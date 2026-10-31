@@ -1,3 +1,4 @@
+use crate::backend::link::signatures::{self, UnitCompiles};
 use crate::backend::rust_ast::{Attr, Cfg, CrateAttr, ExternDecl, Item, Program};
 use crate::backend::{self, Exports};
 use crate::compile_commands::CompileCommand;
@@ -213,6 +214,7 @@ pub struct Merged {
     pub features: BTreeSet<String>,
     report: String,
     pub mismatches: usize,
+    pub signature_mismatches: usize,
 }
 
 impl Merged {
@@ -1013,6 +1015,45 @@ pub fn merge(
         _ => return Err(format!("multiple units define main: {}", roots.join(", "))),
     };
 
+    let mut shared = 0;
+    let mut signature_mismatches = Vec::new();
+    for build in &builds {
+        let stems: Vec<String> = matrix
+            .sources
+            .iter()
+            .map(|source| stem_of(source))
+            .collect::<Result<_, _>>()?;
+        let units: Vec<UnitCompiles> = build
+            .units
+            .iter()
+            .zip(&stems)
+            .map(|(unit, stem)| UnitCompiles {
+                stem,
+                relevant: &unit.relevant,
+                compiled: unit
+                    .compiled
+                    .iter()
+                    .map(|compiled| (compiled.mask, &compiled.program))
+                    .collect(),
+            })
+            .collect();
+        let outcome =
+            signatures::check(&units, &|features| matrix.is_invalid_combination(features));
+        shared += outcome.shared;
+        signature_mismatches.extend(outcome.mismatches.into_iter().map(|mismatch| {
+            format!(
+                "{} [{}]: {}: {} `{}` vs {} `{}`",
+                build.name,
+                mismatch.features.join(","),
+                mismatch.symbol,
+                mismatch.left.0,
+                mismatch.left.1,
+                mismatch.right.0,
+                mismatch.right.1
+            )
+        }));
+    }
+
     let mut report = String::new();
     for (build, count) in builds.iter().zip(&compiles) {
         let _ = writeln!(report, "target {}: {count} compiles", build.name);
@@ -1060,6 +1101,14 @@ pub fn merge(
             let _ = writeln!(report, "  {mismatch}");
         }
     }
+    let _ = writeln!(
+        report,
+        "signatures: {shared} shared symbols, {} mismatches",
+        signature_mismatches.len()
+    );
+    for mismatch in signature_mismatches.iter().take(MAX_REPORTED_MISMATCHES) {
+        let _ = writeln!(report, "  {mismatch}");
+    }
     let features = matrix
         .features
         .iter()
@@ -1074,5 +1123,6 @@ pub fn merge(
         features,
         report,
         mismatches: result.mismatches.len(),
+        signature_mismatches: signature_mismatches.len(),
     })
 }

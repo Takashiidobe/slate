@@ -219,7 +219,11 @@ fn merge_fixture(source: &Path) -> Result<(), String> {
     if serial_report != report || crate_sources(&serial_dir) != generated {
         failures.push("output depends on SLATE_JOBS".to_string());
     }
-    if code != 0 {
+    let expected_code = text
+        .lines()
+        .find_map(|line| line.strip_prefix("// merge-expect-exit:"))
+        .map_or(0, |code| code.trim().parse().expect("expected exit code"));
+    if code != expected_code {
         failures.push(format!("merge exited {code}: {stderr}"));
     }
     if let Err(error) =

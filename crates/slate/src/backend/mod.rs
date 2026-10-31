@@ -8,7 +8,7 @@ pub mod codegen;
 mod engine;
 mod format;
 mod interproc;
-mod link;
+pub mod link;
 /// The Rust AST transformed by the backend.
 pub mod rust_ast;
 

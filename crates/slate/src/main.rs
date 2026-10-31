@@ -756,6 +756,7 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
             .install(|| project_merge::merge(&matrix, &project, &targets, projection))?;
         print!("{}", merged.render());
         let mismatches = merged.mismatches;
+        let signature_mismatches = merged.signature_mismatches;
         let written = write_project_crate(
             Path::new(paths[1]),
             merged.units,
@@ -767,6 +768,10 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
         if mismatches > 0 {
             print!("{written}");
             return Err(format!("{mismatches} projection mismatches"));
+        }
+        if signature_mismatches > 0 {
+            print!("{written}");
+            return Err(format!("{signature_mismatches} signature mismatches"));
         }
         return Ok(written);
     }

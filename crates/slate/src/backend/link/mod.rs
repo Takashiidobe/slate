@@ -1,4 +1,5 @@
 mod calls;
+pub mod signatures;
 mod types;
 
 pub(in crate::backend) use calls::{bind_calls, rust_bound};

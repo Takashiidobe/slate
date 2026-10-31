@@ -26,6 +26,7 @@ int main(void) {
 // CHECK-NEXT:   duplicated fn:state_size: 3 variants
 // CHECK-NEXT:   duplicated fn:__slate_main: 2 variants
 // CHECK-NEXT: projection: 12 checked, 0 not translatable, 0 mismatches
+// CHECK-NEXT: signatures: 0 shared symbols, 0 mismatches
 // CHECK-NEXT: exit: 0
 // CHECK-NEXT: file main.rs
 // CHECK-NEXT: #![no_main]

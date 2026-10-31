@@ -24,6 +24,7 @@ int main(void) {
 // CHECK-NEXT: unit two_units_helper: 4 items, 4 gated, 1 duplicated functions
 // CHECK-NEXT:   duplicated fn:helper: 2 variants
 // CHECK-NEXT: projection: 12 checked, 0 not translatable, 0 mismatches
+// CHECK-NEXT: signatures: 4 shared symbols, 0 mismatches
 // CHECK-NEXT: exit: 0
 // CHECK-NEXT: file main.rs
 // CHECK-NEXT: #![no_main]
