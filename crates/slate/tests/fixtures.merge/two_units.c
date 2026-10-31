@@ -19,7 +19,7 @@ int main(void) {
 // CHECK-NEXT:   two_units.c: [] 1 compiled
 // CHECK-NEXT:   units/two_units_helper.c: [alpha] 2 compiled
 // CHECK-NEXT: total: 6 compiles across 2 targets
-// CHECK-NEXT: unit two_units: 18 items, 12 gated, 0 duplicated functions
+// CHECK-NEXT: unit two_units: 19 items, 13 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
 // CHECK-NEXT: unit two_units_helper: 3 items, 2 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:helper: 2 variants
@@ -52,6 +52,7 @@ int main(void) {
 // CHECK-NEXT:         [[ARG_3:arg[0-9]+]]: *mut __crt_locale_pointers,
 // CHECK-NEXT:         [[ARG_4:arg[0-9]+]]: *mut c_char,
 // CHECK-NEXT:     ) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(unix)]
@@ -141,13 +142,16 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         shared_common = 2;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         println!("{}", unsafe { helper(10i32) });
-// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe { printf(c"%d\n".as_ptr(), helper(10i32)) };
+// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(unix)]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         println!("{}", unsafe { helper(10i32) });
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

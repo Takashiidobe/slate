@@ -109,6 +109,7 @@ known_function_catalog!(define_known);
 pub enum FunctionIdentity {
     /// A function recognized from the known libc catalog.
     Known(Known),
+    HeaderInline,
     #[default]
     /// A function whose identity could not be established.
     Unknown,
@@ -147,7 +148,16 @@ impl CallBinding {
         }
     }
 
-    /// Returns the trusted declaration spelling, if this is a direct call.
+    pub fn is_header_inline(&self) -> bool {
+        matches!(
+            self,
+            Self::Direct {
+                identity: FunctionIdentity::HeaderInline,
+                ..
+            }
+        )
+    }
+
     pub fn trusted_declaration(&self) -> Option<&str> {
         match self {
             Self::Direct {
@@ -169,12 +179,11 @@ impl CallBinding {
     }
 }
 
-pub fn classify_function(name: &str, system_header: Option<&str>) -> FunctionIdentity {
+pub fn classify_function(name: &str, system_headers: &[&str]) -> FunctionIdentity {
     if let Some(known) = Known::from_builtin_symbol(name) {
         return FunctionIdentity::Known(known);
     }
-    system_header
-        .and_then(|header| Known::classify(name, &[header]))
+    Known::classify(name, system_headers)
         .map(FunctionIdentity::Known)
         .unwrap_or(FunctionIdentity::Unknown)
 }

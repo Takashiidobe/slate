@@ -24,7 +24,7 @@ int main(void) {
 // CHECK-NEXT:     6 assignments preprocess like a compiled one
 // CHECK-NEXT:   units/unseen_signature_helper.c: [] 1 compiled
 // CHECK-NEXT: total: 6 compiles across 2 targets
-// CHECK-NEXT: unit unseen_signature: 20 items, 16 gated, 0 duplicated functions
+// CHECK-NEXT: unit unseen_signature: 21 items, 17 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:__slate_main: 4 variants
 // CHECK-NEXT: unit unseen_signature_helper: 1 items, 0 gated, 0 duplicated functions
 // CHECK-NEXT: projection: 16 checked, 0 not translatable, 0 mismatches
@@ -60,6 +60,7 @@ int main(void) {
 // CHECK-NEXT:         [[ARG_3:arg[0-9]+]]: *mut __crt_locale_pointers,
 // CHECK-NEXT:         [[ARG_4:arg[0-9]+]]: *mut c_char,
 // CHECK-NEXT:     ) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(unix)]
@@ -155,17 +156,8 @@ int main(void) {
 // CHECK-NEXT: type c_long = i32;
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     #[cfg(all(
-// CHECK-NEXT:         unix,
-// CHECK-NEXT:         any(not(feature = "alpha"), not(feature = "beta"), feature = "gamma")
-// CHECK-NEXT:     ))]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         println!("{}", unsafe { widen(1i32) });
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(all(unix, feature = "alpha", feature = "beta", not(feature = "gamma")))]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         println!("{}", (unsafe { widen((1 as c_long)) }) as i32);
-// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(all(
 // CHECK-NEXT:         windows,
 // CHECK-NEXT:         any(not(feature = "alpha"), not(feature = "beta"), feature = "gamma")
@@ -176,6 +168,21 @@ int main(void) {
 // CHECK-NEXT:     #[cfg(all(windows, feature = "alpha", feature = "beta", not(feature = "gamma")))]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe { printf(c"%d\n".as_ptr(), widen((1 as c_long))) };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(all(
+// CHECK-NEXT:         unix,
+// CHECK-NEXT:         any(not(feature = "alpha"), not(feature = "beta"), feature = "gamma")
+// CHECK-NEXT:     ))]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         println!("{}", unsafe { widen(1i32) });
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(all(unix, feature = "alpha", feature = "beta", not(feature = "gamma")))]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         println!("{}", (unsafe { widen((1 as c_long)) }) as i32);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

@@ -23,7 +23,7 @@ int main(void) {
 // CHECK-NEXT:   signature_mismatch.c: [] 1 compiled
 // CHECK-NEXT:   units/signature_mismatch_helper.c: [alpha,beta,gamma] 6 compiled
 // CHECK-NEXT: total: 14 compiles across 2 targets
-// CHECK-NEXT: unit signature_mismatch: 20 items, 12 gated, 0 duplicated functions
+// CHECK-NEXT: unit signature_mismatch: 21 items, 13 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
 // CHECK-NEXT: unit signature_mismatch_helper: 9 items, 6 gated, 0 duplicated functions
 // CHECK-NEXT:   hoisted fn:widen: 2 variants
@@ -69,6 +69,7 @@ int main(void) {
 // CHECK-NEXT:         [[ARG_3:arg[0-9]+]]: *mut __crt_locale_pointers,
 // CHECK-NEXT:         [[ARG_4:arg[0-9]+]]: *mut c_char,
 // CHECK-NEXT:     ) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(unix)]
@@ -155,21 +156,8 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut [[SLATE_COMPOUND_0:__slate_compound_[0-9]+]]: pair = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         println!(
-// CHECK-NEXT:             "{} {} {}",
-// CHECK-NEXT:             unsafe { widen(1i32) },
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 (*{
-// CHECK-NEXT:                     [[SLATE_COMPOUND_0]] = make_pair(2i32);
-// CHECK-NEXT:                     std::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
-// CHECK-NEXT:                 })
-// CHECK-NEXT:                 .first
-// CHECK-NEXT:             },
-// CHECK-NEXT:             unsafe { table_size }
-// CHECK-NEXT:         );
-// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe {
@@ -184,6 +172,22 @@ int main(void) {
 // CHECK-NEXT:                 table_size,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
+// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(unix)]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         println!(
+// CHECK-NEXT:             "{} {} {}",
+// CHECK-NEXT:             unsafe { widen(1i32) },
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 (*{
+// CHECK-NEXT:                     [[SLATE_COMPOUND_0]] = make_pair(2i32);
+// CHECK-NEXT:                     std::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
+// CHECK-NEXT:                 })
+// CHECK-NEXT:                 .first
+// CHECK-NEXT:             },
+// CHECK-NEXT:             unsafe { table_size }
+// CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

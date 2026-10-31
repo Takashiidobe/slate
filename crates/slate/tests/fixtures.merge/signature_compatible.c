@@ -40,7 +40,7 @@ int main(void) {
 // CHECK-NEXT:   signature_compatible.c: [alpha] 2 compiled
 // CHECK-NEXT:   units/signature_compatible_helper.c: [alpha,beta] 4 compiled
 // CHECK-NEXT: total: 12 compiles across 2 targets
-// CHECK-NEXT: unit signature_compatible: 33 items, 17 gated, 0 duplicated functions
+// CHECK-NEXT: unit signature_compatible: 33 items, 16 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:__slate_main: 4 variants
 // CHECK-NEXT: unit signature_compatible_helper: 25 items, 9 gated, 0 duplicated functions
 // CHECK-NEXT:   hoisted fn:scale: 2 variants
@@ -73,6 +73,7 @@ int main(void) {
 // CHECK-NEXT:     fn make_opaque() -> *mut opaque;
 // CHECK-NEXT:     fn read_handle([[ARG_0]]: *mut __SlateRecord_signature_compatible_c_13) -> i32;
 // CHECK-NEXT:     fn quit([[ARG_0]]: i32);
+// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
@@ -91,7 +92,6 @@ int main(void) {
 // CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn printf([[ARG_0]]: *const c_char, ...) -> i32;
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(not(feature = "alpha"))]
@@ -192,7 +192,6 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(all(unix, not(feature = "alpha")))]
 // CHECK-NEXT:     {
@@ -228,10 +227,6 @@ int main(void) {
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(all(windows, not(feature = "alpha")))]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe {
@@ -266,6 +261,7 @@ int main(void) {
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     unsafe { quit(0i32) };
 // CHECK-NEXT:     1
 // CHECK-NEXT: }

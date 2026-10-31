@@ -54,8 +54,8 @@ int main(void) {
 // CHECK-NEXT: target linux-i686: 1 compiles
 // CHECK-NEXT:   macro_boundaries.c: [] 1 compiled
 // CHECK-NEXT: total: 3 compiles across 3 targets
-// CHECK-NEXT: unit macro_boundaries: 22 items, 15 gated, 1 duplicated functions
-// CHECK-NEXT:   duplicated fn:report: 2 variants
+// CHECK-NEXT: unit macro_boundaries: 21 items, 12 gated, 0 duplicated functions
+// CHECK-NEXT:   spliced fn:report: 2 variants
 // CHECK-NEXT:   spliced fn:checked: 2 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
 // CHECK-NEXT: projection: 18 checked, 0 not translatable, 0 mismatches
@@ -88,6 +88,9 @@ int main(void) {
 // CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn printf([[ARG_0]]: *const c_char, ...) -> i32;
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -164,16 +167,17 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut verbose: i32 = 1;
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: fn report(message: *const c_char) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"error: %s\n".as_ptr(), message) };
+// CHECK-NEXT:     #[cfg(unix)]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         unsafe { printf(c"error: %s\n".as_ptr(), message) };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         unsafe { printf(c"error: %s\n".as_ptr(), message) };
+// CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(windows)]
-// CHECK-NEXT: fn report(message: *const c_char) {
-// CHECK-NEXT:     unsafe { printf(c"error: %s\n".as_ptr(), message) };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn next_id(state: &mut i32) -> i32 {
@@ -199,30 +203,28 @@ int main(void) {
 // CHECK-NEXT:         report(c"side effect".as_ptr());
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if (unsafe { verbose }) > 0 {
-// CHECK-NEXT:         #[cfg(unix)]
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         #[cfg(unix)]
-// CHECK-NEXT:         {
-// CHECK-NEXT:             unsafe { printf(c"a %d b %d\n".as_ptr(), a, b) };
-// CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:         }
 // CHECK-NEXT:         #[cfg(windows)]
 // CHECK-NEXT:         {
 // CHECK-NEXT:             unsafe { printf(c"a %d b %d\n".as_ptr(), a, b) };
 // CHECK-NEXT:         }
+// CHECK-NEXT:         #[cfg(unix)]
+// CHECK-NEXT:         {
+// CHECK-NEXT:             unsafe { printf(c"a %d b %d\n".as_ptr(), a, b) };
+// CHECK-NEXT:         }
+// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if (unsafe { verbose }) > 0 && a != 0 {
-// CHECK-NEXT:         #[cfg(unix)]
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         #[cfg(unix)]
-// CHECK-NEXT:         {
-// CHECK-NEXT:             unsafe { printf(c"nonzero %d\n".as_ptr(), a) };
-// CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:         }
 // CHECK-NEXT:         #[cfg(windows)]
 // CHECK-NEXT:         {
 // CHECK-NEXT:             unsafe { printf(c"nonzero %d\n".as_ptr(), a) };
 // CHECK-NEXT:         }
+// CHECK-NEXT:         #[cfg(unix)]
+// CHECK-NEXT:         {
+// CHECK-NEXT:             unsafe { printf(c"nonzero %d\n".as_ptr(), a) };
+// CHECK-NEXT:         }
+// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     count += a;
 // CHECK-NEXT:     if b < 0 {
@@ -235,40 +237,51 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     for i in 0i32..2i32 {
 // CHECK-NEXT:         if (unsafe { verbose }) > 0 {
-// CHECK-NEXT:             #[cfg(unix)]
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:             #[cfg(unix)]
-// CHECK-NEXT:             {
-// CHECK-NEXT:                 unsafe { printf(c"loop %d\n".as_ptr(), i) };
-// CHECK-NEXT:                 unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:             }
 // CHECK-NEXT:             #[cfg(windows)]
 // CHECK-NEXT:             {
 // CHECK-NEXT:                 unsafe { printf(c"loop %d\n".as_ptr(), i) };
 // CHECK-NEXT:             }
+// CHECK-NEXT:             #[cfg(unix)]
+// CHECK-NEXT:             {
+// CHECK-NEXT:                 unsafe { printf(c"loop %d\n".as_ptr(), i) };
+// CHECK-NEXT:             }
+// CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         unsafe { printf(c"state %d count %d\n".as_ptr(), state, count) };
+// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         println!("state {} count {}", state, count);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { printf(c"state %d count %d\n".as_ptr(), state, count) };
-// CHECK-NEXT:     }
 // CHECK-NEXT:     (a != b) as i32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         unsafe { printf(c"%d\n".as_ptr(), checked(3i32, 3i32)) };
+// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         unsafe { printf(c"%d\n".as_ptr(), checked(3i32, 4i32)) };
+// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         println!("{}", checked(3i32, 3i32));
 // CHECK-NEXT:         println!("{}", checked(3i32, 4i32));
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { printf(c"%d\n".as_ptr(), checked(3i32, 3i32)) };
-// CHECK-NEXT:         unsafe { printf(c"%d\n".as_ptr(), checked(3i32, 4i32)) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

@@ -533,15 +533,18 @@ impl<'m> ModuleLowerer<'m> {
                         },
                         exported: function.body.is_some() && exports_symbol(options, function),
                         identity: if function.body.is_none() {
-                            classify_function(
-                                &function.name,
-                                function
-                                    .provenance
-                                    .system_header
-                                    .and_then(|header| files.get_path(header))
-                                    .and_then(|path| path.file_name())
-                                    .and_then(|name| name.to_str()),
-                            )
+                            let provenance = &function.provenance;
+                            let system_headers: Vec<&str> = provenance
+                                .system_header
+                                .into_iter()
+                                .flat_map(|outermost| [outermost, provenance.file])
+                                .filter_map(|header| files.get_path(header))
+                                .filter_map(|path| path.file_name())
+                                .filter_map(|name| name.to_str())
+                                .collect();
+                            classify_function(&function.name, &system_headers)
+                        } else if function.provenance.system_header.is_some() {
+                            FunctionIdentity::HeaderInline
                         } else {
                             FunctionIdentity::Unknown
                         },

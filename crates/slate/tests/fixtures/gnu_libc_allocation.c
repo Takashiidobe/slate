@@ -210,10 +210,10 @@ int main(void) {
 // CHECK-NEXT:             unsafe { _obstack_newchunk(__o, __len + 1) };
 // CHECK-NEXT:         }
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             memcpy(
-// CHECK-NEXT:                 (*__o).next_free as *mut (),
-// CHECK-NEXT:                 b"gnu\0".as_ptr() as *const (),
-// CHECK-NEXT:                 (__len as i64) as u64,
+// CHECK-NEXT:             std::ptr::copy_nonoverlapping(
+// CHECK-NEXT:                 c"gnu".as_ptr() as *const u8,
+// CHECK-NEXT:                 ((*__o).next_free as *mut ()) as *mut u8,
+// CHECK-NEXT:                 ((__len as i64) as u64) as usize,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let [[V_7:__v[0-9]+]]: *mut i8 = unsafe { (*__o).next_free };
@@ -282,10 +282,10 @@ int main(void) {
 // CHECK-NEXT:             unsafe { _obstack_newchunk(__o, __len + 1) };
 // CHECK-NEXT:         }
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             memcpy(
-// CHECK-NEXT:                 (*__o).next_free as *mut (),
-// CHECK-NEXT:                 b"libc\0".as_ptr() as *const (),
-// CHECK-NEXT:                 (__len as i64) as u64,
+// CHECK-NEXT:             std::ptr::copy_nonoverlapping(
+// CHECK-NEXT:                 c"libc".as_ptr() as *const u8,
+// CHECK-NEXT:                 ((*__o).next_free as *mut ()) as *mut u8,
+// CHECK-NEXT:                 ((__len as i64) as u64) as usize,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let [[V_3]]: *mut i8 = unsafe { (*__o).next_free };
@@ -374,13 +374,7 @@ int main(void) {
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%d %d\n".as_ptr(),
-// CHECK-NEXT:             gnu_allocation_extensions(),
-// CHECK-NEXT:             gnu_obstack_extensions(),
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
+// CHECK-NEXT:     println!("{} {}", gnu_allocation_extensions(), gnu_obstack_extensions());
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

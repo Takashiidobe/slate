@@ -70,7 +70,7 @@ const STDOUT_WRITER_KNOWNS: &[Known] = &[
     Known::FWrite,
 ];
 
-const STDOUT_WRITER_EXTRA_NAMES: &[&str] = &["putchar", "putc", "vprintf", "vfprintf"];
+const STDOUT_WRITER_EXTRA_NAMES: &[&str] = &["putchar", "putc", "fputc", "vprintf", "vfprintf"];
 
 fn stdout_writer_shim_names(program: &Program) -> HashSet<String> {
     program
@@ -97,11 +97,17 @@ fn is_stdout_writer_call(expr: &Expr, writer_names: &HashSet<String>) -> bool {
         Expr::Call { binding, .. } if matches!(binding.known(), Some(known) if STDOUT_WRITER_KNOWNS.contains(&known)) => {
             true
         }
-        Expr::Call { func, .. } => {
-            matches!(func.as_ref(), Expr::Var(name) if writer_names.contains(name.as_str()))
+        Expr::Call { func, binding, .. } => {
+            matches!(func.as_ref(), Expr::Var(name) if writer_names.contains(name.as_str())
+                || (binding.is_header_inline() && is_stdout_writer_symbol(name.as_str())))
         }
         _ => false,
     }
+}
+
+fn is_stdout_writer_symbol(name: &str) -> bool {
+    STDOUT_WRITER_EXTRA_NAMES.contains(&name)
+        || Known::from_symbol(name).is_some_and(|known| STDOUT_WRITER_KNOWNS.contains(&known))
 }
 
 fn printf_call_args(expr: &Expr) -> Option<&[Expr]> {

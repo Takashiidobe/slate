@@ -146,7 +146,7 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 6 compiles
 // CHECK-NEXT:   splice_statements.c: [alpha,beta,gamma] 6 compiled
 // CHECK-NEXT: total: 12 compiles across 2 targets
-// CHECK-NEXT: unit splice_statements: 26 items, 13 gated, 0 duplicated functions
+// CHECK-NEXT: unit splice_statements: 27 items, 14 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced record:state: 2 variants
 // CHECK-NEXT:   spliced fn:added_statement: 2 variants
 // CHECK-NEXT:   spliced fn:repeated_text: 4 variants
@@ -181,6 +181,7 @@ int main(void) {
 // CHECK-NEXT:         [[ARG_3:arg[0-9]+]]: *mut __crt_locale_pointers,
 // CHECK-NEXT:         [[ARG_4:arg[0-9]+]]: *mut c_char,
 // CHECK-NEXT:     ) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(unix)]
@@ -460,6 +461,61 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             printf(
+// CHECK-NEXT:                 c"%d %d %d\n".as_ptr(),
+// CHECK-NEXT:                 added_statement(1i32),
+// CHECK-NEXT:                 repeated_text(1i32),
+// CHECK-NEXT:                 nested_in_loop(4i32),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         };
+// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         unsafe { printf(c"%d %d\n".as_ptr(), gated_local(1i32), different_tail(1i32)) };
+// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             printf(
+// CHECK-NEXT:                 c"%d %d\n".as_ptr(),
+// CHECK-NEXT:                 shifted_names(3i32, 5i32),
+// CHECK-NEXT:                 shifted_names(99i32, 5i32),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         };
+// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             printf(
+// CHECK-NEXT:                 c"%d %d %d\n".as_ptr(),
+// CHECK-NEXT:                 switched(0i32),
+// CHECK-NEXT:                 switched(1i32),
+// CHECK-NEXT:                 switched(2i32),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         };
+// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         unsafe { printf(c"%d %d\n".as_ptr(), gamma_value(), field_use()) };
+// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         println!(
@@ -476,34 +532,6 @@ int main(void) {
 // CHECK-NEXT:         );
 // CHECK-NEXT:         println!("{} {} {}", switched(0i32), switched(1i32), switched(2i32));
 // CHECK-NEXT:         println!("{} {}", gamma_value(), field_use());
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             printf(
-// CHECK-NEXT:                 c"%d %d %d\n".as_ptr(),
-// CHECK-NEXT:                 added_statement(1i32),
-// CHECK-NEXT:                 repeated_text(1i32),
-// CHECK-NEXT:                 nested_in_loop(4i32),
-// CHECK-NEXT:             )
-// CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { printf(c"%d %d\n".as_ptr(), gated_local(1i32), different_tail(1i32)) };
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             printf(
-// CHECK-NEXT:                 c"%d %d\n".as_ptr(),
-// CHECK-NEXT:                 shifted_names(3i32, 5i32),
-// CHECK-NEXT:                 shifted_names(99i32, 5i32),
-// CHECK-NEXT:             )
-// CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             printf(
-// CHECK-NEXT:                 c"%d %d %d\n".as_ptr(),
-// CHECK-NEXT:                 switched(0i32),
-// CHECK-NEXT:                 switched(1i32),
-// CHECK-NEXT:                 switched(2i32),
-// CHECK-NEXT:             )
-// CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { printf(c"%d %d\n".as_ptr(), gamma_value(), field_use()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

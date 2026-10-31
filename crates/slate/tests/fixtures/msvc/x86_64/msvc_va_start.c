@@ -81,6 +81,10 @@ int main(void) {
 // CHECK-NEXT:     fn abort();
 // CHECK-NEXT: }
 // CHECK-EMPTY:
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __crt_locale_pointers {
@@ -292,6 +296,7 @@ int main(void) {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe { std::process::abort() };
 // CHECK-NEXT:     }
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%s %d %.3f %c %lld\n".as_ptr(),
@@ -302,6 +307,7 @@ int main(void) {
 // CHECK-NEXT:             -9000000000i64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

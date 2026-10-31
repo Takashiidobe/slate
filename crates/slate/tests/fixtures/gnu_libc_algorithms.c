@@ -597,15 +597,10 @@ int main(void) {
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%d %d %d %d\n".as_ptr(),
-// CHECK-NEXT:             gnu_qsort_extension(),
-// CHECK-NEXT:             gnu_getopt_extensions(),
-// CHECK-NEXT:             gnu_argp_extensions(),
-// CHECK-NEXT:             gnu_search_extensions(),
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
+// CHECK-NEXT:     println!(
+// CHECK-NEXT:         "{} {} {} {}", gnu_qsort_extension(), gnu_getopt_extensions(),
+// CHECK-NEXT:         gnu_argp_extensions(), gnu_search_extensions()
+// CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

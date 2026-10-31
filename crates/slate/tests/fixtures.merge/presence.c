@@ -24,7 +24,7 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 4 compiles
 // CHECK-NEXT:   presence.c: [alpha,beta] 4 compiled
 // CHECK-NEXT: total: 8 compiles across 2 targets
-// CHECK-NEXT: unit presence: 19 items, 16 gated, 0 duplicated functions
+// CHECK-NEXT: unit presence: 20 items, 17 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:__slate_main: 8 variants
 // CHECK-NEXT: projection: 12 checked, 0 not translatable, 0 mismatches
 // CHECK-NEXT: signatures: 0 shared symbols, 0 mismatches
@@ -49,6 +49,7 @@ int main(void) {
 // CHECK-NEXT:         [[ARG_3:arg[0-9]+]]: *mut __crt_locale_pointers,
 // CHECK-NEXT:         [[ARG_4:arg[0-9]+]]: *mut c_char,
 // CHECK-NEXT:     ) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(unix)]
@@ -144,6 +145,27 @@ int main(void) {
 // CHECK-NEXT: static mut table: [i32; 2] = [1, 2];
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:     #[cfg(all(windows, feature = "alpha"))]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         unsafe { printf(c"%d\n".as_ptr(), only_alpha()) };
+// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(all(windows, feature = "alpha"))]
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:     #[cfg(all(windows, not(feature = "beta")))]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         unsafe { printf(c"%d\n".as_ptr(), 3i32) };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(all(windows, feature = "beta"))]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         unsafe { printf(c"%d\n".as_ptr(), 2i32) };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(all(unix, feature = "alpha"))]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         println!("{}", only_alpha());
@@ -155,18 +177,6 @@ int main(void) {
 // CHECK-NEXT:     #[cfg(all(unix, feature = "beta"))]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         println!("{}", 2i32);
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(all(windows, feature = "alpha"))]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { printf(c"%d\n".as_ptr(), only_alpha()) };
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(all(windows, not(feature = "beta")))]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { printf(c"%d\n".as_ptr(), 3i32) };
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(all(windows, feature = "beta"))]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { printf(c"%d\n".as_ptr(), 2i32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

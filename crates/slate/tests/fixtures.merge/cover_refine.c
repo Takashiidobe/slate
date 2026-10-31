@@ -65,7 +65,7 @@ int main(void) {
 // CHECK-NEXT:   cover_refine.c: [alpha,beta,gamma,delta,epsilon] 32 compiled
 // CHECK-NEXT:     8 assignments preprocess like a compiled one
 // CHECK-NEXT: total: 48 compiles across 2 targets
-// CHECK-NEXT: unit cover_refine: 26 items, 18 gated, 0 duplicated functions
+// CHECK-NEXT: unit cover_refine: 27 items, 19 gated, 0 duplicated functions
 // CHECK-NEXT:   hoisted fn:state_size: 5 variants
 // CHECK-NEXT:   spliced fn:nested: 5 variants
 // CHECK-NEXT:   spliced fn:joint: 4 variants
@@ -95,6 +95,7 @@ int main(void) {
 // CHECK-NEXT:         [[ARG_3:arg[0-9]+]]: *mut __crt_locale_pointers,
 // CHECK-NEXT:         [[ARG_4:arg[0-9]+]]: *mut c_char,
 // CHECK-NEXT:     ) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(unix)]
@@ -285,16 +286,8 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         println!(
-// CHECK-NEXT:             "{} {} {} {}",
-// CHECK-NEXT:             (state_size() > 8) as i32,
-// CHECK-NEXT:             nested(),
-// CHECK-NEXT:             joint(),
-// CHECK-NEXT:             shape(2i32)
-// CHECK-NEXT:         );
-// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe {
@@ -306,6 +299,17 @@ int main(void) {
 // CHECK-NEXT:                 shape(2i32),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
+// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(unix)]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         println!(
+// CHECK-NEXT:             "{} {} {} {}",
+// CHECK-NEXT:             (state_size() > 8) as i32,
+// CHECK-NEXT:             nested(),
+// CHECK-NEXT:             joint(),
+// CHECK-NEXT:             shape(2i32)
+// CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

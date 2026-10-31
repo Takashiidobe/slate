@@ -25,7 +25,7 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 6 compiles
 // CHECK-NEXT:   many_ifdefs.c: [alpha,beta,gamma] 6 compiled
 // CHECK-NEXT: total: 12 compiles across 2 targets
-// CHECK-NEXT: unit many_ifdefs: 16 items, 12 gated, 0 duplicated functions
+// CHECK-NEXT: unit many_ifdefs: 17 items, 13 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:flags: 6 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
 // CHECK-NEXT: projection: 12 checked, 0 not translatable, 0 mismatches
@@ -51,6 +51,7 @@ int main(void) {
 // CHECK-NEXT:         [[ARG_3:arg[0-9]+]]: *mut __crt_locale_pointers,
 // CHECK-NEXT:         [[ARG_4:arg[0-9]+]]: *mut c_char,
 // CHECK-NEXT:     ) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(unix)]
@@ -151,13 +152,16 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         println!("{}", flags());
-// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe { printf(c"%d\n".as_ptr(), flags()) };
+// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(unix)]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         println!("{}", flags());
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

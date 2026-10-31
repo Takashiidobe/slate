@@ -76,7 +76,7 @@ int main(void) {
 // CHECK-NEXT:   named_types.c: [] 1 compiled
 // CHECK-NEXT:   units/named_types_helper.c: [] 1 compiled
 // CHECK-NEXT: total: 4 compiles across 2 targets
-// CHECK-NEXT: unit named_types: 35 items, 19 gated, 0 duplicated functions
+// CHECK-NEXT: unit named_types: 35 items, 18 gated, 0 duplicated functions
 // CHECK-NEXT:   hoisted fn:width_of_long: 2 variants
 // CHECK-NEXT:   spliced fn:add_total: 2 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
@@ -114,11 +114,11 @@ int main(void) {
 // CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn printf([[ARG_0]]: *const c_char, ...) -> i32;
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn tally_sum([[ARG_0]]: *const tally) -> c_long;
+// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: type c_char = i8;
@@ -308,50 +308,7 @@ int main(void) {
 // CHECK-NEXT:     let delta: c_long = negate(unsafe { shared.delta });
 // CHECK-NEXT:     let bytes: size_t =
 // CHECK-NEXT:         measure(unsafe { shared.name }, (16 as size_t)).wrapping_add(unsafe { shared.bytes });
-// CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             printf(
-// CHECK-NEXT:                 c"%lu %ld %zu %llu %c %s\n".as_ptr(),
-// CHECK-NEXT:                 total,
-// CHECK-NEXT:                 delta,
-// CHECK-NEXT:                 bytes,
-// CHECK-NEXT:                 widen(1u32),
-// CHECK-NEXT:                 shared.tag as i32,
-// CHECK-NEXT:                 std::ptr::addr_of_mut!(shared.label) as *mut c_char,
-// CHECK-NEXT:             )
-// CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             printf(
-// CHECK-NEXT:                 c"%lu %llu\n".as_ptr(),
-// CHECK-NEXT:                 apply(Some(add_total), total),
-// CHECK-NEXT:                 shared.wide,
-// CHECK-NEXT:             )
-// CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             printf(
-// CHECK-NEXT:                 c"%lu %ld\n".as_ptr(),
-// CHECK-NEXT:                 clamp_base((65530 as c_ulong), 200u8, (3 as size_t)),
-// CHECK-NEXT:                 tally_sum(std::ptr::addr_of_mut!(tally) as *const tally),
-// CHECK-NEXT:             )
-// CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:         println!("{}", (width_of_long() == 8) as i32);
-// CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe {
@@ -365,6 +322,12 @@ int main(void) {
 // CHECK-NEXT:                 std::ptr::addr_of_mut!(shared.label) as *mut c_char,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
+// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             printf(
 // CHECK-NEXT:                 c"%lu %llu\n".as_ptr(),
@@ -372,6 +335,25 @@ int main(void) {
 // CHECK-NEXT:                 shared.wide,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(unix)]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             printf(
+// CHECK-NEXT:                 c"%lu %ld %zu %llu %c %s\n".as_ptr(),
+// CHECK-NEXT:                 total,
+// CHECK-NEXT:                 delta,
+// CHECK-NEXT:                 bytes,
+// CHECK-NEXT:                 widen(1u32),
+// CHECK-NEXT:                 shared.tag as i32,
+// CHECK-NEXT:                 std::ptr::addr_of_mut!(shared.label) as *mut c_char,
+// CHECK-NEXT:             )
+// CHECK-NEXT:         };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             printf(
 // CHECK-NEXT:                 c"%lu %ld\n".as_ptr(),
@@ -379,7 +361,37 @@ int main(void) {
 // CHECK-NEXT:                 tally_sum(std::ptr::addr_of_mut!(tally) as *const tally),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(unix)]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             printf(
+// CHECK-NEXT:                 c"%lu %llu\n".as_ptr(),
+// CHECK-NEXT:                 apply(Some(add_total), total),
+// CHECK-NEXT:                 shared.wide,
+// CHECK-NEXT:             )
+// CHECK-NEXT:         };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe { printf(c"%d\n".as_ptr(), (width_of_long() == 4) as i32) };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(unix)]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             printf(
+// CHECK-NEXT:                 c"%lu %ld\n".as_ptr(),
+// CHECK-NEXT:                 clamp_base((65530 as c_ulong), 200u8, (3 as size_t)),
+// CHECK-NEXT:                 tally_sum(std::ptr::addr_of_mut!(tally) as *const tally),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     #[cfg(unix)]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         println!("{}", (width_of_long() == 8) as i32);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

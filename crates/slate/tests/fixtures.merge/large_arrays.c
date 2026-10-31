@@ -58,7 +58,7 @@ int main(void) {
 // CHECK-NEXT: target linux-aarch64: 1 compiles
 // CHECK-NEXT:   large_arrays.c: [] 1 compiled
 // CHECK-NEXT: total: 4 compiles across 4 targets
-// CHECK-NEXT: unit large_arrays: 44 items, 33 gated, 1 duplicated functions
+// CHECK-NEXT: unit large_arrays: 44 items, 32 gated, 1 duplicated functions
 // CHECK-NEXT:   duplicated fn:read_crossing: 2 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 4 variants
 // CHECK-NEXT: projection: 24 checked, 0 not translatable, 0 mismatches
@@ -92,6 +92,9 @@ int main(void) {
 // CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn printf([[ARG_0]]: *const c_char, ...) -> i32;
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -335,6 +338,40 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         unsafe { printf(c"%d %d\n".as_ptr(), read_table(3i32), read_local(10i32)) };
+// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             printf(
+// CHECK-NEXT:                 c"%d %d %d\n".as_ptr(),
+// CHECK-NEXT:                 (exported.0[15] as u32) as i32,
+// CHECK-NEXT:                 (small[1] as u32) as i32,
+// CHECK-NEXT:                 read_crossing(),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         };
+// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             printf(
+// CHECK-NEXT:                 c"%s %s %s\n".as_ptr(),
+// CHECK-NEXT:                 std::ptr::addr_of!(explicit_large.0) as *const c_char,
+// CHECK-NEXT:                 std::ptr::addr_of!(larger.0) as *const c_char,
+// CHECK-NEXT:                 std::ptr::addr_of!(opted_out) as *const c_char,
+// CHECK-NEXT:             )
+// CHECK-NEXT:         };
+// CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         println!("{} {}", read_table(3i32), read_local(10i32));
@@ -367,30 +404,7 @@ int main(void) {
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { printf(c"%d %d\n".as_ptr(), read_table(3i32), read_local(10i32)) };
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             printf(
-// CHECK-NEXT:                 c"%d %d %d\n".as_ptr(),
-// CHECK-NEXT:                 (exported.0[15] as u32) as i32,
-// CHECK-NEXT:                 (small[1] as u32) as i32,
-// CHECK-NEXT:                 read_crossing(),
-// CHECK-NEXT:             )
-// CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             printf(
-// CHECK-NEXT:                 c"%s %s %s\n".as_ptr(),
-// CHECK-NEXT:                 std::ptr::addr_of!(explicit_large.0) as *const c_char,
-// CHECK-NEXT:                 std::ptr::addr_of!(larger.0) as *const c_char,
-// CHECK-NEXT:                 std::ptr::addr_of!(opted_out) as *const c_char,
-// CHECK-NEXT:             )
-// CHECK-NEXT:         };
-// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     #[cfg(not(target_arch = "x86"))]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         if ((unsafe { std::ptr::addr_of!(explicit_large.0) as *const c_char }) as uintptr_t) % 16

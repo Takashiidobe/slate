@@ -34,7 +34,7 @@ int main(void) {
 // CHECK-NEXT:     2 assignments preprocess like a compiled one
 // CHECK-NEXT:     infeasible [alpha,gamma]: {{.*}}tests/fixtures.merge/reused_preprocessing.c: analyze {{.*}}tests/fixtures.merge/reused_preprocessing.c: #error "alpha and gamma preprocess like gamma but must stay infeasible"
 // CHECK-NEXT: total: 8 compiles across 2 targets
-// CHECK-NEXT: unit reused_preprocessing: 18 items, 14 gated, 0 duplicated functions
+// CHECK-NEXT: unit reused_preprocessing: 19 items, 15 gated, 0 duplicated functions
 // CHECK-NEXT:   hoisted fn:value: 2 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 4 variants
 // CHECK-NEXT: projection: 10 checked, 2 not translatable, 0 mismatches
@@ -60,6 +60,7 @@ int main(void) {
 // CHECK-NEXT:         [[ARG_3:arg[0-9]+]]: *mut __crt_locale_pointers,
 // CHECK-NEXT:         [[ARG_4:arg[0-9]+]]: *mut c_char,
 // CHECK-NEXT:     ) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(unix)]
@@ -150,6 +151,20 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         unsafe { printf(c"%d\n".as_ptr(), value()) };
+// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(all(windows, feature = "gamma"))]
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:     #[cfg(all(windows, feature = "gamma"))]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         unsafe { printf(c"gamma\n".as_ptr()) };
+// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         println!("{}", value());
@@ -157,14 +172,6 @@ int main(void) {
 // CHECK-NEXT:     #[cfg(all(unix, feature = "gamma"))]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         println!("gamma");
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { printf(c"%d\n".as_ptr(), value()) };
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(all(windows, feature = "gamma"))]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { printf(c"gamma\n".as_ptr()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

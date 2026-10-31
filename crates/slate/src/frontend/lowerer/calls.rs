@@ -183,7 +183,9 @@ impl FunctionLowerer<'_, '_> {
                         trusted_declaration: None,
                         trusted_headers: Default::default(),
                     },
-                    FunctionIdentity::Unknown => CallBinding::Generated,
+                    FunctionIdentity::HeaderInline | FunctionIdentity::Unknown => {
+                        CallBinding::Generated
+                    }
                 },
             })),
         }))

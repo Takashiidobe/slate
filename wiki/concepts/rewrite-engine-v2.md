@@ -40,6 +40,17 @@ conversions and layout remain slate-parser responsibilities.
   of the block as detached. Comments inside a discarded subtree move to the
   replacement as leading.
 
+- `printf_format` wraps every libc stdio writer in a Rust stdout flush and
+  `fflush(NULL)`, so `print!` and libc output keep their order. Never skip this
+  because a stream looks like `stderr`: `stderr = stdout`, `freopen` and
+  `setvbuf` can all change where it writes or how it buffers. ucrt defines
+  `printf` and `fprintf` inline, so calls to them carry
+  `FunctionIdentity::HeaderInline`. They get the flushes but no libc identity,
+  because `print!` would skip Windows' text-mode `\n` to `\r\n` translation.
+- A libc identity needs the known function's header to be the outermost system
+  header or the declaring file. bionic's `stdlib.h` includes `stdio.h`, so the
+  outermost header alone is not enough.
+
 ## Control-flow rewrites
 
 | CFG shape                               | Rust-to-Rust rewrite                                                                  |

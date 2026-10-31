@@ -174,8 +174,8 @@ from `<command line>` ([compiler-arg-rules](compiler-arg-rules.md#forced-files-a
 
 - `outermost_system_header` is set on entering the first System header
   from user code and restored on leaving it, so every token below
-  `<stdio.h>` reports `<stdio.h>`. Slate uses it to recognize libc
-  declarations.
+  `<stdio.h>` reports `<stdio.h>`. Slate uses it and `file` to recognize
+  libc declarations.
 - `emit_line` gives every token of a group the group's
   provenance, including tokens spelled in a macro defined elsewhere.
 
