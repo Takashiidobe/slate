@@ -205,6 +205,19 @@ fn merge_into(merged: &mut Vec<Node>, incoming: Vec<Node>, fold: &mut Fold) {
     merged.extend(right.map(|(_, node)| node));
 }
 
+fn node_count(nodes: &[Node]) -> usize {
+    nodes
+        .iter()
+        .map(|node| {
+            1 + node
+                .bodies
+                .iter()
+                .map(|body| node_count(body))
+                .sum::<usize>()
+        })
+        .sum()
+}
+
 fn collect_names(nodes: &[Node], out: &mut HashSet<Ident>) {
     for node in nodes {
         out.extend(node.names.iter().copied());
@@ -439,16 +452,24 @@ pub fn splice_function(
         return None;
     }
     let mut next_id = 0;
+    let mut prepared: Vec<(usize, Vec<Node>, HashSet<Ident>)> = variants
+        .iter()
+        .enumerate()
+        .map(|(variant, function)| {
+            let mut body = mark_tail(function);
+            let bound = bound_names(&mut body);
+            let incoming = Builder {
+                variant,
+                bound: &bound,
+                next_id: &mut next_id,
+            }
+            .nodes(body);
+            (variant, incoming, bound)
+        })
+        .collect();
+    prepared.sort_by_key(|(variant, nodes, _)| (std::cmp::Reverse(node_count(nodes)), *variant));
     let mut merged: Vec<Node> = Vec::new();
-    for (variant, function) in variants.iter().enumerate() {
-        let mut body = mark_tail(function);
-        let bound = bound_names(&mut body);
-        let incoming = Builder {
-            variant,
-            bound: &bound,
-            next_id: &mut next_id,
-        }
-        .nodes(body);
+    for (variant, incoming, bound) in prepared {
         let mut taken = HashSet::new();
         collect_names(&merged, &mut taken);
         let mut fold = Fold {
@@ -518,8 +539,11 @@ pub fn splice_record(
         return None;
     }
     let mut merged: Vec<(RecordField, Variants)> = Vec::new();
-    for (variant, record) in variants.iter().enumerate() {
-        let incoming = &record.fields;
+    let mut fold_order: Vec<usize> = (0..variants.len()).collect();
+    fold_order
+        .sort_by_key(|variant| (std::cmp::Reverse(variants[*variant].fields.len()), *variant));
+    for variant in fold_order {
+        let incoming = &variants[variant].fields;
         let width = incoming.len() + 1;
         let mut cells = vec![0u32; (merged.len() + 1) * width];
         for i in (0..merged.len()).rev() {

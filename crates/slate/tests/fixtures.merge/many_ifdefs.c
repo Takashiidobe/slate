@@ -123,8 +123,6 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn flags() -> i32 {
-// CHECK-NEXT:     #[cfg(all(not(feature = "alpha"), not(feature = "beta"), not(feature = "gamma")))]
-// CHECK-NEXT:     let value: i32 = 0;
 // CHECK-NEXT:     #[cfg(any(feature = "alpha", feature = "beta", feature = "gamma"))]
 // CHECK-NEXT:     let mut value: i32 = 0;
 // CHECK-NEXT:     #[cfg(feature = "alpha")]
@@ -139,6 +137,8 @@ int main(void) {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         value += 3 * 4;
 // CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(all(not(feature = "alpha"), not(feature = "beta"), not(feature = "gamma")))]
+// CHECK-NEXT:     let value: i32 = 0;
 // CHECK-NEXT:     value
 // CHECK-NEXT: }
 // CHECK-EMPTY:

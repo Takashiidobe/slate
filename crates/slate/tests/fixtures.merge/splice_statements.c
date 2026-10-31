@@ -275,21 +275,14 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn repeated_text(mut value: i32) -> i32 {
-// CHECK-NEXT:     #[cfg(not(feature = "beta"))]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         value *= 2;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     value += 1;
-// CHECK-NEXT:     value *= 2;
-// CHECK-NEXT:     #[cfg(any(feature = "alpha", feature = "beta"))]
+// CHECK-NEXT:     #[cfg(feature = "beta")]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         value += 1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(feature = "beta")]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         value *= 2;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(all(feature = "alpha", feature = "beta"))]
+// CHECK-NEXT:     value *= 2;
+// CHECK-NEXT:     value += 1;
+// CHECK-NEXT:     value *= 2;
+// CHECK-NEXT:     #[cfg(feature = "alpha")]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         value += 1;
 // CHECK-NEXT:     }
@@ -351,20 +344,6 @@ int main(void) {
 // CHECK-NEXT:     let mut result: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         result = 0;
-// CHECK-NEXT:         #[cfg(not(feature = "alpha"))]
-// CHECK-NEXT:         {
-// CHECK-NEXT:             i = 0;
-// CHECK-NEXT:             while i < limit {
-// CHECK-NEXT:                 if i * 2 == value {
-// CHECK-NEXT:                     result += 1000;
-// CHECK-NEXT:                     return result;
-// CHECK-NEXT:                 } else {
-// CHECK-NEXT:                     result += i;
-// CHECK-NEXT:                     i += 1;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:             }
-// CHECK-NEXT:             result += 7;
-// CHECK-NEXT:         }
 // CHECK-NEXT:         #[cfg(feature = "alpha")]
 // CHECK-NEXT:         {
 // CHECK-NEXT:             [[I_0]] = 0;
@@ -391,6 +370,20 @@ int main(void) {
 // CHECK-NEXT:             }
 // CHECK-NEXT:             result += 1000;
 // CHECK-NEXT:         }
+// CHECK-NEXT:         #[cfg(not(feature = "alpha"))]
+// CHECK-NEXT:         {
+// CHECK-NEXT:             i = 0;
+// CHECK-NEXT:             while i < limit {
+// CHECK-NEXT:                 if i * 2 == value {
+// CHECK-NEXT:                     result += 1000;
+// CHECK-NEXT:                     return result;
+// CHECK-NEXT:                 } else {
+// CHECK-NEXT:                     result += i;
+// CHECK-NEXT:                     i += 1;
+// CHECK-NEXT:                 }
+// CHECK-NEXT:             }
+// CHECK-NEXT:             result += 7;
+// CHECK-NEXT:         }
 // CHECK-NEXT:         return result;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
@@ -398,17 +391,6 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn switched(mode: i32) -> i32 {
 // CHECK-NEXT:     let mut out: i32 = 1;
-// CHECK-NEXT:     #[cfg(not(feature = "beta"))]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         match mode {
-// CHECK-NEXT:             0 => {
-// CHECK-NEXT:                 out += 1;
-// CHECK-NEXT:             }
-// CHECK-NEXT:             _ => {
-// CHECK-NEXT:                 out += 3;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(feature = "beta")]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         match mode {
@@ -417,6 +399,17 @@ int main(void) {
 // CHECK-NEXT:             }
 // CHECK-NEXT:             1 => {
 // CHECK-NEXT:                 out += 2;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             _ => {
+// CHECK-NEXT:                 out += 3;
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(not(feature = "beta"))]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         match mode {
+// CHECK-NEXT:             0 => {
+// CHECK-NEXT:                 out += 1;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             _ => {
 // CHECK-NEXT:                 out += 3;
@@ -443,15 +436,15 @@ int main(void) {
 // CHECK-NEXT:     let mut s: state = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     s.head = 1;
 // CHECK-NEXT:     s.tail = 2;
-// CHECK-NEXT:     #[cfg(not(feature = "alpha"))]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         s.head + s.tail + 8
-// CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(feature = "alpha")]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         s.extra = 4;
 // CHECK-NEXT:         s.tail += s.extra;
 // CHECK-NEXT:         { s.head + s.tail + 12 }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(not(feature = "alpha"))]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         s.head + s.tail + 8
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:

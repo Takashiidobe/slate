@@ -13,6 +13,7 @@ use rayon::prelude::*;
 use slate_parser::files::Files;
 use slate_parser::ir::{Linkage, Module};
 use slate_parser::target_info::TargetInfo;
+use std::cell::RefCell;
 use std::collections::{BTreeMap, BTreeSet, HashMap};
 use std::fmt::Write;
 use std::path::{Path, PathBuf};
@@ -283,16 +284,26 @@ struct Compiled {
 }
 
 struct TargetUnit {
+    source: PathBuf,
     relevant: Vec<String>,
     compiled: Vec<Compiled>,
-    infeasible: Vec<(Vec<String>, String)>,
+    infeasible: Vec<(u32, String)>,
+    tried: BTreeSet<u32>,
     defines_main: bool,
 }
 
 struct TargetBuild {
     name: String,
     cfg: Cfg,
+    owners: CommonOwners,
+    taken: BTreeSet<String>,
     units: Vec<TargetUnit>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Coverage {
+    Refined,
+    FullTable,
 }
 
 fn subset(relevant: &[String], mask: u32) -> Vec<String> {
@@ -381,11 +392,7 @@ fn matrix_cfg(matrix: &Matrix, target: &str) -> Result<Cfg, String> {
     Ok(target_cfg(&info))
 }
 
-fn build_target(
-    matrix: &Matrix,
-    project: &Path,
-    target: &str,
-) -> Result<(TargetBuild, usize), String> {
+fn prepare_target(matrix: &Matrix, project: &Path, target: &str) -> Result<TargetBuild, String> {
     let plan = project_plan::plan(matrix, project, Some(target), project_plan::Mode::Plan)
         .map_err(|error| error.to_string())?;
     let units = &plan.targets[0].units;
@@ -408,8 +415,8 @@ fn build_target(
         .collect();
     let owners = common_owners(parsed.iter().map(|unit| (unit.stem.as_str(), &unit.module)));
 
-    let mut jobs = Vec::new();
-    for (index, unit) in units.iter().enumerate() {
+    let mut built = Vec::with_capacity(units.len());
+    for unit in units {
         if unit.relevant.len() > MAX_RELEVANT_FEATURES {
             return Err(format!(
                 "target {target}: {} depends on {} features, the limit is {MAX_RELEVANT_FEATURES}",
@@ -417,53 +424,98 @@ fn build_target(
                 unit.relevant.len()
             ));
         }
-        for mask in 0u32..1 << unit.relevant.len() {
-            let names = subset(&unit.relevant, mask);
-            if !matrix.is_invalid_combination(&names) {
-                jobs.push((index, mask, names));
-            }
-        }
-    }
-    let results: Vec<_> = jobs
-        .par_iter()
-        .map(|(index, mask, names)| {
-            let command = matrix
-                .command(project, target, names, &units[*index].source)
-                .map_err(|error| error.to_string())?;
-            compile_isolated(command, &owners, *mask)
-        })
-        .collect();
-    let mut built: Vec<TargetUnit> = units
-        .iter()
-        .map(|unit| TargetUnit {
+        built.push(TargetUnit {
+            source: unit.source.clone(),
             relevant: unit.relevant.clone(),
             compiled: Vec::new(),
             infeasible: Vec::new(),
+            tried: BTreeSet::new(),
             defines_main: false,
+        });
+    }
+    Ok(TargetBuild {
+        name: target.to_string(),
+        cfg: matrix_cfg(matrix, target)?,
+        owners,
+        taken: BTreeSet::new(),
+        units: built,
+    })
+}
+
+fn is_valid(matrix: &Matrix, relevant: &[String], mask: u32) -> bool {
+    !matrix.is_invalid_combination(&subset(relevant, mask))
+}
+
+fn seed_rows(matrix: &Matrix, relevant: &[String], coverage: Coverage) -> BTreeSet<u32> {
+    let bits = relevant.len();
+    let mut rows: BTreeSet<u32> = match coverage {
+        Coverage::FullTable => (0u32..1 << bits).collect(),
+        Coverage::Refined => {
+            let mut all_on = (1u32 << bits) - 1;
+            while all_on != 0 && !is_valid(matrix, relevant, all_on) {
+                all_on &= !(1 << (u32::BITS - 1 - all_on.leading_zeros()));
+            }
+            std::iter::once(0)
+                .chain((0..bits).map(|bit| 1u32 << bit))
+                .chain([all_on])
+                .collect()
+        }
+    };
+    rows.retain(|mask| is_valid(matrix, relevant, *mask));
+    rows
+}
+
+type Job = (usize, usize, u32);
+
+fn compile_rows(matrix: &Matrix, project: &Path, builds: &mut [TargetBuild], jobs: Vec<Job>) {
+    let results: Vec<_> = jobs
+        .par_iter()
+        .map(|&(target, index, mask)| {
+            let build = &builds[target];
+            let unit = &build.units[index];
+            let command = matrix
+                .command(
+                    project,
+                    &build.name,
+                    &subset(&unit.relevant, mask),
+                    &unit.source,
+                )
+                .map_err(|error| error.to_string())?;
+            compile_isolated(command, &build.owners, mask)
         })
         .collect();
-    let compiles = jobs.len();
-    for ((index, _, names), result) in jobs.into_iter().zip(results) {
-        let unit = &mut built[index];
+    for ((target, index, mask), result) in jobs.into_iter().zip(results) {
+        let unit = &mut builds[target].units[index];
+        unit.tried.insert(mask);
         match result {
             Ok((compiled, has_main)) => {
                 unit.defines_main |= has_main;
-                unit.compiled.push(compiled);
+                let at = unit.compiled.partition_point(|known| known.mask < mask);
+                unit.compiled.insert(at, compiled);
             }
             Err(error) => {
                 let first = error.lines().next().unwrap_or_default().to_string();
-                unit.infeasible.push((names, first));
+                let at = unit.infeasible.partition_point(|known| known.0 < mask);
+                unit.infeasible.insert(at, (mask, first));
             }
         }
     }
-    let taken: BTreeSet<String> = built
+}
+
+fn place_sections(build: &mut TargetBuild) -> Result<bool, String> {
+    let taken: BTreeSet<String> = build
+        .units
         .iter()
         .flat_map(|unit| &unit.compiled)
         .flat_map(|compiled| compiled.candidates.taken_symbols.iter().cloned())
         .collect();
-    for (unit, source) in built.iter_mut().zip(units) {
-        let stem = stem_of(&source.source)?;
+    let changed = taken != build.taken;
+    for unit in &mut build.units {
+        let stem = stem_of(&unit.source)?;
         for compiled in &mut unit.compiled {
+            if !changed && !compiled.entries.is_empty() {
+                continue;
+            }
             let mut protected = compiled.candidates.taken_here.clone();
             protected.extend(
                 compiled
@@ -473,38 +525,139 @@ fn build_target(
                     .filter(|(symbol, _)| taken.contains(*symbol))
                     .map(|(_, name)| name.clone()),
             );
-            backend::place_in_distinct_sections(&mut compiled.program, &stem, &protected);
-            compiled.entries = entries(&compiled.program);
+            let mut placed = compiled.program.clone();
+            backend::place_in_distinct_sections(&mut placed, &stem, &protected);
+            compiled.entries = entries(&placed);
         }
     }
-    if let Some((unit, built)) = units
-        .iter()
-        .zip(&built)
-        .find(|(_, built)| built.compiled.is_empty())
-    {
-        let reason = built
-            .infeasible
-            .first()
-            .map_or("no configurations", |(_, error)| error.as_str());
-        return Err(format!(
-            "target {target}: no configuration of {} translated: {reason}",
-            unit.source.display()
-        ));
-    }
-    Ok((
-        TargetBuild {
-            name: target.to_string(),
-            cfg: matrix_cfg(matrix, target)?,
-            units: built,
-        },
-        compiles,
-    ))
+    build.taken = taken;
+    Ok(changed)
 }
 
-#[derive(Clone, Copy)]
+fn untried_rows(matrix: &Matrix, unit: &TargetUnit) -> Vec<u32> {
+    (0u32..1 << unit.relevant.len())
+        .filter(|mask| !unit.tried.contains(mask) && is_valid(matrix, &unit.relevant, *mask))
+        .collect()
+}
+
+fn hitting_rows(mut open: Vec<Vec<u32>>) -> Vec<u32> {
+    let mut chosen = Vec::new();
+    while !open.is_empty() {
+        let mut counts: BTreeMap<u32, usize> = BTreeMap::new();
+        for rows in &open {
+            for row in rows {
+                *counts.entry(*row).or_default() += 1;
+            }
+        }
+        let best = counts
+            .iter()
+            .max_by_key(|(row, count)| (**count, std::cmp::Reverse(**row)))
+            .map(|(row, _)| *row)
+            .expect("open row sets are not empty");
+        open.retain(|rows| !rows.contains(&best));
+        chosen.push(best);
+    }
+    chosen
+}
+
+fn undecided_rows(
+    merged: &MergedUnit,
+    target: usize,
+    unit: &TargetUnit,
+    untried: &[u32],
+) -> Vec<u32> {
+    let care: BTreeSet<u32> = unit.compiled.iter().map(|compiled| compiled.mask).collect();
+    let bits = unit.relevant.len();
+    let mut open = Vec::new();
+    for (on, within) in &merged.gates {
+        open.extend(ambiguous_rows(&on[target], &within[target], bits, untried));
+    }
+    for variants in &merged.claims {
+        let covers: Vec<Vec<Implicant>> = variants
+            .iter()
+            .map(|on| minimize(&on[target], &care, bits))
+            .collect();
+        let union: BTreeSet<u32> = variants
+            .iter()
+            .flat_map(|on| on[target].iter().copied())
+            .collect();
+        let present = minimize(&union, &care, bits);
+        for &row in untried {
+            let claims = covers
+                .iter()
+                .filter(|cover| cover.iter().any(|implicant| implicant.covers(row)))
+                .count();
+            let expected = present.iter().any(|implicant| implicant.covers(row));
+            if claims > 1 || (expected && claims == 0) {
+                open.push(vec![row]);
+            }
+        }
+    }
+    hitting_rows(open)
+}
+
+fn refine(
+    matrix: &Matrix,
+    project: &Path,
+    builds: &mut [TargetBuild],
+    stems: &[String],
+) -> Result<Vec<MergedUnit>, String> {
+    let mut merged: Vec<Option<MergedUnit>> = stems.iter().map(|_| None).collect();
+    let mut dirty: BTreeSet<usize> = (0..stems.len()).collect();
+    loop {
+        for build in builds.iter_mut() {
+            if place_sections(build)? {
+                dirty = (0..stems.len()).collect();
+            }
+        }
+        let shared: &[TargetBuild] = builds;
+        let rebuilt: Vec<(usize, MergedUnit)> = dirty
+            .par_iter()
+            .map(|&index| (index, merge_unit(&stems[index], index, shared)))
+            .collect();
+        for (index, unit) in rebuilt {
+            merged[index] = Some(unit);
+        }
+        let units: Vec<(usize, usize)> = dirty
+            .iter()
+            .flat_map(|&index| (0..shared.len()).map(move |target| (target, index)))
+            .collect();
+        let jobs: Vec<Job> = units
+            .par_iter()
+            .flat_map_iter(|&(target, index)| {
+                let unit = &shared[target].units[index];
+                let untried = untried_rows(matrix, unit);
+                let result = merged[index].as_ref().expect("dirty units are merged");
+                let mut rows = if unit.compiled.is_empty() {
+                    untried
+                } else {
+                    undecided_rows(result, target, unit, &untried)
+                };
+                rows.sort_unstable();
+                rows.into_iter().map(move |mask| (target, index, mask))
+            })
+            .collect();
+        if jobs.is_empty() {
+            return Ok(merged
+                .into_iter()
+                .map(|unit| unit.expect("every unit is merged"))
+                .collect());
+        }
+        dirty = jobs.iter().map(|(_, index, _)| *index).collect();
+        compile_rows(matrix, project, builds, jobs);
+    }
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
 struct Implicant {
     value: u32,
     dashes: u32,
+}
+
+impl Implicant {
+    fn covers(&self, mask: u32) -> bool {
+        mask & !self.dashes == self.value
+    }
 }
 
 fn prime_implicants(cover: &BTreeSet<u32>, bits: usize) -> Vec<Implicant> {
@@ -537,12 +690,14 @@ fn prime_implicants(cover: &BTreeSet<u32>, bits: usize) -> Vec<Implicant> {
     primes
 }
 
-fn minimize(on: &BTreeSet<u32>, care: &BTreeSet<u32>, bits: usize) -> Vec<Implicant> {
+fn candidates(on: &BTreeSet<u32>, care: &BTreeSet<u32>, bits: usize) -> Vec<Implicant> {
     let cover: BTreeSet<u32> = (0u32..1 << bits)
         .filter(|mask| on.contains(mask) || !care.contains(mask))
         .collect();
-    let primes = prime_implicants(&cover, bits);
-    let covers = |implicant: &Implicant, mask: u32| mask & !implicant.dashes == implicant.value;
+    prime_implicants(&cover, bits)
+}
+
+fn select_cover(on: &BTreeSet<u32>, primes: &[Implicant]) -> Vec<Implicant> {
     let mut uncovered = on.clone();
     let mut chosen = Vec::new();
     while !uncovered.is_empty() {
@@ -551,7 +706,7 @@ fn minimize(on: &BTreeSet<u32>, care: &BTreeSet<u32>, bits: usize) -> Vec<Implic
             .max_by_key(|implicant| {
                 let gain = uncovered
                     .iter()
-                    .filter(|mask| covers(implicant, **mask))
+                    .filter(|mask| implicant.covers(**mask))
                     .count();
                 (
                     gain,
@@ -561,10 +716,62 @@ fn minimize(on: &BTreeSet<u32>, care: &BTreeSet<u32>, bits: usize) -> Vec<Implic
             })
             .copied()
             .expect("every on-set assignment has a covering implicant");
-        uncovered.retain(|mask| !covers(&best, *mask));
+        uncovered.retain(|mask| !best.covers(*mask));
         chosen.push(best);
     }
     chosen
+}
+
+fn minimize(on: &BTreeSet<u32>, care: &BTreeSet<u32>, bits: usize) -> Vec<Implicant> {
+    select_cover(on, &candidates(on, care, bits))
+}
+
+fn ambiguous_rows(
+    on: &BTreeSet<u32>,
+    within: &BTreeSet<u32>,
+    bits: usize,
+    untried: &[u32],
+) -> Vec<Vec<u32>> {
+    if on.is_empty() || within.is_empty() {
+        return Vec::new();
+    }
+    let primes = candidates(on, within, bits);
+    let chosen = select_cover(on, &primes);
+    let decided = |row: u32| chosen.iter().any(|implicant| implicant.covers(row));
+    let literals = |implicant: &Implicant| bits as u32 - implicant.dashes.count_ones();
+    let simplest = chosen.iter().map(literals).max().unwrap_or(0);
+    let all_on = (1u32 << bits) - 1;
+    let mut open: Vec<Vec<u32>> = primes
+        .iter()
+        .filter(|prime| {
+            !chosen.contains(prime)
+                && literals(prime) <= simplest
+                && on.iter().any(|mask| prime.covers(*mask))
+        })
+        .map(|prime| {
+            untried
+                .iter()
+                .copied()
+                .filter(|row| prime.covers(*row) && !decided(*row))
+                .collect::<Vec<u32>>()
+        })
+        .filter(|rows| !rows.is_empty())
+        .collect();
+    for implicant in &chosen {
+        for witness in [implicant.value, implicant.value | implicant.dashes] {
+            if untried.contains(&witness) {
+                open.push(vec![witness]);
+            }
+        }
+        let positive = implicant.value & !implicant.dashes;
+        for bit in 0..bits {
+            let probe = all_on & !(1 << bit);
+            if positive >> bit & 1 == 1 && untried.contains(&probe) {
+                open.push(vec![probe]);
+            }
+        }
+    }
+    open
 }
 
 fn feature_atom(name: &str) -> Cfg {
@@ -661,7 +868,12 @@ struct MergedUnit {
     duplicated: Vec<(String, usize)>,
     hoisted: Vec<(String, usize)>,
     spliced: Vec<(String, usize)>,
+    gates: BTreeSet<Gate>,
+    claims: Vec<Vec<OnSets>>,
 }
+
+type OnSets = Vec<BTreeSet<u32>>;
+type Gate = (OnSets, OnSets);
 
 fn hoist_values(key: &str, values: &[Value]) -> Option<project_hoist::Hoisted> {
     if key.contains('#') {
@@ -775,7 +987,10 @@ fn merge_unit(stem: &str, index: usize, targets: &[TargetBuild]) -> MergedUnit {
         duplicated: Vec::new(),
         hoisted: Vec::new(),
         spliced: Vec::new(),
+        gates: BTreeSet::new(),
+        claims: Vec::new(),
     };
+    let gates: RefCell<BTreeSet<Gate>> = RefCell::new(BTreeSet::new());
     let cfg_within = |on: &[BTreeSet<u32>], within: &[BTreeSet<u32>]| -> Option<Cfg> {
         let mut groups: BTreeMap<Option<Cfg>, Vec<Cfg>> = BTreeMap::new();
         let mut present = 0;
@@ -797,7 +1012,11 @@ fn merge_unit(stem: &str, index: usize, targets: &[TargetBuild]) -> MergedUnit {
         }
         combined_cfg(groups, present)
     };
-    let cfg_of = |on: &[BTreeSet<u32>]| cfg_within(on, &cares);
+    let recorded_within = |on: &[BTreeSet<u32>], within: &[BTreeSet<u32>]| -> Option<Cfg> {
+        gates.borrow_mut().insert((on.to_vec(), within.to_vec()));
+        cfg_within(on, within)
+    };
+    let cfg_of = |on: &[BTreeSet<u32>]| recorded_within(on, &cares);
     for key in order {
         let values = table.remove(&key).expect("ordered key is in the table");
         if values.len() > 1
@@ -805,6 +1024,8 @@ fn merge_unit(stem: &str, index: usize, targets: &[TargetBuild]) -> MergedUnit {
             && let Some(hoisted) = hoist_values(&key, &values)
         {
             out.hoisted.push((key.clone(), values.len()));
+            out.claims
+                .push(values.iter().map(|value| value.on.clone()).collect());
             let mut on = vec![BTreeSet::new(); targets.len()];
             for (value, binding) in values.iter().zip(hoisted.bindings) {
                 for (all, variant) in on.iter_mut().zip(&value.on) {
@@ -835,7 +1056,7 @@ fn merge_unit(stem: &str, index: usize, targets: &[TargetBuild]) -> MergedUnit {
                 cache
                     .entry((on.clone(), within.clone()))
                     .or_insert_with(|| {
-                        cfg_within(
+                        recorded_within(
                             &union_on(&values, on, targets.len()),
                             &union_on(&values, within, targets.len()),
                         )
@@ -844,6 +1065,14 @@ fn merge_unit(stem: &str, index: usize, targets: &[TargetBuild]) -> MergedUnit {
             };
             if let Some((item, bindings)) = splice_values(&key, &values, &mut gate) {
                 out.spliced.push((key.clone(), values.len()));
+                if !bindings.is_empty() {
+                    out.claims.push(
+                        bindings
+                            .iter()
+                            .map(|(on, _)| union_on(&values, on, targets.len()))
+                            .collect(),
+                    );
+                }
                 for (on, binding) in bindings {
                     let cfg = cfg_of(&union_on(&values, &on, targets.len()));
                     out.gated += usize::from(cfg.is_some());
@@ -869,11 +1098,20 @@ fn merge_unit(stem: &str, index: usize, targets: &[TargetBuild]) -> MergedUnit {
         if values.len() > 1 && key.starts_with("fn:") {
             out.duplicated.push((key.clone(), values.len()));
         }
+        if values.len() > 1 && !matches!(values[0].item, Item::Comment(_)) {
+            out.claims
+                .push(values.iter().map(|value| value.on.clone()).collect());
+        }
         for value in values {
-            let cfg = cfg_of(&value.on);
-            if matches!(value.item, Item::Comment(_)) && cfg.is_some() {
-                continue;
-            }
+            let cfg = if matches!(value.item, Item::Comment(_)) {
+                let cfg = cfg_within(&value.on, &cares);
+                if cfg.is_some() {
+                    continue;
+                }
+                cfg
+            } else {
+                cfg_of(&value.on)
+            };
             out.gated += usize::from(cfg.is_some());
             out.entries.push(MergedEntry {
                 cfg,
@@ -883,6 +1121,7 @@ fn merge_unit(stem: &str, index: usize, targets: &[TargetBuild]) -> MergedUnit {
             });
         }
     }
+    out.gates = gates.into_inner();
     out
 }
 
@@ -1124,6 +1363,7 @@ pub fn merge(
     project: &Path,
     targets: &[String],
     projection: Projection,
+    coverage: Coverage,
 ) -> Result<Merged, String> {
     let names: Vec<String> = if targets.is_empty() {
         matrix
@@ -1142,12 +1382,20 @@ pub fn merge(
         }
     }
     let mut builds = Vec::with_capacity(names.len());
-    let mut compiles = Vec::with_capacity(names.len());
     for name in &names {
-        let (build, count) = build_target(matrix, project, name)?;
-        builds.push(build);
-        compiles.push(count);
+        builds.push(prepare_target(matrix, project, name)?);
     }
+    let mut jobs: Vec<Job> = Vec::new();
+    for (target, build) in builds.iter().enumerate() {
+        for (index, unit) in build.units.iter().enumerate() {
+            jobs.extend(
+                seed_rows(matrix, &unit.relevant, coverage)
+                    .into_iter()
+                    .map(|mask| (target, index, mask)),
+            );
+        }
+    }
+    compile_rows(matrix, project, &mut builds, jobs);
     let mut cfgs = BTreeMap::new();
     for build in &builds {
         if let Some(other) = cfgs.insert(build.cfg.clone(), build.name.clone()) {
@@ -1158,12 +1406,31 @@ pub fn merge(
             ));
         }
     }
-    let merged: Vec<MergedUnit> = matrix
+    let stems: Vec<String> = matrix
         .sources
         .iter()
-        .enumerate()
-        .map(|(index, source)| Ok(merge_unit(&stem_of(source)?, index, &builds)))
-        .collect::<Result<_, String>>()?;
+        .map(|source| stem_of(source))
+        .collect::<Result<_, _>>()?;
+    let merged = refine(matrix, project, &mut builds, &stems)?;
+    for build in &builds {
+        for unit in &build.units {
+            if unit.compiled.is_empty() {
+                let reason = unit
+                    .infeasible
+                    .first()
+                    .map_or("no configurations", |(_, error)| error.as_str());
+                return Err(format!(
+                    "target {}: no configuration of {} translated: {reason}",
+                    build.name,
+                    unit.source.display()
+                ));
+            }
+        }
+    }
+    let compiles: Vec<usize> = builds
+        .iter()
+        .map(|build| build.units.iter().map(|unit| unit.tried.len()).sum())
+        .collect();
     let result = check_projection(matrix, project, &builds, &merged, projection)?;
 
     let roots: Vec<&str> = merged
@@ -1181,11 +1448,6 @@ pub fn merge(
     let mut shared = 0;
     let mut signature_mismatches = Vec::new();
     for build in &builds {
-        let stems: Vec<String> = matrix
-            .sources
-            .iter()
-            .map(|source| stem_of(source))
-            .collect::<Result<_, _>>()?;
         let units: Vec<UnitCompiles> = build
             .units
             .iter()
@@ -1228,7 +1490,8 @@ pub fn merge(
                 unit.relevant.join(","),
                 unit.compiled.len()
             );
-            for (features, message) in &unit.infeasible {
+            for (mask, message) in &unit.infeasible {
+                let features = subset(&unit.relevant, *mask);
                 let _ = writeln!(report, "    infeasible [{}]: {message}", features.join(","));
             }
         }

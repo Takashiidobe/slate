@@ -197,6 +197,16 @@ fn merge_fixture(source: &Path) -> Result<(), String> {
         matrix["targets"][1] =
             serde_json::json!({"name": fields[0], "triple": fields[1], "flavor": fields[2]});
     }
+    if let Some(names) = text
+        .lines()
+        .find_map(|line| line.strip_prefix("// merge-features:"))
+    {
+        matrix["features"] = names
+            .split_whitespace()
+            .map(|name| serde_json::json!({"name": name, "defines": [name.to_uppercase()]}))
+            .collect();
+        matrix["invalid_features"] = serde_json::json!([]);
+    }
     std::fs::create_dir_all(work()).map_err(|e| format!("create work: {e}"))?;
     let matrix_path = work().join(format!("{stem}.json"));
     std::fs::write(&matrix_path, matrix.to_string()).map_err(|e| format!("write matrix: {e}"))?;
