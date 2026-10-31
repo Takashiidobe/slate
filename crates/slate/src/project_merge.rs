@@ -406,7 +406,7 @@ fn matrix_target_info(matrix: &Matrix, target: &str) -> Result<TargetInfo, Strin
 }
 
 fn prepare_target(matrix: &Matrix, project: &Path, target: &str) -> Result<TargetBuild, String> {
-    let plan = project_plan::plan(matrix, project, Some(target), project_plan::Mode::Plan)
+    let plan = project_plan::plan(matrix, project, Some(target), project_plan::Mode::Relevant)
         .map_err(|error| error.to_string())?;
     let units = &plan.targets[0].units;
     if let Some((unit, error)) = units
@@ -582,7 +582,9 @@ fn place_sections(build: &mut TargetBuild) -> Result<(), String> {
                     .filter(|(symbol, _)| taken.contains(*symbol))
                     .map(|(_, name)| name.clone()),
             );
-            let mut placed = compiled.program.clone();
+            let mut placed = Program {
+                items: std::mem::take(&mut compiled.program.items),
+            };
             backend::place_in_distinct_sections(&mut placed, &stem, &protected);
             compiled.entries = entries(&placed);
         }
@@ -1245,10 +1247,12 @@ pub fn merge(
             return Err(format!("matrix sources map twice to module {stem}"));
         }
     }
-    let mut builds = Vec::with_capacity(names.len());
-    for name in &names {
-        builds.push(prepare_target(matrix, project, name)?);
-    }
+    slate_parser::pp::reuse_lexed_sources();
+    let prepared: Vec<Result<TargetBuild, String>> = names
+        .par_iter()
+        .map(|name| prepare_target(matrix, project, name))
+        .collect();
+    let mut builds = prepared.into_iter().collect::<Result<Vec<_>, _>>()?;
     let mut jobs: Vec<Job> = Vec::new();
     for (target, build) in builds.iter().enumerate() {
         for (index, unit) in build.units.iter().enumerate() {
@@ -1277,6 +1281,39 @@ pub fn merge(
             .map(|build| build.properties.clone())
             .collect(),
     );
+    let mut shared = 0;
+    let mut signature_mismatches = Vec::new();
+    for build in &builds {
+        let units: Vec<UnitCompiles> = build
+            .units
+            .iter()
+            .zip(&stems)
+            .map(|(unit, stem)| UnitCompiles {
+                stem,
+                relevant: &unit.relevant,
+                compiled: unit
+                    .compiled
+                    .iter()
+                    .map(|compiled| (compiled.mask, &compiled.program))
+                    .collect(),
+            })
+            .collect();
+        let outcome =
+            signatures::check(&units, &|features| matrix.is_invalid_combination(features));
+        shared += outcome.shared;
+        signature_mismatches.extend(outcome.mismatches.into_iter().map(|mismatch| {
+            format!(
+                "{} [{}]: {}: {} `{}` vs {} `{}`",
+                build.name,
+                mismatch.features.join(","),
+                mismatch.symbol,
+                mismatch.left.0,
+                mismatch.left.1,
+                mismatch.right.0,
+                mismatch.right.1
+            )
+        }));
+    }
     for build in &mut builds {
         place_sections(build)?;
     }
@@ -1323,40 +1360,6 @@ pub fn merge(
         [] => None,
         _ => return Err(format!("multiple units define main: {}", roots.join(", "))),
     };
-
-    let mut shared = 0;
-    let mut signature_mismatches = Vec::new();
-    for build in &builds {
-        let units: Vec<UnitCompiles> = build
-            .units
-            .iter()
-            .zip(&stems)
-            .map(|(unit, stem)| UnitCompiles {
-                stem,
-                relevant: &unit.relevant,
-                compiled: unit
-                    .compiled
-                    .iter()
-                    .map(|compiled| (compiled.mask, &compiled.program))
-                    .collect(),
-            })
-            .collect();
-        let outcome =
-            signatures::check(&units, &|features| matrix.is_invalid_combination(features));
-        shared += outcome.shared;
-        signature_mismatches.extend(outcome.mismatches.into_iter().map(|mismatch| {
-            format!(
-                "{} [{}]: {}: {} `{}` vs {} `{}`",
-                build.name,
-                mismatch.features.join(","),
-                mismatch.symbol,
-                mismatch.left.0,
-                mismatch.left.1,
-                mismatch.right.0,
-                mismatch.right.1
-            )
-        }));
-    }
 
     let mut report = String::new();
     for (build, count) in builds.iter().zip(&compiles) {

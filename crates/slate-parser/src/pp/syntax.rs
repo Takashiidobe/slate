@@ -1,5 +1,6 @@
-use crate::ast::{Loc, Span};
+use crate::ast::{FileId, Loc, Span};
 use crate::lexer::{LineToken, Token};
+use std::rc::Rc;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) enum DirectiveName {
@@ -135,16 +136,23 @@ pub(super) struct PhysicalLine {
 
 pub(super) struct TokenSource<'a> {
     src: &'a str,
-    tokens: Vec<LineToken>,
+    tokens: Rc<Vec<LineToken>>,
+    file: FileId,
     position: usize,
     elifdef_directives: bool,
 }
 
 impl<'a> TokenSource<'a> {
-    pub(super) fn new(src: &'a str, tokens: Vec<LineToken>, elifdef_directives: bool) -> Self {
+    pub(super) fn new(
+        src: &'a str,
+        tokens: Rc<Vec<LineToken>>,
+        file: FileId,
+        elifdef_directives: bool,
+    ) -> Self {
         Self {
             src,
             tokens,
+            file,
             position: 0,
             elifdef_directives,
         }
@@ -199,7 +207,7 @@ impl<'a> TokenSource<'a> {
         let mut comments = Vec::new();
         let mut tokens = Vec::new();
         loop {
-            let token = self.tokens[self.position].token.clone();
+            let token = self.tokens[self.position].token.rehomed(self.file);
             self.position += 1;
             match token.value {
                 Token::Comment(text) => {

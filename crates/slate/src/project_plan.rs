@@ -4,7 +4,9 @@ use rayon::prelude::*;
 use slate_parser::ast::{FileId, Span};
 use slate_parser::files::Files;
 use slate_parser::lexer::{Token, token_spelling};
-use slate_parser::pp::{ArmState, PPNode, PPNodeKind, PreprocessTrace, TokenTrace};
+use slate_parser::pp::{
+    ArmState, FeatureSet, PPNode, PPNodeKind, PreprocessTrace, RootFeatures, TokenTrace,
+};
 use std::collections::{BTreeMap, BTreeSet, HashMap, VecDeque};
 use std::fmt::Write;
 use std::path::{Path, PathBuf};
@@ -59,6 +61,7 @@ pub struct Exhaustive {
 pub enum Mode {
     Plan,
     CheckExhaustive,
+    Relevant,
 }
 
 pub fn plan(
@@ -106,7 +109,11 @@ pub fn plan(
 
 fn plan_unit(matrix: &Matrix, project: &Path, target: &str, source: &Path, mode: Mode) -> UnitPlan {
     let mut explorer = Explorer::new(matrix, project, target, source);
+    explorer.tracks_elements = mode != Mode::Relevant;
     explorer.explore();
+    if mode == Mode::Relevant {
+        return explorer.relevant_unit();
+    }
     let mut unit = explorer.finish();
     if mode == Mode::CheckExhaustive {
         let mut exhaustive = Explorer::new(matrix, project, target, source);
@@ -250,6 +257,7 @@ struct Explorer<'a> {
     target: &'a str,
     source: &'a Path,
     feature_of_macro: HashMap<String, Vec<usize>>,
+    tracks_elements: bool,
     interned: HashMap<String, u32>,
     runs: BTreeMap<Config, Run>,
     reached: BTreeSet<BranchKey>,
@@ -281,6 +289,7 @@ impl<'a> Explorer<'a> {
             target,
             source,
             feature_of_macro,
+            tracks_elements: true,
             interned: HashMap::new(),
             runs: BTreeMap::new(),
             reached: BTreeSet::new(),
@@ -418,15 +427,6 @@ impl<'a> Explorer<'a> {
         *self.interned.entry(key).or_insert(next)
     }
 
-    fn features_of(&self, roots: &BTreeSet<String>) -> Config {
-        roots
-            .iter()
-            .filter_map(|root| self.feature_of_macro.get(root))
-            .flatten()
-            .copied()
-            .collect()
-    }
-
     fn analyze(
         &mut self,
         config: &Config,
@@ -434,7 +434,9 @@ impl<'a> Explorer<'a> {
         files: &Files,
         trace: &PreprocessTrace,
     ) -> Vec<u32> {
-        let mut roots: HashMap<TokenTrace, Config> = HashMap::new();
+        let feature_of_macro = self.feature_of_macro.clone();
+        let mut root_features = trace.root_features(&feature_of_macro);
+        let mut roots: HashMap<TokenTrace, FeatureSet> = HashMap::new();
         let mut elements = BTreeSet::new();
         let mut chunk = String::new();
         let mut chunk_start = None;
@@ -458,21 +460,23 @@ impl<'a> Explorer<'a> {
             for (token, token_trace) in tokens.iter().zip(traces) {
                 let features = roots
                     .entry(*token_trace)
-                    .or_insert_with(|| self.features_of(&trace.dependencies(*token_trace).roots));
+                    .or_insert_with(|| root_features.of_trace(*token_trace));
                 item.features.extend(features.iter().copied());
                 if let Token::Ident(name) = &token.value
-                    && let Some(named) = self.feature_of_macro.get(name.as_str())
+                    && let Some(named) = feature_of_macro.get(name.as_str())
                 {
                     item.features.extend(named.iter().copied());
                 }
                 item.start
                     .get_or_insert((token.expansion.file, token.expansion.offset));
                 item.end = token.expansion.offset;
-                chunk_start.get_or_insert(token);
-                if !chunk.is_empty() {
-                    chunk.push(' ');
+                if self.tracks_elements {
+                    chunk_start.get_or_insert(token);
+                    if !chunk.is_empty() {
+                        chunk.push(' ');
+                    }
+                    chunk.push_str(&token_spelling(token));
                 }
-                chunk.push_str(&token_spelling(token));
                 match token.value {
                     Token::LParen => parens += 1,
                     Token::RParen => parens = parens.saturating_sub(1),
@@ -506,7 +510,7 @@ impl<'a> Explorer<'a> {
         for expansion in &trace.expansions {
             let features = roots
                 .entry(expansion.trace)
-                .or_insert_with(|| self.features_of(&trace.dependencies(expansion.trace).roots));
+                .or_insert_with(|| root_features.of_trace(expansion.trace));
             let containing = by_start
                 .get(&expansion.site.file)
                 .and_then(|starts| starts.range(..=expansion.site.offset).next_back())
@@ -526,11 +530,17 @@ impl<'a> Explorer<'a> {
                 }
             }
         }
-        self.observe_branches(config, files, trace);
+        self.observe_branches(config, files, trace, &mut root_features);
         elements.into_iter().collect()
     }
 
-    fn observe_branches(&mut self, config: &Config, files: &Files, trace: &PreprocessTrace) {
+    fn observe_branches(
+        &mut self,
+        config: &Config,
+        files: &Files,
+        trace: &PreprocessTrace,
+        root_features: &mut RootFeatures<'_>,
+    ) {
         let mut unseen = Vec::new();
         for (index, conditional) in trace.conditionals.iter().enumerate() {
             let Some(first) = conditional.arms.first() else {
@@ -553,7 +563,7 @@ impl<'a> Explorer<'a> {
                     .map_or(NO_ARM, |arm| arm as u32);
                 self.reached.insert((id, taken));
             }
-            let features = self.features_of(&trace.conditional_dependencies(index).roots);
+            let features = root_features.of_conditional(index);
             if features.is_empty() {
                 continue;
             }
@@ -683,6 +693,15 @@ impl<'a> Explorer<'a> {
             .values()
             .filter(|run| run.outcome == outcome)
             .count()
+    }
+
+    fn relevant_unit(&self) -> UnitPlan {
+        UnitPlan {
+            source: self.source.to_path_buf(),
+            relevant: self.names(&self.relevant),
+            error: self.error.clone(),
+            ..UnitPlan::default()
+        }
     }
 
     fn finish(&mut self) -> UnitPlan {

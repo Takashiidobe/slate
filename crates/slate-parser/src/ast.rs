@@ -669,6 +669,17 @@ impl<T> Span<T> {
         }
     }
 
+    pub fn rehomed(&self, file: FileId) -> Self
+    where
+        T: Clone,
+    {
+        let mut span = self.clone();
+        span.id = NodeId::next();
+        span.spelling.file = file;
+        span.expansion.file = file;
+        span
+    }
+
     pub fn with_leading_space(mut self, leading_space: bool) -> Self {
         self.leading_space = leading_space;
         self

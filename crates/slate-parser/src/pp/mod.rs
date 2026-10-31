@@ -5,6 +5,7 @@ mod expand;
 mod has_checks;
 mod hide_set;
 mod include;
+mod lexed;
 mod math;
 mod print;
 mod syntax;
@@ -31,6 +32,7 @@ use error::{PPErrorKind, PPFailure};
 use expand::{PPToken, Piece, Stream};
 use hide_set::HideSets;
 use include::read_source;
+pub use lexed::reuse_lexed_sources;
 use miette::Severity;
 pub use print::{write_preprocessed, write_trace};
 use std::cell::Cell;
@@ -41,8 +43,8 @@ use std::time::SystemTime;
 use syntax::{Directive, DirectiveName, Line, TokenSource, directive_spelling, identifier};
 pub use trace::{
     Arm, ArmState, Branch, Conditional as TracedConditional, ConditionalId, ContextId,
-    Dependencies, Expansion, MacroEvent, MacroEventId, MacroEventKind, MacroRead, MacroSet,
-    PreprocessTrace, TokenTrace,
+    Dependencies, Expansion, FeatureSet, MacroEvent, MacroEventId, MacroEventKind, MacroRead,
+    MacroSet, PreprocessTrace, RootFeatures, TokenTrace,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -1247,11 +1249,12 @@ impl<'a> Preprocessor<'a> {
             true => Charset::Utf8,
             false => self.dialect.source_charset(),
         };
-        let tokens = Lexer::new(file, src, self.dialect.features())
-            .decoding(charset)
-            .tokenize_lines();
+        let tokens = lexed::lexed_tokens(file, src, self.dialect.features(), charset);
         let elifdef_directives = self.dialect.features().elifdef_directives;
-        self.process(file, TokenSource::new(src, tokens, elifdef_directives))
+        self.process(
+            file,
+            TokenSource::new(src, tokens, file, elifdef_directives),
+        )
     }
 
     fn source(&self, file: FileId) -> &str {

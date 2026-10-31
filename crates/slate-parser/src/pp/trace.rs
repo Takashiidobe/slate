@@ -5,6 +5,7 @@ use crate::ast::{FileId, Loc, Span};
 use crate::lexer::Token;
 use std::collections::{BTreeSet, HashMap};
 use std::path::Path;
+use std::rc::Rc;
 
 const COMMAND_LINE: &str = "<command line>";
 
@@ -164,18 +165,6 @@ impl PreprocessTrace {
         )
     }
 
-    pub fn conditional_dependencies(&self, index: usize) -> Dependencies {
-        let conditional = &self.conditionals[index];
-        self.closure(
-            vec![Branch {
-                conditional: ConditionalId(index as u32),
-                arm: conditional.arms.len().saturating_sub(1) as u32,
-            }],
-            vec![conditional.context],
-            Vec::new(),
-        )
-    }
-
     fn closure(
         &self,
         mut branches: Vec<Branch>,
@@ -213,6 +202,19 @@ impl PreprocessTrace {
             } else {
                 return result;
             }
+        }
+    }
+
+    pub fn root_features<'t>(
+        &'t self,
+        feature_of_macro: &'t HashMap<String, Vec<usize>>,
+    ) -> RootFeatures<'t> {
+        RootFeatures {
+            trace: self,
+            feature_of_macro,
+            contexts: HashMap::new(),
+            branches: HashMap::new(),
+            events: HashMap::new(),
         }
     }
 
@@ -286,6 +288,108 @@ impl PreprocessTrace {
                 context
             }
         };
+    }
+}
+
+pub type FeatureSet = Rc<BTreeSet<usize>>;
+
+pub struct RootFeatures<'t> {
+    trace: &'t PreprocessTrace,
+    feature_of_macro: &'t HashMap<String, Vec<usize>>,
+    contexts: HashMap<ContextId, FeatureSet>,
+    branches: HashMap<Branch, FeatureSet>,
+    events: HashMap<MacroEventId, FeatureSet>,
+}
+
+fn union_features(left: FeatureSet, right: &FeatureSet) -> FeatureSet {
+    if right.is_subset(&left) {
+        left
+    } else if left.is_subset(right) {
+        right.clone()
+    } else {
+        Rc::new(left.union(right).copied().collect())
+    }
+}
+
+impl RootFeatures<'_> {
+    pub fn of_trace(&mut self, trace: TokenTrace) -> FeatureSet {
+        let mut features = self.of_context(trace.context);
+        for event in self.trace.macros(trace.macros) {
+            features = union_features(features, &self.of_event(*event));
+        }
+        features
+    }
+
+    pub fn of_conditional(&mut self, index: usize) -> FeatureSet {
+        let conditional = &self.trace.conditionals[index];
+        let last = Branch {
+            conditional: ConditionalId(index as u32),
+            arm: conditional.arms.len().saturating_sub(1) as u32,
+        };
+        let parents = self.of_context(conditional.context);
+        union_features(parents, &self.of_branch(last))
+    }
+
+    fn named(&self, name: &str) -> FeatureSet {
+        Rc::new(
+            self.feature_of_macro
+                .get(name)
+                .into_iter()
+                .flatten()
+                .copied()
+                .collect(),
+        )
+    }
+
+    fn of_context(&mut self, context: ContextId) -> FeatureSet {
+        if let Some(found) = self.contexts.get(&context) {
+            return found.clone();
+        }
+        let (parent, branch) = self.trace.contexts[context.0 as usize];
+        let features = match branch {
+            Some(branch) => {
+                let parents = self.of_context(parent);
+                union_features(parents, &self.of_branch(branch))
+            }
+            None => FeatureSet::default(),
+        };
+        self.contexts.insert(context, features.clone());
+        features
+    }
+
+    fn of_branch(&mut self, branch: Branch) -> FeatureSet {
+        if let Some(found) = self.branches.get(&branch) {
+            return found.clone();
+        }
+        let arms = &self.trace.conditional(branch.conditional).arms;
+        let mut features = FeatureSet::default();
+        for arm in &arms[..=branch.arm as usize] {
+            for read in &arm.reads {
+                for skipped in &read.skipped {
+                    features = union_features(features, &self.of_event(*skipped));
+                }
+                let found = match read.event {
+                    Some(event) => self.of_event(event),
+                    None => self.named(&read.name),
+                };
+                features = union_features(features, &found);
+            }
+        }
+        self.branches.insert(branch, features.clone());
+        features
+    }
+
+    fn of_event(&mut self, id: MacroEventId) -> FeatureSet {
+        if let Some(found) = self.events.get(&id) {
+            return found.clone();
+        }
+        let event = self.trace.event(id);
+        let mut features = self.of_context(event.context);
+        if event.command_line {
+            features = union_features(features, &self.named(&event.name));
+        }
+        self.events.insert(id, features.clone());
+        features
     }
 }
 
