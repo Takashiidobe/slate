@@ -7,8 +7,8 @@ use super::types::TypeResolver;
 use crate::ast::{Attribute, DeclarationSpecifiers, Expr, ExprKind, Span, StorageClass};
 use crate::compiler_options::InlineSemantics;
 use crate::ir::{
-    BindingId, Deallocator, Fallthrough, FunctionSemantics, Inlining, Linkage, MemoryEffects,
-    TargetFeature, Type,
+    BindingId, Deallocator, DllStorage, Fallthrough, FunctionSemantics, Inlining, Linkage,
+    MemoryEffects, TargetFeature, Type,
 };
 use crate::target_info::TargetEnvironment;
 
@@ -18,6 +18,8 @@ pub(super) struct FunctionDeclarations {
     semantics_override: Option<InlineSemantics>,
     definition: Option<DefinitionSpecifiers>,
     has_external_declaration: bool,
+    declared_inline: bool,
+    declared_extern: bool,
     noreturn: bool,
     naked: bool,
     interrupt: bool,
@@ -173,6 +175,8 @@ impl Lowerer {
             state.inlining = Some(Inlining::Hint);
         }
         state.noreturn |= specifiers.is_noreturn;
+        state.declared_inline |= specifiers.is_inline;
+        state.declared_extern |= specifiers.storage == StorageClass::Extern;
         state.has_external_declaration |=
             file_scope && (!specifiers.is_inline || specifiers.storage == StorageClass::Extern);
         if definition {
@@ -295,6 +299,12 @@ impl Lowerer {
                         }
                         _ => false,
                     },
+                discardable: function.body.is_some()
+                    && matches!(function.linkage, Linkage::External)
+                    && mode.is_none()
+                    && state.declared_inline
+                    && !state.declared_extern
+                    && function.symbol.dll_storage != Some(DllStorage::Export),
                 noreturn: state.noreturn,
                 naked: state.naked,
                 interrupt: state.interrupt,

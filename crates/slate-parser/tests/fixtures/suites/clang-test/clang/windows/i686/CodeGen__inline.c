@@ -112,19 +112,19 @@ inline void testC();
 // DEFAULT-NEXT:     global %[[VALUE_P1:[0-9]+]] P1: ptr<fn(unprototyped) -> void> [storage=static] = function_decay<ptr<fn(unprototyped) -> void>>(%[[VALUE_gnu_inline:[0-9]+]]) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_P:[0-9]+]] P: ptr<fn(unprototyped) -> void> [storage=static] = function_decay<ptr<fn(unprototyped) -> void>>(%[[VALUE_gnu_ei_inline:[0-9]+]]) [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE__exit:[0-9]+]] @_exit(%[[VALUE__Code:[0-9]+]] _Code: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE__Exit:[0-9]+]] @_Exit(%[[VALUE_status:[0-9]+]] status: i32) -> void [linkage=external] [inline=hint] [definition=emitted] [noreturn] [fallthrough=ub] {
+// DEFAULT-NEXT:     fn %[[VALUE__Exit:[0-9]+]] @_Exit(%[[VALUE_status:[0-9]+]] status: i32) -> void [linkage=external] [inline=hint] [definition=discardable] [noreturn] [fallthrough=ub] {
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE__exit]], read<i32>(%[[VALUE_status]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ei:[0-9]+]] @ei(unprototyped) -> i32 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(123);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(unprototyped) -> i32 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(unprototyped) -> i32 [linkage=external] [inline=hint] [definition=discardable] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_ei]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_foo]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_unreferenced1:[0-9]+]] @unreferenced1(unprototyped) -> void [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_unreferenced1:[0-9]+]] @unreferenced1(unprototyped) -> void [linkage=external] [inline=hint] [definition=discardable] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_unreferenced2:[0-9]+]] @unreferenced2(unprototyped) -> void [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
@@ -132,10 +132,10 @@ inline void testC();
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_gnu_ei_inline]] @gnu_ei_inline(unprototyped) -> void [linkage=external] [inline=hint] [definition=inline_only] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_test1:[0-9]+]] @test1(unprototyped) -> i32 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_test1:[0-9]+]] @test1(unprototyped) -> i32 [linkage=external] [inline=hint] [definition=discardable] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(4);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_test2:[0-9]+]] @test2(unprototyped) -> i32 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_test2:[0-9]+]] @test2(unprototyped) -> i32 [linkage=external] [inline=hint] [definition=discardable] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(5);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test_test1:[0-9]+]] @test_test1(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
@@ -163,7 +163,7 @@ inline void testC();
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test7:[0-9]+]] @test7(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_strlcpy:[0-9]+]] @strlcpy(%[[VALUE_dest:[0-9]+]] dest: ptr<i8>, %[[VALUE_src:[0-9]+]] src: ptr<const i8>, %[[VALUE_size:[0-9]+]] size: u32) -> u32 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_strlcpy:[0-9]+]] @strlcpy(%[[VALUE_dest:[0-9]+]] dest: ptr<i8>, %[[VALUE_src:[0-9]+]] src: ptr<const i8>, %[[VALUE_size:[0-9]+]] size: u32) -> u32 [linkage=external] [inline=hint] [definition=discardable] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return reinterpret<u32, reason=return, fits=always>(const<i32>(3));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test8:[0-9]+]] @test8(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
@@ -171,7 +171,7 @@ inline void testC();
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test9:[0-9]+]] @test9(unprototyped) -> void [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_testA:[0-9]+]] @testA(unprototyped) -> void [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_testA:[0-9]+]] @testA(unprototyped) -> void [linkage=external] [inline=hint] [definition=discardable] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_testB:[0-9]+]] @testB(unprototyped) -> void [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }

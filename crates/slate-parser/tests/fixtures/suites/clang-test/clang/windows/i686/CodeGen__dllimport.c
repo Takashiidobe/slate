@@ -156,14 +156,14 @@ USE(redecl5)
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_GlobalRedecl6]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_decl]] @decl() -> void [linkage=external] [dllimport];
-// DEFAULT-NEXT:     fn %[[VALUE_inlineFunc:[0-9]+]] @inlineFunc() -> void [linkage=external] [dllimport] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_inlineFunc:[0-9]+]] @inlineFunc() -> void [linkage=external] [dllimport] [inline=hint] [definition=discardable] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_use67:[0-9]+]] @use67() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_inlineFunc]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_noinline:[0-9]+]] @noinline() -> void [linkage=external] [dllimport] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_noinline:[0-9]+]] @noinline() -> void [linkage=external] [dllimport] [inline=never] [definition=discardable] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_alwaysInline:[0-9]+]] @alwaysInline() -> void [linkage=external] [dllimport] [inline=always] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_alwaysInline:[0-9]+]] @alwaysInline() -> void [linkage=external] [dllimport] [inline=always] [definition=discardable] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_use72:[0-9]+]] @use72() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_noinline]]);

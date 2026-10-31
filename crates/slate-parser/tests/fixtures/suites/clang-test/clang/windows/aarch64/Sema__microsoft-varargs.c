@@ -120,7 +120,7 @@ wprintf(/*_In_z_ _Printf_format_string_*/ wchar_t const * const _Format, ...) {
 // DEFAULT-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = ptr<i8>;
 // DEFAULT-NEXT:     type @type[[TYPE_wchar_t:[0-9]+]] wchar_t = u16;
 // DEFAULT-NEXT:     fn %[[VALUE___va_start:[0-9]+]] @__va_start(%[[VALUE0:[0-9]+]] <unnamed>: ptr<ptr<i8>>, ...) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_wprintf:[0-9]+]] @wprintf(%[[VALUE__Format:[0-9]+]] _Format: ptr<const u16> [const], ...) -> i32 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_wprintf:[0-9]+]] @wprintf(%[[VALUE__Format:[0-9]+]] _Format: ptr<const u16> [const], ...) -> i32 [linkage=external] [inline=hint] [definition=discardable] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE__Result:[0-9]+]] _Result: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE__ArgList:[0-9]+]] _ArgList: ptr<i8> [storage=automatic];
 // DEFAULT-NEXT:         va_start(deref(addr_of<ptr<ptr<i8>>>(%[[VALUE__ArgList]])));

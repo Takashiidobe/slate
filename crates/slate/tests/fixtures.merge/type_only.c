@@ -63,8 +63,7 @@ int main(void) {
 // CHECK-NEXT: struct __crt_multibyte_data {}
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(all(target_arch = "x86_64", windows, target_env = "msvc"))]
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: extern "C-unwind" fn __local_stdio_printf_options() -> *mut u64 {
+// CHECK-NEXT: fn __local_stdio_printf_options() -> *mut u64 {
 // CHECK-NEXT:     unsafe { std::ptr::addr_of_mut!(_OptionsStorage) }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -79,8 +78,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(all(target_arch = "x86_64", windows, target_env = "msvc"))]
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: extern "C-unwind" fn _vfprintf_l(
+// CHECK-NEXT: fn _vfprintf_l(
 // CHECK-NEXT:     _Stream: *mut _iobuf,
 // CHECK-NEXT:     _Format: *const i8,
 // CHECK-NEXT:     _Locale: *mut __crt_locale_pointers,
@@ -98,7 +96,6 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(all(target_arch = "x86_64", windows, target_env = "msvc"))]
-// CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn printf(_Format: *const i8, mut __va_args: ...) -> i32 {
 // CHECK-NEXT:     let mut _Result: i32 = 0;
 // CHECK-NEXT:     let mut _ArgList: *mut i8 = unsafe { std::mem::zeroed() };

@@ -1137,6 +1137,8 @@ impl fmt::Display for DisplayModule<'_> {
                     " [definition={}]",
                     if function.semantics.inline_only {
                         "inline_only"
+                    } else if function.semantics.discardable {
+                        "discardable"
                     } else {
                         "emitted"
                     }

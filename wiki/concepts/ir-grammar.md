@@ -190,7 +190,7 @@ tls_model    = "global-dynamic" | "local-dynamic" | "initial-exec" | "local-exec
 ```ebnf
 function    = "fn" binding "@" c_identifier "(" [ params ] ")" "->" type
               linkage symbol_attrs [ "[inline=" ( "hint" | "always" | "never" ) "]" ]
-              [ "[definition=" ( "emitted" | "inline_only" ) "]" ] [ "[noreturn]" ]
+              [ "[definition=" ( "emitted" | "inline_only" | "discardable" ) "]" ] [ "[noreturn]" ]
               [ "[naked]" ] [ "[constructor=" int "]" ] [ "[destructor=" int "]" ]
               [ "[interrupt]" ] [ "[overloadable]" ]
               [ "[target=" target_feature { "," target_feature } "]" ]

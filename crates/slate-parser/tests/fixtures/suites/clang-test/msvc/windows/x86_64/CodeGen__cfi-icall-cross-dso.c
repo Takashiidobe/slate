@@ -71,7 +71,7 @@ void bar() { foo(); }
 // DEFAULT-NEXT:     fn %[[VALUE_h1:[0-9]+]] @h1(unprototyped) -> ptr<fn() -> void> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return addr_of<ptr<fn() -> void>>(%[[VALUE_h]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(unprototyped) -> void [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(unprototyped) -> void [linkage=external] [inline=hint] [definition=discardable] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         call<void, signature=fn(unprototyped) -> void>(%[[VALUE_foo]]);

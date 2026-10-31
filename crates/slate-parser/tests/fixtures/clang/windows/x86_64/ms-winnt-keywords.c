@@ -80,13 +80,13 @@ int use_forced(void) { return forced() + forced_static() + forced_after(); }
 // DEFAULT-NEXT:         write<ptr<u16>>(%[[VALUE_unaligned_wide_string]], pointer_cast<ptr<u16>, reason=explicit>(read<ptr<i32>>(%[[VALUE_plain]])));
 // DEFAULT-NEXT:         write<ptr<i32>>(%[[VALUE_plain]], read<ptr<i32>, align=1>(%[[VALUE_unaligned_pointer]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_forced:[0-9]+]] @forced() -> i32 [linkage=external] [inline=always] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_forced:[0-9]+]] @forced() -> i32 [linkage=external] [inline=always] [definition=discardable] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(1);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_forced_static:[0-9]+]] @forced_static() -> i32 [linkage=internal] [inline=always] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(2);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_forced_after:[0-9]+]] @forced_after() -> i32 [linkage=external] [inline=always] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_forced_after:[0-9]+]] @forced_after() -> i32 [linkage=external] [inline=always] [definition=discardable] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(3);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_use_forced:[0-9]+]] @use_forced() -> i32 [linkage=external] [fallthrough=ub_if_used] {

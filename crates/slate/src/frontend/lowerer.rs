@@ -240,6 +240,7 @@ fn exports_symbol(options: &LowerOptions, function: &ir::Function) -> bool {
     options.export_symbols
         && matches!(function.linkage, ir::Linkage::External)
         && !function.semantics.inline_only
+        && !function.semantics.discardable
         && function.name != "main"
 }
 

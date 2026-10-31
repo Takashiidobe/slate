@@ -222,9 +222,13 @@ control-flow facts:
   definition. `static inline` keeps internal linkage and a definition.
   Rules follow [GCC's inline docs](https://gcc.gnu.org/onlinedocs/gcc/Inline.html).
 - windows-msvc (any flavor): neither mode applies unless `gnu_inline`;
-  clang gives every inline definition its own comdat (`weak_odr` with
-  `dllexport` or an `extern` redeclaration, else `linkonce_odr`), so none
-  is inline-only (`x86_64-pc-windows-msvc/ir_inline.c`).
+  clang gives every inline definition its own comdat, so none is inline-only
+  (`clang/windows/x86_64/ir_inline.c`). `weak_odr`, with `dllexport` or an
+  explicit `extern` on any declaration, prints `[definition=emitted]`.
+  Otherwise `linkonce_odr` prints `[definition=discardable]`: every unit that
+  uses the function supplies it, and no other unit can need its symbol, so
+  Slate keeps it private to the unit. A `static` local in a discardable
+  function is therefore per unit in Slate and shared in clang.
 - `noreturn` merges `_Noreturn`, `[[noreturn]]`, and the GNU attribute
   across declarations. GNU `const`/`pure` become `[memory=none]`/
   `[memory=read]` (`const` wins).
